@@ -1,7 +1,7 @@
 {
     "name": "imperium/imperium",
     "type": "library",
-    "description": "A free library to create websites administration more simply",
+    "description": "A library to manage databases more simply",
     "license": "GPL-3.0-or-later",
     "support": {
         "issues": "https://github.com/fumseck/imperium/issues",

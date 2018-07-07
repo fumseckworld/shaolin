@@ -447,7 +447,10 @@ namespace Imperium\Databases\Eloquent\Bases {
                     case Connexion::POSTGRESQL:
                         return system("psql -U postgres $base < $sqlFile");
                     break;
-                    default:
+					case Connexion::SQLITE:
+						return system("sqlite3 $base < $sqlFile");
+					break;
+            		default:
                         return false;
                     break;
                 }
