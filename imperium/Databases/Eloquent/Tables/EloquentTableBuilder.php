@@ -397,6 +397,22 @@ namespace Imperium\Databases\Eloquent\Tables {
          */
         public function modifyColumn(string $column,string $type,int $size = 0): bool;
 
+        /**
+         * appends columns in an existing table
+         *
+         * @param string $table
+         * @param array $columns
+         * @param array $types
+         * @param array $length
+         * @param array $options
+         * @param array $colOptions
+         * @param array $unique
+         * @param array $nullable
+         *
+         * @return bool
+         */
+        public function appendColumns(string $table,array $columns,array $types,array $length,array $options,array $colOptions,array $unique,array $nullable): bool;
+
     }
 
 }

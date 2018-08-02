@@ -29,7 +29,6 @@ namespace  Imperium\Databases\Eloquent\Tables {
     use Imperium\Databases\Eloquent\Connexion\Connexion;
     use Imperium\Databases\Eloquent\Eloquent;
     use Imperium\File\File;
-    use Monolog\Handler\IFTTTHandler;
     use PDO;
 
     class Table extends Eloquent implements EloquentTableBuilder
@@ -1579,5 +1578,82 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
             return true;
         }
+
+        /**
+         * appends columns in an existing table
+         *
+         * @param string $table
+         * @param array $columns
+         * @param array $types
+         * @param array $length
+         * @param array $options
+         * @param array $colOptions
+         * @param array $unique
+         * @param array $nullable
+         *
+         * @return bool
+         */
+        public function appendColumns(string $table, array $columns, array $types, array $length, array $options, array $colOptions, array $unique, array $nullable): bool
+        {
+            $command = '';
+            switch ($this->driver)
+            {
+                case Connexion::MYSQL:
+                    for ($i=0;$i<count($columns);$i++)
+                    {
+                        if (!empty($length[$i]))
+                        {
+                            if ($unique[$i])
+                            {
+                                if ($nullable[$i])
+                                {
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]} {$length[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]}";
+                                }else{
+
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}({$length[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]} NOT NULL ";
+                                }
+                            }else
+                            {
+                                if ($nullable[$i])
+                                {
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]} {$length[$i]}  {$options[$i]} {$colOptions[$i]}  {$columns[$i]}";
+
+                                }else
+                                {
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]} {$length[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT NOT NULL {$columns[$i]}";
+
+                                }
+
+                            }
+                        }else
+                        {
+                            if ($unique[$i])
+                            {
+                                if ($nullable[$i])
+                                {
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]}";
+                                }else{
+
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]} NOT NULL ";
+                                }
+                            }else
+                            {
+                                if ($nullable[$i])
+                                {
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}  {$options[$i]} {$colOptions[$i]}  {$columns[$i]}";
+
+                                }else
+                                {
+                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}   {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT NOT NULL {$columns[$i]}";
+
+                                }
+                            }
+                        }
+                    }
+                break;
+            }
+            return $this->exec($command);
+        }
     }
+
 }

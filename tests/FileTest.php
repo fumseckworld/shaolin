@@ -377,6 +377,6 @@ class FileTest extends TestCase
         $this->assertEquals(true,File::chmod($this->rename,0777));
         $this->assertEquals(false,File::chmod($this->file,0777));
     }
- 
+
 
 }
