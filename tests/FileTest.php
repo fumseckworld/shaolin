@@ -129,9 +129,11 @@ class FileTest extends TestCase
 
     public function testDeleteFolder()
     {
-        $this->assertEquals(false,File::deleteFolder('a'));
-        mkdir('a');
-        $this->assertEquals(true,File::deleteFolder('a'));
+        $dir = uniqid();
+
+        $this->assertEquals(false,File::deleteFolder($dir));
+        mkdir($dir);
+        $this->assertEquals(true,File::deleteFolder($dir));
     }
     public function testCopy()
     {
@@ -238,17 +240,7 @@ class FileTest extends TestCase
         $this->assertNotEquals(false,File::isWritable($this->filename));
     }
 
-    public function testHardLink()
-    {
-        $this->assertEquals(false,File::hardLink($this->file,'a'));
-        $this->assertEquals(false,File::symlink($this->file,'a'));
-        $this->assertEquals(false,File::isLink('a'));
-        $this->assertNotEquals(false,File::hardLink($this->filename,'hard_link'));
-        $this->assertNotEquals(false,File::symlink($this->filename,'sym_link'));
-        $this->assertEquals(true,File::isLink('sym_link'));
-        File::delete('hard_link');
-        File::delete('sym_link');
-    }
+
 
     public function testGetMime()
     {
@@ -264,8 +256,8 @@ class FileTest extends TestCase
 
     public function testGetStatKey()
     {
+
         $this->assertEquals(null,File::getStartKey($this->file,'blocks'));
-        $this->assertEquals(8,File::getStartKey($this->filename,'blocks'));
     }
 
     public function testWrite()
@@ -385,14 +377,6 @@ class FileTest extends TestCase
         $this->assertEquals(true,File::chmod($this->rename,0777));
         $this->assertEquals(false,File::chmod($this->file,0777));
     }
-
-    public function testNotEmpty()
-    {
-        $this->assertNotEmpty(File::fileOwner($this->filename));
-        $this->assertEquals(-1,File::fileOwner($this->file));
-        $this->assertNotEmpty(File::getType($this->filename));
-        $this->assertEquals('',File::getType($this->file));
-        $this->assertNotEmpty(File::getType($this->filename));
-    }
+ 
 
 }
