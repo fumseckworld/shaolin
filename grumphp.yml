@@ -2,8 +2,7 @@ parameters:
     bin_dir: "./vendor/bin"
     git_dir: "."
     tasks:
-      phpunit: ~
-      phplint: ~
+      make: ~
     ascii:
       failed: ~
       succeeded: ~

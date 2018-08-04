@@ -506,7 +506,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                         $command .= ', ';
 
                 break;
-                
+
                 case Connexion::POSTGRESQL:
 
                     foreach ($field as  $k => $v)
@@ -1579,80 +1579,253 @@ namespace  Imperium\Databases\Eloquent\Tables {
             return true;
         }
 
+
         /**
          * appends columns in an existing table
          *
          * @param string $table
-         * @param array $columns
-         * @param array $types
-         * @param array $length
-         * @param array $options
-         * @param array $colOptions
+         * @param Table $instance
+         * @param array $newColumnNames
+         * @param array $newColumnsTypes
+         * @param array $newColumnsLength
+         * @param array $newColumnOrder
+         * @param array $existingColumnsSelected
          * @param array $unique
          * @param array $nullable
          *
          * @return bool
          */
-        public function appendColumns(string $table, array $columns, array $types, array $length, array $options, array $colOptions, array $unique, array $nullable): bool
+        public function appendColumns(string $table, Table $instance, array $newColumnNames, array $newColumnsTypes, array $newColumnsLength, array $newColumnOrder, array $existingColumnsSelected, array $unique, array $nullable): bool
         {
-            $command = '';
-            switch ($this->driver)
+            $tableColumns = $instance->setName($table)->getColumns();
+            $theEndColumn =  end($newColumnNames);
+
+            switch ($this->getDriver())
             {
                 case Connexion::MYSQL:
-                    for ($i=0;$i<count($columns);$i++)
+                    $command = "ALTER TABLE `$table`  ";
+
+                    for ($i=0;$i<count($newColumnNames);$i++)
                     {
-                        if (!empty($length[$i]))
+                        $columnName     = $newColumnNames[$i];
+                        $columnType     = $newColumnsTypes[$i];
+                        $columnLength   = $newColumnsLength[$i];
+                        $columnSelected = $existingColumnsSelected[$i];
+
+                        $isFirst        = $newColumnOrder[$i] == 'FIRST';
+                        $isUnique       = $unique[$i] == true;
+                        $isNullable     = $nullable[$i] == true;
+                        $islength       = !empty($columnLength);
+                        $isTheEnd       = $newColumnNames[$i] === $theEndColumn;
+
+
+
+                        $columnPrev = array_prev($tableColumns,$columnSelected);
+
+                        // UNIQUE WITH LENGTH
+
+                        if ($islength)
                         {
-                            if ($unique[$i])
+                            if ($isUnique)
                             {
-                                if ($nullable[$i])
+                                if ($isNullable)
                                 {
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]} {$length[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]}";
-                                }else{
 
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}({$length[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]} NOT NULL ";
+                                    if ($isFirst)
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnPrev` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnPrev` , ";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnSelected` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnSelected` , ";
+                                        }
+                                    }
+
                                 }
-                            }else
-                            {
-                                if ($nullable[$i])
-                                {
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]} {$length[$i]}  {$options[$i]} {$colOptions[$i]}  {$columns[$i]}";
 
-                                }else
-                                {
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]} {$length[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT NOT NULL {$columns[$i]}";
+                                // UNIQUE  NOT NULL WITH LENGTH
 
+                                else
+                                {
+                                    if ($isFirst)
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnPrev` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnPrev` , ";
+                                        }
+                                    }else
+                                    {
+
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnSelected` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnSelected` , ";
+                                        }
+                                    }
                                 }
-
                             }
-                        }else
-                        {
-                            if ($unique[$i])
-                            {
-                                if ($nullable[$i])
-                                {
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]}";
-                                }else{
 
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}  {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT  UNIQUE {$columns[$i]} NOT NULL ";
-                                }
-                            }else
-                            {
-                                if ($nullable[$i])
-                                {
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}  {$options[$i]} {$colOptions[$i]}  {$columns[$i]}";
+                            // NOT UNIQUE WITH LENGTH
 
-                                }else
-                                {
-                                    $command .= " ALTER TABLE $table ADD COLUMN {$columns[$i]}  {$types[$i]}   {$options[$i]} {$colOptions[$i]} ADD CONSTRAINT NOT NULL {$columns[$i]}";
+                            else{
 
+                                if ($isNullable)
+                                {
+                                    if ($isFirst)
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) AFTER `$columnPrev` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) AFTER `$columnPrev` , ";
+                                        }
+
+                                    }
+
+                                    // NOT UNIQUE NOT NULL WITH LENGTH
+
+                                    else
+                                    {
+
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) NOT NULL AFTER `$columnSelected` ;";
+
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) NOT NULL AFTER `$columnSelected` , ";
+                                        }
+                                    }
                                 }
                             }
+
+
                         }
+
+                        // NO LENGTH
+
+                        else
+                        {
+
+                            if ($isUnique)
+                            {
+                                if ($isNullable)
+                                {
+
+                                    if ($isFirst)
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType  UNIQUE AFTER `$columnPrev` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE AFTER `$columnPrev` , ";
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE AFTER `$columnSelected` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE AFTER `$columnSelected` , ";
+                                        }
+                                    }
+
+                                }
+
+                                // UNIQUE  NOT NULL WITH LENGTH
+
+                                else
+                                {
+                                    if ($isFirst)
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnPrev` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnPrev` , ";
+                                        }
+                                    }else
+                                    {
+
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnSelected` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnSelected` , ";
+                                        }
+                                    }
+                                }
+                            }
+
+                            // NOT UNIQUE WITH LENGTH
+
+                            else{
+
+                                if ($isNullable)
+                                {
+                                    if ($isFirst)
+                                    {
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType AFTER `$columnPrev` ;";
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType AFTER `$columnPrev` , ";
+                                        }
+
+                                    }
+
+                                    // NOT UNIQUE NOT NULL WITH LENGTH
+
+                                    else
+                                    {
+
+                                        if ($isTheEnd)
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType NOT NULL AFTER `$columnSelected` ;";
+
+                                        }else
+                                        {
+                                            $command .= "ADD COLUMN `$columnName` $columnType NOT NULL AFTER `$columnSelected` , ";
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+
+
                     }
+                    return $this->exec($command);
+                break;
+                default:
+                    return false;
                 break;
             }
-            return $this->exec($command);
+
+
         }
     }
 

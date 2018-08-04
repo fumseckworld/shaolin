@@ -815,6 +815,32 @@ if(!exist('show'))
     }
 }
 
+if(!exist('array_prev'))
+{
+    /**
+     * get the prev value of array by the current key
+     *
+     * @param array $array
+     * @param string $key
+     *
+     * @return mixed
+     */
+    function array_prev(array $array,string $key)
+    {
+
+        if (count($array) > 1)
+        {
+            do{
+                $current  = current($array) !== $key ? next($array): current($array);
+            }while($current !== $key);
+
+            return prev($array);
+        }
+
+        return $key;
+    }
+
+}
 if(!exist('req'))
 {
     /**

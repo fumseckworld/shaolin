@@ -119,6 +119,15 @@ class HelpersTest extends TestCase
 
         $this->assertStringEndsWith('</ul>',$bar);
     }
+
+    public function testPrev()
+    {
+        $array = ['a','b'];
+
+        $this->assertEquals('a',array_prev($array,'b'));
+        $array = ['a','b','c'];
+        $this->assertEquals('b',array_prev($array,'c'));
+    }
     /**
      * @throws IdentifierException
      */

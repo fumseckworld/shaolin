@@ -84,6 +84,7 @@ class TablesTest extends TestCase
     }
 
 
+
     public function testMysql()
     {
         $this->assertEquals('CREATE TABLE IF NOT EXISTS `country` ( `id` INT AUTO_INCREMENT PRIMARY KEY NOT NULL)',$this->mysql->addField(Table::INT,'id',true,0,false,false)->get());
@@ -164,6 +165,15 @@ class TablesTest extends TestCase
         $this->assertEquals($expected,$this->pgsql->deleteColumn($column));
         $this->assertEquals($expected,$this->mysql->deleteColumn($column));
 
+    }
+    public function testAddColumns()
+    {
+
+        $table = 'alexandra';
+        $this->assertEquals(true,$this->mysql->setName($table)->addField(Table::INT,'id',true)->addField(Table::VARCHAR,'city',false,255)->addField(Table::VARCHAR,'country',false,255)->addField(Table::VARCHAR,'code',false,255)->create());
+
+
+        $this->assertEquals(true,$this->mysql->appendColumns($table,$this->mysql,['a','b','c'],[Table::VARCHAR,Table::INT,Table::DATE],[255,'',''],['FIRST','AFTER','AFTER'],['code','country','city'],[true,false,true],[false,true,false]));
     }
 
 
