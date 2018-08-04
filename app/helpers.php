@@ -84,13 +84,21 @@ if (!exist('records'))
      * @param string $startPaginationText
      * @param string $endPaginationText
      * @param string $updatePaginationPlaceholder
+     * @param string $advancedRecordsText
+     * @param string $simpleRecordsText
+     * @param string $formPrefixAction
+     * @param string $recordText
+     * @param string $managementOfTableText
+     * @param string $csrfToken
      * @param bool $framework
      *
+     * @param bool $preferForm
      * @return string
+     * @throws Exception
      */
-    function records(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder,bool $framework = false): string
+    function records(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $csrfToken = '', bool $framework = false, bool $preferForm = true): string
     {
-        return Records::show($driver,$class,$instance,$table,$editPrefix,$deletePrefix,$orderBy,$editText,$deleteText,$editClass,$deleteClass,$editIcon,$deleteIcon,$limit,$current,$paginationUrl,$pdo,$formType,$searchPlaceholder,$confirmDeleteText,$startPaginationText,$endPaginationText,$updatePaginationPlaceholder,$framework);
+        return Records::show($driver,$class,$instance,$table,$editPrefix,$deletePrefix,$orderBy,$editText,$deleteText,$editClass,$deleteClass,$editIcon,$deleteIcon,$limit,$current,$paginationUrl,$pdo,$formType,$searchPlaceholder,$confirmDeleteText,$startPaginationText,$endPaginationText,$updatePaginationPlaceholder,$advancedRecordsText,$simpleRecordsText,$formPrefixAction,$recordText,$managementOfTableText,$csrfToken,$framework,$preferForm);
     }
 }
 
@@ -111,41 +119,6 @@ if (!exist('bootswatch'))
     
         return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/'.$version.'/'.$theme.'/bootstrap.min.css">';
 
-    }
-}
-
-if (!exist('themes'))
-{
-    /**
-     * get all bootswatch themes
-     *
-     * @return array
-     */
-    function themes(): array
-    {
-        return array (
-            'cerulean',
-            'cosmo',
-            'cyborg',
-            'darkly',
-            'flatly',
-            'journal',
-            'litera',
-            'lumen',
-            'lux',
-            'materia',
-            'minty',
-            'pulse',
-            'sandstone',
-            'simplex',
-            'slate',
-            'solar',
-            'spacelab',
-            'superhero',
-            'united',
-            'yeti',
-            'bootstrap',
-        );
     }
 }
 
