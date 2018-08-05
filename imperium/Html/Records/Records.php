@@ -36,6 +36,27 @@ namespace Imperium\Html\Records {
             if ($formType == Form::BOOTSTRAP)
             {
 
+                $simpleRecords = ' <div class="alert alert-success text-center"> '.$recordText.' </div>  ';
+
+
+                $simpleRecords .= '<div class="row">
+                                       <div class="col">  
+                                            <div class="input-group">
+                                                
+                                                <input type="search" class="form-control form-control-lg" id="search-records" placeholder="'.$searchPlaceholder.'" autofocus="autofocus">
+                                            </div>
+                                         </div>  
+                                          <div class="col">  
+                                            <div class="input-group">
+                                                <input type="number" min="1" class="form-control form-control-lg"   placeholder="'.$updatePaginationPlaceholder.'" value="'.$limit.'">
+                                            </div>
+                                         </div>
+                                     </div>';
+
+
+
+                $AdvancedRecords = $simpleRecords;
+
                 if ($preferForm)
                 {
                     $html .=    '<ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -50,8 +71,8 @@ namespace Imperium\Html\Records {
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                          <div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">ac</div>
-                          <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">simple</div>
+                          <div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.$AdvancedRecords .'</div>
+                          <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.$simpleRecords.'</div>
                           <div class="tab-pane fade" id="'.$managementOfTableText.'" role="tabpanel" aria-labelledby="'.$managementOfTableText.'-tab">management</div>
                         </div>';
                 }else{
@@ -67,8 +88,8 @@ namespace Imperium\Html\Records {
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
-                          <div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">simple</div>
-                          <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">ac</div>
+                          <div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.$simpleRecords.'</div>
+                          <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.$AdvancedRecords .'</div>
                           <div class="tab-pane fade" id="'.$managementOfTableText.'" role="tabpanel" aria-labelledby="'.$managementOfTableText.'-tab">management</div>
                         </div>';
                 }
