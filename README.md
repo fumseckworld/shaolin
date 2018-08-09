@@ -1,8 +1,8 @@
-<p align="center"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></p>
+<p align="center"><a href="https://discord.gg/qn6yptm" title="discord"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></a></p>
 <p align="center">
 <img src="https://poser.pugx.org/imperium/imperium/v/stable" alt="Latest Stable Version">
-<img src="https://poser.pugx.org/imperium/imperium/downloads" alt="Latest Stable Version">
-<img src="https://poser.pugx.org/imperium/imperium/license" alt="Latest Stable Version">   
+<img src="https://poser.pugx.org/imperium/imperium/downloads" alt="Download">
+<img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence"> 
 </p>
  
  

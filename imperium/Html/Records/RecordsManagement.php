@@ -62,12 +62,15 @@ namespace Imperium\Html\Records {
          * @param string $formPrefixAction
          * @param string $recordText
          * @param string $managementOfTableText
+         * @param string $tableUrlPrefix
          * @param string $csrfToken
          * @param bool $preferPaginationRight
          * @param bool $framework
          * @param bool $preferForm
+         * @param int $textareaCols
+         * @param int $textareaRow
          * @return string
          */
-        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText,string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $csrfToken = '', bool $preferPaginationRight = true,bool $framework = false, bool $preferForm = true): string;
+        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText,string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,string $csrfToken = '', bool $preferPaginationRight = true,bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string;
     }
 }

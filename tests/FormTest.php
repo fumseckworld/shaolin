@@ -16,37 +16,25 @@ use PHPUnit\Framework\TestCase;
 
 class FormTest extends TestCase
 {
-    /***
-     * @var Form
-     */
-    private $boot;
-
-    /**
-     * @var Form
-     */
-    private $foundation;
+ 
     
     private $class = 'btn btn-primary';
 
     private $icon = '<i class="fa fa-user">';
 
-    public function setUp()
-    {
-        $this->boot = form(Form::BOOTSTRAP);
-        $this->foundation = form(Form::FOUNDATION);
-    }
+ 
 
     public function testStartAndEnd()
     {
 
-        $html = $this->boot->start('/','demo')->end();
+        $html = form()->start('/','demo')->end();
         $this->assertContains('/',$html);
         $this->assertContains('post',$html);
         $this->assertContains('utf8',$html);
         $this->assertStringStartsWith('<form',$html);
         $this->assertStringEndsWith('</form>',$html);
 
-        $html = $this->foundation->start('/','demo')->end();
+        $html = form(2)->start('/','demo')->end();
         $this->assertContains('/',$html);
         $this->assertContains('post',$html);
         $this->assertContains('utf8',$html);
@@ -56,8 +44,8 @@ class FormTest extends TestCase
 
     public function testHide()
     {
-        $boot = $this->boot->start('/','demo')->startHide()->endHide()->end();
-        $foundation = $this->foundation->start('/','demo')->startHide()->endHide()->end();
+        $boot = form()->start('/','demo')->startHide()->endHide()->end();
+        $foundation = form(2)->start('/','demo')->startHide()->endHide()->end();
         $this->assertContains('d-none',$boot);
         $this->assertContains('hide',$foundation);
         $this->assertContains('</div>',$boot);
@@ -67,11 +55,11 @@ class FormTest extends TestCase
 
     public function testFile()
     {
-        $bootHtmlWithoutIcon = $this->boot->start('/','demo')->file('avatar',$this->class,'upload')->end();
-        $bootHtmlWithIcon = $this->boot->start('/','demo')->file('avatar',$this->class,'upload',$this->icon)->end();
+        $bootHtmlWithoutIcon = form()->start('/','demo')->file('avatar',$this->class,'upload')->end();
+        $bootHtmlWithIcon = form()->start('/','demo')->file('avatar',$this->class,'upload',$this->icon)->end();
 
-        $foundationWithoutIcon  = $this->foundation->start('/','demo')->file('avatar',$this->class,'upload')->end();
-        $foundationWithIcon     = $this->foundation->start('/','demo')->file('avatar',$this->class,'upload',$this->icon)->end();
+        $foundationWithoutIcon  = form(2)->start('/','demo')->file('avatar',$this->class,'upload')->end();
+        $foundationWithIcon     = form(2)->start('/','demo')->file('avatar',$this->class,'upload',$this->icon)->end();
 
         $this->assertContains('avatar',$bootHtmlWithIcon);
         $this->assertContains('avatar',$bootHtmlWithoutIcon);
@@ -100,11 +88,11 @@ class FormTest extends TestCase
     public function testInput()
     {
 
-        $bootHtmlWithoutIcon    = $this->boot->start('/','demo')->input(Form::TEXT,'username','Username')->end();
-        $foundationWithoutIcon  = $this->foundation->start('/','demo')->input(Form::TEXT,'username','Username')->end();
+        $bootHtmlWithoutIcon    = form()->start('/','demo')->input(Form::TEXT,'username','Username')->end();
+        $foundationWithoutIcon  = form(2)->start('/','demo')->input(Form::TEXT,'username','Username')->end();
 
-        $bootHtmlWithIcon   = $this->boot->start('/','demo')->input(Form::TEXT,'username','Username',$this->icon)->end();
-        $foundationWithIcon = $this->foundation->start('/','demo')->input(Form::TEXT,'username','Username',$this->icon)->end();
+        $bootHtmlWithIcon   = form()->start('/','demo')->input(Form::TEXT,'username','Username',$this->icon)->end();
+        $foundationWithIcon = form(2)->start('/','demo')->input(Form::TEXT,'username','Username',$this->icon)->end();
 
         $this->assertContains('username',$bootHtmlWithIcon);
         $this->assertContains('username',$bootHtmlWithoutIcon);
@@ -132,11 +120,11 @@ class FormTest extends TestCase
     public function testSubmit()
     {
 
-        $bootHtmlWithoutIcon    = $this->boot->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,'d')->end();
-        $foundationWithoutIcon    = $this->foundation->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,'d')->end();
+        $bootHtmlWithoutIcon    = form()->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,'d')->end();
+        $foundationWithoutIcon    = form(2)->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,'d')->end();
 
-        $bootHtmlWithIcon    = $this->boot->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,fa('fa-send'))->end();
-        $foundationWithIcon  = $this->foundation->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,fa('fa-send'))->end();
+        $bootHtmlWithIcon    = form()->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,fa('fa-send'))->end();
+        $foundationWithIcon  = form(2)->start('/','demo')->input(Form::TEXT,'username','Username')->submit('submit',$this->class,fa('fa-send'))->end();
 
         $this->assertContains('submit',$bootHtmlWithIcon);
         $this->assertContains('submit',$bootHtmlWithoutIcon);
@@ -156,11 +144,11 @@ class FormTest extends TestCase
 
     public function testTextarea()
     {
-        $boot       = $this->boot->start('/','demo')->textarea('bio','biography',10,15)->end();
-        $foundation = $this->foundation->start('/','demo')->textarea('bio','biography',10,15)->end();
+        $boot       = form()->start('/','demo')->textarea('bio','biography',10,15)->end();
+        $foundation = form(2)->start('/','demo')->textarea('bio','biography',10,15)->end();
 
-        $bootAuto = $this->boot->start('/','demo')->textarea('bio','biography',10,15,true)->end();
-        $foundationAuto = $this->foundation->start('/','demo')->textarea('bio','biography',10,15,true)->end();
+        $bootAuto = form()->start('/','demo')->textarea('bio','biography',10,15,true)->end();
+        $foundationAuto = form(2)->start('/','demo')->textarea('bio','biography',10,15,true)->end();
 
         $this->assertContains('bio',$boot);
         $this->assertContains('bio',$foundation);
@@ -181,8 +169,8 @@ class FormTest extends TestCase
     public function testCsrf()
     {
         $csrf = "<input type='hidden' value='#ffee00'>";
-        $boot       = $this->boot->start('/','demo')->csrf($csrf)->textarea('bio','biography',10,15)->end();
-        $foundation = $this->foundation->start('/','demo')->csrf($csrf)->textarea('bio','biography',10,15)->end();
+        $boot       = form()->start('/','demo')->csrf($csrf)->textarea('bio','biography',10,15)->end();
+        $foundation = form(2)->start('/','demo')->csrf($csrf)->textarea('bio','biography',10,15)->end();
 
         $this->assertContains($csrf,$boot);
         $this->assertContains($csrf,$foundation);
@@ -190,8 +178,8 @@ class FormTest extends TestCase
 
     public function testReset()
     {
-        $boot       = $this->boot->start('/','demo')->reset('clear',$this->class)->textarea('bio','biography',10,15)->end();
-        $foundation = $this->foundation->start('/','demo')->reset('clear',$this->class)->textarea('bio','biography',10,15)->end();
+        $boot       = form()->start('/','demo')->reset('clear',$this->class)->textarea('bio','biography',10,15)->end();
+        $foundation = form(2)->start('/','demo')->reset('clear',$this->class)->textarea('bio','biography',10,15)->end();
 
         $this->assertContains('clear',$boot);
         $this->assertContains('clear',$foundation);
@@ -205,8 +193,8 @@ class FormTest extends TestCase
     
     public function testLink()
     {
-        $boot       = $this->boot->start('/','demo')->link('/register',$this->class,'create an account')->end();
-        $foundation = $this->foundation->start('/','demo')->link('/register',$this->class,'create an account')->end();
+        $boot       = form()->start('/','demo')->link('/register',$this->class,'create an account')->end();
+        $foundation = form(2)->start('/','demo')->link('/register',$this->class,'create an account')->end();
         
         $this->assertContains('/register',$boot);
         $this->assertContains('/register',$foundation);
@@ -217,8 +205,8 @@ class FormTest extends TestCase
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
 
-        $boot       = $this->boot->start('/','demo')->link('/register',$this->class,'create an account',$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->link('/register',$this->class,'create an account',$this->icon)->end();
+        $boot       = form()->start('/','demo')->link('/register',$this->class,'create an account',$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->link('/register',$this->class,'create an account',$this->icon)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -228,8 +216,8 @@ class FormTest extends TestCase
     {
         $users = array('marc','antoine','marion','alexandre');
 
-        $boot       = $this->boot->start('/','demo')->select('users',$users)->end();
-        $foundation = $this->foundation->start('/','demo')->select('users',$users)->end();
+        $boot       = form()->start('/','demo')->select('users',$users)->end();
+        $foundation = form(2)->start('/','demo')->select('users',$users)->end();
 
         $this->assertContains('marc',$boot);
         $this->assertContains('antoine',$boot);
@@ -238,16 +226,16 @@ class FormTest extends TestCase
         $this->assertContains('antoine',$foundation);
         $this->assertContains('alexandre',$foundation);
 
-        $boot       = $this->boot->start('/','demo')->select('users',$users,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->select('users',$users,$this->icon)->end();
+        $boot       = form()->start('/','demo')->select('users',$users,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->select('users',$users,$this->icon)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
     }
     public function testTwoInput()
     {
-        $boot             = $this->boot->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
-        $foundation       = $this->foundation->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
+        $boot             = form()->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
+        $foundation       = form(2)->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
 
         $this->assertContains(Form::TEXT,$boot);
         $this->assertContains(Form::EMAIL,$boot);
@@ -272,8 +260,8 @@ class FormTest extends TestCase
 
     public function testTwoInlineInput()
     {
-        $boot             = $this->boot->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
-        $foundation       = $this->foundation->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
+        $boot             = form()->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
+        $foundation       = form(2)->start('/','demo')->twoInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true)->end();
 
         $this->assertContains('username',$boot);
         $this->assertContains('username',$foundation);
@@ -296,8 +284,8 @@ class FormTest extends TestCase
         $users = array('marc','alex','jupiter');
         $capital = array('1111','98956','2325');
 
-        $boot             = $this->boot->start('/','demo')->twoInlineSelect('users',$users,$this->icon,'capitals',$capital,$this->icon)->end();
-        $foundation       = $this->foundation->start('/','demo')->twoInlineSelect('users',$users,$this->icon,'capitals',$capital,$this->icon)->end();
+        $boot             = form()->start('/','demo')->twoInlineSelect('users',$users,$this->icon,'capitals',$capital,$this->icon)->end();
+        $foundation       = form(2)->start('/','demo')->twoInlineSelect('users',$users,$this->icon,'capitals',$capital,$this->icon)->end();
 
         foreach ($users as $k => $user)
         {
@@ -315,8 +303,8 @@ class FormTest extends TestCase
     {
         $bases = array('marc','alex','jupiter');
 
-        $boot             = $this->boot->start('/','demo')->oneInputOneSelect('text','user','username',true,$this->icon,'','bases',$bases,$this->icon)->end();
-        $foundation      = $this->foundation->start('/','demo')->oneInputOneSelect('text','user','username',true,$this->icon,'','bases',$bases,$this->icon)->end();
+        $boot             = form()->start('/','demo')->oneInputOneSelect('text','user','username',true,$this->icon,'','bases',$bases,$this->icon)->end();
+        $foundation      = form(2)->start('/','demo')->oneInputOneSelect('text','user','username',true,$this->icon,'','bases',$bases,$this->icon)->end();
 
 
         foreach ($bases as $base)
@@ -346,8 +334,8 @@ class FormTest extends TestCase
 
     public function testThreeInput()
     {
-        $boot             = $this->boot->start('/','demo')->threeInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true,Form::COLOR,'color','','#FF0000','',true)->end();
-        $foundation       = $this->foundation->start('/','demo')->threeInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true,Form::COLOR,'color','','#FF0000','',true)->end();
+        $boot             = form()->start('/','demo')->threeInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true,Form::COLOR,'color','','#FF0000','',true)->end();
+        $foundation       = form(2)->start('/','demo')->threeInlineInput(Form::TEXT,'name','username','','',true,Form::EMAIL,'email','Email','','',true,Form::COLOR,'color','','#FF0000','',true)->end();
 
 
         $this->assertContains(Form::TEXT,$boot);
@@ -384,8 +372,8 @@ class FormTest extends TestCase
 
     public function testFourInput()
     {
-        $boot             = $this->boot->start('/','demo')->fourInlineInput('text','four1','four','','',true,'text','four2','four','supersonic','',true,'text','four3','four','','',true,'text','four4','for','','',true)->end();
-        $foundation       = $this->foundation->start('/','demo')->fourInlineInput('text','four1','four','','',true,'text','four2','four','supersonic','',true,'text','four3','four','','',true,'text','four4','for','','',true)->end();
+        $boot             = form()->start('/','demo')->fourInlineInput('text','four1','four','','',true,'text','four2','four','supersonic','',true,'text','four3','four','','',true,'text','four4','for','','',true)->end();
+        $foundation       = form(2)->start('/','demo')->fourInlineInput('text','four1','four','','',true,'text','four2','four','supersonic','',true,'text','four3','four','','',true,'text','four4','for','','',true)->end();
 
 
          $this->assertContains('four',$boot);
@@ -404,22 +392,22 @@ class FormTest extends TestCase
 
         // DEFAULT
 
-        $boot             = $this->boot->start('/','demo')->setLargeInput(true)->input('text','code','name')->end();
+        $boot             = form()->start('/','demo')->setLargeInput(true)->input('text','code','name')->end();
 
         $this->assertContains('form-control form-control-lg',$boot);
 
-        $boot             = $this->boot->start('/','demo')->setSmallInput(true)->input('text','code','name')->end();
+        $boot             = form()->start('/','demo')->setSmallInput(true)->input('text','code','name')->end();
 
         $this->assertContains('form-control form-control-sm',$boot);
 
-        $boot             = $this->boot->start('/','demo')->setSmallInput(true)->input('file','code','name')->end();
+        $boot             = form()->start('/','demo')->setSmallInput(true)->input('file','code','name')->end();
 
         $this->assertContains('form-control-file',$boot);
 
         // DEFAULT
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name')->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name')->end();
+        $boot             = form()->start('/','demo')->input('text','code','name')->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name')->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -442,8 +430,8 @@ class FormTest extends TestCase
 
         // AUTOCOMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',false,false,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',false,false,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',false,false,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',false,false,true)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -465,8 +453,8 @@ class FormTest extends TestCase
 
         //  AUTOFOCUS ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',false,true,false)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',false,true,false)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',false,true,false)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',false,true,false)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -488,8 +476,8 @@ class FormTest extends TestCase
 
         //  AUTOFOCUS AND AUTOCOMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',false,true,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',false,true,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',false,true,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',false,true,true)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -512,8 +500,8 @@ class FormTest extends TestCase
 
         //  REQUIRE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',true,false,false)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',true,false,false)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',true,false,false)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',true,false,false)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -536,8 +524,8 @@ class FormTest extends TestCase
 
         //  REQUIRE AND AUTOCOMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',true,false,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',true,false,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',true,false,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',true,false,true)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -561,8 +549,8 @@ class FormTest extends TestCase
 
         //  REQUIRE AND AUTOCOMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',true,false,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',true,false,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',true,false,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',true,false,true)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -585,8 +573,8 @@ class FormTest extends TestCase
 
         //  REQUIRE AUTOFOCUS AND AUTOCOMPLETE  ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name','','',true,true,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name','','',true,true,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name','','',true,true,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name','','',true,true,true)->end();
 
         $this->assertNotContains($this->icon,$boot);
         $this->assertNotContains($this->icon,$foundation);
@@ -609,8 +597,8 @@ class FormTest extends TestCase
 
         // ICON  ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',false,false,false)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',false,false,false)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',false,false,false)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',false,false,false)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -632,8 +620,8 @@ class FormTest extends TestCase
 
         // ICON AUTOCOMPLETE  ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',false,false,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',false,false,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',false,false,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',false,false,true)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -655,8 +643,8 @@ class FormTest extends TestCase
 
         // ICON AUTO FOCUS ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',false,true,false)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',false,true,false)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',false,true,false)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',false,true,false)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -679,8 +667,8 @@ class FormTest extends TestCase
 
         // ICON AUTO FOCUS AUTO COMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',false,true,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',false,true,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',false,true,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',false,true,true)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -703,8 +691,8 @@ class FormTest extends TestCase
 
         // ICON REQUIRED ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',true,false,false)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',true,false,false)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',true,false,false)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',true,false,false)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -726,8 +714,8 @@ class FormTest extends TestCase
 
         // ICON REQUIRED  AUTO COMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',true,false,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',true,false,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',true,false,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',true,false,true)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -750,8 +738,8 @@ class FormTest extends TestCase
 
         // ICON REQUIRED  AUTO FOCUS ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',true,true,false)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',true,true,false)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',true,true,false)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',true,true,false)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -774,8 +762,8 @@ class FormTest extends TestCase
 
         // ICON REQUIRED  AUTO FOCUS AND AUTO COMPLETE ENABLED
 
-        $boot             = $this->boot->start('/','demo')->input('text','code','name',$this->icon,'',true,true,true)->end();
-        $foundation       = $this->foundation->start('/','demo')->input('text','code','name',$this->icon,'',true,true,true)->end();
+        $boot             = form()->start('/','demo')->input('text','code','name',$this->icon,'',true,true,true)->end();
+        $foundation       = form(2)->start('/','demo')->input('text','code','name',$this->icon,'',true,true,true)->end();
 
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
@@ -811,24 +799,24 @@ class FormTest extends TestCase
             {
                 case Connexion::MYSQL:
                      $this->expectException(Exception::class);
-                     $this->boot->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
-                     $this->foundation->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
-                     $this->foundation->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,'azd',3);
-                     $this->boot->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,'azd',3);
+                     form()->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
+                     form(2)->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
+                     form(2)->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,'azd',3);
+                     form()->start('/','boot')->generate('admin',table($driver,"imperiums",'root','',''),'submit',$this->class,'sid',$this->icon,'azd',3);
 
                 break;
                 case Connexion::POSTGRESQL:
                     $this->expectException(Exception::class);
-                    $this->boot->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
-                    $this->foundation->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
+                    form()->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
+                    form(2)->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
 
-                    $this->boot->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,'adz',3);
-                    $this->foundation->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,'adz',3);
+                    form()->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,'adz',3);
+                    form(2)->start('/','boot')->generate('admin',table($driver,"imperiums",'postgres','',''),'submit',$this->class,'sid',$this->icon,'adz',3);
                 break;
                 default:
                     $this->expectException(Exception::class);
-                    $this->boot->start('/','boot')->generate('users',table($driver,"testing",'','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
-                    $this->foundation->start('/','boot')->generate('users',table($driver,"testing",'','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
+                    form()->start('/','boot')->generate('users',table($driver,"testing",'','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
+                    form(2)->start('/','boot')->generate('users',table($driver,"testing",'','',''),'submit',$this->class,'sid',$this->icon,Form::EDIT,99999999999999);
                 break;
             }
 
@@ -842,8 +830,8 @@ class FormTest extends TestCase
         $types = array(Form::BUTTON,Form::RESET,FORM::SUBMIT);
         foreach ($types as $type)
         {
-            $boot             = $this->boot->start('/','demo')->button('alex',$this->class,$this->icon,$type)->end();
-            $foundation       = $this->foundation->start('/','demo')->button('alex',$this->class,$this->icon,$type)->end();
+            $boot             = form()->start('/','demo')->button('alex',$this->class,$this->icon,$type)->end();
+            $foundation       = form(2)->start('/','demo')->button('alex',$this->class,$this->icon,$type)->end();
 
             $this->assertContains('alex',$boot);
             $this->assertContains('alex',$foundation);
@@ -857,8 +845,8 @@ class FormTest extends TestCase
             $this->assertContains($type,$boot);
             $this->assertContains($type,$foundation);
 
-            $boot             = $this->boot->start('/','demo')->button('alex',$this->class,'',$type)->end();
-            $foundation       = $this->foundation->start('/','demo')->button('alex',$this->class,'',$type)->end();
+            $boot             = form()->start('/','demo')->button('alex',$this->class,'',$type)->end();
+            $foundation       = form(2)->start('/','demo')->button('alex',$this->class,'',$type)->end();
 
             $this->assertContains('alex',$boot);
             $this->assertContains('alex',$foundation);
@@ -872,8 +860,8 @@ class FormTest extends TestCase
             $this->assertContains($type,$boot);
             $this->assertContains($type,$foundation);
         }
-        $boot             = $this->boot->start('/','demo')->button('alex',$this->class,$this->icon)->end();
-        $foundation       = $this->foundation->start('/','demo')->button('alex',$this->class,$this->icon)->end();
+        $boot             = form()->start('/','demo')->button('alex',$this->class,$this->icon)->end();
+        $foundation       = form(2)->start('/','demo')->button('alex',$this->class,$this->icon)->end();
 
         $this->assertContains($this->class,$boot);
         $this->assertContains($this->class,$foundation);
@@ -890,8 +878,8 @@ class FormTest extends TestCase
 
     public function testImg()
     {
-        $boot             = $this->boot->start('/','demo')->img('imperiums','lion',$this->class)->end();
-        $foundation       = $this->foundation->start('/','demo')->img('imperiums','lion',$this->class)->end();
+        $boot             = form()->start('/','demo')->img('imperiums','lion',$this->class)->end();
+        $foundation       = form(2)->start('/','demo')->img('imperiums','lion',$this->class)->end();
 
 
         $this->assertContains('imperiums',$boot);
@@ -903,8 +891,8 @@ class FormTest extends TestCase
         $this->assertContains('lion',$boot);
         $this->assertContains('lion',$foundation);
 
-        $boot             = $this->boot->start('/','demo')->img('imperiums','lion')->end();
-        $foundation       = $this->foundation->start('/','demo')->img('imperiums','lion')->end();
+        $boot             = form()->start('/','demo')->img('imperiums','lion')->end();
+        $foundation       = form(2)->start('/','demo')->img('imperiums','lion')->end();
 
 
         $this->assertContains('imperiums',$boot);
@@ -924,8 +912,8 @@ class FormTest extends TestCase
     public function testOneInputOneSelectTwoInput()
     {
         $select = array('1','2','3');
-        $boot       = $this->boot->start('/','demo')->oneInputOneSelectTwoInput('text','name','Username','','',true,'number',$select,'','text','card','card','','',true,'number','age','age','','',true)->end();
-        $foundation = $this->foundation->start('/','demo')->oneInputOneSelectTwoInput('text','name','Username','','',true,'number',$select,'','text','card','card','','',true,'number','age','age','','',true)->end();
+        $boot       = form()->start('/','demo')->oneInputOneSelectTwoInput('text','name','Username','','',true,'number',$select,'','text','card','card','','',true,'number','age','age','','',true)->end();
+        $foundation = form(2)->start('/','demo')->oneInputOneSelectTwoInput('text','name','Username','','',true,'number',$select,'','text','card','card','','',true,'number','age','age','','',true)->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -961,8 +949,8 @@ class FormTest extends TestCase
     public function testOneInputOneSelectOneInputOneSelect()
     {
         $select = array('1','2','3');
-        $boot       = $this->boot->start('/','demo')->oneInputOneSelectOneInputOneSelect('text','name','username','','',true,'age',$select,$this->icon,'text','group','name','','',true,'albums',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->oneInputOneSelectOneInputOneSelect('text','name','username','','',true,'age',$select,$this->icon,'text','group','name','','',true,'albums',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->oneInputOneSelectOneInputOneSelect('text','name','username','','',true,'age',$select,$this->icon,'text','group','name','','',true,'albums',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->oneInputOneSelectOneInputOneSelect('text','name','username','','',true,'age',$select,$this->icon,'text','group','name','','',true,'albums',$select,$this->icon)->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -1004,8 +992,8 @@ class FormTest extends TestCase
     public function testOneInputTwoSelectOneInput()
     {
         $select = array('1','2','3');
-        $boot       = $this->boot->start('/','demo')->oneInputTwoSelectOneInput('text','name','username','','',true,'age',$select,'','years',$select,'','number','card','card','','',true)->end();
-        $foundation = $this->foundation->start('/','demo')->oneInputTwoSelectOneInput('text','name','username','','',true,'age',$select,'','years',$select,'','number','card','card','','',true)->end();
+        $boot       = form()->start('/','demo')->oneInputTwoSelectOneInput('text','name','username','','',true,'age',$select,'','years',$select,'','number','card','card','','',true)->end();
+        $foundation = form(2)->start('/','demo')->oneInputTwoSelectOneInput('text','name','username','','',true,'age',$select,'','years',$select,'','number','card','card','','',true)->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -1048,8 +1036,8 @@ class FormTest extends TestCase
     public function testOneInputThreeSelect()
     {
         $select = array('1','2','3');
-        $boot       = $this->boot->start('/','demo')->oneInputThreeSelect('password','pwd','your password','',$this->icon,true,'years',$select,$this->icon,'age',$select,$this->icon,'party',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->oneInputThreeSelect('password','pwd','your password','',$this->icon,true,'years',$select,$this->icon,'age',$select,$this->icon,'party',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->oneInputThreeSelect('password','pwd','your password','',$this->icon,true,'years',$select,$this->icon,'age',$select,$this->icon,'party',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->oneInputThreeSelect('password','pwd','your password','',$this->icon,true,'years',$select,$this->icon,'age',$select,$this->icon,'party',$select,$this->icon)->end();
 
         $this->assertContains('password',$boot);
         $this->assertContains('password',$foundation);
@@ -1093,8 +1081,8 @@ class FormTest extends TestCase
     {
         $select = array('1','2','3');
 
-        $boot       = $this->boot->start('/','demo')->oneSelectThreeInput('id',$select,$this->icon,'password','pwd','your password','','',true,'text','card','card','','',true,'number','age','your age','','',true)->end();
-        $foundation = $this->foundation->start('/','demo')->oneSelectThreeInput('id',$select,$this->icon,'password','pwd','your password','','',true,'text','card','card','','',true,'number','age','your age','','',true)->end();
+        $boot       = form()->start('/','demo')->oneSelectThreeInput('id',$select,$this->icon,'password','pwd','your password','','',true,'text','card','card','','',true,'number','age','your age','','',true)->end();
+        $foundation = form(2)->start('/','demo')->oneSelectThreeInput('id',$select,$this->icon,'password','pwd','your password','','',true,'text','card','card','','',true,'number','age','your age','','',true)->end();
 
         $this->assertContains('password',$boot);
         $this->assertContains('password',$foundation);
@@ -1144,8 +1132,8 @@ class FormTest extends TestCase
     {
         $select = array('1','2','3');
 
-        $boot       = $this->boot->start('/','demo')->oneSelectTwoInputOneSelect('age',$select,$this->icon,'text','name','username','','',true,'number','age','your age','','',true,'id',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->oneSelectTwoInputOneSelect('age',$select,$this->icon,'text','name','username','','',true,'number','age','your age','','',true,'id',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->oneSelectTwoInputOneSelect('age',$select,$this->icon,'text','name','username','','',true,'number','age','your age','','',true,'id',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->oneSelectTwoInputOneSelect('age',$select,$this->icon,'text','name','username','','',true,'number','age','your age','','',true,'id',$select,$this->icon)->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -1180,8 +1168,8 @@ class FormTest extends TestCase
 
         $select = array('1','2','3');
 
-        $boot       = $this->boot->start('/','demo')->oneSelectOneInputOneSelectOneInput( 'number',$select,$this->icon,'text','name','username','','',true,'number','id','id','4','',true,'age',$select,'')->end();
-        $foundation = $this->foundation->start('/','demo')->oneSelectOneInputOneSelectOneInput( 'number',$select,$this->icon,'text','name','username','','',true,'number','id','id','4','',true,'age',$select,'')->end();
+        $boot       = form()->start('/','demo')->oneSelectOneInputOneSelectOneInput( 'number',$select,$this->icon,'text','name','username','','',true,'number','id','id','4','',true,'age',$select,'')->end();
+        $foundation = form(2)->start('/','demo')->oneSelectOneInputOneSelectOneInput( 'number',$select,$this->icon,'text','name','username','','',true,'number','id','id','4','',true,'age',$select,'')->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -1222,8 +1210,8 @@ class FormTest extends TestCase
 
         $select = array('1','2','3');
 
-        $boot       = $this->boot->start('/','demo')->oneSelectOneInputTwoSelect('id',$select,$this->icon,'text','name','age','','',true,'number',$select,$this->icon,'age',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->oneSelectOneInputTwoSelect('id',$select,$this->icon,'text','name','age','','',true,'number',$select,$this->icon,'age',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->oneSelectOneInputTwoSelect('id',$select,$this->icon,'text','name','age','','',true,'number',$select,$this->icon,'age',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->oneSelectOneInputTwoSelect('id',$select,$this->icon,'text','name','age','','',true,'number',$select,$this->icon,'age',$select,$this->icon)->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -1257,8 +1245,8 @@ class FormTest extends TestCase
     {
         $select = array('1','2','3');
 
-        $boot       = $this->boot->start('/','demo')->threeInlineInputAndOneSelect('text','name','username','4',$this->icon,true,'file','filename','','','',true,'text','src','source','','',true,'age',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->threeInlineInputAndOneSelect('text','name','username','4',$this->icon,true,'file','filename','','','',true,'text','src','source','','',true,'age',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->threeInlineInputAndOneSelect('text','name','username','4',$this->icon,true,'file','filename','','','',true,'text','src','source','','',true,'age',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->threeInlineInputAndOneSelect('text','name','username','4',$this->icon,true,'file','filename','','','',true,'text','src','source','','',true,'age',$select,$this->icon)->end();
 
 
         $this->assertContains('username',$boot);
@@ -1289,8 +1277,8 @@ class FormTest extends TestCase
     {
         $select = array('1','2','3');
 
-        $boot       = $this->boot->start('/','demo')->twoSelectTwoInput('age',$select,$this->icon,'id',$select,$this->icon,'number','id','id','','',false,'text','name','username','','',false)->end();
-        $foundation = $this->foundation->start('/','demo')->twoSelectTwoInput('age',$select,$this->icon,'id',$select,$this->icon,'number','id','id','','',false,'text','name','username','','',false)->end();
+        $boot       = form()->start('/','demo')->twoSelectTwoInput('age',$select,$this->icon,'id',$select,$this->icon,'number','id','id','','',false,'text','name','username','','',false)->end();
+        $foundation = form(2)->start('/','demo')->twoSelectTwoInput('age',$select,$this->icon,'id',$select,$this->icon,'number','id','id','','',false,'text','name','username','','',false)->end();
 
         $this->assertContains('age',$boot);
         $this->assertContains('age',$foundation);
@@ -1327,8 +1315,8 @@ class FormTest extends TestCase
     {
         $select = array('1', '2', '3');
 
-        $boot = $this->boot->start('/','demo')->twoSelectOneInputOneSelect('id', $select, $this->icon, 'age', $select, $this->icon, 'text', 'name', 'username', '', '', true, 'party', $select, $this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->twoSelectOneInputOneSelect('id', $select, $this->icon, 'age', $select, $this->icon, 'text', 'name', 'username', '', '', true, 'party', $select, $this->icon)->end();
+        $boot = form()->start('/','demo')->twoSelectOneInputOneSelect('id', $select, $this->icon, 'age', $select, $this->icon, 'text', 'name', 'username', '', '', true, 'party', $select, $this->icon)->end();
+        $foundation = form(2)->start('/','demo')->twoSelectOneInputOneSelect('id', $select, $this->icon, 'age', $select, $this->icon, 'text', 'name', 'username', '', '', true, 'party', $select, $this->icon)->end();
 
 
         $this->assertContains($this->icon, $boot);
@@ -1372,8 +1360,8 @@ class FormTest extends TestCase
     {
         $select = array('1', '2', '3');
 
-        $boot       = $this->boot->start('/','demo')->threeSelectOneInput('age',$select,$this->icon,'id',$select,$this->icon,'name',$select,$this->icon,'text','username','name','','',true)->end();
-        $foundation = $this->foundation->start('/','demo')->threeSelectOneInput('age',$select,$this->icon,'id',$select,$this->icon,'name',$select,$this->icon,'text','username','name','','',true)->end();
+        $boot       = form()->start('/','demo')->threeSelectOneInput('age',$select,$this->icon,'id',$select,$this->icon,'name',$select,$this->icon,'text','username','name','','',true)->end();
+        $foundation = form(2)->start('/','demo')->threeSelectOneInput('age',$select,$this->icon,'id',$select,$this->icon,'name',$select,$this->icon,'text','username','name','','',true)->end();
 
         $this->assertContains('age',$boot);
         $this->assertContains('age',$foundation);
@@ -1402,8 +1390,8 @@ class FormTest extends TestCase
     {
         $select = array('1', '2', '3');
 
-        $boot       = $this->boot->start('/','demo')->twoInputOneSelectOneInput('text','name','username','','',true,'number','age','age','','',true,'id',$select,$this->icon,'text','ip','','127.0.0.1','',true)->end();
-        $foundation = $this->foundation->start('/','demo')->twoInputOneSelectOneInput('text','name','username','','',true,'number','age','age','','',true,'id',$select,$this->icon,'text','ip','','127.0.0.1','',true)->end();
+        $boot       = form()->start('/','demo')->twoInputOneSelectOneInput('text','name','username','','',true,'number','age','age','','',true,'id',$select,$this->icon,'text','ip','','127.0.0.1','',true)->end();
+        $foundation = form(2)->start('/','demo')->twoInputOneSelectOneInput('text','name','username','','',true,'number','age','age','','',true,'id',$select,$this->icon,'text','ip','','127.0.0.1','',true)->end();
 
         $this->assertContains('text',$boot);
         $this->assertContains('text',$foundation);
@@ -1443,8 +1431,8 @@ class FormTest extends TestCase
     {
         $select = array('1', '2', '3');
 
-        $boot       = $this->boot->start('/','demo')->twoInputTwoSelect('text','name','username','','',true,'text','dep','department','','',true,'ip',$select,$this->icon,'age',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->twoInputTwoSelect('text','name','username','','',true,'text','dep','department','','',true,'ip',$select,$this->icon,'age',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->twoInputTwoSelect('text','name','username','','',true,'text','dep','department','','',true,'ip',$select,$this->icon,'age',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->twoInputTwoSelect('text','name','username','','',true,'text','dep','department','','',true,'ip',$select,$this->icon,'age',$select,$this->icon)->end();
 
         $this->assertContains('ip',$boot);
         $this->assertContains('ip',$foundation);
@@ -1479,8 +1467,8 @@ class FormTest extends TestCase
     {
         $select = array('1', '2', '3');
 
-        $boot       = $this->boot->start('/','demo')->fourInlineSelect('age',$select,$this->icon,'ip',$select,$this->icon,'users',$select,$this->icon,'address',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->fourInlineSelect('age',$select,$this->icon,'ip',$select,$this->icon,'users',$select,$this->icon,'address',$select,$this->icon)->end();
+        $boot       = form()->start('/','demo')->fourInlineSelect('age',$select,$this->icon,'ip',$select,$this->icon,'users',$select,$this->icon,'address',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->fourInlineSelect('age',$select,$this->icon,'ip',$select,$this->icon,'users',$select,$this->icon,'address',$select,$this->icon)->end();
 
         $this->assertContains('1',$boot);
         $this->assertContains('1',$foundation);
@@ -1508,8 +1496,8 @@ class FormTest extends TestCase
 
     public function testCheckBox()
     {
-        $boot       = $this->boot->start('/','demo')->checkbox('a','remember',$this->class,true)->end();
-        $foundation = $this->foundation->start('/','demo')->checkbox('a','remember',$this->class,true)->end();
+        $boot       = form()->start('/','demo')->checkbox('a','remember',$this->class,true)->end();
+        $foundation = form(2)->start('/','demo')->checkbox('a','remember',$this->class,true)->end();
 
         $this->assertContains('a',$boot);
         $this->assertContains('a',$foundation);
@@ -1523,8 +1511,8 @@ class FormTest extends TestCase
         $this->assertContains('checked="checked"',$boot);
         $this->assertContains('checked="checked"',$foundation);
 
-        $boot       = $this->boot->start('/','demo')->checkbox('a','remember',$this->class,false)->end();
-        $foundation = $this->foundation->start('/','demo')->checkbox('a','remember',$this->class,false)->end();
+        $boot       = form()->start('/','demo')->checkbox('a','remember',$this->class,false)->end();
+        $foundation = form(2)->start('/','demo')->checkbox('a','remember',$this->class,false)->end();
 
 
         $this->assertContains('a',$boot);
@@ -1542,8 +1530,8 @@ class FormTest extends TestCase
 
     public function testRadio()
     {
-        $boot       = $this->boot->start('/','demo')->radio('a','remember',$this->class,true)->end();
-        $foundation = $this->foundation->start('/','demo')->radio('a','remember',$this->class,true)->end();
+        $boot       = form()->start('/','demo')->radio('a','remember',$this->class,true)->end();
+        $foundation = form(2)->start('/','demo')->radio('a','remember',$this->class,true)->end();
 
         $this->assertContains('a',$boot);
         $this->assertContains('a',$foundation);
@@ -1557,8 +1545,8 @@ class FormTest extends TestCase
         $this->assertContains('checked="checked"',$boot);
         $this->assertContains('checked="checked"',$foundation);
 
-        $boot       = $this->boot->start('/','demo')->radio('a','remember',$this->class,false)->end();
-        $foundation = $this->foundation->start('/','demo')->radio('a','remember',$this->class,false)->end();
+        $boot       = form()->start('/','demo')->radio('a','remember',$this->class,false)->end();
+        $foundation = form(2)->start('/','demo')->radio('a','remember',$this->class,false)->end();
 
 
         $this->assertContains('a',$boot);
@@ -1579,9 +1567,9 @@ class FormTest extends TestCase
      */
     public function testRedirectSelect()
     {
-        $select = array(  'url' => 'https://google.fr','value' => 'go to google');
+        $select = array( 'https://google.fr' => 'go to google');
 
-        $boot       = $this->boot->start('/','demo')->setSmallInput(true)->redirectSelect('sites',$select)->end();
+        $boot       = form()->start('/','demo')->setSmallInput(true)->redirectSelect('sites',$select)->end();
 
 
         $this->assertContains('form-control form-control-sm',$boot);
@@ -1593,9 +1581,9 @@ class FormTest extends TestCase
 
         $this->assertContains('go to google',$boot);
 
-        $select = array( ['url' => 'https://google.fr','value' => 'go to google'],['url' => 'https://wikipedia.org' ,'value' => 'wikipedia']);
-        $boot       = $this->boot->start('/','demo')->redirectSelect('sites',$select)->end();
-        $foundation = $this->foundation->start('/','demo')->redirectSelect('sites',$select)->end();
+        $select = array(   'https://google.fr'  => 'go to google','https://wikipedia.org' => 'wikipedia');
+        $boot       = form()->start('/','demo')->redirectSelect('sites',$select)->end();
+        $foundation = form(2)->start('/','demo')->redirectSelect('sites',$select)->end();
 
         $this->assertContains('https://google.fr',$boot);
         $this->assertContains('https://google.fr',$foundation);
@@ -1613,14 +1601,14 @@ class FormTest extends TestCase
         $this->assertContains('go to google',$foundation);
 
 
-        $boot       = $this->boot->start('/','demo')->setSmallInput(true)->redirectSelect('sites',$select)->end();
-        $foundation = $this->foundation->start('/','demo')->setSmallInput(true)->redirectSelect('sites',$select)->end();
+        $boot       = form()->start('/','demo')->setSmallInput(true)->redirectSelect('sites',$select)->end();
+        $foundation = form(2)->start('/','demo')->setSmallInput(true)->redirectSelect('sites',$select)->end();
 
         $this->assertContains('form-control form-control-sm',$boot);
         $this->assertNotContains('form-control form-control-sm',$foundation);
 
-        $boot       = $this->boot->start('/','demo')->setLargeInput(true)->redirectSelect('sites',$select)->end();
-        $foundation = $this->foundation->start('/','demo')->setLargeInput(true)->redirectSelect('sites',$select)->end();
+        $boot       = form()->start('/','demo')->setLargeInput(true)->redirectSelect('sites',$select)->end();
+        $foundation = form(2)->start('/','demo')->setLargeInput(true)->redirectSelect('sites',$select)->end();
 
         $this->assertContains('form-control form-control-lg',$boot);
         $this->assertNotContains('form-control form-control-lg',$foundation);
@@ -1632,9 +1620,9 @@ class FormTest extends TestCase
      */
     public function testTwoRedirectSelect()
     {
-        $select = array( ['url' => 'https://google.fr','value' => 'go to google'],['url' => 'https://wikipedia.org' ,'value' => 'wikipedia']);
-        $boot       = $this->boot->start('/','demo')->twoRedirectSelect('sites',$select,$this->icon,'site',$select,$this->icon)->end();
-        $foundation = $this->foundation->start('/','demo')->twoRedirectSelect('sites',$select,$this->icon,'site',$select,$this->icon)->end();
+        $select = array(   'https://google.fr' => 'go to google' , 'https://wikipedia.org'  => 'wikipedia' );
+        $boot       = form()->start('/','demo')->twoRedirectSelect('sites',$select,$this->icon,'site',$select,$this->icon)->end();
+        $foundation = form(2)->start('/','demo')->twoRedirectSelect('sites',$select,$this->icon,'site',$select,$this->icon)->end();
 
 
         $this->assertContains('https://google.fr',$boot);
@@ -1660,22 +1648,13 @@ class FormTest extends TestCase
 
     }
 
-    /**
-     * @throws Exception
-     */
-    public function testRedirectSelectExec()
-    {
-        $select = array(['a' => 'https://google.fr','b' => 'go to google']);
-        $this->expectException(Exception::class);
-        $this->boot->start('/','demo')->redirectSelect('sites',$select)->end();
-        $this->foundation->start('/','demo')->redirectSelect('sites',$select)->end();
-    }
+
 
     public function testOneSelectOneInput()
     {
         $select = array(  'google','wikipedia'   );
-        $boot       = $this->boot->oneSelectOneInput('sites',$select,$this->icon,'text','name','username',true,'','')->end();
-        $foundation = $this->foundation->oneSelectOneInput('sites',$select,$this->icon,'text','name','username',true,'','')->end();
+        $boot       = form()->oneSelectOneInput('sites',$select,$this->icon,'text','name','username',true,'','')->end();
+        $foundation = form(2)->oneSelectOneInput('sites',$select,$this->icon,'text','name','username',true,'','')->end();
 
         $this->assertContains('name',$boot);
         $this->assertContains('name',$foundation);
@@ -1704,8 +1683,8 @@ class FormTest extends TestCase
     public function testOneInputOneSelect()
     {
         $select = array(  'google','wikipedia'   );
-        $boot       = $this->boot->oneInputOneSelect('text','name','username',true,'','','sites',$select,$this->icon)->end();
-        $foundation = $this->foundation->oneInputOneSelect('text','name','username',true,'','','sites',$select,$this->icon)->end();
+        $boot       = form()->oneInputOneSelect('text','name','username',true,'','','sites',$select,$this->icon)->end();
+        $foundation = form(2)->oneInputOneSelect('text','name','username',true,'','','sites',$select,$this->icon)->end();
 
         $this->assertContains('name',$boot);
         $this->assertContains('name',$foundation);
@@ -1749,8 +1728,8 @@ class FormTest extends TestCase
         $mysql = table(Connexion::MYSQL,$base,'root','','');
         $pgsql = table(Connexion::POSTGRESQL,$base,'postgres','','');
 
-        $boot = $this->boot->start('/','demo')->generate($table,$mysql,'add',$this->class,'SUBMIT');
-        $foundation = $this->foundation->start('/','demo')->generate($table,$mysql,'add','','SUBMIT');
+        $boot = form()->start('/','demo')->generate($table,$mysql,'add',$this->class,'SUBMIT');
+        $foundation = form(2)->start('/','demo')->generate($table,$mysql,'add','','SUBMIT');
 
         $this->assertContains('id',$boot);
         $this->assertContains('name',$boot);
@@ -1780,8 +1759,8 @@ class FormTest extends TestCase
         $this->assertContains('SUBMIT',$boot);
         $this->assertContains('SUBMIT',$foundation);
 
-        $boot = $this->boot->start('/','demo')->generate($table,$pgsql,'add',$this->class,'SUBMIT');
-        $foundation = $this->foundation->start('/','demo')->generate($table,$pgsql,'add','','SUBMIT');
+        $boot = form()->start('/','demo')->generate($table,$pgsql,'add',$this->class,'SUBMIT');
+        $foundation = form(2)->start('/','demo')->generate($table,$pgsql,'add','','SUBMIT');
 
 
         $this->assertContains('id',$boot);
@@ -1817,8 +1796,8 @@ class FormTest extends TestCase
         $this->assertContains('SUBMIT',$foundation);
 
 
-        $boot = $this->boot->start('/','demo')->generate($table,$mysql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
-        $foundation = $this->foundation->start('/','demo')->generate($table,$mysql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
+        $boot = form()->start('/','demo')->generate($table,$mysql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
+        $foundation = form(2)->start('/','demo')->generate($table,$mysql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
 
 
         $this->assertContains('1',$boot);
@@ -1861,8 +1840,8 @@ class FormTest extends TestCase
         $this->assertContains($this->icon,$boot);
         $this->assertContains($this->icon,$foundation);
 
-        $boot = $this->boot->start('/','demo')->generate($table,$pgsql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
-        $foundation = $this->foundation->start('/','demo')->generate($table,$pgsql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
+        $boot = form()->start('/','demo')->generate($table,$pgsql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
+        $foundation = form(2)->start('/','demo')->generate($table,$pgsql,'update',$this->class,'SUBMIT',$this->icon,Form::EDIT,1);
 
 
         $this->assertContains('1',$boot);
@@ -1907,29 +1886,29 @@ class FormTest extends TestCase
         $this->assertContains($this->icon,$foundation);
 
         $this->expectException(Exception::class);
-        $this->boot->start('/','a')->generate($table,$mysql,'submit','adz','a','adz',999);
-        $this->boot->start('/','a')->generate($table,$mysql,'submit','adz','a','adz',999,5);
+        form()->start('/','a')->generate($table,$mysql,'submit','adz','a','adz',999);
+        form()->start('/','a')->generate($table,$mysql,'submit','adz','a','adz',999,5);
     }
 
     public function testMultiple()
     {
-        $this->assertContains('multiple',$this->boot->start('','a')->select('a',['a','b'],'',true)->end());
-        $this->assertNotContains('multiple',$this->boot->start('','a')->select('a',['a','b'],'')->end());
-        $this->assertContains('multiple',$this->foundation->start('','a')->select('a',['a','b'],'',true)->end());
-        $this->assertNotContains('multiple',$this->foundation->start('','a')->select('a',['a','b'],'')->end());
+        $this->assertContains('multiple',form()->start('','a')->select('a',['a','b'],'',true)->end());
+        $this->assertNotContains('multiple',form()->start('','a')->select('a',['a','b'],'')->end());
+        $this->assertContains('multiple',form(2)->start('','a')->select('a',['a','b'],'',true)->end());
+        $this->assertNotContains('multiple',form(2)->start('','a')->select('a',['a','b'],'')->end());
 
-        $this->assertContains('multiple',$this->boot->start('','a')->select('a',['a','b'],$this->icon,true)->end());
-        $this->assertNotContains('multiple',$this->boot->start('','a')->select('a',['a','b'],$this->icon)->end());
-        $this->assertContains('multiple',$this->foundation->start('','a')->select('a',['a','b'],$this->icon,true)->end());
-        $this->assertNotContains('multiple',$this->foundation->start('','a')->select('a',['a','b'],$this->icon)->end());
+        $this->assertContains('multiple',form()->start('','a')->select('a',['a','b'],$this->icon,true)->end());
+        $this->assertNotContains('multiple',form()->start('','a')->select('a',['a','b'],$this->icon)->end());
+        $this->assertContains('multiple',form(2)->start('','a')->select('a',['a','b'],$this->icon,true)->end());
+        $this->assertNotContains('multiple',form(2)->start('','a')->select('a',['a','b'],$this->icon)->end());
     }
 
     public function testSize()
     {
-        $this->assertContains('form-control',$this->boot->start('/','id')->setLargeInput(false)->input('text','name','username')->end());
-        $this->assertContains('form-control',$this->boot->start('/','id')->setSmallInput(false)->input('text','name','username')->end());
-        $this->assertContains('form-control form-control-lg',$this->boot->start('/','id')->setLargeInput(true)->input('text','name','username')->end());
-        $this->assertContains('form-control form-control-sm',$this->boot->start('/','id')->setSmallInput(true)->input('text','name','username')->end());
+        $this->assertContains('form-control',form()->start('/','id')->setLargeInput(false)->input('text','name','username')->end());
+        $this->assertContains('form-control',form()->start('/','id')->setSmallInput(false)->input('text','name','username')->end());
+        $this->assertContains('form-control form-control-lg',form()->start('/','id')->setLargeInput(true)->input('text','name','username')->end());
+        $this->assertContains('form-control form-control-sm',form()->start('/','id')->setSmallInput(true)->input('text','name','username')->end());
 
     }
 }

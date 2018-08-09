@@ -21,6 +21,7 @@
 
 namespace Imperium\Html\Form\Core {
 
+    use Exception;
     use Imperium\Databases\Eloquent\Tables\Table;
     use Imperium\Html\Form\Form;
 
@@ -61,6 +62,25 @@ namespace Imperium\Html\Form\Core {
          * @return string
          */
         public function generate(string $table, Table $instance,string $submitText,string $submitClass,string $submitId,string $submitIcon = '',int $mode = Form::CREATE,int $id = 0): string;
+
+        /**
+         * generate a form in a row
+         *
+         * @param string $table
+         * @param Table $instance
+         * @param array $records
+         * @param string $action
+         * @param string $tableClass
+         * @param string $searchPlaceholder
+         * @param string $tableUrlPrefix
+         * @param int $limit
+         * @param string $csrf
+         * @param int $textareaCols
+         * @param int $textareaRow
+         * @param bool $largeInput
+         * @return string
+         */
+        public function generateTable(string $table, Table $instance , array $records , string $action, string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1 ,bool $largeInput = true): string;
 
         /**
          * start hidden input
@@ -109,18 +129,19 @@ namespace Imperium\Html\Form\Core {
         /**
          * generate an input
          *
-         * @param string      $type
-         * @param string      $name
-         * @param string      $placeholder
-         * @param string      $value
-         * @param string      $icon
-         * @param bool        $required
-         * @param bool        $autofocus
-         * @param bool        $autoComplete
-         *
+         * @param string $type
+         * @param string $name
+         * @param string $placeholder
+         * @param string $icon
+         * @param string $value
+         * @param bool $required
+         * @param bool $autofocus
+         * @param bool $autoComplete
+         * @param bool $tableOption
+         * @param string $dataFormId
          * @return Form
          */
-        public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form;
+        public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false,bool $tableOption = false,string $dataFormId =''): Form;
 
         /**
          * set form type
@@ -268,12 +289,14 @@ namespace Imperium\Html\Form\Core {
          * @param string $placeholder
          * @param int $cols
          * @param int $row
-         * @param string $value
          * @param bool $autofocus
+         * @param string $value
+         * @param bool $tableOption
+         * @param string $dataFormId
          *
          * @return Form
          */
-        public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = ''): Form;
+        public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = '',bool $tableOption = false,string $dataFormId=''): Form;
 
         /**
          * generate a image
