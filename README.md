@@ -6,7 +6,8 @@
 </p>
  
 
-* [Show Coverage](coverage/index.html)
+[**Coverage**](coverage/index.html)
+
 
 # What it's ?
 
