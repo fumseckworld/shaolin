@@ -23,7 +23,6 @@ namespace Imperium\Html\Records {
 
     use Exception;
     use Imperium\Databases\Eloquent\Tables\Table;
-    use Imperium\Html\Form\Form;
     use PDO;
 
     class Records implements RecordsManagement
@@ -58,24 +57,33 @@ namespace Imperium\Html\Records {
          * @param string $recordText
          * @param string $managementOfTableText
          * @param string $tableUrlPrefix
+         * @param bool $largeInput
          * @param string $csrfToken
          * @param bool $preferPaginationRight
          * @param bool $framework
          * @param bool $preferForm
          * @param int $textareaCols
          * @param int $textareaRow
+         *
          * @return string
+         *
          * @throws Exception
          */
-
-        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
+        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,bool $largeInput,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
         {
 
+
+
             $key = $instance->primaryKey();
+            if (is_null($key))
+                throw new Exception('We have not found the primary key');
+            
             $offset = ($limit * $current) - $limit;
 
             if ($framework)
             {
+                $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}};function search(elem){var pagination = elem.attributes[0].value;window.location = pagination + "/search/" + elem.value;}</script>';
+
                 $parts = explode('/',server('REQUEST_URI'));
                 $search = has('search',$parts);
                 if ($search)
@@ -87,7 +95,11 @@ namespace Imperium\Html\Records {
                     $records = sql($table)->setPdo($pdo)->limit($limit, $offset)->orderBy($key,$orderBy)->getRecords();
                 else
                     $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance, $like)->orderBy($key,$orderBy)->getRecords();
-            } else {
+
+            }else
+            {
+                $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}function search(elem){var pagination = elem.attributes[0].value;window.location = pagination + "?search=" + elem.value;}</script>';
+
                 $like = get('search');
                 if (empty($like))
                     $records = sql($table)->setPdo($pdo)->limit($limit,$offset)->orderBy($key,$orderBy)->getRecords();
@@ -95,8 +107,30 @@ namespace Imperium\Html\Records {
                     $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance,$like)->orderBy($key,$orderBy)->getRecords();
             }
 
-            return form($formType)->generateTable($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$csrfToken,$textareaCols,$textareaRow);
 
+            if ($preferForm)
+            {
+                $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="true">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="false">'.$simpleRecordsText.'</a></li></ul>';
+
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow,$largeInput).'</div> <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$textareaRow).'</div></div>';
+
+            }
+            else
+            {
+                $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="true">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="false">'.$advancedRecordsText.'</a></li></ul>';
+
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$largeInput).'</div> <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow,$largeInput).'</div></div>';
+
+            }
+
+            $pagination = pagination( $limit,$paginationUrl,$current,$instance->count($table),$startPaginationText,$endPaginationText);
+
+            if ($preferPaginationRight)
+                $html .=    '<div class="float-right mt-4 mb-5">'.$pagination.'</div>';
+            else
+                $html .=    '<div class="float-left mt-4 mb-5">'.$pagination.'</div>';
+
+            return $html;
         }
     }
 }

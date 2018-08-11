@@ -2572,7 +2572,7 @@ class Form implements FormBuilder
     }
 
     /**
-     * generate a form in a row
+     * generate an advanced records view
      *
      * @param string $table
      * @param Table $instance
@@ -2582,6 +2582,11 @@ class Form implements FormBuilder
      * @param string $searchPlaceholder
      * @param string $tableUrlPrefix
      * @param int $limit
+     * @param string $removeUrl
+     * @param string $removeClassBtn
+     * @param string $removeText
+     * @param string $confirmRemoveText
+     * @param string $removeIcon
      * @param string $csrf
      * @param int $textareaCols
      * @param int $textareaRow
@@ -2590,14 +2595,13 @@ class Form implements FormBuilder
      *
      * @throws Exception
      */
-    public function generateTable(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1,bool $largeInput = true): string
+    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1,bool $largeInput = true): string
     {
 
         $instance = $instance->setName($table);
         $types    = $instance->getColumnsTypes();
         $columns  = $instance->getColumns();
         $primary  = $instance->primaryKey();
-
 
 
         if(is_null($primary))
@@ -2647,64 +2651,94 @@ class Form implements FormBuilder
             }
 
             $redirect = $this->start('',uniqid())->setLargeInput($largeInput)->redirectSelect('table',$tables)->end();
-            $this->form = '<div class="row mt-4"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control form-control-lg" min="1" value="'.$limit.'"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
-            foreach ($columns as  $x)
+
+            if ($largeInput)
+            {
+                $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control form-control-lg" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
+
+            }else
+            {
+
+                $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
+            }
+            $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }</script>';
+             foreach ($columns as  $x)
             {
                 if ($x != $primary)
                     $this->form .=  "<th> $x</th>";
+
             }
 
-            $this->form .=  '</tr></thead><tbody>';
+            $this->form .=  '<th>'.$removeText.' </th></tr></thead><tbody>';
 
+            foreach ($records as $record)
+            {
+                $dataFormId = sha1("$table-{$record->$primary}");
 
-                foreach ($records as $record)
+                $this->form .= '<tr><form action="'.$action.'" method="get" id="'.$dataFormId.'" class="dynamic">';
+
+                foreach ($columns as $k => $column)
                 {
-                    $dataFormId = "$table-{$record->$primary}";
 
-                        $this->form .= '<tr><form action="'.$action.'" method="get" id="'.$dataFormId.'" class="dynamic">';
 
-                    foreach ($columns as $k => $column)
+                    $type = $types[$k];
+
+                    if (is_null($record->$column))
+                        $record->$column = '';
+
+                    if($column != $primary)
                     {
+                        $type = explode('(',$type);
+                        $type = $type[0];
 
-
-                        $type = $types[$k];
-
-                        if (is_null($record->$column))
-                            $record->$column = '';
-
-                        if($column != $primary)
+                        switch ($type)
                         {
-                            $type = explode('(',$type);
-                            $type = $type[0];
-
-                            switch ($type)
-                            {
-                                case has($type,$number):
-                                    $this->input(Form::NUMBER,$column,$column,'',$record->$column,true,false,false,true,$dataFormId);
-                                break;
-                                case has($type,$date):
-                                    $this->input(Form::DATETIME,$column,$column,'',$record->$column,true,false,false,true,$dataFormId);
-                                break;
-                                default:
-                                    $this->textarea($column,$column,$textareaCols,$textareaRow,false,$record->$column,true,$dataFormId);
-                                break;
-                            }
-                        } else {
-
-
-                            $this->input(Form::HIDDEN,$column,$column,'',$record->$column);
-
+                            case has($type,$number):
+                                $this->input(Form::NUMBER,$column,$column,'',$record->$column,true,false,false,true,$dataFormId);
+                            break;
+                            case has($type,$date):
+                                $this->input(Form::DATETIME,$column,$column,'',$record->$column,true,false,false,true,$dataFormId);
+                            break;
+                            default:
+                                $this->textarea($column,$column,$textareaCols,$textareaRow,false,$record->$column,true,$dataFormId);
+                            break;
                         }
+                    } else {
+                        $this->input(Form::HIDDEN,$column,$column,'',$record->$column);
 
                     }
-                    $this->form .= '</form></tr>';
-                }
 
+                }
+                $this->form .= '<td><a href="'.$removeUrl.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></form></tr>';
+            }
+
+            $this->form .= '</tbody></table></div>';
 
 
         }
 
         return $this->form;
+    }
+
+    /**
+     * generate a simply record view
+     *
+     * @param string $table
+     * @param Table $instance
+     * @param array $records
+     * @param string $action
+     * @param string $tableClass
+     * @param string $searchPlaceholder
+     * @param string $tableUrlPrefix
+     * @param int $limit
+     * @param bool $largeInput
+     *
+     * @return string
+     */
+    public function generateSimplyRecordView(string $table, Table $instance, array $records, string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, bool $largeInput = true): string
+    {
+        $this->form = '';
+        return 'lore200';
     }
 }
 

@@ -64,7 +64,7 @@ namespace Imperium\Html\Form\Core {
         public function generate(string $table, Table $instance,string $submitText,string $submitClass,string $submitId,string $submitIcon = '',int $mode = Form::CREATE,int $id = 0): string;
 
         /**
-         * generate a form in a row
+         * generate an advanced records view
          *
          * @param string $table
          * @param Table $instance
@@ -74,13 +74,35 @@ namespace Imperium\Html\Form\Core {
          * @param string $searchPlaceholder
          * @param string $tableUrlPrefix
          * @param int $limit
+         * @param string $removeUrl
+         * @param string $removeClassBtn
+         * @param string $removeText
+         * @param string $confirmRemoveText
+         * @param string $removeIcon
          * @param string $csrf
          * @param int $textareaCols
          * @param int $textareaRow
          * @param bool $largeInput
          * @return string
          */
-        public function generateTable(string $table, Table $instance , array $records , string $action, string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1 ,bool $largeInput = true): string;
+        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1 , bool $largeInput = true): string;
+
+        /**
+         * generate a simply record view
+         *
+         * @param string $table
+         * @param Table $instance
+         * @param array $records
+         * @param string $action
+         * @param string $tableClass
+         * @param string $searchPlaceholder
+         * @param string $tableUrlPrefix
+         * @param int $limit
+         * @param bool $largeInput
+         *
+         * @return string
+         */
+        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, bool $largeInput = true): string;
 
         /**
          * start hidden input

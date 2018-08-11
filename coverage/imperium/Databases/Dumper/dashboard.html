@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for H:\laragon\www\imperium/imperium/Databases/Dumper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../../../.css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="../../../.css/nv.d3.min.css" rel="stylesheet" type="text/css">
+  <link href="../../../.css/style.css" rel="stylesheet" type="text/css">
+  <!--[if lt IE 9]>
+  <script src="../../../.js/html5shiv.min.js"></script>
+  <script src="../../../.js/respond.min.js"></script>
+  <![endif]-->
+ </head>
+ <body>
+  <header>
+   <div class="container">
+    <div class="row">
+     <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li><a href="../../../index.html">H:\laragon\www\imperium</a></li>
+        <li><a href="../../index.html">imperium</a></li>
+        <li><a href="../index.html">Databases</a></li>
+        <li><a href="index.html">Dumper</a></li>
+        <li class="active">(Dashboard)</li>
+
+      </ol>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\MySQLDatabase</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\PostgreSQLDatabase</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/SQLiteDatabase.php.html#28">Imperium\Databases\Dumper\Databases\SQLiteDatabase</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#34">Imperium\Databases\Dumper\Dumper</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/CannotSetParameter.php.html#26">Imperium\Databases\Dumper\Exceptions\CannotSetParameter</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/CannotStartDump.php.html#27">Imperium\Databases\Dumper\Exceptions\CannotStartDump</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/DumpFailed.php.html#28">Imperium\Databases\Dumper\Exceptions\DumpFailed</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#30">Imperium\Databases\Dumper\Tables\MySQLTable</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#31">Imperium\Databases\Dumper\Tables\PostgreSQLTable</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/SQLiteTable.php.html#28">Imperium\Databases\Dumper\Tables\SQLiteTable</a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Dumper.php.html#34">Imperium\Databases\Dumper\Dumper</a></td><td class="text-right">930</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\MySQLDatabase</a></td><td class="text-right">552</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#30">Imperium\Databases\Dumper\Tables\MySQLTable</a></td><td class="text-right">462</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\PostgreSQLDatabase</a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#31">Imperium\Databases\Dumper\Tables\PostgreSQLTable</a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="Databases/SQLiteDatabase.php.html#28">Imperium\Databases\Dumper\Databases\SQLiteDatabase</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Tables/SQLiteTable.php.html#28">Imperium\Databases\Dumper\Tables\SQLiteTable</a></td><td class="text-right">12</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#41"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#79"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dontUseExtendedInserts">dontUseExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#255"><abbr title="Imperium\Databases\Dumper\Dumper::includeTables">includeTables</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#275"><abbr title="Imperium\Databases\Dumper\Dumper::excludeTables">excludeTables</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#294"><abbr title="Imperium\Databases\Dumper\Dumper::addExtraOption">addExtraOption</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#315"><abbr title="Imperium\Databases\Dumper\Dumper::checkIfDumpWasSuccessFul">checkIfDumpWasSuccessFul</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/CannotSetParameter.php.html#33"><abbr title="Imperium\Databases\Dumper\Exceptions\CannotSetParameter::conflictingParameters">conflictingParameters</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/CannotStartDump.php.html#34"><abbr title="Imperium\Databases\Dumper\Exceptions\CannotStartDump::emptyParameter">emptyParameter</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/DumpFailed.php.html#35"><abbr title="Imperium\Databases\Dumper\Exceptions\DumpFailed::processDidNotEndSuccessfully">processDidNotEndSuccessfully</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/DumpFailed.php.html#43"><abbr title="Imperium\Databases\Dumper\Exceptions\DumpFailed::dumpfileWasNotCreated">dumpfileWasNotCreated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Exceptions/DumpFailed.php.html#51"><abbr title="Imperium\Databases\Dumper\Exceptions\DumpFailed::dumpfileWasEmpty">dumpfileWasEmpty</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#41"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#49"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::skipComments">skipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#59"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dontSkipComments">dontSkipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#69"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::useExtendedInserts">useExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#89"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::useSingleTransaction">useSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#227"><abbr title="Imperium\Databases\Dumper\Dumper::getTable">getTable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#99"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dontUseSingleTransaction">dontUseSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#112"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#143"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#178"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#191"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#200"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::determineQuote">determineQuote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#36"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#44"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::useInserts">useInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#56"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#86"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#106"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#119"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#128"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getEnvironmentVariablesForDumpCommand">getEnvironmentVariablesForDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/SQLiteTable.php.html#36"><abbr title="Imperium\Databases\Dumper\Tables\SQLiteTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#239"><abbr title="Imperium\Databases\Dumper\Dumper::setDumpBinaryPath">setDumpBinaryPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#214"><abbr title="Imperium\Databases\Dumper\Dumper::setTable">setTable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#49"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::skipComments">skipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#86"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#59"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dontSkipComments">dontSkipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#69"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::useExtendedInserts">useExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#79"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dontUseExtendedInserts">dontUseExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#89"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::useSingleTransaction">useSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#99"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dontUseSingleTransaction">dontUseSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#112"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#143"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#185"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#198"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#207"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::determineQuote">determineQuote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#35"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#43"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::useInserts">useInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#55"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#115"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#201"><abbr title="Imperium\Databases\Dumper\Dumper::setTimeout">setTimeout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#128"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#139"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getEnvironmentVariablesForDumpCommand">getEnvironmentVariablesForDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/SQLiteDatabase.php.html#36"><abbr title="Imperium\Databases\Dumper\Databases\SQLiteDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/SQLiteDatabase.php.html#60"><abbr title="Imperium\Databases\Dumper\Databases\SQLiteDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#75"><abbr title="Imperium\Databases\Dumper\Dumper::dump">dump</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#85"><abbr title="Imperium\Databases\Dumper\Dumper::clear">clear</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#102"><abbr title="Imperium\Databases\Dumper\Dumper::getDbName">getDbName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#113"><abbr title="Imperium\Databases\Dumper\Dumper::setDbName">setDbName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#126"><abbr title="Imperium\Databases\Dumper\Dumper::setUserName">setUserName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#139"><abbr title="Imperium\Databases\Dumper\Dumper::setPassword">setPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#152"><abbr title="Imperium\Databases\Dumper\Dumper::setHost">setHost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#164"><abbr title="Imperium\Databases\Dumper\Dumper::getHost">getHost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#175"><abbr title="Imperium\Databases\Dumper\Dumper::setPort">setPort</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Dumper.php.html#188"><abbr title="Imperium\Databases\Dumper\Dumper::setSocket">setSocket</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Tables/SQLiteTable.php.html#60"><abbr title="Imperium\Databases\Dumper\Tables\SQLiteTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#143"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#143"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#86"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Dumper.php.html#315"><abbr title="Imperium\Databases\Dumper\Dumper::checkIfDumpWasSuccessFul">checkIfDumpWasSuccessFul</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Dumper.php.html#275"><abbr title="Imperium\Databases\Dumper\Dumper::excludeTables">excludeTables</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#198"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#119"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#128"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dumper.php.html#239"><abbr title="Imperium\Databases\Dumper\Dumper::setDumpBinaryPath">setDumpBinaryPath</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Dumper.php.html#255"><abbr title="Imperium\Databases\Dumper\Dumper::includeTables">includeTables</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#191"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#86"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Tables/PostgreSQLTable.php.html#56"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#200"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::determineQuote">determineQuote</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#112"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Tables/MySQLTable.php.html#112"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dumper.php.html#294"><abbr title="Imperium\Databases\Dumper\Dumper::addExtraOption">addExtraOption</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Dumper.php.html#85"><abbr title="Imperium\Databases\Dumper\Dumper::clear">clear</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/SQLiteDatabase.php.html#36"><abbr title="Imperium\Databases\Dumper\Databases\SQLiteDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/PostgreSQLDatabase.php.html#55"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/MySQLDatabase.php.html#207"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::determineQuote">determineQuote</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Tables/SQLiteTable.php.html#36"><abbr title="Imperium\Databases\Dumper\Tables\SQLiteTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 5.3.2</a> using <a href="https://secure.php.net/" target="_top">PHP 7.1.19</a> with <a href="https://xdebug.org/">Xdebug 2.6.1</a> and <a href="https://phpunit.de/">PHPUnit 6.5.11</a> at Sat Aug 11 17:09:01 UTC 2018.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../../../.js/jquery.min.js" type="text/javascript"></script>
+  <script src="../../../.js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="../../../.js/holder.min.js" type="text/javascript"></script>
+  <script src="../../../.js/d3.min.js" type="text/javascript"></script>
+  <script src="../../../.js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([10,0,0,0,0,0,0,0,0,0,0,0], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([65,0,0,0,0,0,0,0,0,0,0,1], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[0,23,"<a href=\"Databases\/MySQLDatabase.php.html#30\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase<\/a>"],[0,15,"<a href=\"Databases\/PostgreSQLDatabase.php.html#30\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase<\/a>"],[0,3,"<a href=\"Databases\/SQLiteDatabase.php.html#28\">Imperium\\Databases\\Dumper\\Databases\\SQLiteDatabase<\/a>"],[0,30,"<a href=\"Dumper.php.html#34\">Imperium\\Databases\\Dumper\\Dumper<\/a>"],[0,1,"<a href=\"Exceptions\/CannotSetParameter.php.html#26\">Imperium\\Databases\\Dumper\\Exceptions\\CannotSetParameter<\/a>"],[0,1,"<a href=\"Exceptions\/CannotStartDump.php.html#27\">Imperium\\Databases\\Dumper\\Exceptions\\CannotStartDump<\/a>"],[0,3,"<a href=\"Exceptions\/DumpFailed.php.html#28\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed<\/a>"],[0,21,"<a href=\"Tables\/MySQLTable.php.html#30\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable<\/a>"],[0,11,"<a href=\"Tables\/PostgreSQLTable.php.html#31\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable<\/a>"],[0,3,"<a href=\"Tables\/SQLiteTable.php.html#28\">Imperium\\Databases\\Dumper\\Tables\\SQLiteTable<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#41\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::__construct<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#49\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::skipComments<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#59\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dontSkipComments<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#69\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::useExtendedInserts<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#79\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dontUseExtendedInserts<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#89\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::useSingleTransaction<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#99\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dontUseSingleTransaction<\/a>"],[0,2,"<a href=\"Databases\/MySQLDatabase.php.html#112\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dumpToFile<\/a>"],[0,8,"<a href=\"Databases\/MySQLDatabase.php.html#143\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/MySQLDatabase.php.html#185\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Databases\/MySQLDatabase.php.html#198\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::guardAgainstIncompleteCredentials<\/a>"],[0,2,"<a href=\"Databases\/MySQLDatabase.php.html#207\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::determineQuote<\/a>"],[0,1,"<a href=\"Databases\/PostgreSQLDatabase.php.html#35\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::__construct<\/a>"],[0,1,"<a href=\"Databases\/PostgreSQLDatabase.php.html#43\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::useInserts<\/a>"],[0,2,"<a href=\"Databases\/PostgreSQLDatabase.php.html#55\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::dumpToFile<\/a>"],[0,6,"<a href=\"Databases\/PostgreSQLDatabase.php.html#86\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/PostgreSQLDatabase.php.html#115\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Databases\/PostgreSQLDatabase.php.html#128\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::guardAgainstIncompleteCredentials<\/a>"],[0,1,"<a href=\"Databases\/PostgreSQLDatabase.php.html#139\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::getEnvironmentVariablesForDumpCommand<\/a>"],[0,2,"<a href=\"Databases\/SQLiteDatabase.php.html#36\">Imperium\\Databases\\Dumper\\Databases\\SQLiteDatabase::dumpToFile<\/a>"],[0,1,"<a href=\"Databases\/SQLiteDatabase.php.html#60\">Imperium\\Databases\\Dumper\\Databases\\SQLiteDatabase::getDumpCommand<\/a>"],[0,1,"<a href=\"Dumper.php.html#75\">Imperium\\Databases\\Dumper\\Dumper::dump<\/a>"],[0,2,"<a href=\"Dumper.php.html#85\">Imperium\\Databases\\Dumper\\Dumper::clear<\/a>"],[0,1,"<a href=\"Dumper.php.html#102\">Imperium\\Databases\\Dumper\\Dumper::getDbName<\/a>"],[0,1,"<a href=\"Dumper.php.html#113\">Imperium\\Databases\\Dumper\\Dumper::setDbName<\/a>"],[0,1,"<a href=\"Dumper.php.html#126\">Imperium\\Databases\\Dumper\\Dumper::setUserName<\/a>"],[0,1,"<a href=\"Dumper.php.html#139\">Imperium\\Databases\\Dumper\\Dumper::setPassword<\/a>"],[0,1,"<a href=\"Dumper.php.html#152\">Imperium\\Databases\\Dumper\\Dumper::setHost<\/a>"],[0,1,"<a href=\"Dumper.php.html#164\">Imperium\\Databases\\Dumper\\Dumper::getHost<\/a>"],[0,1,"<a href=\"Dumper.php.html#175\">Imperium\\Databases\\Dumper\\Dumper::setPort<\/a>"],[0,1,"<a href=\"Dumper.php.html#188\">Imperium\\Databases\\Dumper\\Dumper::setSocket<\/a>"],[0,1,"<a href=\"Dumper.php.html#201\">Imperium\\Databases\\Dumper\\Dumper::setTimeout<\/a>"],[0,1,"<a href=\"Dumper.php.html#214\">Imperium\\Databases\\Dumper\\Dumper::setTable<\/a>"],[0,1,"<a href=\"Dumper.php.html#227\">Imperium\\Databases\\Dumper\\Dumper::getTable<\/a>"],[0,3,"<a href=\"Dumper.php.html#239\">Imperium\\Databases\\Dumper\\Dumper::setDumpBinaryPath<\/a>"],[0,3,"<a href=\"Dumper.php.html#255\">Imperium\\Databases\\Dumper\\Dumper::includeTables<\/a>"],[0,3,"<a href=\"Dumper.php.html#275\">Imperium\\Databases\\Dumper\\Dumper::excludeTables<\/a>"],[0,2,"<a href=\"Dumper.php.html#294\">Imperium\\Databases\\Dumper\\Dumper::addExtraOption<\/a>"],[100,1,"<a href=\"Dumper.php.html#308\">Imperium\\Databases\\Dumper\\Dumper::dumpToFile<\/a>"],[0,4,"<a href=\"Dumper.php.html#315\">Imperium\\Databases\\Dumper\\Dumper::checkIfDumpWasSuccessFul<\/a>"],[0,1,"<a href=\"Exceptions\/CannotSetParameter.php.html#33\">Imperium\\Databases\\Dumper\\Exceptions\\CannotSetParameter::conflictingParameters<\/a>"],[0,1,"<a href=\"Exceptions\/CannotStartDump.php.html#34\">Imperium\\Databases\\Dumper\\Exceptions\\CannotStartDump::emptyParameter<\/a>"],[0,1,"<a href=\"Exceptions\/DumpFailed.php.html#35\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed::processDidNotEndSuccessfully<\/a>"],[0,1,"<a href=\"Exceptions\/DumpFailed.php.html#43\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed::dumpfileWasNotCreated<\/a>"],[0,1,"<a href=\"Exceptions\/DumpFailed.php.html#51\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed::dumpfileWasEmpty<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#41\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::__construct<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#49\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::skipComments<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#59\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dontSkipComments<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#69\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::useExtendedInserts<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#79\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dontUseExtendedInserts<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#89\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::useSingleTransaction<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#99\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dontUseSingleTransaction<\/a>"],[0,2,"<a href=\"Tables\/MySQLTable.php.html#112\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dumpToFile<\/a>"],[0,6,"<a href=\"Tables\/MySQLTable.php.html#143\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::getDumpCommand<\/a>"],[0,1,"<a href=\"Tables\/MySQLTable.php.html#178\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Tables\/MySQLTable.php.html#191\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::guardAgainstIncompleteCredentials<\/a>"],[0,2,"<a href=\"Tables\/MySQLTable.php.html#200\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::determineQuote<\/a>"],[0,1,"<a href=\"Tables\/PostgreSQLTable.php.html#36\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::__construct<\/a>"],[0,1,"<a href=\"Tables\/PostgreSQLTable.php.html#44\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::useInserts<\/a>"],[0,2,"<a href=\"Tables\/PostgreSQLTable.php.html#56\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::dumpToFile<\/a>"],[0,2,"<a href=\"Tables\/PostgreSQLTable.php.html#86\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::getDumpCommand<\/a>"],[0,1,"<a href=\"Tables\/PostgreSQLTable.php.html#106\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Tables\/PostgreSQLTable.php.html#119\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::guardAgainstIncompleteCredentials<\/a>"],[0,1,"<a href=\"Tables\/PostgreSQLTable.php.html#128\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::getEnvironmentVariablesForDumpCommand<\/a>"],[0,2,"<a href=\"Tables\/SQLiteTable.php.html#36\">Imperium\\Databases\\Dumper\\Tables\\SQLiteTable::dumpToFile<\/a>"],[0,1,"<a href=\"Tables\/SQLiteTable.php.html#60\">Imperium\\Databases\\Dumper\\Tables\\SQLiteTable::getDumpCommand<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

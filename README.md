@@ -5,7 +5,9 @@
 <img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence"> 
 </p>
  
- 
+
+* [Coverage](https://git.fumseck.eu/cgit/imperium/tree/coverage/index.html)
+
 # What it's ?
 
 It is a free php library written to be useful for everybody and to be included in [Ji](https://git.fumseck.eu/cgit/ji/), and [Lumos](https://git.fumseck.eu/cgit/lumos) projects.

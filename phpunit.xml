@@ -14,9 +14,8 @@
         </testsuite>
     </testsuites>
     <filter>
-        <whitelist>
-            <directory>imperium/</directory>
-            <directory>tests/</directory>
+        <whitelist proceessUncoveredFromWhitelist="true">
+            <directory suffic=".php">imperium/</directory>
         </whitelist>
     </filter>
 </phpunit>

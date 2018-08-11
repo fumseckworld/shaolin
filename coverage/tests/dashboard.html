@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for H:\laragon\www\imperium/tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="../.css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="../.css/nv.d3.min.css" rel="stylesheet" type="text/css">
+  <link href="../.css/style.css" rel="stylesheet" type="text/css">
+  <!--[if lt IE 9]>
+  <script src="../.js/html5shiv.min.js"></script>
+  <script src="../.js/respond.min.js"></script>
+  <![endif]-->
+ </head>
+ <body>
+  <header>
+   <div class="container">
+    <div class="row">
+     <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li><a href="../index.html">H:\laragon\www\imperium</a></li>
+        <li><a href="index.html">tests</a></li>
+        <li class="active">(Dashboard)</li>
+
+      </ol>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="FormTest.php.html#302"><abbr title="tests\FormTest::OneInputAndSelect">OneInputAndSelect</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="FormTest.php.html#792"><abbr title="tests\FormTest::testGenerateWithoutRecord">testGenerateWithoutRecord</abbr></a></td><td class="text-right">23%</td></tr>
+       <tr><td><a href="HelpersTest.php.html#134"><abbr title="tests\HelpersTest::testBase">testBase</abbr></a></td><td class="text-right">31%</td></tr>
+       <tr><td><a href="HelpersTest.php.html#461"><abbr title="tests\HelpersTest::testShow">testShow</abbr></a></td><td class="text-right">37%</td></tr>
+       <tr><td><a href="AuthenticationTest.php.html#64"><abbr title="tests\AuthenticationTest::testCodeLength">testCodeLength</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="FileTest.php.html#349"><abbr title="tests\FileTest::testLoad">testLoad</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="FileTest.php.html#62"><abbr title="tests\FileTest::create">create</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="FileTest.php.html#46"><abbr title="tests\FileTest::createTestFile">createTestFile</abbr></a></td><td class="text-right">75%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="FormTest.php.html#792"><abbr title="tests\FormTest::testGenerateWithoutRecord">testGenerateWithoutRecord</abbr></a></td><td class="text-right">11</td></tr>
+       <tr><td><a href="FormTest.php.html#302"><abbr title="tests\FormTest::OneInputAndSelect">OneInputAndSelect</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="FileTest.php.html#62"><abbr title="tests\FileTest::create">create</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="FileTest.php.html#46"><abbr title="tests\FileTest::createTestFile">createTestFile</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 5.3.2</a> using <a href="https://secure.php.net/" target="_top">PHP 7.1.19</a> with <a href="https://xdebug.org/">Xdebug 2.6.1</a> and <a href="https://phpunit.de/">PHPUnit 6.5.11</a> at Sat Aug 11 17:09:01 UTC 2018.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="../.js/jquery.min.js" type="text/javascript"></script>
+  <script src="../.js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="../.js/holder.min.js" type="text/javascript"></script>
+  <script src="../.js/d3.min.js" type="text/javascript"></script>
+  <script src="../.js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([0,0,0,0,0,0,0,0,0,0,4,8], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([1,0,0,1,2,0,1,2,1,0,1,167], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[92.3076923076923,6,"<a href=\"AuthenticationTest.php.html#25\">tests\\AuthenticationTest<\/a>"],[100,9,"<a href=\"BaseTest.php.html#30\">tests\\BaseTest<\/a>"],[100,6,"<a href=\"ConnectionTest.php.html#30\">tests\\ConnectionTest<\/a>"],[97.90575916230367,43,"<a href=\"FileTest.php.html#29\">tests\\FileTest<\/a>"],[96.97754749568222,52,"<a href=\"FormTest.php.html#17\">tests\\FormTest<\/a>"],[93.98496240601504,35,"<a href=\"HelpersTest.php.html#41\">tests\\HelpersTest<\/a>"],[100,4,"<a href=\"OauthTest.php.html#28\">tests\\OauthTest<\/a>"],[100,1,"<a href=\"PaginationTest.php.html#25\">tests\\PaginationTest<\/a>"],[100,1,"<a href=\"PasswordsTest.php.html#29\">tests\\PasswordsTest<\/a>"],[100,12,"<a href=\"SqlBuilderTest.php.html#30\">tests\\SqlBuilderTest<\/a>"],[100,11,"<a href=\"TablesTest.php.html#31\">tests\\TablesTest<\/a>"],[100,7,"<a href=\"UsersTest.php.html#30\">tests\\UsersTest<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,1,"<a href=\"AuthenticationTest.php.html#32\">tests\\AuthenticationTest::setUp<\/a>"],[100,1,"<a href=\"AuthenticationTest.php.html#37\">tests\\AuthenticationTest::testTwoFactorKeyLength<\/a>"],[100,1,"<a href=\"AuthenticationTest.php.html#46\">tests\\AuthenticationTest::testIsValidCode<\/a>"],[100,1,"<a href=\"AuthenticationTest.php.html#55\">tests\\AuthenticationTest::testIsNotValidCode<\/a>"],[50,1,"<a href=\"AuthenticationTest.php.html#64\">tests\\AuthenticationTest::testCodeLength<\/a>"],[100,1,"<a href=\"AuthenticationTest.php.html#71\">tests\\AuthenticationTest::testGenerateQrCode<\/a>"],[100,1,"<a href=\"BaseTest.php.html#59\">tests\\BaseTest::setUp<\/a>"],[100,1,"<a href=\"BaseTest.php.html#69\">tests\\BaseTest::testCreateOnExisting<\/a>"],[100,1,"<a href=\"BaseTest.php.html#78\">tests\\BaseTest::test<\/a>"],[100,1,"<a href=\"BaseTest.php.html#90\">tests\\BaseTest::testGetInstance<\/a>"],[100,1,"<a href=\"BaseTest.php.html#99\">tests\\BaseTest::testShow<\/a>"],[100,1,"<a href=\"BaseTest.php.html#108\">tests\\BaseTest::testExist<\/a>"],[100,1,"<a href=\"BaseTest.php.html#118\">tests\\BaseTest::testGetCharset<\/a>"],[100,1,"<a href=\"BaseTest.php.html#127\">tests\\BaseTest::testGetCollation<\/a>"],[100,1,"<a href=\"BaseTest.php.html#137\">tests\\BaseTest::testHidden<\/a>"],[100,1,"<a href=\"ConnectionTest.php.html#34\">tests\\ConnectionTest::testMysql<\/a>"],[100,1,"<a href=\"ConnectionTest.php.html#49\">tests\\ConnectionTest::testPostgresql<\/a>"],[100,1,"<a href=\"ConnectionTest.php.html#64\">tests\\ConnectionTest::testSqlite<\/a>"],[100,1,"<a href=\"ConnectionTest.php.html#71\">tests\\ConnectionTest::testConnectHelper<\/a>"],[100,1,"<a href=\"ConnectionTest.php.html#81\">tests\\ConnectionTest::testNotValid<\/a>"],[100,1,"<a href=\"ConnectionTest.php.html#89\">tests\\ConnectionTest::testWithoutDatabase<\/a>"],[100,1,"<a href=\"FileTest.php.html#41\">tests\\FileTest::getTestFile<\/a>"],[75,2,"<a href=\"FileTest.php.html#46\">tests\\FileTest::createTestFile<\/a>"],[100,1,"<a href=\"FileTest.php.html#57\">tests\\FileTest::deleteTestFile<\/a>"],[66.66666666666666,2,"<a href=\"FileTest.php.html#62\">tests\\FileTest::create<\/a>"],[100,1,"<a href=\"FileTest.php.html#70\">tests\\FileTest::delete<\/a>"],[100,1,"<a href=\"FileTest.php.html#77\">tests\\FileTest::testCreateAndDelete<\/a>"],[100,1,"<a href=\"FileTest.php.html#83\">tests\\FileTest::testGetContent<\/a>"],[100,1,"<a href=\"FileTest.php.html#92\">tests\\FileTest::testPutContent<\/a>"],[100,1,"<a href=\"FileTest.php.html#101\">tests\\FileTest::testHash<\/a>"],[100,1,"<a href=\"FileTest.php.html#111\">tests\\FileTest::testExist<\/a>"],[100,1,"<a href=\"FileTest.php.html#117\">tests\\FileTest::testNotExist<\/a>"],[100,1,"<a href=\"FileTest.php.html#122\">tests\\FileTest::testIsFile<\/a>"],[100,1,"<a href=\"FileTest.php.html#130\">tests\\FileTest::testDeleteFolder<\/a>"],[100,1,"<a href=\"FileTest.php.html#138\">tests\\FileTest::testCopy<\/a>"],[100,1,"<a href=\"FileTest.php.html#146\">tests\\FileTest::testSearch<\/a>"],[100,1,"<a href=\"FileTest.php.html#159\">tests\\FileTest::testGetLines<\/a>"],[100,1,"<a href=\"FileTest.php.html#168\">tests\\FileTest::testCopyDirectory<\/a>"],[100,1,"<a href=\"FileTest.php.html#173\">tests\\FileTest::testLastModified<\/a>"],[100,1,"<a href=\"FileTest.php.html#182\">tests\\FileTest::testCreateExistingFile<\/a>"],[100,1,"<a href=\"FileTest.php.html#189\">tests\\FileTest::testDelete<\/a>"],[100,1,"<a href=\"FileTest.php.html#195\">tests\\FileTest::testDeleteNotExistingFolder<\/a>"],[100,1,"<a href=\"FileTest.php.html#200\">tests\\FileTest::testGetKeys<\/a>"],[100,1,"<a href=\"FileTest.php.html#205\">tests\\FileTest::testGetValues<\/a>"],[100,1,"<a href=\"FileTest.php.html#211\">tests\\FileTest::testGetSize<\/a>"],[100,1,"<a href=\"FileTest.php.html#219\">tests\\FileTest::testGetExtention<\/a>"],[100,1,"<a href=\"FileTest.php.html#225\">tests\\FileTest::testCopySourceNotExist<\/a>"],[100,1,"<a href=\"FileTest.php.html#230\">tests\\FileTest::testIsReadable<\/a>"],[100,1,"<a href=\"FileTest.php.html#236\">tests\\FileTest::testIsWritable<\/a>"],[100,1,"<a href=\"FileTest.php.html#245\">tests\\FileTest::testGetMime<\/a>"],[100,1,"<a href=\"FileTest.php.html#251\">tests\\FileTest::testGetStat<\/a>"],[100,1,"<a href=\"FileTest.php.html#257\">tests\\FileTest::testGetStatKey<\/a>"],[100,1,"<a href=\"FileTest.php.html#263\">tests\\FileTest::testWrite<\/a>"],[100,1,"<a href=\"FileTest.php.html#273\">tests\\FileTest::testIs<\/a>"],[100,1,"<a href=\"FileTest.php.html#328\">tests\\FileTest::testRename<\/a>"],[100,1,"<a href=\"FileTest.php.html#334\">tests\\FileTest::testGetGroup<\/a>"],[100,1,"<a href=\"FileTest.php.html#340\">tests\\FileTest::testGetsOwner<\/a>"],[60,1,"<a href=\"FileTest.php.html#349\">tests\\FileTest::testLoad<\/a>"],[100,1,"<a href=\"FileTest.php.html#357\">tests\\FileTest::testOpen<\/a>"],[100,1,"<a href=\"FileTest.php.html#363\">tests\\FileTest::testRealPath<\/a>"],[100,1,"<a href=\"FileTest.php.html#370\">tests\\FileTest::testFileTime<\/a>"],[100,1,"<a href=\"FileTest.php.html#375\">tests\\FileTest::testChmod<\/a>"],[100,1,"<a href=\"FormTest.php.html#27\">tests\\FormTest::testStartAndEnd<\/a>"],[100,1,"<a href=\"FormTest.php.html#45\">tests\\FormTest::testHide<\/a>"],[100,1,"<a href=\"FormTest.php.html#56\">tests\\FormTest::testFile<\/a>"],[100,1,"<a href=\"FormTest.php.html#88\">tests\\FormTest::testInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#120\">tests\\FormTest::testSubmit<\/a>"],[100,1,"<a href=\"FormTest.php.html#145\">tests\\FormTest::testTextarea<\/a>"],[100,1,"<a href=\"FormTest.php.html#169\">tests\\FormTest::testCsrf<\/a>"],[100,1,"<a href=\"FormTest.php.html#179\">tests\\FormTest::testReset<\/a>"],[100,1,"<a href=\"FormTest.php.html#194\">tests\\FormTest::testLink<\/a>"],[100,1,"<a href=\"FormTest.php.html#215\">tests\\FormTest::testSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#235\">tests\\FormTest::testTwoInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#255\">tests\\FormTest::testEnctype<\/a>"],[100,1,"<a href=\"FormTest.php.html#261\">tests\\FormTest::testTwoInlineInput<\/a>"],[100,2,"<a href=\"FormTest.php.html#282\">tests\\FormTest::testTwoSelect<\/a>"],[0,2,"<a href=\"FormTest.php.html#302\">tests\\FormTest::OneInputAndSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#335\">tests\\FormTest::testThreeInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#373\">tests\\FormTest::testFourInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#390\">tests\\FormTest::testGenerate<\/a>"],[23.809523809523807,4,"<a href=\"FormTest.php.html#792\">tests\\FormTest::testGenerateWithoutRecord<\/a>"],[100,2,"<a href=\"FormTest.php.html#828\">tests\\FormTest::testButton<\/a>"],[100,1,"<a href=\"FormTest.php.html#879\">tests\\FormTest::testImg<\/a>"],[100,1,"<a href=\"FormTest.php.html#912\">tests\\FormTest::testOneInputOneSelectTwoInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#949\">tests\\FormTest::testOneInputOneSelectOneInputOneSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#992\">tests\\FormTest::testOneInputTwoSelectOneInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1036\">tests\\FormTest::testOneInputThreeSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1080\">tests\\FormTest::testOneSelectThreeInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1131\">tests\\FormTest::testOneSelectTwoInputOneSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1166\">tests\\FormTest::testOneSelectOneInputOneSelectOneInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1208\">tests\\FormTest::testOneSelectOneInputTwoSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1244\">tests\\FormTest::testThreeInlineInputAndOneSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1276\">tests\\FormTest::testTwoSelectTwoInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1314\">tests\\FormTest::testTwoSelectOneInputOneSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1359\">tests\\FormTest::testThreeSelectOneInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1389\">tests\\FormTest::testTwoInputOneSelectOneInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1430\">tests\\FormTest::testTwoInputTwoSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1466\">tests\\FormTest::testFoorInlineSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1497\">tests\\FormTest::testCheckBox<\/a>"],[100,1,"<a href=\"FormTest.php.html#1531\">tests\\FormTest::testRadio<\/a>"],[100,1,"<a href=\"FormTest.php.html#1568\">tests\\FormTest::testRedirectSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1621\">tests\\FormTest::testTwoRedirectSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1653\">tests\\FormTest::testOneSelectOneInput<\/a>"],[100,1,"<a href=\"FormTest.php.html#1683\">tests\\FormTest::testOneInputOneSelect<\/a>"],[100,1,"<a href=\"FormTest.php.html#1713\">tests\\FormTest::testContainClass<\/a>"],[98.36065573770492,1,"<a href=\"FormTest.php.html#1722\">tests\\FormTest::testGenerateForm<\/a>"],[100,1,"<a href=\"FormTest.php.html#1893\">tests\\FormTest::testMultiple<\/a>"],[100,1,"<a href=\"FormTest.php.html#1906\">tests\\FormTest::testSize<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#66\">tests\\HelpersTest::setUp<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#74\">tests\\HelpersTest::testIconBar<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#123\">tests\\HelpersTest::testPrev<\/a>"],[31.25,1,"<a href=\"HelpersTest.php.html#134\">tests\\HelpersTest::testBase<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#153\">tests\\HelpersTest::testCollation<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#158\">tests\\HelpersTest::testSql<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#164\">tests\\HelpersTest::testFile<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#169\">tests\\HelpersTest::testArray<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#191\">tests\\HelpersTest::testPhp<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#199\">tests\\HelpersTest::testExecuteAndReq<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#205\">tests\\HelpersTest::testGit<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#210\">tests\\HelpersTest::testTable<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#274\">tests\\HelpersTest::testUserDell<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#280\">tests\\HelpersTest::testUserAdd<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#288\">tests\\HelpersTest::testFa<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#294\">tests\\HelpersTest::testCssLoader<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#300\">tests\\HelpersTest::testJsLoader<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#306\">tests\\HelpersTest::testFaGroup<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#314\">tests\\HelpersTest::testHelper<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#359\">tests\\HelpersTest::testIconic<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#369\">tests\\HelpersTest::testGlyph<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#376\">tests\\HelpersTest::testImage<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#381\">tests\\HelpersTest::testDate<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#400\">tests\\HelpersTest::testPass<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#406\">tests\\HelpersTest::testGenerateQrCode<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#412\">tests\\HelpersTest::testIsMobile<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#418\">tests\\HelpersTest::testGetOs<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#424\">tests\\HelpersTest::testGetBrowser<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#430\">tests\\HelpersTest::testGetDevice<\/a>"],[100,2,"<a href=\"HelpersTest.php.html#436\">tests\\HelpersTest::testIsBrowser<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#444\">tests\\HelpersTest::testCharset<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#449\">tests\\HelpersTest::testUser<\/a>"],[37.5,1,"<a href=\"HelpersTest.php.html#461\">tests\\HelpersTest::testShow<\/a>"],[100,1,"<a href=\"HelpersTest.php.html#474\">tests\\HelpersTest::testFormInstance<\/a>"],[100,1,"<a href=\"OauthTest.php.html#40\">tests\\OauthTest::setUp<\/a>"],[100,1,"<a href=\"OauthTest.php.html#46\">tests\\OauthTest::testGenerateSecret<\/a>"],[100,1,"<a href=\"OauthTest.php.html#51\">tests\\OauthTest::testGenerateQrCode<\/a>"],[100,1,"<a href=\"OauthTest.php.html#58\">tests\\OauthTest::testCheckCode<\/a>"],[100,1,"<a href=\"PaginationTest.php.html#36\">tests\\PaginationTest::test<\/a>"],[100,1,"<a href=\"PasswordsTest.php.html#31\">tests\\PasswordsTest::testUpdatedPass<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#64\">tests\\SqlBuilderTest::setUp<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#72\">tests\\SqlBuilderTest::testUnion<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#114\">tests\\SqlBuilderTest::testJoin<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#169\">tests\\SqlBuilderTest::testSql<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#255\">tests\\SqlBuilderTest::testCount<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#261\">tests\\SqlBuilderTest::testLimit<\/a>"],[100,3,"<a href=\"SqlBuilderTest.php.html#269\">tests\\SqlBuilderTest::testOrder<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#278\">tests\\SqlBuilderTest::testDelete<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#284\">tests\\SqlBuilderTest::testGetUnionRecords<\/a>"],[100,1,"<a href=\"SqlBuilderTest.php.html#296\">tests\\SqlBuilderTest::testGetOneRecord<\/a>"],[100,1,"<a href=\"TablesTest.php.html#72\">tests\\TablesTest::setUp<\/a>"],[100,1,"<a href=\"TablesTest.php.html#88\">tests\\TablesTest::testMysql<\/a>"],[100,1,"<a href=\"TablesTest.php.html#97\">tests\\TablesTest::testSqlite<\/a>"],[100,1,"<a href=\"TablesTest.php.html#106\">tests\\TablesTest::testPostgresql<\/a>"],[100,1,"<a href=\"TablesTest.php.html#115\">tests\\TablesTest::testRename<\/a>"],[100,1,"<a href=\"TablesTest.php.html#130\">tests\\TablesTest::testHas<\/a>"],[100,1,"<a href=\"TablesTest.php.html#137\">tests\\TablesTest::testHasColumn<\/a>"],[100,1,"<a href=\"TablesTest.php.html#143\">tests\\TablesTest::testGetColumn<\/a>"],[100,1,"<a href=\"TablesTest.php.html#150\">tests\\TablesTest::testGetColumnType<\/a>"],[100,1,"<a href=\"TablesTest.php.html#157\">tests\\TablesTest::testAddColumn<\/a>"],[100,1,"<a href=\"TablesTest.php.html#169\">tests\\TablesTest::testAddColumns<\/a>"],[100,1,"<a href=\"UsersTest.php.html#48\">tests\\UsersTest::setUp<\/a>"],[100,1,"<a href=\"UsersTest.php.html#54\">tests\\UsersTest::testShow<\/a>"],[100,1,"<a href=\"UsersTest.php.html#60\">tests\\UsersTest::testHidden<\/a>"],[100,1,"<a href=\"UsersTest.php.html#66\">tests\\UsersTest::testInstance<\/a>"],[100,1,"<a href=\"UsersTest.php.html#72\">tests\\UsersTest::testExist<\/a>"],[100,1,"<a href=\"UsersTest.php.html#81\">tests\\UsersTest::testChangePassword<\/a>"],[100,1,"<a href=\"UsersTest.php.html#87\">tests\\UsersTest::testDrop<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>

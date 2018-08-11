@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for H:\laragon\www\imperium\imperium</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href=".css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href=".css/nv.d3.min.css" rel="stylesheet" type="text/css">
+  <link href=".css/style.css" rel="stylesheet" type="text/css">
+  <!--[if lt IE 9]>
+  <script src=".js/html5shiv.min.js"></script>
+  <script src=".js/respond.min.js"></script>
+  <![endif]-->
+ </head>
+ <body>
+  <header>
+   <div class="container">
+    <div class="row">
+     <div class="col-md-12">
+      <ol class="breadcrumb">
+        <li><a href="index.html">H:\laragon\www\imperium\imperium</a></li>
+        <li class="active">(Dashboard)</li>
+
+      </ol>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Html/Records/Records.php.html#28">Imperium\Html\Records\Records</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/DumpFailed.php.html#28">Imperium\Databases\Dumper\Exceptions\DumpFailed</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Directory/Dir.php.html#24">Imperium\Directory\Dir</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Exception/EloquentException.php.html#27">Imperium\Databases\Eloquent\Exception\EloquentException</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#31">Imperium\Databases\Dumper\Tables\PostgreSQLTable</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#30">Imperium\Databases\Dumper\Tables\MySQLTable</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/SQLiteTable.php.html#28">Imperium\Databases\Dumper\Tables\SQLiteTable</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/CannotStartDump.php.html#27">Imperium\Databases\Dumper\Exceptions\CannotStartDump</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/CannotSetParameter.php.html#26">Imperium\Databases\Dumper\Exceptions\CannotSetParameter</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#34">Imperium\Databases\Dumper\Dumper</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/SQLiteDatabase.php.html#28">Imperium\Databases\Dumper\Databases\SQLiteDatabase</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\PostgreSQLDatabase</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\MySQLDatabase</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#29">Imperium\Html\Pagination\Pagination</a></td><td class="text-right">31%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#34">Imperium\Databases\Eloquent\Tables\Table</a></td><td class="text-right">41%</td></tr>
+       <tr><td><a href="Auth/Exceptions/OauthExceptions.php.html#26">Imperium\Auth\Exceptions\OauthExceptions</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Html/Canvas/Canvas.php.html#23">Imperium\Html\Canvas\Canvas</a></td><td class="text-right">54%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#35">Imperium\Databases\Eloquent\Bases\Base</a></td><td class="text-right">54%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#31">Imperium\Databases\Eloquent\Users\Users</a></td><td class="text-right">65%</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#26">Imperium\Auth\Oauth</a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#29">Imperium\Databases\Eloquent\Connexion\Connexion</a></td><td class="text-right">73%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#32">Imperium\Databases\Eloquent\Query\Query</a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="File/File.php.html#32">Imperium\File\File</a></td><td class="text-right">79%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#34">Imperium\Databases\Eloquent\Tables\Table</a></td><td class="text-right">16578</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#29">Imperium\Html\Pagination\Pagination</a></td><td class="text-right">2285</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#34">Imperium\Databases\Dumper\Dumper</a></td><td class="text-right">930</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#32">Imperium\Databases\Eloquent\Query\Query</a></td><td class="text-right">683</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\MySQLDatabase</a></td><td class="text-right">552</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#30">Imperium\Databases\Dumper\Tables\MySQLTable</a></td><td class="text-right">462</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#35">Imperium\Databases\Eloquent\Bases\Base</a></td><td class="text-right">388</td></tr>
+       <tr><td><a href="File/File.php.html#32">Imperium\File\File</a></td><td class="text-right">352</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#30">Imperium\Databases\Dumper\Databases\PostgreSQLDatabase</a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#31">Imperium\Databases\Dumper\Tables\PostgreSQLTable</a></td><td class="text-right">132</td></tr>
+       <tr><td><a href="Html/Records/Records.php.html#28">Imperium\Html\Records\Records</a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#31">Imperium\Databases\Eloquent\Users\Users</a></td><td class="text-right">69</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#29">Imperium\Databases\Eloquent\Connexion\Connexion</a></td><td class="text-right">36</td></tr>
+       <tr><td><a href="Html/Canvas/Canvas.php.html#23">Imperium\Html\Canvas\Canvas</a></td><td class="text-right">22</td></tr>
+       <tr><td><a href="Directory/Dir.php.html#24">Imperium\Directory\Dir</a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/SQLiteTable.php.html#28">Imperium\Databases\Dumper\Tables\SQLiteTable</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/SQLiteDatabase.php.html#28">Imperium\Databases\Dumper\Databases\SQLiteDatabase</a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#26">Imperium\Auth\Oauth</a></td><td class="text-right">7</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Auth/Exceptions/OauthExceptions.php.html#38"><abbr title="Imperium\Auth\Exceptions\OauthExceptions::invalidSecretCode">invalidSecretCode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#672"><abbr title="Imperium\Databases\Eloquent\Tables\Table::isOracle">isOracle</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#159"><abbr title="Imperium\Databases\Eloquent\Users\Users::create">create</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1573"><abbr title="Imperium\Databases\Eloquent\Tables\Table::dropAll">dropAll</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1561"><abbr title="Imperium\Databases\Eloquent\Tables\Table::setEngine">setEngine</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1498"><abbr title="Imperium\Databases\Eloquent\Tables\Table::modifyColumn">modifyColumn</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1481"><abbr title="Imperium\Databases\Eloquent\Tables\Table::optimize">optimize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1436"><abbr title="Imperium\Databases\Eloquent\Tables\Table::update">update</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1421"><abbr title="Imperium\Databases\Eloquent\Tables\Table::countTable">countTable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1365"><abbr title="Imperium\Databases\Eloquent\Tables\Table::truncateSqliteTable">truncateSqliteTable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1113"><abbr title="Imperium\Databases\Eloquent\Tables\Table::ignore">ignore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1017"><abbr title="Imperium\Databases\Eloquent\Tables\Table::insert">insert</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#860"><abbr title="Imperium\Databases\Eloquent\Tables\Table::renameColumn">renameColumn</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#847"><abbr title="Imperium\Databases\Eloquent\Tables\Table::deleteById">deleteById</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#725"><abbr title="Imperium\Databases\Eloquent\Tables\Table::dump">dump</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#662"><abbr title="Imperium\Databases\Eloquent\Tables\Table::isPostgresql">isPostgresql</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Directory/Dir.php.html#33"><abbr title="Imperium\Directory\Dir::clear">clear</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#312"><abbr title="Imperium\Databases\Eloquent\Tables\Table::truncate">truncate</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#281"><abbr title="Imperium\Databases\Eloquent\Tables\Table::drop">drop</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#732"><abbr title="Imperium\Databases\Eloquent\Query\Query::setDriver">setDriver</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#697"><abbr title="Imperium\Databases\Eloquent\Query\Query::like">like</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#686"><abbr title="Imperium\Databases\Eloquent\Query\Query::execute">execute</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#575"><abbr title="Imperium\Databases\Eloquent\Query\Query::request">request</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#562"><abbr title="Imperium\Databases\Eloquent\Query\Query::query">query</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#532"><abbr title="Imperium\Databases\Eloquent\Query\Query::setMode">setMode</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Exception/EloquentException.php.html#36"><abbr title="Imperium\Databases\Eloquent\Exception\EloquentException::notFoundPrimaryKey">notFoundPrimaryKey</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#245"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getOracleConnection">getOracleConnection</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#467"><abbr title="Imperium\Databases\Eloquent\Bases\Base::dropAll">dropAll</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#438"><abbr title="Imperium\Databases\Eloquent\Bases\Base::restore">restore</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#423"><abbr title="Imperium\Databases\Eloquent\Bases\Base::setEncodingOptions">setEncodingOptions</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#243"><abbr title="Imperium\Databases\Eloquent\Bases\Base::dump">dump</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#172"><abbr title="Imperium\Databases\Eloquent\Users\Users::setRights">setRights</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#415"><abbr title="Imperium\File\File::download">download</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/SQLiteTable.php.html#36"><abbr title="Imperium\Databases\Dumper\Tables\SQLiteTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1577"><abbr title="Imperium\File\File::fileOwner">fileOwner</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#627"><abbr title="Imperium\Html\Pagination\Pagination::setWithLinkInCurrentLi">setWithLinkInCurrentLi</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#520"><abbr title="Imperium\Html\Pagination\Pagination::setAdjacent">setAdjacent</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#450"><abbr title="Imperium\Html\Pagination\Pagination::linksRaw">linksRaw</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#278"><abbr title="Imperium\Html\Pagination\Pagination::getStart">getStart</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#268"><abbr title="Imperium\Html\Pagination\Pagination::getLimit">getLimit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#231"><abbr title="Imperium\Html\Pagination\Pagination::getNextPrevLinks">getNextPrevLinks</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#218"><abbr title="Imperium\Html\Pagination\Pagination::createLiFirstAndSecondRaw">createLiFirstAndSecondRaw</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#204"><abbr title="Imperium\Html\Pagination\Pagination::createLiFirstAndSecond">createLiFirstAndSecond</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#174"><abbr title="Imperium\Html\Pagination\Pagination::createLiCurrentOrNotRaw">createLiCurrentOrNotRaw</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#2738"><abbr title="Imperium\Html\Form\Form::generateSimplyRecordView">generateSimplyRecordView</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#2598"><abbr title="Imperium\Html\Form\Form::generateAdvancedRecordView">generateAdvancedRecordView</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Canvas/Canvas.php.html#202"><abbr title="Imperium\Html\Canvas\Canvas::setRowClass">setRowClass</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Canvas/Canvas.php.html#188"><abbr title="Imperium\Html\Canvas\Canvas::setGridClass">setGridClass</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Canvas/Canvas.php.html#166"><abbr title="Imperium\Html\Canvas\Canvas::addForm">addForm</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1546"><abbr title="Imperium\File\File::getType">getType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#815"><abbr title="Imperium\File\File::hardLink">hardLink</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1517"><abbr title="Imperium\File\File::chown">chown</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1502"><abbr title="Imperium\File\File::lchgrp">lchgrp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1485"><abbr title="Imperium\File\File::chgrp">chgrp</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1425"><abbr title="Imperium\File\File::quit">quit</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1413"><abbr title="Imperium\File\File::fileNotExist">fileNotExist</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1354"><abbr title="Imperium\File\File::nameIsEmpty">nameIsEmpty</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1316"><abbr title="Imperium\File\File::moveUploadedFile">moveUploadedFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1283"><abbr title="Imperium\File\File::uploadedFileErrors">uploadedFileErrors</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1269"><abbr title="Imperium\File\File::uploadedFileTmpPath">uploadedFileTmpPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1255"><abbr title="Imperium\File\File::uploadedFileName">uploadedFileName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1241"><abbr title="Imperium\File\File::uploadedFileSize">uploadedFileSize</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1227"><abbr title="Imperium\File\File::uploadedFileType">uploadedFileType</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#1215"><abbr title="Imperium\File\File::getFile">getFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="File/File.php.html#834"><abbr title="Imperium\File\File::symlink">symlink</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/SQLiteTable.php.html#60"><abbr title="Imperium\Databases\Dumper\Tables\SQLiteTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Html/Records/Records.php.html#72"><abbr title="Imperium\Html\Records\Records::show">show</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#128"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getEnvironmentVariablesForDumpCommand">getEnvironmentVariablesForDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#188"><abbr title="Imperium\Databases\Dumper\Dumper::setSocket">setSocket</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#85"><abbr title="Imperium\Databases\Dumper\Dumper::clear">clear</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#102"><abbr title="Imperium\Databases\Dumper\Dumper::getDbName">getDbName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#113"><abbr title="Imperium\Databases\Dumper\Dumper::setDbName">setDbName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#126"><abbr title="Imperium\Databases\Dumper\Dumper::setUserName">setUserName</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#139"><abbr title="Imperium\Databases\Dumper\Dumper::setPassword">setPassword</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#152"><abbr title="Imperium\Databases\Dumper\Dumper::setHost">setHost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#164"><abbr title="Imperium\Databases\Dumper\Dumper::getHost">getHost</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#175"><abbr title="Imperium\Databases\Dumper\Dumper::setPort">setPort</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#201"><abbr title="Imperium\Databases\Dumper\Dumper::setTimeout">setTimeout</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/SQLiteDatabase.php.html#60"><abbr title="Imperium\Databases\Dumper\Databases\SQLiteDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#214"><abbr title="Imperium\Databases\Dumper\Dumper::setTable">setTable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#227"><abbr title="Imperium\Databases\Dumper\Dumper::getTable">getTable</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#239"><abbr title="Imperium\Databases\Dumper\Dumper::setDumpBinaryPath">setDumpBinaryPath</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#255"><abbr title="Imperium\Databases\Dumper\Dumper::includeTables">includeTables</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#275"><abbr title="Imperium\Databases\Dumper\Dumper::excludeTables">excludeTables</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#119"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#315"><abbr title="Imperium\Databases\Dumper\Dumper::checkIfDumpWasSuccessFul">checkIfDumpWasSuccessFul</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/CannotSetParameter.php.html#33"><abbr title="Imperium\Databases\Dumper\Exceptions\CannotSetParameter::conflictingParameters">conflictingParameters</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#75"><abbr title="Imperium\Databases\Dumper\Dumper::dump">dump</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/SQLiteDatabase.php.html#36"><abbr title="Imperium\Databases\Dumper\Databases\SQLiteDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/DumpFailed.php.html#35"><abbr title="Imperium\Databases\Dumper\Exceptions\DumpFailed::processDidNotEndSuccessfully">processDidNotEndSuccessfully</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#143"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#41"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#49"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::skipComments">skipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#59"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dontSkipComments">dontSkipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#69"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::useExtendedInserts">useExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#79"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dontUseExtendedInserts">dontUseExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#89"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::useSingleTransaction">useSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#99"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dontUseSingleTransaction">dontUseSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#112"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#185"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#139"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getEnvironmentVariablesForDumpCommand">getEnvironmentVariablesForDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#198"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#207"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::determineQuote">determineQuote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#35"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#43"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::useInserts">useInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#55"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#86"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#115"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#128"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/CannotStartDump.php.html#34"><abbr title="Imperium\Databases\Dumper\Exceptions\CannotStartDump::emptyParameter">emptyParameter</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#294"><abbr title="Imperium\Databases\Dumper\Dumper::addExtraOption">addExtraOption</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#99"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dontUseSingleTransaction">dontUseSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#106"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#59"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dontSkipComments">dontSkipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#191"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#44"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::useInserts">useInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#89"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::useSingleTransaction">useSingleTransaction</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#49"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::skipComments">skipComments</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#56"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#86"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#41"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#200"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::determineQuote">determineQuote</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#178"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::getContentsOfCredentialsFile">getContentsOfCredentialsFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/DumpFailed.php.html#51"><abbr title="Imperium\Databases\Dumper\Exceptions\DumpFailed::dumpfileWasEmpty">dumpfileWasEmpty</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#69"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::useExtendedInserts">useExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Exceptions/DumpFailed.php.html#43"><abbr title="Imperium\Databases\Dumper\Exceptions\DumpFailed::dumpfileWasNotCreated">dumpfileWasNotCreated</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#79"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dontUseExtendedInserts">dontUseExtendedInserts</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#143"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#112"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#36"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#934"><abbr title="Imperium\Databases\Eloquent\Tables\Table::deleteColumn">deleteColumn</abbr></a></td><td class="text-right">15%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1220"><abbr title="Imperium\Databases\Eloquent\Tables\Table::count">count</abbr></a></td><td class="text-right">23%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#290"><abbr title="Imperium\Html\Pagination\Pagination::get">get</abbr></a></td><td class="text-right">27%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#224"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getSqliteConnection">getSqliteConnection</abbr></a></td><td class="text-right">42%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#767"><abbr title="Imperium\Databases\Eloquent\Tables\Table::primaryKey">primaryKey</abbr></a></td><td class="text-right">47%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#262"><abbr title="Imperium\Databases\Eloquent\Users\Users::getInstance">getInstance</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1598"><abbr title="Imperium\Databases\Eloquent\Tables\Table::appendColumns">appendColumns</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#98"><abbr title="Imperium\Databases\Eloquent\Bases\Base::create">create</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="File/File.php.html#912"><abbr title="Imperium\File\File::getStartKey">getStartKey</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1139"><abbr title="Imperium\Databases\Eloquent\Tables\Table::show">show</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#408"><abbr title="Imperium\Databases\Eloquent\Query\Query::where">where</abbr></a></td><td class="text-right">61%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#200"><abbr title="Imperium\Databases\Eloquent\Users\Users::updatePassword">updatePassword</abbr></a></td><td class="text-right">62%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#42"><abbr title="Imperium\Databases\Eloquent\Users\Users::drop">drop</abbr></a></td><td class="text-right">62%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#70"><abbr title="Imperium\Databases\Eloquent\Users\Users::show">show</abbr></a></td><td class="text-right">64%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1000"><abbr title="Imperium\Databases\Eloquent\Tables\Table::exist">exist</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#49"><abbr title="Imperium\Auth\Oauth::checkCode">checkCode</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#67"><abbr title="Imperium\Auth\Oauth::generateQrCode">generateQrCode</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1408"><abbr title="Imperium\Databases\Eloquent\Tables\Table::getRecords">getRecords</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#224"><abbr title="Imperium\Databases\Eloquent\Bases\Base::drop">drop</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#33"><abbr title="Imperium\Auth\Oauth::generateSecret">generateSecret</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#709"><abbr title="Imperium\Databases\Eloquent\Tables\Table::isEnd">isEnd</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#285"><abbr title="Imperium\Databases\Eloquent\Bases\Base::exist">exist</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#300"><abbr title="Imperium\Databases\Eloquent\Bases\Base::getCharset">getCharset</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#138"><abbr title="Imperium\Html\Pagination\Pagination::createLiCurrentOrNot">createLiCurrentOrNot</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#145"><abbr title="Imperium\Databases\Eloquent\Tables\Table::rename">rename</abbr></a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#197"><abbr title="Imperium\Databases\Eloquent\Tables\Table::getColumnsTypes">getColumnsTypes</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#176"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getMysqlConnection">getMysqlConnection</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#199"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getPostgresqlConnection">getPostgresqlConnection</abbr></a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#596"><abbr title="Imperium\Databases\Eloquent\Query\Query::join">join</abbr></a></td><td class="text-right">73%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#50"><abbr title="Imperium\Databases\Eloquent\Bases\Base::show">show</abbr></a></td><td class="text-right">75%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#459"><abbr title="Imperium\Databases\Eloquent\Tables\Table::updateCreateCommand">updateCreateCommand</abbr></a></td><td class="text-right">76%</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#407"><abbr title="Imperium\Html\Form\Form::input">input</abbr></a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#241"><abbr title="Imperium\Databases\Eloquent\Tables\Table::getColumns">getColumns</abbr></a></td><td class="text-right">78%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#406"><abbr title="Imperium\Databases\Eloquent\Tables\Table::addColumn">addColumn</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#1877"><abbr title="Imperium\Html\Form\Form::textarea">textarea</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1315"><abbr title="Imperium\Databases\Eloquent\Tables\Table::exec">exec</abbr></a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#339"><abbr title="Imperium\Databases\Eloquent\Bases\Base::getCollation">getCollation</abbr></a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#141"><abbr title="Imperium\Databases\Eloquent\Query\Query::get">get</abbr></a></td><td class="text-right">82%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#692"><abbr title="Imperium\Databases\Eloquent\Tables\Table::end">end</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1537"><abbr title="Imperium\Databases\Eloquent\Tables\Table::get">get</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#423"><abbr title="Imperium\Databases\Eloquent\Tables\Table::create">create</abbr></a></td><td class="text-right">87%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#290"><abbr title="Imperium\Html\Pagination\Pagination::get">get</abbr></a></td><td class="text-right">416</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#312"><abbr title="Imperium\Databases\Eloquent\Tables\Table::truncate">truncate</abbr></a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1017"><abbr title="Imperium\Databases\Eloquent\Tables\Table::insert">insert</abbr></a></td><td class="text-right">306</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#450"><abbr title="Imperium\Html\Pagination\Pagination::linksRaw">linksRaw</abbr></a></td><td class="text-right">240</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#2598"><abbr title="Imperium\Html\Form\Form::generateAdvancedRecordView">generateAdvancedRecordView</abbr></a></td><td class="text-right">210</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#141"><abbr title="Imperium\Databases\Eloquent\Query\Query::get">get</abbr></a></td><td class="text-right">204</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#860"><abbr title="Imperium\Databases\Eloquent\Tables\Table::renameColumn">renameColumn</abbr></a></td><td class="text-right">156</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1598"><abbr title="Imperium\Databases\Eloquent\Tables\Table::appendColumns">appendColumns</abbr></a></td><td class="text-right">113</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#725"><abbr title="Imperium\Databases\Eloquent\Tables\Table::dump">dump</abbr></a></td><td class="text-right">110</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#459"><abbr title="Imperium\Databases\Eloquent\Tables\Table::updateCreateCommand">updateCreateCommand</abbr></a></td><td class="text-right">81</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1436"><abbr title="Imperium\Databases\Eloquent\Tables\Table::update">update</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#281"><abbr title="Imperium\Databases\Eloquent\Tables\Table::drop">drop</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Html/Records/Records.php.html#72"><abbr title="Imperium\Html\Records\Records::show">show</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#143"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">72</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#934"><abbr title="Imperium\Databases\Eloquent\Tables\Table::deleteColumn">deleteColumn</abbr></a></td><td class="text-right">57</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1498"><abbr title="Imperium\Databases\Eloquent\Tables\Table::modifyColumn">modifyColumn</abbr></a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1220"><abbr title="Imperium\Databases\Eloquent\Tables\Table::count">count</abbr></a></td><td class="text-right">55</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#231"><abbr title="Imperium\Html\Pagination\Pagination::getNextPrevLinks">getNextPrevLinks</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#143"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#86"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">42</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1139"><abbr title="Imperium\Databases\Eloquent\Tables\Table::show">show</abbr></a></td><td class="text-right">37</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#697"><abbr title="Imperium\Databases\Eloquent\Query\Query::like">like</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#438"><abbr title="Imperium\Databases\Eloquent\Bases\Base::restore">restore</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1365"><abbr title="Imperium\Databases\Eloquent\Tables\Table::truncateSqliteTable">truncateSqliteTable</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#98"><abbr title="Imperium\Databases\Eloquent\Bases\Base::create">create</abbr></a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#767"><abbr title="Imperium\Databases\Eloquent\Tables\Table::primaryKey">primaryKey</abbr></a></td><td class="text-right">24</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#315"><abbr title="Imperium\Databases\Dumper\Dumper::checkIfDumpWasSuccessFul">checkIfDumpWasSuccessFul</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Directory/Dir.php.html#33"><abbr title="Imperium\Directory\Dir::clear">clear</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#243"><abbr title="Imperium\Databases\Eloquent\Bases\Base::dump">dump</abbr></a></td><td class="text-right">20</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#596"><abbr title="Imperium\Databases\Eloquent\Query\Query::join">join</abbr></a></td><td class="text-right">19</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#408"><abbr title="Imperium\Databases\Eloquent\Query\Query::where">where</abbr></a></td><td class="text-right">17</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#70"><abbr title="Imperium\Databases\Eloquent\Users\Users::show">show</abbr></a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#407"><abbr title="Imperium\Html\Form\Form::input">input</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1573"><abbr title="Imperium\Databases\Eloquent\Tables\Table::dropAll">dropAll</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#198"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#275"><abbr title="Imperium\Databases\Dumper\Dumper::excludeTables">excludeTables</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#174"><abbr title="Imperium\Html\Pagination\Pagination::createLiCurrentOrNotRaw">createLiCurrentOrNotRaw</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#255"><abbr title="Imperium\Databases\Dumper\Dumper::includeTables">includeTables</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#128"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#239"><abbr title="Imperium\Databases\Dumper\Dumper::setDumpBinaryPath">setDumpBinaryPath</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#467"><abbr title="Imperium\Databases\Eloquent\Bases\Base::dropAll">dropAll</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#191"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#119"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::guardAgainstIncompleteCredentials">guardAgainstIncompleteCredentials</abbr></a></td><td class="text-right">12</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#197"><abbr title="Imperium\Databases\Eloquent\Tables\Table::getColumnsTypes">getColumnsTypes</abbr></a></td><td class="text-right">10</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#241"><abbr title="Imperium\Databases\Eloquent\Tables\Table::getColumns">getColumns</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="Html/Form/Form.php.html#1877"><abbr title="Imperium\Html\Form\Form::textarea">textarea</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#50"><abbr title="Imperium\Databases\Eloquent\Bases\Base::show">show</abbr></a></td><td class="text-right">9</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#300"><abbr title="Imperium\Databases\Eloquent\Bases\Base::getCharset">getCharset</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#138"><abbr title="Imperium\Html\Pagination\Pagination::createLiCurrentOrNot">createLiCurrentOrNot</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#224"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getSqliteConnection">getSqliteConnection</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#245"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getOracleConnection">getOracleConnection</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Html/Pagination/Pagination.php.html#204"><abbr title="Imperium\Html\Pagination\Pagination::createLiFirstAndSecond">createLiFirstAndSecond</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#56"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#262"><abbr title="Imperium\Databases\Eloquent\Users\Users::getInstance">getInstance</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#834"><abbr title="Imperium\File\File::symlink">symlink</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/PostgreSQLTable.php.html#86"><abbr title="Imperium\Databases\Dumper\Tables\PostgreSQLTable::getDumpCommand">getDumpCommand</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#112"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/SQLiteTable.php.html#36"><abbr title="Imperium\Databases\Dumper\Tables\SQLiteTable::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Eloquent/Query/Query.php.html#532"><abbr title="Imperium\Databases\Eloquent\Query\Query::setMode">setMode</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1481"><abbr title="Imperium\Databases\Eloquent\Tables\Table::optimize">optimize</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#207"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::determineQuote">determineQuote</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#1517"><abbr title="Imperium\File\File::chown">chown</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#1485"><abbr title="Imperium\File\File::chgrp">chgrp</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#815"><abbr title="Imperium\File\File::hardLink">hardLink</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#294"><abbr title="Imperium\Databases\Dumper\Dumper::addExtraOption">addExtraOption</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/PostgreSQLDatabase.php.html#55"><abbr title="Imperium\Databases\Dumper\Databases\PostgreSQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/MySQLDatabase.php.html#112"><abbr title="Imperium\Databases\Dumper\Databases\MySQLDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Dumper.php.html#85"><abbr title="Imperium\Databases\Dumper\Dumper::clear">clear</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#1546"><abbr title="Imperium\File\File::getType">getType</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#1577"><abbr title="Imperium\File\File::fileOwner">fileOwner</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Html/Canvas/Canvas.php.html#166"><abbr title="Imperium\Html\Canvas\Canvas::addForm">addForm</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Tables/MySQLTable.php.html#200"><abbr title="Imperium\Databases\Dumper\Tables\MySQLTable::determineQuote">determineQuote</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Dumper/Databases/SQLiteDatabase.php.html#36"><abbr title="Imperium\Databases\Dumper\Databases\SQLiteDatabase::dumpToFile">dumpToFile</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="File/File.php.html#415"><abbr title="Imperium\File\File::download">download</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#145"><abbr title="Imperium\Databases\Eloquent\Tables\Table::rename">rename</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#339"><abbr title="Imperium\Databases\Eloquent\Bases\Base::getCollation">getCollation</abbr></a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#42"><abbr title="Imperium\Databases\Eloquent\Users\Users::drop">drop</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Users/Users.php.html#200"><abbr title="Imperium\Databases\Eloquent\Users\Users::updatePassword">updatePassword</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#176"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getMysqlConnection">getMysqlConnection</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Connexion/Connexion.php.html#199"><abbr title="Imperium\Databases\Eloquent\Connexion\Connexion::getPostgresqlConnection">getPostgresqlConnection</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1315"><abbr title="Imperium\Databases\Eloquent\Tables\Table::exec">exec</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#423"><abbr title="Imperium\Databases\Eloquent\Tables\Table::create">create</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1537"><abbr title="Imperium\Databases\Eloquent\Tables\Table::get">get</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#224"><abbr title="Imperium\Databases\Eloquent\Bases\Base::drop">drop</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#692"><abbr title="Imperium\Databases\Eloquent\Tables\Table::end">end</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="File/File.php.html#912"><abbr title="Imperium\File\File::getStartKey">getStartKey</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#67"><abbr title="Imperium\Auth\Oauth::generateQrCode">generateQrCode</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#49"><abbr title="Imperium\Auth\Oauth::checkCode">checkCode</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1408"><abbr title="Imperium\Databases\Eloquent\Tables\Table::getRecords">getRecords</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Databases/Eloquent/Bases/Base.php.html#285"><abbr title="Imperium\Databases\Eloquent\Bases\Base::exist">exist</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#1000"><abbr title="Imperium\Databases\Eloquent\Tables\Table::exist">exist</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#709"><abbr title="Imperium\Databases\Eloquent\Tables\Table::isEnd">isEnd</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Auth/Oauth.php.html#33"><abbr title="Imperium\Auth\Oauth::generateSecret">generateSecret</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Databases/Eloquent/Tables/Table.php.html#406"><abbr title="Imperium\Databases\Eloquent\Tables\Table::addColumn">addColumn</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 5.3.2</a> using <a href="https://secure.php.net/" target="_top">PHP 7.1.19</a> with <a href="https://xdebug.org/">Xdebug 2.6.1</a> and <a href="https://phpunit.de/">PHPUnit 6.5.11</a> at Sat Aug 11 17:45:11 UTC 2018.</small>
+    </p>
+   </footer>
+  </div>
+  <script src=".js/jquery.min.js" type="text/javascript"></script>
+  <script src=".js/bootstrap.min.js" type="text/javascript"></script>
+  <script src=".js/holder.min.js" type="text/javascript"></script>
+  <script src=".js/d3.min.js" type="text/javascript"></script>
+  <script src=".js/nv.d3.min.js" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([13,0,0,0,1,1,3,2,3,0,1,4], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([130,0,1,2,0,2,3,16,9,8,8,163], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[50,2,"<a href=\"Auth\/Exceptions\/OauthExceptions.php.html#26\">Imperium\\Auth\\Exceptions\\OauthExceptions<\/a>"],[66.66666666666666,6,"<a href=\"Auth\/Oauth.php.html#26\">Imperium\\Auth\\Oauth<\/a>"],[0,23,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#30\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase<\/a>"],[0,15,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#30\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Databases\/SQLiteDatabase.php.html#28\">Imperium\\Databases\\Dumper\\Databases\\SQLiteDatabase<\/a>"],[0,30,"<a href=\"Databases\/Dumper\/Dumper.php.html#34\">Imperium\\Databases\\Dumper\\Dumper<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/CannotSetParameter.php.html#26\">Imperium\\Databases\\Dumper\\Exceptions\\CannotSetParameter<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/CannotStartDump.php.html#27\">Imperium\\Databases\\Dumper\\Exceptions\\CannotStartDump<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Exceptions\/DumpFailed.php.html#28\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed<\/a>"],[0,21,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#30\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable<\/a>"],[0,11,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#31\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Tables\/SQLiteTable.php.html#28\">Imperium\\Databases\\Dumper\\Tables\\SQLiteTable<\/a>"],[54.421768707483,59,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#35\">Imperium\\Databases\\Eloquent\\Bases\\Base<\/a>"],[73.33333333333333,25,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#29\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion<\/a>"],[100,0,"<a href=\"Databases\/Eloquent\/Eloquent.php.html#25\">Imperium\\Databases\\Eloquent\\Eloquent<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Exception\/EloquentException.php.html#27\">Imperium\\Databases\\Eloquent\\Exception\\EloquentException<\/a>"],[75.3731343283582,183,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#32\">Imperium\\Databases\\Eloquent\\Query\\Query<\/a>"],[41.736227045075125,287,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#34\">Imperium\\Databases\\Eloquent\\Tables\\Table<\/a>"],[65.67164179104478,31,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#31\">Imperium\\Databases\\Eloquent\\Users\\Users<\/a>"],[100,1,"<a href=\"Databases\/Exception\/IdentifierException.php.html#27\">Imperium\\Databases\\Exception\\IdentifierException<\/a>"],[0,4,"<a href=\"Directory\/Dir.php.html#24\">Imperium\\Directory\\Dir<\/a>"],[79.3220338983051,151,"<a href=\"File\/File.php.html#32\">Imperium\\File\\File<\/a>"],[100,9,"<a href=\"Html\/Bar\/Icon.php.html#25\">Imperium\\Html\\Bar\\Icon<\/a>"],[54.166666666666664,11,"<a href=\"Html\/Canvas\/Canvas.php.html#23\">Imperium\\Html\\Canvas\\Canvas<\/a>"],[93.94240317775571,196,"<a href=\"Html\/Form\/Form.php.html#30\">Imperium\\Html\\Form\\Form<\/a>"],[31.05263157894737,82,"<a href=\"Html\/Pagination\/Pagination.php.html#29\">Imperium\\Html\\Pagination\\Pagination<\/a>"],[0,8,"<a href=\"Html\/Records\/Records.php.html#28\">Imperium\\Html\\Records\\Records<\/a>"],[100,0,"<a href=\"Databases\/Eloquent\/Share.php.html#26\">Share<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,1,"<a href=\"Auth\/Exceptions\/OauthExceptions.php.html#33\">Imperium\\Auth\\Exceptions\\OauthExceptions::codeLengthIncorrect<\/a>"],[0,1,"<a href=\"Auth\/Exceptions\/OauthExceptions.php.html#38\">Imperium\\Auth\\Exceptions\\OauthExceptions::invalidSecretCode<\/a>"],[66.66666666666666,2,"<a href=\"Auth\/Oauth.php.html#33\">Imperium\\Auth\\Oauth::generateSecret<\/a>"],[66.66666666666666,2,"<a href=\"Auth\/Oauth.php.html#49\">Imperium\\Auth\\Oauth::checkCode<\/a>"],[66.66666666666666,2,"<a href=\"Auth\/Oauth.php.html#67\">Imperium\\Auth\\Oauth::generateQrCode<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#41\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::__construct<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#49\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::skipComments<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#59\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dontSkipComments<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#69\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::useExtendedInserts<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#79\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dontUseExtendedInserts<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#89\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::useSingleTransaction<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#99\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dontUseSingleTransaction<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#112\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::dumpToFile<\/a>"],[0,8,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#143\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#185\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#198\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::guardAgainstIncompleteCredentials<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Databases\/MySQLDatabase.php.html#207\">Imperium\\Databases\\Dumper\\Databases\\MySQLDatabase::determineQuote<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#35\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::__construct<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#43\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::useInserts<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#55\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::dumpToFile<\/a>"],[0,6,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#86\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#115\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#128\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::guardAgainstIncompleteCredentials<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/PostgreSQLDatabase.php.html#139\">Imperium\\Databases\\Dumper\\Databases\\PostgreSQLDatabase::getEnvironmentVariablesForDumpCommand<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Databases\/SQLiteDatabase.php.html#36\">Imperium\\Databases\\Dumper\\Databases\\SQLiteDatabase::dumpToFile<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Databases\/SQLiteDatabase.php.html#60\">Imperium\\Databases\\Dumper\\Databases\\SQLiteDatabase::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#75\">Imperium\\Databases\\Dumper\\Dumper::dump<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Dumper.php.html#85\">Imperium\\Databases\\Dumper\\Dumper::clear<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#102\">Imperium\\Databases\\Dumper\\Dumper::getDbName<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#113\">Imperium\\Databases\\Dumper\\Dumper::setDbName<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#126\">Imperium\\Databases\\Dumper\\Dumper::setUserName<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#139\">Imperium\\Databases\\Dumper\\Dumper::setPassword<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#152\">Imperium\\Databases\\Dumper\\Dumper::setHost<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#164\">Imperium\\Databases\\Dumper\\Dumper::getHost<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#175\">Imperium\\Databases\\Dumper\\Dumper::setPort<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#188\">Imperium\\Databases\\Dumper\\Dumper::setSocket<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#201\">Imperium\\Databases\\Dumper\\Dumper::setTimeout<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#214\">Imperium\\Databases\\Dumper\\Dumper::setTable<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#227\">Imperium\\Databases\\Dumper\\Dumper::getTable<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Dumper.php.html#239\">Imperium\\Databases\\Dumper\\Dumper::setDumpBinaryPath<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Dumper.php.html#255\">Imperium\\Databases\\Dumper\\Dumper::includeTables<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Dumper.php.html#275\">Imperium\\Databases\\Dumper\\Dumper::excludeTables<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Dumper.php.html#294\">Imperium\\Databases\\Dumper\\Dumper::addExtraOption<\/a>"],[100,1,"<a href=\"Databases\/Dumper\/Dumper.php.html#308\">Imperium\\Databases\\Dumper\\Dumper::dumpToFile<\/a>"],[0,4,"<a href=\"Databases\/Dumper\/Dumper.php.html#315\">Imperium\\Databases\\Dumper\\Dumper::checkIfDumpWasSuccessFul<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/CannotSetParameter.php.html#33\">Imperium\\Databases\\Dumper\\Exceptions\\CannotSetParameter::conflictingParameters<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/CannotStartDump.php.html#34\">Imperium\\Databases\\Dumper\\Exceptions\\CannotStartDump::emptyParameter<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/DumpFailed.php.html#35\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed::processDidNotEndSuccessfully<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/DumpFailed.php.html#43\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed::dumpfileWasNotCreated<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Exceptions\/DumpFailed.php.html#51\">Imperium\\Databases\\Dumper\\Exceptions\\DumpFailed::dumpfileWasEmpty<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#41\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::__construct<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#49\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::skipComments<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#59\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dontSkipComments<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#69\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::useExtendedInserts<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#79\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dontUseExtendedInserts<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#89\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::useSingleTransaction<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#99\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dontUseSingleTransaction<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#112\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::dumpToFile<\/a>"],[0,6,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#143\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#178\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#191\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::guardAgainstIncompleteCredentials<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Tables\/MySQLTable.php.html#200\">Imperium\\Databases\\Dumper\\Tables\\MySQLTable::determineQuote<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#36\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::__construct<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#44\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::useInserts<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#56\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::dumpToFile<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#86\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::getDumpCommand<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#106\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::getContentsOfCredentialsFile<\/a>"],[0,3,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#119\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::guardAgainstIncompleteCredentials<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/PostgreSQLTable.php.html#128\">Imperium\\Databases\\Dumper\\Tables\\PostgreSQLTable::getEnvironmentVariablesForDumpCommand<\/a>"],[0,2,"<a href=\"Databases\/Dumper\/Tables\/SQLiteTable.php.html#36\">Imperium\\Databases\\Dumper\\Tables\\SQLiteTable::dumpToFile<\/a>"],[0,1,"<a href=\"Databases\/Dumper\/Tables\/SQLiteTable.php.html#60\">Imperium\\Databases\\Dumper\\Tables\\SQLiteTable::getDumpCommand<\/a>"],[75,8,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#50\">Imperium\\Databases\\Eloquent\\Bases\\Base::show<\/a>"],[52.63157894736842,12,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#98\">Imperium\\Databases\\Eloquent\\Bases\\Base::create<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#138\">Imperium\\Databases\\Eloquent\\Bases\\Base::setEncoding<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#153\">Imperium\\Databases\\Eloquent\\Bases\\Base::setCollation<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#167\">Imperium\\Databases\\Eloquent\\Bases\\Base::setDriver<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#181\">Imperium\\Databases\\Eloquent\\Bases\\Base::setPassword<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#195\">Imperium\\Databases\\Eloquent\\Bases\\Base::setUser<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#209\">Imperium\\Databases\\Eloquent\\Bases\\Base::setName<\/a>"],[66.66666666666666,3,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#224\">Imperium\\Databases\\Eloquent\\Bases\\Base::drop<\/a>"],[0,4,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#243\">Imperium\\Databases\\Eloquent\\Bases\\Base::dump<\/a>"],[66.66666666666666,2,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#285\">Imperium\\Databases\\Eloquent\\Bases\\Base::exist<\/a>"],[66.66666666666666,6,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#300\">Imperium\\Databases\\Eloquent\\Bases\\Base::getCharset<\/a>"],[82.35294117647058,5,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#339\">Imperium\\Databases\\Eloquent\\Bases\\Base::getCollation<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#374\">Imperium\\Databases\\Eloquent\\Bases\\Base::setHidden<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#386\">Imperium\\Databases\\Eloquent\\Bases\\Base::manage<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#396\">Imperium\\Databases\\Eloquent\\Bases\\Base::getInstance<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#409\">Imperium\\Databases\\Eloquent\\Bases\\Base::setDumpDirectory<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#423\">Imperium\\Databases\\Eloquent\\Bases\\Base::setEncodingOptions<\/a>"],[0,5,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#438\">Imperium\\Databases\\Eloquent\\Bases\\Base::restore<\/a>"],[0,3,"<a href=\"Databases\/Eloquent\/Bases\/Base.php.html#467\">Imperium\\Databases\\Eloquent\\Bases\\Base::dropAll<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#69\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::connect<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#82\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::setDriver<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#96\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::setUser<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#110\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::setDatabase<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#124\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::setPassword<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#138\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::setEncoding<\/a>"],[90,5,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#150\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::getConnexion<\/a>"],[71.42857142857143,4,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#176\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::getMysqlConnection<\/a>"],[71.42857142857143,4,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#199\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::getPostgresqlConnection<\/a>"],[42.857142857142854,4,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#224\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::getSqliteConnection<\/a>"],[0,2,"<a href=\"Databases\/Eloquent\/Connexion\/Connexion.php.html#245\">Imperium\\Databases\\Eloquent\\Connexion\\Connexion::getOracleConnection<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Exception\/EloquentException.php.html#36\">Imperium\\Databases\\Eloquent\\Exception\\EloquentException::notFoundPrimaryKey<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#95\">Imperium\\Databases\\Eloquent\\Query\\Query::start<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#107\">Imperium\\Databases\\Eloquent\\Query\\Query::setTable<\/a>"],[100,2,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#116\">Imperium\\Databases\\Eloquent\\Query\\Query::notDefine<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#127\">Imperium\\Databases\\Eloquent\\Query\\Query::deleteSpace<\/a>"],[100,2,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#132\">Imperium\\Databases\\Eloquent\\Query\\Query::isNotNull<\/a>"],[82.46753246753246,123,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#141\">Imperium\\Databases\\Eloquent\\Query\\Query::get<\/a>"],[61.53846153846154,11,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#408\">Imperium\\Databases\\Eloquent\\Query\\Query::where<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#446\">Imperium\\Databases\\Eloquent\\Query\\Query::orderBy<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#461\">Imperium\\Databases\\Eloquent\\Query\\Query::setColumns<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#475\">Imperium\\Databases\\Eloquent\\Query\\Query::setPdo<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#487\">Imperium\\Databases\\Eloquent\\Query\\Query::count<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#500\">Imperium\\Databases\\Eloquent\\Query\\Query::getRecords<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#517\">Imperium\\Databases\\Eloquent\\Query\\Query::limit<\/a>"],[0,2,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#532\">Imperium\\Databases\\Eloquent\\Query\\Query::setMode<\/a>"],[100,3,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#545\">Imperium\\Databases\\Eloquent\\Query\\Query::delete<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#562\">Imperium\\Databases\\Eloquent\\Query\\Query::query<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#575\">Imperium\\Databases\\Eloquent\\Query\\Query::request<\/a>"],[73.52941176470588,15,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#596\">Imperium\\Databases\\Eloquent\\Query\\Query::join<\/a>"],[92.3076923076923,7,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#655\">Imperium\\Databases\\Eloquent\\Query\\Query::union<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#686\">Imperium\\Databases\\Eloquent\\Query\\Query::execute<\/a>"],[0,5,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#697\">Imperium\\Databases\\Eloquent\\Query\\Query::like<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Query\/Query.php.html#732\">Imperium\\Databases\\Eloquent\\Query\\Query::setDriver<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#98\">Imperium\\Databases\\Eloquent\\Tables\\Table::manage<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#110\">Imperium\\Databases\\Eloquent\\Tables\\Table::setName<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#122\">Imperium\\Databases\\Eloquent\\Tables\\Table::getDriver<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#133\">Imperium\\Databases\\Eloquent\\Tables\\Table::setNewName<\/a>"],[70,5,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#145\">Imperium\\Databases\\Eloquent\\Tables\\Table::rename<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#173\">Imperium\\Databases\\Eloquent\\Tables\\Table::has<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#185\">Imperium\\Databases\\Eloquent\\Tables\\Table::hasColumn<\/a>"],[71.42857142857143,9,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#197\">Imperium\\Databases\\Eloquent\\Tables\\Table::getColumnsTypes<\/a>"],[78.94736842105263,9,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#241\">Imperium\\Databases\\Eloquent\\Tables\\Table::getColumns<\/a>"],[0,8,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#281\">Imperium\\Databases\\Eloquent\\Tables\\Table::drop<\/a>"],[0,17,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#312\">Imperium\\Databases\\Eloquent\\Tables\\Table::truncate<\/a>"],[100,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#381\">Imperium\\Databases\\Eloquent\\Tables\\Table::addField<\/a>"],[80,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#406\">Imperium\\Databases\\Eloquent\\Tables\\Table::addColumn<\/a>"],[87.5,4,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#423\">Imperium\\Databases\\Eloquent\\Tables\\Table::create<\/a>"],[100,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#445\">Imperium\\Databases\\Eloquent\\Tables\\Table::startCreateCommand<\/a>"],[76.19047619047619,49,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#459\">Imperium\\Databases\\Eloquent\\Tables\\Table::updateCreateCommand<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#641\">Imperium\\Databases\\Eloquent\\Tables\\Table::setHidden<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#653\">Imperium\\Databases\\Eloquent\\Tables\\Table::isMysql<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#662\">Imperium\\Databases\\Eloquent\\Tables\\Table::isPostgresql<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#672\">Imperium\\Databases\\Eloquent\\Tables\\Table::isOracle<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#681\">Imperium\\Databases\\Eloquent\\Tables\\Table::isSqlite<\/a>"],[83.33333333333334,3,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#692\">Imperium\\Databases\\Eloquent\\Tables\\Table::end<\/a>"],[66.66666666666666,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#709\">Imperium\\Databases\\Eloquent\\Tables\\Table::isEnd<\/a>"],[0,10,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#725\">Imperium\\Databases\\Eloquent\\Tables\\Table::dump<\/a>"],[47.61904761904761,10,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#767\">Imperium\\Databases\\Eloquent\\Tables\\Table::primaryKey<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#823\">Imperium\\Databases\\Eloquent\\Tables\\Table::isEmpty<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#835\">Imperium\\Databases\\Eloquent\\Tables\\Table::selectById<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#847\">Imperium\\Databases\\Eloquent\\Tables\\Table::deleteById<\/a>"],[0,12,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#860\">Imperium\\Databases\\Eloquent\\Tables\\Table::renameColumn<\/a>"],[15.625,9,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#934\">Imperium\\Databases\\Eloquent\\Tables\\Table::deleteColumn<\/a>"],[66.66666666666666,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1000\">Imperium\\Databases\\Eloquent\\Tables\\Table::exist<\/a>"],[0,17,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1017\">Imperium\\Databases\\Eloquent\\Tables\\Table::insert<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1113\">Imperium\\Databases\\Eloquent\\Tables\\Table::ignore<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1127\">Imperium\\Databases\\Eloquent\\Tables\\Table::setDumpPath<\/a>"],[60.60606060606061,18,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1139\">Imperium\\Databases\\Eloquent\\Tables\\Table::show<\/a>"],[23.076923076923077,10,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1220\">Imperium\\Databases\\Eloquent\\Tables\\Table::count<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1259\">Imperium\\Databases\\Eloquent\\Tables\\Table::setDriver<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1273\">Imperium\\Databases\\Eloquent\\Tables\\Table::setDatabase<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1287\">Imperium\\Databases\\Eloquent\\Tables\\Table::setUsername<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1301\">Imperium\\Databases\\Eloquent\\Tables\\Table::setPassword<\/a>"],[81.81818181818183,4,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1315\">Imperium\\Databases\\Eloquent\\Tables\\Table::exec<\/a>"],[100,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1346\">Imperium\\Databases\\Eloquent\\Tables\\Table::request<\/a>"],[0,5,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1365\">Imperium\\Databases\\Eloquent\\Tables\\Table::truncateSqliteTable<\/a>"],[66.66666666666666,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1408\">Imperium\\Databases\\Eloquent\\Tables\\Table::getRecords<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1421\">Imperium\\Databases\\Eloquent\\Tables\\Table::countTable<\/a>"],[0,8,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1436\">Imperium\\Databases\\Eloquent\\Tables\\Table::update<\/a>"],[0,2,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1481\">Imperium\\Databases\\Eloquent\\Tables\\Table::optimize<\/a>"],[0,7,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1498\">Imperium\\Databases\\Eloquent\\Tables\\Table::modifyColumn<\/a>"],[87.5,4,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1537\">Imperium\\Databases\\Eloquent\\Tables\\Table::get<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1561\">Imperium\\Databases\\Eloquent\\Tables\\Table::setEngine<\/a>"],[0,3,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1573\">Imperium\\Databases\\Eloquent\\Tables\\Table::dropAll<\/a>"],[52.23880597014925,28,"<a href=\"Databases\/Eloquent\/Tables\/Table.php.html#1598\">Imperium\\Databases\\Eloquent\\Tables\\Table::appendColumns<\/a>"],[62.5,4,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#42\">Imperium\\Databases\\Eloquent\\Users\\Users::drop<\/a>"],[64.28571428571429,10,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#70\">Imperium\\Databases\\Eloquent\\Users\\Users::show<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#133\">Imperium\\Databases\\Eloquent\\Users\\Users::setName<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#147\">Imperium\\Databases\\Eloquent\\Users\\Users::setPassword<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#159\">Imperium\\Databases\\Eloquent\\Users\\Users::create<\/a>"],[0,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#172\">Imperium\\Databases\\Eloquent\\Users\\Users::setRights<\/a>"],[100,2,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#184\">Imperium\\Databases\\Eloquent\\Users\\Users::exist<\/a>"],[62.5,4,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#200\">Imperium\\Databases\\Eloquent\\Users\\Users::updatePassword<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#226\">Imperium\\Databases\\Eloquent\\Users\\Users::setHidden<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#240\">Imperium\\Databases\\Eloquent\\Users\\Users::setDriver<\/a>"],[100,1,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#252\">Imperium\\Databases\\Eloquent\\Users\\Users::manage<\/a>"],[50,4,"<a href=\"Databases\/Eloquent\/Users\/Users.php.html#262\">Imperium\\Databases\\Eloquent\\Users\\Users::getInstance<\/a>"],[100,1,"<a href=\"Databases\/Exception\/IdentifierException.php.html#29\">Imperium\\Databases\\Exception\\IdentifierException::incorrectIdentifiers<\/a>"],[0,4,"<a href=\"Directory\/Dir.php.html#33\">Imperium\\Directory\\Dir::clear<\/a>"],[100,2,"<a href=\"File\/File.php.html#380\">Imperium\\File\\File::hash<\/a>"],[100,2,"<a href=\"File\/File.php.html#397\">Imperium\\File\\File::lastModified<\/a>"],[0,2,"<a href=\"File\/File.php.html#415\">Imperium\\File\\File::download<\/a>"],[100,2,"<a href=\"File\/File.php.html#442\">Imperium\\File\\File::search<\/a>"],[100,2,"<a href=\"File\/File.php.html#463\">Imperium\\File\\File::create<\/a>"],[100,3,"<a href=\"File\/File.php.html#482\">Imperium\\File\\File::delete<\/a>"],[100,4,"<a href=\"File\/File.php.html#505\">Imperium\\File\\File::deleteFolder<\/a>"],[90.9090909090909,5,"<a href=\"File\/File.php.html#532\">Imperium\\File\\File::getLines<\/a>"],[92.3076923076923,6,"<a href=\"File\/File.php.html#568\">Imperium\\File\\File::getKeys<\/a>"],[92.3076923076923,6,"<a href=\"File\/File.php.html#607\">Imperium\\File\\File::getValues<\/a>"],[100,2,"<a href=\"File\/File.php.html#643\">Imperium\\File\\File::getSize<\/a>"],[100,2,"<a href=\"File\/File.php.html#662\">Imperium\\File\\File::getExtension<\/a>"],[100,8,"<a href=\"File\/File.php.html#681\">Imperium\\File\\File::copyFolder<\/a>"],[100,2,"<a href=\"File\/File.php.html#734\">Imperium\\File\\File::copy<\/a>"],[91.66666666666666,8,"<a href=\"File\/File.php.html#752\">Imperium\\File\\File::isReadable<\/a>"],[100,3,"<a href=\"File\/File.php.html#790\">Imperium\\File\\File::isWritable<\/a>"],[0,2,"<a href=\"File\/File.php.html#815\">Imperium\\File\\File::hardLink<\/a>"],[0,2,"<a href=\"File\/File.php.html#834\">Imperium\\File\\File::symlink<\/a>"],[100,2,"<a href=\"File\/File.php.html#852\">Imperium\\File\\File::isLink<\/a>"],[100,2,"<a href=\"File\/File.php.html#869\">Imperium\\File\\File::getMime<\/a>"],[100,3,"<a href=\"File\/File.php.html#888\">Imperium\\File\\File::getStat<\/a>"],[60,2,"<a href=\"File\/File.php.html#912\">Imperium\\File\\File::getStartKey<\/a>"],[100,2,"<a href=\"File\/File.php.html#933\">Imperium\\File\\File::write<\/a>"],[100,1,"<a href=\"File\/File.php.html#953\">Imperium\\File\\File::isFile<\/a>"],[100,1,"<a href=\"File\/File.php.html#959\">Imperium\\File\\File::mimes<\/a>"],[100,2,"<a href=\"File\/File.php.html#969\">Imperium\\File\\File::isImg<\/a>"],[100,3,"<a href=\"File\/File.php.html#986\">Imperium\\File\\File::isHtml<\/a>"],[100,3,"<a href=\"File\/File.php.html#1003\">Imperium\\File\\File::isPhp<\/a>"],[100,3,"<a href=\"File\/File.php.html#1020\">Imperium\\File\\File::isJS<\/a>"],[100,3,"<a href=\"File\/File.php.html#1037\">Imperium\\File\\File::isJson<\/a>"],[100,3,"<a href=\"File\/File.php.html#1053\">Imperium\\File\\File::isXml<\/a>"],[100,3,"<a href=\"File\/File.php.html#1068\">Imperium\\File\\File::isCss<\/a>"],[100,3,"<a href=\"File\/File.php.html#1085\">Imperium\\File\\File::isPdf<\/a>"],[100,1,"<a href=\"File\/File.php.html#1103\">Imperium\\File\\File::isEnd<\/a>"],[100,2,"<a href=\"File\/File.php.html#1118\">Imperium\\File\\File::getGroup<\/a>"],[100,2,"<a href=\"File\/File.php.html#1137\">Imperium\\File\\File::getOwner<\/a>"],[100,4,"<a href=\"File\/File.php.html#1155\">Imperium\\File\\File::loads<\/a>"],[100,2,"<a href=\"File\/File.php.html#1178\">Imperium\\File\\File::getContent<\/a>"],[100,2,"<a href=\"File\/File.php.html#1199\">Imperium\\File\\File::putContents<\/a>"],[0,1,"<a href=\"File\/File.php.html#1215\">Imperium\\File\\File::getFile<\/a>"],[0,1,"<a href=\"File\/File.php.html#1227\">Imperium\\File\\File::uploadedFileType<\/a>"],[0,1,"<a href=\"File\/File.php.html#1241\">Imperium\\File\\File::uploadedFileSize<\/a>"],[0,1,"<a href=\"File\/File.php.html#1255\">Imperium\\File\\File::uploadedFileName<\/a>"],[0,1,"<a href=\"File\/File.php.html#1269\">Imperium\\File\\File::uploadedFileTmpPath<\/a>"],[0,1,"<a href=\"File\/File.php.html#1283\">Imperium\\File\\File::uploadedFileErrors<\/a>"],[100,3,"<a href=\"File\/File.php.html#1298\">Imperium\\File\\File::rename<\/a>"],[0,1,"<a href=\"File\/File.php.html#1316\">Imperium\\File\\File::moveUploadedFile<\/a>"],[100,2,"<a href=\"File\/File.php.html#1328\">Imperium\\File\\File::verify<\/a>"],[100,1,"<a href=\"File\/File.php.html#1342\">Imperium\\File\\File::exist<\/a>"],[0,1,"<a href=\"File\/File.php.html#1354\">Imperium\\File\\File::nameIsEmpty<\/a>"],[100,1,"<a href=\"File\/File.php.html#1365\">Imperium\\File\\File::isEmpty<\/a>"],[100,2,"<a href=\"File\/File.php.html#1378\">Imperium\\File\\File::open<\/a>"],[100,3,"<a href=\"File\/File.php.html#1396\">Imperium\\File\\File::quitIfEmpty<\/a>"],[0,1,"<a href=\"File\/File.php.html#1413\">Imperium\\File\\File::fileNotExist<\/a>"],[0,1,"<a href=\"File\/File.php.html#1425\">Imperium\\File\\File::quit<\/a>"],[100,1,"<a href=\"File\/File.php.html#1438\">Imperium\\File\\File::close<\/a>"],[100,2,"<a href=\"File\/File.php.html#1452\">Imperium\\File\\File::realPath<\/a>"],[100,2,"<a href=\"File\/File.php.html#1469\">Imperium\\File\\File::chmod<\/a>"],[0,2,"<a href=\"File\/File.php.html#1485\">Imperium\\File\\File::chgrp<\/a>"],[0,1,"<a href=\"File\/File.php.html#1502\">Imperium\\File\\File::lchgrp<\/a>"],[0,2,"<a href=\"File\/File.php.html#1517\">Imperium\\File\\File::chown<\/a>"],[100,1,"<a href=\"File\/File.php.html#1532\">Imperium\\File\\File::isExecutable<\/a>"],[0,2,"<a href=\"File\/File.php.html#1546\">Imperium\\File\\File::getType<\/a>"],[100,2,"<a href=\"File\/File.php.html#1562\">Imperium\\File\\File::fileTime<\/a>"],[0,2,"<a href=\"File\/File.php.html#1577\">Imperium\\File\\File::fileOwner<\/a>"],[100,1,"<a href=\"Html\/Bar\/Icon.php.html#56\">Imperium\\Html\\Bar\\Icon::start<\/a>"],[100,4,"<a href=\"Html\/Bar\/Icon.php.html#73\">Imperium\\Html\\Bar\\Icon::add<\/a>"],[100,1,"<a href=\"Html\/Bar\/Icon.php.html#94\">Imperium\\Html\\Bar\\Icon::end<\/a>"],[100,1,"<a href=\"Html\/Bar\/Icon.php.html#108\">Imperium\\Html\\Bar\\Icon::setIconClass<\/a>"],[100,1,"<a href=\"Html\/Bar\/Icon.php.html#122\">Imperium\\Html\\Bar\\Icon::setLinkClass<\/a>"],[100,1,"<a href=\"Html\/Bar\/Icon.php.html#136\">Imperium\\Html\\Bar\\Icon::startUl<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#70\">Imperium\\Html\\Canvas\\Canvas::start<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#84\">Imperium\\Html\\Canvas\\Canvas::add<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#98\">Imperium\\Html\\Canvas\\Canvas::setLinkClass<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#112\">Imperium\\Html\\Canvas\\Canvas::startUl<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#124\">Imperium\\Html\\Canvas\\Canvas::end<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#138\">Imperium\\Html\\Canvas\\Canvas::setPosition<\/a>"],[100,1,"<a href=\"Html\/Canvas\/Canvas.php.html#152\">Imperium\\Html\\Canvas\\Canvas::setId<\/a>"],[0,2,"<a href=\"Html\/Canvas\/Canvas.php.html#166\">Imperium\\Html\\Canvas\\Canvas::addForm<\/a>"],[0,1,"<a href=\"Html\/Canvas\/Canvas.php.html#188\">Imperium\\Html\\Canvas\\Canvas::setGridClass<\/a>"],[0,1,"<a href=\"Html\/Canvas\/Canvas.php.html#202\">Imperium\\Html\\Canvas\\Canvas::setRowClass<\/a>"],[100,4,"<a href=\"Html\/Form\/Form.php.html#204\">Imperium\\Html\\Form\\Form::start<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#230\">Imperium\\Html\\Form\\Form::startHide<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#250\">Imperium\\Html\\Form\\Form::endHide<\/a>"],[100,5,"<a href=\"Html\/Form\/Form.php.html#267\">Imperium\\Html\\Form\\Form::file<\/a>"],[100,19,"<a href=\"Html\/Form\/Form.php.html#301\">Imperium\\Html\\Form\\Form::generateInput<\/a>"],[78.78787878787878,11,"<a href=\"Html\/Form\/Form.php.html#407\">Imperium\\Html\\Form\\Form::input<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#479\">Imperium\\Html\\Form\\Form::setType<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#504\">Imperium\\Html\\Form\\Form::twoInlineInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#564\">Imperium\\Html\\Form\\Form::threeInlineInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#635\">Imperium\\Html\\Form\\Form::oneInputOneSelectTwoInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#711\">Imperium\\Html\\Form\\Form::oneInputOneSelectOneInputOneSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#788\">Imperium\\Html\\Form\\Form::oneInputTwoSelectOneInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#862\">Imperium\\Html\\Form\\Form::oneInputThreeSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#941\">Imperium\\Html\\Form\\Form::oneSelectThreeInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1017\">Imperium\\Html\\Form\\Form::oneSelectTwoInputOneSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1093\">Imperium\\Html\\Form\\Form::oneSelectOneInputOneSelectOneInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1166\">Imperium\\Html\\Form\\Form::oneSelectOneInputTwoSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1245\">Imperium\\Html\\Form\\Form::threeInlineInputAndOneSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1321\">Imperium\\Html\\Form\\Form::twoSelectTwoInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1394\">Imperium\\Html\\Form\\Form::twoSelectOneInputOneSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1468\">Imperium\\Html\\Form\\Form::threeSelectOneInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1547\">Imperium\\Html\\Form\\Form::twoInputOneSelectOneInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1623\">Imperium\\Html\\Form\\Form::twoInputTwoSelect<\/a>"],[100,4,"<a href=\"Html\/Form\/Form.php.html#1685\">Imperium\\Html\\Form\\Form::button<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1735\">Imperium\\Html\\Form\\Form::fourInlineInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#1783\">Imperium\\Html\\Form\\Form::fourInlineSelect<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#1842\">Imperium\\Html\\Form\\Form::csrf<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#1858\">Imperium\\Html\\Form\\Form::reset<\/a>"],[80,9,"<a href=\"Html\/Form\/Form.php.html#1877\">Imperium\\Html\\Form\\Form::textarea<\/a>"],[100,2,"<a href=\"Html\/Form\/Form.php.html#1934\">Imperium\\Html\\Form\\Form::img<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#1949\">Imperium\\Html\\Form\\Form::create<\/a>"],[100,2,"<a href=\"Html\/Form\/Form.php.html#1964\">Imperium\\Html\\Form\\Form::submit<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#1985\">Imperium\\Html\\Form\\Form::link<\/a>"],[97.14285714285714,14,"<a href=\"Html\/Form\/Form.php.html#2002\">Imperium\\Html\\Form\\Form::select<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#2080\">Imperium\\Html\\Form\\Form::twoInlineSelect<\/a>"],[100,2,"<a href=\"Html\/Form\/Form.php.html#2123\">Imperium\\Html\\Form\\Form::checkbox<\/a>"],[100,2,"<a href=\"Html\/Form\/Form.php.html#2144\">Imperium\\Html\\Form\\Form::radio<\/a>"],[100,1,"<a href=\"Html\/Form\/Form.php.html#2170\">Imperium\\Html\\Form\\Form::end<\/a>"],[100,9,"<a href=\"Html\/Form\/Form.php.html#2187\">Imperium\\Html\\Form\\Form::redirectSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#2249\">Imperium\\Html\\Form\\Form::twoRedirectSelect<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#2299\">Imperium\\Html\\Form\\Form::oneSelectOneInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#2351\">Imperium\\Html\\Form\\Form::oneInputOneSelect<\/a>"],[94.23076923076923,16,"<a href=\"Html\/Form\/Form.php.html#2402\">Imperium\\Html\\Form\\Form::generate<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#2538\">Imperium\\Html\\Form\\Form::setLargeInput<\/a>"],[100,3,"<a href=\"Html\/Form\/Form.php.html#2560\">Imperium\\Html\\Form\\Form::setSmallInput<\/a>"],[0,14,"<a href=\"Html\/Form\/Form.php.html#2598\">Imperium\\Html\\Form\\Form::generateAdvancedRecordView<\/a>"],[0,1,"<a href=\"Html\/Form\/Form.php.html#2738\">Imperium\\Html\\Form\\Form::generateSimplyRecordView<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#105\">Imperium\\Html\\Pagination\\Pagination::paginate<\/a>"],[100,3,"<a href=\"Html\/Pagination\/Pagination.php.html#116\">Imperium\\Html\\Pagination\\Pagination::setInstance<\/a>"],[66.66666666666666,6,"<a href=\"Html\/Pagination\/Pagination.php.html#138\">Imperium\\Html\\Pagination\\Pagination::createLiCurrentOrNot<\/a>"],[0,3,"<a href=\"Html\/Pagination\/Pagination.php.html#174\">Imperium\\Html\\Pagination\\Pagination::createLiCurrentOrNotRaw<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#195\">Imperium\\Html\\Pagination\\Pagination::isBoot<\/a>"],[0,2,"<a href=\"Html\/Pagination\/Pagination.php.html#204\">Imperium\\Html\\Pagination\\Pagination::createLiFirstAndSecond<\/a>"],[0,1,"<a href=\"Html\/Pagination\/Pagination.php.html#218\">Imperium\\Html\\Pagination\\Pagination::createLiFirstAndSecondRaw<\/a>"],[0,6,"<a href=\"Html\/Pagination\/Pagination.php.html#231\">Imperium\\Html\\Pagination\\Pagination::getNextPrevLinks<\/a>"],[0,1,"<a href=\"Html\/Pagination\/Pagination.php.html#268\">Imperium\\Html\\Pagination\\Pagination::getLimit<\/a>"],[0,1,"<a href=\"Html\/Pagination\/Pagination.php.html#278\">Imperium\\Html\\Pagination\\Pagination::getStart<\/a>"],[27.848101265822784,32,"<a href=\"Html\/Pagination\/Pagination.php.html#290\">Imperium\\Html\\Pagination\\Pagination::get<\/a>"],[0,15,"<a href=\"Html\/Pagination\/Pagination.php.html#450\">Imperium\\Html\\Pagination\\Pagination::linksRaw<\/a>"],[0,1,"<a href=\"Html\/Pagination\/Pagination.php.html#520\">Imperium\\Html\\Pagination\\Pagination::setAdjacent<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#533\">Imperium\\Html\\Pagination\\Pagination::setCurrent<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#546\">Imperium\\Html\\Pagination\\Pagination::setEndChar<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#560\">Imperium\\Html\\Pagination\\Pagination::setStartChar<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#574\">Imperium\\Html\\Pagination\\Pagination::setEndCssClass<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#588\">Imperium\\Html\\Pagination\\Pagination::setStartCssClass<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#602\">Imperium\\Html\\Pagination\\Pagination::setUlCssClass<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#615\">Imperium\\Html\\Pagination\\Pagination::setTotal<\/a>"],[0,1,"<a href=\"Html\/Pagination\/Pagination.php.html#627\">Imperium\\Html\\Pagination\\Pagination::setWithLinkInCurrentLi<\/a>"],[100,1,"<a href=\"Html\/Pagination\/Pagination.php.html#641\">Imperium\\Html\\Pagination\\Pagination::setType<\/a>"],[0,8,"<a href=\"Html\/Records\/Records.php.html#72\">Imperium\\Html\\Records\\Records::show<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>
