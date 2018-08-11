@@ -6,7 +6,7 @@
 </p>
  
 
-* [Coverage](https://git.fumseck.eu/cgit/imperium/tree/coverage/index.html)
+* [Show Coverage](coverage/index.html)
 
 # What it's ?
 
