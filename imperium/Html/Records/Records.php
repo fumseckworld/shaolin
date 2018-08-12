@@ -57,7 +57,6 @@ namespace Imperium\Html\Records {
          * @param string $recordText
          * @param string $managementOfTableText
          * @param string $tableUrlPrefix
-         * @param bool $largeInput
          * @param string $csrfToken
          * @param bool $preferPaginationRight
          * @param bool $framework
@@ -80,7 +79,7 @@ namespace Imperium\Html\Records {
 
             if ($framework)
             {
-                $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}};function search(elem){var pagination = elem.attributes[0].value;window.location = pagination + "/search/" + elem.value;}</script>';
+                $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}function search(elem){var pagination = elem.attributes[0].value;window.location = pagination + "/search/" + elem.value;}</script>';
 
                 $parts = explode('/',server('REQUEST_URI'));
                 $search = has('search',$parts);
@@ -110,14 +109,14 @@ namespace Imperium\Html\Records {
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="true">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="false">'.$simpleRecordsText.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow).'</div> <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow).'</div> <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon).'</div></div>';
 
             }
             else
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="true">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="false">'.$advancedRecordsText.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit).'</div> <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon).'</div> <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow).'</div></div>';
 
             }
 

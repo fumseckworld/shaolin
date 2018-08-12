@@ -64,7 +64,6 @@ namespace Imperium\Html\Records {
          * @param string $recordText
          * @param string $managementOfTableText
          * @param string $tableUrlPrefix
-         * @param bool $largeInput
          * @param string $csrfToken
          * @param bool $preferPaginationRight
          * @param bool $framework

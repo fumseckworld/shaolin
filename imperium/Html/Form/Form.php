@@ -2701,7 +2701,7 @@ class Form implements FormBuilder
                     }
 
                 }
-                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$removeUrl.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></form></tr>';
+                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></form></tr>';
             }
 
             $this->form .= '</tbody></table></div>';
@@ -2723,14 +2723,83 @@ class Form implements FormBuilder
      * @param string $searchPlaceholder
      * @param string $tableUrlPrefix
      * @param int $limit
-     * @param bool $largeInput
-     *
+     * @param string $removeText
+     * @param string $removeConfirm
+     * @param string $removeBtnClass
+     * @param string $removeUrl
+     * @param string $removeIcon
+     * @param string $editText
+     * @param string $editUrl
+     * @param string $editClass
+     * @param string $editIcon
      * @return string
+     *
+     * @throws Exception
      */
-    public function generateSimplyRecordView(string $table, Table $instance, array $records, string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit): string
+    public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon): string
     {
-        $this->form = '';
-        return 'lore200';
+        $instance = $instance->setName($table);
+
+        $columns  = $instance->getColumns();
+        $primary  = $instance->primaryKey();
+
+
+        if(is_null($primary))
+        {
+            throw new Exception('We have not found a primary key');
+        }
+
+
+
+        if ($this->type == Form::BOOTSTRAP)
+        {
+
+            $tables =  [ '/' =>  $table ];
+
+            foreach ($instance->show() as $x)
+            {
+                if(!has($x,$tables))
+                    $tables = merge($tables,[  "$tableUrlPrefix$x" => $x]);
+            }
+
+            $redirect = $this->start('',uniqid())->redirectSelect('table',$tables)->end();
+
+            $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
+            $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }</script>';
+            foreach ($columns as  $x)
+            {
+                if ($x != $primary)
+                    $this->form .=  "<th> $x</th>";
+
+            }
+            $this->form .=  "<th> $editText</th><th> $removeText</th></tr></thead><tbody>";
+
+            foreach ($records as $record)
+            {
+
+
+                $this->form .= '<tr>';
+
+                foreach ($columns as $k => $column)
+                {
+
+                    if (is_null($record->$column))
+                        $record->$column = '';
+
+                    if($column != $primary)
+                    {
+                       $this->form .= '<td> '.$record->$column.'</td>';
+                    }
+                }
+                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></span></td><td><span class=" row justify-content-center"><a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></form></tr>';
+            }
+
+            $this->form .= '</tbody></table></div>';
+
+
+        }
+
+        return $this->form;
     }
 }
 

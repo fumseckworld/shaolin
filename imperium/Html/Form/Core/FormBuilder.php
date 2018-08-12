@@ -98,11 +98,18 @@ namespace Imperium\Html\Form\Core {
          * @param string $searchPlaceholder
          * @param string $tableUrlPrefix
          * @param int $limit
-         * @param bool $largeInput
-         *
+         * @param string $removeText
+         * @param string $removeConfirm
+         * @param string $removeBtnClass
+         * @param string $removeUrl
+         * @param string $removeIcon
+         * @param string $editText
+         * @param string $editUrl
+         * @param string $editClass
+         * @param string $editIcon
          * @return string
          */
-        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit): string;
+        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon): string;
 
         /**
          * start hidden input
