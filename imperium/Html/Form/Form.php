@@ -2595,7 +2595,7 @@ class Form implements FormBuilder
      *
      * @throws Exception
      */
-    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1,bool $largeInput = true): string
+    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
     {
 
         $instance = $instance->setName($table);
@@ -2650,17 +2650,9 @@ class Form implements FormBuilder
                     $tables = merge($tables,[  "$tableUrlPrefix$x" => $x]);
             }
 
-            $redirect = $this->start('',uniqid())->setLargeInput($largeInput)->redirectSelect('table',$tables)->end();
+            $redirect = $this->start('',uniqid())->redirectSelect('table',$tables)->end();
 
-            if ($largeInput)
-            {
-                $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control form-control-lg" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
-
-            }else
-            {
-
-                $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
-            }
+            $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
             $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }</script>';
              foreach ($columns as  $x)
             {
@@ -2709,7 +2701,7 @@ class Form implements FormBuilder
                     }
 
                 }
-                $this->form .= '<td><a href="'.$removeUrl.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></form></tr>';
+                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$removeUrl.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></form></tr>';
             }
 
             $this->form .= '</tbody></table></div>';
@@ -2735,7 +2727,7 @@ class Form implements FormBuilder
      *
      * @return string
      */
-    public function generateSimplyRecordView(string $table, Table $instance, array $records, string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, bool $largeInput = true): string
+    public function generateSimplyRecordView(string $table, Table $instance, array $records, string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit): string
     {
         $this->form = '';
         return 'lore200';

@@ -4,13 +4,12 @@
     "description": "A library to manage databases more simply",
     "license": "GPL-3.0-or-later",
     "support": {
-        "issues": "https://github.com/fumseck/imperium/issues",
-        "source": "https://github.com/fumseck/imperium"
+       "source": "https://git.fumseck.eu/cgit/imperium/"
     },
     "authors": [
         {
-            "name": "fumseck",
-            "email": "fumseckworld@gmail.com"
+            "name": "Willy Micieli",
+            "email": "will.micieli@gmail.com"
         }
     ],
     "require": {
@@ -23,7 +22,8 @@
         "nesbot/carbon": "^1.22",
         "robmorgan/phinx": "^0.9.0",
         "ralouphie/mimey": "^1.0",
-        "spatie/db-dumper": "^2.10"
+        "spatie/db-dumper": "^2.10",
+        "ext-PDO": "^7.2"
     },
     "autoload": {
         "psr-4": {

@@ -85,7 +85,7 @@ namespace Imperium\Html\Form\Core {
          * @param bool $largeInput
          * @return string
          */
-        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1 , bool $largeInput = true): string;
+        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
 
         /**
          * generate a simply record view
@@ -102,7 +102,7 @@ namespace Imperium\Html\Form\Core {
          *
          * @return string
          */
-        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, bool $largeInput = true): string;
+        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit): string;
 
         /**
          * start hidden input

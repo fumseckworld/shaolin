@@ -69,10 +69,8 @@ namespace Imperium\Html\Records {
          *
          * @throws Exception
          */
-        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,bool $largeInput,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
+        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
         {
-
-
 
             $key = $instance->primaryKey();
             if (is_null($key))
@@ -112,23 +110,23 @@ namespace Imperium\Html\Records {
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="true">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="false">'.$simpleRecordsText.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow,$largeInput).'</div> <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$textareaRow).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow).'</div> <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit).'</div></div>';
 
             }
             else
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="true">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="false">'.$advancedRecordsText.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$largeInput).'</div> <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow,$largeInput).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit).'</div> <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$searchPlaceholder,$tableUrlPrefix,$limit,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$csrfToken,$textareaCols,$textareaRow).'</div></div>';
 
             }
 
             $pagination = pagination( $limit,$paginationUrl,$current,$instance->count($table),$startPaginationText,$endPaginationText);
 
             if ($preferPaginationRight)
-                $html .=    '<div class="float-right mt-4 mb-5">'.$pagination.'</div>';
+                $html .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
             else
-                $html .=    '<div class="float-left mt-4 mb-5">'.$pagination.'</div>';
+                $html .=    '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
 
             return $html;
         }
