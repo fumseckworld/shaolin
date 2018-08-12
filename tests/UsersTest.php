@@ -86,10 +86,10 @@ class UsersTest extends TestCase
 
     public function testDrop()
     {
-        $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,'tmp','alex','',root(Connexion::POSTGRESQL)));
+        $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,'tmp','alex','',root(Connexion::POSTGRESQL,'postgres')));
         $this->assertEquals(true,$this->pgsql->drop('tmp'));
 
-        $this->assertEquals(true,userAdd(Connexion::MYSQL,'tmp','alex','',root(Connexion::MYSQL)));
+        $this->assertEquals(true,userAdd(Connexion::MYSQL,'tmp','alex','',root(Connexion::MYSQL,'root')));
         $this->assertEquals(true,$this->mariadb->drop('tmp'));
     }
 }

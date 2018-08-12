@@ -90,8 +90,8 @@ class ConnectionTest extends TestCase
     {
          $this->assertInstanceOf(PDO::class,connect(Connexion::MYSQL,'','root'));
          $this->assertInstanceOf(PDO::class,connect(Connexion::POSTGRESQL,'','postgres'));
-         $this->assertInstanceOf(PDO::class,root(Connexion::MYSQL));
-         $this->assertInstanceOf(PDO::class,root(Connexion::POSTGRESQL));
-         $this->assertEquals(null,root(Connexion::ORACLE));
+         $this->assertInstanceOf(PDO::class,root(Connexion::MYSQL,'root'));
+         $this->assertInstanceOf(PDO::class,root(Connexion::POSTGRESQL,'postgres'));
+         $this->assertEquals(null,root(Connexion::ORACLE,'a'));
     }
 }

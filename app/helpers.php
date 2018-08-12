@@ -346,18 +346,19 @@ if (!exist('root'))
      * get the connexion with all rights
      *
      * @param string $driver
+     * @param string $user
      * @param string $password
      * @return null|PDO
      */
-    function root(string $driver,string $password = '')
+    function root(string $driver,string $user,string $password = '')
     {
         switch ($driver)
         {
             case Connexion::MYSQL:
-                return connect($driver,'','root',$password);
+                return connect($driver,'',$user,$password);
             break;
             case Connexion::POSTGRESQL:
-                return connect($driver,'','postgres',$password);
+                return connect($driver,'',$user,$password);
             break;
             default:
                 return null;

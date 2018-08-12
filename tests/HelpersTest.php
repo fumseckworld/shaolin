@@ -280,9 +280,9 @@ class HelpersTest extends TestCase
     public function testUserAdd()
     {
         $this->assertEquals(false, userAdd(Connexion::SQLITE, 'username', 'pass', '', $this->pdo));
-        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'username', 'pass', '', root(Connexion::MYSQL)));
-        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'usernames', 'pass', '', root(Connexion::MYSQL)));
-        $this->assertEquals(true, userDel(Connexion::MYSQL, root(Connexion::MYSQL),'usernames', 'username'));
+        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'username', 'pass', '', root(Connexion::MYSQL,'root')));
+        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'usernames', 'pass', '', root(Connexion::MYSQL,'root')));
+        $this->assertEquals(true, userDel(Connexion::MYSQL, root(Connexion::MYSQL,'root'),'usernames', 'username'));
     }
 
     public function testFa()
