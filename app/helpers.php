@@ -91,6 +91,8 @@ if (!exist('records'))
      * @param string $recordText
      * @param string $managementOfTableText
      * @param string $tableUrlPrefix
+     * @param bool $columnNameAlignCenter
+     * @param bool $columnNameToUpper
      * @param string $csrfToken
      * @param bool $preferPaginationRight
      * @param bool $framework
@@ -101,9 +103,9 @@ if (!exist('records'))
      * @return string
      * @throws Exception
      */
-     function records(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
-     {
-         return Records::show($driver,$class,$instance, $table, $editPrefix,  $deletePrefix,  $orderBy, $editText, $deleteText,$editClass, $deleteClass, $editIcon, $deleteIcon,$limit,$current, $paginationUrl,$pdo,$formType, $searchPlaceholder, $confirmDeleteText, $startPaginationText, $endPaginationText,$updatePaginationPlaceholder,$advancedRecordsText, $simpleRecordsText, $formPrefixAction, $recordText, $managementOfTableText, $tableUrlPrefix, $csrfToken, $preferPaginationRight, $framework, $preferForm,$textareaCols, $textareaRow );
+    function records(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $searchPlaceholder, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
+    {
+         return Records::show($driver,$class,$instance, $table, $editPrefix,  $deletePrefix,  $orderBy, $editText, $deleteText,$editClass, $deleteClass, $editIcon, $deleteIcon,$limit,$current, $paginationUrl,$pdo,$formType, $searchPlaceholder, $confirmDeleteText, $startPaginationText, $endPaginationText,$updatePaginationPlaceholder,$advancedRecordsText, $simpleRecordsText, $formPrefixAction, $recordText, $managementOfTableText, $tableUrlPrefix,$columnNameAlignCenter,$columnNameToUpper, $csrfToken, $preferPaginationRight, $framework, $preferForm,$textareaCols, $textareaRow );
     }
 }
 

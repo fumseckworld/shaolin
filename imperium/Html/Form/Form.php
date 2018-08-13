@@ -2596,7 +2596,7 @@ class Form implements FormBuilder
      *
      * @throws Exception
      */
-    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
+    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
     {
 
         $instance = $instance->setName($table);
@@ -2658,11 +2658,23 @@ class Form implements FormBuilder
              foreach ($columns as  $x)
             {
                 if ($x != $primary)
-                    $this->form .=  "<th> $x</th>";
+                {
+                    $this->form .= '<th  class="';
+                    if ($columnAlignCenter) {  $this->form .= ' text-center'; }
+
+                    if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
+
+                    $this->form .= '">'.$x.'</th>';
+                }
 
             }
 
-            $this->form .=  '<th>'.$removeText.' </th></tr></thead><tbody>';
+            $this->form .= '<th  class="';
+            if ($columnAlignCenter) {  $this->form .= ' text-center'; }
+
+            if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
+
+            $this->form .= '">'.$removeText.'</th></tr></thead><tbody>';
 
             foreach ($records as $record)
             {
@@ -2752,11 +2764,15 @@ class Form implements FormBuilder
      * @param string $editUrl
      * @param string $editClass
      * @param string $editIcon
+     * @param string $pagination
+     * @param bool $columnAlignCenter
+     * @param bool $columnToUpper
+     * @param bool $preferPaginationRight
      * @return string
      *
      * @throws Exception
      */
-    public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $preferPaginationRight = true): string
+    public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $preferPaginationRight = true): string
     {
         $instance = $instance->setName($table);
 
@@ -2789,10 +2805,30 @@ class Form implements FormBuilder
             foreach ($columns as  $x)
             {
                 if ($x != $primary)
-                    $this->form .=  "<th> $x</th>";
+                {
+                    $this->form .= '<th  class="';
+                    if ($columnAlignCenter) {  $this->form .= ' text-center'; }
+
+                    if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
+
+                    $this->form .= '">'.$x.'</th>';
+                }
+
 
             }
-            $this->form .=  "<th> $editText</th><th> $removeText</th></tr></thead><tbody>";
+            $this->form .= '<th  class="';
+
+            if ($columnAlignCenter) {  $this->form .= ' text-center'; }
+
+            if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
+
+            $this->form .= '">'.$editText.'</th>';
+
+            if ($columnAlignCenter) {  $this->form .= ' text-center'; }
+
+            if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
+
+            $this->form .= '">'.$removeText.'</th></tr></thead><tbody>';
 
             foreach ($records as $record)
             {
