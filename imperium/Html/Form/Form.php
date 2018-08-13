@@ -2003,7 +2003,7 @@ class Form implements FormBuilder
     {
 
         if(empty($this->inputSize))
-            $class = 'form-control';
+            $class = 'custom-select';
         else
             $class = $this->inputSize;
 
@@ -2197,9 +2197,9 @@ class Form implements FormBuilder
                 $this->form .= '<div class="form-group">';
 
             if (!empty($this->inputSize))
-                $this->form .= '<select class="form-control ' . $this->inputSize . '" name="' . $name . '" size="1"  onChange="location = this.options[this.selectedIndex].value">';
+                $this->form .= '<select class="custom-select ' . $this->inputSize . '" name="' . $name . '" size="1"  onChange="location = this.options[this.selectedIndex].value">';
             else
-                $this->form .= '<select class="form-control" name="' . $name . '" size="1"  onChange="location = this.options[this.selectedIndex].value">';
+                $this->form .= '<select class="custom-select" name="' . $name . '" size="1"  onChange="location = this.options[this.selectedIndex].value">';
 
             foreach ($options as $k => $option)
                 $this->form .= '<option value="'.$k.'"> '.$option.'</option>';
@@ -2587,15 +2587,16 @@ class Form implements FormBuilder
      * @param string $removeText
      * @param string $confirmRemoveText
      * @param string $removeIcon
+     * @param string $pagination
+     * @param bool $paginationPreferRight
      * @param string $csrf
      * @param int $textareaCols
      * @param int $textareaRow
-     * @param bool $largeInput
      * @return string
      *
      * @throws Exception
      */
-    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
+    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
     {
 
         $instance = $instance->setName($table);
@@ -2706,10 +2707,29 @@ class Form implements FormBuilder
 
             $this->form .= '</tbody></table></div>';
 
+            if ($paginationPreferRight)
+                $this->form .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
+            else
+                $this->form .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
 
         }
 
         return $this->form;
+    }
+
+
+    /**
+     * generate alter table view
+     *
+     * @param string $table
+     * @param Table $instance
+     * @param int $formType
+     *
+     * @return string
+     */
+    public function generateAlterTableView(string $table, Table $instance,int $formType = Form::BOOTSTRAP): string
+    {
+        return '';
     }
 
     /**
@@ -2736,7 +2756,7 @@ class Form implements FormBuilder
      *
      * @throws Exception
      */
-    public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon): string
+    public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $preferPaginationRight = true): string
     {
         $instance = $instance->setName($table);
 
@@ -2796,7 +2816,10 @@ class Form implements FormBuilder
 
             $this->form .= '</tbody></table></div>';
 
-
+            if ($preferPaginationRight)
+                $this->form .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
+            else
+                $this->form .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
         }
 
         return $this->form;

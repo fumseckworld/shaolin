@@ -79,13 +79,14 @@ namespace Imperium\Html\Form\Core {
          * @param string $removeText
          * @param string $confirmRemoveText
          * @param string $removeIcon
+         * @param string $pagination
+         * @param bool $paginationPreferRight
          * @param string $csrf
          * @param int $textareaCols
          * @param int $textareaRow
-         * @param bool $largeInput
          * @return string
          */
-        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
+        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $paginationPreferRight,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
 
         /**
          * generate a simply record view
@@ -107,9 +108,23 @@ namespace Imperium\Html\Form\Core {
          * @param string $editUrl
          * @param string $editClass
          * @param string $editIcon
+         * @param string $pagination
+         * @param bool $preferPaginationRight
          * @return string
          */
-        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon): string;
+        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $preferPaginationRight = true): string;
+
+
+        /**
+         * generate alter table view
+         *
+         * @param string $table
+         * @param Table $instance
+         * @param int $formType
+         *
+         * @return string
+         */
+        public function generateAlterTableView(string $table, Table $instance,int $formType = Form::BOOTSTRAP): string;
 
         /**
          * start hidden input

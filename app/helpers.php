@@ -58,6 +58,7 @@ if (!exist('generateKey'))
         return (new Google2FA())->generateSecretKey();
     }
 }
+
 if (!exist('records'))
 {
     /**
@@ -90,7 +91,6 @@ if (!exist('records'))
      * @param string $recordText
      * @param string $managementOfTableText
      * @param string $tableUrlPrefix
-     * @param bool $largeInput
      * @param string $csrfToken
      * @param bool $preferPaginationRight
      * @param bool $framework
