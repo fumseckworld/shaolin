@@ -2824,6 +2824,8 @@ class Form implements FormBuilder
 
             $this->form .= '">'.$editText.'</th>';
 
+            $this->form .= '<th  class="';
+            
             if ($columnAlignCenter) {  $this->form .= ' text-center'; }
 
             if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
