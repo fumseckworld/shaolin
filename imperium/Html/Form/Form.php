@@ -257,23 +257,26 @@ class Form implements FormBuilder
     /**
      * generate a files input
      *
-     * @param string      $name
-     * @param string      $class
-     * @param string      $text
+     * @param string $name
+     * @param string $class
+     * @param string $text
      * @param string|null $ico
      *
+     * @param string $locale
      * @return Form
      */
-    public function file(string $name, string $class, string $text, string $ico = ''): Form
+    public function file(string $name, string $class, string $text, string $ico = '',string $locale = 'en'): Form
     {
 
         switch ($this->type)
         {
             case Form::BOOTSTRAP:
                 if (empty($ico))
-                    $this->form .= '<div class="form-group"><label for="'.$name.'">'.$text.'</label><input type="file" class="form-control-file '.$class.'" id="'.$name.'"></div>';
+                    $this->form.= '<div class="form-group"><div class="custom-file"><input type="file"  name="'.$name.'" class="custom-file-input"   lang="'.$locale.'"><label class="custom-file-label" for="customFile">'.$text.'</label></div></div>';
                 else
-                    $this->form .= '<div class="form-group"><label for="'.$name.'">'. $ico .' '.$text.'</label><input type="file" class="form-control-file '.$class.'" id="'.$name.'"></div>';
+                    $this->form.= '<div class="form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >'.$ico.'</span></div><div class="custom-file"><input type="file" name="'.$name.'" class="custom-file-input" lang="'.$locale.'"><label class="custom-file-label" for="customFile">'.$text.'</label></div></div></div>';
+
+
             break;
             case Form::FOUNDATION:
                 if (empty($ico))
@@ -2122,12 +2125,25 @@ class Form implements FormBuilder
      */
     public function checkbox(string $name, string $text, string $class, bool $checked = false): Form
     {
-        if ($checked)
+        if ($this->type == Form::BOOTSTRAP)
         {
-            $this->form .=  '<div class="'.$class.'"><input id="'.$name.'" type="checkbox" checked="checked"><label for="'.$name.'"> '.$text.'</label> </div>' ;
-        } else  {
-            $this->form .=  '<div class="'.$class.'"><input id="'.$name.'" type="checkbox"><label for="'.$name.'"> '.$text.'</label> </div>';
+            if ($checked)
+
+                $this->form .= '<div class="form-group"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input " id="'.$name.'"><label class="custom-control-label" for="'.$name.'">'.$text.'</label></div> </div> ';
+            else
+                $this->form .= '<div class="form-group"> <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input " id="'.$name.'"><label class="custom-control-label" for="'.$name.'">'.$text.'</label></div> </div> ';
+
+        }else{
+            if ($checked)
+            {
+                $this->form .=  '<div class="'.$class.'"><input id="'.$name.'" type="checkbox" checked="checked"><label for="'.$name.'"> '.$text.'</label> </div>' ;
+            } else  {
+                $this->form .=  '<div class="'.$class.'"><input id="'.$name.'" type="checkbox"><label for="'.$name.'"> '.$text.'</label> </div>';
+            }
         }
+
+
+
         return $this;
     }
 
@@ -2191,15 +2207,16 @@ class Form implements FormBuilder
         if ($this->type == Form::BOOTSTRAP)
         {
 
+
             if (!empty($icon))
-                $this->form .= '<div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
+                $this->form .= ' <div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
             else
                 $this->form .= '<div class="form-group">';
 
             if (!empty($this->inputSize))
-                $this->form .= '<select class="custom-select ' . $this->inputSize . '" name="' . $name . '" size="1"  onChange="location = this.options[this.selectedIndex].value">';
+                $this->form .= '<select class="custom-select ' . $this->inputSize . '" name="' . $name . '" onChange="location = this.options[this.selectedIndex].value">';
             else
-                $this->form .= '<select class="custom-select" name="' . $name . '" size="1"  onChange="location = this.options[this.selectedIndex].value">';
+                $this->form .= '<select class="custom-select" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">';
 
             foreach ($options as $k => $option)
                 $this->form .= '<option value="'.$k.'"> '.$option.'</option>';
@@ -2251,13 +2268,13 @@ class Form implements FormBuilder
         switch ($this->type)
         {
             case Form::BOOTSTRAP:
-                $this->form .= '<div class="row">';
+                $this->form .= '<div class="form-row">';
 
-                    $this->form .= '<div class="col-md-6">';
+                    $this->form .= '<div class="col">';
                         $this->redirectSelect($nameOne,$optionsOne,$iconOne);
                     $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-6">';
+                    $this->form .= '<div class="col">';
                         $this->redirectSelect($nameTwo,$optionsTwo,$iconTwo);
                     $this->form .= '</div>';
 
@@ -2301,13 +2318,13 @@ class Form implements FormBuilder
         switch ($this->type)
         {
             case Form::BOOTSTRAP:
-                $this->form .= '<div class="row">';
+                $this->form .= '<div class="form-row">';
 
-                    $this->form .= '<div class="col-md-6">';
+                    $this->form .= '<div class="col">';
                         $this->select($selectName,$selectOptions,$selectIconOne);
                     $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-6">';
+                    $this->form .= '<div class="col">';
                         $this->input($type,$name,$placeholder,$value,$iconTwo,$required);
                     $this->form .= '</div>';
 
@@ -2354,13 +2371,13 @@ class Form implements FormBuilder
         switch ($this->type)
         {
             case Form::BOOTSTRAP:
-                $this->form .= '<div class="row">';
+                $this->form .= '<div class="form-row">';
 
-                    $this->form .= '<div class="col-md-6">';
+                    $this->form .= '<div class="col">';
                         $this->input($type,$name,$placeholder,$inputIcon,$value,$required);
                     $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-6">';
+                    $this->form .= '<div class="col">';
                         $this->select($selectName,$selectOptions,$selectIconOne);
                     $this->form .= '</div>';
 

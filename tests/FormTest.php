@@ -66,8 +66,7 @@ class FormTest extends TestCase
         $this->assertContains('avatar',$foundationWithIcon);
         $this->assertContains('avatar',$foundationWithoutIcon);
 
-        $this->assertContains($this->class,$bootHtmlWithIcon);
-        $this->assertContains($this->class,$bootHtmlWithoutIcon);
+
         $this->assertContains($this->class,$foundationWithIcon);
         $this->assertContains($this->class,$foundationWithoutIcon);
 
@@ -1505,7 +1504,7 @@ class FormTest extends TestCase
         $this->assertContains('remember',$boot);
         $this->assertContains('remember',$foundation);
 
-        $this->assertContains($this->class,$boot);
+
         $this->assertContains($this->class,$foundation);
 
         $this->assertContains('checked="checked"',$boot);
@@ -1521,7 +1520,7 @@ class FormTest extends TestCase
         $this->assertContains('remember',$boot);
         $this->assertContains('remember',$foundation);
 
-        $this->assertContains($this->class,$boot);
+   
         $this->assertContains($this->class,$foundation);
 
         $this->assertNotContains('checked="checked"',$boot);

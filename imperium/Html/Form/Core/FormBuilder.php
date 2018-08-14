@@ -147,14 +147,15 @@ namespace Imperium\Html\Form\Core {
         /**
          * generate a files input
          *
-         * @param string      $name
-         * @param string      $class
-         * @param string      $text
-         * @param string      $ico
+         * @param string $name
+         * @param string $class
+         * @param string $text
+         * @param string $ico
          *
+         * @param string $locale
          * @return Form
          */
-        public function file(string $name, string $class, string $text, string $ico = ''): Form;
+        public function file(string $name, string $class, string $text, string $ico = '',string $locale = 'en'): Form;
 
         /**
          * define input size to large
