@@ -45,9 +45,9 @@ sqlite:
 
 dbs: drop
 	psql -c "create database $(BASE);" -U postgres
-	mysql -uroot -e "CREATE DATABASE $(BASE);"
+	mysql -uroot -proot -e "CREATE DATABASE $(BASE);"
 	touch $(BASE) && chmod 777 $(BASE)
 drop:
 	psql -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
-	mysql -uroot -e "DROP DATABASE IF EXISTS $(BASE);"
+	mysql -uroot -proot -e "DROP DATABASE IF EXISTS $(BASE);"
 	$(RM) $(BASE)

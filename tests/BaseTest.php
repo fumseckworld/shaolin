@@ -58,7 +58,7 @@ class BaseTest extends TestCase
 
     public function setUp()
     {
-        $this->mariadb = base(Connexion::MYSQL,'','root','',"dump");
+        $this->mariadb = base(Connexion::MYSQL,'','root','root',"dump");
         $this->pgsql = base(Connexion::POSTGRESQL,'','postgres','',"dump");
         $this->sqlite = base(Connexion::SQLITE,'imperiums','','',"dump");
     }

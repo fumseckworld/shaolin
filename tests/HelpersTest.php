@@ -214,9 +214,9 @@ class HelpersTest extends TestCase
         $this->assertContains('patients', table(Connexion::SQLITE, $this->base, '', '', '')->show());
         $this->assertContains('doctors', table(Connexion::SQLITE, $this->base, '', '', '')->show());
 
-        $this->assertContains('works', table(Connexion::MYSQL, $this->base, 'root', '', '')->show());
-        $this->assertContains('patients', table(Connexion::MYSQL, $this->base, 'root', '', '')->show());
-        $this->assertContains('doctors', table(Connexion::MYSQL, $this->base, 'root', '', '')->show());
+        $this->assertContains('works', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->show());
+        $this->assertContains('patients', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->show());
+        $this->assertContains('doctors', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->show());
 
 
         $this->assertContains('public.works', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
@@ -224,16 +224,16 @@ class HelpersTest extends TestCase
         $this->assertContains('public.doctors', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
         $this->assertContains('public.doctors', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
 
-        $this->assertEquals(true, table(Connexion::MYSQL, $this->base, 'root', '', '')->has());
+        $this->assertEquals(true, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->has());
         $this->assertEquals(true, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->has());
         $this->assertEquals(true, table(Connexion::SQLITE, $this->base, '', '', '')->has());
 
-        $this->assertEquals(100, table(Connexion::MYSQL, $this->base, 'root', '', '')->count($this->table));
+        $this->assertEquals(100, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->count($this->table));
         $this->assertEquals(100, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->count($this->table));
         $this->assertEquals(99, table(Connexion::SQLITE, $this->base, '', '', '')->count($this->table));
 
-        $this->assertContains('id', table(Connexion::MYSQL, $this->base, 'root', '', '')->setName($this->table)->getColumns());
-        $this->assertContains( 'name', table(Connexion::MYSQL, $this->base, 'root', '', '')->setName($this->table)->getColumns());
+        $this->assertContains('id', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumns());
+        $this->assertContains( 'name', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumns());
 
         $this->assertContains('id', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumns());
         $this->assertContains('name', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumns());
@@ -245,8 +245,8 @@ class HelpersTest extends TestCase
         $this->assertContains( 'INTEGER', table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->getColumnsTypes());
         $this->assertContains( 'VARCHAR(255)', table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->getColumnsTypes());
 
-        $this->assertContains( 'int(11)', table(Connexion::MYSQL, $this->base, 'root', '', '')->setName($this->table)->getColumnsTypes());
-        $this->assertContains( 'varchar(255)', table(Connexion::MYSQL, $this->base, 'root', '', '')->setName($this->table)->getColumnsTypes());
+        $this->assertContains( 'int(11)', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumnsTypes());
+        $this->assertContains( 'varchar(255)', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumnsTypes());
 
 
         $this->assertContains( 'integer', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumnsTypes());
@@ -254,20 +254,20 @@ class HelpersTest extends TestCase
 
 
         $this->assertEquals(true, table(Connexion::SQLITE, $this->base, '', '', '') ->exist($this->table));
-        $this->assertEquals(true, table(Connexion::MYSQL, $this->base, 'root', '', '') ->exist($this->table));
+        $this->assertEquals(true, table(Connexion::MYSQL, $this->base, 'root', 'root', '') ->exist($this->table));
         $this->assertEquals(true, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '') ->exist("public.$this->table"));
 
         $this->assertEquals(false, table(Connexion::SQLITE, $this->base, '', '', '')->exist('alexandra'));
-        $this->assertEquals(false, table(Connexion::MYSQL, $this->base, 'root', '', '')->exist('alexandra'));
+        $this->assertEquals(false, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->exist('alexandra'));
         $this->assertEquals(false, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->exist('alexandra'));
 
         $this->assertEquals(false, table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->isEmpty());
-        $this->assertEquals(false, table(Connexion::MYSQL, $this->base, 'root', '', '')->setName($this->table)->isEmpty());
+        $this->assertEquals(false, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->isEmpty());
         $this->assertEquals(false, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->isEmpty());
 
         $this->assertEquals(Connexion::SQLITE, table(Connexion::SQLITE, $this->base, '', '', '')->getDriver());
         $this->assertEquals(Connexion::POSTGRESQL, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->getDriver());
-        $this->assertEquals(Connexion::MYSQL, table(Connexion::MYSQL, $this->base, 'root', '', '')->getDriver());
+        $this->assertEquals(Connexion::MYSQL, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->getDriver());
 
     }
 
@@ -280,9 +280,9 @@ class HelpersTest extends TestCase
     public function testUserAdd()
     {
         $this->assertEquals(false, userAdd(Connexion::SQLITE, 'username', 'pass', '', $this->pdo));
-        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'username', 'pass', '', root(Connexion::MYSQL,'root')));
-        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'usernames', 'pass', '', root(Connexion::MYSQL,'root')));
-        $this->assertEquals(true, userDel(Connexion::MYSQL, root(Connexion::MYSQL,'root'),'usernames', 'username'));
+        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'username', 'pass', '', root(Connexion::MYSQL,'root','root')));
+        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'usernames', 'pass', '', root(Connexion::MYSQL,'root','root')));
+        $this->assertEquals(true, userDel(Connexion::MYSQL, root(Connexion::MYSQL,'root','root'),'usernames', 'username'));
     }
 
     public function testFa()
@@ -399,7 +399,7 @@ class HelpersTest extends TestCase
 
     public function testPass()
     {
-        $this->assertEquals(true, pass(Connexion::MYSQL, 'root', '', ''));
+        $this->assertEquals(true, pass(Connexion::MYSQL, 'root', 'root', 'root'));
         $this->assertEquals(true, pass(Connexion::POSTGRESQL, 'postgres', '', ''));
     }
 
@@ -450,7 +450,7 @@ class HelpersTest extends TestCase
     {
         $this->assertInstanceOf(Users::class, user('mysql', 'a', 'a'));
         $this->assertInstanceOf(Users::class, user('pgsql', 'a', 'a'));
-        $this->assertContains('root', user(Connexion::MYSQL, 'root', '')->show());
+        $this->assertContains('root', user(Connexion::MYSQL, 'root', 'root')->show());
         $this->assertContains('postgres', user(Connexion::POSTGRESQL, 'postgres', '')->show());
         $this->assertEquals([], user(Connexion::SQLITE, 'adz', 'pass')->show());
     }

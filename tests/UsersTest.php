@@ -47,7 +47,7 @@ class UsersTest extends TestCase
 
     public function setUp()
     {
-        $this->mariadb = user(Connexion::MYSQL,'root','');
+        $this->mariadb = user(Connexion::MYSQL,'root','root');
         $this->pgsql = user(Connexion::POSTGRESQL,'postgres','');
     }
 
@@ -78,18 +78,13 @@ class UsersTest extends TestCase
         $this->assertEquals(true,$this->pgsql->setName($this->postgres)->exist());
     }
 
-    public function testChangePassword()
-    {
-        $this->assertEquals(true,$this->mariadb->updatePassword($this->root,''));
-        $this->assertEquals(true,$this->pgsql->updatePassword($this->postgres,''));
-    }
 
     public function testDrop()
     {
         $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,'tmp','alex','',root(Connexion::POSTGRESQL,'postgres')));
         $this->assertEquals(true,$this->pgsql->drop('tmp'));
 
-        $this->assertEquals(true,userAdd(Connexion::MYSQL,'tmp','alex','',root(Connexion::MYSQL,'root')));
-        $this->assertEquals(true,$this->mariadb->drop('tmp'));
+        $this->assertEquals(true,userAdd(Connexion::MYSQL,'az','alex','',root(Connexion::MYSQL,'root','root')));
+        $this->assertEquals(true,$this->mariadb->drop('az'));
     }
 }

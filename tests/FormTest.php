@@ -1724,7 +1724,7 @@ class FormTest extends TestCase
         $table = "doctors";
         $base = 'imperiums';
 
-        $mysql = table(Connexion::MYSQL,$base,'root','','');
+        $mysql = table(Connexion::MYSQL,$base,'root','root','');
         $pgsql = table(Connexion::POSTGRESQL,$base,'postgres','','');
 
         $boot = form()->start('/','demo')->generate($table,$mysql,'add',$this->class,'SUBMIT');

@@ -22,8 +22,7 @@
         "nesbot/carbon": "^1.22",
         "robmorgan/phinx": "^0.9.0",
         "ralouphie/mimey": "^1.0",
-        "spatie/db-dumper": "^2.10",
-        "ext-PDO": "^7.2"
+        "spatie/db-dumper": "^2.10"
     },
     "autoload": {
         "psr-4": {

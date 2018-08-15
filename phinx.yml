@@ -10,7 +10,7 @@ environments:
         host: localhost
         name: imperiums
         user: root
-        pass: ''
+        pass: 'root'
         port: 3306
         charset: utf8
 

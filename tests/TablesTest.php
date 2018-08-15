@@ -73,11 +73,11 @@ class TablesTest extends TestCase
     {
         $table = 'country';
 
-        $this->mariadbBase = base(Connexion::MYSQL,'','root','','');
+        $this->mariadbBase = base(Connexion::MYSQL,'','root','root','');
         $this->pgsqlBase = base(Connexion::POSTGRESQL,'','postgres','','');
 
         $this->pgsql    = table(Connexion::POSTGRESQL,$this->base,'postgres','','dump')->setName($table);
-        $this->mysql    = table(Connexion::MYSQL,$this->base,'root','','dump')->setName($table);
+        $this->mysql    = table(Connexion::MYSQL,$this->base,'root','root','dump')->setName($table);
         $this->sqlite   = table(Connexion::SQLITE,$this->base,'','','dump')->setName($table);
 
 

@@ -41,9 +41,9 @@ class ConnectionTest extends TestCase
             ->setPassword('a')
             ->setEncoding('utf8')->getConnexion());
 
-        $this->assertInstanceOf(PDO::class,connect(Connexion::MYSQL,$this->base,'root'));
+        $this->assertInstanceOf(PDO::class,connect(Connexion::MYSQL,$this->base,'root','root'));
         $this->assertInstanceOf(PDO::class,Connexion::connect()
-            ->setDriver('mysql')->setDatabase($this->base)->setUser('root')->getConnexion());
+            ->setDriver('mysql')->setDatabase($this->base)->setUser('root')->setPassword('root')->getConnexion());
     }
 
     public function testPostgresql()
@@ -88,9 +88,9 @@ class ConnectionTest extends TestCase
 
     public function testWithoutDatabase()
     {
-         $this->assertInstanceOf(PDO::class,connect(Connexion::MYSQL,'','root'));
+         $this->assertInstanceOf(PDO::class,connect(Connexion::MYSQL,'','root','root'));
          $this->assertInstanceOf(PDO::class,connect(Connexion::POSTGRESQL,'','postgres'));
-         $this->assertInstanceOf(PDO::class,root(Connexion::MYSQL,'root'));
+         $this->assertInstanceOf(PDO::class,root(Connexion::MYSQL,'root','root'));
          $this->assertInstanceOf(PDO::class,root(Connexion::POSTGRESQL,'postgres'));
          $this->assertEquals(null,root(Connexion::ORACLE,'a'));
     }

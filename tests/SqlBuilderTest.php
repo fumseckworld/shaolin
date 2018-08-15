@@ -63,7 +63,7 @@ class SqlBuilderTest extends TestCase
 
     public function setUp()
     {
-        $this->mariadb = connect(Connexion::MYSQL, $this->base, 'root');
+        $this->mariadb = connect(Connexion::MYSQL, $this->base, 'root','root');
         $this->pgsql = connect(Connexion::POSTGRESQL, $this->base, 'postgres');
         $this->sqlite = connect(Connexion::SQLITE, $this->base);
         $this->sql = sql($this->table);
