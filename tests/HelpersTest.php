@@ -373,6 +373,40 @@ class HelpersTest extends TestCase
         $this->assertEquals('<img src="icon"/>', glyph('icon', 'a'));
     }
 
+    public function testZones()
+    {
+      $this->assertNotContains(25,zones('a'));
+      $this->assertNotContains(1,zones('a'));
+      $this->assertContains('a',zones('a'));
+      $this->assertContains('Europe/Paris',zones('a'));
+      $this->assertContains('Europe/Madrid',zones('a'));
+      $this->assertContains('Africa/Abidjan',zones('a'));
+      $this->assertContains('Africa/Dakar',zones('a'));
+      $this->assertTrue(is_array(zones('m')));
+
+    }
+
+    public function tesRegister()
+    {
+        $register = registerForm(1,'/','Your username','your email','your password','confirm','create account','create');
+
+        $this->assertContains('<i class="fas fa-user"></i>',$register);
+        $this->assertContains('<i class="fas fa-key"></i>',$register);
+        $this->assertContains('<i class="fas fa-envelope"></i>',$register);
+        $this->assertContains('<i class="fas fa-user-plus"></i>',$register);
+        $this->assertContains('btn btn-outline-primary',$register);
+        $this->assertContains('Your username',$register);
+        $this->assertContains('your email',$register);
+        $this->assertContains('your password',$register);
+        $this->assertContains('confirm',$register);
+        $this->assertContains('create',$register);
+        $this->assertContains('create',$register);
+        $this->assertContains('create account',$register);
+        $this->assertNotContains('Europe/Paris',$register);
+        $this->assertNotContains('Europe/London',$register);
+
+    }
+
     public function testImage()
     {
         $this->assertInstanceOf(ImageManager::class, image('gd'));

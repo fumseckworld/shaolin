@@ -16,6 +16,7 @@
     <filter>
         <whitelist proceessUncoveredFromWhitelist="true">
             <directory suffic=".php">imperium/</directory>
+            <directory suffic=".php">app/</directory>
         </whitelist>
     </filter>
 </phpunit>

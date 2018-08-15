@@ -46,6 +46,41 @@ use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
 
+
+
+if (!exist('registerForm'))
+{
+    function registerForm(int $formType,string $action,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
+    {
+        $form = form($formType)->start($action,'register-form')->csrf($csrfToken);
+
+        if ($multiLang)
+            $form->twoRedirectSelect('locale',$supportedLang,$langIcon,'zone',zones($chooseTimeZoneText),$zonesIcon);
+
+        $form->twoInlineInput(Form::TEXT,'name',$usernamePlaceholder,post('name'),$usernameIcon,true, Form::EMAIL,'email',$emailPlaceholder,post('email'),$emailIcon,true)
+        ->twoInlineInput(Form::PASSWORD,'password',$passwordPlaceholder,post('password'),$passwordIcon,true, Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,post('password_confirmation'),$passwordIcon,true)
+        ->submit($submitText,$submitClass,$submitId,$submitIcon);
+
+        return $form->end();
+    }
+}
+
+if (!exist('zones'))
+{
+    /**
+     * @param string $text
+     * @return array
+     */
+    function zones(string $text) : array
+    {
+        $zones = array("/" => $text);
+
+        foreach (DateTimeZone::listIdentifiers() as $x)
+            $zones = merge($zones,[$x=> $x ]);
+
+        return $zones;
+    }
+}
 if (!exist('generateKey'))
 {
     /**
