@@ -386,7 +386,7 @@ class HelpersTest extends TestCase
 
     }
 
-    public function tesRegister()
+    public function testRegister()
     {
         $register = registerForm(1,'/','Your username','your email','your password','confirm','create account','create');
 
@@ -404,6 +404,27 @@ class HelpersTest extends TestCase
         $this->assertContains('create account',$register);
         $this->assertNotContains('Europe/Paris',$register);
         $this->assertNotContains('Europe/London',$register);
+
+        $register = registerForm(1,'/','Your username','your email','your password','confirm','create account','create',true,['/' =>'choose','fr' => 'french' ,'en' => 'english'],'choose a time zone');
+
+        $this->assertContains('fr',$register);
+        $this->assertContains('en',$register);
+        $this->assertContains('Europe/Paris',$register);
+        $this->assertContains('Europe/London',$register);
+        $this->assertContains('choose a time zone',$register);
+        $this->assertContains('<i class="fas fa-user"></i>',$register);
+        $this->assertContains('<i class="fas fa-key"></i>',$register);
+        $this->assertContains('<i class="fas fa-envelope"></i>',$register);
+        $this->assertContains('<i class="fas fa-user-plus"></i>',$register);
+        $this->assertContains('btn btn-outline-primary',$register);
+        $this->assertContains('Your username',$register);
+        $this->assertContains('your email',$register);
+        $this->assertContains('your password',$register);
+        $this->assertContains('confirm',$register);
+        $this->assertContains('create',$register);
+        $this->assertContains('create',$register);
+        $this->assertContains('create account',$register);
+
 
     }
 
