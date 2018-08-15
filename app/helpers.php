@@ -611,12 +611,9 @@ if (!exist('pass'))
      */
     function pass(string $driver,string $username,string $current,string $new) : bool
     {
-        try {
-           return user($driver, $username, $current)->updatePassword($username, $new);
-        }catch (PDOException $e)
-        {
-            return false;
-        }
+
+        return user($driver, $username, $current)->updatePassword($username,$new);
+
     }
 }
 
@@ -773,6 +770,7 @@ if (!exist('create'))
      */
     function create(string $driver,string $database,string $charset,string $collation,PDO $connexion): bool
     {
+
         switch ($driver)
         {
             case Connexion::MYSQL:
@@ -780,9 +778,6 @@ if (!exist('create'))
             break;
             case Connexion::POSTGRESQL:
                 return execute($connexion,"CREATE DATABASE $database ENCODING '$charset' LC_COLLATE='$collation' LC_CTYPE='$collation' TEMPLATE=template0");
-            break;
-            case Connexion::ORACLE:
-               return execute($connexion,"CREATE DATABASE $database CHARACTER SET $charset");
             break;
             case Connexion::SQLITE:
                  return new PDO("sqlite:$database") instanceof PDO;
@@ -871,16 +866,14 @@ if(!exist('req'))
     function req(PDO $instance,string $request,int $fetchStyle = PDO::FETCH_OBJ): array
     {
         $query = $instance->prepare($request);
-        if ($query->execute())
-        {
-            $data = $query->fetchAll($fetchStyle);
 
-            if ($query->closeCursor())
-            {
-                return $data;
-            }
-        }
-        return array();
+        $query->execute();
+
+        $data = $query->fetchAll($fetchStyle);
+
+        $query->closeCursor();
+
+        return $data;
     }
 }
 
@@ -926,6 +919,7 @@ if (!exist('drop'))
      * @param string[] ...$to
      *
      * @return bool
+     * @throws \Imperium\Databases\Exception\IdentifierException
      */
     function drop($instance,string ...$to): bool
     {
@@ -998,9 +992,6 @@ if (!exist('userDel'))
      */
     function userDel(string $driver,PDO $connexion,string ...$users): bool
     {
-        if (is_null($connexion))
-            return false;
-
         switch ($driver)
         {
             case Connexion::MYSQL:
@@ -1009,12 +1000,6 @@ if (!exist('userDel'))
                         return false;
             break;
             case Connexion::POSTGRESQL:
-                foreach ($users as $user)
-                    if (!execute($connexion,"DROP USER $user"))
-                        return false;
-
-            break;
-            case Connexion::ORACLE:
                 foreach ($users as $user)
                     if (!execute($connexion,"DROP USER $user"))
                         return false;
@@ -1230,9 +1215,6 @@ if (!exist('userAdd'))
      */
     function userAdd(string $driver,string $user,string $password,string $rights,PDO $connexion): bool
     {
-        if (is_null($connexion))
-            return false;
-
         switch($driver)
         {
             case Connexion::MYSQL:
@@ -1240,9 +1222,6 @@ if (!exist('userAdd'))
             break;
             case Connexion::POSTGRESQL:
                 return execute($connexion,"CREATE ROLE $user PASSWORD '$password' $rights");
-            break;
-            case Connexion::ORACLE:
-                return execute($connexion,"CREATE ROLE $user IDENTIFIED BY '$password' $rights");
             break;
             default:
                 return false;

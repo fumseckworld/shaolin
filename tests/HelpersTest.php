@@ -25,11 +25,13 @@ namespace tests;
 
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
+use Faker\Generator;
 use Imperium\Databases\Eloquent\Bases\Base;
 use Imperium\Databases\Eloquent\Connexion\Connexion;
 use Imperium\Databases\Eloquent\Eloquent;
 use Imperium\Databases\Eloquent\Users\Users;
 use Imperium\Databases\Exception\IdentifierException;
+use Imperium\File\File;
 use Imperium\Html\Bar\Icon;
 use Imperium\Html\Canvas\Canvas;
 use Imperium\Html\Form\Form;
@@ -37,6 +39,9 @@ use Imperium\Html\Records\Records;
 use Intervention\Image\ImageManager;
 use PDO;
 use PHPUnit\Framework\TestCase;
+use Sinergi\BrowserDetector\Browser;
+use Sinergi\BrowserDetector\Device;
+use Sinergi\BrowserDetector\Os;
 
 class HelpersTest extends TestCase
 {
@@ -152,6 +157,18 @@ class HelpersTest extends TestCase
 
     public function testCollation()
     {
+
+
+        $mysql = collation(Connexion::MYSQL,root(Connexion::MYSQL,'root','root'));
+        $pgsql = collation(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''));
+
+
+        $this->assertNotEmpty($mysql);
+        $this->assertNotEmpty($pgsql);
+        $this->assertContains('utf8_general_ci',$mysql);
+        $this->assertContains('utf8_unicode_ci',$mysql);
+        $this->assertContains('C',$pgsql);
+        $this->assertContains('POSIX',$pgsql);
         $this->assertEquals([], collation('sqlite', connect('sqlite', 'testing')));
     }
 
@@ -190,11 +207,28 @@ class HelpersTest extends TestCase
 
     public function testPhp()
     {
+        $expected = 4;
+        $key = 'age';
+        $_SESSION[$key] = $expected;
+        $_COOKIE[$key] = $expected;
+        $_GET[$key] = $expected;
+        $_POST[$key] = $expected;
+        $_SERVER[$key] = $expected;
+        $_FILES[$key] = $expected;
+
         $this->assertEquals('',cookie('a'));
         $this->assertEquals('',session('a'));
         $this->assertEquals('',server('a'));
         $this->assertEquals('',get('a'));
         $this->assertEquals('',post('a'));
+        $this->assertEquals('',files('a'));
+
+        $this->assertEquals($expected,cookie($key));
+        $this->assertEquals( $expected,session($key));
+        $this->assertEquals($expected,server($key));
+        $this->assertEquals($expected,get($key));
+        $this->assertEquals($expected,post($key));
+        $this->assertEquals($expected,files($key));
     }
     public function testExecuteAndReq()
     {
@@ -495,9 +529,84 @@ class HelpersTest extends TestCase
         }
 
     }
+   public function testCurrentBranch()
+    {
+        $this->assertEquals('master',getCurrentBranch('.'));
 
+    }
+
+    public function testGetOsObject()
+    {
+        $this->assertInstanceOf(Os::class,os());
+    }
+
+    public function testGetDeviceObject()
+    {
+        $this->assertInstanceOf(Device::class,device());
+    }
+
+    public function testGetBrowserObject()
+    {
+        $this->assertInstanceOf(Browser::class,browser());
+    }
+
+    public function testShowWithNotPossible()
+    {
+       $this->assertEquals([],show('sqlite','imperiums','root','root'));
+    }
+
+    public function testArrayPrevWhichOneKey()
+    {
+       $this->assertEquals('a',array_prev(['a'],'a'));
+    }
+
+    /**
+     * @throws IdentifierException
+     */
+    public function testCreateDatabases()
+    {
+        $mysqlPdo = root(Connexion::MYSQL,'root','root');
+        $pgsqlPdo = root(Connexion::POSTGRESQL,'postgres','');
+        $sqlitePdo = connect(Connexion::SQLITE,'imperiums','','');
+
+        $database = 'superman';
+
+
+        $this->assertEquals(true,create(Connexion::MYSQL,$database,'utf8','utf8_general_ci',$mysqlPdo));
+        $this->assertEquals(true,base(Connexion::MYSQL,'','root','root','')->drop($database));
+
+
+        $this->assertEquals(true,create(Connexion::POSTGRESQL,$database,'UTF8','C',$pgsqlPdo));
+        $this->assertEquals(true,base(Connexion::POSTGRESQL,'','postgres','','')->drop($database));
+
+        $this->assertEquals(true,create(Connexion::SQLITE,$database,'','',$sqlitePdo));
+        $this->assertEquals(true,base(Connexion::SQLITE,'','postgres','','')->drop($database));
+
+        $this->expectException(IdentifierException::class);
+
+        $this->assertEquals(false,create('a',$database,'utf8','utf8_general_ci',$mysqlPdo));
+        $this->assertEquals(false,base('a','','postgres','','')->drop($database));
+
+    }
+
+
+
+    public function testPassReturnFalse()
+    {
+        $this->assertEquals(false,pass('sqlite','root','root',''));
+    }
     public function testCharset()
     {
+        $mysql = charset(Connexion::MYSQL,root(Connexion::MYSQL,'root','root'));
+        $pgsql = charset(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''));
+
+        $this->assertNotEmpty($mysql);
+        $this->assertNotEmpty($pgsql);
+
+        $this->assertContains('utf8',  $mysql);
+        $this->assertContains('UTF8',  $pgsql);
+
+
         $this->assertEquals([], charset('sqlite', connect('sqlite', 'testing')));
     }
 
@@ -515,9 +624,32 @@ class HelpersTest extends TestCase
      */
     public function testShow()
     {
+
+        $database = 'imperiums';
+
+        $this->assertEquals([],show(Connexion::MYSQL, $database, 'root', 'root', 88888888));
+        $this->assertEquals([],show(Connexion::POSTGRESQL, $database, 'postgres', '', 88888888));
+
+        $this->assertNotEmpty(show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_TABLES));
+        $this->assertContains('patients',show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_TABLES));
+
+        $this->assertNotEmpty(show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_USERS));
+        $this->assertContains('root',show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_USERS));
+
+        $this->assertNotEmpty(show(Connexion::MYSQL, '', 'root', 'root', Eloquent::MODE_ALL_DATABASES));
+        $this->assertContains('mysql',show(Connexion::MYSQL, '', 'root', 'root', Eloquent::MODE_ALL_DATABASES));
+
+        $this->assertNotEmpty(show(Connexion::POSTGRESQL, $database, 'postgres', '', Eloquent::MODE_ALL_TABLES));
+        $this->assertContains('public.doctors',show(Connexion::POSTGRESQL, $database, 'postgres', '', Eloquent::MODE_ALL_TABLES));
+
+        $this->assertNotEmpty(show(Connexion::POSTGRESQL, $database, 'postgres', '', Eloquent::MODE_ALL_USERS));
+        $this->assertContains('postgres',show(Connexion::POSTGRESQL, '', 'postgres', '', Eloquent::MODE_ALL_USERS));
+
+        $this->assertNotEmpty(show(Connexion::POSTGRESQL, '', 'postgres', '', Eloquent::MODE_ALL_DATABASES));
+        $this->assertContains('postgres',show(Connexion::POSTGRESQL, '', 'postgres', '', Eloquent::MODE_ALL_DATABASES));
+
         $this->expectException(IdentifierException::class);
 
-        show(Connexion::MYSQL, 'a', 'user', 'password', Eloquent::MODE_ALL_TABLES);
         show(Connexion::MYSQL, 'user', 'user', 'password', Eloquent::MODE_ALL_DATABASES);
         show(Connexion::MYSQL, 'user', 'user', 'password', Eloquent::MODE_ALL_USERS);
 
@@ -533,4 +665,96 @@ class HelpersTest extends TestCase
         $this->assertInstanceOf(Form::class, form(3));
         $this->assertInstanceOf(Form::class, form(5));
     }
+
+    /**
+     * @throws IdentifierException
+     */
+    public function testDrop()
+    {
+
+
+        $user = 'dracula';
+
+        $mysqlBases = base(Connexion::MYSQL,'','root','root','');
+        $pgsqlBases = base(Connexion::POSTGRESQL,'','postgres','','');
+
+        $mysqlTables = table(Connexion::MYSQL,'imperiums','root','root','');
+        $pgsqlTables = table(Connexion::POSTGRESQL,'imperiums','postgres','','');
+
+        $mysqlUsers = user(Connexion::MYSQL,'root','root');
+        $pgsqlUsers = user(Connexion::POSTGRESQL,'postgres','');
+
+        $this->assertEquals(true,userAdd(Connexion::MYSQL,$user,$user,'',root(Connexion::MYSQL,'root','root')));
+        $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,$user,$user,'',root(Connexion::POSTGRESQL,'postgres','')));
+
+
+        $this->assertEquals(true,create(Connexion::MYSQL,$user,'utf8','utf8_general_ci',root(Connexion::MYSQL,'root','root')));
+        $this->assertEquals(true,create(Connexion::POSTGRESQL,$user,'UTF8','C',root(Connexion::POSTGRESQL,'postgres','')));
+
+
+
+        $this->assertEquals(true,$mysqlTables->setName($user)->addField('int','loi',true)->create());
+        $this->assertEquals(true,$pgsqlTables->setName($user)->addField('serial','loi',true)->create());
+
+
+        $this->assertEquals(true,drop($mysqlBases,$user));
+        $this->assertEquals(true,drop($mysqlTables,$user));
+        $this->assertEquals(true,drop($mysqlUsers,$user));
+
+        $this->assertEquals(true,drop($pgsqlBases,$user));
+        $this->assertEquals(true,drop($pgsqlTables,$user));
+        $this->assertEquals(true,drop($pgsqlUsers,$user));
+
+    }
+
+    public function testFaker()
+    {
+        $this->assertInstanceOf(Generator::class,faker('fr'));
+        $this->assertInstanceOf(Generator::class,faker('en'));
+        $this->assertInstanceOf(Generator::class,faker('es'));
+    }
+
+    public function testUserDel()
+    {
+        $user = 'alexandra';
+
+
+        $this->assertEquals(true,userAdd(Connexion::MYSQL,$user,$user,'',root(Connexion::MYSQL,'root','root')));
+        $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,$user,$user,'',root(Connexion::POSTGRESQL,'postgres','')));
+
+        $this->assertEquals(true,userDel(Connexion::MYSQL,root(Connexion::MYSQL,'root','root'),$user));
+        $this->assertEquals(true,userDel(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''),$user));
+    }
+
+    public function testGetLines()
+    {
+        $this->assertNotEmpty(File::getLines('README.md'));
+        $this->assertNotEmpty(getLines('README.md'));
+    }
+
+    public function testGetFileInfo()
+    {
+        $keys = ['database','username','password'];
+        $values = ['forge','forger','xkjkl'];
+
+        $fileKeys = File::getKeys('env','=');
+        $fileValues = File::getValues('env','=');
+
+        $this->assertNotEmpty($fileKeys);
+        $this->assertEquals($keys,$fileKeys);
+
+        $this->assertNotEmpty($fileValues);
+        $this->assertEquals($values,$fileValues);
+
+
+        $fileKeys = getKeys('env','=');
+        $fileValues = getValues('env','=');
+
+        $this->assertNotEmpty($fileKeys);
+        $this->assertEquals($keys,$fileKeys);
+
+        $this->assertNotEmpty($fileValues);
+        $this->assertEquals($values,$fileValues);
+    }
 }
+

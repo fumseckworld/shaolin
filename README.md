@@ -34,7 +34,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | PostgreSQL            |   yes     |
 | SQLite                |   yes     |
 | Oracle                |   partly  |
-| SQL Server            |   no      |
+| SQL Server            |   no    
 | Firebird              |   no      |
 | MongoDB               |   no      |
 | Other                 |   no      |
