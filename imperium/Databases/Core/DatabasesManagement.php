@@ -126,15 +126,7 @@ namespace Imperium\Databases\Core {
          */
         public function drop(string $database): bool;
 
-        /**
-         * restore a database
-         *
-         * @param string $base
-         * @param string $sqlFile
-         *
-         * @return bool
-         */
-        public function restore(string $base,string $sqlFile): bool;
+
 
         /**
          * dump a database

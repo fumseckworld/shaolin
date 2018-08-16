@@ -739,22 +739,6 @@ if (!exist('isMobile'))
     }
 }
 
-if (!exist('restore'))
-{
-    /**
-     * restore a database
-     *
-     * @param Base $instance
-     * @param string $base
-     * @param string $sqlFile
-     *
-     * @return bool
-     */
-    function restore(Base $instance,string $base,string $sqlFile): bool
-    {
-        return $instance->restore($base,$sqlFile);
-    }
-}
 if (!exist('create'))
 {
     /**
@@ -1342,38 +1326,7 @@ if (!exist('jsLoader'))
     }
 }
 
-if (!exist('faGroup'))
-{
-    /**
-     * generate a link icon group area
-     *
-     * @param array $icons
-     * @param array $urls
-     * @param array $text
-     * @param array $class
-     * @param string $containerClass
-     *
-     * @return null|string
-     */
-    function faGroup(array $icons, array $urls ,array $text, array $class, string $containerClass = 'list-group')
-    {
-        $total = count($icons);
 
-        if ($total > 0 && count($urls) == $total && count($text) == $total && count($class) == $total)
-        {
-            $fa = '<div class="'.$containerClass.'">';
-
-            for ($i=0;$i<count($icons);++$i)
-                $fa .= '<a class="'.$class[$i].'" href="'.$urls[$i].'">'.$icons[$i] .' '.$text[$i].'</a>';
-
-
-            $fa .= '</div>';
-
-            return $fa;
-        }
-        return null;
-    }
-}
 if (!exist('iconic'))
 {
     /**

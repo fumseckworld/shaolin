@@ -337,13 +337,7 @@ class HelpersTest extends TestCase
         $this->assertEquals('<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js" type="text/babel"></script>', jsLoader('https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js', 'text/babel'));
     }
 
-    public function testFaGroup()
-    {
-        $this->assertContains('Gnu/Linux', faGroup([fa('fa-linux')], ['#linux'], ['Gnu/Linux'], ['btn btn-primary']));
-        $this->assertContains('fa-linux', faGroup([fa('fa-linux')], ['#linux'], ['Gnu/Linux'], ['btn btn-primary']));
-        $this->assertContains('btn btn-primary', faGroup([fa('fa-linux')], ['#linux'], ['Gnu/Linux'], ['btn btn-primary']));
-        $this->assertContains('#linux', faGroup([fa('fa-linux')], ['#linux'], ['Gnu/Linux'], ['btn btn-primary']));
-    }
+
 
     public function testHelper()
     {
@@ -707,6 +701,35 @@ class HelpersTest extends TestCase
 
     }
 
+
+    public function testFuture()
+    {
+        $this->assertEquals(now()->addSecond(60)->toDateString(),future('second',60));
+        $this->assertEquals(now()->addSeconds(360)->toDateString(),future('seconds',360));
+        $this->assertEquals(now()->addMinutes(50)->toDateString(),future('minutes',50));
+        $this->assertEquals(now()->addMinute()->toDateString(),future('minute',1));
+        $this->assertEquals(now()->addHour()->toDateString(),future('hour',1));
+        $this->assertEquals(now()->addHours(5)->toDateString(),future('hours',5));
+        $this->assertEquals(now()->addDay()->toDateString(),future('day',1));
+        $this->assertEquals(now()->addDays(5)->toDateString(),future('days',5));
+        $this->assertEquals(now()->addWeek()->toDateString(),future('week',1));
+        $this->assertEquals(now()->addWeeks(10)->toDateString(),future('weeks',10));
+        $this->assertEquals(now()->addMonth()->toDateString(),future('month',1));
+        $this->assertEquals(now()->addMonths(11)->toDateString(),future('months',11));
+        $this->assertEquals(now()->addYear()->toDateString(),future('year',1));
+        $this->assertEquals(now()->addYears(5)->toDateString(),future('years',5));
+        $this->assertEquals(now()->addCentury()->toDateString(),future('century',1));
+        $this->assertEquals(now()->addCenturies(5)->toDateString(),future('centuries',5));
+
+    }
+
+    public function testExist()
+    {
+        $this->assertEquals(true,exist('drop'));
+        $this->assertEquals(true,exist('faker'));
+        $this->assertEquals(true,exist('db'));
+        $this->assertEquals(false,exist('lorem'));
+    }
     public function testFaker()
     {
         $this->assertInstanceOf(Generator::class,faker('fr'));

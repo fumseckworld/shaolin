@@ -428,37 +428,6 @@ namespace Imperium\Databases\Eloquent\Bases {
         }
 
         /**
-         * restore a database
-         *
-         * @param string $base
-         * @param string $sqlFile
-         *
-         * @return bool
-         */
-        public function restore(string $base,string $sqlFile): bool
-        {
-            if (File::exist($sqlFile))
-            {
-                switch ($this->driver)
-                {
-                    case Connexion::MYSQL:
-                        return system("mysql -uroot $base < $sqlFile");
-                    break;
-                    case Connexion::POSTGRESQL:
-                        return system("psql -U postgres $base < $sqlFile");
-                    break;
-					case Connexion::SQLITE:
-						return system("sqlite3 $base < $sqlFile");
-					break;
-            		default:
-                        return false;
-                    break;
-                }
-            }
-            return false;
-        }
-
-        /**
          * delete all database hosted on server not ignored
          *
          * @return bool

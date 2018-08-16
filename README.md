@@ -32,7 +32,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | MariaDB               |   yes     |
 | MySQL                 |   yes     |
 | PostgreSQL            |   yes     |
-| SQLite                |   yes     |
+| SQLite                |   yes     
 | Oracle                |   partly  |
 | SQL Server            |   no    
 | Firebird              |   no      |
