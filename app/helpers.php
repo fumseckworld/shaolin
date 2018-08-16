@@ -1515,6 +1515,45 @@ if (!exist('ago'))
     }
 }
 
+if (!exist('mysql_loaded'))
+{
+    /**
+     * check if mysql is loaded
+     *
+     * @return bool
+     */
+    function mysql_loaded(): bool
+    {
+        return extension_loaded('pdo_mysql');
+    }
+}
+
+if (!exist('pgsql_loaded'))
+{
+    /**
+     * check if mysql is loaded
+     *
+     * @return bool
+     */
+    function pgsql_loaded(): bool
+    {
+        return extension_loaded('pdo_pgsql');
+    }
+}
+
+if (!exist('sqlite_loaded'))
+{
+    /**
+     * check if mysql is loaded
+     *
+     * @return bool
+     */
+    function sqlite_loaded(): bool
+    {
+        return extension_loaded('pdo_sqlite');
+    }
+}
+
 /**
  * check if a function exist
  *

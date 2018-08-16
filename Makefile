@@ -10,6 +10,7 @@ ifeq (phinx,$(firstword $(MAKECMDGOALS)))
 endif
 
 all: dbs pgsql mysql sqlite
+	@clear
 	@vendor/bin/phpunit --coverage-html coverage
 
 conf: dbs pgsql mysql sqlite

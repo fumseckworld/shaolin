@@ -11,6 +11,7 @@ namespace tests;
 
 use Exception;
 use Imperium\Databases\Eloquent\Connexion\Connexion;
+use Imperium\Databases\Eloquent\Tables\Table;
 use Imperium\Html\Form\Form;
 use PHPUnit\Framework\TestCase;
 
@@ -1709,6 +1710,7 @@ class FormTest extends TestCase
 
     }
 
+
     public function testContainClass()
     {
         $this->assertContains($this->class,form(1)->start('/','form',$this->class)->end());
@@ -1729,6 +1731,25 @@ class FormTest extends TestCase
 
         $boot = form()->start('/','demo')->generate($table,$mysql,'add',$this->class,'SUBMIT');
         $foundation = form(2)->start('/','demo')->generate($table,$mysql,'add','','SUBMIT');
+
+        $generateBoot = generate(1,'demo','','/',$table,$mysql,'add',$this->class,'','submit');
+        $generateFoundation = generate(2,'demo','','/',$table,$mysql,'add',$this->class,'','submit');
+
+        $this->assertContains('demo',$generateBoot);
+        $this->assertContains('form-control',$generateBoot);
+        $this->assertContains('/',$generateBoot);
+        $this->assertContains('submit',$generateBoot);
+        $this->assertStringEndsWith('</form>',$generateBoot);
+        $this->assertStringStartsWith('<form ',$generateBoot);
+
+        $this->assertContains('demo',$generateFoundation);
+        $this->assertNotContains('form-control',$generateFoundation);
+        $this->assertContains('/',$generateFoundation);
+        $this->assertContains('submit',$generateFoundation);
+        $this->assertStringEndsWith('</form>',$generateFoundation);
+        $this->assertStringStartsWith('<form ',$generateFoundation);
+
+
 
         $this->assertContains('id',$boot);
         $this->assertContains('name',$boot);
@@ -1889,6 +1910,24 @@ class FormTest extends TestCase
         form()->start('/','a')->generate($table,$mysql,'submit','adz','a','adz',999,5);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testFormException()
+    {
+        $i = table('mysql','imperiums','root','root','')->setName('doctors');
+
+        $this->expectException(Exception::class);
+
+         form()->start('/','')->generate('doctors',$i,'test','','dzaa','a',Form::EDIT,99999999);
+         form()->start('/','')->generate('doctors',$i,'test','','dzaa','a',Form::EDIT,800);
+         form()->start('/','')->generate('doctors',$i,'test','','dzaa','a',Form::EDIT,500);
+
+         form(2)->start('/','')->generate('doctors',$i,'test','','dzaa','a',Form::EDIT,99999999);
+         form(2)->start('/','')->generate('doctors',$i,'test','','dzaa','a',Form::EDIT,800);
+         form(2)->start('/','')->generate('doctors',$i,'test','','dzaa','a',Form::EDIT,500);
+
+    }
     public function testMultiple()
     {
         $this->assertContains('multiple',form()->start('','a')->select('a',['a','b'],'',true)->end());

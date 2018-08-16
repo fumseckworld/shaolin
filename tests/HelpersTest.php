@@ -723,6 +723,12 @@ class HelpersTest extends TestCase
 
     }
 
+    public function testIsLoaded()
+    {
+        $this->assertEquals(true,mysql_loaded());
+        $this->assertEquals(true,pgsql_loaded());
+        $this->assertEquals(true,sqlite_loaded());
+    }
     public function testExist()
     {
         $this->assertEquals(true,exist('drop'));

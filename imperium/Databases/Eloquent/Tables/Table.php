@@ -34,7 +34,6 @@ namespace  Imperium\Databases\Eloquent\Tables {
     class Table extends Eloquent implements EloquentTableBuilder
     {
 
-
         /**
          * @var string
          */
