@@ -21,30 +21,75 @@
 
 namespace Imperium\Directory {
 
+    use Imperium\File\File;
+
     class Dir
     {
 
         /**
          * delete a folder with files
          *
-         * @param $folder
+         * @param $directory
+         *
          * @return bool
          */
-        public static function clear($folder)
+        public static function clear(string $directory)
         {
-            if (!is_dir($folder))
-                return mkdir($folder);
+           if (!self::create($directory))
+           {
+               $files = array_diff(scandir($directory), array('.','..'));
+               foreach ($files as $file)
+               {
+                   if($file != '.gitignore')
+                   {
+                       (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::delete("$directory/$file");
+                   }
 
-            $files = array_diff(scandir($folder), array('.','..'));
-            foreach ($files as $file)
-            {
-                if($file != '.gitignore')
-                {
-                    (is_dir("$folder/$file")) ? self::clear("$folder/$file") : unlink("$folder/$file");
-                }
-
-            }
+               }
+           }
             return true;
+        }
+
+        /**
+         * create a new directory
+         *
+         * @param string $directory
+         *
+         * @return bool
+         */
+        public static function create(string $directory): bool
+        {
+            if (!self::is($directory))
+                return mkdir($directory);
+
+            return false;
+        }
+
+        /**
+         * remove  a  directory
+         *
+         * @param string $directory
+         *
+         * @return bool
+         */
+        public static function remove(string $directory): bool
+        {
+            if (self::is($directory))
+                return rmdir($directory);
+
+            return false;
+        }
+
+        /**
+         * check if param is a directory
+         *
+         * @param string $directory
+         *
+         * @return bool
+         */
+        public static function is(string $directory): bool
+        {
+             return is_dir($directory);
         }
     }
 }
