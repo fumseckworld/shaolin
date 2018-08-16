@@ -4,10 +4,12 @@
 <img src="https://poser.pugx.org/imperium/imperium/downloads" alt="Download">
 <img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence"> 
 </p>
- 
 
-[**Coverage**](coverage/index.html)
 
+* [**Discord**](https://discord.gg/qn6yptm)
+    * [**Coverage**](coverage/index.html)
+
+> run make in order to see the coverage and run tests
 
 # What it's ?
 
@@ -230,8 +232,3 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | optimize          | optimize a table                          | void                  | bool          |
 | modifyColumn      | modify an existing column                 | string multiples      | bool          |
 | setEngine         | define the engine                         | string $engine        | bool          |
-
-
-# To run tests
-
-`$ make`
