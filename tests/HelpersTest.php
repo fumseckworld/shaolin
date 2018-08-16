@@ -31,6 +31,7 @@ use Imperium\Databases\Eloquent\Connexion\Connexion;
 use Imperium\Databases\Eloquent\Eloquent;
 use Imperium\Databases\Eloquent\Users\Users;
 use Imperium\Databases\Exception\IdentifierException;
+use Imperium\Directory\Dir;
 use Imperium\File\File;
 use Imperium\Html\Bar\Icon;
 use Imperium\Html\Canvas\Canvas;
@@ -42,6 +43,7 @@ use PHPUnit\Framework\TestCase;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
+use Spatie\DbDumper\Exceptions\DumpFailed;
 
 class HelpersTest extends TestCase
 {
@@ -701,7 +703,30 @@ class HelpersTest extends TestCase
 
     }
 
+    public function testClearDirectory()
+    {
+        $this->assertEquals(true,Dir::clear('dump'));
+    }
+    public function testDump()
+    {
+        $base = 'imperiums';
+        $table = 'doctors';
 
+        $this->assertNotEquals(false,dump(Connexion::MYSQL,'root','root',$base,'dump'));
+        $this->assertNotEquals(false,dump(Connexion::POSTGRESQL,'postgres','',$base,'dump'));
+        $this->assertNotEquals(false,dump(Connexion::SQLITE,'','',$base,'dump'));
+
+        $this->assertNotEquals(false,dump(Connexion::MYSQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        $this->assertNotEquals(false,dump(Connexion::POSTGRESQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        $this->assertNotEquals(false,dump(Connexion::SQLITE,'','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+
+        $this->assertEquals(false,dump(Connexion::POSTGRESQL,'root','root',$base,'dump')) ;
+        $this->assertEquals(false,dump(Connexion::MYSQL,'postgres','',$base,'dump')) ;
+
+        $this->assertEquals(false , dump(Connexion::POSTGRESQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table)) ;
+        $this->assertEquals(false,dump(Connexion::MYSQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        
+    }
     public function testFuture()
     {
         $this->assertEquals(now()->addSecond(60)->toDateString(),future('second',60));

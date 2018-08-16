@@ -22,18 +22,16 @@
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
 use Imperium\Auth\Exceptions\OauthExceptions;
-use Imperium\Databases\Dumper\Databases\MySQLDatabase;
-use Imperium\Databases\Dumper\Databases\PostgreSQLDatabase;
-use Imperium\Databases\Dumper\Databases\SQLiteDatabase;
-use Imperium\Databases\Dumper\Tables\MySQLTable;
-use Imperium\Databases\Dumper\Tables\PostgreSQLTable;
-use Imperium\Databases\Dumper\Tables\SQLiteTable;
+use Imperium\Databases\Dumper\MySql;
+use Imperium\Databases\Dumper\PostgreSql;
+use Imperium\Databases\Dumper\Sqlite;
 use Imperium\Databases\Eloquent\Bases\Base;
 use Imperium\Databases\Eloquent\Connexion\Connexion;
 use Imperium\Databases\Eloquent\Eloquent;
 use Imperium\Databases\Eloquent\Query\Query;
 use Imperium\Databases\Eloquent\Tables\Table;
 use Imperium\Databases\Eloquent\Users\Users;
+use Imperium\Directory\Dir;
 use Imperium\File\File;
 use Imperium\Html\Bar\Icon;
 use Imperium\Html\Canvas\Canvas;
@@ -45,7 +43,6 @@ use PragmaRX\Google2FA\Google2FA;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
-
 
 
 if (!exist('registerForm'))
@@ -1012,50 +1009,44 @@ if (!exist('form'))
     }
 }
 
-if (!exist('dumper'))
+if (!exist('dump'))
 {
-    /**
-     * dump a database or a table
-     *
-     * @param string $driver
-     * @param string $username
-     * @param string $password
-     * @param string $database
-     * @param string $dumpPath
-     * @param int    $mode
-     * @param string $table
-     *
-     * @return bool
-     */
-    function dumper(string $driver, string $username, string $password, string $database, string $dumpPath, int $mode = Eloquent::MODE_DUMP_DATABASE, string $table ='')
+
+    function  dump(string $driver, string $username, string $password, string $database, string $dumpPath, int $mode = Eloquent::MODE_DUMP_DATABASE, string $table ='')
     {
+
+        Dir::clear($dumpPath);
         $filename = $mode == Eloquent::MODE_DUMP_DATABASE ? "$dumpPath/$database.sql" : "$dumpPath/$table.sql";
 
-        switch ($driver)
+        if (!is_null(connect($driver,$database,$username,$password)))
         {
-            case Connexion::MYSQL:
-                if ($mode == Eloquent::MODE_DUMP_DATABASE)
-                   MySQLDatabase::dump()->setDbName($database)->setUserName($username)->setPassword($password)->dumpToFile("$dumpPath/$database.sql",$dumpPath);
-                else
-                    MySQLTable::dump()->setTable($table)->setUserName($username)->setPassword($password)->setDbName($database)->dumpToFile("$dumpPath/$table.sql",$dumpPath);
-            break;
-            case Connexion::POSTGRESQL:
-                if ($mode == Eloquent::MODE_DUMP_DATABASE)
-                   PostgreSQLDatabase::dump()->setDbName($database)->setUserName($username)->setPassword($password)->dumpToFile("$dumpPath/$database.sql",$dumpPath);
-                else
-                    PostgreSQLTable::dump()->setTable($table)->setUserName($username)->setPassword($password)->setDbName($database)->dumpToFile("$dumpPath/$table.sql",$dumpPath);
-            break;
-            case Connexion::SQLITE:
-                if ($mode == Eloquent::MODE_DUMP_DATABASE)
-                   SQLiteDatabase::dump()->setDbName($database)->dumpToFile("$dumpPath/$database.sql",$dumpPath);
-                else
-                    SQLiteTable::dump()->setTable($table)->setDbName($database)->dumpToFile("$dumpPath/$table.sql",$dumpPath);
-            break;
-            default:
-                return false;
-            break;
+            switch ($driver)
+            {
+                case Connexion::MYSQL:
+                    if ($mode == Eloquent::MODE_DUMP_DATABASE)
+                        MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
+                    else
+                        MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
+                break;
+                case Connexion::POSTGRESQL:
+                    if ($mode == Eloquent::MODE_DUMP_DATABASE)
+                        PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
+                    else
+                        PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
+                break;
+                case Connexion::SQLITE:
+                    if ($mode == Eloquent::MODE_DUMP_DATABASE)
+                        Sqlite::create()->setDbName($database)->dumpToFile($filename);
+                    else
+                        Sqlite::create()->setDbName($database)->includeTables($table)->dumpToFile($filename);
+                break;
+
+            }
+
+
+            return true;
         }
-       return File::download($filename) != false;
+        return false;
     }
 }
 
