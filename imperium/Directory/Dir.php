@@ -32,6 +32,9 @@ namespace Imperium\Directory {
          */
         public static function clear($folder)
         {
+            if (!is_dir($folder))
+                return mkdir($folder);
+
             $files = array_diff(scandir($folder), array('.','..'));
             foreach ($files as $file)
             {
