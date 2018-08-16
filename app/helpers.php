@@ -21,7 +21,6 @@
 
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
-use Imperium\Auth\Exceptions\OauthExceptions;
 use Imperium\Databases\Dumper\MySql;
 use Imperium\Databases\Dumper\PostgreSql;
 use Imperium\Databases\Dumper\Sqlite;
@@ -39,7 +38,6 @@ use Imperium\Html\Form\Form;
 use Imperium\Html\Pagination\Pagination;
 use Imperium\Html\Records\Records;
 use Intervention\Image\ImageManager;
-use PragmaRX\Google2FA\Google2FA;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
@@ -47,6 +45,33 @@ use Sinergi\BrowserDetector\Os;
 
 if (!exist('registerForm'))
 {
+    /**
+     * build a register form conform for laravel
+     *
+     * @param int $formType
+     * @param string $action
+     * @param string $usernamePlaceholder
+     * @param string $emailPlaceholder
+     * @param string $passwordPlaceholder
+     * @param string $passwordConfirmPlaceholder
+     * @param string $submitText
+     * @param string $submitId
+     * @param bool $multiLang
+     * @param array $supportedLang
+     * @param string $chooseTimeZoneText
+     * @param string $csrfToken
+     * @param string $submitClass
+     * @param string $passwordIcon
+     * @param string $usernameIcon
+     * @param string $emailIcon
+     * @param string $submitIcon
+     * @param string $zonesIcon
+     * @param string $langIcon
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
     function registerForm(int $formType,string $action,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
     {
         $form = form($formType)->start($action,'register-form')->csrf($csrfToken);
@@ -78,18 +103,7 @@ if (!exist('zones'))
         return $zones;
     }
 }
-if (!exist('generateKey'))
-{
-    /**
-     * generate secret key
-     *
-     * @return string
-     */
-    function generateKey() : string
-    {
-        return (new Google2FA())->generateSecretKey();
-    }
-}
+
 
 if (!exist('records'))
 {
@@ -493,50 +507,15 @@ if (!exist('getCurrentBranch'))
      * @param string $repository
      *
      * @return string
+     *
+     * @throws \Cz\Git\GitException
      */
     function getCurrentBranch(string $repository): string
     {
         return (new GitRepository($repository))->getCurrentBranchName();
     }
 }
-if (!exist('checkCode'))
-{
-    /**
-     * check if a code is valid
-     *
-     * @param string $secret
-     * @param string $code
-     *
-     * @return bool|int
-     * @throws OauthExceptions
-     */
-    function checkCode(string $secret,string $code)
-    {
-        if (strlen($code) != 6)
-            throw OauthExceptions::codeLengthIncorrect();
-        else
-            return (new Google2FA())->verifyKey($secret,$code);
 
-    }
-}
-
-if (!exist('generateQrCode'))
-{
-    /**
-     * generate Qr code
-     *
-     * @param string $company
-     * @param string $username
-     * @param string $secret
-     *
-     * @param int $size
-     * @return string
-     */
-    function generateQrCode(string $company,string $username,string $secret,int $size = 200) : string
-    {
-        return  (new Google2FA())->getQRCodeGoogleUrl($company,$username,$secret,$size);
-    }
-}
 
 if (!exist('base'))
 {

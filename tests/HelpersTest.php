@@ -36,14 +36,12 @@ use Imperium\File\File;
 use Imperium\Html\Bar\Icon;
 use Imperium\Html\Canvas\Canvas;
 use Imperium\Html\Form\Form;
-use Imperium\Html\Records\Records;
 use Intervention\Image\ImageManager;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
-use Spatie\DbDumper\Exceptions\DumpFailed;
 
 class HelpersTest extends TestCase
 {
@@ -488,11 +486,7 @@ class HelpersTest extends TestCase
         $this->assertEquals(true, pass(Connexion::POSTGRESQL, 'postgres', '', ''));
     }
 
-    public function testGenerateQrCode()
-    {
-        $secret = generateKey();
-        $this->assertEquals("https://chart.googleapis.com/chart?chs=200x200&chld=M|0&cht=qr&chl=otpauth%3A%2F%2Ftotp%2Fcompany%3Afumseck%3Fsecret%3D$secret%26issuer%3Dcompany", generateQrCode('company', 'fumseck', $secret));
-    }
+
 
     public function testIsMobile()
     {
