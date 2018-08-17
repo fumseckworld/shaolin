@@ -545,12 +545,9 @@ namespace Imperium\File {
                     {
                         array_push($lines,fgets($file));
                     }
-                    if (self::close($file))
-                    {
-                        return $lines;
-                    } else {
-                        self::quit('error on close files');
-                    }
+                    self::close($file);
+
+                    return $lines;
                 }
             }
             return array();
@@ -584,12 +581,8 @@ namespace Imperium\File {
                             array_push($lines,$parts[0]);
 
                     }
-                    if (self::close($file))
-                    {
-                        return $lines;
-                    } else {
-                        self::quit('error on close files');
-                    }
+                    self::close($file);
+                    return $lines;
                 }
             }
             return array();
@@ -622,12 +615,8 @@ namespace Imperium\File {
                         if (!empty($parts[1]))
                             array_push($lines,rtrim($parts[1]));
                     }
-                    if (self::close($file))
-                    {
-                        return $lines;
-                    } else {
-                        self::quit('error on close files');
-                    }
+                    self::close($file);
+                    return $lines;
                 }
             }
             return array();

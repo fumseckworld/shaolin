@@ -48,7 +48,7 @@ class BaseTest extends TestCase
      *
      * @var string
      */
-    private $base = 'imperiums';
+    private $base = 'zen';
 
     /**
      *  Pdo

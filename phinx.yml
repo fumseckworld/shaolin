@@ -8,7 +8,7 @@ environments:
     mysql:
         adapter: mysql
         host: localhost
-        name: imperiums
+        name: zen
         user: root
         pass: 'root'
         port: 3306
@@ -17,7 +17,7 @@ environments:
     pgsql:
         adapter: pgsql
         host: localhost
-        name: imperiums
+        name: zen
         user: postgres
         pass: ''
         port: 5432
@@ -26,7 +26,7 @@ environments:
     sqlite:
         adapter: sqlite
         host: localhost
-        name: imperiums
+        name: zen
         user: root
         pass: ''
         port: 3306

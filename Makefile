@@ -1,6 +1,6 @@
 .PHONY:serve all serve add mysql pgsql sqlite dbs drop
 
-BASE=imperiums
+BASE=zen
 
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"

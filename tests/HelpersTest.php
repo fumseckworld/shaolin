@@ -25,6 +25,7 @@ namespace tests;
 
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
+use Exception;
 use Faker\Generator;
 use Imperium\Databases\Eloquent\Bases\Base;
 use Imperium\Databases\Eloquent\Connexion\Connexion;
@@ -60,7 +61,7 @@ class HelpersTest extends TestCase
      */
     private $mariadb;
 
-    private $base = 'imperiums';
+    private $base = 'zen';
 
     private $table = 'country';
     /**
@@ -615,7 +616,7 @@ class HelpersTest extends TestCase
     public function testShow()
     {
 
-        $database = 'imperiums';
+        $database = 'zen';
 
         $this->assertEquals([],show(Connexion::MYSQL, $database, 'root', 'root', 88888888));
         $this->assertEquals([],show(Connexion::POSTGRESQL, $database, 'postgres', '', 88888888));
@@ -657,6 +658,71 @@ class HelpersTest extends TestCase
     }
 
     /**
+     * @throws \Exception
+     */
+    public function testHtml()
+    {
+        $elements = array(
+               'title','article','aside','footer','header','h1','h2','h3','h4','h5','h6','section','div','p','li','ol','ul','pre'
+        );
+
+        foreach ($elements as $element)
+        {
+            $content = faker()->text();
+            $class = faker()->text(10);
+            $id = faker()->text(10);
+            $x = html($element,$content);
+
+            $this->assertStringStartsWith("<$element>",$x);
+            $this->assertStringEndsWith("</$element>",$x);
+            $this->assertContains("$content</$element>",$x);
+            $this->assertNotContains('class=',$x);
+            $this->assertNotContains('id=',$x);
+
+            $x = html($element,$content,$class);
+
+            $this->assertContains('class="'.$class.'"',$x);
+            $this->assertNotContains('id=',$x);
+
+
+            $x = html($element,$content,'',$id);
+
+            $this->assertNotContains('class="'.$class.'"',$x);
+            $this->assertContains('id="'.$id.'"',$x);
+
+            $x = html($element,$content,$class,$id);
+
+            $this->assertContains('class="'.$class.'"',$x);
+            $this->assertContains('id="'.$id.'"',$x);
+        }
+        $content = faker()->text();
+        $class = faker()->text(10);
+        $x = html('link','lily.css');
+        $this->assertEquals('<link href="lily.css" rel="stylesheet">',$x);
+
+        $x = html('img',$content,$class);
+        $this->assertEquals('<img src="'.$content.'" class="'.$class.'">',$x);
+
+        $x = html('meta','charset="utf-8"');
+        $this->assertEquals('<meta charset="utf-8">',$x);
+
+        $this->expectException(Exception::class);
+        html($content,'li');
+        html($content,'ul');
+        html($content,'div');
+    }
+    public function testBootstrapJs()
+    {
+        $code  = bootstrapJs();
+        $this->assertNotEmpty($code);
+        $this->assertContains('bootstrap.min.js',$code);
+        $this->assertContains('jquery',$code);
+        $this->assertContains('popper',$code);
+        $this->assertStringStartsWith('<script ',$code);
+        $this->assertStringEndsWith('</script>',$code);
+    }
+
+    /**
      * @throws IdentifierException
      */
     public function testDrop()
@@ -668,18 +734,18 @@ class HelpersTest extends TestCase
         $mysqlBases = base(Connexion::MYSQL,'','root','root','');
         $pgsqlBases = base(Connexion::POSTGRESQL,'','postgres','','');
 
-        $mysqlTables = table(Connexion::MYSQL,'imperiums','root','root','');
-        $pgsqlTables = table(Connexion::POSTGRESQL,'imperiums','postgres','','');
+        $mysqlTables = table(Connexion::MYSQL,'zen','root','root','');
+        $pgsqlTables = table(Connexion::POSTGRESQL,'zen','postgres','','');
 
         $mysqlUsers = user(Connexion::MYSQL,'root','root');
         $pgsqlUsers = user(Connexion::POSTGRESQL,'postgres','');
 
-        $this->assertEquals(true,userAdd(Connexion::MYSQL,$user,$user,'',root(Connexion::MYSQL,'root','root')));
-        $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,$user,$user,'',root(Connexion::POSTGRESQL,'postgres','')));
+       $this->assertEquals(true,userAdd(Connexion::MYSQL,$user,$user,'',root(Connexion::MYSQL,'root','root')));
+       $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,$user,$user,'',root(Connexion::POSTGRESQL,'postgres','')));
 
 
-        $this->assertEquals(true,create(Connexion::MYSQL,$user,'utf8','utf8_general_ci',root(Connexion::MYSQL,'root','root')));
-        $this->assertEquals(true,create(Connexion::POSTGRESQL,$user,'UTF8','C',root(Connexion::POSTGRESQL,'postgres','')));
+       $this->assertEquals(true,create(Connexion::MYSQL,$user,'utf8','utf8_general_ci',root(Connexion::MYSQL,'root','root')));
+       $this->assertEquals(true,create(Connexion::POSTGRESQL,$user,'UTF8','C',root(Connexion::POSTGRESQL,'postgres','')));
 
 
 
@@ -703,7 +769,7 @@ class HelpersTest extends TestCase
     }
     public function testDump()
     {
-        $base = 'imperiums';
+        $base = 'zen';
         $table = 'doctors';
 
         $this->assertNotEquals(false,dump(Connexion::MYSQL,'root','root',$base,'dump'));

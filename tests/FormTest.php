@@ -1724,7 +1724,7 @@ class FormTest extends TestCase
     {
 
         $table = "doctors";
-        $base = 'imperiums';
+        $base = 'zen';
 
         $mysql = table(Connexion::MYSQL,$base,'root','root','');
         $pgsql = table(Connexion::POSTGRESQL,$base,'postgres','','');
@@ -1915,7 +1915,7 @@ class FormTest extends TestCase
      */
     public function testFormException()
     {
-        $i = table('mysql','imperiums','root','root','')->setName('doctors');
+        $i = table('mysql','zen','root','root','')->setName('doctors');
 
         $this->expectException(Exception::class);
 

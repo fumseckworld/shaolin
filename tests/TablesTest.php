@@ -55,7 +55,7 @@ class TablesTest extends TestCase
      */
     private $db;
     
-    private $base = 'imperiums';
+    private $base = 'zen';
 
     private $mariadb = 'sql/mariadb.sql';
 

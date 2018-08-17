@@ -1,11 +1,11 @@
 .idea
 vendor
 composer.lock
-index.php
 dump
 lion
 *_link
-imperiums
+zen
 testing
 scss
 coverage
+imperiums

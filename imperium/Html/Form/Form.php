@@ -2697,7 +2697,7 @@ class Form implements FormBuilder
             {
                 $dataFormId = sha1("$table-{$record->$primary}");
 
-                $this->form .= '<tr><form action="'.$action.'" method="get" id="'.$dataFormId.'" class="dynamic">';
+                $this->form .= '<form action="'.$action.'" method="get" id="'.$dataFormId.'" class="dynamic"><tr>';
 
                 foreach ($columns as $k => $column)
                 {
@@ -2731,7 +2731,7 @@ class Form implements FormBuilder
                     }
 
                 }
-                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></form></tr>';
+                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></tr></form>';
             }
 
             $this->form .= '</tbody></table></div>';

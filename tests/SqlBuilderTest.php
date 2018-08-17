@@ -29,7 +29,7 @@ use PHPUnit\Framework\TestCase;
 
 class SqlBuilderTest extends TestCase
 {
-    private $base = 'imperiums';
+    private $base = 'zen';
 
     /**
      * @var string

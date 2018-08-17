@@ -29,7 +29,7 @@ use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
 {
-    private $base = 'imperiums';
+    private $base = 'zen';
 
     public function testMysql()
     {

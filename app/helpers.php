@@ -155,6 +155,80 @@ if (!exist('records'))
     }
 }
 
+if (!exist('bootstrapJs'))
+{
+    function bootstrapJs(): string
+    {
+        return '<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script><script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>';
+    }
+}
+
+
+if (!exist('html'))
+{
+    /**
+     * @param string $element
+     * @param string $content
+     * @param string $class
+     * @param string $id
+     *
+     * @return string
+     * @throws Exception
+     */
+    function html(string $element, string $content ,string $class = '',string $id= ''): string
+    {
+        switch ($element)
+        {
+            case 'link':
+                    return '<link href="'.$content.'" rel="stylesheet">';
+            break;
+            case 'meta':
+                return '<meta '.$content.'>';
+            break;
+            case 'img':
+                return '<img src="'.$content.'" class="'.$class.'">';
+            break;
+            case 'title':
+            case 'article':
+            case 'aside':
+            case 'footer':
+            case 'header':
+            case 'h1':
+            case 'h2':
+            case 'h3':
+            case 'h4':
+            case 'h5':
+            case 'h6':
+            case 'nav':
+            case 'section':
+            case 'div':
+            case 'p':
+            case 'li':
+            case 'ol':
+            case 'ul':
+            case 'pre':
+
+                $html = "<$element";
+
+                if (!empty($class))
+                    $html .= ' class="'.$class.'"';
+
+                if (!empty($id))
+                    $html .= ' id="'.$id.'"';
+
+                $html .= '>' .$content . '</'.$element.'>';
+
+                return $html;
+
+            break;
+            default:
+                throw new Exception('Element are not in supported list');
+            break;
+        }
+    }
+}
+
+
 if (!exist('bootswatch'))
 {
     /**
