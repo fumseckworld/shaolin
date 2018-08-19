@@ -32,6 +32,8 @@ namespace Imperium\Html\Records {
          * @param string $class
          * @param Table $instance
          * @param string $table
+         * @param $tableIcon
+         * @param string $changeOfTableText
          * @param string $editPrefix
          * @param string $deletePrefix
          * @param string $orderBy
@@ -50,11 +52,9 @@ namespace Imperium\Html\Records {
          * @param string $confirmDeleteText
          * @param string $startPaginationText
          * @param string $endPaginationText
-         * @param string $updatePaginationPlaceholder
          * @param string $advancedRecordsText
          * @param string $simpleRecordsText
          * @param string $formPrefixAction
-         * @param string $recordText
          * @param string $managementOfTableText
          * @param string $tableUrlPrefix
          * @param bool $columnNameAlignCenter
@@ -63,66 +63,39 @@ namespace Imperium\Html\Records {
          * @param bool $preferPaginationRight
          * @param bool $framework
          * @param bool $preferForm
-         * @param int $textareaCols
+         * @param string $separator
          * @param int $textareaRow
          *
          * @return string
          *
          * @throws Exception
          */
-        public static function show(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
+        public static function show(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string
         {
 
-            $instance = $instance->setName($table);
-
-            $key = $instance->primaryKey();
-
-            if (is_null($key))
-                throw new Exception('We have not found the primary key');
-            
-            $offset = ($limit * $current) - $limit;
-
             if ($framework)
-            {
                 $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}function search(elem){var pagination = elem.attributes[0].value;window.location = pagination + "/search/" + elem.value;}</script>';
-
-                $parts = explode('/',server('REQUEST_URI'));
-                $search = has('search',$parts);
-                if ($search)
-                    $like = end($parts);
-                else
-                    $like = '';
-
-                if (empty($like))
-                    $records = sql($table)->setPdo($pdo)->limit($limit, $offset)->orderBy($key,$orderBy)->getRecords();
-                else
-                    $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance, $like)->orderBy($key,$orderBy)->getRecords();
-
-            }else
-            {
+            else
                 $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}function search(elem){var pagination = elem.attributes[0].value;window.location = pagination + "?search=" + elem.value;}</script>';
 
-                $like = get('search');
-                if (empty($like))
-                    $records = sql($table)->setPdo($pdo)->limit($limit,$offset)->orderBy($key,$orderBy)->getRecords();
-                else
-                    $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance,$like)->orderBy($key,$orderBy)->getRecords();
-            }
-            $pagination = pagination( $limit,$paginationUrl,$current,$instance->count($table),$startPaginationText,$endPaginationText);
+            $records = getRecords($instance,$table,$current,$limit,$pdo,$framework,$orderBy);
 
+            $selectTable = selectTable($instance,$tableUrlPrefix,$table,$changeOfTableText,$formType,$limit,$csrfToken,$separator,$tableIcon);
+
+            $pagination =   pagination( $limit,$paginationUrl,$current,$instance->count($table),$startPaginationText,$endPaginationText);
 
             if ($preferForm)
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="true">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="false">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$table.'-tab" data-toggle="tab" href="#'.$table.'" role="tab" aria-controls="'.$table.'" aria-selected="false">'.$table.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$saveText,$tableUrlPrefix,$limit,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$textareaCols,$textareaRow).' </div>  <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView($table,$instance,$records,$formPrefixAction,$class,$saveText,$tableUrlPrefix,$limit,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'.form($formType)->generateAlterTableView($table,$instance,$formType).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.   advancedView($table,$instance,$records,$formPrefixAction,$selectTable,$saveText,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$formType,$textareaRow)       .' </div>  <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'. simpleView($table,$instance,$records,$selectTable,$class,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$formType).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'. alterTableView($table,$instance,$formType).'</div></div>';
 
             }
             else
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="true">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="false">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$table.'-tab" data-toggle="tab" href="#'.$table.'" role="tab" aria-controls="'.$table.'" aria-selected="false">'.$table.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'.form($formType)->generateSimplyRecordView(  $table,$instance,$records,$formPrefixAction,$class,$saveText,$tableUrlPrefix,$limit,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight).' </div>  <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.form($formType)->generateAdvancedRecordView($table,$instance,$records,$formPrefixAction,$class,$saveText,$tableUrlPrefix,$limit,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$deleteIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$textareaCols,$textareaRow).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'.form($formType)->generateAlterTableView($table,$instance,$formType).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'. simpleView($table,$instance,$records,$selectTable,$class,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$formType).' </div>  <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'. advancedView($table,$instance,$records,$formPrefixAction,$selectTable,$saveText,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$formType,$textareaRow).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'.alterTableView($table,$instance,$formType).'</div></div>';
             }
 
             return $html;

@@ -1,6 +1,7 @@
 <?php
 
 use Imperium\Databases\Eloquent\Connexion\Connexion;
+use Imperium\Html\Form\Form;
 
 require_once 'vendor/autoload.php';
 
@@ -54,7 +55,7 @@ $current = rand(1,$limit);;
         }
             try{
 
-                $records = records('mysql','table table-dark table-bordered',$i,$x,'imperium/edit',"$H/$x/remove?remove-id=",'DESC','Editer','Supprimer','btn btn-outline-primary btn-block','btn btn-outline-danger btn-block',fa('fa-edit'),fa('fa-trash'),$limit,$current,'imperium',$pdo,1,"Sauvegarder",'are you sure','previous','end','','advanced','normal',"index.php?table=$x",'',$x,'?table=',true,true,'',true,true,true,25,1);
+                $records = records(Connexion::MYSQL,'table table-dark table-bordered',$i,$x,fa('fa-table'),'Selected a another table','edit','remove','desc','editer','supprimer','btn btn-outline-primary btn-block','btn btn-outline-danger btn-block',fa('fa-edit'),fa('fa-trash'),$limit,$current,'imperium',$pdo,  Form::BOOTSTRAP,'Sauvegarder','Etes vous sur de vouloir supprimer ?','debut','fin','Advance','simple',"index.php?table=$x",'management','index.php?table=',true,true,'',false,false,true,'',1);
 
                 echo html('div', $records, 'container');
             }catch (Exception $e)
@@ -65,10 +66,6 @@ $current = rand(1,$limit);;
 
         <?= bootstrapJs();?>
 
-
-        <script type="text/javascript">
-
-        </script>
 
     </body>
 </html>

@@ -785,6 +785,22 @@ class FormTest extends TestCase
 
     }
 
+    /**
+     * @throws Exception
+     */
+    public function testAdvancedView()
+    {
+        $base = 'zen';
+        $user = 'root';
+        $table = 'doctors';
+        $t = table('mysql',$base,$user,$user,'dump')->setName($table);
+        $pdo = connect('mysql',$base,$user,$user);
+        $records = getRecords($t,$table,1,10,$pdo,true);
+
+
+        $this->assertNotEmpty($records);
+
+    }
     public function testSelectWithSize()
     {
         $form = form()->setLargeInput(true)->select('a',['b'])->end();

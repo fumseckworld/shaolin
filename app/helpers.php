@@ -108,10 +108,13 @@ if (!exist('zones'))
 if (!exist('records'))
 {
     /**
+     *
      * @param string $driver
      * @param string $class
-     * @param \Imperium\Databases\Eloquent\Tables\Table $instance
+     * @param Table $instance
      * @param string $table
+     * @param $tableIcon
+     * @param string $changeOfTableText
      * @param string $editPrefix
      * @param string $deletePrefix
      * @param string $orderBy
@@ -124,17 +127,15 @@ if (!exist('records'))
      * @param int $limit
      * @param int $current
      * @param string $paginationUrl
-     * @param \PDO $pdo
+     * @param PDO $pdo
      * @param int $formType
      * @param string $saveText
      * @param string $confirmDeleteText
      * @param string $startPaginationText
      * @param string $endPaginationText
-     * @param string $updatePaginationPlaceholder
      * @param string $advancedRecordsText
      * @param string $simpleRecordsText
      * @param string $formPrefixAction
-     * @param string $recordText
      * @param string $managementOfTableText
      * @param string $tableUrlPrefix
      * @param bool $columnNameAlignCenter
@@ -142,18 +143,388 @@ if (!exist('records'))
      * @param string $csrfToken
      * @param bool $preferPaginationRight
      * @param bool $framework
-     *
      * @param bool $preferForm
-     * @param int $textareaCols
+     * @param string $separator
      * @param int $textareaRow
+     *
      * @return string
+     *
      * @throws Exception
      */
-    function records(string $driver, string $class, Table $instance, string $table, string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $updatePaginationPlaceholder, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $recordText,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,int $textareaCols = 25,int $textareaRow = 1): string
+    function records(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string
     {
-         return Records::show($driver,$class,$instance, $table, $editPrefix,  $deletePrefix,  $orderBy, $editText, $deleteText,$editClass, $deleteClass, $editIcon, $deleteIcon,$limit,$current, $paginationUrl,$pdo,$formType, $saveText, $confirmDeleteText, $startPaginationText, $endPaginationText,$updatePaginationPlaceholder,$advancedRecordsText, $simpleRecordsText, $formPrefixAction, $recordText, $managementOfTableText, $tableUrlPrefix,$columnNameAlignCenter,$columnNameToUpper, $csrfToken, $preferPaginationRight, $framework, $preferForm,$textareaCols, $textareaRow );
+       return Records::show( $driver, $class,$instance, $table,$tableIcon, $changeOfTableText,$editPrefix,  $deletePrefix,   $orderBy,   $editText,   $deleteText,   $editClass,   $deleteClass,   $editIcon,   $deleteIcon,   $limit,   $current,   $paginationUrl,   $pdo,   $formType,   $saveText,   $confirmDeleteText,   $startPaginationText,   $endPaginationText,   $advancedRecordsText,   $simpleRecordsText,   $formPrefixAction,  $managementOfTableText,  $tableUrlPrefix,  $columnNameAlignCenter,   $columnNameToUpper,  $csrfToken  ,   $preferPaginationRight ,   $framework,   $preferForm,    $separator , $textareaRow );
     }
 }
+
+
+if (!exist('selectTable'))
+{
+    /**
+     * generate a form to checkout on a new table table
+     *
+     * @param Table $instance
+     * @param string $urlPrefix
+     * @param string $currentTable
+     * @param string $changeOfTableText
+     * @param int $formType
+     * @param int $paginationLimit
+     * @param string $csrf
+     * @param string $separator
+     * @param string $icon
+     *
+     * @return string
+     */
+    function selectTable(Table $instance,string $urlPrefix,string $currentTable,string $changeOfTableText,int $formType,int $paginationLimit,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-table"></i>'): string
+    {
+        $tables =  [ '#' =>  $changeOfTableText ];
+
+        foreach ($instance->show() as $x)
+        {
+            if ($x != $currentTable)
+            {
+                $tables = merge($tables,["$urlPrefix$separator$x" => $x]);
+            }
+        }
+        if ($formType === Form::BOOTSTRAP)
+            return '<div class="row mt-5"> <div class="col">'. form($formType)->start('',uniqid())->csrf($csrf)->redirectSelect('table',$tables,$icon)->end().'</div> <div class="col">  <div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div><input type="number" class="form-control" min="1" value="'.$paginationLimit.'" onchange="location = this.value"></div></div></div></div> ';
+        else
+            return '<div class="row"><div class="medium-6 small-12 large-6"> '. form($formType)->start('',uniqid())->csrf($csrf)->redirectSelect('table',$tables,$icon)->end().'</div> <div class="medium-6 small-12 large-6"> <div class="input-group"><span class="input-group-label">'.$icon.'</span></div><input type="number"  min="1" value="'.$paginationLimit.'" onchange="location = this.value"></div></div> ';
+    }
+}
+
+if (!exist('simpleView'))
+{
+    /**
+     * generate an simply view to manage records
+     *
+     * @param string $table
+     * @param Table $instance
+     * @param array $records
+     * @param string $selectTable
+     * @param string $tableClass
+     * @param string $removeText
+     * @param string $removeConfirm
+     * @param string $removeBtnClass
+     * @param string $removeUrl
+     * @param string $removeIcon
+     * @param string $editText
+     * @param string $editUrl
+     * @param string $editClass
+     * @param string $editIcon
+     * @param string $pagination
+     * @param bool $columnAlignCenter
+     * @param bool $columnToUpper
+     * @param bool $preferPaginationRight
+     * @param int $formType
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function simpleView(string $table, Table $instance , array $records , string $selectTable,string $tableClass,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $preferPaginationRight = true,int $formType = Form::BOOTSTRAP): string
+    {
+        $instance = $instance->setName($table);
+
+        $columns  = $instance->getColumns();
+        $primary  = $instance->primaryKey();
+
+
+        if(is_null($primary))
+            throw new Exception('We have not found a primary key');
+
+        if ($formType == Form::BOOTSTRAP)
+        {
+
+            $code = $selectTable.'<div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
+            $code .= '<script type="text/javascript">function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
+
+            foreach ($columns as  $x)
+            {
+                if ($x != $primary)
+                {
+                    $code.= '<th  class="';
+                    if ($columnAlignCenter) {  $code .= ' text-center'; }
+
+                    if ($columnToUpper) {  $code .= ' text-uppercase'; }
+
+                    $code .= '">'.$x.'</th>';
+                }
+            }
+            $code .= '<th  class="';
+
+            if ($columnAlignCenter) {  $code.= ' text-center'; }
+
+            if ($columnToUpper) {  $code.= ' text-uppercase'; }
+
+            $code.= '">'.$editText.'</th>';
+
+            $code .= '<th  class="';
+
+            if ($columnAlignCenter) {  $code .= ' text-center'; }
+
+            if ($columnToUpper) { $code .= ' text-uppercase'; }
+
+            $code.= '">'.$removeText.'</th></tr></thead><tbody>';
+
+            foreach ($records as $record)
+            {
+                $code .= '<tr>';
+
+                foreach ($columns as $k => $column)
+                {
+
+                    if (is_null($record->$column))
+                        $record->$column = '';
+
+                    if($column != $primary)
+                    {
+                        $code .= '<td> '.$record->$column.'</td>';
+                    }
+                }
+                $code .= '<td> <a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></td><td> <a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></form></tr>';
+            }
+
+            $code .= '</tbody></table></div>';
+
+            if ($preferPaginationRight)
+                $code .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
+            else
+                $code .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
+
+            return $code;
+        }
+    }
+}
+
+
+
+if (!exist('alterTable'))
+{
+    /**
+    * generate alter table view
+    *
+    * @param string $table
+    * @param Table $instance
+    * @param int $formType
+    *
+    * @return string
+    */
+    function alterTableView(string $table, Table $instance,int $formType = Form::BOOTSTRAP): string
+    {
+        return '';
+    }
+
+}
+if (!exist('advancedView'))
+{
+
+
+    /**
+     * generate an advanced view to manage records
+     *
+     * @param string $table
+     * @param Table $instance
+     * @param array $records
+     * @param string $action
+     * @param string $selectTable
+     * @param string $saveText
+     * @param string $editText
+     * @param string $btnEditClass
+     * @param string $removeUrl
+     * @param string $removeClassBtn
+     * @param string $removeText
+     * @param string $confirmRemoveText
+     * @param string $pagination
+     * @param bool $columnAlignCenter
+     * @param bool $columnToUpper
+     * @param bool $paginationPreferRight
+     * @param string $csrf
+     * @param int $type
+     * @param int $textareaRow
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function advancedView(string $table, Table $instance,array $records,string $action,string $selectTable,string $saveText,string $editText,string $btnEditClass,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int $type = Form::BOOTSTRAP,int  $textareaRow =  1): string
+    {
+
+        $instance = $instance->setName($table);
+        $types    = $instance->getColumnsTypes();
+        $columns  = $instance->getColumns();
+        $primary  = $instance->primaryKey();
+
+        if(is_null($primary))
+            throw new Exception('We have not found a primary key');
+
+        $number = array(
+            'smallint',
+            'integer',
+            'bigint',
+            'decimal',
+            'numeric',
+            'real',
+            'double',
+            'double precision',
+            'smallserial',
+            'serial',
+            'integer',
+            'int',
+            'bigserial',
+            'smallint',
+            'float',
+        );
+
+        $date = array(
+            'date',
+            'datetime',
+            'timestamp',
+            'time',
+            'interval',
+            'real',
+            'float4',
+            'timestamp without time zone'
+        );
+
+
+        if ($type == Form::BOOTSTRAP)
+        {
+            $code = $selectTable;
+            $code.= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();   const id = btn.attr("data-form-id"); if (btn.text() !== btn.attr("data-edit")){  $("#"+id).submit(); }  if (btn.text() === btn.attr("data-edit")){ btn.text(btn.attr("data-save"))}else{btn.text(btn.attr("data-edit"))} tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>';
+
+            $code .= ' <div class="table-responsive"><div class="table"><div class="thead"><div class="tr">';
+
+            foreach ($columns as $column)
+            {
+                if ($column != $primary)
+                {
+                    $code .= ' <div class="td ';
+                    if ($columnToUpper)
+                        $code .= ' text-uppercase';
+
+                    if ($columnAlignCenter)
+                        $code.= ' text-center';
+
+                    $code.= '">'.$column.'</div>';
+                }
+            }
+
+            $code.= '<div class="td">'.$editText.'</div><div class="td">'.$removeText.'</div></div></div> <div class="tbody">';
+
+
+            foreach ($records as $record)
+            {
+                $id = uniqid().sha1($table.md5($record->$primary));
+
+                $code.= '<form class="tr" id="'.$id.'" method="post" action="'.$action.'">'.$csrf.'';
+
+                foreach ($columns as $k => $column)
+                {
+                    $type = $types[$k];
+
+                    if (is_null($record->$column))
+                        $record->$column = '';
+
+                    if($column != $primary)
+                    {
+                        $type = explode('(',$type);
+                        $type = $type[0];
+
+                        switch ($type)
+                        {
+                            case has($type,$number):
+                                $code .= '<div class="td"><span class="d-none td-input"><input type="number" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>';
+                            break;
+                            case has($type,$date):
+                                $code .= '<div class="td"><span class="d-none td-input"><input type="datetime" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>';
+                            break;
+                            default:
+                                $code.= '<div class="td"><span class="d-none td-input"><textarea name="'.$column.'" name="'.$column.'"  class="form-control form-control-lg"  rows="'.$textareaRow.'">'.$record->$column.'</textarea></span> <span class="record"> '.$record->$column.'</span></div>';
+                            break;
+                        }
+                    } else {
+                        $code.= '  <div class="td d-none"><input name="'.$primary.'"  value="'.$record->$primary.'"></div>';
+                        $code .= '  <div class="td d-none"><input name="table"  value="'.$table.'"></div>';
+                    }
+                }
+
+                $code .= '<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$btnEditClass.'" data-form-id="'.$id.'" data-edit="'.$editText.'" data-save="'.$saveText.'" >'.$editText.'</button> </div><div class="td  remove btn-group"><a href="'.$removeUrl.'/'.  $record->$primary.'" onclick="sure(event,this.attributes[2].value)"  data-confirm="'.$confirmRemoveText.'" class="'.$removeClassBtn.'" data-form-id="'.$id.'">'.$removeText.'</a> </div></form>';
+            }
+
+
+            $code.= '</div></div></div>';
+
+            if ($paginationPreferRight)
+                $code .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
+            else
+                $code .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
+
+            return $code;
+        }
+    }
+}
+if (!exist('getRecords'))
+{
+    /**
+     * get records
+     *
+     * separate record code in multiples methods
+     *
+     * @param Table $instance
+     * @param string $table
+     * @param int $current
+     * @param int $limit
+     * @param PDO $pdo
+     * @param bool $framework
+     * @param string $orderBy
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
+    function getRecords(Table $instance,string $table,int $current,int $limit,PDO $pdo,bool $framework,string $orderBy = 'DESC')
+    {
+
+        $instance = $instance->setName($table);
+
+        $key = $instance->primaryKey();
+        if (is_null($key))
+            throw new Exception('We have not found a primary key');
+
+        $offset = ($limit * $current) - $limit;
+        $driver = $instance->getDriver();
+        if ($framework)
+        {
+
+
+            $parts = explode('/',server('REQUEST_URI'));
+            $search = has('search',$parts);
+            if ($search)
+                $like = end($parts);
+            else
+                $like = '';
+
+            if (empty($like))
+                $records = sql($table)->setPdo($pdo)->limit($limit, $offset)->orderBy($key,$orderBy)->getRecords();
+            else
+                $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance, $like)->orderBy($key,$orderBy)->getRecords();
+
+        }else
+        {
+
+
+            $like = get('search');
+            if (empty($like))
+                $records = sql($table)->setPdo($pdo)->limit($limit,$offset)->orderBy($key,$orderBy)->getRecords();
+            else
+                $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance,$like)->orderBy($key,$orderBy)->getRecords();
+        }
+
+        return $records;
+    }
+}
+
 
 if (!exist('bootstrapJs'))
 {

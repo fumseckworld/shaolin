@@ -63,74 +63,6 @@ namespace Imperium\Html\Form\Core {
          */
         public function generate(string $table, Table $instance,string $submitText,string $submitClass,string $submitId,string $submitIcon = '',int $mode = Form::CREATE,int $id = 0): string;
 
-        /**
-         * generate an advanced records view
-         *
-         * @param string $table
-         * @param Table $instance
-         * @param array $records
-         * @param string $action
-         * @param string $tableClass
-         * @param string $saveText
-         * @param string $tableUrlPrefix
-         * @param int $limit
-         * @param string $editText
-         * @param string $btnEditClass
-         * @param string $removeUrl
-         * @param string $removeClassBtn
-         * @param string $removeText
-         * @param string $confirmRemoveText
-         * @param string $removeIcon
-         * @param string $pagination
-         * @param bool $columnAlignCenter
-         * @param bool $columnToUpper
-         * @param bool $paginationPreferRight
-         * @param string $csrf
-         * @param int $textareaCols
-         * @param int $textareaRow
-         * @return string
-         */
-        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $saveText, string $tableUrlPrefix, int $limit,string $editText,string $btnEditClass, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
-
-        /**
-         * generate a simply record view
-         *
-         * @param string $table
-         * @param Table $instance
-         * @param array $records
-         * @param string $action
-         * @param string $tableClass
-         * @param string $searchPlaceholder
-         * @param string $tableUrlPrefix
-         * @param int $limit
-         * @param string $removeText
-         * @param string $removeConfirm
-         * @param string $removeBtnClass
-         * @param string $removeUrl
-         * @param string $removeIcon
-         * @param string $editText
-         * @param string $editUrl
-         * @param string $editClass
-         * @param string $editIcon
-         * @param string $pagination
-         * @param bool $columnAlignCenter
-         * @param bool $columnToUpper
-         * @param bool $preferPaginationRight
-         * @return string
-         */
-        public function generateSimplyRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $preferPaginationRight = true): string;
-
-
-        /**
-         * generate alter table view
-         *
-         * @param string $table
-         * @param Table $instance
-         * @param int $formType
-         *
-         * @return string
-         */
-        public function generateAlterTableView(string $table, Table $instance,int $formType = Form::BOOTSTRAP): string;
 
         /**
          * start hidden input
@@ -188,8 +120,6 @@ namespace Imperium\Html\Form\Core {
          * @param bool $required
          * @param bool $autofocus
          * @param bool $autoComplete
-         * @param bool $tableOption
-         * @param string $dataFormId
          * @return Form
          */
         public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form;
