@@ -2561,7 +2561,7 @@ class Form implements FormBuilder
      * @param array $records
      * @param string $action
      * @param string $tableClass
-     * @param string $searchPlaceholder
+     * @param string $saveText
      * @param string $tableUrlPrefix
      * @param int $limit
      * @param string $editText
@@ -2837,7 +2837,7 @@ class Form implements FormBuilder
                        $this->form .= '<td> '.$record->$column.'</td>';
                     }
                 }
-                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></span></td><td><span class=" row justify-content-center"><a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></form></tr>';
+                $this->form .= '<td> <a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></td><td> <a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></form></tr>';
             }
 
             $this->form .= '</tbody></table></div>';

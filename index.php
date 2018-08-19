@@ -10,8 +10,8 @@ $x = empty(get('table')) ? 'doctors' : get('table');
 
 $pdo = connect(Connexion::MYSQL,'zen','root','root');
 $H = server('HTTP_REFERER');
-
-
+$limit = 10;
+$current = rand(1,$limit);;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,7 +54,7 @@ $H = server('HTTP_REFERER');
         }
             try{
 
-                $records = records('mysql','  ',$i,$x,'imperium/edit',"$H/$x/remove?remove-id=",'DESC','Editer','Supprimer','btn btn-outline-primary btn-block','btn btn-outline-danger btn-block',fa('fa-edit'),fa('fa-trash'),20,1,'imperium',$pdo,1,"Sauvegarder",'are you sure','previous','end','','advanced','normal',"index.php?table=$x",'',$x,'?table=',true,true,'',true,true,true,25,1);
+                $records = records('mysql','table table-dark table-bordered',$i,$x,'imperium/edit',"$H/$x/remove?remove-id=",'DESC','Editer','Supprimer','btn btn-outline-primary btn-block','btn btn-outline-danger btn-block',fa('fa-edit'),fa('fa-trash'),$limit,$current,'imperium',$pdo,1,"Sauvegarder",'are you sure','previous','end','','advanced','normal',"index.php?table=$x",'',$x,'?table=',true,true,'',true,true,true,25,1);
 
                 echo html('div', $records, 'container');
             }catch (Exception $e)
