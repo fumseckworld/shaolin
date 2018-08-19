@@ -2599,12 +2599,16 @@ class Form implements FormBuilder
      * @param string $searchPlaceholder
      * @param string $tableUrlPrefix
      * @param int $limit
+     * @param string $editText
+     * @param string $btnEditClass
      * @param string $removeUrl
      * @param string $removeClassBtn
      * @param string $removeText
      * @param string $confirmRemoveText
      * @param string $removeIcon
      * @param string $pagination
+     * @param bool $columnAlignCenter
+     * @param bool $columnToUpper
      * @param bool $paginationPreferRight
      * @param string $csrf
      * @param int $textareaCols
@@ -2613,7 +2617,7 @@ class Form implements FormBuilder
      *
      * @throws Exception
      */
-    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
+    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $editText,string $btnEditClass,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
     {
 
         $instance = $instance->setName($table);
@@ -2670,39 +2674,39 @@ class Form implements FormBuilder
 
             $redirect = $this->start('',uniqid())->redirectSelect('table',$tables)->end();
 
-            $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div><div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
-            $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }</script>';
-             foreach ($columns as  $x)
+            $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div> ';
+            $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();  const id = btn.attr("data-form-id"); tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>';
+
+            $this->form .= ' <div class="table-responsive"><div class="table"><div class="thead"><div class="tr">';
+
+            foreach ($columns as $column)
             {
-                if ($x != $primary)
+                if ($column != $primary)
                 {
-                    $this->form .= '<th  class="';
-                    if ($columnAlignCenter) {  $this->form .= ' text-center'; }
+                    $this->form .= ' <div class="td ';
+                    if ($columnToUpper)
+                        $this->form .= ' text-uppercase';
 
-                    if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
+                    if ($columnAlignCenter)
+                        $this->form .= ' text-center';
 
-                    $this->form .= '">'.$x.'</th>';
+                    $this->form .= '">'.$column.'</div>';
                 }
-
             }
 
-            $this->form .= '<th  class="';
-            if ($columnAlignCenter) {  $this->form .= ' text-center'; }
 
-            if ($columnToUpper) {  $this->form .= ' text-uppercase'; }
 
-            $this->form .= '">'.$removeText.'</th></tr></thead><tbody>';
+            $this->form .= ' <div class="td">'.$editText.'</div></div></div> <div class="tbody">';
+
 
             foreach ($records as $record)
             {
-                $dataFormId = sha1("$table-{$record->$primary}");
+                $id = uniqid().sha1($table.md5($record->$primary));
 
-                $this->form .= '<form action="'.$action.'" method="get" id="'.$dataFormId.'" class="dynamic"><tr>';
+                $this->form .= '<form class="tr" id="'.$id.'" method="post" action="'.$action.'">';
 
                 foreach ($columns as $k => $column)
                 {
-
-
                     $type = $types[$k];
 
                     if (is_null($record->$column))
@@ -2716,34 +2720,30 @@ class Form implements FormBuilder
                         switch ($type)
                         {
                             case has($type,$number):
-                                $this->input(Form::NUMBER,$column,$column,'',$record->$column,true,false,false,true,$dataFormId);
+                                $this->form .= '<div class="td"><span class="d-none td-input"><input type="number" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>';
+
                             break;
                             case has($type,$date):
-                                $this->input(Form::DATETIME,$column,$column,'',$record->$column,true,false,false,true,$dataFormId);
+                                $this->form .= '<div class="td"><span class="d-none td-input"><input type="datetime" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>';
+
                             break;
                             default:
-                                $this->textarea($column,$column,$textareaCols,$textareaRow,false,$record->$column,true,$dataFormId);
+                                $this->form .= '<div class="td"><span class="d-none td-input"><textarea name="'.$column.'" name="'.$column.'"  class="form-control form-control-lg"  rows="'.$textareaRow.'">'.$record->$column.'</textarea></span> <span class="record"> '.$record->$column.'</span></div>';
                             break;
                         }
                     } else {
-                        $this->input(Form::HIDDEN,$column,$column,'',$record->$column);
-
+                        $this->form .= '  <div class="td d-none"><input name="'.$primary.'"  value="'.$record->$primary.'"></div>';
+                        $this->form .= '  <div class="td d-none"><input name="table"  value="'.$table.'"></div>';
                     }
-
                 }
-                $this->form .= '<td><span class=" row justify-content-center"><a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeClassBtn.'" data-confirm="'.$confirmRemoveText.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></span></td></tr></form>';
+
+                $this->form .= '<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$btnEditClass.'" data-form-id="'.$id.'">'.$editText.'</button> </div></form>';
             }
 
-            $this->form .= '</tbody></table></div>';
 
-            if ($paginationPreferRight)
-                $this->form .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
-            else
-                $this->form .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
-
+            $this->form .= '</div></div></div>';
+            return $this->form;
         }
-
-        return $this->form;
     }
 
 

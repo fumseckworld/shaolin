@@ -17493,3 +17493,40 @@ a.text-dark:hover, a.text-dark:focus {
     border-color: #dee2e6;
   }
 }
+.table {
+  display: table;
+  border-collapse: separate;
+  border-spacing: 1rem;
+}
+
+.thead {
+  display: table-header-group;
+  color: white;
+  text-align: center;
+  text-transform: uppercase;
+  font-weight: bold;
+  background-color: #000;
+}
+
+.tbody {
+  display: table-row-group;
+  background-color: #000;
+}
+
+.tr {
+  display: table-row;
+}
+
+.td {
+  display: table-cell;
+  padding: 1rem;
+  border: 1px solid #2e353c;
+}
+
+.tr:hover {
+  background-color: rgba(19, 26, 35, 0.82);
+}
+
+.tr.editing .td INPUT {
+  width: 100%;
+}

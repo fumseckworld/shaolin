@@ -229,6 +229,16 @@ if (!exist('html'))
 }
 
 
+if (!exist('submit'))
+{
+    function submit(string $key,string $method = 'POST')
+    {
+        if ($method === 'POST')
+            return !empty($_POST[$key]) && isset($_POST[$key]);
+
+        return !empty($_GET[$key]) && isset($_GET[$key]);
+    }
+}
 if (!exist('bootswatch'))
 {
     /**

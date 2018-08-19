@@ -74,6 +74,8 @@ namespace Imperium\Html\Form\Core {
          * @param string $searchPlaceholder
          * @param string $tableUrlPrefix
          * @param int $limit
+         * @param string $editText
+         * @param string $btnEditClass
          * @param string $removeUrl
          * @param string $removeClassBtn
          * @param string $removeText
@@ -88,7 +90,7 @@ namespace Imperium\Html\Form\Core {
          * @param int $textareaRow
          * @return string
          */
-        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
+        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $editText,string $btnEditClass, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
 
         /**
          * generate a simply record view

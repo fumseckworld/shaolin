@@ -657,6 +657,16 @@ class HelpersTest extends TestCase
         $this->assertInstanceOf(Form::class, form(5));
     }
 
+    public function testSubmit()
+    {
+        $this->assertEquals(false,submit('a'));
+        $this->assertEquals(false,submit('a','GET'));
+        $_GET['a'] = 'a';
+        $_POST['a'] = 'a';
+        $this->assertEquals(true,submit('a'));
+        $this->assertEquals(true,submit('a','GET'));
+
+    }
     /**
      * @throws \Exception
      */
