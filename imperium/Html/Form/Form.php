@@ -301,7 +301,7 @@ class Form implements FormBuilder
      * @param string $dataFormId
      * @return string
      */
-    private function generateInput(string $start, string $end, string $input,string $name, string $placeholder, string $value  ,bool $required , bool $autofocus  , bool $autoComplete,string $dataFormId ='')
+    private function generateInput(string $start, string $end, string $input,string $name, string $placeholder, string $value  ,bool $required , bool $autofocus  , bool $autoComplete)
     {
         if ($this->type == Form::BOOTSTRAP)
         {
@@ -320,14 +320,14 @@ class Form implements FormBuilder
                 {
                     if ($autoComplete)
                     {
-                        return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="on" data-form-id="'.$dataFormId.'"> '.$end.'';
+                        return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="on" > '.$end.'';
                     }
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="off" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="off" > '.$end.'';
                 }
                 if ($autoComplete)
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="on" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="on" > '.$end.'';
                 else
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" > '.$end.'';
 
             } else
             {
@@ -337,16 +337,16 @@ class Form implements FormBuilder
                 {
                     if ($autoComplete) // AUTO FOCUS , AND AUTO COMPLETE
                     {
-                        return ''.$start.' <input type="'.$input.'" class="'.$class.'"  autofocus="autofocus" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" data-form-id="'.$dataFormId.'"> '.$end.'';
+                        return ''.$start.' <input type="'.$input.'" class="'.$class.'"  autofocus="autofocus" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
                     }
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'"  autofocus="autofocus" placeholder="'.$placeholder.'"  autocomplete="off" name="'.$name.'" value="'.$value.'" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'" class="'.$class.'"  autofocus="autofocus" placeholder="'.$placeholder.'"  autocomplete="off" name="'.$name.'" value="'.$value.'" > '.$end.'';
                 }else
                 {   // WITHOUT AUTO FOCUS
                     if ($autoComplete) //   AUTO FOCUS , AND AUTO COMPLETE
                     {
-                        return ''.$start.' <input type="'.$input.'" class="'.$class.'" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" data-form-id="'.$dataFormId.'"> '.$end.'';
+                        return ''.$start.' <input type="'.$input.'" class="'.$class.'" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
                     }   // AUTO FOCUS , WITHOUT AUTO COMPLETE
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" autocomplete="off" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" autocomplete="off" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
                 }
             }
         }
@@ -359,14 +359,14 @@ class Form implements FormBuilder
             {
                 if ($autoComplete)
                 {
-                    return ''.$start.' <input type="'.$input.'"  required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="on" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'"  required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="on" > '.$end.'';
                 }
-                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="off" data-form-id="'.$dataFormId.'"> '.$end.'';
+                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="off" > '.$end.'';
             }
             if ($autoComplete)
-                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="on" data-form-id="'.$dataFormId.'"> '.$end.'';
+                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="on" > '.$end.'';
             else
-                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" data-form-id="'.$dataFormId.'"> '.$end.'';
+                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" > '.$end.'';
 
         }
         else
@@ -376,17 +376,17 @@ class Form implements FormBuilder
             {
                 if ($autoComplete) //  REQUIRED , AUTO FOCUS , AND AUTO COMPLETE
                 {
-                    return ''.$start.' <input type="'.$input.'"  autofocus="autofocus" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'"  autofocus="autofocus" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
                 }   //  REQUIRED , AUTO FOCUS , WITHOUT AUTO COMPLETE
 
-                return ''.$start.' <input type="'.$input.'"  autofocus="autofocus" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" data-form-id="'.$dataFormId.'"> '.$end.'';
+                return ''.$start.' <input type="'.$input.'"  autofocus="autofocus" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" > '.$end.'';
             }else
             {   // WITHOUT AUTO FOCUS
                 if ($autoComplete) //     REQUIRED , AUTO FOCUS , AND AUTO COMPLETE
                 {
-                    return ''.$start.' <input type="'.$input.'" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" data-form-id="'.$dataFormId.'"> '.$end.'';
+                    return ''.$start.' <input type="'.$input.'" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
                 }  //  REQUIRED , AUTO FOCUS , WITHOUT AUTO COMPLETE
-                return ''.$start.' <input type="'.$input.'"   placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'"  autocomplete="off" data-form-id="'.$dataFormId.'"> '.$end.'';
+                return ''.$start.' <input type="'.$input.'"   placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'"  autocomplete="off" > '.$end.'';
             }
         }
     }
@@ -403,11 +403,9 @@ class Form implements FormBuilder
      * @param bool $autofocus
      * @param bool $autoComplete
      *
-     * @param bool $tableOption
-     * @param string $dataFormId
      * @return Form
      */
-    public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '',bool $required = true  , bool $autofocus = false, bool $autoComplete = false,bool $tableOption = false,string $dataFormId =''): Form
+    public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '',bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form
     {
 
 
@@ -418,54 +416,38 @@ class Form implements FormBuilder
 
                  if (empty($icon))
                  {
-                     if ($tableOption)
-                         $start = '<td><div class="form-group">';
-                    else
-                        $start = '<div class="form-group">';
+                  
+                    $start = '<div class="form-group">';
+                    
+                    $end = "</div>";
 
-                    if ($tableOption)
-                         $end = "</div></td>";
-                    else
-                         $end = "</div>";
-
-                    $this->form .= $this->generateInput($start,$end,$type,$name,$placeholder,$value,$required,$autofocus,$autoComplete,$dataFormId);
+                    $this->form .= $this->generateInput($start,$end,$type,$name,$placeholder,$value,$required,$autofocus,$autoComplete);
                  } else
                  {
-                     if ($tableOption)
-                         $start = '<td><div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
-                     else
-                         $start = '<div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
+                
+                     $start = '<div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
 
                      $end = "</div></div>";
-                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$dataFormId);
+                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
                  }
              break;
              default:
                  if (empty($icon))
                  {
-                     if ($tableOption)
-                        $start = '<td><div class="input-group">';
-                     else
-                        $start = '<div class="input-group">';
 
-                     if ($tableOption)
-                         $end = "</div></td>";
-                     else
-                         $end = "</div>";
-                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$dataFormId);
+                     $start = '<div class="input-group">';
+
+                     $end = "</div>";
+                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
                  } else
                  {
-                     if ($tableOption)
-                        $start = '<td><div class="input-group"><span class="input-group-label">' . $icon . '</span>';
-                     else
-                        $start = '<div class="input-group"><span class="input-group-label">' . $icon . '</span>';
 
-                     if ($tableOption)
-                         $end = "</div></td>";
-                     else
-                         $end = "</div>";
+                    $start = '<div class="input-group"><span class="input-group-label">' . $icon . '</span>';
 
-                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$dataFormId);
+
+                     $end = "</div>";
+
+                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
                  }
              break;
          }
@@ -1874,49 +1856,32 @@ class Form implements FormBuilder
      * @param int $row
      * @param bool $autofocus
      * @param string $value
-     * @param bool $tableOption
      * @return Form
      */
-    public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = '',bool $tableOption = false,string $dataFormId=''): Form
+    public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = ''): Form
     {
         switch ($this->type)
         {
             case Form::BOOTSTRAP:
                 if ($autofocus)
                 {
-                    if ($tableOption)
-                    {
-                        $this->form .= ' <td><div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" autofocus="autofocus" class="form-control" required="required" name="'.$name.'" data-form-id="'.$dataFormId.'">'.$value.'</textarea></div></td>';
 
-                    }else{
-                        $this->form .= ' <div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" autofocus="autofocus" class="form-control" required="required" name="'.$name.'" data-form-id="'.$dataFormId.'">'.$value.'</textarea></div>';
-                    }
+                    $this->form .= ' <div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" autofocus="autofocus" class="form-control" required="required" name="'.$name.'" >'.$value.'</textarea></div>';
+
                 } else {
-                    if ($tableOption)
-                    {
-                        $this->form .= '<td><div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" class="form-control" required="required" name="'.$name.'" data-form-id="'.$dataFormId.'">'.$value.'</textarea></div></td>';
 
-                    }else{
-                        $this->form .= '<div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" class="form-control" required="required" name="'.$name.'" data-form-id="'.$dataFormId.'" >'.$value.'</textarea></div>';
-                    }
+                    $this->form .= '<div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" class="form-control" required="required" name="'.$name.'"  >'.$value.'</textarea></div>';
+
                 }
             break;
             case Form::FOUNDATION:
                 if ($autofocus)
                 {
-                    if ($tableOption)
-                    {
-                        $this->form .= '<td><textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'"  autofocus="autofocus" name="'.$name.'" data-form-id="'.$dataFormId.'"> '.$value.'</textarea></td>';
-                    }else{
-                        $this->form .= '<textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'"  autofocus="autofocus" name="'.$name.' data-form-id="'.$dataFormId.'"'.$value.'</textarea>';
-                    }
+                    $this->form .= '<textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'"  autofocus="autofocus" name="'.$name.' '.$value.'</textarea>';
+
                 } else {
-                    if ($tableOption)
-                    {
-                        $this->form .= '<td><textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'" name="'.$name.'" data-form-id="'.$dataFormId.'">'.$value.'</textarea></td>';
-                    }else{
-                        $this->form .= '<textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'" name="'.$name.'" data-form-id="'.$dataFormId.'">'.$value.'</textarea>';
-                    }
+
+                    $this->form .= '<textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'" name="'.$name.'" >'.$value.'</textarea>';
 
                 }
             break;
@@ -2617,7 +2582,7 @@ class Form implements FormBuilder
      *
      * @throws Exception
      */
-    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $searchPlaceholder,string $tableUrlPrefix,int $limit,string $editText,string $btnEditClass,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
+    public function generateAdvancedRecordView(string $table, Table $instance,array $records,string $action,string $tableClass,string $saveText,string $tableUrlPrefix,int $limit,string $editText,string $btnEditClass,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int $textareaCols = 25,int  $textareaRow =  1): string
     {
 
         $instance = $instance->setName($table);
@@ -2675,7 +2640,7 @@ class Form implements FormBuilder
             $redirect = $this->start('',uniqid())->redirectSelect('table',$tables)->end();
 
             $this->form = '<div class="row mt-5"><div class="col"> '.$redirect.'</div> <div class="col"><input type="number" class="form-control" min="1" value="'.$limit.'" onchange="location = this.value"></div></div> ';
-            $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();  const id = btn.attr("data-form-id"); tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>';
+            $this->form .= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();   const id = btn.attr("data-form-id"); if (btn.text() !== btn.attr("data-edit")){  $("#"+id).submit(); }  if (btn.text() === btn.attr("data-edit")){ btn.text(btn.attr("data-save"))}else{btn.text(btn.attr("data-edit"))} tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>';
 
             $this->form .= ' <div class="table-responsive"><div class="table"><div class="thead"><div class="tr">';
 
@@ -2696,7 +2661,7 @@ class Form implements FormBuilder
 
 
 
-            $this->form .= ' <div class="td">'.$editText.'</div></div></div> <div class="tbody">';
+            $this->form .= '<div class="td">'.$editText.'</div><div class="td">'.$removeText.'</div></div></div> <div class="tbody">';
 
 
             foreach ($records as $record)
@@ -2737,11 +2702,17 @@ class Form implements FormBuilder
                     }
                 }
 
-                $this->form .= '<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$btnEditClass.'" data-form-id="'.$id.'">'.$editText.'</button> </div></form>';
+                $this->form .= '<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$btnEditClass.'" data-form-id="'.$id.'" data-edit="'.$editText.'" data-save="'.$saveText.'" >'.$editText.'</button> </div><div class="td  remove btn-group"><a href="'.$removeUrl.  $record->$primary.'" onclick="sure(event,this.attributes[2].value)"  data-confirm="'.$confirmRemoveText.'" class="'.$removeClassBtn.'" data-form-id="'.$id.'">'.$removeText.'</a> </div></form>';
             }
 
 
             $this->form .= '</div></div></div>';
+
+            if ($paginationPreferRight)
+                $this->form .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
+            else
+                $this->form .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
+
             return $this->form;
         }
     }

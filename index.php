@@ -9,6 +9,7 @@ $i = table(Connexion::MYSQL,'zen','root','root','dump');
 $x = empty(get('table')) ? 'doctors' : get('table');
 
 $pdo = connect(Connexion::MYSQL,'zen','root','root');
+$H = server('HTTP_REFERER');
 
 
 ?>
@@ -23,14 +24,28 @@ $pdo = connect(Connexion::MYSQL,'zen','root','root');
         <?php
 
 
+        if (get('remove-id'))
+        {
+            $url = server('REQUEST_URI');
+            $p = explode('/',$url);
+            $table = $p[1];
+            $id = intval(get('remove-id'));
+            if($i->setName($table)->deleteById($id))
+            {
+
+                header("Location : /");
+
+            }
+
+        }
         if (submit('id'))
         {
             $z = post('table');
             $result = $i->update(intval($_POST['id']),$_POST,[$z],$z);
            if ($result)
             {
-                $redirect = server('HTTP_REFERER');
-               header("Location :$redirect");
+                $redirect = server('HTTP_HOST');
+               header("Location :$redirect?table=$z");
            }
            else{
                var_dump($result);
@@ -39,7 +54,7 @@ $pdo = connect(Connexion::MYSQL,'zen','root','root');
         }
             try{
 
-                $records = records('mysql','table table-bordered table-hover table-dark',$i,$x,'imperium/edit','imperium/remove','DESC','Editer','remove','btn btn-outline-primary btn-block','btn btn-outline-danger',fa('fa-edit'),fa('fa-trash'),200,1,'imperium',$pdo,1,"search",'are you sure','previous','end','','advanced','normal',"index.php?table=$x",'',$x,'?table=',true,true,'',true,true,true,25,1);
+                $records = records('mysql','  ',$i,$x,'imperium/edit',"$H/$x/remove?remove-id=",'DESC','Editer','Supprimer','btn btn-outline-primary btn-block','btn btn-outline-danger btn-block',fa('fa-edit'),fa('fa-trash'),20,1,'imperium',$pdo,1,"Sauvegarder",'are you sure','previous','end','','advanced','normal',"index.php?table=$x",'',$x,'?table=',true,true,'',true,true,true,25,1);
 
                 echo html('div', $records, 'container');
             }catch (Exception $e)

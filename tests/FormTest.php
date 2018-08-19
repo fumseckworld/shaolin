@@ -11,7 +11,6 @@ namespace tests;
 
 use Exception;
 use Imperium\Databases\Eloquent\Connexion\Connexion;
-use Imperium\Databases\Eloquent\Tables\Table;
 use Imperium\Html\Form\Form;
 use PHPUnit\Framework\TestCase;
 
@@ -786,6 +785,19 @@ class FormTest extends TestCase
 
     }
 
+    public function testSelectWithSize()
+    {
+        $form = form()->setLargeInput(true)->select('a',['b'])->end();
+        $this->assertContains('form-control-lg',$form);
+
+        $form = form()->setSmallInput(true)->select('a',['b'])->end();
+        $this->assertContains('form-control-sm',$form);
+
+        $form = form()->select('a',['b'])->end();
+        $this->assertNotContains('form-control-sm',$form);
+        $this->assertNotContains('form-control-lg',$form);
+
+    }
     /**
      * @throws Exception
      */
@@ -1949,4 +1961,6 @@ class FormTest extends TestCase
         $this->assertContains('form-control form-control-sm',form()->start('/','id')->setSmallInput(true)->input('text','name','username')->end());
 
     }
+    
+
 }

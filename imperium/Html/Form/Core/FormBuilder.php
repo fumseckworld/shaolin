@@ -71,7 +71,7 @@ namespace Imperium\Html\Form\Core {
          * @param array $records
          * @param string $action
          * @param string $tableClass
-         * @param string $searchPlaceholder
+         * @param string $saveText
          * @param string $tableUrlPrefix
          * @param int $limit
          * @param string $editText
@@ -90,7 +90,7 @@ namespace Imperium\Html\Form\Core {
          * @param int $textareaRow
          * @return string
          */
-        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $searchPlaceholder, string $tableUrlPrefix, int $limit,string $editText,string $btnEditClass, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
+        public function generateAdvancedRecordView(string $table, Table $instance , array $records , string $action, string $tableClass, string $saveText, string $tableUrlPrefix, int $limit,string $editText,string $btnEditClass, string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $removeIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='', int $textareaCols = 25, int  $textareaRow =  1): string;
 
         /**
          * generate a simply record view
@@ -192,7 +192,7 @@ namespace Imperium\Html\Form\Core {
          * @param string $dataFormId
          * @return Form
          */
-        public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false,bool $tableOption = false,string $dataFormId =''): Form;
+        public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form;
 
         /**
          * set form type
@@ -342,12 +342,10 @@ namespace Imperium\Html\Form\Core {
          * @param int $row
          * @param bool $autofocus
          * @param string $value
-         * @param bool $tableOption
-         * @param string $dataFormId
          *
          * @return Form
          */
-        public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = '',bool $tableOption = false,string $dataFormId=''): Form;
+        public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = ''): Form;
 
         /**
          * generate a image
