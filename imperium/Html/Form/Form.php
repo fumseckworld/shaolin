@@ -29,15 +29,22 @@ use Imperium\Html\Form\Core\FormBuilder;
 
 class Form implements FormBuilder
 {
-    /**
-     * to generate a bootstrap form
-     */
-    const BOOTSTRAP  = 1;
 
-    /**
-     * to generate a foundation form
-     */
-    const FOUNDATION = 2;
+    const GRID_ROW = 'form-row';
+
+    const AUTO_COL = 'col';
+
+    const BASIC_CLASS = 'form-control';
+
+    const LARGE_CLASS = 'form-control-lg';
+
+    const SMALL_CLASS = 'form-control-sm';
+
+    const FORM_SEPARATOR = 'form-group';
+
+    const CUSTOM_SELECT_CLASS = 'custom-select';
+
+    const HIDE_CLASS = 'd-none';
 
     /**
      * to create a reset button
@@ -182,10 +189,6 @@ class Form implements FormBuilder
      */
     private $form;
 
-    /**
-     * @var int
-     */
-    private $type;
 
     private $inputSize;
 
@@ -201,21 +204,19 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function start(string $action, string $id,string $class = '', bool $enctype = false, string $method = Form::POST, string $charset = 'utf8'): Form
+    public function start(string $action, string $id, string $class = '', bool $enctype = false, string $method = Form::POST, string $charset = 'utf8'): Form
     {
         if ($enctype)
         {
             if (empty($class))
-                $this->form .= '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" enctype="multipart/form-data" id="'.$id.'">';
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" enctype="multipart/form-data" id="' . $id . '">';
             else
-                $this->form .= '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" class="'.$class.'" enctype="multipart/form-data" id="'.$id.'">';
-        }
-        else
-        {
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" enctype="multipart/form-data" id="' . $id . '">';
+        } else {
             if (empty($class))
-                $this->form .= '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" id="'.$id.'">';
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">';
             else
-                $this->form .= '<form action="'.$action.'" method="'. $method.'" accept-charset="'. $charset.'" class="'.$class.'"   id="'.$id.'">';
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '"   id="' . $id . '">';
         }
 
 
@@ -229,16 +230,9 @@ class Form implements FormBuilder
      */
     public function startHide(): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                $this->form .= '<div class="d-none">';
-            break;
-            case Form::FOUNDATION:
-                $this->form .= '<div class="hide">';
-            break;
 
-        }
+        $this->form .= '<div class="'.self::HIDE_CLASS.'>';
+
         return $this;
     }
 
@@ -265,26 +259,13 @@ class Form implements FormBuilder
      * @param string $locale
      * @return Form
      */
-    public function file(string $name, string $class, string $text, string $ico = '',string $locale = 'en'): Form
+    public function file(string $name, string $class, string $text, string $ico = '', string $locale = 'en'): Form
     {
+        if (empty($ico))
+            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="custom-file"><input type="file"  name="' . $name . '" class="custom-file-input"   lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div>';
+        else
+            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >' . $ico . '</span></div><div class="custom-file"><input type="file" name="' . $name . '" class="custom-file-input" lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div></div>';
 
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                if (empty($ico))
-                    $this->form.= '<div class="form-group"><div class="custom-file"><input type="file"  name="'.$name.'" class="custom-file-input"   lang="'.$locale.'"><label class="custom-file-label" for="customFile">'.$text.'</label></div></div>';
-                else
-                    $this->form.= '<div class="form-group"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >'.$ico.'</span></div><div class="custom-file"><input type="file" name="'.$name.'" class="custom-file-input" lang="'.$locale.'"><label class="custom-file-label" for="customFile">'.$text.'</label></div></div></div>';
-
-
-            break;
-            case Form::FOUNDATION:
-                if (empty($ico))
-                    $this->form .= '<label for="'.$name.'" class="'.$class.'">'.$text.'</label><input type="file" id="'.$name.'" class="show-for-sr">';
-                else
-                    $this->form .= '<label for="'.$name.'" class="'.$class.'">' .$ico .' ' .$text.'</label><input type="file" id="'.$name.'" class="show-for-sr">';
-            break;
-        }
         return $this;
     }
 
@@ -298,95 +279,49 @@ class Form implements FormBuilder
      * @param bool $required
      * @param bool $autofocus
      * @param bool $autoComplete
-     * @param string $dataFormId
      * @return string
      */
-    private function generateInput(string $start, string $end, string $input,string $name, string $placeholder, string $value  ,bool $required , bool $autofocus  , bool $autoComplete)
+    private function generateInput(string $start, string $end, string $input, string $name, string $placeholder, string $value, bool $required, bool $autofocus, bool $autoComplete)
     {
-        if ($this->type == Form::BOOTSTRAP)
-        {
-            if(empty($this->inputSize) && $input != Form::FILE)
-               $class = 'form-control';
-            else
-                $class = $this->inputSize;
 
-            if ($input == Form::FILE)
-                $class = 'form-control-file';
+        if (empty($this->inputSize) && $input != Form::FILE)
+            $class = self::BASIC_CLASS;
+        else
+            $class = $this->inputSize;
 
-            if ($required) // WITH REQUIRED
-            {
-
-                if ($autofocus)
-                {
-                    if ($autoComplete)
-                    {
-                        return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="on" > '.$end.'';
-                    }
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="off" > '.$end.'';
-                }
-                if ($autoComplete)
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="on" > '.$end.'';
-                else
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" > '.$end.'';
-
-            } else
-            {
-
-                // WITHOUT REQUIRED
-                if ($autofocus) // WITH AUTO FOCUS
-                {
-                    if ($autoComplete) // AUTO FOCUS , AND AUTO COMPLETE
-                    {
-                        return ''.$start.' <input type="'.$input.'" class="'.$class.'"  autofocus="autofocus" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
-                    }
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'"  autofocus="autofocus" placeholder="'.$placeholder.'"  autocomplete="off" name="'.$name.'" value="'.$value.'" > '.$end.'';
-                }else
-                {   // WITHOUT AUTO FOCUS
-                    if ($autoComplete) //   AUTO FOCUS , AND AUTO COMPLETE
-                    {
-                        return ''.$start.' <input type="'.$input.'" class="'.$class.'" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
-                    }   // AUTO FOCUS , WITHOUT AUTO COMPLETE
-                    return ''.$start.' <input type="'.$input.'" class="'.$class.'" autocomplete="off" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
-                }
-            }
-        }
-
-        # NOT BOOTSTRAP
+        if ($input == Form::FILE)
+            $class = 'form-control-file';
 
         if ($required) // WITH REQUIRED
         {
-            if ($autofocus)
-            {
-                if ($autoComplete)
-                {
-                    return ''.$start.' <input type="'.$input.'"  required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="on" > '.$end.'';
+
+            if ($autofocus) {
+                if ($autoComplete) {
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="on" > ' . $end . '';
                 }
-                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autofocus="autofocus" autocomplete="off" > '.$end.'';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="off" > ' . $end . '';
             }
             if ($autoComplete)
-                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="on" > '.$end.'';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="on" > ' . $end . '';
             else
-                return ''.$start.' <input type="'.$input.'" required="required" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" > '.$end.'';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="off" > ' . $end . '';
 
-        }
-        else
-        {
+        } else {
+
             // WITHOUT REQUIRED
             if ($autofocus) // WITH AUTO FOCUS
             {
-                if ($autoComplete) //  REQUIRED , AUTO FOCUS , AND AUTO COMPLETE
+                if ($autoComplete) // AUTO FOCUS , AND AUTO COMPLETE
                 {
-                    return ''.$start.' <input type="'.$input.'"  autofocus="autofocus" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
-                }   //  REQUIRED , AUTO FOCUS , WITHOUT AUTO COMPLETE
-
-                return ''.$start.' <input type="'.$input.'"  autofocus="autofocus" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" autocomplete="off" > '.$end.'';
-            }else
-            {   // WITHOUT AUTO FOCUS
-                if ($autoComplete) //     REQUIRED , AUTO FOCUS , AND AUTO COMPLETE
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+                }
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" placeholder="' . $placeholder . '"  autocomplete="off" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+            } else {   // WITHOUT AUTO FOCUS
+                if ($autoComplete) //   AUTO FOCUS , AND AUTO COMPLETE
                 {
-                    return ''.$start.' <input type="'.$input.'" autocomplete="on" placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'" > '.$end.'';
-                }  //  REQUIRED , AUTO FOCUS , WITHOUT AUTO COMPLETE
-                return ''.$start.' <input type="'.$input.'"   placeholder="'.$placeholder.'" name="'.$name.'" value="'.$value.'"  autocomplete="off" > '.$end.'';
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+                }   // AUTO FOCUS , WITHOUT AUTO COMPLETE
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="off" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > ' . $end . '';
             }
         }
     }
@@ -405,68 +340,29 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '',bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form
+    public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
     {
 
+        if (empty($icon))
+        {
+            $start = '<div class="' . self::FORM_SEPARATOR . '">';
 
-         switch ($this->type)
-         {
-             case Form::BOOTSTRAP:
+            $end = "</div>";
 
+            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
+        } else {
 
-                 if (empty($icon))
-                 {
-                  
-                    $start = '<div class="form-group">';
-                    
-                    $end = "</div>";
+            $start = '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
 
-                    $this->form .= $this->generateInput($start,$end,$type,$name,$placeholder,$value,$required,$autofocus,$autoComplete);
-                 } else
-                 {
-                
-                     $start = '<div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
+            $end = "</div></div>";
 
-                     $end = "</div></div>";
-                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
-                 }
-             break;
-             default:
-                 if (empty($icon))
-                 {
-
-                     $start = '<div class="input-group">';
-
-                     $end = "</div>";
-                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
-                 } else
-                 {
-
-                    $start = '<div class="input-group"><span class="input-group-label">' . $icon . '</span>';
+            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
+        }
 
 
-                     $end = "</div>";
-
-                     $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
-                 }
-             break;
-         }
         return $this;
     }
 
-    /**
-     * set form type
-     *
-     * @param int $type
-     *
-     * @return Form
-     */
-    public function setType(int $type): Form
-    {
-        $this->type = $type;
-
-        return $this;
-    }
 
     /**
      * generate two inline input
@@ -476,49 +372,31 @@ class Form implements FormBuilder
      * @param string $placeholderOne
      * @param string $valueOne
      * @param string $iconOne
-     * @param bool   $requiredOne
+     * @param bool $requiredOne
      * @param string $typeTwo
      * @param string $nameTwo
      * @param string $placeholderTwo
      * @param string $valueTwo
      * @param string $iconTwo
-     * @param bool   $requiredTwo
+     * @param bool $requiredTwo
      *
      * @return Form
      */
     public function twoInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                    $this->form .= '<div class="col">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$valueOne,$iconOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$valueTwo,$iconTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -548,45 +426,21 @@ class Form implements FormBuilder
      */
     public function threeInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -617,55 +471,27 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneInputOneSelectTwoInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectName,array $selectOptions,string $selectIcon, string $typeThree,string $nameThree, string $placeholderThree,string $valueThree, string $iconThree, bool $requiredThree, string $typeFour, string $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
+    public function oneInputOneSelectTwoInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectName, array $selectOptions, string $selectIcon, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $typeFour, string $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                       $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeFour, $nameFour, $placeholderFour, $iconFour, $valueFour, $requiredFour);
+            $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeFour,$nameFour,$placeholderFour,$iconFour,$valueFour,$requiredFour);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeFour,$nameFour,$placeholderFour,$iconFour,$valueFour,$requiredFour);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -693,55 +519,27 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneInputOneSelectOneInputOneSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne,array $selectOptionsOne,string $selectIconOne, string $typeThree,string $nameThree, string $placeholderThree,string $valueThree, string $iconThree, bool $requiredThree, string $selectNameFour, array $selectOptionFour, string $selectIconFour): Form
+    public function oneInputOneSelectOneInputOneSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $selectNameFour, array $selectOptionFour, string $selectIconFour): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                       $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameFour, $selectOptionFour, $selectIconFour);
+            $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameFour,$selectOptionFour,$selectIconFour);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameFour,$selectOptionFour,$selectIconFour);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -770,55 +568,26 @@ class Form implements FormBuilder
      * @return Form
      *
      */
-    public function oneInputTwoSelectOneInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne,array $selectOptionsOne,string $selectIconOne, string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo, string $typeFour, $nameFour, string $placeholderFour,string $valueFour, string $iconFour, bool $requiredFour): Form
+    public function oneInputTwoSelectOneInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $typeFour, $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                       $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeFour, $nameFour, $placeholderFour, $iconFour, $valueFour, $requiredFour);
+            $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeFour,$nameFour,$placeholderFour,$iconFour,$valueFour,$requiredFour);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeFour,$nameFour,$placeholderFour,$iconFour,$valueFour,$requiredFour);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -844,55 +613,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneInputThreeSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne,array $selectOptionsOne,string $selectIconOne, string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo,string $selectNameThree ,array $selectOptionsThree,string $selectIconThree): Form
+    public function oneInputThreeSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $selectNameThree, array $selectOptionsThree, string $selectIconThree): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                       $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -923,55 +665,29 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneSelectThreeInput( string $selectName ,array $selectOptions ,string $selectIcon , string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne,string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo,string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
+    public function oneSelectThreeInput(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                         $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -999,55 +715,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneSelectTwoInputOneSelect( string $selectName ,array $selectOptions ,string $selectIcon , string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne,string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo): Form
+    public function oneSelectTwoInputOneSelect(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                         $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1075,55 +764,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneSelectOneInputOneSelectOneInput(string $selectName ,array $selectOptions ,string $selectIcon , string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne,string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo): Form
+    public function oneSelectOneInputOneSelectOneInput(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                         $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1148,55 +810,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function oneSelectOneInputTwoSelect(string $selectName ,array $selectOptions ,string $selectIcon , string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo, string $selectNameThree,array $selectOptionsThree,string $selectIconThree): Form
+    public function oneSelectOneInputTwoSelect(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $selectNameThree, array $selectOptionsThree, string $selectIconThree): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-6 col-lg-6   col-sm-12 col-xl-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                         $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1227,54 +862,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function threeInlineInputAndOneSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree,string $selectName,array $selectOptions,string $selectIcon): Form
+    public function threeInlineInputAndOneSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $selectName, array $selectOptions, string $selectIcon): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3   col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1303,55 +912,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function twoSelectTwoInput(string $selectNameOne,array $selectOptionsOne,string $selectIconOne,string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo,string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo): Form
+    public function twoSelectTwoInput(string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3   col-sm-12 col-xl-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1376,55 +958,29 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function twoSelectOneInputOneSelect(string $selectNameOne,array $selectOptionsOne,string $selectIconOne,string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo,string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameThree,array $selectOptionsThree,string $selectIconThree): Form
+    public function twoSelectOneInputOneSelect(string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameThree, array $selectOptionsThree, string $selectIconThree): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3   col-sm-12 col-xl-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+        $this->form .= ' <div class="'.self::AUTO_COL.'>';
+            $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+        $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+        $this->form .= ' <div class="' . self::AUTO_COL . '>';
+            $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+        $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+        $this->form .= ' <div class="' . self::AUTO_COL . '>';
+            $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+        $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                    $this->form .= '</div>';
+        $this->form .= ' <div class="' . self::AUTO_COL . '>';
+            $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="row">';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1450,55 +1006,28 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function threeSelectOneInput(string $selectNameOne,array $selectOptionsOne,string $selectIconOne,string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo,string $selectNameThree,array $selectOptionsThree,string $selectIconThree,string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne ): Form
+    public function threeSelectOneInput(string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $selectNameThree, array $selectOptionsThree, string $selectIconThree, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3   col-sm-12 col-xl-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                    $this->select($selectNameThree,$selectOptionsThree,$selectIconThree);
-                $this->form .= '</div>';
-
-                $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1529,55 +1058,29 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function twoInputOneSelectOneInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo,string $selectName,array $selectOptions,string $selectIcon, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
+    public function twoInputOneSelectOneInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectName, array $selectOptions, string $selectIcon, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3   col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectName, $selectOptions, $selectIcon);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
 
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectName,$selectOptions,$selectIcon);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -1605,80 +1108,53 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function twoInputTwoSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo,string $selectNameOne,array $selectOptionsOne,string $selectIconOne,string $selectNameTwo,array $selectOptionsTwo,string $selectIconTwo): Form
+    public function twoInputTwoSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3   col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= ' <div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3  col-sm-12 col-xl-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="' . self::AUTO_COL . '>';
+                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
+            $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameOne,$selectOptionsOne,$selectIconOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="columns small-12 large-3 medium-3">';
-                        $this->select($selectNameTwo,$selectOptionsTwo,$selectIconTwo);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
     /**
      * generate a button
      *
-     * @param string      $text
-     * @param string      $class
-     * @param string      $icon
-     * @param string      $type
+     * @param string $text
+     * @param string $class
+     * @param string $icon
+     * @param string $type
      *
      * @return Form
      */
-    public function button(string $text, string $class, string $icon = '',string $type = Form::BUTTON ): Form
+    public function button(string $text, string $class, string $icon = '', string $type = Form::BUTTON): Form
     {
-        switch ($type)
-        {
+        switch ($type) {
             case Form::BUTTON:
-                $this->form .='<button class="'.$class.'" type="button">  '.$icon.' ' .$text.'</button>';
+                $this->form .= '<button class="' . $class . '" type="button">  ' . $icon . ' ' . $text . '</button>';
             break;
             case Form::RESET:
-                $this->form .='<button class="'.$class.'" type="reset">  '.$icon.' ' .$text.'</button>';
+                $this->form .= '<button class="' . $class . '" type="reset">  ' . $icon . ' ' . $text . '</button>';
             break;
             case Form::SUBMIT:
-                $this->form .='<button class="'.$class.'" type="submit">  '.$icon.' ' .$text.'</button>';
+                $this->form .= '<button class="' . $class . '" type="submit">  ' . $icon . ' ' . $text . '</button>';
             break;
 
         }
@@ -1719,104 +1195,54 @@ class Form implements FormBuilder
      */
     public function fourInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $typefour, string $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
+            $this->form .= ' <div class="'.self::AUTO_COL.'>';
+                $this->input($typefour, $nameFour, $placeholderFour, $iconFour, $valueFour, $requiredFour);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class=" col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                        $this->input($typefour,$nameFour,$placeholderFour,$iconFour,$valueFour,$requiredFour);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= ' <div class="columns small-12 large-6 medium-6">';
-                        $this->input($typeOne,$nameOne,$placeholderOne,$iconOne,$valueOne,$requiredOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= ' <div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeTwo,$nameTwo,$placeholderTwo,$iconTwo,$valueTwo,$requiredTwo);
-                    $this->form .= '</div>';
-
-                    $this->form .= ' <div class="columns small-12 large-3 medium-3">';
-                        $this->input($typeThree,$nameThree,$placeholderThree,$iconThree,$valueThree,$requiredThree);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
-    public function fourInlineSelect(string $nameOne,array $optionsOne,string $iconOne,string $nameTwo,array $optionsTwo,string $iconTwo,string $nameThree,array $optionsThree,string $iconThree,string $nameFour,array $optionsFour,string $iconFour): Form
+    public function fourInlineSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo, string $nameThree, array $optionsThree, string $iconThree, string $nameFour, array $optionsFour, string $iconFour): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                $this->form .= '<div class="form-row">';
+        $this->form .= ' <div class="'.self::AUTO_COL.'>';
+            $this->select($nameOne, $optionsOne, $iconOne);
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                    $this->select($nameOne,$optionsOne,$iconOne);
-                $this->form .= '</div>';
+        $this->form .= ' <div class="'.self::AUTO_COL.'>';
+            $this->select($nameTwo, $optionsTwo, $iconTwo);
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                    $this->select($nameTwo,$optionsTwo,$iconTwo);
-                $this->form .= '</div>';
+        $this->form .= ' <div class="'.self::AUTO_COL.'>';
+            $this->select($nameThree, $optionsThree, $iconThree);
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                    $this->select($nameThree,$optionsThree,$iconThree);
-                $this->form .= '</div>';
+        $this->form .= ' <div class="'.self::AUTO_COL.'>';
+            $this->select($nameFour, $optionsFour, $iconFour);
+        $this->form .= '</div>';
 
-                $this->form .= '<div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">';
-                    $this->select($nameFour,$optionsFour,$iconFour);
-                $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                $this->form .= ' <div class="columns small-12 large-3 medium-3">';
-                $this->select($nameOne,$optionsOne,$iconOne);
-                $this->form .= '</div>';
-
-                $this->form .= ' <div class="columns small-12 large-3 medium-3">';
-                $this->select($nameTwo,$optionsTwo,$iconTwo);
-                $this->form .= '</div>';
-
-                $this->form .= ' <div class="columns small-12 large-3 medium-3">';
-                $this->select($nameThree,$optionsThree,$iconThree);
-                $this->form .= '</div>';
-
-                $this->form .= ' <div class="columns small-12 large-3 medium-3">';
-                $this->select($nameFour,$optionsFour,$iconFour);
-                $this->form .= '</div>';
-
-                $this->form .= '</div>';
-
-            break;
-        }
         return $this;
     }
+
     /**
      * add csrf token in form
      *
@@ -1826,23 +1252,23 @@ class Form implements FormBuilder
      */
     public function csrf(string $csrf): Form
     {
-       $this->form .= $csrf;
+        $this->form .= $csrf;
 
-       return $this;
+        return $this;
     }
 
     /**
      * generate a button to reset the form
      *
-     * @param string      $text
-     * @param string      $class
+     * @param string $text
+     * @param string $class
      * @param string|null $icon
      *
      * @return Form
      */
     public function reset(string $text, string $class, string $icon = ''): Form
     {
-        $this->form .= '<button class="'.$class.'" type="reset">  '.$icon.' ' .' '.$text.'</button>';
+        $this->form .= '<button class="' . $class . '" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button>';
 
         return $this;
     }
@@ -1858,53 +1284,33 @@ class Form implements FormBuilder
      * @param string $value
      * @return Form
      */
-    public function textarea(string $name, string $placeholder, int $cols, int $row,bool $autofocus = false,string $value = ''): Form
+    public function textarea(string $name, string $placeholder, int $cols, int $row, bool $autofocus = false, string $value = ''): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                if ($autofocus)
-                {
 
-                    $this->form .= ' <div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" autofocus="autofocus" class="form-control" required="required" name="'.$name.'" >'.$value.'</textarea></div>';
+        if ($autofocus)
+            $this->form .= ' <div class="' . self::FORM_SEPARATOR . '"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.self::BASIC_CLASS.'" required="required" name="' . $name . '" >' . $value . '</textarea></div>';
+        else
+            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.self::BASIC_CLASS.'" required="required" name="' . $name . '"  >' . $value . '</textarea></div>';
 
-                } else {
-
-                    $this->form .= '<div class="form-group"><textarea rows="'.$row.'"  cols="'.$cols.'" placeholder="'.$placeholder.'" class="form-control" required="required" name="'.$name.'"  >'.$value.'</textarea></div>';
-
-                }
-            break;
-            case Form::FOUNDATION:
-                if ($autofocus)
-                {
-                    $this->form .= '<textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'"  autofocus="autofocus" name="'.$name.' '.$value.'</textarea>';
-
-                } else {
-
-                    $this->form .= '<textarea rows="'.$row.'" cols="'.$cols.'" placeholder="'.$placeholder.'" name="'.$name.'" >'.$value.'</textarea>';
-
-                }
-            break;
-        }
         return $this;
     }
 
     /**
      * generate a image
      *
-     * @param string      $src
-     * @param string      $alt
-     * @param string      $class
-     * @param string      $width
+     * @param string $src
+     * @param string $alt
+     * @param string $class
+     * @param string $width
      *
      * @return Form
      */
     public function img(string $src, string $alt, string $class = '', string $width = '100%'): Form
     {
         if (empty($class))
-            $this->form .= '<img src="'.$src.'" alt="'.$alt.'"  width="'.$width.'">';
+            $this->form .= '<img src="' . $src . '" alt="' . $alt . '"  width="' . $width . '">';
         else
-            $this->form .= '<img src="'.$src.'" alt="'.$alt.'" class="'.$class.'" width="'.$width.'">';
+            $this->form .= '<img src="' . $src . '" alt="' . $alt . '" class="' . $class . '" width="' . $width . '">';
 
         return $this;
     }
@@ -1929,13 +1335,12 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function submit(string $text, string $class, string $id,string $icon = ''): Form
+    public function submit(string $text, string $class, string $id, string $icon = ''): Form
     {
 
-        if ($this->type == Form::BOOTSTRAP)
-            $this->form .= '<div class="form-group"><button type="submit" class="'.$class.'" id="'.$id.'">'.$icon.' '.$text.'</button></div>';
-        else
-            $this->form .= '<div><button type="submit" class="'.$class.'" id="'.$id.'">'.$icon.' '.$text.'</button></div>';
+
+        $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $class . '" id="' . $id . '">' . $icon . ' ' . $text . '</button></div>';
+
 
         return $this;
     }
@@ -1943,16 +1348,16 @@ class Form implements FormBuilder
     /**
      * generate a link
      *
-     * @param string      $url
-     * @param string      $class
-     * @param string      $text
+     * @param string $url
+     * @param string $class
+     * @param string $text
      * @param string|null $icon
      *
      * @return Form
      */
     public function link(string $url, string $class, string $text, string $icon = ''): Form
     {
-        $this->form .= '<a href="'.$url.'" class="'.$class.'">  '. $icon .' '.$text .'</a>';
+        $this->form .= '<a href="' . $url . '" class="' . $class . '">  ' . $icon . ' ' . $text . '</a>';
 
         return $this;
     }
@@ -1967,113 +1372,69 @@ class Form implements FormBuilder
      * @param bool $multiple
      * @return Form
      */
-    public function select(string $name, array $options,string $icon = '',bool $multiple = false): Form
+    public function select(string $name, array $options, string $icon = '', bool $multiple = false): Form
     {
 
-        if(empty($this->inputSize))
-            $class = 'custom-select';
+        if (empty($this->inputSize))
+            $class = self::CUSTOM_SELECT_CLASS;
         else
             $class = $this->inputSize;
 
-        switch ($this->type)
+
+        if (empty($icon))
         {
-            case Form::BOOTSTRAP:
-                if (empty($icon))
-                {
-                    if ($multiple)
-                        $this->form .= '<div class="form-group"><select class="'.$class.'"  name="'.$name.'" multiple>';
-                    else
-                        $this->form .= '<div class="form-group"><select class="'.$class.'"  name="'.$name.'">';
-                    foreach ($options as $value)
-                    {
-                        $this->form .= ' <option value="'.$value.'" class="'.$class.'"> '.$value.'</option>';
-                    }
-                    $this->form .= '</select></div>';
+            if ($multiple)
+                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><select class="' . $class . '"  name="' . $name . '" multiple>';
+            else
+                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><select class="' . $class . '"  name="' . $name . '">';
+            foreach ($options as $value)
+            {
+                $this->form .= ' <option value="' . $value . '" class="' . $class . '"> ' . $value . '</option>';
+            }
+            $this->form .= '</select></div>';
 
-                } else {
+        } else {
 
-                    if ($multiple)
-                        $this->form .= '<div class="form-group"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> '.$icon.' </span></div>  <select class="'.$class.'"  name="'.$name.'" multiple>';
-                    else
-                        $this->form .= '<div class="form-group"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> '.$icon.' </span></div> <select class="'.$class.'"  name="'.$name.'">';
+            if ($multiple)
+                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div>  <select class="' . $class . '"  name="' . $name . '" multiple>';
+            else
+                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div> <select class="' . $class . '"  name="' . $name . '">';
 
-                    foreach ($options as $value)
-                        $this->form .= '<option value="'.$value.'" class="'.$class.'"> '.$value.'</option>';
+            foreach ($options as $value)
+                $this->form .= '<option value="' . $value . '" class="' . $class . '"> ' . $value . '</option>';
 
-                    $this->form .= '</select> </div></div>';
-                }
-
-            break;
-            case Form::FOUNDATION:
-
-                if (empty($icon))
-                {
-                    if ($multiple)
-                        $this->form .= ' <select name="'.$name.'" multiple>';
-                    else
-                        $this->form .= ' <select name="'.$name.'">';
-
-                    foreach ($options as $value)
-                        $this->form .= ' <option value="'.$value.'">'.$value.'</option>';
-
-                    $this->form .= '</select>';
-                } else {
-
-                    if ($multiple)
-                        $this->form .= '<div class="input-group"><span class="input-group-label">'.$icon.'</span><select class="input-group-field"  name="'.$name.'" multiple>';
-                    else
-                        $this->form .= '<div class="input-group"><span class="input-group-label">'.$icon.'</span><select class="input-group-field"  name="'.$name.'">';
-
-                    foreach ($options as $value)
-                        $this->form .= ' <option class="input-group-field" value="'.$value.'">'.$value.'</option>';
-
-                    $this->form .= '</select></div>';
-                }
-
-            break;
+            $this->form .= '</select> </div></div>';
         }
+
+
         return $this;
     }
 
     /**
      * @param string $nameOne
-     * @param array  $optionsOne
+     * @param array $optionsOne
      * @param string $iconOne
      * @param string $nameTwo
-     * @param array  $optionsTwo
+     * @param array $optionsTwo
      * @param string $iconTwo
      *
      * @return Form
      */
     public function twoInlineSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                $this->form .= '<div class="row">';
 
-                    $this->form .= '<div class="col-md-6">';
-                        $this->select($nameOne,$optionsOne,$iconOne);
-                    $this->form .= '</div>';
+        $this->form .= '<div class="'.self::GRID_ROW.'">';
 
-                    $this->form .= '<div class="col-md-6">';
-                        $this->select($nameTwo,$optionsTwo,$iconTwo);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'">';
+                $this->select($nameOne, $optionsOne, $iconOne);
+            $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-                $this->form .= '<div class="row">';
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->select($nameOne,$optionsOne,$iconOne);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'">';
+                $this->select($nameTwo, $optionsTwo, $iconTwo);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->select($nameTwo,$optionsTwo,$iconTwo);
-                    $this->form .= '</div>';
-                $this->form .= '</div>';
-            break;
-        }
+        $this->form .= '</div>';
+
 
         return $this;
     }
@@ -2084,30 +1445,17 @@ class Form implements FormBuilder
      * @param string $name
      * @param string $text
      * @param string $class
-     * @param bool   $checked
+     * @param bool $checked
      *
      * @return Form
      */
     public function checkbox(string $name, string $text, string $class, bool $checked = false): Form
     {
-        if ($this->type == Form::BOOTSTRAP)
-        {
-            if ($checked)
+        if ($checked)
 
-                $this->form .= '<div class="form-group"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input " id="'.$name.'"><label class="custom-control-label" for="'.$name.'">'.$text.'</label></div> </div> ';
-            else
-                $this->form .= '<div class="form-group"> <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input " id="'.$name.'"><label class="custom-control-label" for="'.$name.'">'.$text.'</label></div> </div> ';
-
-        }else{
-            if ($checked)
-            {
-                $this->form .=  '<div class="'.$class.'"><input id="'.$name.'" type="checkbox" checked="checked"><label for="'.$name.'"> '.$text.'</label> </div>' ;
-            } else  {
-                $this->form .=  '<div class="'.$class.'"><input id="'.$name.'" type="checkbox"><label for="'.$name.'"> '.$text.'</label> </div>';
-            }
-        }
-
-
+            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input " id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> ';
+        else
+            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input " id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> ';
 
         return $this;
     }
@@ -2118,7 +1466,7 @@ class Form implements FormBuilder
      * @param string $name
      * @param string $text
      * @param string $class
-     * @param bool   $checked
+     * @param bool $checked
      *
      * @return Form
      */
@@ -2126,19 +1474,19 @@ class Form implements FormBuilder
     {
         if ($checked)
         {
-            $this->form .=  '<div class="'.$class.'">
+            $this->form .= '<div class="' . $class . '">
                                       <label>
-                                        <input type="radio" name="'.$name.'" checked="checked">
-                                        '.$text.'
+                                        <input type="radio" name="' . $name . '" checked="checked">
+                                        ' . $text . '
                                       </label>
-                                 </div>' ;
-        } else  {
-            $this->form .=  '<div class="'.$class.'">
+                                 </div>';
+        } else {
+            $this->form .= '<div class="' . $class . '">
                                       <label>
-                                        <input type="radio" name="'.$name.'">
-                                        '.$text.'
+                                        <input type="radio" name="' . $name . '">
+                                        ' . $text . '
                                       </label>
-                                 </div>' ;
+                                 </div>';
         }
         return $this;
     }
@@ -2150,66 +1498,39 @@ class Form implements FormBuilder
      */
     public function end(): string
     {
-       $this->form .= '</form>';
+        $this->form .= '</form>';
 
-       return $this->form;
+        return $this->form;
     }
 
     /**
      * generate a redirect select
      *
      * @param string $name
-     * @param array  $options
+     * @param array $options
      * @param string $icon
-
      * @return Form
      */
     public function redirectSelect(string $name, array $options, string $icon = ''): Form
     {
+        if (!empty($icon))
+            $this->form .= ' <div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
+        else
+            $this->form .= '<div class="' . self::FORM_SEPARATOR . '">';
+
+        if (!empty($this->inputSize))
+            $this->form .= '<select class="'.self::CUSTOM_SELECT_CLASS .' '. $this->inputSize . '" name="' . $name . '" onChange="location = this.options[this.selectedIndex].value">';
+        else
+            $this->form .= '<select class="'.self::CUSTOM_SELECT_CLASS .'" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">';
+
+        foreach ($options as $k => $option)
+            $this->form .= '<option value="' . $k . '"> ' . $option . '</option>';
 
 
-        if ($this->type == Form::BOOTSTRAP)
-        {
-
-
-            if (!empty($icon))
-                $this->form .= ' <div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
-            else
-                $this->form .= '<div class="form-group">';
-
-            if (!empty($this->inputSize))
-                $this->form .= '<select class="custom-select ' . $this->inputSize . '" name="' . $name . '" onChange="location = this.options[this.selectedIndex].value">';
-            else
-                $this->form .= '<select class="custom-select" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">';
-
-            foreach ($options as $k => $option)
-                $this->form .= '<option value="'.$k.'"> '.$option.'</option>';
-
-
-            if (!empty($icon))
-                $this->form .=  '</select></div></div>';
-            else
-                $this->form .=  '</select></div>';
-
-        }
-
-        if ($this->type == Form::FOUNDATION)
-        {
-            if (!empty($icon))
-                $this->form .= '<div class="input-group"><span class="input-group-label">'.$icon.'</span>';
-            else
-                $this->form .= '<div class="input-group">';
-
-
-            $this->form .= '<select  name="'. $name.'" size="1"  onChange="location = this.options[this.selectedIndex].value" class="input-group-field">';
-
-            foreach ($options as $k => $option)
-                $this->form .= '<option value="'.$k.'"> '.$option.'</option>';
-
-
+        if (!empty($icon))
+            $this->form .= '</select></div></div>';
+        else
             $this->form .= '</select></div>';
-
-        }
 
         return $this;
     }
@@ -2228,139 +1549,81 @@ class Form implements FormBuilder
      */
     public function twoRedirectSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                    $this->form .= '<div class="col">';
-                        $this->redirectSelect($nameOne,$optionsOne,$iconOne);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->redirectSelect($nameOne, $optionsOne, $iconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col">';
-                        $this->redirectSelect($nameTwo,$optionsTwo,$iconTwo);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->redirectSelect($nameTwo, $optionsTwo, $iconTwo);
+            $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
+        $this->form .= '</div>';
 
-            case Form::FOUNDATION:
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->redirectSelect($nameOne,$optionsOne,$iconOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->redirectSelect($nameTwo,$optionsTwo,$iconTwo);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
     /**
      * generate one select and one input inline
      *
-     * @param string      $selectName
-     * @param array       $selectOptions
-     * @param string      $selectIconOne
-     * @param string      $type
-     * @param string      $name
-     * @param string      $placeholder
-     * @param bool        $required
-     * @param string      $iconTwo
+     * @param string $selectName
+     * @param array $selectOptions
+     * @param string $selectIconOne
+     * @param string $type
+     * @param string $name
+     * @param string $placeholder
+     * @param bool $required
+     * @param string $iconTwo
      * @param string|null $value
      *
      * @return Form
      */
-    public function oneSelectOneInput(string $selectName, array $selectOptions, string $selectIconOne, string $type, string $name, string $placeholder, bool $required, string $iconTwo , string $value): Form
+    public function oneSelectOneInput(string $selectName, array $selectOptions, string $selectIconOne, string $type, string $name, string $placeholder, bool $required, string $iconTwo, string $value): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                $this->form .= '<div class="form-row">';
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-                    $this->form .= '<div class="col">';
-                        $this->select($selectName,$selectOptions,$selectIconOne);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->select($selectName, $selectOptions, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col">';
-                        $this->input($type,$name,$placeholder,$value,$iconTwo,$required);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->input($type, $name, $placeholder, $value, $iconTwo, $required);
+            $this->form .= '</div>';
 
-                $this->form .= '</div>';
-
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->select($selectName,$selectOptions,$selectIconOne);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->input($type,$name,$placeholder,$value,$iconTwo,$required);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-
-            break;
-        }
+        $this->form .= '</div>';
         return $this;
     }
 
     /**
      * generate one input and one select
      *
-     * @param string      $type
-     * @param string      $name
-     * @param string      $placeholder
-     * @param bool        $required
-     * @param string      $inputIcon
-     * @param string      $value
-     * @param string      $selectName
-     * @param array       $selectOptions
-     * @param string      $selectIconOne
+     * @param string $type
+     * @param string $name
+     * @param string $placeholder
+     * @param bool $required
+     * @param string $inputIcon
+     * @param string $value
+     * @param string $selectName
+     * @param array $selectOptions
+     * @param string $selectIconOne
      *
      * @return Form
      */
     public function oneInputOneSelect(string $type, string $name, string $placeholder, bool $required, string $inputIcon, string $value, string $selectName, array $selectOptions, string $selectIconOne): Form
     {
+        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                $this->form .= '<div class="form-row">';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->input($type, $name, $placeholder, $inputIcon, $value, $required);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col">';
-                        $this->input($type,$name,$placeholder,$inputIcon,$value,$required);
-                    $this->form .= '</div>';
+            $this->form .= '<div class="' . self::AUTO_COL . '">';
+                $this->select($selectName, $selectOptions, $selectIconOne);
+            $this->form .= '</div>';
 
-                    $this->form .= '<div class="col">';
-                        $this->select($selectName,$selectOptions,$selectIconOne);
-                    $this->form .= '</div>';
+        $this->form .= '</div>';
 
-                $this->form .= '</div>';
-            break;
-            case Form::FOUNDATION:
-
-                $this->form .= '<div class="row">';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->input($type,$name,$placeholder,$value,$inputIcon,$required);
-                    $this->form .= '</div>';
-
-                    $this->form .= '<div class="large-6 medium-6 small-12 columns">';
-                        $this->select($selectName,$selectOptions,$selectIconOne);
-                    $this->form .= '</div>';
-
-                $this->form .= '</div>';
-            break;
-        }
         return $this;
     }
 
@@ -2379,16 +1642,15 @@ class Form implements FormBuilder
      * @return string
      * @throws Exception
      */
-    public function generate(string $table, Table $instance,string $submitText,string $submitClass,string $submitId,string $submitIcon = '',int $mode = Form::CREATE,int $id = 0): string
+    public function generate(string $table, Table $instance, string $submitText, string $submitClass, string $submitId, string $submitIcon = '', int $mode = Form::CREATE, int $id = 0): string
     {
         $instance = $instance->setName($table);
-        $types    = $instance->getColumnsTypes();
-        $columns  = $instance->getColumns();
-        $primary  = $instance->primaryKey();
+        $types = $instance->getColumnsTypes();
+        $columns = $instance->getColumns();
+        $primary = $instance->primaryKey();
 
 
-        if(is_null($primary))
-        {
+        if (is_null($primary)) {
             throw new Exception('We have not found a primary key');
         }
 
@@ -2440,33 +1702,30 @@ class Form implements FormBuilder
                     if (is_null($record->$column))
                         $record->$column = '';
 
-                    if($column != $primary)
+                    if ($column != $primary)
                     {
-                        $type = explode('(',$type);
+                        $type = explode('(', $type);
                         $type = $type[0];
 
                         switch ($type)
                         {
-                            case has($type,$number):
-                                $this->input(Form::NUMBER,$column,$column,'',$record->$column);
+                            case has($type, $number):
+                                $this->input(Form::NUMBER, $column, $column, '', $record->$column);
                             break;
-                            case has($type,$date):
-                                $this->input(Form::DATETIME,$column,$column,'',$record->$column);
+                            case has($type, $date):
+                                $this->input(Form::DATETIME, $column, $column, '', $record->$column);
                             break;
                             default:
-                                $this->textarea($column,$column,10,10,false,$record->$column);
+                                $this->textarea($column, $column, 10, 10, false, $record->$column);
                             break;
 
                         }
                     } else {
-
-
-                        $this->input(Form::HIDDEN,$column,$column,'',$record->$column);
-
+                        $this->input(Form::HIDDEN, $column, $column, '', $record->$column);
                     }
                 }
             }
-            $this->submit($submitText,$submitClass,$submitId,$submitIcon);
+            $this->submit($submitText, $submitClass, $submitId, $submitIcon);
             return $this->end();
         }
 
@@ -2481,28 +1740,28 @@ class Form implements FormBuilder
 
                     $current = date('Y-m-d');
 
-                    $type = explode('(',$type);
+                    $type = explode('(', $type);
 
                     $type = $type[0];
 
                     switch ($type)
                     {
-                        case has($type,$number):
-                            $this->input(Form::NUMBER,$column,$column);
+                        case has($type, $number):
+                            $this->input(Form::NUMBER, $column, $column);
                         break;
-                        case has($type,$date):
-                            $this->input(Form::DATE,$column,$column,'',$current);
+                        case has($type, $date):
+                            $this->input(Form::DATE, $column, $column, '', $current);
                         break;
                         default:
-                            $this->textarea($column,$column,10,10);
+                            $this->textarea($column, $column, 10, 10);
                         break;
                     }
                 } else {
-                    $this->input(Form::HIDDEN,$column,$column);
+                    $this->input(Form::HIDDEN, $column, $column);
                 }
 
             }
-            $this->submit( $submitText,$submitClass,$submitId,$submitIcon);
+            $this->submit($submitText, $submitClass, $submitId, $submitIcon);
             return $this->end();
         }
         throw new Exception('missing mode edit or create');
@@ -2517,16 +1776,12 @@ class Form implements FormBuilder
      */
     public function setLargeInput(bool $large): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                if ($large)
-                    $this->inputSize = 'form-control form-control-lg';
-                else
-                   $this->inputSize = 'form-control';
-            break;
+        if ($large)
+            $this->inputSize = self::LARGE_CLASS . ' ' . self::BASIC_CLASS;
+        else
+            $this->inputSize = self::BASIC_CLASS;
 
-        }
+
         return $this;
     }
 
@@ -2539,22 +1794,11 @@ class Form implements FormBuilder
      */
     public function setSmallInput(bool $small): Form
     {
-        switch ($this->type)
-        {
-            case Form::BOOTSTRAP:
-                if ($small)
-                    $this->inputSize = 'form-control form-control-sm';
-                else
-                    $this->inputSize = 'form-control';
-                break;
-        }
+        if ($small)
+            $this->inputSize = self::SMALL_CLASS . ' ' . self::BASIC_CLASS;
+        else
+            $this->inputSize = self::BASIC_CLASS;
+
         return $this;
     }
-
-
-
-
-
 }
-
-

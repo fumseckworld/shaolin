@@ -47,7 +47,6 @@ namespace Imperium\Html\Records {
          * @param int $current
          * @param string $paginationUrl
          * @param PDO $pdo
-         * @param int $formType
          * @param string $saveText
          * @param string $confirmDeleteText
          * @param string $startPaginationText
@@ -70,7 +69,7 @@ namespace Imperium\Html\Records {
          *
          * @throws Exception
          */
-        public static function show(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string
+        public static function show(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo,  string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string
         {
 
             if ($framework)
@@ -80,7 +79,7 @@ namespace Imperium\Html\Records {
 
             $records = getRecords($instance,$table,$current,$limit,$pdo,$framework,$orderBy);
 
-            $selectTable = selectTable($instance,$tableUrlPrefix,$table,$changeOfTableText,$formType,$limit,$csrfToken,$separator,$tableIcon);
+            $selectTable = selectTable($instance,$tableUrlPrefix,$table,$changeOfTableText,$limit,$csrfToken,$separator,$tableIcon);
 
             $pagination =   pagination( $limit,$paginationUrl,$current,$instance->count($table),$startPaginationText,$endPaginationText);
 
@@ -88,14 +87,14 @@ namespace Imperium\Html\Records {
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="true">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="false">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$table.'-tab" data-toggle="tab" href="#'.$table.'" role="tab" aria-controls="'.$table.'" aria-selected="false">'.$table.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.   advancedView($table,$instance,$records,$formPrefixAction,$selectTable,$saveText,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$formType,$textareaRow)       .' </div>  <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'. simpleView($table,$instance,$records,$selectTable,$class,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$formType).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'. alterTableView($table,$instance,$formType).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'.   advancedView($table,$instance,$records,$formPrefixAction,$selectTable,$saveText,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$textareaRow)       .' </div>  <div class="tab-pane fade" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'. simpleView($table,$instance,$records,$selectTable,$class,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'. alterTableView($table,$instance).'</div></div>';
 
             }
             else
             {
                 $html .= '<ul class="nav nav-tabs mt-5" role="tablist"><li class="nav-item"><a class="nav-link active" id="'.$simpleRecordsText.'-tab" data-toggle="tab" href="#'.$simpleRecordsText.'" role="tab" aria-controls="'.$simpleRecordsText.'" aria-selected="true">'.$simpleRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$advancedRecordsText.'-tab" data-toggle="tab" href="#'.$advancedRecordsText.'" role="tab" aria-controls="'.$advancedRecordsText.'" aria-selected="false">'.$advancedRecordsText.'</a></li><li class="nav-item"><a class="nav-link" id="'.$table.'-tab" data-toggle="tab" href="#'.$table.'" role="tab" aria-controls="'.$table.'" aria-selected="false">'.$table.'</a></li></ul>';
 
-                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'. simpleView($table,$instance,$records,$selectTable,$class,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$formType).' </div>  <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'. advancedView($table,$instance,$records,$formPrefixAction,$selectTable,$saveText,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$formType,$textareaRow).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'.alterTableView($table,$instance,$formType).'</div></div>';
+                $html .= '<div class="tab-content"><div class="tab-pane fade show active" id="'.$simpleRecordsText.'" role="tabpanel" aria-labelledby="'.$simpleRecordsText.'-tab">'. simpleView($table,$instance,$records,$selectTable,$class,$deleteText,$confirmDeleteText,$deleteClass,$deletePrefix,$deleteIcon,$editText,$editPrefix,$editClass,$editIcon,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight).' </div>  <div class="tab-pane fade" id="'.$advancedRecordsText.'" role="tabpanel" aria-labelledby="'.$advancedRecordsText.'-tab">'. advancedView($table,$instance,$records,$formPrefixAction,$selectTable,$saveText,$editText,$editClass,$deletePrefix,$deleteClass,$deleteText,$confirmDeleteText,$pagination,$columnNameAlignCenter,$columnNameToUpper,$preferPaginationRight,$csrfToken,$textareaRow).'</div><div class="tab-pane fade" id="'.$table.'" role="tabpanel" aria-labelledby="'.$table.'-tab">'.alterTableView($table,$instance).'</div></div>';
             }
 
             return $html;

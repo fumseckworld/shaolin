@@ -173,7 +173,7 @@ class Canvas implements CanvasManagement
                 $this->canvas .= $item;
             $this->canvas .= '</div>';
         }
-   	$this->canvas .= '</div>';
+    	$this->canvas .= '</div>';
 
         return $this;
     }

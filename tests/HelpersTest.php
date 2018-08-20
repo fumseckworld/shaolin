@@ -77,6 +77,32 @@ class HelpersTest extends TestCase
         $this->pgsql =  base(Connexion::POSTGRESQL,'','postgres','','');
     }
 
+    public function testSelectTable()
+    {
+        $base = 'zen';
+        $user = 'root';
+        $instance = table(Connexion::MYSQL, $base, $user, $user, '');
+        $code = selectTable($instance, 'table', 'doctors', 'Select a table', 10);
+        $this->assertNotContains('doctors', $code);
+        $this->assertContains('table', $code);
+        $this->assertContains('Select a table', $code);
+        $this->assertContains('10', $code);
+
+        $instance = table(Connexion::POSTGRESQL, $base, 'postgres', '', '');
+        $code = selectTable($instance, 'table', 'public.doctors', 'Select a table', 10);
+        $this->assertNotContains('doctors', $code);
+        $this->assertContains('table', $code);
+        $this->assertContains('Select a table', $code);
+        $this->assertContains('10', $code);
+
+        $instance = table(Connexion::SQLITE, $base, '', '', '');
+        $code = selectTable($instance, 'table', 'doctors', 'Select a table', 10);
+        $this->assertNotContains('doctors', $code);
+        $this->assertContains('table', $code);
+        $this->assertContains('Select a table', $code);
+        $this->assertContains('10', $code);
+    }
+
     public function testIconBar()
     {
         $bar =  icon()
@@ -415,9 +441,12 @@ class HelpersTest extends TestCase
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRegister()
     {
-        $register = registerForm(1,'/','Your username','your email','your password','confirm','create account','create');
+        $register = registerForm('/','Your username','your email','your password','confirm','create account','create');
 
         $this->assertContains('<i class="fas fa-user"></i>',$register);
         $this->assertContains('<i class="fas fa-key"></i>',$register);
@@ -434,7 +463,7 @@ class HelpersTest extends TestCase
         $this->assertNotContains('Europe/Paris',$register);
         $this->assertNotContains('Europe/London',$register);
 
-        $register = registerForm(1,'/','Your username','your email','your password','confirm','create account','create',true,['/' =>'choose','fr' => 'french' ,'en' => 'english'],'choose a time zone');
+        $register = registerForm( '/','Your username','your email','your password','confirm','create account','create',true,['/' =>'choose','fr' => 'french' ,'en' => 'english'],'choose a time zone');
 
         $this->assertContains('fr',$register);
         $this->assertContains('en',$register);
@@ -520,6 +549,183 @@ class HelpersTest extends TestCase
         }
 
     }
+
+    /**
+     * @throws Exception
+     */
+    public function testAdvanced()
+    {
+        $base = 'zen';
+        $user = 'root';
+        $current = 'doctors';
+        $csrf = '<input type="hidden" name="csrf_token" value="'.sha1($current).'"> ';
+
+        $instance  = table(Connexion::MYSQL,$base,$user,$user,'');
+        $pdo = connect(Connexion::MYSQL,$base,$user,$user);
+        $records = getRecords($instance,$current,1,10,$pdo,true);
+        $pagination = pagination(10,'imperium',1,$instance->count($current),'start','end');
+        $selectTable = selectTable($instance,'table',$current,'change of table',10);
+
+        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,false,false,true,$csrf, 1);
+
+        $this->assertNotEmpty($code);
+        $this->assertContains('imperium',$code);
+        $this->assertContains('save',$code);
+        $this->assertContains('10',$code);
+        $this->assertContains('start',$code);
+        $this->assertContains('end',$code);
+        $this->assertContains('remove',$code);
+        $this->assertContains('btn btn-outline-primary',$code);
+        $this->assertContains('btn btn-outline-danger',$code);
+        $this->assertContains('action="index.php"',$code);
+        $this->assertContains('are you sure',$code);
+        $this->assertContains($pagination,$code);
+        $this->assertContains($csrf,$code);
+
+        $this->assertNotContains('text-center',$code);
+        $this->assertNotContains('text-uppercase',$code);
+
+
+        $user = 'postgres';
+        $instance  = table(Connexion::POSTGRESQL,$base,$user,'','');
+        $pdo = connect(Connexion::POSTGRESQL,$base,$user,'');
+        $records = getRecords($instance,$current,1,10,$pdo,true);
+        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
+        $selectTable = selectTable($instance,'table',$current,'change of table', 10);
+        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,false,false,true,$csrf, 1);
+
+
+        $this->assertNotEmpty($code);
+        $this->assertContains('imperium',$code);
+        $this->assertContains('save',$code);
+        $this->assertContains('10',$code);
+        $this->assertContains('remove',$code);
+        $this->assertContains('btn btn-outline-primary',$code);
+        $this->assertContains('btn btn-outline-danger',$code);
+        $this->assertContains('action="index.php"',$code);
+        $this->assertContains('are you sure',$code);
+        $this->assertContains($pagination,$code);
+
+        $this->assertNotContains('text-center',$code);
+        $this->assertNotContains('text-uppercase',$code);
+        $this->assertNotContains('impeiru',$code);
+        $this->assertContains($csrf,$code);
+
+
+
+
+        $instance  = table(Connexion::SQLITE,$base,'','','');
+        $pdo = connect(Connexion::SQLITE,$base,'','');
+        $records = getRecords($instance,$current,1,10,$pdo,true);
+        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
+        $selectTable = selectTable($instance,'table',$current,'change of table',10);
+        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,false,false,true,$csrf, 1);
+
+
+        $this->assertNotEmpty($code);
+        $this->assertContains('imperium',$code);
+        $this->assertContains('save',$code);
+        $this->assertContains('10',$code);
+        $this->assertContains('remove',$code);
+        $this->assertContains('btn btn-outline-primary',$code);
+        $this->assertContains('btn btn-outline-danger',$code);
+        $this->assertContains('action="index.php"',$code);
+        $this->assertContains('are you sure',$code);
+        $this->assertContains($pagination,$code);
+
+        $this->assertNotContains('text-center',$code);
+        $this->assertNotContains('text-uppercase',$code);
+        $this->assertNotContains('impeiru',$code);
+        $this->assertContains($csrf,$code);
+
+
+        $user = 'root';
+
+
+        $instance  = table(Connexion::MYSQL,$base,$user,$user,'');
+        $pdo = connect(Connexion::MYSQL,$base,$user,$user);
+        $records = getRecords($instance,$current,1,10,$pdo,true);
+        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
+        $selectTable = selectTable($instance,'table',$current,'change of table',10);
+        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,true,true,false,$csrf,1);
+
+        $this->assertNotEmpty($code);
+        $this->assertContains('imperium',$code);
+        $this->assertContains('save',$code);
+        $this->assertContains('10',$code);
+        $this->assertContains('start',$code);
+        $this->assertContains('end',$code);
+        $this->assertContains('remove',$code);
+        $this->assertContains('btn btn-outline-primary',$code);
+        $this->assertContains('btn btn-outline-danger',$code);
+        $this->assertContains('action="index.php"',$code);
+        $this->assertContains('are you sure',$code);
+        $this->assertContains($pagination,$code);
+        $this->assertContains($csrf,$code);
+
+        $this->assertContains('text-center',$code);
+        $this->assertContains('text-uppercase',$code);
+
+
+
+        $user = 'postgres';
+
+        $instance  = table(Connexion::POSTGRESQL,$base,$user,'','');
+        $pdo = connect(Connexion::POSTGRESQL,$base,$user,'');
+        $records = getRecords($instance,$current,1,10,$pdo,true);
+        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
+        $selectTable = selectTable($instance,'table',$current,'change of table',10);
+        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,true,true,false,$csrf,1);
+
+
+        $this->assertNotEmpty($code);
+        $this->assertContains('imperium',$code);
+        $this->assertContains('save',$code);
+        $this->assertContains('10',$code);
+        $this->assertContains('remove',$code);
+        $this->assertContains('btn btn-outline-primary',$code);
+        $this->assertContains('btn btn-outline-danger',$code);
+        $this->assertContains('action="index.php"',$code);
+        $this->assertContains('are you sure',$code);
+        $this->assertContains($pagination,$code);
+
+        $this->assertContains('text-center',$code);
+        $this->assertContains('text-uppercase',$code);
+        $this->assertNotContains('impeiru',$code);
+        $this->assertContains($csrf,$code);
+
+
+
+
+
+        $instance  = table(Connexion::SQLITE,$base,'','','');
+        $pdo = connect(Connexion::SQLITE,$base,'','');
+        $records = getRecords($instance,$current,1,10,$pdo,true);
+        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
+        $selectTable = selectTable($instance,'table',$current,'change of table',10);
+        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,true,true,false,$csrf,1);
+
+
+        $this->assertNotEmpty($code);
+        $this->assertContains('imperium',$code);
+        $this->assertContains('save',$code);
+        $this->assertContains('10',$code);
+        $this->assertContains('remove',$code);
+        $this->assertContains('btn btn-outline-primary',$code);
+        $this->assertContains('btn btn-outline-danger',$code);
+        $this->assertContains('action="index.php"',$code);
+        $this->assertContains('are you sure',$code);
+        $this->assertContains($pagination,$code);
+
+        $this->assertContains('text-center',$code);
+        $this->assertContains('text-uppercase',$code);
+        $this->assertNotContains('impeiru',$code);
+        $this->assertContains($csrf,$code);
+
+    }
+    /***
+     * @throws \Cz\Git\GitException
+     */
    public function testCurrentBranch()
     {
         $this->assertEquals('master',getCurrentBranch('.'));
@@ -541,6 +747,9 @@ class HelpersTest extends TestCase
         $this->assertInstanceOf(Browser::class,browser());
     }
 
+    /**
+     * @throws IdentifierException
+     */
     public function testShowWithNotPossible()
     {
        $this->assertEquals([],show('sqlite','imperiums','root','root'));
@@ -651,10 +860,8 @@ class HelpersTest extends TestCase
 
     public function testFormInstance()
     {
-        $this->assertInstanceOf(Form::class, form(Form::BOOTSTRAP));
-        $this->assertInstanceOf(Form::class, form(Form::FOUNDATION));
-        $this->assertInstanceOf(Form::class, form(3));
-        $this->assertInstanceOf(Form::class, form(5));
+        $this->assertInstanceOf(Form::class, form());
+
     }
 
     public function testSubmit()

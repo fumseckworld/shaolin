@@ -20,7 +20,6 @@
 namespace Imperium\Html\Bar;
 
 
-use Imperium\Html\Form\Form;
 
 class Icon implements IconManagement
 {

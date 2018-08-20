@@ -21,7 +21,8 @@
         "guzzlehttp/guzzle": "^6.3",
         "nesbot/carbon": "^1.22",
         "robmorgan/phinx": "^0.9.0",
-        "ralouphie/mimey": "^1.0"
+        "ralouphie/mimey": "^1.0",
+        "ext-PDO": "^7.2"
     },
     "autoload": {
         "psr-4": {

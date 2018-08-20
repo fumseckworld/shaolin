@@ -124,14 +124,6 @@ namespace Imperium\Html\Form\Core {
          */
         public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form;
 
-        /**
-         * set form type
-         *
-         * @param int $type
-         *
-         * @return Form
-         */
-        public function setType(int $type): Form;
 
         /**
          * generate two inline input

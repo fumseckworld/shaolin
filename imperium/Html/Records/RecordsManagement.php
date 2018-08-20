@@ -54,7 +54,6 @@ namespace Imperium\Html\Records {
          * @param int $current
          * @param string $paginationUrl
          * @param PDO $pdo
-         * @param int $formType
          * @param string $saveText
          * @param string $confirmDeleteText
          * @param string $startPaginationText
@@ -62,7 +61,6 @@ namespace Imperium\Html\Records {
          * @param string $advancedRecordsText
          * @param string $simpleRecordsText
          * @param string $formPrefixAction
-         * @param string $recordText
          * @param string $managementOfTableText
          * @param string $tableUrlPrefix
          * @param bool $columnNameAlignCenter
@@ -76,7 +74,6 @@ namespace Imperium\Html\Records {
          *
          * @return string
          */
-        public static function show(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, int $formType, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string;
-
+        public static function show(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo,  string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string;
     }
 }

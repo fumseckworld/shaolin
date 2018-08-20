@@ -19,7 +19,6 @@
 
 namespace tests {
 
-    use Imperium\Html\Form\Form;
     use PHPUnit\Framework\TestCase;
 
     class PaginationTest extends TestCase
@@ -35,26 +34,20 @@ namespace tests {
 
         public function test()
         {
-            $boot = pagination($this->per,$this->instance,$this->current,$this->total,$this->start,$this->end,$this->class,Form::BOOTSTRAP);
-            $foundation = pagination($this->per,$this->instance,$this->current,$this->total,$this->start,$this->end,$this->class,Form::FOUNDATION);
+            $boot = pagination($this->per,$this->instance,$this->current,$this->total,$this->start,$this->end,$this->class);
+
 
             $this->assertContains('10',$boot);
-            $this->assertContains('10',$foundation);
 
             $this->assertContains('1',$boot);
-            $this->assertContains('1',$foundation);
 
             $this->assertContains('previous',$boot);
-            $this->assertContains('previous',$foundation);
 
             $this->assertContains('next',$boot);
-            $this->assertContains('next',$foundation);
 
             $this->assertContains('pagination',$boot);
-            $this->assertContains('pagination',$foundation);
 
             $this->assertContains('imperium/admin',$boot);
-            $this->assertContains('imperium/admin',$foundation);
 
 
         }
