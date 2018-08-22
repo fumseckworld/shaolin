@@ -108,7 +108,6 @@ class SqlBuilderTest extends TestCase
 
         $this->assertEquals("SELECT articles, price FROM $this->table UNION SELECT articles, price FROM $this->secondTable WHERE id > 20 ORDER BY id DESC LIMIT 2 OFFSET 4", union(Query::MODE_UNION, $this->table, $this->secondTable, ['articles', 'price'], ['articles', 'price'])->where('id', '>', 20)->limit(2, 4)->orderBy('id')->get());
 
-
     }
 
     public function testJoin()

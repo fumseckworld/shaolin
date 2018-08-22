@@ -77,6 +77,15 @@ class HelpersTest extends TestCase
         $this->pgsql =  base(Connexion::POSTGRESQL,'','postgres','','');
     }
 
+    public function testDef()
+    {
+        $b = 'c';
+        $d = 14;
+        $this->assertEquals(false,def(''));
+        $this->assertEquals(true,def('a','d','aczedez','addazzadaz'));
+        $this->assertEquals(true,def($b));
+        $this->assertEquals(true,def($d));
+    }
     public function testSelectTable()
     {
         $base = 'zen';
@@ -860,7 +869,7 @@ class HelpersTest extends TestCase
 
     public function testFormInstance()
     {
-        $this->assertInstanceOf(Form::class, form());
+        $this->assertInstanceOf(Form::class, form('a','a'));
 
     }
 

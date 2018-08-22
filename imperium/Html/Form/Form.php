@@ -30,7 +30,7 @@ use Imperium\Html\Form\Core\FormBuilder;
 class Form implements FormBuilder
 {
 
-    const GRID_ROW = 'form-row';
+    const GRID_ROW = 'row';
 
     const AUTO_COL = 'col';
 
@@ -64,7 +64,7 @@ class Form implements FormBuilder
     /**
      * to create a form with get method
      */
-    const GET = 'post';
+    const GET = 'get';
 
     /**
      * to create a button
@@ -209,14 +209,14 @@ class Form implements FormBuilder
         if ($enctype)
         {
             if (empty($class))
-                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" enctype="multipart/form-data" id="' . $id . '">';
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">';
             else
-                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" enctype="multipart/form-data" id="' . $id . '">';
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">';
         } else {
             if (empty($class))
                 $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">';
             else
-                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '"   id="' . $id . '">';
+                $this->form .= '<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">';
         }
 
 
@@ -231,7 +231,7 @@ class Form implements FormBuilder
     public function startHide(): Form
     {
 
-        $this->form .= '<div class="'.self::HIDE_CLASS.'>';
+        $this->form .= '<div class="'.self::HIDE_CLASS.'">';
 
         return $this;
     }
@@ -249,22 +249,21 @@ class Form implements FormBuilder
     }
 
     /**
-     * generate a files input
+     * generate a file input
      *
      * @param string $name
-     * @param string $class
      * @param string $text
-     * @param string|null $ico
-     *
      * @param string $locale
+     * @param string $ico
+     *
      * @return Form
      */
-    public function file(string $name, string $class, string $text, string $ico = '', string $locale = 'en'): Form
+    public function file(string $name, string $text, string $locale = 'en',string $ico = ''): Form
     {
         if (empty($ico))
-            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="custom-file"><input type="file"  name="' . $name . '" class="custom-file-input"   lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="custom-file"><input type="file"  name="' . $name . '" class="custom-file-input"   lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div></div>';
         else
-            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >' . $ico . '</span></div><div class="custom-file"><input type="file" name="' . $name . '" class="custom-file-input" lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div></div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >' . $ico . '</span></div><div class="custom-file"><input type="file" name="' . $name . '" class="custom-file-input" lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div></div></div>';
 
         return $this;
     }
@@ -284,19 +283,24 @@ class Form implements FormBuilder
     private function generateInput(string $start, string $end, string $input, string $name, string $placeholder, string $value, bool $required, bool $autofocus, bool $autoComplete)
     {
 
-        if (empty($this->inputSize) && $input != Form::FILE)
-            $class = self::BASIC_CLASS;
-        else
-            $class = $this->inputSize;
 
-        if ($input == Form::FILE)
-            $class = 'form-control-file';
+        $size = $this->inputSize;
+        if (def( $size))
+            $class = $size;
+        else
+            $class = self::BASIC_CLASS;
+
+
+        if ($input === Form::FILE)
+            $class =  $class .' form-control-file';
 
         if ($required) // WITH REQUIRED
         {
 
-            if ($autofocus) {
-                if ($autoComplete) {
+            if ($autofocus)
+            {
+                if ($autoComplete)
+                {
                     return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="on" > ' . $end . '';
                 }
                 return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="off" > ' . $end . '';
@@ -345,18 +349,19 @@ class Form implements FormBuilder
 
         if (empty($icon))
         {
-            $start = '<div class="' . self::FORM_SEPARATOR . '">';
 
-            $end = "</div>";
-
-            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
-        } else {
-
-            $start = '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
+            $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'">';
 
             $end = "</div></div>";
 
             $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
+        } else {
+
+            $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.self::AUTO_COL.'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
+
+            $end = "</div></div></div>";
+
+            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
         }
 
 
@@ -364,883 +369,35 @@ class Form implements FormBuilder
     }
 
 
-    /**
-     * generate two inline input
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     *
-     * @return Form
-     */
-    public function twoInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate three inline input
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     *
-     * @return Form
-     */
-    public function threeInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one input one select and two input
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     * @param string $typeFour
-     * @param string $nameFour
-     * @param string $placeholderFour
-     * @param string $valueFour
-     * @param string $iconFour
-     * @param bool $requiredFour
-     *
-     * @return Form
-     */
-    public function oneInputOneSelectTwoInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectName, array $selectOptions, string $selectIcon, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $typeFour, string $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeFour, $nameFour, $placeholderFour, $iconFour, $valueFour, $requiredFour);
-            $this->form .= '</div>';
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one input one select one input one select
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     * @param string $selectNameFour
-     * @param array $selectOptionFour
-     * @param string $selectIconFour
-     *
-     * @return Form
-     */
-    public function oneInputOneSelectOneInputOneSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $selectNameFour, array $selectOptionFour, string $selectIconFour): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameFour, $selectOptionFour, $selectIconFour);
-            $this->form .= '</div>';
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one input two select one input
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     * @param string $typeFour
-     * @param $nameFour
-     * @param string $placeholderFour
-     * @param string $valueFour
-     * @param string $iconFour
-     * @param bool $requiredFour
-     *
-     * @return Form
-     *
-     */
-    public function oneInputTwoSelectOneInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $typeFour, $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeFour, $nameFour, $placeholderFour, $iconFour, $valueFour, $requiredFour);
-            $this->form .= '</div>';
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-
-    /**
-     * generate one input three select
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     * @param string $selectNameThree
-     * @param array $selectOptionsThree
-     * @param string $selectIconThree
-     *
-     * @return Form
-     */
-    public function oneInputThreeSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $selectNameThree, array $selectOptionsThree, string $selectIconThree): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one select three input
-     *
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     *
-     * @return Form
-     */
-    public function oneSelectThreeInput(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one select two input one select
-     *
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     *
-     * @return Form
-     */
-    public function oneSelectTwoInputOneSelect(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one select one input one select one input
-     *
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     *
-     * @return Form
-     */
-    public function oneSelectOneInputOneSelectOneInput(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one select one input two select
-     *
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     * @param string $selectNameThree
-     * @param array $selectOptionsThree
-     * @param string $selectIconThree
-     *
-     * @return Form
-     */
-    public function oneSelectOneInputTwoSelect(string $selectName, array $selectOptions, string $selectIcon, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $selectNameThree, array $selectOptionsThree, string $selectIconThree): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate three inline input and one select
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     *
-     * @return Form
-     */
-    public function threeInlineInputAndOneSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $selectName, array $selectOptions, string $selectIcon): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-
-    /**
-     * generate two select and two input
-     *
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     *
-     * @return Form
-     */
-    public function twoSelectTwoInput(string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate two select one input one select
-     *
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectNameThree
-     * @param array $selectOptionsThree
-     * @param string $selectIconThree
-     *
-     * @return Form
-     */
-    public function twoSelectOneInputOneSelect(string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $selectNameThree, array $selectOptionsThree, string $selectIconThree): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-        $this->form .= ' <div class="'.self::AUTO_COL.'>';
-            $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-        $this->form .= '</div>';
-
-        $this->form .= ' <div class="' . self::AUTO_COL . '>';
-            $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-        $this->form .= '</div>';
-
-        $this->form .= ' <div class="' . self::AUTO_COL . '>';
-            $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-        $this->form .= '</div>';
-
-        $this->form .= ' <div class="' . self::AUTO_COL . '>';
-            $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
-        $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-
-    /**
-     * generate three select one input
-     *
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $selectNameThree
-     * @param array $selectOptionsThree
-     * @param string $selectIconThree
-     *
-     * @return Form
-     */
-    public function threeSelectOneInput(string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo, string $selectNameThree, array $selectOptionsThree, string $selectIconThree, string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameThree, $selectOptionsThree, $selectIconThree);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate two inline input one select and one input
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIcon
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     *
-     * @return Form
-     */
-    public function twoInputOneSelectOneInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectName, array $selectOptions, string $selectIcon, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectName, $selectOptions, $selectIcon);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-
-        return $this;
-    }
-
-    /**
-     * generate two inline input and two select
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $selectNameOne
-     * @param array $selectOptionsOne
-     * @param string $selectIconOne
-     * @param string $selectNameTwo
-     * @param array $selectOptionsTwo
-     * @param string $selectIconTwo
-     *
-     * @return Form
-     */
-    public function twoInputTwoSelect(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $selectNameOne, array $selectOptionsOne, string $selectIconOne, string $selectNameTwo, array $selectOptionsTwo, string $selectIconTwo): Form
-    {
-
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameOne, $selectOptionsOne, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="' . self::AUTO_COL . '>';
-                $this->select($selectNameTwo, $selectOptionsTwo, $selectIconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
 
     /**
      * generate a button
      *
+     * @param string $type
      * @param string $text
      * @param string $class
      * @param string $icon
-     * @param string $type
      *
      * @return Form
      */
-    public function button(string $text, string $class, string $icon = '', string $type = Form::BUTTON): Form
+    public function button(string $type,string $text, string $class, string $icon = ''): Form
     {
-        switch ($type) {
+        switch ($type)
+        {
             case Form::BUTTON:
-                $this->form .= '<button class="' . $class . '" type="button">  ' . $icon . ' ' . $text . '</button>';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><button class="' . $class . '" type="button">  ' . $icon . ' ' . $text . '</button></div></div>';
             break;
             case Form::RESET:
-                $this->form .= '<button class="' . $class . '" type="reset">  ' . $icon . ' ' . $text . '</button>';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><button class="' . $class . '" type="reset">  ' . $icon . ' ' . $text . '</button></div></div>';
             break;
             case Form::SUBMIT:
-                $this->form .= '<button class="' . $class . '" type="submit">  ' . $icon . ' ' . $text . '</button>';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><button class="' . $class . '" type="submit">  ' . $icon . ' ' . $text . '</button></div></div>';
             break;
 
         }
 
         return $this;
 
-    }
-
-    /**
-     * generate four inline input
-     *
-     * @param string $typeOne
-     * @param string $nameOne
-     * @param string $placeholderOne
-     * @param string $valueOne
-     * @param string $iconOne
-     * @param bool $requiredOne
-     * @param string $typeTwo
-     * @param string $nameTwo
-     * @param string $placeholderTwo
-     * @param string $valueTwo
-     * @param string $iconTwo
-     * @param bool $requiredTwo
-     * @param string $typeThree
-     * @param string $nameThree
-     * @param string $placeholderThree
-     * @param string $valueThree
-     * @param string $iconThree
-     * @param bool $requiredThree
-     * @param string $typefour
-     * @param string $nameFour
-     * @param string $placeholderFour
-     * @param string $valueFour
-     * @param string $iconFour
-     * @param bool $requiredFour
-     *
-     * @return Form
-     */
-    public function fourInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $typefour, string $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typeOne, $nameOne, $placeholderOne, $iconOne, $valueOne, $requiredOne);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typeTwo, $nameTwo, $placeholderTwo, $iconTwo, $valueTwo, $requiredTwo);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typeThree, $nameThree, $placeholderThree, $iconThree, $valueThree, $requiredThree);
-            $this->form .= '</div>';
-
-            $this->form .= ' <div class="'.self::AUTO_COL.'>';
-                $this->input($typefour, $nameFour, $placeholderFour, $iconFour, $valueFour, $requiredFour);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    public function fourInlineSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo, string $nameThree, array $optionsThree, string $iconThree, string $nameFour, array $optionsFour, string $iconFour): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-        $this->form .= ' <div class="'.self::AUTO_COL.'>';
-            $this->select($nameOne, $optionsOne, $iconOne);
-        $this->form .= '</div>';
-
-        $this->form .= ' <div class="'.self::AUTO_COL.'>';
-            $this->select($nameTwo, $optionsTwo, $iconTwo);
-        $this->form .= '</div>';
-
-        $this->form .= ' <div class="'.self::AUTO_COL.'>';
-            $this->select($nameThree, $optionsThree, $iconThree);
-        $this->form .= '</div>';
-
-        $this->form .= ' <div class="'.self::AUTO_COL.'>';
-            $this->select($nameFour, $optionsFour, $iconFour);
-        $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
     }
 
     /**
@@ -1268,7 +425,7 @@ class Form implements FormBuilder
      */
     public function reset(string $text, string $class, string $icon = ''): Form
     {
-        $this->form .= '<button class="' . $class . '" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button>';
+        $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><button class="' . $class . '" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>';
 
         return $this;
     }
@@ -1288,9 +445,9 @@ class Form implements FormBuilder
     {
 
         if ($autofocus)
-            $this->form .= ' <div class="' . self::FORM_SEPARATOR . '"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.self::BASIC_CLASS.'" required="required" name="' . $name . '" >' . $value . '</textarea></div>';
+            $this->form .= ' <div class="'.self::AUTO_COL.'">   <div class="' . self::FORM_SEPARATOR  .'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.self::BASIC_CLASS.'" required="required" name="' . $name . '" >' . $value . '</textarea></div></div>';
         else
-            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.self::BASIC_CLASS.'" required="required" name="' . $name . '"  >' . $value . '</textarea></div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.self::BASIC_CLASS.'" required="required" name="' . $name . '"  >' . $value . '</textarea></div></div>';
 
         return $this;
     }
@@ -1307,10 +464,11 @@ class Form implements FormBuilder
      */
     public function img(string $src, string $alt, string $class = '', string $width = '100%'): Form
     {
-        if (empty($class))
-            $this->form .= '<img src="' . $src . '" alt="' . $alt . '"  width="' . $width . '">';
+
+        if (!empty($class))
+            $this->form .= '<div class="'.self::FORM_SEPARATOR.'"><div class="'.self::AUTO_COL.'"><img src="' . $src . '" alt="' . $alt . '"  width="' . $width . '" class="'.$class.'"></div></div>';
         else
-            $this->form .= '<img src="' . $src . '" alt="' . $alt . '" class="' . $class . '" width="' . $width . '">';
+            $this->form .= '<div class="'.self::FORM_SEPARATOR.'"><div class="'.self::AUTO_COL.'"><img src="' . $src . '" alt="' . $alt . '"  width="' . $width . '"></div></div>';
 
         return $this;
     }
@@ -1338,8 +496,7 @@ class Form implements FormBuilder
     public function submit(string $text, string $class, string $id, string $icon = ''): Form
     {
 
-
-        $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $class . '" id="' . $id . '">' . $icon . ' ' . $text . '</button></div>';
+        $this->form .= '<div class="'.self::AUTO_COL.'">  <div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $class . '" id="' . $id . '">' . $icon . ' ' . $text . '</button></div></div>';
 
 
         return $this;
@@ -1357,7 +514,7 @@ class Form implements FormBuilder
      */
     public function link(string $url, string $class, string $text, string $icon = ''): Form
     {
-        $this->form .= '<a href="' . $url . '" class="' . $class . '">  ' . $icon . ' ' . $text . '</a>';
+        $this->form .= '<div class="'.self::AUTO_COL.'"> <div class="'.self::FORM_SEPARATOR.'"><a href="' . $url . '" class="' . $class . '">  ' . $icon . ' ' . $text . '</a></div></div>';
 
         return $this;
     }
@@ -1374,66 +531,37 @@ class Form implements FormBuilder
      */
     public function select(string $name, array $options, string $icon = '', bool $multiple = false): Form
     {
-
-        if (empty($this->inputSize))
-            $class = self::CUSTOM_SELECT_CLASS;
+        $size = $this->inputSize;
+        if (def($size))
+            $class = $size . ' ' . self::CUSTOM_SELECT_CLASS;
         else
-            $class = $this->inputSize;
+            $class = self::CUSTOM_SELECT_CLASS;
 
 
         if (empty($icon))
         {
             if ($multiple)
-                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><select class="' . $class . '"  name="' . $name . '" multiple>';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><select class="' . $class . '"  name="' . $name . '" multiple>';
             else
-                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><select class="' . $class . '"  name="' . $name . '">';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '">';
             foreach ($options as $value)
             {
-                $this->form .= ' <option value="' . $value . '" class="' . $class . '"> ' . $value . '</option>';
+                $this->form .= ' <option value="' . $value . '">'. $value . '</option>';
             }
-            $this->form .= '</select></div>';
+            $this->form .= '</select></div></div>';
 
         } else {
 
             if ($multiple)
-                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div>  <select class="' . $class . '"  name="' . $name . '" multiple>';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div>  <select class="' . $class . '"  name="' . $name . '" multiple>';
             else
-                $this->form .= '<div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div> <select class="' . $class . '"  name="' . $name . '">';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div> <select class="' . $class . '"  name="' . $name . '">';
 
             foreach ($options as $value)
-                $this->form .= '<option value="' . $value . '" class="' . $class . '"> ' . $value . '</option>';
+                $this->form .= '<option value="' . $value . '">' . $value . '</option>';
 
-            $this->form .= '</select> </div></div>';
+            $this->form .= '</select> </div></div></div></div>';
         }
-
-
-        return $this;
-    }
-
-    /**
-     * @param string $nameOne
-     * @param array $optionsOne
-     * @param string $iconOne
-     * @param string $nameTwo
-     * @param array $optionsTwo
-     * @param string $iconTwo
-     *
-     * @return Form
-     */
-    public function twoInlineSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo): Form
-    {
-
-        $this->form .= '<div class="'.self::GRID_ROW.'">';
-
-            $this->form .= '<div class="'.self::AUTO_COL.'">';
-                $this->select($nameOne, $optionsOne, $iconOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="'.self::AUTO_COL.'">';
-                $this->select($nameTwo, $optionsTwo, $iconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
 
 
         return $this;
@@ -1449,13 +577,13 @@ class Form implements FormBuilder
      *
      * @return Form
      */
-    public function checkbox(string $name, string $text, string $class, bool $checked = false): Form
+    public function checkbox(string $name, string $text,string $class = '',bool $checked = false): Form
     {
         if ($checked)
 
-            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input " id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> ';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ';
         else
-            $this->form .= '<div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input " id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> ';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  class="custom-control-input '.$class.'" id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> </div> ';
 
         return $this;
     }
@@ -1474,19 +602,15 @@ class Form implements FormBuilder
     {
         if ($checked)
         {
-            $this->form .= '<div class="' . $class . '">
-                                      <label>
-                                        <input type="radio" name="' . $name . '" checked="checked">
-                                        ' . $text . '
-                                      </label>
-                                 </div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"> <div class="custom-control custom-radio">
+                          <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input" checked="checked">
+                          <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
+                        </div></div></div>';
         } else {
-            $this->form .= '<div class="' . $class . '">
-                                      <label>
-                                        <input type="radio" name="' . $name . '">
-                                        ' . $text . '
-                                      </label>
-                                 </div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="custom-control custom-radio">
+                          <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input">
+                          <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
+                        </div></div></div>';
         }
         return $this;
     }
@@ -1514,118 +638,28 @@ class Form implements FormBuilder
     public function redirectSelect(string $name, array $options, string $icon = ''): Form
     {
         if (!empty($icon))
-            $this->form .= ' <div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>';
         else
-            $this->form .= '<div class="' . self::FORM_SEPARATOR . '">';
+            $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '">';
 
-        if (!empty($this->inputSize))
-            $this->form .= '<select class="'.self::CUSTOM_SELECT_CLASS .' '. $this->inputSize . '" name="' . $name . '" onChange="location = this.options[this.selectedIndex].value">';
+        if (empty($this->inputSize))
+            $this->form .= '<select class="'.self::CUSTOM_SELECT_CLASS. '" name="' . $name . '" onChange="location = this.options[this.selectedIndex].value">';
         else
-            $this->form .= '<select class="'.self::CUSTOM_SELECT_CLASS .'" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">';
+            $this->form .= '<select class="'.self::CUSTOM_SELECT_CLASS  .' '. $this->inputSize . '" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">';
 
         foreach ($options as $k => $option)
             $this->form .= '<option value="' . $k . '"> ' . $option . '</option>';
 
 
         if (!empty($icon))
-            $this->form .= '</select></div></div>';
+            $this->form .= '</select></div></div></div>';
         else
-            $this->form .= '</select></div>';
+            $this->form .= '</select></div></div>';
 
         return $this;
     }
 
-    /**
-     * generate two inline redirect select
-     *
-     * @param string $nameOne
-     * @param array $optionsOne
-     * @param string $iconOne
-     * @param string $nameTwo
-     * @param array $optionsTwo
-     * @param string $iconTwo
-     *
-     * @return Form
-     */
-    public function twoRedirectSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
 
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->redirectSelect($nameOne, $optionsOne, $iconOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->redirectSelect($nameTwo, $optionsTwo, $iconTwo);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
-
-    /**
-     * generate one select and one input inline
-     *
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIconOne
-     * @param string $type
-     * @param string $name
-     * @param string $placeholder
-     * @param bool $required
-     * @param string $iconTwo
-     * @param string|null $value
-     *
-     * @return Form
-     */
-    public function oneSelectOneInput(string $selectName, array $selectOptions, string $selectIconOne, string $type, string $name, string $placeholder, bool $required, string $iconTwo, string $value): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->select($selectName, $selectOptions, $selectIconOne);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->input($type, $name, $placeholder, $value, $iconTwo, $required);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-        return $this;
-    }
-
-    /**
-     * generate one input and one select
-     *
-     * @param string $type
-     * @param string $name
-     * @param string $placeholder
-     * @param bool $required
-     * @param string $inputIcon
-     * @param string $value
-     * @param string $selectName
-     * @param array $selectOptions
-     * @param string $selectIconOne
-     *
-     * @return Form
-     */
-    public function oneInputOneSelect(string $type, string $name, string $placeholder, bool $required, string $inputIcon, string $value, string $selectName, array $selectOptions, string $selectIconOne): Form
-    {
-        $this->form .= '<div class="' . self::GRID_ROW . '">';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->input($type, $name, $placeholder, $inputIcon, $value, $required);
-            $this->form .= '</div>';
-
-            $this->form .= '<div class="' . self::AUTO_COL . '">';
-                $this->select($selectName, $selectOptions, $selectIconOne);
-            $this->form .= '</div>';
-
-        $this->form .= '</div>';
-
-        return $this;
-    }
 
     /**
      * generate a form
@@ -1800,5 +834,52 @@ class Form implements FormBuilder
             $this->inputSize = self::BASIC_CLASS;
 
         return $this;
+    }
+
+    /**
+     * start an auto column
+     *
+     * @return Form
+     */
+    public function startRow(): Form
+    {
+       $this->form .= '<div class="'.self::GRID_ROW.'">';
+
+       return $this;
+    }
+
+    /**
+     * end of auto
+     *
+     * @return Form
+     */
+    public function endRow(): Form
+    {
+        $this->form .= '</div>';
+
+        return $this;
+    }
+
+    /**
+     *  end of line and start a new row
+     *
+     * @return Form
+     */
+    public function endRowAndNew(): Form
+    {
+         $this->endRow();
+         $this->startRow();
+
+       return $this;
+    }
+
+    /**
+     * return the form
+     *
+     * @return string
+     */
+    public function get(): string
+    {
+            return $this->end();
     }
 }

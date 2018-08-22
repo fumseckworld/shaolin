@@ -73,16 +73,38 @@ if (!exist('registerForm'))
      */
     function registerForm(string $action,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
     {
-        $form = form()->start($action,'register-form')->csrf($csrfToken);
+        $form = form($action,'register-form')->csrf($csrfToken);
 
         if ($multiLang)
-            $form->twoRedirectSelect('locale',$supportedLang,$langIcon,'zone',zones($chooseTimeZoneText),$zonesIcon);
+            $form->startRow()->select('locale',$supportedLang,$langIcon)->select('zone',zones($chooseTimeZoneText),$zonesIcon)->endRowAndNew();
 
-        $form->twoInlineInput(Form::TEXT,'name',$usernamePlaceholder,post('name'),$usernameIcon,true, Form::EMAIL,'email',$emailPlaceholder,post('email'),$emailIcon,true)
-        ->twoInlineInput(Form::PASSWORD,'password',$passwordPlaceholder,post('password'),$passwordIcon,true, Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,post('password_confirmation'),$passwordIcon,true)
-        ->submit($submitText,$submitClass,$submitId,$submitIcon);
+        $form->input(Form::TEXT,'name',$usernamePlaceholder,post('name'),$usernameIcon,true)->input(Form::EMAIL,'email',$emailPlaceholder,post('email'),$emailIcon,true)->endRowAndNew()
+        ->input(Form::PASSWORD,'password',$passwordPlaceholder,post('password'),$passwordIcon,true)->input(Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,post('password_confirmation'),$passwordIcon,true)->endRowAndNew()
+        ->submit($submitText,$submitClass,$submitId,$submitIcon)->endRow();
 
-        return $form->end();
+        return $form->get();
+    }
+}
+
+if(!exist('def'))
+{
+    /**
+     * check if value are defined
+     *
+     * @param mixed ...$values
+     *
+     * @return bool
+     */
+    function def(...$values): bool
+    {
+        foreach ($values as $value)
+        {
+            if(!isset($value) || empty($value))
+                return false;
+        }
+
+
+        return true;
     }
 }
 
@@ -127,7 +149,6 @@ if (!exist('records'))
      * @param int $current
      * @param string $paginationUrl
      * @param PDO $pdo
-     * @param int $formType
      * @param string $saveText
      * @param string $confirmDeleteText
      * @param string $startPaginationText
@@ -185,7 +206,7 @@ if (!exist('selectTable'))
             }
         }
 
-        return '<div class="row mt-5"> <div class="col">'. form()->start('',uniqid())->csrf($csrf)->redirectSelect('table',$tables,$icon)->end().'</div> <div class="col">  <div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div><input type="number" class="form-control" min="1" value="'.$paginationLimit.'" onchange="location = this.value"></div></div></div></div> ';
+        return '<div class="row mt-5"> <div class="col">'. form('',uniqid())->csrf($csrf)->redirectSelect('table',$tables,$icon)->end().'</div> <div class="col">  <div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div><input type="number" class="form-control" min="1" value="'.$paginationLimit.'" onchange="location = this.value"></div></div> </div></div>';
      }
 }
 
@@ -229,7 +250,7 @@ if (!exist('simpleView'))
 
 
         $code = $selectTable.'<div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
-        $code .= '<script type="text/javascript">function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
+        $code .= '<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
 
         foreach ($columns as  $x)
         {
@@ -274,9 +295,18 @@ if (!exist('simpleView'))
                     $code .= '<td> '.$record->$column.'</td>';
                 }
             }
-            $code .= '<td> <a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></td><td> <a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></form></tr>';
+            $code .= '<td> <a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></td><td> <a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></tr>';
         }
+
+        $code.= '</tbody></table></div>';
+
+        if ($preferPaginationRight)
+            $code .=    '<div class="ml-auto mt-5 mb-5">'.$pagination.'</div>';
+        else
+            $code .=     '<div class="mr-auto mt-5 mb-5">'.$pagination.'</div>';
+
         return $code;
+
     }
 }
 
@@ -436,9 +466,9 @@ if (!exist('advancedView'))
         $code.= '</div></div></div>';
 
         if ($paginationPreferRight)
-            $code .=    '<div class="float-right mt-5 mb-5">'.$pagination.'</div>';
+            $code .=    '<div class="ml-auto mt-5 mb-5">'.$pagination.'</div>';
         else
-            $code .=     '<div class="float-left mt-5 mb-5">'.$pagination.'</div>';
+            $code .=     '<div class="mr-auto mt-5 mb-5">'.$pagination.'</div>';
 
         return $code;
     }
@@ -514,6 +544,34 @@ if (!exist('bootstrapJs'))
 }
 
 
+if (!exist('_html'))
+{
+
+    /***
+     * print html code
+     *
+     * @param bool $secure
+     *
+     * @param mixed ...$data
+     */
+    function _html(bool $secure,...$data)
+    {
+        foreach ($data as $x)
+        {
+            if (!is_array($x))
+            {
+                if ($secure)
+                {
+                    echo htmlspecialchars($x, ENT_QUOTES, 'UTF-8', $secure);
+                } else {
+                    echo $x;
+                }
+            }
+
+        }
+
+    }
+}
 if (!exist('html'))
 {
     /**
@@ -701,7 +759,7 @@ if (!exist('session'))
     function session(string $key): string
     {
         if (isset($_SESSION[$key]) && !empty($_SESSION[$key]))
-            return $_SESSION[$key];
+            return  htmlspecialchars($_SESSION[$key], ENT_QUOTES, 'UTF-8', true);
 
         return '';
     }
@@ -719,7 +777,7 @@ if (!exist('cookie'))
     function cookie(string $key): string
     {
         if (isset($_COOKIE[$key]) && !empty($_COOKIE[$key]))
-            return $_COOKIE[$key];
+            return  htmlspecialchars($_COOKIE[$key], ENT_QUOTES, 'UTF-8', true);
 
         return '';
     }
@@ -736,7 +794,7 @@ if (!exist('get'))
     function get(string $key): string
     {
         if (isset($_GET[$key]) && !empty($_GET[$key]))
-            return htmlentities($_GET[$key]);
+            return  htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true);
 
         return '';
     }
@@ -789,8 +847,7 @@ if (!exist('post'))
     function post(string $key): string
     {
         if (isset($_POST[$key]) && !empty($_POST[$key]))
-            return htmlentities($_POST[$key]);
-
+            return htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8', true);
         return '';
     }
 }
@@ -799,7 +856,6 @@ if (!exist('generate'))
     /**
      * generate a form to edit or create a record
      *
-     * @param int $type
      * @param string $formId
      * @param string $class
      * @param string $action
@@ -816,9 +872,9 @@ if (!exist('generate'))
      * @return string
      * @throws Exception
      */
-    function generate(int $type,string $formId,string $class,string $action,string $table,Table $instance,string $submitText,string $submitClass,string $submitIcon,string $submitId,string $csrfToken = '',int $mode = Form::CREATE,int $id = 0): string
+    function generate(string $formId,string $class,string $action,string $table,Table $instance,string $submitText,string $submitClass,string $submitIcon,string $submitId,string $csrfToken = '',int $mode = Form::CREATE,int $id = 0): string
     {
-        return form($type)->start($action,$formId,$class)->csrf($csrfToken)->generate($table,$instance,$submitText,$submitClass,$submitId,$submitIcon,$mode,$id);
+        return form($action,$formId,$class)->csrf($csrfToken)->generate($table,$instance,$submitText,$submitClass,$submitId,$submitIcon,$mode,$id);
     }
 }
 
@@ -867,14 +923,10 @@ if (!exist('collation'))
         switch ($driver)
         {
             case Connexion::MYSQL:
-
                 foreach (req($connexion,"SHOW COLLATION") as $char)
                     push($collation,$char->Collation);
-
             break;
-
             case Connexion::POSTGRESQL:
-
                 foreach (req($connexion,"SELECT collname FROM pg_collation") as $char)
                     push($collation,$char->collname);
             break;
@@ -1409,12 +1461,20 @@ if (!exist('userDel'))
 if (!exist('form'))
 {
     /**
+     * start a form
+     *
+     * @param string $action
+     * @param string $id
+     * @param string $method
+     * @param string $class
+     * @param bool $enctype
+     * @param string $charset
      *
      * @return Form
      */
-    function form()
+    function form(string $action, string $id, string $method = Form::POST,string $class = '', bool $enctype = false,  string $charset = 'utf8')
     {
-        return Form::create();
+        return Form::create()->start($action,$id,$class,$enctype,$method,$charset);
     }
 }
 

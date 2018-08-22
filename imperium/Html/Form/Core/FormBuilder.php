@@ -20,8 +20,6 @@
  */
 
 namespace Imperium\Html\Form\Core {
-
-    use Exception;
     use Imperium\Databases\Eloquent\Tables\Table;
     use Imperium\Html\Form\Form;
 
@@ -72,6 +70,27 @@ namespace Imperium\Html\Form\Core {
         public function startHide(): Form;
 
         /**
+         * start an auto column line
+         *
+         * @return Form
+         */
+        public function startRow(): Form;
+
+        /**
+         * end of line
+         *
+         * @return Form
+         */
+        public function endRow(): Form;
+
+        /**
+         *  end of line and start a new row
+         *
+         * @return Form
+         */
+        public function endRowAndNew(): Form;
+
+        /**
          * close hidden input
          *
          * @return Form
@@ -79,17 +98,16 @@ namespace Imperium\Html\Form\Core {
         public function endHide(): Form;
 
         /**
-         * generate a files input
+         * generate a file input
          *
          * @param string $name
-         * @param string $class
          * @param string $text
+         * @param string $locale
          * @param string $ico
          *
-         * @param string $locale
          * @return Form
          */
-        public function file(string $name, string $class, string $text, string $ico = '',string $locale = 'en'): Form;
+        public function file(string $name, string $text, string $locale = 'en',string $ico = ''): Form;
 
         /**
          * define input size to large
@@ -125,103 +143,6 @@ namespace Imperium\Html\Form\Core {
         public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form;
 
 
-        /**
-         * generate two inline input
-         *
-         * @param string $typeOne
-         * @param string $nameOne
-         * @param string $placeholderOne
-         * @param string $valueOne
-         * @param string $iconOne
-         * @param bool   $requiredOne
-         * @param string $typeTwo
-         * @param string $nameTwo
-         * @param string $placeholderTwo
-         * @param string $valueTwo
-         * @param string $iconTwo
-         * @param bool   $requiredTwo
-         *
-         * @return Form
-         */
-        public function twoInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo): Form;
-
-        /**
-         * generate three inline input
-         *
-         * @param string $typeOne
-         * @param string $nameOne
-         * @param string $placeholderOne
-         * @param string $valueOne
-         * @param string $iconOne
-         * @param bool $requiredOne
-         * @param string $typeTwo
-         * @param string $nameTwo
-         * @param string $placeholderTwo
-         * @param string $valueTwo
-         * @param string $iconTwo
-         * @param bool $requiredTwo
-         * @param string $typeThree
-         * @param string $nameThree
-         * @param string $placeholderThree
-         * @param string $valueThree
-         * @param string $iconThree
-         * @param bool $requiredThree
-         *
-         * @return Form
-         */
-        public function threeInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree): Form;
-
-        /**
-         * generate four inline input
-         *
-         * @param string $typeOne
-         * @param string $nameOne
-         * @param string $placeholderOne
-         * @param string $valueOne
-         * @param string $iconOne
-         * @param bool $requiredOne
-         * @param string $typeTwo
-         * @param string $nameTwo
-         * @param string $placeholderTwo
-         * @param string $valueTwo
-         * @param string $iconTwo
-         * @param bool $requiredTwo
-         * @param string $typeThree
-         * @param string $nameThree
-         * @param string $placeholderThree
-         * @param string $valueThree
-         * @param string $iconThree
-         * @param bool $requiredThree
-         * @param string $typefour
-         * @param string $nameFour
-         * @param string $placeholderFour
-         * @param string $valueFour
-         * @param string $iconFour
-         * @param bool $requiredFour
-         *
-         * @return Form
-         */
-        public function fourInlineInput(string $typeOne, string $nameOne, string $placeholderOne, string $valueOne, string $iconOne, bool $requiredOne, string $typeTwo, string $nameTwo, string $placeholderTwo, string $valueTwo, string $iconTwo, bool $requiredTwo, string $typeThree, string $nameThree, string $placeholderThree, string $valueThree, string $iconThree, bool $requiredThree, string $typefour, string $nameFour, string $placeholderFour, string $valueFour, string $iconFour, bool $requiredFour): Form;
-
-        /**
-         * generate four select
-         *
-         * @param string $nameOne
-         * @param array $optionsOne
-         * @param string $iconOne
-         * @param string $nameTwo
-         * @param array $optionsTwo
-         * @param string $iconTwo
-         * @param string $nameThree
-         * @param array $optionsThree
-         * @param string $iconThree
-         * @param string $nameFour
-         * @param array $optionsFour
-         * @param string $iconFour
-         *
-         * @return Form
-         */
-        public function fourInlineSelect(string $nameOne,array $optionsOne,string $iconOne,string $nameTwo,array $optionsTwo,string $iconTwo,string $nameThree,array $optionsThree,string $iconThree,string $nameFour,array $optionsFour,string $iconFour): Form;
 
         /**
          * add csrf token in form
@@ -235,14 +156,14 @@ namespace Imperium\Html\Form\Core {
         /**
          * generate a button
          *
-         * @param string      $text
-         * @param string      $class
-         * @param string      $icon
-         * @param string      $type
+         * @param string $type
+         * @param string $text
+         * @param string $class
+         * @param string $icon
          *
          * @return Form
          */
-        public function button(string $text, string $class, string $icon = '',string $type = Form::BUTTON ): Form;
+        public function button(string $type,string $text, string $class, string $icon = ''): Form;
 
         /**
          * generate a button to reset the form
@@ -325,28 +246,16 @@ namespace Imperium\Html\Form\Core {
         public function select(string $name, array $options,string $icon = '',bool $multiple = false): Form;
 
         /**
-         * @param string $nameOne
-         * @param array  $optionsOne
-         * @param string $iconOne
-         * @param string $nameTwo
-         * @param array  $optionsTwo
-         * @param string $iconTwo
-         *
-         * @return Form
-         */
-        public function twoInlineSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo):Form;
-
-        /**
          * generate a checkbox input
          *
          * @param string $name
          * @param string $text
          * @param string $class
-         * @param bool   $checked
+         * @param bool $checked
          *
          * @return Form
          */
-        public function checkbox(string $name, string $text, string $class, bool $checked = false): Form;
+        public function checkbox(string $name, string $text,string $class = '',bool $checked = false): Form;
 
         /**
          * generate a radio input
@@ -368,6 +277,13 @@ namespace Imperium\Html\Form\Core {
         public function end(): string;
 
         /**
+         * return the form
+         *
+         * @return string
+         */
+        public function get(): string;
+
+        /**
          * generate a redirect select
          *
          * @param string $name
@@ -378,53 +294,5 @@ namespace Imperium\Html\Form\Core {
          */
         public function redirectSelect(string $name, array $options, string $icon = ''): Form;
 
-        /**
-         * generate two inline redirect select
-         *
-         * @param string $nameOne
-         * @param array  $optionsOne
-         * @param string $iconOne
-         * @param string $nameTwo
-         * @param array  $optionsTwo
-         * @param string $iconTwo
-         *
-         * @return Form
-         * @throws Exception
-         */
-        public function twoRedirectSelect(string $nameOne, array $optionsOne, string $iconOne, string $nameTwo, array $optionsTwo, string $iconTwo): Form;
-
-        /**
-         * generate one select and one input inline
-         *
-         * @param string      $selectName
-         * @param array       $selectOptions
-         * @param string      $selectIconOne
-         * @param string      $type
-         * @param string      $name
-         * @param string      $placeholder
-         * @param bool        $required
-         * @param string      $iconTwo
-         * @param string      $value
-         *
-         * @return Form
-         */
-        public function oneSelectOneInput(string $selectName, array $selectOptions, string $selectIconOne, string $type, string $name, string $placeholder, bool $required , string $iconTwo, string $value): Form;
-
-        /**
-         * generate one input and one select
-         *
-         * @param string      $type
-         * @param string      $name
-         * @param string      $placeholder
-         * @param bool        $required
-         * @param string      $inputIcon
-         * @param string      $value
-         * @param string      $selectName
-         * @param array       $selectOptions
-         * @param string      $selectIconOne
-         *
-         * @return Form
-         */
-        public function oneInputOneSelect(string $type, string $name, string $placeholder, bool $required, string $inputIcon, string $value , string $selectName, array $selectOptions, string $selectIconOne): Form;
-    }
+   }
 }
