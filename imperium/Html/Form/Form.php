@@ -684,9 +684,9 @@ class Form implements FormBuilder
         $primary = $instance->primaryKey();
 
 
-        if (is_null($primary)) {
+        if (is_null($primary))
             throw new Exception('We have not found a primary key');
-        }
+
 
         $number = array(
             'smallint',

@@ -2,6 +2,8 @@
 
 namespace tests;
 
+use Exception;
+use Imperium\Databases\Eloquent\Connexion\Connexion;
 use Imperium\Html\Form\Form;
 use PHPUnit\Framework\TestCase;
 
@@ -330,5 +332,85 @@ class FormTest extends TestCase
 
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function testGenerate()
+    {
+        $table = 'doctors';
+        $base = 'zen';
+        $user = 'root';
+        $class = 'btn btn-primary';
+        $icon = fa('fa-user');
+        $instance = table(Connexion::MYSQL,$base,$user,$user,'');
+        $form = form('a','a')->generate($table,$instance,'submit',$class,'id');
 
+        $this->assertNotEmpty($form);
+        $this->assertContains('submit',$form);
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+         $form = form('a','a')->generate($table,$instance,'submit',$class,'id',$icon);
+
+        $this->assertNotEmpty($form);
+        $this->assertContains('submit',$form);
+        $this->assertContains($icon,$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+        $form = form('a','a')->generate($table,$instance,'submit',$class,'id','',Form::EDIT,1);
+
+        $this->assertNotEmpty($form);
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('submit',$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+        $form = form('a','a')->generate($table,$instance,'submit',$class,'id',$icon,Form::EDIT,1);
+
+        $this->assertNotEmpty($form);
+        $this->assertContains($icon,$form);
+        $this->assertContains('submit',$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+        $this->expectException(Exception::class);
+        form('a','a')->generate($table,$instance,'a',$class,'a',$icon,Form::EDIT,88888);
+        form('a','a')->generate($table,$instance,'a',$class,'a',$icon,Form::EDIT,854);
+        form('a','a')->generate($table,$instance,'a',$class,'a',$icon,Form::EDIT,356);
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test()
+    {   $table = 'doctors';
+        $base = 'zen';
+        $user = 'root';
+        $class = 'btn btn-primary';
+        $icon = fa('fa-user');
+        $instance = table(Connexion::MYSQL,$base,$user,$user,'');
+        $this->expectException(Exception::class);
+        form('a','a')->generate($table,$instance,'a',$class,'a',$icon,888,356);
+        form('a','a')->generate($table,$instance,'a',$class,'a',$icon,700,356);
+        form('a','a')->generate($table,$instance,'a',$class,'a',$icon,300,356);
+    }
 }
