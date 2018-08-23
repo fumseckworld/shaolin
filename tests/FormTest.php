@@ -401,7 +401,7 @@ class FormTest extends TestCase
     /**
      * @throws Exception
      */
-    public function test()
+    public function testWithNoValidMode()
     {   $table = 'doctors';
         $base = 'zen';
         $user = 'root';
