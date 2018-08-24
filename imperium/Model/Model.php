@@ -35,11 +35,11 @@ class Model
     private $instance;
 
 
-    public function __construct(PDO $pdo,Table $instance, string $table,string $oderBy = 'desc')
+    public function __construct(PDO $pdo,Table $instance, string $table,int $pdoMode = PDO::FETCH_OBJ,string $oderBy = 'desc')
     {
         $this->instance = $instance->setName($table);
         $this->primary = $this->instance->primaryKey();
-        $this->sql = sql($table)->setPdo($pdo)->orderBy($this->primary,$oderBy);
+        $this->sql = sql($table)->setPdo($pdo)->orderBy($this->primary,$oderBy)->setMode($pdoMode);
 
         $this->table = $table;
 
@@ -89,15 +89,15 @@ class Model
     }
 
     /**
-     * find records by the where clause
+     * get records by a where clause
      *
-     * @param $param
-     * @param $condition
+     * @param string $param
+     * @param string $condition
      * @param $expected
      *
      * @return array
      */
-    public function where($param,$condition,$expected): array
+    public function where(string $param,string $condition,$expected): array
     {
         return $this->sql->where($param,$condition,$expected)->getRecords();
     }
@@ -182,5 +182,10 @@ class Model
     public function isEmpty(): bool
     {
         return $this->instance->isEmpty();
+    }
+
+    public function paginate(int $limit)
+    {
+
     }
 }

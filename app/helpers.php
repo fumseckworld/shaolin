@@ -1401,13 +1401,14 @@ if (!exist('model'))
      * @param PDO $pdo
      * @param Table $instance
      * @param string $table
+     * @param int $pdoMode
      * @param string $oderBy
      *
      * @return Model
      */
-    function model(PDO $pdo,Table $instance, string $table,string $oderBy = 'desc'): Model
+    function model(PDO $pdo,Table $instance, string $table,int $pdoMode = PDO::FETCH_OBJ,string $oderBy = 'desc'): Model
     {
-        return new Model($pdo,$instance,$table,$oderBy);
+        return new Model($pdo,$instance,$table,$pdoMode,$oderBy);
     }
 }
 if (!exist('table'))

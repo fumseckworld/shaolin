@@ -1,5 +1,6 @@
 <?php
 
+use Imperium\Core\Collection;
 use Imperium\Databases\Eloquent\Connexion\Connexion;
 
 
@@ -12,15 +13,9 @@ $x = empty(get('table')) ? 'doctors' : get('table');
 $pdo = connect(Connexion::MYSQL,'zen','root','root');
 $H = server('HTTP_REFERER');
 $limit = 10;
-
-
-
 $db = model($pdo,$i,$x);
 
-
-var_dump($db->find(2));
-
-
+$collections = new  Collection($db->where('id','<',12));
 
 $current = rand(1,$limit);;
 ?>
@@ -35,7 +30,14 @@ $current = rand(1,$limit);;
     </head>
     <body>
         <?php
+        try {
 
+            $collections->print( true,$i->getColumns(),false);
+            $collections->print( false,$i->getColumns(),true);
+
+        } catch (Exception $e) {
+            die($e->getMessage());
+        }
 
         if (get('remove-id'))
         {
@@ -69,7 +71,7 @@ $current = rand(1,$limit);;
 
                 $records = records(Connexion::MYSQL,'table table-dark table-bordered',$i,$x,fa('fa-table'),'Selected a another table','edit','remove','desc','editer','supprimer','btn btn-outline-primary btn-block','btn btn-outline-danger btn-block',fa('fa-edit'),fa('fa-trash'),$limit,$current,'imperium',$pdo,   'Sauvegarder','Etes vous sur de vouloir supprimer ?','debut','fin','Advance','simple',"index.php?table=$x",'management','index.php?table=',true,true,'',false,false,true,'',1 );
 
-                 echo html('div', $records, 'container');
+
             }catch (Exception $e)
             {
                 exit($e->getMessage());
@@ -84,7 +86,6 @@ $current = rand(1,$limit);;
 
                 $t = html('div',$form,'container mt-5 mb-5');
 
-                 _html(false,$t,$t,$t,$form);
 
             ?>
 
