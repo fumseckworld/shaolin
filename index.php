@@ -12,6 +12,16 @@ $x = empty(get('table')) ? 'doctors' : get('table');
 $pdo = connect(Connexion::MYSQL,'zen','root','root');
 $H = server('HTTP_REFERER');
 $limit = 10;
+
+
+
+$db = model($pdo,$i,$x);
+
+
+var_dump($db->find(2));
+
+
+
 $current = rand(1,$limit);;
 ?>
 <!DOCTYPE html>

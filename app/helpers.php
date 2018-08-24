@@ -37,6 +37,7 @@ use Imperium\Html\Canvas\Canvas;
 use Imperium\Html\Form\Form;
 use Imperium\Html\Pagination\Pagination;
 use Imperium\Html\Records\Records;
+use Imperium\Model\Model;
 use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
@@ -1390,6 +1391,25 @@ if (!exist('drop'))
     }
 }
 
+
+if (!exist('model'))
+{
+
+    /**
+     * return an instance of the mode class
+     *
+     * @param PDO $pdo
+     * @param Table $instance
+     * @param string $table
+     * @param string $oderBy
+     *
+     * @return Model
+     */
+    function model(PDO $pdo,Table $instance, string $table,string $oderBy = 'desc'): Model
+    {
+        return new Model($pdo,$instance,$table,$oderBy);
+    }
+}
 if (!exist('table'))
 {
     /**

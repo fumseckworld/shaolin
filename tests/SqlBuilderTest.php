@@ -282,8 +282,8 @@ class SqlBuilderTest extends TestCase
 
     public function testGetUnionRecords()
     {
-        $this->assertCount(100, $this->sql->setPdo($this->mariadb)->union(Query::MODE_UNION, $this->table, $this->secondTable, ['id'], ['id'])->getRecords());
-        $this->assertCount(200, $this->sql->setPdo($this->mariadb)->union(Query::MODE_UNION_ALL, $this->table, $this->secondTable, ['id'], ['id'])->getRecords());
+        $this->assertCount(200, $this->sql->setPdo($this->mariadb)->union(Query::MODE_UNION, $this->table, $this->secondTable, ['id'], ['id'])->getRecords());
+        $this->assertCount(300, $this->sql->setPdo($this->mariadb)->union(Query::MODE_UNION_ALL, $this->table, $this->secondTable, ['id'], ['id'])->getRecords());
 
         $this->assertCount(100, $this->sql->setPdo($this->sqlite)->union(Query::MODE_UNION, $this->table, $this->secondTable, ['id'], ['id'])->getRecords());
         $this->assertCount(199, $this->sql->setPdo($this->sqlite)->union(Query::MODE_UNION_ALL, $this->table, $this->secondTable, ['id'], ['id'])->getRecords());
