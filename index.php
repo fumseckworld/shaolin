@@ -5,19 +5,20 @@ use Imperium\Databases\Eloquent\Connexion\Connexion;
 
 
 require_once 'vendor/autoload.php';
-
+whoops();
 $i = table(Connexion::MYSQL,'zen','root','root','dump');
 
 $x = empty(get('table')) ? 'doctors' : get('table');
 
 $pdo = connect(Connexion::MYSQL,'zen','root','root');
+
 $H = server('HTTP_REFERER');
 $limit = 10;
 $db = model($pdo,$i,$x);
 
-$collections = new  Collection($db->where('id','<',12));
+$collections = new  Collection($db->where('id','>',1));
 
-$current = rand(1,$limit);;
+$current = rand(1,$limit);  
 ?>
 <!DOCTYPE html>
 <html lang="en">

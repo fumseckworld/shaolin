@@ -1006,20 +1006,20 @@ class HelpersTest extends TestCase
         $base = 'zen';
         $table = 'doctors';
 
-        $this->assertNotEquals(false,dump(Connexion::MYSQL,'root','root',$base,'dump'));
-        $this->assertNotEquals(false,dump(Connexion::POSTGRESQL,'postgres','',$base,'dump'));
-        $this->assertNotEquals(false,dump(Connexion::SQLITE,'','',$base,'dump'));
+        $this->assertNotEquals(false,dumper(Connexion::MYSQL,'root','root',$base,'dump'));
+        $this->assertNotEquals(false,dumper(Connexion::POSTGRESQL,'postgres','',$base,'dump'));
+        $this->assertNotEquals(false,dumper(Connexion::SQLITE,'','',$base,'dump'));
 
-        $this->assertNotEquals(false,dump(Connexion::MYSQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
-        $this->assertNotEquals(false,dump(Connexion::POSTGRESQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
-        $this->assertNotEquals(false,dump(Connexion::SQLITE,'','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        $this->assertNotEquals(false,dumper(Connexion::MYSQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        $this->assertNotEquals(false,dumper(Connexion::POSTGRESQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        $this->assertNotEquals(false,dumper(Connexion::SQLITE,'','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
 
-        $this->assertEquals(false,dump(Connexion::POSTGRESQL,'root','root',$base,'dump')) ;
-        $this->assertEquals(false,dump(Connexion::MYSQL,'postgres','',$base,'dump')) ;
+        $this->assertEquals(false,dumper(Connexion::POSTGRESQL,'root','root',$base,'dump')) ;
+        $this->assertEquals(false,dumper(Connexion::MYSQL,'postgres','',$base,'dump')) ;
 
-        $this->assertEquals(false , dump(Connexion::POSTGRESQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table)) ;
-        $this->assertEquals(false,dump(Connexion::MYSQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
-        
+        $this->assertEquals(false , dumper(Connexion::POSTGRESQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table)) ;
+        $this->assertEquals(false,dumper(Connexion::MYSQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+
     }
     public function testFuture()
     {

@@ -43,6 +43,8 @@ use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 
 if (!exist('registerForm'))
@@ -1274,6 +1276,18 @@ if(!exist('show'))
     }
 }
 
+if(!exist('whoops'))
+{
+    /**
+     * load whoops
+     */
+   function whoops()
+    {
+        $whoops = new Run;
+        $whoops->pushHandler(new PrettyPageHandler);
+        $whoops->register();
+    }
+}
 if(!exist('array_prev'))
 {
     /**
@@ -1493,10 +1507,22 @@ if (!exist('form'))
     }
 }
 
-if (!exist('dump'))
+if (!exist('d'))
+{
+    function d(...$values)
+    {
+        $dumper = new \Imperium\Core\Debug\Dumper();
+
+        foreach ($values as $value)
+            $dumper->dump($value);
+
+        die();
+    }
+}
+if (!exist('dumper'))
 {
 
-    function  dump(string $driver, string $username, string $password, string $database, string $dumpPath, int $mode = Eloquent::MODE_DUMP_DATABASE, string $table ='')
+    function  dumper(string $driver, string $username, string $password, string $database, string $dumpPath, int $mode = Eloquent::MODE_DUMP_DATABASE, string $table ='')
     {
 
         Dir::clear($dumpPath);
