@@ -21,6 +21,7 @@
 
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
+use Imperium\Core\Collection;
 use Imperium\Databases\Dumper\MySql;
 use Imperium\Databases\Dumper\PostgreSql;
 use Imperium\Databases\Dumper\Sqlite;
@@ -1279,23 +1280,16 @@ if(!exist('array_prev'))
      * get the prev value of array by the current key
      *
      * @param array $array
-     * @param string $key
+     * @param mixed $key
      *
      * @return mixed
      */
-    function array_prev(array $array,string $key)
+    function array_prev(array $array, $key)
     {
 
-        if (count($array) > 1)
-        {
-            do{
-                $current  = current($array) !== $key ? next($array): current($array);
-            }while($current !== $key);
+        $collection = new  Collection($array);
 
-            return prev($array);
-        }
-
-        return $key;
+        return $collection->valueBeforeKey($key);
     }
 
 }

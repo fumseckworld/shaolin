@@ -168,6 +168,14 @@ class HelpersTest extends TestCase
         $this->assertEquals('a',array_prev($array,'b'));
         $array = ['a','b','c'];
         $this->assertEquals('b',array_prev($array,'c'));
+        $array = ['c'];
+        $this->assertEquals('c',array_prev($array,'c'));
+
+        $array = [2 => 'a',4 => 'lorem',5 => -4,'azer'=> 'z'];
+
+        $this->assertEquals(-4,array_prev($array,'azer'));
+        $this->assertEquals('lorem',array_prev($array,5));
+        $this->assertEquals('a',array_prev($array,4));
     }
     /**
      * @throws IdentifierException

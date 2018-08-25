@@ -21,6 +21,11 @@ class Collection implements ArrayAccess, Iterator
      */
     private $position;
 
+    /**
+     * @var mixed
+     */
+    private $beforeValue;
+
 
     /**
      * Collection constructor.
@@ -32,6 +37,16 @@ class Collection implements ArrayAccess, Iterator
         $this->position = 0;
     }
 
+    /**
+     * init the counter
+     *
+     * @return int
+     */
+    public function init()
+    {
+        $this->position = 0;
+        return $this->position;
+    }
     /**
      * print data from a table
      *
@@ -139,6 +154,14 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
+     * get
+     * @return array
+     */
+    public function getCollection(): array
+    {
+        return $this->data;
+    }
+    /**
      * add data in the array
      *
      * @return Collection
@@ -171,7 +194,7 @@ class Collection implements ArrayAccess, Iterator
     public function merge(array ...$array): Collection
     {
         foreach($array as $elem)
-            array_merge($this->data,$elem);
+          $this->data =  array_merge($this->data,$elem);
 
         return $this;
     }
@@ -201,7 +224,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return int
      */
-    public function total(): int
+    public function length(): int
     {
         return count($this->data);
     }
@@ -245,7 +268,8 @@ class Collection implements ArrayAccess, Iterator
      */
     public function firstKey()
     {
-        return reset($this->getKeys());
+        $data = $this->getKeys();
+        return reset($data);
     }
 
     /**
@@ -255,7 +279,8 @@ class Collection implements ArrayAccess, Iterator
      */
     public function firstValue()
     {
-        return reset($this->getValues());
+        $data = $this->getValues();
+        return reset($data);
     }
 
 
@@ -277,9 +302,42 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return array
      */
-    public function reverse($preserveKey= true): array
+    public function reverse($preserveKey= false): array
     {
         return array_reverse($this->data,$preserveKey);
+    }
+
+
+    /**
+     * get the value of the array before a key
+     *
+     * @param $key
+     *
+     * @return mixed
+     */
+    public function valueBeforeKey($key)
+    {
+        $length = $this->length();
+        if ($this->has($key) && $length > 1)
+        {
+
+            foreach ($this->data as $k => $v)
+                if($k !== $key)
+                    $this->beforeValue = $v;
+                else
+                    return $this->beforeValue;
+
+        }
+
+        if ($length > 1)
+        {
+            foreach ($this->data as $v)
+                if($v !== $key)
+                    $this->beforeValue = $v;
+                else
+                    return $this->beforeValue;
+        }
+        return $key;
     }
 
     /**
@@ -315,13 +373,23 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
+     * get the before value in the array
+     *
+     * @return mixed
+     */
+    public function before()
+    {
+        return prev($this->data);
+    }
+
+    /**
      * get the prev value in the array
      *
      * @return mixed
      */
-    public function prev()
+    public function after()
     {
-        return prev($this->data);
+        return next($this->data);
     }
 
 
@@ -346,21 +414,23 @@ class Collection implements ArrayAccess, Iterator
      */
     public function get($key)
     {
-        if ($this->has($key))
-            return $this->data[$key];
+        return $this->has($key) ? $this->data[$key] : null;
 
-        return false;
     }
 
     /**
      * remove a value in the array
      *
-     * @param $value
+     * @param $key
+     *
+     * @return Collection
      */
-    public function unset($value)
+    public function unset($key): Collection
     {
-        if ($this->has($value))
-          unset($this->data[$value]);
+        if ($this->has($key))
+          unset($this->data[$key]);
+
+        return $this;
     }
 
     /**
@@ -402,14 +472,17 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * get the total of elements
+     * empty the data
      *
-     * @return int
+     * @return Collection
      */
-    public function size()
+    public function clear(): Collection
     {
-        return $this->total();
+        $this->data = array();
+
+        return $this;
     }
+
     /**
      * searches the array for a given value and returns the first corresponding key if successful
      *
@@ -422,6 +495,8 @@ class Collection implements ArrayAccess, Iterator
     {
         return array_search($needle,$this->data,$strict);
     }
+
+
 
     /**
      * Whether a offset exists
@@ -517,6 +592,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function valid()
     {
+
         return isset($this->data[$this->position]);
     }
 
@@ -541,5 +617,6 @@ class Collection implements ArrayAccess, Iterator
     {
         ++$this->position;
     }
+
 
 }

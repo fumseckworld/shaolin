@@ -23,7 +23,7 @@ To allow you to use it in your own projects, and group my projects in one to upd
 
 Its objectives are to supports all [types of databases](http://php.net/manual/en/pdo.drivers.php) possibles, and be useful for all developers to build a admin area more simply.
 
-# Installation
+# Installation**
 
 `$ composer require imperium/imperium`
 
