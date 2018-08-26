@@ -1084,6 +1084,12 @@ class HelpersTest extends TestCase
     {
         $keys = ['database','username','password'];
         $values = ['forge','forger','xkjkl'];
+        $file = 'env';
+        if (File::exist($file))
+            File::delete($file);
+
+        File::create($file);
+        File::putContents($file,"database=forge\nusername=forger\npassword=xkjkl");
 
         $fileKeys = File::getKeys('env','=');
         $fileValues = File::getValues('env','=');
@@ -1095,8 +1101,8 @@ class HelpersTest extends TestCase
         $this->assertEquals($values,$fileValues);
 
 
-        $fileKeys = getKeys('env','=');
-        $fileValues = getValues('env','=');
+        $fileKeys = getKeys($file,'=');
+        $fileValues = getValues($file,'=');
 
         $this->assertNotEmpty($fileKeys);
         $this->assertEquals($keys,$fileKeys);
