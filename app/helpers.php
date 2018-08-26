@@ -1,27 +1,8 @@
 <?php
-/**
- * fumseck added helpers.php to imperium
- * The 09/09/17 at 15:11
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- */
 
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
-use Imperium\Core\Collection;
+use Imperium\Collection\Collection;
 use Imperium\Databases\Dumper\MySql;
 use Imperium\Databases\Dumper\PostgreSql;
 use Imperium\Databases\Dumper\Sqlite;
@@ -31,6 +12,7 @@ use Imperium\Databases\Eloquent\Eloquent;
 use Imperium\Databases\Eloquent\Query\Query;
 use Imperium\Databases\Eloquent\Tables\Table;
 use Imperium\Databases\Eloquent\Users\Users;
+use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
 use Imperium\File\File;
 use Imperium\Html\Bar\Icon;
@@ -90,6 +72,20 @@ if (!exist('registerForm'))
     }
 }
 
+if(!exist('collection'))
+{
+    /**
+     * manage the array
+     *
+     * @param array $array
+     *
+     * @return Collection
+     */
+    function collection(array $array = []): Collection
+    {
+        return new Collection($array);
+    }
+}
 if(!exist('def'))
 {
     /**
@@ -1509,9 +1505,14 @@ if (!exist('form'))
 
 if (!exist('d'))
 {
+    /**
+     * debug values
+     *
+     * @param mixed ...$values
+     */
     function d(...$values)
     {
-        $dumper = new \Imperium\Core\Debug\Dumper();
+        $dumper = new Dumper();
 
         foreach ($values as $value)
             $dumper->dump($value);
@@ -1766,15 +1767,17 @@ if (!exist('canvas'))
      * start canvas
      *
      * @param string $id
+     * @param string $gridClass
+     * @param string $rowClass
      * @param string $position
      * @param string $ulClass
      * @param string $linkClass
      *
      * @return Canvas
      */
-    function canvas(string $id,string $position = 'navmenu-fixed-right',string $ulClass = 'list-inline offCanvasLinkBackground',string $linkClass = 'offCanvasLink'): Canvas
+    function canvas(string $id,string $gridClass = 'col',string $rowClass = 'row',string $position = 'navmenu-fixed-right',string $ulClass = 'list-inline offCanvasLinkBackground',string $linkClass = 'offCanvasLink'): Canvas
     {
-        return Canvas::start()->setPosition($position)->setId($id)->startUl($ulClass)->setLinkClass($linkClass);
+        return Canvas::start()->setGridClass($gridClass)->setRowClass($rowClass)->setPosition($position)->setId($id)->setLinkClass($linkClass)->startUl($ulClass);
     }
 }
 

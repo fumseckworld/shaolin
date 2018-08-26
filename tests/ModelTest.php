@@ -53,6 +53,11 @@ class ModelTest extends TestCase
 
     }
 
+    public function testShow()
+    {
+        $this->assertNotEmpty($this->model->showTables());
+    }
+
     public function testWhere()
     {
         $this->assertNotEmpty($this->model->where('id','=',3));

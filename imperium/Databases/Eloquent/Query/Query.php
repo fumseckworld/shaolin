@@ -523,6 +523,19 @@ namespace Imperium\Databases\Eloquent\Query {
 
 
         /**
+         * change pdo fetch mode
+         *
+         * @param int $mode
+         *
+         * @return Query
+         */
+        public function setPdoMode(int $mode): Query
+        {
+            $this->fetch = $mode;
+
+            return $this;
+        }
+        /**
          * set mode
          *
          * @param string $mode

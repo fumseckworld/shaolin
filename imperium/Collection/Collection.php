@@ -1,6 +1,6 @@
 <?php
 
-namespace Imperium\Core;
+namespace Imperium\Collection;
 
 
 use ArrayAccess;
@@ -47,6 +47,7 @@ class Collection implements ArrayAccess, Iterator
         $this->position = 0;
         return $this->position;
     }
+
     /**
      * print data from a table
      *
@@ -446,32 +447,6 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * extract a slice of the array
-     *
-     * @param int $offset
-     *
-     * @param int|null $length
-     * @param bool $preserveKey
-     *
-     * @return array
-     */
-    public function slice(int $offset, int $length = null,bool $preserveKey = false): array
-    {
-        return array_slice($this->data,$offset,$length,$preserveKey);
-    }
-
-    /**
-     * @param callable $function
-     * @param int $flag
-     *
-     * @return array
-     */
-    public function filter(callable $function,int $flag = 0): array
-    {
-        return array_filter($this->data,$function,$flag);
-    }
-
-    /**
      * empty the data
      *
      * @return Collection
@@ -579,7 +554,6 @@ class Collection implements ArrayAccess, Iterator
      */
     public function key()
     {
-
         return $this->position;
     }
 

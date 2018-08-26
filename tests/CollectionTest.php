@@ -4,12 +4,18 @@
 
 namespace tests;
 
-
-use Imperium\Core\Collection;
+use Imperium\Collection\Collection;
 use PHPUnit\Framework\TestCase;
 
 class CollectionTest extends TestCase
 {
+
+
+    public function testInstance()
+    {
+        $this->assertInstanceOf(Collection::class,collection());
+        $this->assertInstanceOf(Collection::class,collection(['a','b']));
+    }
 
     public function testPush()
     {
@@ -19,6 +25,19 @@ class CollectionTest extends TestCase
         $this->assertEquals(['a','b','c','d','e','f'],$collection->getCollection()) ;
     }
 
+    public function testCurrent()
+    {
+        $data = ['a','b','c','d','e','f'];
+        $collection = new Collection($data);
+        $collection->rewind();
+        while ($collection->valid())
+        {
+            $this->assertNotEmpty($collection->current());
+
+            $collection->next();
+            $this->assertGreaterThan(0,$collection->key());
+        }
+    }
     public  function testPop()
     {
         $data = ['a','b','c','d','e','f'];

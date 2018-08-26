@@ -1,12 +1,6 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fumse
- * Date: 25/08/2018
- * Time: 21:26
- */
 
-namespace Imperium\Core\Debug;
+namespace Imperium\Debug;
 
 use Symfony\Component\VarDumper\Cloner\VarCloner;
 use Symfony\Component\VarDumper\Dumper\CliDumper;

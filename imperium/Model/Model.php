@@ -39,12 +39,21 @@ class Model
     {
         $this->instance = $instance->setName($table);
         $this->primary = $this->instance->primaryKey();
-        $this->sql = sql($table)->setPdo($pdo)->orderBy($this->primary,$oderBy)->setMode($pdoMode);
+        $this->sql = sql($table)->setPdo($pdo)->orderBy($this->primary,$oderBy)->setPdoMode($pdoMode);
 
         $this->table = $table;
 
     }
 
+    /**
+     * show all tables
+     *
+     * @return array
+     */
+    public function showTables():array
+    {
+        return $this->instance->show();
+    }
 
     /**
      * get all records with an order by
@@ -182,10 +191,5 @@ class Model
     public function isEmpty(): bool
     {
         return $this->instance->isEmpty();
-    }
-
-    public function paginate(int $limit)
-    {
-
     }
 }

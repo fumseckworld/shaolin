@@ -1,6 +1,6 @@
 <?php
 
-use Imperium\Core\Collection;
+
 use Imperium\Databases\Eloquent\Connexion\Connexion;
 
 
@@ -16,7 +16,8 @@ $H = server('HTTP_REFERER');
 $limit = 10;
 $db = model($pdo,$i,$x);
 
-$collections = new  Collection($db->where('id','>',1));
+$collections = collection($db->where('id','<',10));
+
 
 $current = rand(1,$limit);  
 ?>

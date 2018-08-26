@@ -1074,12 +1074,44 @@ class HelpersTest extends TestCase
         $this->assertEquals(true,userDel(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''),$user));
     }
 
+
+    public function testDefaultCanvasValues()
+    {
+        $canvas = \canvas('a')->addForm('adz','azd')->add('a','adz','azd')->end();
+
+        $this->assertContains('row',$canvas);
+        $this->assertContains('col',$canvas);
+        $this->assertContains('list-inline',$canvas);
+        $this->assertContains('navmenu-fixed-right',$canvas);
+        $this->assertContains('offCanvasLink',$canvas);
+
+    }
     public function testGetLines()
     {
         $this->assertNotEmpty(File::getLines('README.md'));
         $this->assertNotEmpty(getLines('README.md'));
     }
 
+
+    public function testCanvasAddForm()
+    {
+        $one = form('a','e')->input('search','a','')->end();
+        $two = form('a','e')->input('number','aadz','')->end();
+        $three = form('a','e')->input('number','aadz','')->textarea('a','a',10,10)->end();
+
+        $canvas = canvas('a')->addForm($one,$two,$three)->end();
+
+        $this->assertContains($one,$canvas);
+        $this->assertContains($two,$canvas);
+        $this->assertContains($three,$canvas);
+    }
+
+    public function testSetCanvasClass()
+    {
+        $canvas = canvas('a')->setGridClass('grid-class')->setRowClass('row-class')->addForm('aazaz')->end();
+        $this->assertContains('grid-class',$canvas);
+        $this->assertContains('row-class',$canvas);
+    }
     public function testGetFileInfo()
     {
         $keys = ['database','username','password'];
