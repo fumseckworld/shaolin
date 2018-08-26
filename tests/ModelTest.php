@@ -85,7 +85,7 @@ class ModelTest extends TestCase
         $this->assertNotEmpty($this->model->findOrFail(8));
         $this->assertNotEmpty($this->model->findOrFail(18));
         $this->expectException(Exception::class);
-        $this->assertNotEmpty($this->model->findOrFail(1));
+        $this->model->findOrFail(1);
     }
 
     public function testDelete()

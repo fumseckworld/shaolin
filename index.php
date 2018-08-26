@@ -33,7 +33,7 @@ $x = empty(get('table')) ? 'doctors' : get('table');
 
     <div class="container">
         <?php $app->print( html('div',registerForm('a','username','email','password','confirm','create account','register'),'mt-5')) ?>
-        
+
     </div>
 
     </body>
