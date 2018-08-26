@@ -132,7 +132,7 @@ class Model
      *
      * @return bool
      */
-    public function save(array $data,array $ignore = []): bool
+    public function insert(array $data,array $ignore = []): bool
     {
         return $this->instance->insert($data,$ignore);
     }

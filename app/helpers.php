@@ -20,6 +20,7 @@ use Imperium\Html\Canvas\Canvas;
 use Imperium\Html\Form\Form;
 use Imperium\Html\Pagination\Pagination;
 use Imperium\Html\Records\Records;
+use Imperium\Imperium;
 use Imperium\Model\Model;
 use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
@@ -54,8 +55,6 @@ if (!exist('registerForm'))
      * @param string $langIcon
      *
      * @return string
-     *
-     * @throws Exception
      */
     function registerForm(string $action,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
     {
@@ -64,11 +63,10 @@ if (!exist('registerForm'))
         if ($multiLang)
             $form->startRow()->select('locale',$supportedLang,$langIcon)->select('zone',zones($chooseTimeZoneText),$zonesIcon)->endRowAndNew();
 
-        $form->input(Form::TEXT,'name',$usernamePlaceholder,post('name'),$usernameIcon,true)->input(Form::EMAIL,'email',$emailPlaceholder,post('email'),$emailIcon,true)->endRowAndNew()
-        ->input(Form::PASSWORD,'password',$passwordPlaceholder,post('password'),$passwordIcon,true)->input(Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,post('password_confirmation'),$passwordIcon,true)->endRowAndNew()
-        ->submit($submitText,$submitClass,$submitId,$submitIcon)->endRow();
+      return  $form->startRow()->input(Form::TEXT,'name',$usernamePlaceholder,$usernameIcon,post('name'),true)->input(Form::EMAIL,'email',$emailPlaceholder,$emailIcon,post('email'),true)->endRowAndNew()
+        ->input(Form::PASSWORD,'password',$passwordPlaceholder,$passwordIcon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,$passwordIcon,post('password_confirmation'),true)->endRow()
+        ->submit($submitText,$submitClass,$submitId,$submitIcon)->get();
 
-        return $form->get();
     }
 }
 
@@ -1745,6 +1743,24 @@ if (!exist('jasnyJs'))
     }
 }
 
+if (!exist('imperium'))
+{
+    /**
+     * all possibilities of management
+     *
+     * @param Base $base
+     * @param Table $table
+     * @param Users $users
+     * @param Query $query
+     * @param Model $model
+     *
+     * @return Imperium
+     */
+    function imperium(Base $base, Table $table, Users $users,Query $query,Model $model): Imperium
+    {
+        return new  Imperium($base,$table,$users,$query,$model);
+    }
+}
 if (!exist('icon'))
 {
     /**

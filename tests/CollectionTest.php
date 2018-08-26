@@ -24,6 +24,18 @@ class CollectionTest extends TestCase
         $collection->push('c','d','e','f');
         $this->assertEquals(['a','b','c','d','e','f'],$collection->getCollection()) ;
     }
+    public function testCreation()
+    {
+        $data = collection();
+
+        for ($i=0;$i<10;$i++)
+        {
+            $data->push($i);
+
+        }
+        $this->assertEquals(10,$data->length());
+        $this->assertEquals([0,1,2,3,4,5,6,7,8,9],$data->getCollection());
+    }
 
     public function testCurrent()
     {

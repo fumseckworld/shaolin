@@ -359,7 +359,7 @@ class Form implements FormBuilder
 
             $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.self::AUTO_COL.'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
 
-            $end = "</div></div></div>";
+            $end = "</div></div></div> ";
 
             $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
         }

@@ -1062,6 +1062,8 @@ class HelpersTest extends TestCase
         $this->assertInstanceOf(Generator::class,faker('es'));
     }
 
+
+
     public function testUserDel()
     {
         $user = 'alexandra';
@@ -1141,6 +1143,63 @@ class HelpersTest extends TestCase
 
         $this->assertNotEmpty($fileValues);
         $this->assertEquals($values,$fileValues);
+    }
+
+    /**
+     * @throws IdentifierException
+     */
+    public function testImperium()
+    {
+        $data = [
+
+            'id' => null,
+            'name' => faker()->name(),
+            'age' => faker()->numberBetween(1,80),
+            'sex' => rand(1,2) == 1 ? 'M': 'F',
+            'status' => faker()->text(20),
+            'date' => faker()->date()
+        ];
+
+
+        $pdo = connect(Connexion::MYSQL,'zen','root','root');
+        $bases = \base(Connexion::MYSQL,'zen','root','root','');
+        $users = user(Connexion::MYSQL,'root','root');
+        $tables = table(Connexion::MYSQL,'zen','root','root','');
+        $query = sql( 'doctors');
+        $model = model($pdo,$tables,'doctors');
+        $imperium = imperium($bases,$tables,$users,$query,$model);
+
+        $this->assertNotEmpty($imperium->tables());
+        $this->assertNotEmpty($imperium->databases());
+        $this->assertNotEmpty($imperium->users());
+
+        $this->assertContains('doctors',$imperium->tables());
+        $this->assertContains('zen',$imperium->databases());
+        $this->assertContains('root',$imperium->users());
+
+        $this->assertNotEmpty($imperium->find(1));
+        $this->assertNotEmpty($imperium->records());
+        $this->assertTrue($imperium->remove(1));
+        $this->assertEmpty($imperium->find(1));
+        $this->assertTrue($imperium->insert($data,[]));
+        $this->assertTrue($imperium->insert($data,[]));
+        $this->assertTrue($imperium->update(10,$data));
+
+        $columns = $imperium->columns();
+
+        $this->assertContains('id',$columns);
+        $this->assertContains('name',$columns);
+        $this->assertContains('age',$columns);
+        $this->assertContains('sex',$columns);
+        $this->assertContains('status',$columns);
+
+        $records  = $imperium->where('id', '<',10);
+        $this->assertNotEmpty($records);
+        $this->assertEquals(8,count($records));
+
+        $this->expectException(Exception::class);
+        $imperium->findOrFail(88888);
+        $imperium->findOrFail(888);
     }
 }
 

@@ -48,7 +48,7 @@ class ModelTest extends TestCase
     public function testFind()
     {
 
-        $this->assertNotEmpty($this->model->find(1));
+        $this->assertNotEmpty($this->model->find(12));
         $this->assertNotEmpty($this->model->find(5));
 
     }
@@ -80,10 +80,12 @@ class ModelTest extends TestCase
     public function testFindOrFailSuccess()
     {
 
-        $this->assertNotEmpty($this->model->findOrFail(1));
+
         $this->assertNotEmpty($this->model->findOrFail(52));
         $this->assertNotEmpty($this->model->findOrFail(8));
         $this->assertNotEmpty($this->model->findOrFail(18));
+        $this->expectException(Exception::class);
+        $this->assertNotEmpty($this->model->findOrFail(1));
     }
 
     public function testDelete()
@@ -124,8 +126,9 @@ class ModelTest extends TestCase
                 'age' => faker()->numberBetween(1,80),
                 'sex' => rand(1,2) == 1 ? 'M': 'F',
                 'status' => faker()->text(20),
-                'date' => faker()->date()];
-            $this->assertTrue($this->model->save($data));
+                'date' => faker()->date()
+            ];
+            $this->assertTrue($this->model->insert($data));
         }
 
 

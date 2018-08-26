@@ -355,7 +355,30 @@ class FormTest extends TestCase
         $this->assertStringStartsWith('<form',$form);
         $this->assertStringEndsWith('</form>',$form);
 
+        $form = generate('a','a','a',$table,$instance,'submit',$class,'','id');
+        $this->assertNotEmpty($form);
+        $this->assertContains('submit',$form);
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
          $form = form('a','a')->generate($table,$instance,'submit',$class,'id',$icon);
+
+        $this->assertNotEmpty($form);
+        $this->assertContains('submit',$form);
+        $this->assertContains($icon,$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+        $form = generate('a','a','a',$table,$instance,'submit',$class,$icon,'id');
 
         $this->assertNotEmpty($form);
         $this->assertContains('submit',$form);
@@ -371,6 +394,30 @@ class FormTest extends TestCase
 
         $this->assertNotEmpty($form);
         $this->assertNotContains($icon,$form);
+        $this->assertContains('submit',$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+        $form = generate('a','a','a',$table,$instance,'submit',$class,'','id','',Form::EDIT,2);
+
+        $this->assertNotEmpty($form);
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('submit',$form);
+        $this->assertContains('id',$form);
+        $this->assertContains('a',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('id',$form);
+        $this->assertStringStartsWith('<form',$form);
+        $this->assertStringEndsWith('</form>',$form);
+
+        $form = generate('a','a','a',$table,$instance,'submit',$class,$icon,'id','',Form::EDIT,2);
+
+        $this->assertNotEmpty($form);
+        $this->assertContains($icon,$form);
         $this->assertContains('submit',$form);
         $this->assertContains('id',$form);
         $this->assertContains('a',$form);
