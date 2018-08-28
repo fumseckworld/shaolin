@@ -206,7 +206,7 @@ class Imperium
             if (!is_array($x))
             {
                 echo $x;
-            }else{
+            }else {
                 d($x);
             }
 

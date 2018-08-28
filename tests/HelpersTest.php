@@ -463,7 +463,8 @@ class HelpersTest extends TestCase
      */
     public function testRegister()
     {
-        $register = registerForm('/','Your username','your email','your password','confirm','create account','create');
+        $register = registerForm('/', '1','1','Your username','your email','your password','confirm','create account','create');
+        $danger = registerForm('/', '1','1a','Your username','your email','your password','confirm','create account','create');
 
         $this->assertContains('<i class="fas fa-user"></i>',$register);
         $this->assertContains('<i class="fas fa-key"></i>',$register);
@@ -480,7 +481,9 @@ class HelpersTest extends TestCase
         $this->assertNotContains('Europe/Paris',$register);
         $this->assertNotContains('Europe/London',$register);
 
-        $register = registerForm( '/','Your username','your email','your password','confirm','create account','create',true,['/' =>'choose','fr' => 'french' ,'en' => 'english'],'choose a time zone');
+        $this->assertEquals('access denied',$danger);
+
+        $register = registerForm( '/','1','1','Your username','your email','your password','confirm','create account','create',true,['/' =>'choose','fr' => 'french' ,'en' => 'english'],'choose a time zone');
 
         $this->assertContains('fr',$register);
         $this->assertContains('en',$register);

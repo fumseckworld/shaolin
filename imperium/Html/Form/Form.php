@@ -357,7 +357,7 @@ class Form implements FormBuilder
             $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
         } else {
 
-            $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.self::AUTO_COL.'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
+            $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
 
             $end = "</div></div></div> ";
 
@@ -544,23 +544,38 @@ class Form implements FormBuilder
                 $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><select class="' . $class . '"  name="' . $name . '" multiple>';
             else
                 $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '">';
-            foreach ($options as $value)
+            foreach ($options as $k=> $v)
             {
-                $this->form .= ' <option value="' . $value . '">'. $value . '</option>';
+                if (!empty($k) && !is_numeric($k))
+                    $this->form .= '<option value="' . $k . '">' . $v . '</option>';
+                else
+                    $this->form .= '<option value="' . $v . '">' . $v . '</option>';
+
             }
             $this->form .= '</select></div></div>';
 
         } else {
 
             if ($multiple)
-                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div>  <select class="' . $class . '"  name="' . $name . '" multiple>';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>';
             else
-                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><div class="input-group"><div class="input-group-prepend"> <span class="input-group-text"> ' . $icon . ' </span></div> <select class="' . $class . '"  name="' . $name . '">';
+                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">';
 
-            foreach ($options as $value)
-                $this->form .= '<option value="' . $value . '">' . $value . '</option>';
 
-            $this->form .= '</select> </div></div></div></div>';
+
+
+            foreach ($options as $k => $v)
+            {
+                if (!empty($k) && !is_numeric($k))
+                    $this->form .= '<option value="' . $k . '">' . $v . '</option>';
+                else
+                    $this->form .= '<option value="' . $v . '">' . $v . '</option>';
+
+
+            }
+
+
+            $this->form .= '</select> </div></div> </div>';
         }
 
 

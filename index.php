@@ -23,8 +23,9 @@ $x = empty(get('table')) ? 'doctors' : get('table');
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <?= cssLoader('/lily/lily-dark.css');  ?>
+
         <?= fontAwesome();  ?>
+        <?= cssLoader('lily/lily-dark.css');  ?>
         <title>Imperium</title>
 
         <link rel='shortcut icon' href='https://git-scm.com/favicon.ico'/>
@@ -32,10 +33,8 @@ $x = empty(get('table')) ? 'doctors' : get('table');
     <body>
 
     <div class="container">
-        <?php $app->print( html('div',registerForm('a','username','email','password','confirm','create account','register'),'mt-5')) ?>
-
+        <?php $app->print( html('div',registerForm('a', '1','1','username','email','password','confirm','create account','register',true,[ ''=> 'Choose a language','en' => 'English','fr' => 'Francais'],'choose a time zone'),'mt-5')) ?>
     </div>
-
     </body>
 </html>
 

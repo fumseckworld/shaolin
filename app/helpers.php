@@ -36,6 +36,9 @@ if (!exist('registerForm'))
      * build a register form conform for laravel
      *
      * @param string $action
+     * @param string $resetPasswordForm
+     * @param string $validIp
+     * @param string $currentIp
      * @param string $usernamePlaceholder
      * @param string $emailPlaceholder
      * @param string $passwordPlaceholder
@@ -56,17 +59,23 @@ if (!exist('registerForm'))
      *
      * @return string
      */
-    function registerForm(string $action,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
+    function registerForm(string $action,string $validIp,string $currentIp,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
     {
-        $form = form($action,'register-form')->csrf($csrfToken);
 
-        if ($multiLang)
-            $form->startRow()->select('locale',$supportedLang,$langIcon)->select('zone',zones($chooseTimeZoneText),$zonesIcon)->endRowAndNew();
+        if ($validIp === $currentIp)
+        {
 
-      return  $form->startRow()->input(Form::TEXT,'name',$usernamePlaceholder,$usernameIcon,post('name'),true)->input(Form::EMAIL,'email',$emailPlaceholder,$emailIcon,post('email'),true)->endRowAndNew()
-        ->input(Form::PASSWORD,'password',$passwordPlaceholder,$passwordIcon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,$passwordIcon,post('password_confirmation'),true)->endRow()
-        ->submit($submitText,$submitClass,$submitId,$submitIcon)->get();
+            $form = form($action,'register-form')->csrf($csrfToken);
 
+            if ($multiLang)
+                $form->startRow()->select('locale',$supportedLang,$langIcon)->select('zone',zones($chooseTimeZoneText),$zonesIcon)->endRow();
+
+           return   $form->startRow()->input(Form::TEXT,'name',$usernamePlaceholder,$usernameIcon,post('name'),true)->input(Form::EMAIL,'email',$emailPlaceholder,$emailIcon,post('email'),true)->endRowAndNew()
+                ->input(Form::PASSWORD,'password',$passwordPlaceholder,$passwordIcon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,$passwordIcon,post('password_confirmation'),true)->endRowAndNew()
+                ->submit($submitText,$submitClass,$submitId,$submitIcon) ->endRow()->get();
+
+        }
+        return 'access denied';
     }
 }
 
