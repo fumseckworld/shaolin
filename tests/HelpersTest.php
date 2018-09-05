@@ -1,1030 +1,474 @@
 <?php
-/**
- * fumseck added HelpersTest.php to imperium
- * The 11/09/17 at 06:08
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- **/
+
+namespace  tests;
 
 
-namespace tests;
 
-
-use Carbon\Carbon;
-use Cz\Git\GitRepository;
 use Exception;
 use Faker\Generator;
-use Imperium\Databases\Eloquent\Bases\Base;
-use Imperium\Databases\Eloquent\Connexion\Connexion;
-use Imperium\Databases\Eloquent\Eloquent;
-use Imperium\Databases\Eloquent\Users\Users;
-use Imperium\Databases\Exception\IdentifierException;
-use Imperium\Directory\Dir;
-use Imperium\File\File;
-use Imperium\Html\Bar\Icon;
-use Imperium\Html\Canvas\Canvas;
-use Imperium\Html\Form\Form;
-use Intervention\Image\ImageManager;
+use Imperium\Connexion\Connect;
+use Imperium\Databases\Eloquent\Query\Query;
 use PDO;
-use PHPUnit\Framework\TestCase;
-use Sinergi\BrowserDetector\Browser;
-use Sinergi\BrowserDetector\Device;
-use Sinergi\BrowserDetector\Os;
+use Testing\DatabaseTest;
 
-class HelpersTest extends TestCase
+class HelpersTest extends DatabaseTest
 {
-    /**
-     * @var \Imperium\Databases\Eloquent\Query\Query
-     */
-    private $sql;
 
-    /**
-     * @var \PDO
-     */
-    private $pdo;
 
-    /**
-     * @var Base
-     */
-    private $mariadb;
-
-    private $base = 'zen';
-
-    private $table = 'country';
-    /**
-     * @var Base
-     */
-    private $pgsql;
-
-    public function setUp()
-    {
-        $this->pdo = connect(Connexion::SQLITE, $this->base);
-        $this->sql = sql('country');
-        $this->mariadb =  base(Connexion::MYSQL,'','root','','');
-        $this->pgsql =  base(Connexion::POSTGRESQL,'','postgres','','');
-    }
-
-    public function testDef()
-    {
-        $b = 'c';
-        $d = 14;
-        $this->assertEquals(false,def(''));
-        $this->assertEquals(true,def('a','d','aczedez','addazzadaz'));
-        $this->assertEquals(true,def($b));
-        $this->assertEquals(true,def($d));
-    }
-    public function testSelectTable()
-    {
-        $base = 'zen';
-        $user = 'root';
-        $instance = table(Connexion::MYSQL, $base, $user, $user, '');
-        $code = selectTable($instance, 'table', 'doctors', 'Select a table', 10);
-        $this->assertNotContains('doctors', $code);
-        $this->assertContains('table', $code);
-        $this->assertContains('Select a table', $code);
-        $this->assertContains('10', $code);
-
-        $instance = table(Connexion::POSTGRESQL, $base, 'postgres', '', '');
-        $code = selectTable($instance, 'table', 'public.doctors', 'Select a table', 10);
-        $this->assertNotContains('doctors', $code);
-        $this->assertContains('table', $code);
-        $this->assertContains('Select a table', $code);
-        $this->assertContains('10', $code);
-
-        $instance = table(Connexion::SQLITE, $base, '', '', '');
-        $code = selectTable($instance, 'table', 'doctors', 'Select a table', 10);
-        $this->assertNotContains('doctors', $code);
-        $this->assertContains('table', $code);
-        $this->assertContains('Select a table', $code);
-        $this->assertContains('10', $code);
-    }
-
-    public function testIconBar()
-    {
-        $bar =  icon()
-            ->add(fa('fa-bars','fa-2x'),'menu','#myNavmenu','',true)
-            ->add(fa('fa-table','fa-2x'),'tables','#myNavmenu' ,'',true)
-            ->add(fa('fa-database','fa-2x'),'database','#myNavmenu' ,'',true)
-            ->add(fa('fa-users','fa-2x'),'users','#myNavmenu','',true)
-            ->add(fa('fa-user','fa-2x'),'user','#myNavmenu' ,'',true)
-            ->add(fa('fa-tachometer-alt','fa-2x'),'dashboard', '/','')
-            ->add(fa('fa-chart-pie','fa-2x'),'graph', '/','')
-            ->add(fa('fa-terminal','fa-2x'),'sql', '/','')
-            ->add(fa('fa-home','fa-2x'),'home', '/','')
-            ->add(fa('fa-power-off','fa-2x'),'logout', '/','')
-            ->end();
-
-        $this->assertStringStartsWith('<ul class="list-inline">',$bar);
-
-        $this->assertContains('myNavmenu',$bar);
-        $this->assertContains('fa-2x',$bar);
-
-        $this->assertContains('link',$bar);
-        $this->assertContains('icon',$bar);
-
-        $this->assertContains('menu',$bar);
-        $this->assertContains('tables',$bar);
-        $this->assertContains('database',$bar);
-        $this->assertContains('users',$bar);
-        $this->assertContains('user',$bar);
-        $this->assertContains('dashboard',$bar);
-        $this->assertContains('graph',$bar);
-        $this->assertContains('sql',$bar);
-        $this->assertContains('home',$bar);
-        $this->assertContains('logout',$bar);
-
-
-        $this->assertContains('fa-bars',$bar);
-        $this->assertContains('fa-table',$bar);
-        $this->assertContains('fa-database',$bar);
-        $this->assertContains('fa-users',$bar);
-        $this->assertContains('fa-user',$bar);
-        $this->assertContains('fa-tachometer-alt',$bar);
-        $this->assertContains('fa-chart-pie',$bar);
-        $this->assertContains('fa-terminal',$bar);
-        $this->assertContains('fa-home',$bar);
-        $this->assertContains('fa-power-off',$bar);
-
-        $this->assertStringEndsWith('</ul>',$bar);
-    }
-
-    public function testPrev()
-    {
-        $array = ['a','b'];
-
-        $this->assertEquals('a',array_prev($array,'b'));
-        $array = ['a','b','c'];
-        $this->assertEquals('b',array_prev($array,'c'));
-        $array = ['c'];
-        $this->assertEquals('c',array_prev($array,'c'));
-
-        $array = [2 => 'a',4 => 'lorem',5 => -4,'azer'=> 'z'];
-
-        $this->assertEquals(-4,array_prev($array,'azer'));
-        $this->assertEquals('lorem',array_prev($array,5));
-        $this->assertEquals('a',array_prev($array,4));
-    }
-    /**
-     * @throws IdentifierException
-     */
-    public function testBase()
-    {
-        $this->assertInstanceOf(Base::class, base('mysql', 'a', 'a', 'a', 'dump'));
-        $this->assertInstanceOf(Base::class, base('pgsql', 'a', 'a', 'a', 'dump'));
-        $this->assertInstanceOf(Base::class, base('sqlite', 'a', 'a', 'a', 'dump'));
-        $this->expectException(IdentifierException::class);
-        base(Connexion::MYSQL, 'base', 'user', 'pass', 'dump')->show();
-        base(Connexion::POSTGRESQL, 'base', 'user', 'pass', 'dump')->show();
-        base(Connexion::SQLITE, 'base', 'user', 'pass', 'dump')->show();
-        base(Connexion::SQLITE, 'base', 'user', 'pass', 'dump')->create();
-        base(Connexion::MYSQL, 'base', 'user', 'pass', 'dump')->create();
-        base(Connexion::POSTGRESQL, 'base', 'user', 'pass', 'dump')->create();
-        base(Connexion::ORACLE, 'base', 'user', 'pass', 'dump')->create();
-        $this->assertEquals(false, base(Connexion::MYSQL, 'ae', 'a', 'pass', 'dump')->setName('a')->exist());
-        $this->assertEquals(false, base(Connexion::POSTGRESQL, 'a', 'a', 'pass', 'dump')->setName('a')->exist());
-        $this->assertEquals(false, base(Connexion::SQLITE, 'a', 'a', 'pass', 'dump')->setName('a')->exist());
-        $this->assertEquals(false, base(Connexion::ORACLE, 'a', 'a', 'pass', 'dump')->setName('a')->exist());
-    }
-
-    public function testCollation()
-    {
-
-
-        $mysql = collation(Connexion::MYSQL,root(Connexion::MYSQL,'root','root'));
-        $pgsql = collation(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''));
-
-
-        $this->assertNotEmpty($mysql);
-        $this->assertNotEmpty($pgsql);
-        $this->assertContains('utf8_general_ci',$mysql);
-        $this->assertContains('utf8_unicode_ci',$mysql);
-        $this->assertContains('C',$pgsql);
-        $this->assertContains('POSIX',$pgsql);
-        $this->assertEquals([], collation('sqlite', connect('sqlite', 'testing')));
-    }
-
-    public function testSql()
-    {
-        $this->assertEquals(5, count($this->sql->setPdo($this->pdo)->limit(5, 2)->where('id', '>=', 1)->getRecords()));
-
-    }
-
-    public function testFile()
-    {
-        $this->assertEquals('',files('a'));
-    }
-
-    public function testArray()
-    {
-        $a = array();
-        push($a,1);
-        $this->assertContains(1,$a);
-        $this->assertEquals(true,has(1,$a));
-        $this->assertEquals([1],values($a));
-        pop($a);
-        $this->assertEquals(true,empty($a));
-        $a = array('linux','is','the','must');
-        $this->assertEquals(['linux','is','the','must'],values($a));
-        pop($a);
-        $this->assertEquals(['linux','is','the'],values($a));
-        pop($a);pop($a);
-        $this->assertEquals(['linux'],values($a));
-        push($a,'is the better os');
-        $this->assertEquals(2,count($a));
-        $b = array( "color" , "red");
-        $a = array('a');
-        $this->assertEquals( ["color" , "red" ,'a'],merge($b,$a));
-    }
-
-    public function testPhp()
-    {
-        $expected = 4;
-        $key = 'age';
-        $_SESSION[$key] = $expected;
-        $_COOKIE[$key] = $expected;
-        $_GET[$key] = $expected;
-        $_POST[$key] = $expected;
-        $_SERVER[$key] = $expected;
-        $_FILES[$key] = $expected;
-
-        $this->assertEquals('',cookie('a'));
-        $this->assertEquals('',session('a'));
-        $this->assertEquals('',server('a'));
-        $this->assertEquals('',get('a'));
-        $this->assertEquals('',post('a'));
-        $this->assertEquals('',files('a'));
-
-        $this->assertEquals($expected,cookie($key));
-        $this->assertEquals( $expected,session($key));
-        $this->assertEquals($expected,server($key));
-        $this->assertEquals($expected,get($key));
-        $this->assertEquals($expected,post($key));
-        $this->assertEquals($expected,files($key));
-    }
-    public function testExecuteAndReq()
-    {
-        $this->assertEquals(true, execute($this->pdo, "delete  from country WHERE id = 10"));
-        $this->assertNotEmpty(req($this->pdo, "select  * from country WHERE id = 1", PDO::FETCH_ASSOC));
-    }
-
-    public function testGit()
-    {
-        $this->assertInstanceOf(GitRepository::class, git('.'));
-    }
-
-    public function testTable()
-    {
-
-        $this->assertContains('works', table(Connexion::SQLITE, $this->base, '', '', '')->show());
-        $this->assertContains('patients', table(Connexion::SQLITE, $this->base, '', '', '')->show());
-        $this->assertContains('doctors', table(Connexion::SQLITE, $this->base, '', '', '')->show());
-
-        $this->assertContains('works', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->show());
-        $this->assertContains('patients', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->show());
-        $this->assertContains('doctors', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->show());
-
-
-        $this->assertContains('public.works', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
-        $this->assertContains('public.patients', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
-        $this->assertContains('public.doctors', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
-        $this->assertContains('public.doctors', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->show());
-
-        $this->assertEquals(true, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->has());
-        $this->assertEquals(true, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->has());
-        $this->assertEquals(true, table(Connexion::SQLITE, $this->base, '', '', '')->has());
-
-        $this->assertEquals(100, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->count($this->table));
-        $this->assertEquals(100, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->count($this->table));
-        $this->assertEquals(99, table(Connexion::SQLITE, $this->base, '', '', '')->count($this->table));
-
-        $this->assertContains('id', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumns());
-        $this->assertContains( 'name', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumns());
-
-        $this->assertContains('id', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumns());
-        $this->assertContains('name', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumns());
-
-        $this->assertContains('id', table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->getColumns());
-        $this->assertContains( 'name', table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->getColumns());
-
-
-        $this->assertContains( 'INTEGER', table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->getColumnsTypes());
-        $this->assertContains( 'VARCHAR(255)', table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->getColumnsTypes());
-
-        $this->assertContains( 'int(11)', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumnsTypes());
-        $this->assertContains( 'varchar(255)', table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->getColumnsTypes());
-
-
-        $this->assertContains( 'integer', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumnsTypes());
-        $this->assertContains( 'character varying', table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->getColumnsTypes());
-
-
-        $this->assertEquals(true, table(Connexion::SQLITE, $this->base, '', '', '') ->exist($this->table));
-        $this->assertEquals(true, table(Connexion::MYSQL, $this->base, 'root', 'root', '') ->exist($this->table));
-        $this->assertEquals(true, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '') ->exist("public.$this->table"));
-
-        $this->assertEquals(false, table(Connexion::SQLITE, $this->base, '', '', '')->exist('alexandra'));
-        $this->assertEquals(false, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->exist('alexandra'));
-        $this->assertEquals(false, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->exist('alexandra'));
-
-        $this->assertEquals(false, table(Connexion::SQLITE, $this->base, '', '', '')->setName($this->table)->isEmpty());
-        $this->assertEquals(false, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->setName($this->table)->isEmpty());
-        $this->assertEquals(false, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->setName($this->table)->isEmpty());
-
-        $this->assertEquals(Connexion::SQLITE, table(Connexion::SQLITE, $this->base, '', '', '')->getDriver());
-        $this->assertEquals(Connexion::POSTGRESQL, table(Connexion::POSTGRESQL, $this->base, 'postgres', '', '')->getDriver());
-        $this->assertEquals(Connexion::MYSQL, table(Connexion::MYSQL, $this->base, 'root', 'root', '')->getDriver());
-
-    }
-
-    public function testUserDell()
-    {
-        $this->assertEquals(false, userDel(Connexion::SQLITE,$this->pdo, 'user'));
-
-    }
-
-    public function testUserAdd()
-    {
-        $this->assertEquals(false, userAdd(Connexion::SQLITE, 'username', 'pass', '', $this->pdo));
-        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'username', 'pass', '', root(Connexion::MYSQL,'root','root')));
-        $this->assertEquals(true, userAdd(Connexion::MYSQL, 'usernames', 'pass', '', root(Connexion::MYSQL,'root','root')));
-        $this->assertEquals(true, userDel(Connexion::MYSQL, root(Connexion::MYSQL,'root','root'),'usernames', 'username'));
-    }
-
-    public function testFa()
-    {
-        $this->assertContains('fa-linux', fa('fa-linux'));
-        $this->assertContains('fa-linux fa-spin', fa('fa-linux', 'fa-spin'));
-    }
-
-    public function testCssLoader()
-    {
-        $this->assertEquals('<link href="url" rel="stylesheet">', cssLoader('url'));
-        $this->assertEquals('<link href="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css" rel="stylesheet">', cssLoader('https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/css/foundation.min.css'));
-    }
-
-    public function testJsLoader()
-    {
-        $this->assertEquals('<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js" type="text/javascript"></script>', jsLoader('https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js'));
-        $this->assertEquals('<script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js" type="text/babel"></script>', jsLoader('https://cdnjs.cloudflare.com/ajax/libs/foundation/6.4.3/js/foundation.min.js', 'text/babel'));
-    }
-
-
-
-    public function testHelper()
-    {
-        $this->assertContains('v5.0.8',fontAwesome());
-        $this->assertContains('3.1.3',jasnyCss());
-        $this->assertContains('3.1.3',jasnyJs());
-        $this->assertContains('script',jasnyJs());
-
-        $this->assertContains('6.4.3',foundation());
-
-
-        $this->assertContains('<link rel="stylesheet"',fontAwesome());
-        $this->assertContains('<link rel="stylesheet"',jasnyCss());
-        $this->assertContains('<link rel="stylesheet"',bootswatch('lumen'));
-        $this->assertContains('<link rel="stylesheet"',bootswatch('bootstrap'));
-        $this->assertContains('<link rel="stylesheet"',foundation());
-
-        $this->assertInstanceOf(Icon::class,icon());
-        $this->assertInstanceOf(Canvas::class,canvas('a'));
-
-        $this->assertContains('a',canvas('a')->end());
-
-        $this->assertContains('icon',Icon::start()->add(fa('fa-linux'),'linux','/linux','')->end());
-        $this->assertContains('link',Icon::start()->add(fa('fa-linux'),'linux','/linux','')->end());
-
-        $this->assertContains('fa-linux',Icon::start()->add(fa('fa-linux'),'linux','/linux','')->end());
-        $this->assertContains('list-inline',icon()->end());
-        $this->assertContains('link',icon()->add(fa('fa-linux'),'2','/','')->end());
-        $this->assertContains('icon',icon()->add(fa('fa-linux'),'2','/','')->end());
-        $this->assertContains('2',icon()->add(fa('fa-linux'),'2','/','')->end());
-        $this->assertContains('/',icon()->add(fa('fa-linux'),'2','/','')->end());
-
-
-        $this->assertContains('fa-linux fa-2x',icon()->add(fa('fa-linux','fa-2x'),'linux','/linux','')->end());
-        $this->assertContains('linux',icon()->add(fa('fa-linux','fa-2x'),'linux','/linux','')->end());
-        $this->assertContains('/linux',icon()->add(fa('fa-linux','fa-2x'),'linux','/linux','')->end());
-
-
-        $this->assertContains('list-inline',canvas('a')->end());
-        $this->assertContains('offCanvasLink',canvas('a')->end());
-        $this->assertContains('navmenu-fixed-right',canvas('a')->end());
-        $this->assertContains('a',canvas('a')->end());
-        $this->assertContains('alexandra',canvas('a')->add('alexandra','/','al')->end());
-        $this->assertContains('/',canvas('a')->add('alexandra','/','al')->end());
-        $this->assertContains('/',canvas('al')->add('alexandra','/','al')->end());
-    }
-    public function testIconic()
-    {
-        $this->assertEquals('<svg viewBox="0 0 8 8"><use xlink:href="icon"></use></svg>', iconic('svg', 'icon'));
-        $this->assertEquals('<span class="oi" data-glyph="icon"></span>', iconic('icon', 'icon'));
-        $this->assertEquals('<span class="oi icon"></span>', iconic('bootstrap', 'icon'));
-        $this->assertEquals('<span class="icon"></span>', iconic('foundation', 'icon'));
-        $this->assertEquals('<img src="icon">', iconic('img', 'icon'));
-        $this->assertEquals('', iconic('imadzg', 'icon'));
-    }
-
-    public function testGlyph()
-    {
-        $this->assertEquals('<svg-icon><src href="icon"/></svg-icon>', glyph('icon'));
-        $this->assertEquals('<img src="icon"/>', glyph('icon', 'img'));
-        $this->assertEquals('<img src="icon"/>', glyph('icon', 'a'));
-    }
-
-    public function testZones()
-    {
-      $this->assertNotContains(25,zones('a'));
-      $this->assertNotContains(1,zones('a'));
-      $this->assertContains('a',zones('a'));
-      $this->assertContains('Europe/Paris',zones('a'));
-      $this->assertContains('Europe/Madrid',zones('a'));
-      $this->assertContains('Africa/Abidjan',zones('a'));
-      $this->assertContains('Africa/Dakar',zones('a'));
-      $this->assertTrue(is_array(zones('m')));
-
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testRegister()
-    {
-        $register = registerForm('/', '1','1','Your username','your email','your password','confirm','create account','create');
-        $danger = registerForm('/', '1','1a','Your username','your email','your password','confirm','create account','create');
-
-        $this->assertContains('<i class="fas fa-user"></i>',$register);
-        $this->assertContains('<i class="fas fa-key"></i>',$register);
-        $this->assertContains('<i class="fas fa-envelope"></i>',$register);
-        $this->assertContains('<i class="fas fa-user-plus"></i>',$register);
-        $this->assertContains('btn btn-outline-primary',$register);
-        $this->assertContains('Your username',$register);
-        $this->assertContains('your email',$register);
-        $this->assertContains('your password',$register);
-        $this->assertContains('confirm',$register);
-        $this->assertContains('create',$register);
-        $this->assertContains('create',$register);
-        $this->assertContains('create account',$register);
-        $this->assertNotContains('Europe/Paris',$register);
-        $this->assertNotContains('Europe/London',$register);
-
-        $this->assertEquals('access denied',$danger);
-
-        $register = registerForm( '/','1','1','Your username','your email','your password','confirm','create account','create',true,['/' =>'choose','fr' => 'french' ,'en' => 'english'],'choose a time zone');
-
-        $this->assertContains('fr',$register);
-        $this->assertContains('en',$register);
-        $this->assertContains('Europe/Paris',$register);
-        $this->assertContains('Europe/London',$register);
-        $this->assertContains('choose a time zone',$register);
-        $this->assertContains('<i class="fas fa-user"></i>',$register);
-        $this->assertContains('<i class="fas fa-key"></i>',$register);
-        $this->assertContains('<i class="fas fa-envelope"></i>',$register);
-        $this->assertContains('<i class="fas fa-user-plus"></i>',$register);
-        $this->assertContains('btn btn-outline-primary',$register);
-        $this->assertContains('Your username',$register);
-        $this->assertContains('your email',$register);
-        $this->assertContains('your password',$register);
-        $this->assertContains('confirm',$register);
-        $this->assertContains('create',$register);
-        $this->assertContains('create',$register);
-        $this->assertContains('create account',$register);
-
-
-    }
-
-    public function testImage()
-    {
-        $this->assertInstanceOf(ImageManager::class, image('gd'));
-    }
-
-    public function testDate()
-    {
-        $this->assertInstanceOf(Carbon::class, today());
-        $this->assertInstanceOf(Carbon::class, now());
-        $this->assertEquals(Carbon::now()->addHour(1)->toDateString(), future('hour', 1));
-        $this->assertEquals(Carbon::now()->addHour(2)->toDateString(), future('hours', 2));
-        $this->assertEquals(Carbon::now()->addMinute(2)->toDateString(), future('minute', 2));
-        $this->assertEquals(Carbon::now()->addDay(3)->toDateString(), future('day', 3));
-        $this->assertEquals(Carbon::now()->addWeek(2)->toDateString(), future('week', 2));
-        $this->assertEquals(Carbon::now()->addMonths(2)->toDateString(), future('month', 2));
-        $this->assertEquals(Carbon::now()->addYear(2)->toDateString(), future('year', 2));
-        $this->assertEquals(Carbon::now()->addCenturies(2)->toDateString(), future('century', 2));
-        $this->assertEquals(Carbon::now()->addHour(2)->toDateString(), future('', 2));
-        $this->assertEquals('1 second ago', ago('en', Carbon::now()));
-        $this->assertEquals('hace 1 segundo', ago('es', Carbon::now()));
-        $this->assertEquals('1 secondo fa', ago('it', Carbon::now()));
-        $this->assertEquals('il y a 1 seconde', ago('fr', Carbon::now()));
-    }
-
-    public function testPass()
-    {
-        $this->assertEquals(true, pass(Connexion::MYSQL, 'root', 'root', 'root'));
-        $this->assertEquals(true, pass(Connexion::POSTGRESQL, 'postgres', '', ''));
-    }
-
-
-
-    public function testIsMobile()
-    {
-        $this->assertEquals(false, isMobile());
-        $this->assertEquals(true, !isMobile());
-    }
-
-    public function testGetOs()
-    {
-        $this->assertEquals('unknown', getOs());
-        $this->assertEquals('unknown', os(true));
-    }
-
-    public function testGetBrowser()
-    {
-        $this->assertEquals('unknown', getBrowser());
-        $this->assertEquals('unknown', browser(true));
-    }
-
-    public function testGetDevice()
-    {
-        $this->assertEquals('unknown', getDevice());
-        $this->assertEquals('unknown', device(true));
-    }
-
-    public function testIsBrowser()
-    {
-        foreach (['chromium', 'firefox', 'vivaldi', 'opera', 'google chrome', 'edge'] as $browser) {
-            $this->assertEquals(false, isBrowser($browser));
-        }
-
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function testAdvanced()
-    {
-        $base = 'zen';
-        $user = 'root';
-        $current = 'doctors';
-        $csrf = '<input type="hidden" name="csrf_token" value="'.sha1($current).'"> ';
-
-        $instance  = table(Connexion::MYSQL,$base,$user,$user,'');
-        $pdo = connect(Connexion::MYSQL,$base,$user,$user);
-        $records = getRecords($instance,$current,1,10,$pdo,true);
-        $pagination = pagination(10,'imperium',1,$instance->count($current),'start','end');
-        $selectTable = selectTable($instance,'table',$current,'change of table',10);
-
-        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,false,false,true,$csrf, 1);
-
-        $this->assertNotEmpty($code);
-        $this->assertContains('imperium',$code);
-        $this->assertContains('save',$code);
-        $this->assertContains('10',$code);
-        $this->assertContains('start',$code);
-        $this->assertContains('end',$code);
-        $this->assertContains('remove',$code);
-        $this->assertContains('btn btn-outline-primary',$code);
-        $this->assertContains('btn btn-outline-danger',$code);
-        $this->assertContains('action="index.php"',$code);
-        $this->assertContains('are you sure',$code);
-        $this->assertContains($pagination,$code);
-        $this->assertContains($csrf,$code);
-
-        $this->assertNotContains('text-center',$code);
-        $this->assertNotContains('text-uppercase',$code);
-
-
-        $user = 'postgres';
-        $instance  = table(Connexion::POSTGRESQL,$base,$user,'','');
-        $pdo = connect(Connexion::POSTGRESQL,$base,$user,'');
-        $records = getRecords($instance,$current,1,10,$pdo,true);
-        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
-        $selectTable = selectTable($instance,'table',$current,'change of table', 10);
-        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,false,false,true,$csrf, 1);
-
-
-        $this->assertNotEmpty($code);
-        $this->assertContains('imperium',$code);
-        $this->assertContains('save',$code);
-        $this->assertContains('10',$code);
-        $this->assertContains('remove',$code);
-        $this->assertContains('btn btn-outline-primary',$code);
-        $this->assertContains('btn btn-outline-danger',$code);
-        $this->assertContains('action="index.php"',$code);
-        $this->assertContains('are you sure',$code);
-        $this->assertContains($pagination,$code);
-
-        $this->assertNotContains('text-center',$code);
-        $this->assertNotContains('text-uppercase',$code);
-        $this->assertNotContains('impeiru',$code);
-        $this->assertContains($csrf,$code);
-
-
-
-
-        $instance  = table(Connexion::SQLITE,$base,'','','');
-        $pdo = connect(Connexion::SQLITE,$base,'','');
-        $records = getRecords($instance,$current,1,10,$pdo,true);
-        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
-        $selectTable = selectTable($instance,'table',$current,'change of table',10);
-        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,false,false,true,$csrf, 1);
-
-
-        $this->assertNotEmpty($code);
-        $this->assertContains('imperium',$code);
-        $this->assertContains('save',$code);
-        $this->assertContains('10',$code);
-        $this->assertContains('remove',$code);
-        $this->assertContains('btn btn-outline-primary',$code);
-        $this->assertContains('btn btn-outline-danger',$code);
-        $this->assertContains('action="index.php"',$code);
-        $this->assertContains('are you sure',$code);
-        $this->assertContains($pagination,$code);
-
-        $this->assertNotContains('text-center',$code);
-        $this->assertNotContains('text-uppercase',$code);
-        $this->assertNotContains('impeiru',$code);
-        $this->assertContains($csrf,$code);
-
-
-        $user = 'root';
-
-
-        $instance  = table(Connexion::MYSQL,$base,$user,$user,'');
-        $pdo = connect(Connexion::MYSQL,$base,$user,$user);
-        $records = getRecords($instance,$current,1,10,$pdo,true);
-        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
-        $selectTable = selectTable($instance,'table',$current,'change of table',10);
-        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,true,true,false,$csrf,1);
-
-        $this->assertNotEmpty($code);
-        $this->assertContains('imperium',$code);
-        $this->assertContains('save',$code);
-        $this->assertContains('10',$code);
-        $this->assertContains('start',$code);
-        $this->assertContains('end',$code);
-        $this->assertContains('remove',$code);
-        $this->assertContains('btn btn-outline-primary',$code);
-        $this->assertContains('btn btn-outline-danger',$code);
-        $this->assertContains('action="index.php"',$code);
-        $this->assertContains('are you sure',$code);
-        $this->assertContains($pagination,$code);
-        $this->assertContains($csrf,$code);
-
-        $this->assertContains('text-center',$code);
-        $this->assertContains('text-uppercase',$code);
-
-
-
-        $user = 'postgres';
-
-        $instance  = table(Connexion::POSTGRESQL,$base,$user,'','');
-        $pdo = connect(Connexion::POSTGRESQL,$base,$user,'');
-        $records = getRecords($instance,$current,1,10,$pdo,true);
-        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
-        $selectTable = selectTable($instance,'table',$current,'change of table',10);
-        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,true,true,false,$csrf,1);
-
-
-        $this->assertNotEmpty($code);
-        $this->assertContains('imperium',$code);
-        $this->assertContains('save',$code);
-        $this->assertContains('10',$code);
-        $this->assertContains('remove',$code);
-        $this->assertContains('btn btn-outline-primary',$code);
-        $this->assertContains('btn btn-outline-danger',$code);
-        $this->assertContains('action="index.php"',$code);
-        $this->assertContains('are you sure',$code);
-        $this->assertContains($pagination,$code);
-
-        $this->assertContains('text-center',$code);
-        $this->assertContains('text-uppercase',$code);
-        $this->assertNotContains('impeiru',$code);
-        $this->assertContains($csrf,$code);
-
-
-
-
-
-        $instance  = table(Connexion::SQLITE,$base,'','','');
-        $pdo = connect(Connexion::SQLITE,$base,'','');
-        $records = getRecords($instance,$current,1,10,$pdo,true);
-        $pagination = pagination(10,'imperium',10,$instance->count($current),'start','end');
-        $selectTable = selectTable($instance,'table',$current,'change of table',10);
-        $code = advancedView($current,$instance,$records,'index.php',$selectTable,'save','edit','btn btn-outline-primary','remove','btn btn-outline-danger','remove','are you sure',$pagination,true,true,false,$csrf,1);
-
-
-        $this->assertNotEmpty($code);
-        $this->assertContains('imperium',$code);
-        $this->assertContains('save',$code);
-        $this->assertContains('10',$code);
-        $this->assertContains('remove',$code);
-        $this->assertContains('btn btn-outline-primary',$code);
-        $this->assertContains('btn btn-outline-danger',$code);
-        $this->assertContains('action="index.php"',$code);
-        $this->assertContains('are you sure',$code);
-        $this->assertContains($pagination,$code);
-
-        $this->assertContains('text-center',$code);
-        $this->assertContains('text-uppercase',$code);
-        $this->assertNotContains('impeiru',$code);
-        $this->assertContains($csrf,$code);
-
-    }
-    /***
-     * @throws \Cz\Git\GitException
-     */
-   public function testCurrentBranch()
-    {
-        $this->assertEquals('master',getCurrentBranch('.'));
-
-    }
-
-    public function testGetOsObject()
-    {
-        $this->assertInstanceOf(Os::class,os());
-    }
-
-    public function testGetDeviceObject()
-    {
-        $this->assertInstanceOf(Device::class,device());
-    }
-
-    public function testGetBrowserObject()
-    {
-        $this->assertInstanceOf(Browser::class,browser());
-    }
-
-    /**
-     * @throws IdentifierException
-     */
-    public function testShowWithNotPossible()
-    {
-       $this->assertEquals([],show('sqlite','imperiums','root','root'));
-    }
-
-    public function testArrayPrevWhichOneKey()
-    {
-       $this->assertEquals('a',array_prev(['a'],'a'));
-    }
-
-    /**
-     * @throws IdentifierException
-     */
-    public function testCreateDatabases()
-    {
-        $mysqlPdo = root(Connexion::MYSQL,'root','root');
-        $pgsqlPdo = root(Connexion::POSTGRESQL,'postgres','');
-        $sqlitePdo = connect(Connexion::SQLITE,'imperiums','','');
-
-        $database = 'superman';
-
-
-        $this->assertEquals(true,create(Connexion::MYSQL,$database,'utf8','utf8_general_ci',$mysqlPdo));
-        $this->assertEquals(true,base(Connexion::MYSQL,'','root','root','')->drop($database));
-
-
-        $this->assertEquals(true,create(Connexion::POSTGRESQL,$database,'UTF8','C',$pgsqlPdo));
-        $this->assertEquals(true,base(Connexion::POSTGRESQL,'','postgres','','')->drop($database));
-
-        $this->assertEquals(true,create(Connexion::SQLITE,$database,'','',$sqlitePdo));
-        $this->assertEquals(true,base(Connexion::SQLITE,'','postgres','','')->drop($database));
-
-        $this->expectException(IdentifierException::class);
-
-        $this->assertEquals(false,create('a',$database,'utf8','utf8_general_ci',$mysqlPdo));
-        $this->assertEquals(false,base('a','','postgres','','')->drop($database));
-
-    }
-
-
-
-    public function testPassReturnFalse()
-    {
-        $this->assertEquals(false,pass('sqlite','root','root',''));
-    }
-    public function testCharset()
-    {
-        $mysql = charset(Connexion::MYSQL,root(Connexion::MYSQL,'root','root'));
-        $pgsql = charset(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''));
-
-        $this->assertNotEmpty($mysql);
-        $this->assertNotEmpty($pgsql);
-
-        $this->assertContains('utf8',  $mysql);
-        $this->assertContains('UTF8',  $pgsql);
-
-
-        $this->assertEquals([], charset('sqlite', connect('sqlite', 'testing')));
-    }
-
-    public function testUser()
-    {
-        $this->assertInstanceOf(Users::class, user('mysql', 'a', 'a'));
-        $this->assertInstanceOf(Users::class, user('pgsql', 'a', 'a'));
-        $this->assertContains('root', user(Connexion::MYSQL, 'root', 'root')->show());
-        $this->assertContains('postgres', user(Connexion::POSTGRESQL, 'postgres', '')->show());
-        $this->assertEquals([], user(Connexion::SQLITE, 'adz', 'pass')->show());
-    }
-
-    /**
-     * @throws IdentifierException
-     */
-    public function testShow()
-    {
-
-        $database = 'zen';
-
-        $this->assertEquals([],show(Connexion::MYSQL, $database, 'root', 'root', 88888888));
-        $this->assertEquals([],show(Connexion::POSTGRESQL, $database, 'postgres', '', 88888888));
-
-        $this->assertNotEmpty(show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_TABLES));
-        $this->assertContains('patients',show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_TABLES));
-
-        $this->assertNotEmpty(show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_USERS));
-        $this->assertContains('root',show(Connexion::MYSQL, $database, 'root', 'root', Eloquent::MODE_ALL_USERS));
-
-        $this->assertNotEmpty(show(Connexion::MYSQL, '', 'root', 'root', Eloquent::MODE_ALL_DATABASES));
-        $this->assertContains('mysql',show(Connexion::MYSQL, '', 'root', 'root', Eloquent::MODE_ALL_DATABASES));
-
-        $this->assertNotEmpty(show(Connexion::POSTGRESQL, $database, 'postgres', '', Eloquent::MODE_ALL_TABLES));
-        $this->assertContains('public.doctors',show(Connexion::POSTGRESQL, $database, 'postgres', '', Eloquent::MODE_ALL_TABLES));
-
-        $this->assertNotEmpty(show(Connexion::POSTGRESQL, $database, 'postgres', '', Eloquent::MODE_ALL_USERS));
-        $this->assertContains('postgres',show(Connexion::POSTGRESQL, '', 'postgres', '', Eloquent::MODE_ALL_USERS));
-
-        $this->assertNotEmpty(show(Connexion::POSTGRESQL, '', 'postgres', '', Eloquent::MODE_ALL_DATABASES));
-        $this->assertContains('postgres',show(Connexion::POSTGRESQL, '', 'postgres', '', Eloquent::MODE_ALL_DATABASES));
-
-        $this->expectException(IdentifierException::class);
-
-        show(Connexion::MYSQL, 'user', 'user', 'password', Eloquent::MODE_ALL_DATABASES);
-        show(Connexion::MYSQL, 'user', 'user', 'password', Eloquent::MODE_ALL_USERS);
-
-        show(Connexion::POSTGRESQL, 'a', 'user', 'password', Eloquent::MODE_ALL_TABLES);
-        show(Connexion::POSTGRESQL, 'user', 'user', 'password', Eloquent::MODE_ALL_DATABASES);
-        show(Connexion::POSTGRESQL, 'user', 'user', 'password', Eloquent::MODE_ALL_USERS);
-    }
-
-    public function testFormInstance()
-    {
-        $this->assertInstanceOf(Form::class, form('a','a'));
-
-    }
-
-    public function testSubmit()
-    {
-        $this->assertEquals(false,submit('a'));
-        $this->assertEquals(false,submit('a','GET'));
-        $_GET['a'] = 'a';
-        $_POST['a'] = 'a';
-        $this->assertEquals(true,submit('a'));
-        $this->assertEquals(true,submit('a','GET'));
-
-    }
     /**
      * @throws \Exception
      */
-    public function testHtml()
+    public function test_query_view()
     {
-        $elements = array(
-               'title','article','aside','footer','header','h1','h2','h3','h4','h5','h6','section','div','p','li','ol','ul','pre'
-        );
 
-        foreach ($elements as $element)
-        {
-            $content = faker()->text();
-            $class = faker()->text(10);
-            $id = faker()->text(10);
-            $x = html($element,$content);
+        $not_found = 'records was not found';
+        $table_empty = 'the current table is empty';
 
-            $this->assertStringStartsWith("<$element>",$x);
-            $this->assertStringEndsWith("</$element>",$x);
-            $this->assertContains("$content</$element>",$x);
-            $this->assertNotContains('class=',$x);
-            $this->assertNotContains('id=',$x);
-
-            $x = html($element,$content,$class);
-
-            $this->assertContains('class="'.$class.'"',$x);
-            $this->assertNotContains('id=',$x);
+        $code = query_view(2,"index.php",$this->mysql->model(),$this->mysql->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->mysql->class(),'record was removed successfully',$not_found,$table_empty);
 
 
-            $x = html($element,$content,'',$id);
+        $this->assertContains('action="index.php"', $code);
+        $this->assertNotContains($not_found, $code);
+        $this->assertContains('expected"', $code);
+        $this->assertContains('superior ', $code);
+        $this->assertContains('superior or equal', $code);
+        $this->assertContains('inferior', $code);
+        $this->assertContains('inferior or equal', $code);
+        $this->assertContains('different', $code);
+        $this->assertContains('equal', $code);
+        $this->assertContains('like', $code);
+        $this->assertContains('remove', $code);
+        $this->assertContains('select', $code);
+        $this->assertContains('execute', $code);
+        $this->assertContains($this->mysql->class(), $code);
 
-            $this->assertNotContains('class="'.$class.'"',$x);
-            $this->assertContains('id="'.$id.'"',$x);
+        $code = query_view(2,"index.php",$this->pgsql->model(),$this->pgsql->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->pgsql->class(),'record was removed successfully',$not_found,$table_empty);
 
-            $x = html($element,$content,$class,$id);
 
-            $this->assertContains('class="'.$class.'"',$x);
-            $this->assertContains('id="'.$id.'"',$x);
-        }
-        $content = faker()->text();
-        $class = faker()->text(10);
-        $x = html('link','lily.css');
-        $this->assertEquals('<link href="lily.css" rel="stylesheet">',$x);
+        $this->assertContains('action="index.php"', $code);
 
-        $x = html('img',$content,$class);
-        $this->assertEquals('<img src="'.$content.'" class="'.$class.'">',$x);
+        $this->assertNotContains($not_found, $code);
+        $this->assertContains('expected"', $code);
+        $this->assertContains('superior ', $code);
+        $this->assertContains('superior or equal', $code);
+        $this->assertContains('inferior', $code);
+        $this->assertContains('inferior or equal', $code);
+        $this->assertContains('different', $code);
+        $this->assertContains('equal', $code);
+        $this->assertContains('like', $code);
+        $this->assertContains('remove', $code);
+        $this->assertContains('select', $code);
+        $this->assertContains('execute', $code);
+        $this->assertContains($this->mysql->class(), $code);
 
-        $x = html('meta','charset="utf-8"');
-        $this->assertEquals('<meta charset="utf-8">',$x);
+        $code = query_view(2,"index.php",$this->sqlite->model(),$this->sqlite->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->sqlite->class(),'record was removed successfully',$not_found,$table_empty);
 
-        $this->expectException(Exception::class);
-        html($content,'li');
-        html($content,'ul');
-        html($content,'div');
+
+        $this->assertContains('action="index.php"', $code);
+
+        $this->assertNotContains($not_found, $code);
+        $this->assertContains('expected"', $code);
+        $this->assertContains('superior ', $code);
+        $this->assertContains('superior or equal', $code);
+        $this->assertContains('inferior', $code);
+        $this->assertContains('inferior or equal', $code);
+        $this->assertContains('different', $code);
+        $this->assertContains('equal', $code);
+        $this->assertContains('like', $code);
+        $this->assertContains('remove', $code);
+        $this->assertContains('select', $code);
+        $this->assertContains('execute', $code);
+        $this->assertContains($this->sqlite->class(), $code);
+
+
     }
-    public function testBootstrapJs()
+
+    public function test_equal()
     {
-        $code  = bootstrapJs();
-        $this->assertNotEmpty($code);
-        $this->assertContains('bootstrap.min.js',$code);
-        $this->assertContains('jquery',$code);
-        $this->assertContains('popper',$code);
-        $this->assertStringStartsWith('<script ',$code);
-        $this->assertStringEndsWith('</script>',$code);
+        $this->assertTrue(equal(1,1));
+        $this->assertTrue(equal(5,5));
+        $this->assertTrue(equal("ale","ale"));
+        $this->assertTrue(equal("",""));
+
+        $this->assertFalse(equal(1,12));
+        $this->assertFalse(equal(15,12));
+        $this->assertFalse(equal("",12));
+        $this->assertFalse(equal("","adz"));
+        $this->assertFalse(equal("a","adz"));
+
+    }
+
+    public function test_append()
+    {
+        $code = '';
+        append($code,'i ','am ','very ','happy');
+        $this->assertEquals('i am very happy',$code);
+    }
+
+    public function test_different()
+    {
+        $this->assertTrue(different('','adz'));
+        $this->assertTrue(different('','a'));
+        $this->assertTrue(different('a','aadz'));
+
+        $this->assertFalse(different('adz','adz'));
+        $this->assertFalse(different('a','a'));
+        $this->assertFalse(different('aadz','aadz'));
     }
 
     /**
-     * @throws IdentifierException
+     * @throws \Exception
      */
-    public function testDrop()
+    public function test_execute_query()
     {
+        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','=',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','!=',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','<=',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
+        $this->assertTrue(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','<',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','>',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
+
+        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','=',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','!=',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','<=',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
+        $this->assertTrue(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','<',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','>',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
+
+        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','=',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','!=',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','<=',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
+        $this->assertTrue(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','<',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','>',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
 
 
-        $user = 'dracula';
-
-        $mysqlBases = base(Connexion::MYSQL,'','root','root','');
-        $pgsqlBases = base(Connexion::POSTGRESQL,'','postgres','','');
-
-        $mysqlTables = table(Connexion::MYSQL,'zen','root','root','');
-        $pgsqlTables = table(Connexion::POSTGRESQL,'zen','postgres','','');
-
-        $mysqlUsers = user(Connexion::MYSQL,'root','root');
-        $pgsqlUsers = user(Connexion::POSTGRESQL,'postgres','');
-
-       $this->assertEquals(true,userAdd(Connexion::MYSQL,$user,$user,'',root(Connexion::MYSQL,'root','root')));
-       $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,$user,$user,'',root(Connexion::POSTGRESQL,'postgres','')));
+        $this->assertTrue(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::DELETE,'id','=',1,$this->table,$this->mysql->class(),'a',''));
+        $this->assertEmpty(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','=',1,$this->table,$this->mysql->class(),'a',''));
 
 
-       $this->assertEquals(true,create(Connexion::MYSQL,$user,'utf8','utf8_general_ci',root(Connexion::MYSQL,'root','root')));
-       $this->assertEquals(true,create(Connexion::POSTGRESQL,$user,'UTF8','C',root(Connexion::POSTGRESQL,'postgres','')));
+        $this->assertTrue(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::DELETE,'id','=',1,$this->table,$this->pgsql->class(),'a',''));
+        $this->assertEmpty(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','=',1,$this->table,$this->pgsql->class(),'a',''));
 
 
-
-        $this->assertEquals(true,$mysqlTables->setName($user)->addField('int','loi',true)->create());
-        $this->assertEquals(true,$pgsqlTables->setName($user)->addField('serial','loi',true)->create());
-
-
-        $this->assertEquals(true,drop($mysqlBases,$user));
-        $this->assertEquals(true,drop($mysqlTables,$user));
-        $this->assertEquals(true,drop($mysqlUsers,$user));
-
-        $this->assertEquals(true,drop($pgsqlBases,$user));
-        $this->assertEquals(true,drop($pgsqlTables,$user));
-        $this->assertEquals(true,drop($pgsqlUsers,$user));
+        $this->assertTrue(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::DELETE,'id','=',1,$this->table,$this->sqlite->class(),'a',''));
+        $this->assertEmpty(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','=',1,$this->table,$this->sqlite->class(),'a',''));
 
     }
 
-    public function testClearDirectory()
+    /**
+     * @throws \Exception
+     */
+    public function test_print_result()
     {
-        $this->assertEquals(true,Dir::clear('dump'));
+        $success = 'record was found';
+        $failure = 'record was not found';
+
+
+        $query = execute_query(10,$this->mysql->model(), $this->mysql->table(),Query::SELECT,'id','=',1,$this->table,$this->mysql->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->mysql->model(),Query::SELECT,$query,$this->mysql->columns(),$success,$failure,$failure));
+
+
+        $query = execute_query(1,$this->pgsql->model(), $this->pgsql->table(),Query::SELECT,'id','=',1,$this->table,$this->pgsql->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->pgsql->model(),Query::SELECT,$query,$this->pgsql->columns(),$success,$failure,$failure));
+
+
+        $query = execute_query(1,$this->sqlite->model(), $this->sqlite->table(),Query::SELECT,'id','=',1,$this->table,$this->sqlite->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->sqlite->model(),Query::SELECT,$query,$this->sqlite->columns(),$success,$failure,$failure));
+
+
+
+
+        $query = execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::DELETE,'id','=',2,$this->table,$this->mysql->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->mysql->model(),Query::DELETE,$query,$this->sqlite->columns(),$success,$failure,$failure));
+
+
+        $query = execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::DELETE,'id','=',2,$this->table,$this->pgsql->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->pgsql->model(),Query::DELETE,$query,$this->pgsql->columns(),$success,$failure,$failure));
+
+
+        $query = execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::DELETE,'id','=',2,$this->table,$this->sqlite->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->sqlite->model(),Query::DELETE,$query,$this->sqlite->columns(),$success,$failure,$failure));
+
+
+
     }
-    public function testDump()
+
+    public function test_merge()
     {
-        $base = 'zen';
-        $table = 'doctors';
+        $data = array();
 
-        $this->assertNotEquals(false,dumper(Connexion::MYSQL,'root','root',$base,'dump'));
-        $this->assertNotEquals(false,dumper(Connexion::POSTGRESQL,'postgres','',$base,'dump'));
-        $this->assertNotEquals(false,dumper(Connexion::SQLITE,'','',$base,'dump'));
+        merge($data,[1,2,3],[4,5,6]);
 
-        $this->assertNotEquals(false,dumper(Connexion::MYSQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
-        $this->assertNotEquals(false,dumper(Connexion::POSTGRESQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
-        $this->assertNotEquals(false,dumper(Connexion::SQLITE,'','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+        $this->assertEquals([1,2,3,4,5,6],$data);
+    }
 
-        $this->assertEquals(false,dumper(Connexion::POSTGRESQL,'root','root',$base,'dump')) ;
-        $this->assertEquals(false,dumper(Connexion::MYSQL,'postgres','',$base,'dump')) ;
+    public function test_stack()
+    {
+        $data = [];
+        for ($i=0;$i<10;$i++)
+        {
+            stack($data,$i);
+        }
 
-        $this->assertEquals(false , dumper(Connexion::POSTGRESQL,'root','root',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table)) ;
-        $this->assertEquals(false,dumper(Connexion::MYSQL,'postgres','',$base,'dump',Eloquent::MODE_DUMP_TABLE,$table));
+      $this->assertEquals([9,8,7,6,5,4,3,2,1,0],$data);
+    }
+
+    public function test_def_and_not_def()
+    {
+        $a = 'define';
+        $c ='';
+        $x = null;
+        $this->assertTrue(def($a));
+        $this->assertTrue(not_def($x,$c));
+    }
+
+    public function test_zones()
+    {
+        $zone =zones('choose');
+        $this->assertNotEmpty($zone);
+        $this->assertContains('choose',$zone);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_tables_select()
+    {
+
+        $choose = 'select a table';
+        $select = tables_select($this->mysql->table(),'imperium',$this->table,$choose,false);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotContains('location',$select);
+        $this->assertNotEmpty($select);
+
+        $select = tables_select($this->mysql->table(),'imperium',$this->table,$choose,true);
+        $this->assertContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+
+        $select = tables_select($this->pgsql->table(),'imperium',$this->table,$choose,false);
+
+        $this->assertNotContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+
+        $select = tables_select($this->pgsql->table(),'imperium',$this->table,$choose,true);
+        $this->assertContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+
+
+        $select = tables_select($this->sqlite->table(),'imperium',$this->table,$choose,false);
+
+        $this->assertNotContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+
+
+        $select = tables_select($this->sqlite->table(),'imperium',$this->table,$choose,true);
+
+        $this->assertContains($choose,$select);
+        $this->assertContains('location',$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_users_select()
+    {
+
+        $choose = 'select an user';
+        $select = users_select($this->mysql->user(),'imperium',$this->table,$choose,false);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotContains('location',$select);
+        $this->assertNotEmpty($select);
+
+        $select = users_select($this->mysql->user(),'imperium',$this->table,$choose,true);
+        $this->assertContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+
+        $select = users_select($this->pgsql->user(),'imperium',$this->table,$choose,false);
+
+        $this->assertNotContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
+
+        $select = users_select($this->pgsql->user(),'imperium',$this->table,$choose,true);
+        $this->assertContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select);
+        $this->assertNotEmpty($select);
 
     }
-    public function testFuture()
+
+    /**
+     * @throws \Exception
+     */
+    public function test_base_select()
+    {
+
+        $choose = 'select a database';
+        $select = bases_select($this->mysql->base(),'imperium',$this->base,$choose,false);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->base,$select);
+        $this->assertNotContains('location',$select);
+        $this->assertNotEmpty($select);
+
+        $select = bases_select($this->mysql->base(),'imperium',$this->base,$choose,true);
+        $this->assertContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->base,$select);
+        $this->assertNotEmpty($select);
+
+        $select = bases_select($this->pgsql->base(),'imperium',$this->base,$choose,false);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->base,$select);
+        $this->assertNotContains('location',$select);
+        $this->assertNotEmpty($select);
+
+        $select = bases_select($this->pgsql->base(),'imperium',$this->base,$choose,true);
+        $this->assertContains('location',$select);
+        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->base,$select);
+        $this->assertNotEmpty($select);
+    }
+
+    public function test_global()
+    {
+        $this->assertEquals('',session('a'));
+        $this->assertEquals('',cookie('a'));
+        $this->assertEquals('',get('a'));
+        $this->assertEquals('',post('a'));
+        $this->assertEquals('',server('a'));
+        $this->assertEquals('',files('a'));
+
+        $_POST['a'] = 'a';
+        $_GET['a'] = 'a';
+        $_COOKIE['a'] = 'a';
+        $_SESSION['a'] = 'a';
+        $_SERVER['a'] = 'a';
+        $_FILES['a'] = 'a';
+
+        $this->assertEquals('a',session('a'));
+        $this->assertEquals('a',cookie('a'));
+        $this->assertEquals('a',get('a'));
+        $this->assertEquals('a',post('a'));
+        $this->assertEquals('a',server('a'));
+        $this->assertEquals('a',files('a'));
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_html()
+    {
+        $content = faker()->text(20);
+        $class = $this->class;
+
+        for ($i=1;$i!=6;$i++)
+            $this->assertEquals("<h$i>$content</h$i>",html("h$i",$content));
+
+        $this->assertEquals('<p class="'.$class.'">'.$content.'</p>',html('p',$content,$class));
+        $this->assertEquals('<div class="'.$class.'">'.$content.'</div>',html('div',$content,$class));
+        $this->assertEquals('<ol class="'.$class.'">'.$content.'</ol>',html('ol',$content,$class));
+        $this->assertEquals('<ul class="'.$class.'">'.$content.'</ul>',html('ul',$content,$class));
+        $this->assertEquals('<li class="'.$class.'">'.$content.'</li>',html('li',$content,$class));
+        $this->assertEquals('<link href="'.$content.'" rel="stylesheet">',html('link',$content));
+        $this->assertEquals( '<meta '.$content.'>',html('meta',$content));
+        $this->assertEquals( '<img src="'.$content.'" class="'.$class.'">',html('img',$content,$class));
+
+        $this->assertNotContains($class,html('p',$content));
+        $this->assertNotContains($class,html('div',$content));
+        $this->assertNotContains($class,html('ol',$content));
+        $this->assertNotContains($class,html('ul',$content));
+        $this->assertNotContains($class,html('li',$content));
+        $this->assertNotContains($class,html('img',$content));
+
+        $id = faker()->text(5);
+        $this->assertEquals('<p class="'.$class.'" id="'.$id.'">'.$content.'</p>',html('p',$content,$class,$id));
+        $this->assertEquals('<div class="'.$class.'" id="'.$id.'">'.$content.'</div>',html('div',$content,$class,$id));
+        $this->assertEquals('<ol class="'.$class.'" id="'.$id.'">'.$content.'</ol>',html('ol',$content,$class,$id));
+        $this->assertEquals('<ul class="'.$class.'" id="'.$id.'">'.$content.'</ul>',html('ul',$content,$class,$id));
+        $this->assertEquals('<li class="'.$class.'" id="'.$id.'">'.$content.'</li>',html('li',$content,$class,$id));
+
+
+        $this->expectException(Exception::class);
+        html('a',$content,$class);
+        html($content,$class,"");
+        html('',$class,$content);
+    }
+
+    public function test_login()
+    {
+        $login = login('index.php','login','username','password','login',$this->class,'login-id');
+        $this->assertContains('placeholder="password"',$login);
+        $this->assertContains('placeholder="username"',$login);
+        $this->assertContains('id="login"',$login);
+        $this->assertContains($this->class,$login);
+        $this->assertContains('id="login-id"',$login);
+        $this->assertContains('login"',$login);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_root()
+    {
+        $this->assertInstanceOf(PDO::class,root(Connect::MYSQL,self::MYSQL_USER,self::MYSQL_PASS)->instance());
+        $this->assertInstanceOf(PDO::class,root(Connect::POSTGRESQL,self::POSTGRESQL_USER,self::POSTGRESQL_PASS)->instance());
+
+        $this->expectException(Exception::class);
+
+        root(Connect::MYSQL,self::POSTGRESQL_USER,self::MYSQL_PASS)->instance();
+        root(Connect::POSTGRESQL,self::MYSQL_USER,self::MYSQL_PASS)->instance();
+
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_pass()
+    {
+        $this->assertTrue(pass($this->mysql->connect(),self::MYSQL_USER,self::MYSQL_USER));
+        $this->assertTrue(pass($this->mysql->connect(),self::MYSQL_USER,self::MYSQL_PASS));
+
+        $this ->assertTrue(pass($this->pgsql->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_USER));
+        $this->assertTrue(pass($this->pgsql->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
+
+    }
+
+    public function test_loaded()
+    {
+        $this->assertTrue(mysql_loaded());
+        $this->assertTrue(postgresql_loaded());
+        $this->assertTrue(sqlite_loaded());
+    }
+
+    public function test_exist()
+    {
+        $this->assertTrue(exist('html'));
+        $this->assertFalse(exist('_e'));
+        $this->assertFalse(exist('app'));
+        $this->assertTrue(exist('_html'));
+    }
+
+    public function test_future()
     {
         $this->assertEquals(now()->addSecond(60)->toDateString(),future('second',60));
         $this->assertEquals(now()->addSeconds(360)->toDateString(),future('seconds',360));
@@ -1044,165 +488,68 @@ class HelpersTest extends TestCase
         $this->assertEquals(now()->addCenturies(5)->toDateString(),future('centuries',5));
 
     }
-
-    public function testIsLoaded()
-    {
-        $this->assertEquals(true,mysql_loaded());
-        $this->assertEquals(true,pgsql_loaded());
-        $this->assertEquals(true,sqlite_loaded());
-    }
-    public function testExist()
-    {
-        $this->assertEquals(true,exist('drop'));
-        $this->assertEquals(true,exist('faker'));
-        $this->assertEquals(true,exist('db'));
-        $this->assertEquals(false,exist('lorem'));
-    }
-    public function testFaker()
+    public function test_faker()
     {
         $this->assertInstanceOf(Generator::class,faker('fr'));
         $this->assertInstanceOf(Generator::class,faker('en'));
         $this->assertInstanceOf(Generator::class,faker('es'));
     }
 
-
-
-    public function testUserDel()
+    /**
+     * @throws Exception
+     */
+    public function test_user_del()
     {
         $user = 'alexandra';
 
+        $this->assertTrue(user_add($user,$user,'',$this->mysql->connect()));
+        $this->assertTrue(user_add($user,$user,'',$this->pgsql->connect()));
+        $this->assertFalse(user_add($user,$user,'',$this->sqlite->connect()));
 
-        $this->assertEquals(true,userAdd(Connexion::MYSQL,$user,$user,'',root(Connexion::MYSQL,'root','root')));
-        $this->assertEquals(true,userAdd(Connexion::POSTGRESQL,$user,$user,'',root(Connexion::POSTGRESQL,'postgres','')));
-
-        $this->assertEquals(true,userDel(Connexion::MYSQL,root(Connexion::MYSQL,'root','root'),$user));
-        $this->assertEquals(true,userDel(Connexion::POSTGRESQL,root(Connexion::POSTGRESQL,'postgres',''),$user));
+        $this->assertTrue(remove_users($this->mysql->connect(),$user));
+        $this->assertTrue(remove_users($this->pgsql->connect(),$user));
+        $this->assertFalse(remove_users($this->sqlite->connect(),$user));
     }
 
 
-    public function testDefaultCanvasValues()
+    public function test_loaders()
     {
-        $canvas = \canvas('a')->addForm('adz','azd')->add('a','adz','azd')->end();
+        $scriptFirst = '<script src="app.js"></script>';
+        $scriptSecond = '<script src="main.js"></script>';
+        $loader = js_loader("app.js","main.js");
+        $this->assertEquals("$scriptFirst$scriptSecond",$loader);
 
-        $this->assertContains('row',$canvas);
-        $this->assertContains('col',$canvas);
-        $this->assertContains('list-inline',$canvas);
-        $this->assertContains('navmenu-fixed-right',$canvas);
-        $this->assertContains('offCanvasLink',$canvas);
-
-    }
-    public function testGetLines()
-    {
-        $this->assertNotEmpty(File::getLines('README.md'));
-        $this->assertNotEmpty(getLines('README.md'));
+        $scriptFirst = '<link href="app.css" rel="stylesheet">';
+        $scriptSecond = '<link href="main.css" rel="stylesheet">';
+        $loader = css_loader("app.css","main.css");
+        $this->assertEquals("$scriptFirst$scriptSecond",$loader);
     }
 
-
-    public function testCanvasAddForm()
+    public function test_sql()
     {
-        $one = form('a','e')->input('search','a','')->end();
-        $two = form('a','e')->input('number','aadz','')->end();
-        $three = form('a','e')->input('number','aadz','')->textarea('a','a',10,10)->end();
-
-        $canvas = canvas('a')->addForm($one,$two,$three)->end();
-
-        $this->assertContains($one,$canvas);
-        $this->assertContains($two,$canvas);
-        $this->assertContains($three,$canvas);
-    }
-
-    public function testSetCanvasClass()
-    {
-        $canvas = canvas('a')->setGridClass('grid-class')->setRowClass('row-class')->addForm('aazaz')->end();
-        $this->assertContains('grid-class',$canvas);
-        $this->assertContains('row-class',$canvas);
-    }
-    public function testGetFileInfo()
-    {
-        $keys = ['database','username','password'];
-        $values = ['forge','forger','xkjkl'];
-        $file = 'env';
-        if (File::exist($file))
-            File::delete($file);
-
-        File::create($file);
-        File::putContents($file,"database=forge\nusername=forger\npassword=xkjkl");
-
-        $fileKeys = File::getKeys('env','=');
-        $fileValues = File::getValues('env','=');
-
-        $this->assertNotEmpty($fileKeys);
-        $this->assertEquals($keys,$fileKeys);
-
-        $this->assertNotEmpty($fileValues);
-        $this->assertEquals($values,$fileValues);
-
-
-        $fileKeys = getKeys($file,'=');
-        $fileValues = getValues($file,'=');
-
-        $this->assertNotEmpty($fileKeys);
-        $this->assertEquals($keys,$fileKeys);
-
-        $this->assertNotEmpty($fileValues);
-        $this->assertEquals($values,$fileValues);
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->mysql->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->pgsql->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->sqlite->query()));
     }
 
     /**
-     * @throws IdentifierException
+     * @throws Exception
      */
-    public function testImperium()
+    public function test_collation()
     {
-        $data = [
+        $this->assertFalse(collection(collation($this->mysql->connect()))->isEmpty());
+        $this->assertFalse(collection(collation($this->pgsql->connect()))->isEmpty());
 
-            'id' => null,
-            'name' => faker()->name(),
-            'age' => faker()->numberBetween(1,80),
-            'sex' => rand(1,2) == 1 ? 'M': 'F',
-            'status' => faker()->text(20),
-            'date' => faker()->date()
-        ];
-
-
-        $pdo = connect(Connexion::MYSQL,'zen','root','root');
-        $bases = \base(Connexion::MYSQL,'zen','root','root','');
-        $users = user(Connexion::MYSQL,'root','root');
-        $tables = table(Connexion::MYSQL,'zen','root','root','');
-        $query = sql( 'doctors');
-        $model = model($pdo,$tables,'doctors');
-        $imperium = imperium($bases,$tables,$users,$query,$model);
-
-        $this->assertNotEmpty($imperium->tables());
-        $this->assertNotEmpty($imperium->databases());
-        $this->assertNotEmpty($imperium->users());
-
-        $this->assertContains('doctors',$imperium->tables());
-        $this->assertContains('zen',$imperium->databases());
-        $this->assertContains('root',$imperium->users());
-
-        $this->assertNotEmpty($imperium->find(1));
-        $this->assertNotEmpty($imperium->records());
-        $this->assertTrue($imperium->remove(1));
-        $this->assertEmpty($imperium->find(1));
-        $this->assertTrue($imperium->insert($data,[]));
-        $this->assertTrue($imperium->insert($data,[]));
-        $this->assertTrue($imperium->update(10,$data));
-
-        $columns = $imperium->columns();
-
-        $this->assertContains('id',$columns);
-        $this->assertContains('name',$columns);
-        $this->assertContains('age',$columns);
-        $this->assertContains('sex',$columns);
-        $this->assertContains('status',$columns);
-
-        $records  = $imperium->where('id', '<',10);
-        $this->assertNotEmpty($records);
-        $this->assertEquals(8,count($records));
-
-        $this->expectException(Exception::class);
-        $imperium->findOrFail(88888);
-        $imperium->findOrFail(888);
     }
-}
 
+    /**
+     * @throws Exception
+     */
+    public function test_charset()
+    {
+        $this->assertFalse(collection(charset($this->mysql->connect()))->isEmpty());
+        $this->assertFalse(collection(charset($this->pgsql->connect()))->isEmpty());
+
+    }
+
+}

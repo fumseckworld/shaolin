@@ -1,43 +1,13 @@
 <?php
 
-
-use Imperium\Databases\Eloquent\Connexion\Connexion;
-
-
 require_once 'vendor/autoload.php';
-whoops();
 
-$pdo = connect(Connexion::MYSQL,'zen','root','root');
-$bases = base(Connexion::MYSQL,'zen','root','root','');
-$users =  user(Connexion::MYSQL,'root','root');
-$tables = table(Connexion::MYSQL,'zen','root','root','');
-$query = sql( 'doctors');
-$model = model($pdo,$tables,'doctors');
-$app = imperium($bases,$tables,$users,$query,$model);
+echo fontAwesome();
+echo css_loader('lily/lily-dark.css');
 
-
-
-$x = empty(get('table')) ? 'doctors' : get('table');
-
-?>
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-
-        <?= fontAwesome();  ?>
-        <?= cssLoader('lily/lily-dark.css');  ?>
-        <title>Imperium</title>
-
-        <link rel='shortcut icon' href='https://git-scm.com/favicon.ico'/>
-    </head>
-    <body>
-
-    <div class="container">
-        <?php $app->print( html('div',registerForm('a', '1','1','username','email','password','confirm','create account','register',true,[ ''=> 'Choose a language','en' => 'English','fr' => 'Francais'],'choose a time zone'),'mt-5')) ?>
-    </div>
-    </body>
-</html>
-
-
-
-
+try{
+    echo html('div',register('register.php','','','username','username will be used','username cannot be empty','email address','email will be used','email address incorrect','password','password will be used','The password must not be empty ','confirm password','create account','btn btn-outline-primary',true,['fr' => 'Francais','es' => 'Spanish'],'select a language','language will be used','please select a language','choose a time zone','time zone will be used','please select a timezone'),'container mt-5');
+}catch (Exception $e)
+{
+    d($e->getMessage());
+}

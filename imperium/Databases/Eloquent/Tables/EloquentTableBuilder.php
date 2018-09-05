@@ -21,6 +21,8 @@
 
 namespace Imperium\Databases\Eloquent\Tables {
 
+
+    use Imperium\Connexion\Connect;
     use Imperium\Databases\Eloquent\Eloquent;
 
 
@@ -33,11 +35,13 @@ namespace Imperium\Databases\Eloquent\Tables {
     {
 
         /**
-         * start table query builder
+         * Table constructor.
          *
-         * @return Table
+         * @param Connect $connect
          */
-        public static function manage(): Table;
+        public function __construct(Connect $connect);
+
+
 
         /**
          * update a table
@@ -58,25 +62,26 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return Table
          */
-        public function setHidden(array $hidden): Table;
+        public function hidden(array $hidden): Table;
 
         /**
          * define name of table
          *
-         * @param string $table
+         * @param string $current_table_name
          *
          * @return Table
          */
-        public function setName(string $table): Table;
+        public function set_current_table(string $current_table_name): Table;
 
         /**
          * define new name of table
          *
-         * @param string $newName
+         * @param string $new_name
          *
          * @return Table
          */
-        public function setNewName(string $newName): Table;
+        public function set_new_name(string $new_name): Table;
+
 
         /**
          * rename a table
@@ -99,7 +104,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function hasColumn(string $column): bool;
+        public function has_column(string $column): bool;
 
 
         /**
@@ -107,14 +112,14 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return array
          */
-        public function getColumnsTypes(): array;
+        public function get_columns_types(): array;
 
         /**
          * get all columns in a table
          *
          * @return array
          */
-        public function getColumns(): array;
+        public function get_columns(): array;
 
 
         /**
@@ -131,7 +136,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function dropAll(): bool;
+        public function drop_all_tables(): bool;
 
         /**
          * truncate one or all tables
@@ -155,7 +160,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return Table
          */
-        public function addField(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = true, bool $nullable = false): Table;
+        public function append_field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = true, bool $nullable = false): Table;
 
         /**
          * add a column in a existing table
@@ -168,15 +173,14 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function addColumn(string $column, string $type, int $size = 0, bool $unique = true, bool $nullable = false): bool;
+        public function append_column(string $column, string $type, int $size = 0, bool $unique = true, bool $nullable = false): bool;
 
         /**
          * create the table
          *
-         *
-         * @return bool|string
+         * @return bool
          */
-        public function create();
+        public function create() : bool;
 
         /**
          * set the engine
@@ -185,7 +189,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return Table
          */
-        public function setEngine(string $engine): Table;
+        public function set_engine(string $engine): Table;
 
         /**
          * return create table sql query
@@ -199,23 +203,23 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @param string $table
          *
-         * @return mixed
+         * @return bool
          */
-        public function dump(string $table = null);
+        public function dump(string $table = ""): bool;
 
         /**
          * get the primary key of a table
          *
-         * @return string|null
+         * @return string
          */
-        public function primaryKey();
+        public function get_primary_key(): string ;
 
         /**
          * check if a table is empty
          *
          * @return bool
          */
-        public function isEmpty(): bool;
+        public function is_empty(): bool;
 
         /**
          * select a record by id
@@ -224,7 +228,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return array
          */
-        public function selectById(int $id): array;
+        public function select_by_id(int $id): array;
 
         /**
          * delete a record by id
@@ -233,7 +237,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function deleteById(int $id): bool;
+        public function delete_by_id(int $id): bool;
 
         /**
          * rename a existing column
@@ -243,7 +247,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function renameColumn(string $old, string $new): bool;
+        public function rename_column(string $old, string $new): bool;
 
         /**
          * delete a column
@@ -268,11 +272,11 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @param array       $values
          * @param array       $toIgnore
-         * @param string|null $table
+         * @param string $table
          *
          * @return bool
          */
-        public function insert(array $values,array $toIgnore = [],string $table = null): bool;
+        public function insert(array $values,array $toIgnore = [],string $table  =''): bool;
 
         /**
          * set tables to ignore
@@ -283,14 +287,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          */
         public function ignore(array $tables): Table;
 
-        /**
-         * set the dump directory path
-         *
-         * @param string $path
-         *
-         * @return Table
-         */
-        public function setDumpPath(string $path): Table;
+
 
         /**
          * show all tables in a database
@@ -316,59 +313,6 @@ namespace Imperium\Databases\Eloquent\Tables {
          */
         public function count(string $table = '', int $mode = Eloquent::MODE_ONE_TABLE);
 
-        /**
-         * set the database driver
-         *
-         * @param string $driver
-         *
-         * @return Table
-         */
-        public function setDriver(string $driver): Table;
-
-        /**
-         * set name of database
-         *
-         * @param string $database
-         *
-         * @return Table
-         */
-        public function setDatabase(string $database): Table;
-
-        /**
-         * define database username
-         *
-         * @param string $username
-         *
-         * @return Table
-         */
-        public function setUsername(string $username): Table;
-
-        /**
-         * define username password
-         *
-         * @param string $password
-         *
-         * @return Table
-         */
-        public function setPassword(string $password): Table;
-
-        /**
-         * execute a statement
-         *
-         * @param string $statement
-         *
-         * @return bool
-         */
-        public function exec(string $statement): bool;
-
-        /**
-         * execute a statement
-         *
-         * @param string $statement
-         *
-         * @return array
-         */
-        public function request(string $statement): array;
 
         /**
          * get all record in a table
@@ -399,21 +343,21 @@ namespace Imperium\Databases\Eloquent\Tables {
 
 
         /**
-         * appends columns in an existing table
+         * appends multiple columns in a table
          *
          * @param string $table
          * @param Table $instance
-         * @param array $newColumnNames
-         * @param array $newColumnsTypes
-         * @param array $newColumnsLength
-         * @param array $newColumnOrder
-         * @param array $existingColumnsSelected
+         * @param array $new_columns_names
+         * @param array $new_columns_types
+         * @param array $new_columns_length
+         * @param array $new_column_order
+         * @param array $existing_columns_selected
          * @param array $unique
-         * @param array $nullable
+         * @param array $null
          *
          * @return bool
          */
-        public function appendColumns(string $table,Table $instance,array  $newColumnNames,array $newColumnsTypes,array $newColumnsLength,array $newColumnOrder,array $existingColumnsSelected,array $unique,array $nullable): bool;
+        public function append_columns(string $table, Table $instance, array  $new_columns_names, array $new_columns_types, array $new_columns_length, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool;
 
     }
 

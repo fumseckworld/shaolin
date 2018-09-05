@@ -48,6 +48,7 @@ namespace Imperium\Html\Form\Core {
         /**
          * generate a form
          *
+         * @param int $form_grid
          * @param string $table
          * @param Table $instance
          * @param string $submitText
@@ -59,8 +60,7 @@ namespace Imperium\Html\Form\Core {
          *
          * @return string
          */
-        public function generate(string $table, Table $instance,string $submitText,string $submitClass,string $submitId,string $submitIcon = '',int $mode = Form::CREATE,int $id = 0): string;
-
+        public function generate(int $form_grid,string $table, Table $instance,string $submitText,string $submitClass,string $submitId,string $submitIcon = '',int $mode = Form::CREATE,int $id = 0): string;
 
         /**
          * start hidden input
@@ -133,6 +133,8 @@ namespace Imperium\Html\Form\Core {
          * @param string $type
          * @param string $name
          * @param string $placeholder
+         * @param string $success_text
+         * @param string $error_text
          * @param string $icon
          * @param string $value
          * @param bool $required
@@ -140,7 +142,7 @@ namespace Imperium\Html\Form\Core {
          * @param bool $autoComplete
          * @return Form
          */
-        public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form;
+        public function input(string $type, string $name, string $placeholder,string $success_text = '',string $error_text ='',string $icon = '', string $value = '', bool $required = true  , bool $autofocus = false, bool $autoComplete = false): Form;
 
 
 
@@ -238,12 +240,15 @@ namespace Imperium\Html\Form\Core {
          *
          * @param string $name
          * @param array $options
+         * @param string $success_text
+         * @param string $error_text
          * @param string|null $icon
          *
+         * @param bool $required
          * @param bool $multiple
          * @return Form
          */
-        public function select(string $name, array $options,string $icon = '',bool $multiple = false): Form;
+        public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $required = true,bool $multiple = false): Form;
 
         /**
          * generate a checkbox input
@@ -293,6 +298,12 @@ namespace Imperium\Html\Form\Core {
          * @return Form
          */
         public function redirectSelect(string $name, array $options, string $icon = ''): Form;
+
+
+        /**
+         * @return Form
+         */
+        public function validate(): Form;
 
    }
 }

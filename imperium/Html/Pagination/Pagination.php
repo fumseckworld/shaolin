@@ -61,7 +61,7 @@ class Pagination implements PaginationManagement
     /**
      * @var string
      */
-    private static $startCssClass;
+    private static $liCssClass;
 
     /**
      * @var string
@@ -184,7 +184,7 @@ class Pagination implements PaginationManagement
      */
     private static function createLiFirstAndSecond(string $path): string
     {
-        return '<li class="'.self::$startCssClass.'"> <a href="'.$path. self::$instance. '/1" class="page-link"> 1 </a></li><li class="'.self::$startCssClass.'"> <a href="'.$path. self::$instance.'/2" class="page-link"> 2</a></li>';
+        return '<li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance. '/1" class="page-link"> 1 </a></li><li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance.'/2" class="page-link"> 2</a></li>';
     }
 
     /**
@@ -219,13 +219,13 @@ class Pagination implements PaginationManagement
             if (self::$current > 1)
             {
 
-                $prevLink = '<li class="'.self::$startCssClass.'"> <a  href="' . $path . self::$instance . '/' . $prev . '" class="page-link"></li>';
+                $prevLink = '<li class="'.self::$liCssClass.'"> <a  href="' . $path . self::$instance . '/' . $prev . '" class="page-link"></li>';
 
             }
 
             if (self::$current < $last)
             {
-                $prevLink = '<li class="'.self::$startCssClass.'"> <a  href="' . $path . self::$instance . '/' . $next . '" class="page-link"></li>';
+                $prevLink = '<li class="'.self::$liCssClass.'"> <a  href="' . $path . self::$instance . '/' . $next . '" class="page-link"></li>';
             }
 
 
@@ -286,9 +286,9 @@ class Pagination implements PaginationManagement
         {
             $pagination .= '<ul class="' . self::$ulClass . '" data-pagination-current="' . self::$current . '" data-pagination-prev="' . $prevDataAttribute . '" data-pagination-next="' . $nextDataAttribute . '" data-pagination-length="' . $last . '">';
             if (self::$current > 1)
-                $pagination .= '<li class="' . self::$startCssClass . '"><a href="' . $path . self::$instance . '/' . $prev . '" class="page-link"> ' . self::$startText . '</a></li>';
+                $pagination .= '<li class="' . self::$liCssClass . '"><a href="' . $path . self::$instance . '/' . $prev . '" class="page-link"> ' . self::$startText . '</a></li>';
             else
-                $pagination .= '<li class="disabled ' . self::$startCssClass . '"> <a class="page-link"> ' . self::$startText . '</a> </li>';
+                $pagination .= '<li class="disabled ' . self::$liCssClass . '"> <a class="page-link"> ' . self::$startText . '</a> </li>';
 
             if ($last < 7 + (self::$adjacent * 2))
             {
@@ -307,7 +307,7 @@ class Pagination implements PaginationManagement
                     }
                 }
 
-                $pagination .= '<li class="'.self::$startCssClass.'"><a href="' . $path . self::$instance . '/' . $tmpSave . '" class="page-link">   ' . $tmpSave . '</a></li>';
+                $pagination .= '<li class="'.self::$liCssClass.'"><a href="' . $path . self::$instance . '/' . $tmpSave . '" class="page-link">   ' . $tmpSave . '</a></li>';
                 $pagination .= '<li><a href="' . $path . self::$instance . '/' . $last . '" class="page-link">   ' . $last . ' </a></li>';
             } elseif ($last - (self::$adjacent * 2) > self::$current && self::$current > (self::$adjacent * 2))
             {
@@ -482,9 +482,9 @@ class Pagination implements PaginationManagement
      *
      * @return \Imperium\Html\Pagination\Pagination
      */
-    public function setStartCssClass(string $startClass): Pagination
+    public function setLiCssClass(string $startClass): Pagination
     {
-        self::$startCssClass = $startClass;
+        self::$liCssClass = $startClass;
 
         return $this;
     }

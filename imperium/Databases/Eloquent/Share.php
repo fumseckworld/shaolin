@@ -23,49 +23,69 @@
 namespace Imperium\Databases\Eloquent;
 
 
+use Imperium\Connexion\Connect;
+use Imperium\Databases\Eloquent\Query\Query;
+use Imperium\Databases\Eloquent\Tables\Table;
+
 trait Share
 {
-    /**
-     * @var string $driver
-     */
-    private $driver;
-    /**
-     * @var string $database
-     */
-    private $database;
 
     /**
-     * @var string $username
+     * @var Table
      */
-    private $username;
+    private $tables;
 
     /**
-     * @var string $password
+     * the primary key
+     *
+     * @var string
      */
-    private $password;
+    private $primary;
 
     /**
-     * @var string $rights
+     * @var Query
      */
-    private $rights;
+    private $sql;
 
     /**
-     * @var array $hidden
+     * @var Connect
+     */
+    private $connexion;
+
+    /**
+     * current table
+     *
+     * @var string
+     */
+    private $table;
+
+
+    /**
+     * order by
+     *
+     * @var string
+     */
+    private $order;
+
+
+    /**
+     * the limit clause
+     *
+     * @var string
+     */
+    private $limit;
+
+    /**
+     * hidden values
+     *
+     * @var array
      */
     private $hidden;
 
     /**
-     * @var string $encoding
-     */
-    private $encoding;
-
-    /**
-     * @var string $collation
-     */
-    private $collation;
-
-    /**
-     * @var string $dump
+     * the dump path
+     *
+     * @var string
      */
     private $path;
 }

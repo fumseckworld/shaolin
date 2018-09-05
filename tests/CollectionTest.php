@@ -1,268 +1,246 @@
 <?php
-
-
+/**
+ * Created by PhpStorm.
+ * User: fumse
+ * Date: 03/09/2018
+ * Time: 17:07
+ */
 
 namespace tests;
 
-use Imperium\Collection\Collection;
-use PHPUnit\Framework\TestCase;
 
-class CollectionTest extends TestCase
+use Imperium\Collection\Collection;
+use Testing\DatabaseTest;
+
+class CollectionTest extends DatabaseTest
 {
 
 
-    public function testInstance()
+    public function test_instance()
     {
+        $data = [];
         $this->assertInstanceOf(Collection::class,collection());
-        $this->assertInstanceOf(Collection::class,collection(['a','b']));
+        $this->assertInstanceOf(Collection::class,collection($data));
+        $this->assertInstanceOf(Collection::class,collection(array('1',2,3,3,5)));
     }
 
-    public function testPush()
-    {
-        $data = ['a','b'];
-        $collection = new Collection($data);
-        $collection->push('c','d','e','f');
-        $this->assertEquals(['a','b','c','d','e','f'],$collection->getCollection()) ;
-    }
-    public function testCreation()
+    public function test_push()
     {
         $data = collection();
 
-        for ($i=0;$i<10;$i++)
+        $data->push(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+        $this->assertEquals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],$data->getCollection());
+        $this->assertEquals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],$data->getCollection());
+    }
+    public function test_stack()
+    {
+        $data = collection();
+
+        $data->stack(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+        $this->assertEquals([20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],$data->getCollection());
+
+    }
+
+    public function test_init()
+    {
+        $data = collection();
+        $this->assertEquals(0,$data->init());
+
+    }
+
+    public function test_end()
+    {
+        $data = collection([1,2,3]);
+
+        $this->assertEquals(3,$data->end());
+    }
+
+    public function test_key()
+    {
+        $data = collection([0 => 5]);
+        $data->rewind();
+        $this->assertEquals(0,$data->key());
+        $this->assertEquals(5,$data->current());
+    }
+
+    public function test_start()
+    {
+        $data = collection([1,2,3]);
+
+        $this->assertEquals(1,$data->start());
+    }
+
+    public function test_length()
+    {
+        $data = collection();
+        $this->assertEquals(0,$data->length());
+
+        $data->push('123','124',50);
+        $this->assertEquals(3,$data->length());
+
+    }
+
+    public function test_set()
+    {
+        $data = collection();
+
+        $data->set('alex')->set('marc')->set('marion');
+
+        $this->assertEquals(['alex','marc','marion'],$data->getCollection());
+
+        $data =  collection();
+
+        $data->set(10,'note')->set(15,'age')->set(25 ,'euros');
+
+        $this->assertEquals(['note' => 10,'age' => 15,'euros' => 25] ,$data->getCollection());
+
+    }
+
+    public function test_is()
+    {
+        $data =  collection();
+
+        $this->assertTrue($data->isNumeric('1'));
+        $this->assertTrue($data->isNumeric(12));
+        $this->assertTrue($data->isString("azadz"));
+        $this->assertTrue($data->isString("lerfzz"));
+        $this->assertTrue($data->isEmpty());
+    }
+
+    public function test_get()
+    {
+        $data =  collection();
+
+        $data->set(10,'note')->set(15,'age')->set(25 ,'euros');
+
+        $this->assertEquals(10,$data->get('note'));
+        $this->assertEquals(15,$data->get('age'));
+        $this->assertEquals(25,$data->get('euros'));
+    }
+
+    public function test_remove()
+    {
+        $data =  collection();
+
+        $data->set(10,'note')->set(15,'age')->set(25 ,'euros');
+
+        $data->remove('note');
+        $this->assertNotContains('note',$data->getCollection());
+    }
+
+    public function test_join()
+    {
+        $data =  collection();
+        $data->push('i am a boy','you a little girl');
+        $this->assertEquals('i am a boy, you a little girl',$data->join(', '));
+
+        $data->clear()->push('i am a boy','you a little girl');
+        $this->assertEquals('i am a girl, you a little girl',$data->join(', ',true,'boy','girl'));
+    }
+
+    public function test_get_values()
+    {
+        $data = collection();
+        $data->set('i','a')->set('am','b')->set('a','c')->set('boy','d');
+        $this->assertEquals(['i','am','a','boy'],$data->getValues());
+        $this->assertEquals(['a','b','c','d'],$data->getKeys());
+    }
+
+    public function test_for()
+    {
+        $data = collection(array('i','have','a','dog','and','i','eat','a','big','sandwich'));
+        $data->rewind();
+        while ($data->valid())
         {
-            $data->push($i);
-
+            $this->assertNotEmpty($data->current());
+            $data->next();
         }
-        $this->assertEquals(10,$data->length());
-        $this->assertEquals([0,1,2,3,4,5,6,7,8,9],$data->getCollection());
-    }
 
-    public function testCurrent()
+    }
+    public function test_array_prev()
     {
-        $data = ['a','b','c','d','e','f'];
-        $collection = new Collection($data);
-        $collection->rewind();
-        while ($collection->valid())
-        {
-            $this->assertNotEmpty($collection->current());
+        $data = collection(['note' =>10 ,'age' => 18,'phone' => 564]);
+        $this->assertEquals(10,$data->valueBeforeKey('age'));
+        $this->assertEquals(18,$data->valueBeforeKey('phone'));
 
-            $collection->next();
-            $this->assertGreaterThan(0,$collection->key());
-        }
+        $data = collection([10 , 18, 564]);
+        $this->assertEquals(10,$data->valueBeforeKey(18));
+        $this->assertEquals(18,$data->valueBeforeKey(564));
+        $data = collection([10]);
+        $this->assertEquals(10,$data->valueBeforeKey(10));
+
     }
-    public  function testPop()
+
+    public function test_reverse()
     {
-        $data = ['a','b','c','d','e','f'];
-        $collection = new Collection($data);
-        $collection->pop()->pop()->pop();
-        $this->assertEquals(['a','b','c'],$collection->getCollection()) ;
+        $data =  collection(['boy','a','am','i']);
+
+        $this->assertEquals(['i','am','a','boy'],$data->reverse());
     }
-   public  function testGetCollection()
+
+    public function test_before_and_after()
     {
-        $data = ['a','b','c','d','e','f'];
-        $collection = new Collection($data);
+        $data = collection(['do','re','mi','fa','sol','la','si','do']);
+        $data->rewind();
 
-        $this->assertNotEmpty($collection->getCollection());
-        $this->assertEquals($data,$collection->getCollection()) ;
+        $this->assertEquals('re',$data->after());
+
+        $this->assertEquals('mi',$data->after());
+
+        $this->assertEquals('fa',$data->after());
+
+        $this->assertEquals('mi',$data->before());
+
+        $this->assertEquals('re',$data->before());
+
+
+        $this->assertEquals('do',$data->before());
+        $data->next();
+        $data->next();
+        $data->next();
+        $data->next();
+        $this->assertEquals('sol',$data->current());
+
     }
 
-    public function testMerge()
+    /**
+     * @throws \Exception
+     */
+    public function test_print()
     {
-        $data = ['a','b','c','d','e','f'];
-        $second = ['g','h','i'];
-        $three = ['j','k','l'];
-        $collection = new Collection($data);
-        $collection->merge($second,$three);
+        $data = collection($this->mysql->model()->all());
 
-        $this->assertEquals( ['a','b','c','d','e','f','g','h','i','j','k','l'],$collection->getCollection());
-    }
+        $this->assertNotEmpty($data->print(true,$this->mysql->model()->columns()));
+        $this->assertNotEmpty($data->print(true));
+        $this->assertNotEmpty($data->print(false,$this->mysql->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,[],true));
 
-    public function testEndAndStart()
-    {
-        $data = ['a','b','c','d','e','f'];
+        $data = collection( $this->pgsql->model()->all());
+        $this->assertNotEmpty($data->print(true,$this->pgsql->model()->columns()));
+        $this->assertNotEmpty($data->print(true));
+        $this->assertNotEmpty($data->print(false,$this->pgsql->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,[],true));
 
-        $collection = new Collection($data);
+        $data = \collection($this->sqlite->model()->all());
 
-        $this->assertEquals('f',$collection->end());
-        $this->assertEquals('a',$collection->start());
-    }
-
-    public function testGetTotal()
-    {
-        $data = ['a','b','c','d','e','f'];
-
-        $collection = new Collection($data);
-
-        $this->assertEquals(6,$collection->length());
-        $collection->merge($data);
-        $this->assertEquals(12,$collection->length());
-        $collection->pop();
-
-        $this->assertEquals(11,$collection->length());
+        $this->assertNotEmpty($data->print(true,$this->sqlite->model()->columns()));
+        $this->assertNotEmpty($data->print(true));
+        $this->assertNotEmpty($data->print(false,$this->sqlite->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,[],true));
 
     }
 
-    public function testSet()
-    {
-        $data = ['a','b','c','d','e','f'];
-
-        $collection = new Collection($data);
-        $collection->set('g')->set('h');
-        $this->assertEquals( ['a','b','c','d','e','f','g','h'],$collection->getCollection());
-
-        $collection->offsetSet('i','a');
-        $collection->offsetSet('j','b');
-        $collection->offsetSet('k','c');
-        $collection->offsetSet('l','d');
-        $this->assertEquals( ['a','b','c','d','e','f','g','h','a' => 'i','b' => 'j','c'=> 'k','d'=> 'l'],$collection->getCollection());
-
-    }
-
-    public function testGetValues()
-    {
-        $data = [0=> 'a', 1=>'b', 2=>'c', 3=>'d',4 =>'e',5 => 'f'];
-
-        $collection = new Collection($data);
-        $this->assertEquals(5,$collection->lastKey());
-        $this->assertEquals('f',$collection->lastValue());
-        $this->assertEquals(0,$collection->firstKey());
-        $this->assertEquals('a',$collection->firstValue());
-    }
-
-
-    public function testReverse()
-    {
-        $data = [1,2,3];
-        $collection = new Collection($data);
-        $this->assertEquals([3,2,1],$collection->reverse());
-    }
-
-    public function testHasAndExist()
-    {
-        $data = [1 => 4 ,2 => 6,3 => 12];
-        $collection = new Collection($data);
-        $this->assertTrue($collection->exist(4));
-        $this->assertTrue($collection->exist(6));
-        $this->assertFalse($collection->exist(60));
-        $this->assertFalse($collection->exist(70));
-        $this->assertTrue($collection->has(1));
-        $this->assertTrue($collection->offsetExists(1));
-        $this->assertTrue($collection->has(2));
-        $this->assertTrue($collection->offsetExists(2));
-        $this->assertTrue($collection->offsetExists(3));
-        $this->assertFalse($collection->has(325));
-        $this->assertFalse($collection->has(3245));
-        $this->assertFalse($collection->has(3245));
-
-    }
-
-
-    public function testExist()
+    public function test()
     {
 
-        $data = ['lundi','mardi','mercredi'];
+        $data = \collection();
+        $data->offsetSet('name','willy');
+        $this->assertEquals('name',$data->offsetGet('willy'));
+        $this->assertEquals(true,$data->offsetExists('willy'));
+        $data->offsetUnset('willy');
+        $this->assertEquals(false,$data->offsetExists('willy'));
 
-        $collection =  new Collection($data);
-        $this->assertTrue($collection->exist('lundi'));
-        $this->assertTrue($collection->exist('mardi'));
-        $this->assertTrue($collection->exist('mercredi'));
-        $this->assertFalse($collection->exist('a'));
-        $this->assertFalse($collection->exist('ad'));
-        $this->assertFalse($collection->exist('aad'));
-
-    }
-    public function testHas()
-    {
-        $data = ['lundi','mardi','mercredi'];
-
-        $collection =  new Collection($data);
-
-        $this->assertEquals(false,$collection->has('lundi'));
-        $this->assertEquals(false,$collection->has('mardi'));
-        $this->assertEquals(false,$collection->has('mercredi'));
-
-        $data = ['lundi' => 4,'mardi' => 5,'mercredi' => 6];
-
-        $collection =  new Collection($data);
-        $this->assertEquals(true,$collection->has('lundi'));
-        $this->assertEquals(true,$collection->has('mardi'));
-        $this->assertEquals(true,$collection->has('mercredi'));
-    }
-
-    public function testGet()
-    {
-        $data = ['lundi','mardi','mercredi'];
-
-        $collection =  new Collection($data);
-        $this->assertEquals(null,$collection->get('a'));
-        $this->assertEquals(null,$collection->get('b'));
-        $this->assertEquals('lundi',$collection->get(0));
-
-        $this->assertEquals(null,$collection->offsetGet('a'));
-        $this->assertEquals(null,$collection->offsetGet('b'));
-        $this->assertEquals('lundi',$collection->offsetGet(0));
-    }
-    public function testUnset()
-    {
-        $data = ['lundi','mardi','mercredi'];
-
-        $collection =  new Collection($data);
-        $this->assertEquals(false,$collection->unset(0)->exist('lundi'));
-
-        $collection->offsetUnset(1);
-        $this->assertEquals(false,$collection->exist('mardi'));
-
-    }
-
-
-    public function testClear()
-    {
-        $data = ['lundi','mardi','mercredi'];
-
-        $collection =  new Collection($data);
-        $this->assertEquals([],$collection->clear()->getCollection());
-    }
-    public function testSearch()
-    {
-        $data = ['lundi','mardi','mercredi'];
-
-        $collection =  new Collection($data);
-        $this->assertEquals(0,$collection->search('lundi'));
-        $this->assertEquals(0,$collection->search('lun'));
-        $this->assertEquals(1,$collection->search('mardi'));
-
-    }
-
-    public function testJoin()
-    {  $data = ['lundi','mardi','mercredi'];
-
-        $collection =  new Collection($data);
-        $this->assertEquals('lundi, mardi, mercredi',$collection->join(', '));
-    }
-    public function testBeforeAndAfter()
-    {
-        $data = ['lundi','mardi','mercredi'];
-
-       $collection =  new Collection($data);
-       $this->assertEquals('mardi',$collection->after());
-       $this->assertEquals('mercredi',$collection->after());
-       $this->assertEquals('mardi',$collection->before());
-       $this->assertEquals('lundi',$collection->before());
-    }
-    public function testInit()
-    {
-
-        $collection = new Collection();
-        $this->assertEquals(0,$collection->init());
-
-    }
-    public function testBeforeAKey()
-    {
-        $data = [1 => 4 ,2 => 6,3 => 12];
-        $collection = new Collection($data);
-
-        $this->assertEquals(6,$collection->valueBeforeKey(3));
-        $this->assertEquals(4,$collection->valueBeforeKey(2));
+        $this->assertEquals('',$data->offsetGet('willy'));
 
     }
 }

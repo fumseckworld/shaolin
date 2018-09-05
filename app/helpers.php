@@ -3,11 +3,11 @@
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
 use Imperium\Collection\Collection;
+use Imperium\Connexion\Connect;
 use Imperium\Databases\Dumper\MySql;
 use Imperium\Databases\Dumper\PostgreSql;
 use Imperium\Databases\Dumper\Sqlite;
 use Imperium\Databases\Eloquent\Bases\Base;
-use Imperium\Databases\Eloquent\Connexion\Connexion;
 use Imperium\Databases\Eloquent\Eloquent;
 use Imperium\Databases\Eloquent\Query\Query;
 use Imperium\Databases\Eloquent\Tables\Table;
@@ -30,52 +30,312 @@ use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
 
-if (!exist('registerForm'))
+if (!exist('instance'))
+{
+    /***
+     * get all instance
+     *
+     * @param string $driver
+     * @param string $user
+     * @param string $base
+     * @param string $root_user
+     * @param string $root_password
+     * @param string $table
+     * @param string $btn_class
+     * @param string $btn_danger_class
+     * @param int $fetch_mode
+     * @param string $order_by
+     * @param string $password
+     * @param string $dump_path
+     * @return Imperium
+     *
+     * @throws Exception
+     */
+    function instance(string $driver,string $user,string $base,string $root_user,string $root_password,string $table ='',string $btn_class ='btn btn-outline-primary',string $btn_danger_class = 'btn btn-outline-danger',int $fetch_mode = PDO::FETCH_OBJ ,string $order_by = 'desc',string $password = '',string $dump_path = 'dump'): Imperium
+    {
+
+        $connexion          = connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
+        $root_connexion     = connect($driver,$base,$root_user,$root_password,$fetch_mode,$dump_path);
+        $users              = user($root_connexion);
+        $bases              = base($root_connexion);
+        $tables             = table($connexion)->path($dump_path);
+        $query              = query($tables,$connexion);
+        $sql                = $query->set_current_table_name($table);
+        $model              = model($connexion,$tables,$table,$order_by);
+
+        return imperium($bases,$tables,$users,$sql,$model,$connexion,$btn_class,$btn_danger_class);
+    }
+}
+
+if (!exist('query'))
+{
+    function query(Table $table,Connect $connect): Query
+    {
+        return new Query($table,$connect);
+    }
+}
+if (!exist('equal'))
 {
     /**
-     * build a register form conform for laravel
+     * test if two strings are equal
+     *
+     * @param string $first
+     * @param string $second
+     *
+     * @return bool
+     */
+    function equal(string $first,string $second): bool
+    {
+        return strcmp($first,$second) === 0;
+    }
+}
+
+if (!exist('different'))
+{
+    /**
+     * test if first is not equal to second
+     *
+     * @param string $first
+     * @param string $second
+     *
+     * @return bool
+     */
+    function different(string $first,string $second): bool
+    {
+        return strcmp($first,$second) !== 0;
+    }
+}
+if (!exist('register'))
+{
+
+    /**
+     * generate a register form
      *
      * @param string $action
-     * @param string $resetPasswordForm
-     * @param string $validIp
-     * @param string $currentIp
-     * @param string $usernamePlaceholder
-     * @param string $emailPlaceholder
-     * @param string $passwordPlaceholder
-     * @param string $passwordConfirmPlaceholder
-     * @param string $submitText
-     * @param string $submitId
-     * @param bool $multiLang
-     * @param array $supportedLang
-     * @param string $chooseTimeZoneText
-     * @param string $csrfToken
-     * @param string $submitClass
-     * @param string $passwordIcon
-     * @param string $usernameIcon
-     * @param string $emailIcon
-     * @param string $submitIcon
-     * @param string $zonesIcon
-     * @param string $langIcon
+     * @param string $valid_ip
+     * @param string $current_ip
+     * @param string $username_placeholder
+     * @param string $username_success_text
+     * @param string $username_error_text
+     * @param string $email_placeholder
+     * @param string $email_success_text
+     * @param $email_error_text
+     * @param string $password_placeholder
+     * @param string $password_valid_text
+     * @param string $password_invalid_text
+     * @param string $confirm_password_placeholder
+     * @param string $submit_text
+     * @param string $submit_id
+     * @param bool $multiple_languages
+     * @param array $supported_languages
+     * @param string $choose_language_text
+     * @param string $choose_language_valid_text
+     * @param string $choose_language_invalid_text
+     * @param string $select_time_zone_text
+     * @param string $valid_time_zone_text
+     * @param string $time_zone_invalid_text
+     * @param string $csrf_token_field
+     * @param string $submit_button_class
+     * @param string $password_icon
+     * @param string $username_icon
+     * @param string $email_icon
+     * @param string $submit_icon
+     * @param string $time_zone_icon
+     * @param string $lang_icon
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function register(string $action,string $valid_ip,string $current_ip,string $username_placeholder,string $username_success_text,string $username_error_text,string $email_placeholder,string $email_success_text,$email_error_text,string $password_placeholder,string $password_valid_text,string $password_invalid_text,string $confirm_password_placeholder,string $submit_text,string $submit_id,bool $multiple_languages = false,array $supported_languages =[],string $choose_language_text = '',string $choose_language_valid_text ='',string $choose_language_invalid_text = '',string $select_time_zone_text ='',string $valid_time_zone_text= '',string $time_zone_invalid_text = '',string $csrf_token_field = '',string $submit_button_class = 'btn btn-outline-primary',string $password_icon = '<i class="fas fa-key"></i>',string $username_icon = '<i class="fas fa-user"></i>',string $email_icon = '<i class="fas fa-envelope"></i>',string $submit_icon = '<i class="fas fa-user-plus"></i>',string $time_zone_icon = '<i class="fas fa-clock"></i>',string $lang_icon = '<i class="fas fa-globe"></i>')
+    {
+
+        $languages = collection(array('' => $choose_language_text));
+
+        foreach ($supported_languages as $k => $v)
+            $languages->merge([$k => $v]);
+
+        if (equal($valid_ip,$current_ip))
+        {
+            $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate();
+
+            if ($multiple_languages)
+                $form->startRow()->select('locale',$languages->getCollection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->endRow();
+
+           return   $form->startRow()->input(Form::TEXT,'name',$username_placeholder,$username_success_text,$username_error_text,$username_icon,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_success_text,$email_error_text,$email_icon,post('email'),true)->endRowAndNew()
+                ->input(Form::PASSWORD,'password',$password_placeholder,$password_valid_text,$password_invalid_text,$password_icon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_valid_text,$password_invalid_text,  $password_icon,post('password_confirmation'),true)->endRowAndNew()
+                ->submit($submit_text,$submit_button_class,$submit_id,$submit_icon)->endRow()->get();
+
+        }
+        return '';
+    }
+}
+
+if (!exist('query_result'))
+{
+    /**
+     * @param Model $model
+     * @param $mode
+     * @param array $data
+     *
+     * @param array $columns
+     *
+     * @param $success_text
+     * @param $result_empty_text
+     *
+     * @param $table_empty_text
+     * @return string
+     *
+     * @throws Exception
+     */
+    function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text): string
+    {
+        if (equal($mode,'UPDATE'))
+        {
+            $code = '';
+            foreach ($data as $datum)
+                append($code,$datum);
+
+            return $code;
+        }
+        if (is_bool($data) && $data)
+           return html('div',$success_text,'alert alert-success');
+        elseif(empty($model->all()))
+            return html('div',$table_empty_text,'alert alert-danger');
+        else
+           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : collection($data)->print(true,$columns);
+
+    }
+}
+if (!exist('execute_query'))
+{
+    /**
+     * search a value
+     *
+     * @param int $form_grid
+     * @param Model $model
+     * @param Table $table
+     * @param $mode
+     * @param string $column_name
+     * @param string $condition
+     * @param $expected
+     * @param string $current_table_name
+     * @param string $submit_class
+     * @param $submit_update_text
+     * @param string $form_update_action
+     * @return array|bool
+     *
+     * @throws Exception
+     */
+    function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action )
+    {
+
+        if (equal($mode,'UPDATE'))
+        {
+            $code = collection();
+            foreach ($model->where($column_name,html_entity_decode($condition),$expected) as $record)
+            {
+                $id = $table->set_current_table($current_table_name)->get_primary_key();
+                $code->push(form($form_update_action,uniqid())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
+            }
+            return $code->getCollection();
+
+        }
+        if (equal($mode,Query::DELETE))
+        {
+            $data = $model->where($column_name,$condition,$expected);
+            return empty($data) ? $data :  $model->query()->where($column_name, html_entity_decode($condition), $expected)->delete() ;
+        }
+
+
+        return $model->where($column_name,$condition,$expected);
+    }
+}
+
+if (!exist('query_view'))
+{
+    /**
+     * @param int $form_grid
+     * @param string $query_action
+     * @param Model $model
+     * @param Table $instance
+     * @param string $create_record_action
+     * @param string $update_record_action
+     * @param string $create_record_submit_text
+     * @param string $update_record_text
+     * @param string $current_table_name
+     * @param string $expected_placeholder
+     * @param string $superior_text
+     * @param string $superior_or_equal_text
+     * @param string $inferior_text
+     * @param string $inferior_or_equal_text
+     * @param string $different_text
+     * @param string $equal_text
+     * @param string $like_text
+     * @param string $select_mode_text
+     * @param string $remove_mode_text
+     * @param string $update_mode_text
+     * @param string $submit_query_text
+     * @param string $submit_class
+     * @param string $remove_success_text
+     * @param string $record_not_found_text
+     * @param string $table_empty_text
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function query_view(int $form_grid,string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text): string
+    {
+        if (equal($form_grid,0))
+            $form_grid = 2;
+
+        $table = $instance->set_current_table($current_table_name);
+        $columns = $table->get_columns();
+        $condition = array('=' => $equal_text,'!=' => $different_text,'<' => $inferior_text,'>' => $superior_text,'<=' => $inferior_or_equal_text,'>=' =>$superior_or_equal_text,'LIKE' => $like_text);
+
+        return post('mode') ?  form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
+    }
+}
+
+if (!exist('connect'))
+{
+    /**
+     * @param string $driver
+     * @param string $base
+     * @param string $user
+     * @param string $password
+     * @param int $fetch_mode
+     *
+     * @param string $dump_path
+     * @return Connect
+     *
+     */
+    function connect(string $driver,string $base,string $user,string $password,int $fetch_mode,string $dump_path): Connect
+    {
+        return new Connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
+    }
+}
+if (!exist('login'))
+{
+    /**
+     * build a form to login user
+     *
+     * @param string $action
+     * @param string $id
+     * @param string $name_placeholder
+     * @param string $password_placeholder
+     * @param string $submit_text
+     * @param string $submit_class
+     * @param string $submit_id
+     * @param string $csrf
+     * @param string $submit_icon
      *
      * @return string
      */
-    function registerForm(string $action,string $validIp,string $currentIp,string $usernamePlaceholder,string $emailPlaceholder,string $passwordPlaceholder,string $passwordConfirmPlaceholder,string $submitText,string $submitId,bool $multiLang= false,array $supportedLang =[],string $chooseTimeZoneText ='',string $csrfToken = '',string $submitClass = 'btn btn-outline-primary',string $passwordIcon = '<i class="fas fa-key"></i>',string $usernameIcon = '<i class="fas fa-user"></i>',string $emailIcon = '<i class="fas fa-envelope"></i>',string $submitIcon = '<i class="fas fa-user-plus"></i>',string $zonesIcon = '<i class="fas fa-clock"></i>',string $langIcon = '<i class="fas fa-globe"></i>')
+    function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $csrf ='',string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
-
-        if ($validIp === $currentIp)
-        {
-
-            $form = form($action,'register-form')->csrf($csrfToken);
-
-            if ($multiLang)
-                $form->startRow()->select('locale',$supportedLang,$langIcon)->select('zone',zones($chooseTimeZoneText),$zonesIcon)->endRow();
-
-           return   $form->startRow()->input(Form::TEXT,'name',$usernamePlaceholder,$usernameIcon,post('name'),true)->input(Form::EMAIL,'email',$emailPlaceholder,$emailIcon,post('email'),true)->endRowAndNew()
-                ->input(Form::PASSWORD,'password',$passwordPlaceholder,$passwordIcon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$passwordConfirmPlaceholder,$passwordIcon,post('password_confirmation'),true)->endRowAndNew()
-                ->submit($submitText,$submitClass,$submitId,$submitIcon) ->endRow()->get();
-
-        }
-        return 'access denied';
+        return form($action,$id)->csrf($csrf)->startRow()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->endRowAndNew()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->endRow()->get();
     }
 }
 
@@ -93,6 +353,7 @@ if(!exist('collection'))
         return new Collection($array);
     }
 }
+
 if(!exist('def'))
 {
     /**
@@ -115,202 +376,352 @@ if(!exist('def'))
     }
 }
 
-if (!exist('zones'))
+if(!exist('not_def'))
 {
     /**
-     * @param string $text
-     * @return array
+     * check if value are not defined
+     *
+     * @param mixed ...$values
+     *
+     * @return bool
      */
-    function zones(string $text) : array
+    function not_def(...$values): bool
     {
-        $zones = array("/" => $text);
 
-        foreach (DateTimeZone::listIdentifiers() as $x)
-            $zones = merge($zones,[$x=> $x ]);
+       foreach ($values as $value)
+           if (def($value))
+               return false;
 
-        return $zones;
+       return true;
     }
 }
 
+if (!exist('zones'))
+{
+    /**
+     * get all time zone
+     *
+     * @param string $select_time_zone_text
+     *
+     * @return array
+     */
+    function zones(string $select_time_zone_text) : array
+    {
+        $zones = collection(array('' => $select_time_zone_text));
+
+        foreach (DateTimeZone::listIdentifiers() as $x)
+            $zones->merge([$x => $x]);
+
+        return $zones->getCollection();
+    }
+}
+
+if (!exist('web'))
+{
+    /**
+     * @param string $tab_name_for_manage_table
+     * @param string $tab_name_for_manage_users
+     * @param string $tab_name_for_manage_database
+     * @param string $query_view_html
+     * @param string $select_table_view
+     * @param string $records_table_view
+     * @param string $select_user_view
+     * @param string $select_base_view
+     * @param string $manage_database_view
+     * @return string
+     *
+     * @throws Exception
+     */
+    function web(string $tab_name_for_manage_table,string $tab_name_for_manage_users,string $tab_name_for_manage_database,string $query_view_html,string $select_table_view,string $records_table_view,string $select_user_view,string $select_base_view,string $manage_database_view): string
+    {
+        $tables_management = '';
+        $users_management = '';
+        $base_management = '';
+
+        $class ='mt-5 mb-5';
+        append($tables_management,html('div',$select_table_view,$class,'select_table'),html('div',$query_view_html,$class,'query'),html('div',$records_table_view,$class));
+
+        append($users_management,html('div',$select_user_view,$class));
+        append($base_management,html('div',$select_base_view,$class),html('div',$manage_database_view,$class));
+
+        $code = ' <ul class="nav nav-tabs mt-5 mb-5" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="'.$tab_name_for_manage_table.'-tab" data-toggle="tab" href="#'.$tab_name_for_manage_table.'" role="tab" aria-controls="'.$tab_name_for_manage_table.'" aria-selected="false">'.$tab_name_for_manage_table.'</a>
+                    </li>   
+                     <li class="nav-item">
+                        <a class="nav-link" id="'.$tab_name_for_manage_users.'-tab" data-toggle="tab" href="#'.$tab_name_for_manage_users.'" role="tab" aria-controls="'.$tab_name_for_manage_users.'" aria-selected="false">'.$tab_name_for_manage_users.'</a>
+                    </li>    
+                    <li class="nav-item">
+                        <a class="nav-link" id="'.$tab_name_for_manage_database.'-tab" data-toggle="tab" href="#'.$tab_name_for_manage_database.'" role="tab" aria-controls="'.$tab_name_for_manage_database.'" aria-selected="false">'.$tab_name_for_manage_database.'</a>
+                    </li>    
+                </ul>
+                <div class="tab-content">
+                  <div class="tab-pane fade show active" id="'.$tab_name_for_manage_table.'" role="tabpanel" aria-labelledby="'.$tab_name_for_manage_table.'-tab">'.$tables_management.'</div>
+                  <div class="tab-pane fade" id="'.$tab_name_for_manage_users.'" role="tabpanel" aria-labelledby="'.$tab_name_for_manage_users.'-tab">'.$users_management.'</div>
+                  <div class="tab-pane fade" id="'.$tab_name_for_manage_database.'" role="tabpanel" aria-labelledby="'.$tab_name_for_manage_database.'-tab">'.$base_management.'</div>
+                </div>';
+        append($code,bootstrap_js());
+        return $code;
+    }
+}
 
 if (!exist('records'))
 {
+
     /**
-     *
-     * @param string $driver
-     * @param string $class
+     * @param string $html_table_class
      * @param Table $instance
-     * @param string $table
-     * @param $tableIcon
-     * @param string $changeOfTableText
-     * @param string $editPrefix
-     * @param string $deletePrefix
-     * @param string $orderBy
-     * @param string $editText
-     * @param string $deleteText
-     * @param string $editClass
-     * @param string $deleteClass
-     * @param string $editIcon
-     * @param string $deleteIcon
-     * @param int $limit
-     * @param int $current
-     * @param string $paginationUrl
-     * @param PDO $pdo
-     * @param string $saveText
-     * @param string $confirmDeleteText
-     * @param string $startPaginationText
-     * @param string $endPaginationText
-     * @param string $advancedRecordsText
-     * @param string $simpleRecordsText
-     * @param string $formPrefixAction
-     * @param string $managementOfTableText
-     * @param string $tableUrlPrefix
-     * @param bool $columnNameAlignCenter
-     * @param bool $columnNameToUpper
-     * @param string $csrfToken
-     * @param bool $preferPaginationRight
+     * @param string $current_table_name
+     * @param string $edit_url_prefix
+     * @param string $remove_url_prefix
+     * @param string $action_edit_text
+     * @param string $action_remove_text
+     * @param string $edit_button_class
+     * @param string $remove_button_class
+     * @param string $edit_icon
+     * @param string $remove_icon
+     * @param int $limit_records_per_page
+     * @param int $current_page
+     * @param string $pagination_prefix_url
+     * @param Connect $connect
+     * @param string $action_save_text
+     * @param string $confirm_before_remove_text
+     * @param string $start_pagination_text
+     * @param string $end_pagination_text
+     * @param string $advanced_view_tab_text
+     * @param string $simply_view_tab_text
+     * @param string $form_prefix_url
+     * @param string $table_view_bab_text
+     * @param string $table_url_prefix
+     * @param string $choose_text
+     * @param bool $align_column_center
+     * @param bool $column_to_upper
+     * @param string $csrf_token_field
+     * @param bool $pagination_to_right
      * @param bool $framework
-     * @param bool $preferForm
-     * @param string $separator
-     * @param int $textareaRow
+     * @param bool $advanced_view_default
+     * @param string $url_separator
+     * @param int $textarea_row
+     * @param string $table_icon
+     * @param string $order_by
      *
      * @return string
      *
      * @throws Exception
      */
-    function records(string $driver, string $class, Table $instance, string $table,$tableIcon, string $changeOfTableText,string $editPrefix, string $deletePrefix, string $orderBy, string $editText, string $deleteText, string $editClass, string $deleteClass, string $editIcon, string $deleteIcon, int $limit, int $current, string $paginationUrl, PDO $pdo, string $saveText, string $confirmDeleteText, string $startPaginationText, string $endPaginationText, string $advancedRecordsText, string $simpleRecordsText, string $formPrefixAction,string $managementOfTableText,string $tableUrlPrefix,bool $columnNameAlignCenter, bool $columnNameToUpper,string $csrfToken = '', bool $preferPaginationRight = true, bool $framework = false, bool $preferForm = true,  string $separator = '/',int $textareaRow = 1): string
+    function records(
+        string $html_table_class, Table $instance, string $current_table_name,
+        string $edit_url_prefix, string $remove_url_prefix, string $action_edit_text,
+        string $action_remove_text, string $edit_button_class, string $remove_button_class,
+        string $edit_icon, string $remove_icon, int $limit_records_per_page, int $current_page,
+        string $pagination_prefix_url, Connect $connect, string $action_save_text,
+        string $confirm_before_remove_text, string $start_pagination_text,
+        string $end_pagination_text, string $advanced_view_tab_text, string $simply_view_tab_text,
+        string $form_prefix_url,string $table_view_bab_text,string $table_url_prefix,string $choose_text,bool $align_column_center,
+        bool $column_to_upper,string $csrf_token_field = '', bool $pagination_to_right = true, bool $framework = false,
+        bool $advanced_view_default = false,  string $url_separator = '/',int $textarea_row = 1, string $table_icon ='<i class="fas fa-table"></i>',string $order_by = 'desc'): string
     {
-       return Records::show( $driver, $class,$instance, $table,$tableIcon, $changeOfTableText,$editPrefix,  $deletePrefix,   $orderBy,   $editText,   $deleteText,   $editClass,   $deleteClass,   $editIcon,   $deleteIcon,   $limit,   $current,   $paginationUrl,   $pdo,   $saveText,   $confirmDeleteText,   $startPaginationText,   $endPaginationText,   $advancedRecordsText,   $simpleRecordsText,   $formPrefixAction,  $managementOfTableText,  $tableUrlPrefix,  $columnNameAlignCenter,   $columnNameToUpper,  $csrfToken  ,   $preferPaginationRight ,   $framework,   $preferForm,    $separator , $textareaRow );
+       return Records::show( $html_table_class,$instance, $current_table_name,
+                            $edit_url_prefix, $remove_url_prefix,$action_edit_text,
+                            $action_remove_text , $edit_button_class,   $remove_button_class,
+                            $edit_icon,$remove_icon, $limit_records_per_page,   $current_page,
+                            $pagination_prefix_url, $connect,   $action_save_text,
+                            $confirm_before_remove_text,   $start_pagination_text,
+                            $end_pagination_text,   $advanced_view_tab_text,   $simply_view_tab_text,
+                            $form_prefix_url,  $table_view_bab_text,  $table_url_prefix, $choose_text,$align_column_center,
+                            $column_to_upper,  $csrf_token_field ,$pagination_to_right , $framework,
+                            $advanced_view_default ,  $url_separator , $textarea_row ,$table_icon ,  $order_by);
     }
 }
 
 
-if (!exist('selectTable'))
+if (!exist('tables_select'))
 {
     /**
-     * generate a form to checkout on a new table table
-     *
      * @param Table $instance
+     * @param string $url_prefix
+     * @param string $current_table_name
+     * @param string $choose_text
+     * @param bool $use_a_redirect_select
+     * @param string $csrf_token_field
+     * @param string $separator
+     * @param string $icon
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function tables_select(Table $instance, string $url_prefix, string $current_table_name, string $choose_text, bool $use_a_redirect_select, string $csrf_token_field = '', string $separator = '/', string $icon = '<i class="fas fa-table"></i>'): string
+    {
+
+        $tables = collection(array('' => $choose_text));
+
+        foreach ($instance->show() as $x)
+        {
+            if (different($x,$current_table_name))
+                $tables->merge(["$url_prefix$separator$x" => $x]);
+
+        }
+
+        return $use_a_redirect_select ? form('',uniqid())->startRow()->csrf($csrf_token_field)->redirectSelect('table',$tables->getCollection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf_token_field)->startRow()->select('table',$tables->getCollection(),$icon)->endRow()->get();
+     }
+}
+
+if (!exist('users_select'))
+{
+    /**
+     * build a form to select an user
+     *
+     * @param Users $instance
      * @param string $urlPrefix
-     * @param string $currentTable
-     * @param string $changeOfTableText
-     * @param int $paginationLimit
+     * @param string $currentUser
+     * @param string $chooseText
+     * @param bool $use_a_redirect_select
      * @param string $csrf
      * @param string $separator
      * @param string $icon
      *
      * @return string
+     *
+     * @throws Exception
      */
-    function selectTable(Table $instance,string $urlPrefix,string $currentTable,string $changeOfTableText,int $paginationLimit,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-table"></i>'): string
+    function users_select(Users $instance,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-user"></i>'): string
     {
-        $tables =  [ '#' =>  $changeOfTableText ];
+
+        $users = collection(array('' => $chooseText));
 
         foreach ($instance->show() as $x)
         {
-            if ($x != $currentTable)
-            {
-                $tables = merge($tables,["$urlPrefix$separator$x" => $x]);
-            }
+            if (different($x,$currentUser))
+                $users->merge(["$urlPrefix$separator$x" => $x]);
         }
 
-        return '<div class="row mt-5"> <div class="col">'. form('',uniqid())->csrf($csrf)->redirectSelect('table',$tables,$icon)->end().'</div> <div class="col">  <div class="form-group"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div><input type="number" class="form-control" min="1" value="'.$paginationLimit.'" onchange="location = this.value"></div></div> </div></div>';
+        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->startRow()->redirectSelect('users',$users->getCollection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('users',$users->getCollection(),$icon)->endRow()->get();
      }
 }
 
-if (!exist('simpleView'))
+
+if (!exist('bases_select'))
 {
     /**
-     * generate an simply view to manage records
+     * build a form to select a base
      *
-     * @param string $table
-     * @param Table $instance
-     * @param array $records
-     * @param string $selectTable
-     * @param string $tableClass
-     * @param string $removeText
-     * @param string $removeConfirm
-     * @param string $removeBtnClass
-     * @param string $removeUrl
-     * @param string $removeIcon
-     * @param string $editText
-     * @param string $editUrl
-     * @param string $editClass
-     * @param string $editIcon
-     * @param string $pagination
-     * @param bool $columnAlignCenter
-     * @param bool $columnToUpper
-     * @param bool $preferPaginationRight
+     * @param Base $instance
+     * @param string $urlPrefix
+     * @param string $currentBase
+     * @param string $chooseText
+     * @param bool $use_a_redirect_select
+     * @param string $csrf
+     * @param string $separator
+     * @param string $icon
      *
      * @return string
      *
      * @throws Exception
      */
-    function simpleView(string $table, Table $instance , array $records , string $selectTable,string $tableClass,string $removeText,string $removeConfirm,string $removeBtnClass,string $removeUrl,string $removeIcon,string $editText,string $editUrl,string $editClass,string $editIcon,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $preferPaginationRight = true): string
+    function bases_select(Base $instance,string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
     {
-        $instance = $instance->setName($table);
 
-        $columns  = $instance->getColumns();
-        $primary  = $instance->primaryKey();
+        $bases = collection(array('' => $chooseText));
 
-        if(is_null($primary))
-            throw new Exception('We have not found a primary key');
+        foreach ($instance->show() as $x)
+        {
+            if (different($x, $currentBase))
+                $bases->merge(["$urlPrefix$separator$x" => $x]);
+
+        }
+
+        return $use_a_redirect_select ?  form('',uniqid())->startRow()->csrf($csrf)->redirectSelect('bases',$bases->getCollection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('bases',$bases->getCollection(),$icon)->endRow()->get();
+     }
+}
+
+if (!exist('simply_view'))
+{
+    /**
+     * generate an simply view to manage records
+     *
+     * @param string $current_table_name
+     * @param Table $instance
+     * @param array $records
+     * @param string $html_table_class
+     * @param string $action_remove_text
+     * @param string $before_remove_text
+     * @param string $remove_button_class
+     * @param string $remove_url_prefix
+     * @param string $remove_icon
+     * @param string $action_edit_text
+     * @param string $action_edit_url_prefix
+     * @param string $edit_button_class
+     * @param string $edit_icon
+     * @param string $pagination
+     * @param bool $align_column_center
+     * @param bool $column_to_upper
+     * @param bool $pagination_to_right
+     * @return string
+     *
+     * @throws Exception
+     */
+    function simply_view(string $current_table_name, Table $instance , array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right = true): string
+    {
+        $instance = $instance->set_current_table($current_table_name);
+
+        $columns  = $instance->get_columns();
+        $primary  = $instance->get_primary_key();
+
+        $code = '';
 
 
-        $code = $selectTable.'<div class="table-responsive mt-4"><table class="'.$tableClass.'"><thead><tr>';
-        $code .= '<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
+        append($code,'<div class="table-responsive mt-4"><table class="'.$html_table_class.'"><thead><tr>');
+        append($code,'<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>');
 
         foreach ($columns as  $x)
         {
-            if ($x != $primary)
-            {
-                $code.= '<th  class="';
-                if ($columnAlignCenter) {  $code .= ' text-center'; }
 
-                if ($columnToUpper) {  $code .= ' text-uppercase'; }
+            append($code,'<th  class="');
+            if ($align_column_center) {  append($code,' text-center'); }
 
-                $code .= '">'.$x.'</th>';
-            }
+            if ($column_to_upper)   {  append($cpode,' text-uppercase') ; }
+
+            append($code, '">'.$x.'</th>');
+
         }
-        $code .= '<th  class="';
+        append($code, '<th  class="');
 
-        if ($columnAlignCenter) {  $code.= ' text-center'; }
+        if ($align_column_center) {  append($code,' text-center'); }
 
-        if ($columnToUpper) {  $code.= ' text-uppercase'; }
+        if ($column_to_upper)   {  append($cpode,' text-uppercase') ; }
 
-        $code.= '">'.$editText.'</th>';
+        append($code, '">'.$action_edit_text.'</th>');
 
-        $code .= '<th  class="';
+        append( $code,'<th  class="');
 
-        if ($columnAlignCenter) {  $code .= ' text-center'; }
+        if ($align_column_center) {  append($code,' text-center'); }
 
-        if ($columnToUpper) { $code .= ' text-uppercase'; }
+        if ($column_to_upper)   {  append($cpode,' text-uppercase') ; }
 
-        $code.= '">'.$removeText.'</th></tr></thead><tbody>';
+        append($code,'">'.$action_remove_text.'</th></tr></thead><tbody>');
 
         foreach ($records as $record)
         {
-            $code .= '<tr>';
+            append($code, '<tr>');
 
             foreach ($columns as $k => $column)
             {
-
                 if (is_null($record->$column))
                     $record->$column = '';
 
-                if($column != $primary)
-                {
-                    $code .= '<td> '.$record->$column.'</td>';
-                }
+                append($code, '<td> '.$record->$column.'</td>');
+
             }
-            $code .= '<td> <a href="'.$editUrl.'/'.$record->$primary.'" class="'.$editClass.'">'.$editIcon.'</a></td><td> <a href="'.$removeUrl.'/'.$record->$primary.'" class="'.$removeBtnClass.'" data-confirm="'.$removeConfirm.'" onclick="sure(event,this.attributes[2].value)">'.$removeIcon.' </a></td></tr>';
+            append($code ,'<td> <a href="'.$action_edit_url_prefix.'/'.$record->$primary.'" class="'.$edit_button_class.'">'.$edit_icon.'</a></td><td> <a href="'.$remove_url_prefix.'/'.$record->$primary.'" class="'.$remove_button_class.'" data-confirm="'.$before_remove_text.'" onclick="sure(event,this.attributes[2].value)">'.$remove_icon.' </a></td></tr>');
         }
 
-        $code.= '</tbody></table></div>';
+        append($code, '</tbody></table></div>');
 
-        if ($preferPaginationRight)
-            $code .=    '<div class="ml-auto mt-5 mb-5">'.$pagination.'</div>';
+        if ($pagination_to_right)
+            append($code ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div>');
         else
-            $code .=     '<div class="mr-auto mt-5 mb-5">'.$pagination.'</div>';
+            append($code ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
 
         return $code;
 
@@ -319,62 +730,70 @@ if (!exist('simpleView'))
 
 
 
-if (!exist('alterTable'))
+if (!exist('tables_view'))
 {
     /**
     * generate alter table view
     *
-    * @param string $table
     * @param Table $instance
     *
     * @return string
     */
-    function alterTableView(string $table, Table $instance): string
+    function tables_view( Table $instance): string
     {
         return '';
     }
 
 }
-if (!exist('advancedView'))
+
+if (!exist('users_view'))
 {
-
-
     /**
-     * generate an advanced view to manage records
+     * generate a view to manage users
      *
-     * @param string $table
+     * @param Users $instance
+     *
+     * @return string
+     */
+    function users_view(Users $instance): string
+    {
+        return '';
+    }
+
+}
+if (!exist('advanced_view'))
+{
+    /**
+     * @param string $current_table
      * @param Table $instance
      * @param array $records
-     * @param string $action
-     * @param string $selectTable
-     * @param string $saveText
-     * @param string $editText
-     * @param string $btnEditClass
-     * @param string $removeUrl
-     * @param string $removeClassBtn
-     * @param string $removeText
-     * @param string $confirmRemoveText
+     * @param string $form_action
+     * @param string $select_table_code
+     * @param string $action_save_text
+     * @param string $action_edit_text
+     * @param string $edit_text_class
+     * @param string $remove_url_prefix
+     * @param string $remove_button_class
+     * @param string $remove_text
+     * @param string $text_before_remove
      * @param string $pagination
-     * @param bool $columnAlignCenter
-     * @param bool $columnToUpper
-     * @param bool $paginationPreferRight
-     * @param string $csrf
-     * @param int $textareaRow
+     * @param bool $align_column_center
+     * @param bool $column_to_upper
+     * @param bool $pagination_to_right
+     * @param string $csrf_token_field
+     * @param int $textarea_row
      *
      * @return string
      *
      * @throws Exception
      */
-    function advancedView(string $table, Table $instance,array $records,string $action,string $selectTable,string $saveText,string $editText,string $btnEditClass,string $removeUrl,string $removeClassBtn,string $removeText,string $confirmRemoveText,string $pagination,bool $columnAlignCenter,bool $columnToUpper,bool $paginationPreferRight,string $csrf ='',int  $textareaRow =  1): string
+    function advanced_view(string $current_table, Table $instance,array $records,string $form_action,string $select_table_code,string $action_save_text,string $action_edit_text,string $edit_text_class,string $remove_url_prefix,string $remove_button_class,string $remove_text,string $text_before_remove,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right,string $csrf_token_field ='',int  $textarea_row =  1): string
     {
 
-        $instance = $instance->setName($table);
-        $types    = $instance->getColumnsTypes();
-        $columns  = $instance->getColumns();
-        $primary  = $instance->primaryKey();
-
-        if(is_null($primary))
-            throw new Exception('We have not found a primary key');
+        $instance = $instance->set_current_table($current_table);
+        $types    = $instance->get_columns_types();
+        $columns  = $instance->get_columns();
+        $primary  = $instance->get_primary_key();
 
         $number = array(
             'smallint',
@@ -407,34 +826,38 @@ if (!exist('advancedView'))
 
 
 
-        $code = $selectTable;
-        $code.= '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();   const id = btn.attr("data-form-id"); if (btn.text() !== btn.attr("data-edit")){  $("#"+id).submit(); }  if (btn.text() === btn.attr("data-edit")){ btn.text(btn.attr("data-save"))}else{btn.text(btn.attr("data-edit"))} tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>';
 
-        $code .= ' <div class="table-responsive"><div class="table"><div class="thead"><div class="tr">';
+        $code = '';
+
+        append($code,html('div',$select_table_code,'mt-5 mb-5'));
+
+        append($code, '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();   const id = btn.attr("data-form-id"); if (btn.text() !== btn.attr("data-edit")){  $("#"+id).submit(); }  if (btn.text() === btn.attr("data-edit")){ btn.text(btn.attr("data-save"))}else{btn.text(btn.attr("data-edit"))} tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>');
+
+        append( $code ,' <div class="table-responsive"><div class="table"><div class="thead"><div class="tr">');
 
         foreach ($columns as $column)
         {
-            if ($column != $primary)
+            if (different($column,$primary))
             {
-                $code .= ' <div class="td ';
-                if ($columnToUpper)
-                    $code .= ' text-uppercase';
+                append($code,' <div class="td ');
+                if ($column_to_upper)
+                    append($code,' text-uppercase');
 
-                if ($columnAlignCenter)
-                    $code.= ' text-center';
+                if ($align_column_center)
+                    append($code,' text-center');
 
-                $code.= '">'.$column.'</div>';
+                append($code,'">'.$column.'</div>');
             }
         }
 
-        $code.= '<div class="td">'.$editText.'</div><div class="td">'.$removeText.'</div></div></div> <div class="tbody">';
+        append($code,'<div class="td">'.$action_edit_text.'</div><div class="td">'.$remove_text.'</div></div></div> <div class="tbody">');
 
 
         foreach ($records as $record)
         {
-            $id = uniqid().sha1($table.md5($record->$primary));
+            $id = uniqid().sha1($current_table.md5($record->$primary));
 
-            $code.= '<form class="tr" id="'.$id.'" method="post" action="'.$action.'">'.$csrf.'';
+           append($code,'<form class="tr" id="'.$id.'" method="post" action="'.$form_action.'">'.$csrf_token_field.'');
 
             foreach ($columns as $k => $column)
             {
@@ -443,7 +866,7 @@ if (!exist('advancedView'))
                 if (is_null($record->$column))
                     $record->$column = '';
 
-                if($column != $primary)
+                if(different($column,$primary))
                 {
                     $type = explode('(',$type);
                     $type = $type[0];
@@ -451,69 +874,61 @@ if (!exist('advancedView'))
                     switch ($type)
                     {
                         case has($type,$number):
-                            $code .= '<div class="td"><span class="d-none td-input"><input type="number" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>';
+                           append($code , '<div class="td"><span class="d-none td-input"><input type="number" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>');
                         break;
                         case has($type,$date):
-                            $code .= '<div class="td"><span class="d-none td-input"><input type="datetime" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>';
+                            append($code ,'<div class="td"><span class="d-none td-input"><input type="datetime" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>');
                         break;
                         default:
-                            $code.= '<div class="td"><span class="d-none td-input"><textarea name="'.$column.'" name="'.$column.'"  class="form-control form-control-lg"  rows="'.$textareaRow.'">'.$record->$column.'</textarea></span> <span class="record"> '.$record->$column.'</span></div>';
+                            append($code,'<div class="td"><span class="d-none td-input"><textarea name="'.$column.'" name="'.$column.'"  class="form-control form-control-lg"  rows="'.$textarea_row.'">'.$record->$column.'</textarea></span> <span class="record"> '.$record->$column.'</span></div>');
                         break;
                     }
                 } else {
-                    $code.= '  <div class="td d-none"><input name="'.$primary.'"  value="'.$record->$primary.'"></div>';
-                    $code .= '  <div class="td d-none"><input name="table"  value="'.$table.'"></div>';
+                   append( $code,'  <div class="td d-none"><input name="'.$primary.'"  value="'.$record->$primary.'"></div>  <div class="td d-none"><input name="table"  value="'.$current_table.'"></div>');
+
                 }
             }
 
-            $code .= '<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$btnEditClass.'" data-form-id="'.$id.'" data-edit="'.$editText.'" data-save="'.$saveText.'" >'.$editText.'</button> </div><div class="td  remove btn-group"><a href="'.$removeUrl.'/'.  $record->$primary.'" onclick="sure(event,this.attributes[2].value)"  data-confirm="'.$confirmRemoveText.'" class="'.$removeClassBtn.'" data-form-id="'.$id.'">'.$removeText.'</a> </div></form>';
+            append($code,'<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$edit_text_class.'" data-form-id="'.$id.'" data-edit="'.$action_edit_text.'" data-save="'.$action_save_text.'" >'.$action_edit_text.'</button> </div><div class="td  remove btn-group"><a href="'.$remove_url_prefix.'/'.  $record->$primary.'" onclick="sure(event,this.attributes[2].value)"  data-confirm="'.$text_before_remove.'" class="'.$remove_button_class.'" data-form-id="'.$id.'">'.$remove_text.'</a> </div></form>');
         }
 
-
-        $code.= '</div></div></div>';
-
-        if ($paginationPreferRight)
-            $code .=    '<div class="ml-auto mt-5 mb-5">'.$pagination.'</div>';
+        append($code, '</div></div></div>');
+        if ($pagination_to_right)
+            append($code ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div>');
         else
-            $code .=     '<div class="mr-auto mt-5 mb-5">'.$pagination.'</div>';
+            append($code ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
 
         return $code;
     }
 }
-if (!exist('getRecords'))
+if (!exist('get_records'))
 {
     /**
-     * get records
-     *
-     * separate record code in multiples methods
-     *
      * @param Table $instance
-     * @param string $table
-     * @param int $current
-     * @param int $limit
-     * @param PDO $pdo
+     * @param string $current_table_name
+     * @param int $current_page
+     * @param int $limit_per_page
+     * @param Connect $connect
      * @param bool $framework
-     * @param string $orderBy
+     * @param string $order_by
      *
      * @return array
      *
      * @throws Exception
      */
-    function getRecords(Table $instance,string $table,int $current,int $limit,PDO $pdo,bool $framework,string $orderBy = 'DESC')
+    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,bool $framework,string $order_by = 'DESC')
     {
 
-        $instance = $instance->setName($table);
 
-        $key = $instance->primaryKey();
-        if (is_null($key))
-            throw new Exception('We have not found a primary key');
+        $instance = $instance->set_current_table($current_table_name);
 
-        $offset = ($limit * $current) - $limit;
-        $driver = $instance->getDriver();
+        $key = $instance->get_primary_key();
+
+        $offset = ($limit_per_page * $current_page) - $limit_per_page;
+
+
         if ($framework)
         {
-
-
             $parts = explode('/',server('REQUEST_URI'));
             $search = has('search',$parts);
             if ($search)
@@ -522,19 +937,17 @@ if (!exist('getRecords'))
                 $like = '';
 
             if (empty($like))
-                $records = sql($table)->setPdo($pdo)->limit($limit, $offset)->orderBy($key,$orderBy)->getRecords();
+                $records = sql($current_table_name,query($instance,$connect))->connect($connect)->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
             else
-                $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance, $like)->orderBy($key,$orderBy)->getRecords();
+                $records = sql($current_table_name,\query($instance,$connect))->connect($connect)->like($instance, $like)->order_by($key,$order_by)->get();
 
         }else
         {
-
-
             $like = get('search');
             if (empty($like))
-                $records = sql($table)->setPdo($pdo)->limit($limit,$offset)->orderBy($key,$orderBy)->getRecords();
+                $records = sql($current_table_name,query($instance,$connect))->connect($connect)->limit($limit_per_page,$offset)->order_by($key,$order_by)->get();
             else
-                $records = sql($table)->setDriver($driver)->setPdo($pdo)->like($instance,$like)->orderBy($key,$orderBy)->getRecords();
+                $records = sql($current_table_name,query($instance,$connect))->connect($connect)->like($instance,$like)->order_by($key,$order_by)->get();
         }
 
         return $records;
@@ -542,9 +955,12 @@ if (!exist('getRecords'))
 }
 
 
-if (!exist('bootstrapJs'))
+if (!exist('bootstrap_js'))
 {
-    function bootstrapJs(): string
+    /**
+     * @return string
+     */
+    function bootstrap_js(): string
     {
         return '<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script><script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>';
     }
@@ -571,7 +987,7 @@ if (!exist('_html'))
                 {
                     echo htmlspecialchars($x, ENT_QUOTES, 'UTF-8', $secure);
                 } else {
-                    echo $x;
+                    echo html_entity_decode($x,ENT_QUOTES,'UTF-8');
                 }
             }
 
@@ -582,12 +998,15 @@ if (!exist('_html'))
 if (!exist('html'))
 {
     /**
+     * generate an element between the content
+     *
      * @param string $element
      * @param string $content
      * @param string $class
      * @param string $id
      *
      * @return string
+     *
      * @throws Exception
      */
     function html(string $element, string $content ,string $class = '',string $id= ''): string
@@ -646,12 +1065,16 @@ if (!exist('html'))
 
 if (!exist('submit'))
 {
-    function submit(string $key,string $method = 'POST')
+    /**
+     * verify if a form is submit
+     *
+     * @param string $key
+     * @param bool $post
+     * @return bool
+     */
+    function submit(string $key,bool $post = true): bool
     {
-        if ($method === 'POST')
-            return !empty($_POST[$key]) && isset($_POST[$key]);
-
-        return !empty($_GET[$key]) && isset($_GET[$key]);
+        return $post ? isset($_POST[$key])  : isset($_GET[$key])  ;
     }
 }
 if (!exist('bootswatch'))
@@ -666,7 +1089,7 @@ if (!exist('bootswatch'))
      */
     function bootswatch(string $theme = 'bootstrap',string $version = '4.0.0'): string
     {
-        if ($theme == "bootstrap")
+        if (equal($theme,"bootstrap"))
             return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/'.$version.'/css/bootstrap.min.css">';
     
         return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/'.$version.'/'.$theme.'/bootstrap.min.css">';
@@ -680,30 +1103,33 @@ if (!exist('push'))
      * push one or more elements onto the end of array
      *
      * @param array $array
-     * @param mixed $value
-     *
-     * @return int
+     * @param  $values
      */
-    function push(array &$array,$value): int
+    function push(array &$array,...$values)
     {
-        return array_push($array,$value);
+
+        foreach ($values as $value)
+            array_push($array,$value);
     }
 }
 
-if (!exist('pop'))
+if (!exist('stack'))
 {
     /**
-     * pop the element off the end of array
+     * push one or more elements onto the end of array
      *
      * @param array $array
-     *
-     * @return mixed
+     * @param  $values
      */
-    function pop(array &$array)
+    function stack(array &$array,...$values)
     {
-        return array_pop($array);
+
+        foreach ($values as $value)
+           array_unshift($array,$value);
     }
 }
+
+
 
 if (!exist('has'))
 {
@@ -744,13 +1170,12 @@ if (!exist('merge'))
      * merge two array
      *
      * @param array $array
-     * @param array $second
-     *
-     * @return array
+     * @param array[] $to
      */
-    function merge(array $array,array $second): array
+    function merge(array &$array,array ...$to)
     {
-        return array_merge($array,$second);
+        foreach ($to as $item)
+            $array = array_merge($array,$item);
     }
 }
 
@@ -888,22 +1313,25 @@ if (!exist('generate'))
 if (!exist('root'))
 {
     /**
-     * get the connexion with all rights
-     *
      * @param string $driver
      * @param string $user
      * @param string $password
-     * @return null|PDO
+     *
+     * @param string $dump_path
+     * @param int $pdo_mode
+     * @return Connect
+     *
      */
-    function root(string $driver,string $user,string $password = '')
+    function root(string $driver,string $user,string $password = '',string $dump_path = 'dump',$pdo_mode = PDO::FETCH_OBJ): Connect
     {
+
         switch ($driver)
         {
-            case Connexion::MYSQL:
-                return connect($driver,'',$user,$password);
+            case Connect::MYSQL:
+                return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
             break;
-            case Connexion::POSTGRESQL:
-                return connect($driver,'',$user,$password);
+            case Connect::POSTGRESQL:
+                return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
             break;
             default:
                 return null;
@@ -918,30 +1346,29 @@ if (!exist('collation'))
     /**
      * get all collation
      *
-     * @param string $driver
-     * @param PDO    $connexion
+     * @param Connect $connexion
      *
      * @return array
+     *
+     * @throws Exception
      */
-    function collation(string $driver,PDO $connexion): array
+    function collation(Connect $connexion): array
     {
-        $collation = array();
+        $collation = collection();
 
-        switch ($driver)
+        switch ($connexion->get_driver())
         {
-            case Connexion::MYSQL:
-                foreach (req($connexion,"SHOW COLLATION") as $char)
-                    push($collation,$char->Collation);
+            case Connect::MYSQL:
+                foreach ($connexion->request("SHOW COLLATION") as $char)
+                        $collation->push(current($char));
             break;
-            case Connexion::POSTGRESQL:
-                foreach (req($connexion,"SELECT collname FROM pg_collation") as $char)
-                    push($collation,$char->collname);
+            case Connect::POSTGRESQL:
+                foreach ($connexion->request("SELECT collname FROM pg_collation") as $char)
+                    $collation->push(current($char));
             break;
-            default:
-                return $collation;
-            break;
+
         }
-        return $collation;
+        return $collation->getCollection();
     }
 }
 if (!exist('charset'))
@@ -949,30 +1376,29 @@ if (!exist('charset'))
     /**
      * get all charset
      *
-     * @param string $driver
-     * @param PDO    $connexion
+     * @param Connect $connexion
      *
      * @return array
+     *
+     * @throws Exception
      */
-    function charset(string $driver,PDO $connexion): array
+    function charset(Connect $connexion): array
     {
-        $encoding = array();
-        switch ($driver)
+        $encoding = collection();
+        switch ($connexion->get_driver())
         {
-            case Connexion::MYSQL:
-                foreach (req($connexion,"SHOW CHARACTER SET") as $char)
-                    push($encoding,$char->Charset);
+            case Connect::MYSQL:
+                foreach ($connexion->request('SHOW CHARACTER SET') as $char)
+                    $encoding->push(current($char));
             break;
 
-            case Connexion::POSTGRESQL:
-                 foreach (req($connexion,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1") as $char)
-                    push($encoding,$char->pg_encoding_to_char);
-            break;
-            default:
-                return $encoding;
+            case Connect::POSTGRESQL:
+                foreach ($connexion->request('SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1') as $char)
+                    $encoding->push(current($char));
+
             break;
         }
-        return $encoding;
+        return $encoding->getCollection();
     }
 }
 
@@ -1015,18 +1441,13 @@ if (!exist('base'))
     /**
      * manage database
      *
-     * @param string $driver
-     * @param string $base
-     * @param string $username
-     * @param string $password
-     * @param string $dumpPath
-     * @param array  $hidden
+     * @param Connect $connect
      *
      * @return Base
      */
-    function base(string $driver,string $base,string $username,string $password,string $dumpPath,array $hidden = [])
+    function base(Connect $connect): Base
     {
-        return Base::manage()->setName($base)->setDriver($driver)->setUser($username)->setPassword($password)->setDumpDirectory($dumpPath)->setHidden($hidden);
+        return new Base($connect);
     }
 }
 
@@ -1035,34 +1456,13 @@ if (!exist('user'))
     /**
      * manage users
      *
-     * @param string $driver
-     * @param string $username
-     * @param string $password
-     * @param array  $hidden
+     * @param Connect $connect
      *
      * @return Users
      */
-    function user(string $driver,string $username,string $password,array $hidden = []) : Users
+    function user(Connect $connect) : Users
     {
-        return Users::manage()->setDriver($driver)->setName($username)->setPassword($password)->setHidden($hidden);
-    }
-}
-
-if (!exist('connect'))
-{
-    /**
-     * connect to a database
-     *
-     * @param string $driver
-     * @param string $database
-     * @param string $username
-     * @param string $password
-     *
-     * @return null|PDO
-     */
-    function connect(string $driver,string $database = '',string $username = '',$password = '')
-    {
-        return Connexion::connect()->setDriver($driver)->setDatabase($database)->setUser($username)->setPassword($password)->getConnexion();
+        return new Users($connect);
     }
 }
 
@@ -1071,17 +1471,17 @@ if (!exist('pass'))
     /**
      * update user password
      *
-     * @param string $driver
+     * @param Connect $connect
      * @param string $username
-     * @param string $current
-     * @param string $new
-     *
+     * @param string $new_password
      * @return bool
+     *
+     * @throws Exception
      */
-    function pass(string $driver,string $username,string $current,string $new) : bool
+    function pass(Connect $connect,string $username ,string $new_password) : bool
     {
 
-        return user($driver, $username, $current)->updatePassword($username,$new);
+        return user($connect)->update_password($username,$new_password);
 
     }
 }
@@ -1123,44 +1523,6 @@ if (!exist('device'))
     }
 }
 
-if (!exist('getDevice'))
-{
-    /**
-     * get device
-     *
-     * @return string
-     */
-    function getDevice(): string
-    {
-        return (new Device())->getName();
-    }
-}
-
-if (!exist('getOs'))
-{
-    /**
-     * get operating system
-     *
-     * @return string
-     */
-    function getOs(): string
-    {
-        return (new Os())->getName();
-    }
-}
-
-if (!exist('getBrowser'))
-{
-    /**
-     * get browser name
-     *
-     * @return string
-     */
-    function getBrowser(): string
-    {
-        return (new Browser())->getName();
-    }
-}
 
 if (!exist('browser'))
 {
@@ -1180,7 +1542,7 @@ if (!exist('browser'))
     }
 }
 
-if (!exist('isBrowser'))
+if (!exist('is_browser'))
 {
     /**
      * check if is name is browser
@@ -1189,20 +1551,20 @@ if (!exist('isBrowser'))
      *
      * @return bool
      */
-    function isBrowser(string $name): bool
+    function is_browser(string $name): bool
     {
         return (new Browser())->isBrowser($name);
     }
 }
 
-if (!exist('isMobile'))
+if (!exist('is_mobile'))
 {
     /**
      * check if device is mobile
      *
      * @return bool
      */
-    function isMobile(): bool
+    function is_mobile(): bool
     {
         return (new Os())->isMobile();
     }
@@ -1211,35 +1573,104 @@ if (!exist('isMobile'))
 if (!exist('create'))
 {
     /**
-     * create a new database
+     * create a new database or user or table
      *
-     * @param string $driver
-     * @param string $database
-     * @param string $charset
-     * @param string $collation
-     * @param PDO    $connexion
+     * @param Imperium $imperium
      *
      * @return bool
      */
-    function create(string $driver,string $database,string $charset,string $collation,PDO $connexion): bool
+    function create(Imperium $imperium): bool
     {
 
-        switch ($driver)
+    }
+}
+
+if (!exist('databases_view'))
+{
+    /**
+     * create a view to create  database, user or table
+     *
+     * @param Imperium $imperium
+     *
+     * @param $create_database_action
+     * @param $name_of_database_placeholder
+     * @param $create_database_submit
+     *
+     * @param $database_was_created_successfully
+     * @param $database_creation_failed
+     * @param string $database_already_exist
+     * @param string $drop_database_submit_text
+     * @param string $database_was_removed_successfully
+     * @param string $remove_database_failed
+     * @return string
+     *
+     * @throws Exception
+     */
+    function databases_view(Imperium $imperium,$create_database_action,$name_of_database_placeholder,$create_database_submit,$database_was_created_successfully,$database_creation_failed,string $database_already_exist,string $drop_database_submit_text,string $database_was_removed_successfully,string $remove_database_failed): string
+    {
+        $code = '';
+        if (post('name'))
         {
-            case Connexion::MYSQL:
-                return execute($connexion,"CREATE DATABASE IF NOT EXISTS $database DEFAULT CHARACTER SET $charset DEFAULT COLLATE $collation");
-            break;
-            case Connexion::POSTGRESQL:
-                return execute($connexion,"CREATE DATABASE $database ENCODING '$charset' LC_COLLATE='$collation' LC_CTYPE='$collation' TEMPLATE=template0");
-            break;
-            case Connexion::SQLITE:
-                 return new PDO("sqlite:$database") instanceof PDO;
-            break;
-            default:
-                return false;
-            break;
+            $base = post('name');
+            if ($imperium->database_exist($base))
+            {
+                append($code,html('div',$database_already_exist,'alert alert-danger'));
+            }else{
+                if ($imperium->base()->set_charset(post('charset'))->set_collation(post('collation'))->create(post('name')))
+                {
+                    append($code,html('div',$database_was_created_successfully,'alert alert-success'));
+                }else{
+                    append($code,html('div',$database_creation_failed,'alert alert-danger'));
+                }
+            }
 
         }
+
+        if (post('database'))
+        {
+            $code = '';
+            if ($imperium->base()->drop(post('database')))
+            {
+                append($code,html('div',$database_was_removed_successfully,'alert alert-success'));
+            }else{
+                append($code,html('div',$remove_database_failed,'alert alert-danger'));
+            }
+        }
+
+        append($code,html('div',form($create_database_action,uniqid())->startRow()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->endRowAndNew()->input(Form::TEXT,'name',$name_of_database_placeholder)->endRowAndNew()->submit($create_database_submit,$imperium->class(),uniqid())->get(),'mt-5 mb-5'));
+        append($code,html('div',form($create_database_action,uniqid())->startRow()->select('database',$imperium->show_databases())->endRowAndNew()->submit($drop_database_submit_text,$imperium->class(false),uniqid())->get(),'mt-5 mb-5'));
+
+        return $code;
+    }
+}
+
+if (!exist('remove'))
+{
+    /**
+     * remove a database , user or table
+     *
+     * @param Imperium $imperium
+     *
+     * @return bool
+     */
+    function remove( Imperium $imperium): bool
+    {
+
+    }
+}
+
+if (!exist('remove_view'))
+{
+    /**
+     * create a view to create  database, user or table
+     *
+     * @param Imperium $imperium
+     *
+     * @return bool
+     */
+    function remove_view(Imperium $imperium): bool
+    {
+
     }
 }
 
@@ -1248,28 +1679,26 @@ if(!exist('show'))
     /**
      * show databases, users, tables
      *
-     * @param string $driver
-     * @param string $database
-     * @param string $username
-     * @param string $password
-     * @param array $hidden
+     * @param Imperium $imperium
      * @param int $mode
      *
+     * @param array $hidden
      * @return array
-     * @throws \Imperium\Databases\Exception\IdentifierException
+     *
+     * @throws Exception
      */
-    function show(string $driver,string $database,string $username,string $password,int $mode = Eloquent::MODE_ALL_DATABASES,array $hidden = []) : array
+    function show(Imperium $imperium,int $mode,array $hidden = []) : array
     {
         switch ($mode)
         {
             case Eloquent::MODE_ALL_DATABASES:
-                return base($driver,$database,$username,$password,'')->setHidden($hidden)->show();
+                return $imperium->show_databases($hidden);
             break;
             case Eloquent::MODE_ALL_USERS:
-                return user($driver,$username,$password)->setHidden($hidden)->show();
+                return $imperium->show_users($hidden);
             break;
             case Eloquent::MODE_ALL_TABLES:
-                 return table($driver,$database,$username,$password,'')->setHidden($hidden)->show();
+                 return $imperium->show_tables($hidden);
             break;
             default:
                 return array();
@@ -1315,40 +1744,34 @@ if(!exist('req'))
     /**
      * execute a query return an array with results
      *
-     * @param PDO $instance
+     * @param Connect $instance
      * @param string $request
-     * @param int $fetchStyle
-     *
      * @return array
+     *
+     * @throws Exception
      */
-    function req(PDO $instance,string $request,int $fetchStyle = PDO::FETCH_OBJ): array
+    function req(Connect $instance,string $request): array
     {
-        $query = $instance->prepare($request);
+        return $instance->request($request);
 
-        $query->execute();
-
-        $data = $query->fetchAll($fetchStyle);
-
-        $query->closeCursor();
-
-        return $data;
     }
 }
 
 if(!exist('execute'))
 {
-
     /**
      * execute a query return a boolean
      *
-     * @param PDO $instance
+     * @param Connect $instance
      * @param string $request
+     *
      * @return bool
+     *
+     * @throws Exception
      */
-    function execute(PDO $instance,string $request): bool
+    function execute(Connect $instance,string $request): bool
     {
-        $query = $instance->prepare($request);
-        return $query->execute();
+        return $instance->execute($request);
     }
 }
 if (!exist('db'))
@@ -1362,11 +1785,12 @@ if (!exist('db'))
      * @param string $collation
      *
      * @return bool
-     * @throws \Imperium\Databases\Exception\IdentifierException
+     *
+     * @throws Exception
      */
     function db(Base $instance,string $base,string $charset ='',string $collation =''): bool
     {
-        return $instance->setCollation($collation)->setEncoding($charset)->create($base);
+        return $instance->set_collation($collation)->set_charset($charset)->create($base);
     }
 }
 
@@ -1374,10 +1798,11 @@ if (!exist('drop'))
 {
     /**
      * @param $instance
-     * @param string[] ...$to
+     * @param string ...$to
      *
      * @return bool
-     * @throws \Imperium\Databases\Exception\IdentifierException
+     *
+     * @throws Exception
      */
     function drop($instance,string ...$to): bool
     {
@@ -1409,35 +1834,34 @@ if (!exist('model'))
     /**
      * return an instance of the mode class
      *
-     * @param PDO $pdo
-     * @param Table $instance
-     * @param string $table
-     * @param int $pdoMode
-     * @param string $oderBy
+     * @param Connect $connect
+     * @param Table $table
+     * @param string $current_table_name
+     * @param string $order_by
      *
      * @return Model
+     *
+     * @throws Exception
      */
-    function model(PDO $pdo,Table $instance, string $table,int $pdoMode = PDO::FETCH_OBJ,string $oderBy = 'desc'): Model
+    function model(Connect $connect,Table $table, string $current_table_name,string $order_by = 'desc'): Model
     {
-        return new Model($pdo,$instance,$table,$pdoMode,$oderBy);
+        return new Model($connect,$table,$current_table_name,$order_by);
     }
 }
 if (!exist('table'))
 {
+
     /**
-     * manage tables
      *
-     * @param string $driver
-     * @param string $database
-     * @param string $username
-     * @param string $password
-     * @param string $dumpPath
+     * @param Connect $connect
      *
      * @return Table
+     *
+     * @throws Exception
      */
-    function table(string $driver,string $database,string $username,string $password,string $dumpPath): Table
+    function table(Connect $connect): Table
     {
-        return Table::manage()->setDriver($driver)->setDatabase($database)->setUsername($username)->setPassword($password)->setDumpPath($dumpPath);
+        return new Table($connect);
     }
 }
 
@@ -1457,29 +1881,98 @@ if (!exist('faker'))
 }
 
 
-if (!exist('userDel'))
+if (!exist('remove_users'))
 {
     /**
-     * delete an user
+     * remove users
      *
-     * @param string $driver
+     * @param Connect $connexion
+     *
      * @param string[] $users
-     * @param PDO    $connexion
      *
      * @return bool
+     *
+     * @throws Exception
      */
-    function userDel(string $driver,PDO $connexion,string ...$users): bool
+    function remove_users(Connect $connexion,string ...$users): bool
     {
-        switch ($driver)
+        switch ($connexion->get_driver())
         {
-            case Connexion::MYSQL:
+            case Connect::MYSQL:
                 foreach ($users as $user)
-                    if (!execute($connexion,"DROP USER '$user'@'localhost'"))
+                    if (!$connexion->execute("DROP USER '$user'@'localhost'"))
                         return false;
             break;
-            case Connexion::POSTGRESQL:
+            case Connect::POSTGRESQL:
                 foreach ($users as $user)
-                    if (!execute($connexion,"DROP USER $user"))
+                    if (!$connexion->execute("DROP USER $user"))
+                        return false;
+            break;
+            default:
+                return false;
+            break;
+        }
+        return true;
+    }
+}
+
+if (!exist('remove_tables'))
+{
+    /**
+     * remove users
+     *
+     * @param Connect $connexion
+     *
+     * @param string[] $tables
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function remove_tables(Connect $connexion,string ...$tables): bool
+    {
+        switch ($connexion->get_driver())
+        {
+            case Connect::MYSQL:
+            case Connect::SQLITE:
+            case Connect::POSTGRESQL:
+                foreach ($tables as $table)
+                    if (!$connexion->execute("DROP TABLE $table"))
+                        return false;
+            break;
+            default:
+                return false;
+            break;
+        }
+        return true;
+    }
+}
+
+if (!exist('remove_bases'))
+{
+    /**
+     * remove databases
+     *
+     * @param Connect $connexion
+     *
+     * @param string[] $databases
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function remove_bases(Connect $connexion,string ...$databases): bool
+    {
+        switch ($connexion->get_driver())
+        {
+            case Connect::MYSQL:
+            case Connect::POSTGRESQL:
+                foreach ($databases as $database)
+                    if (!$connexion->execute("DROP DATABASE $database"))
+                        return false;
+            break;
+            case Connect::SQLITE:
+                foreach ($databases as $database)
+                    if (!File::delete($database))
                         return false;
             break;
             default:
@@ -1504,7 +1997,7 @@ if (!exist('form'))
      *
      * @return Form
      */
-    function form(string $action, string $id, string $method = Form::POST,string $class = '', bool $enctype = false,  string $charset = 'utf8')
+    function form(string $action, string $id, string $class = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf8')
     {
         return Form::create()->start($action,$id,$class,$enctype,$method,$charset);
     }
@@ -1530,41 +2023,56 @@ if (!exist('d'))
 if (!exist('dumper'))
 {
 
-    function  dumper(string $driver, string $username, string $password, string $database, string $dumpPath, int $mode = Eloquent::MODE_DUMP_DATABASE, string $table ='')
+    /**
+     * @param Connect $connect
+     * @param bool $base
+     * @param string $table
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function dumper(Connect $connect,bool $base = true,string $table ='')
     {
 
-        Dir::clear($dumpPath);
-        $filename = $mode == Eloquent::MODE_DUMP_DATABASE ? "$dumpPath/$database.sql" : "$dumpPath/$table.sql";
+        $database = $connect->get_database();
+        $driver = $connect->get_driver();
+        $password = $connect->get_password();
+        $username = $connect->get_username();
+        $dump_path = $connect->get_dump_path();
 
-        if (!is_null(connect($driver,$database,$username,$password)))
+        Dir::clear($dump_path);
+
+        $filename = $base  ? "$dump_path/$database.sql" : "$dump_path/$table.sql";
+
+
+        switch ($driver)
         {
-            switch ($driver)
-            {
-                case Connexion::MYSQL:
-                    if ($mode == Eloquent::MODE_DUMP_DATABASE)
-                        MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
-                    else
-                        MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
-                break;
-                case Connexion::POSTGRESQL:
-                    if ($mode == Eloquent::MODE_DUMP_DATABASE)
-                        PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
-                    else
-                        PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
-                break;
-                case Connexion::SQLITE:
-                    if ($mode == Eloquent::MODE_DUMP_DATABASE)
-                        Sqlite::create()->setDbName($database)->dumpToFile($filename);
-                    else
-                        Sqlite::create()->setDbName($database)->includeTables($table)->dumpToFile($filename);
-                break;
+            case Connect::MYSQL:
+                if ($base)
+                    MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
+                else
+                    MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
+            break;
+            case Connect::POSTGRESQL:
+                if ($base)
+                    PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
+                else
+                    PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
+            break;
+            case Connect::SQLITE:
+                if ($base)
+                    Sqlite::create()->setDbName($database)->dumpToFile($filename);
+                else
+                    Sqlite::create()->setDbName($database)->includeTables($table)->dumpToFile($filename);
+            break;
+            default:
+                return false;
+            break;
 
-            }
-
-
-            return true;
         }
-        return false;
+
+        return true;
+
     }
 }
 
@@ -1575,28 +2083,12 @@ if (!exist('sql'))
      *
      * @param string $table
      *
+     * @param Query $query
      * @return Query
      */
-    function sql(string $table): Query
+    function sql(string $table,Query $query): Query
     {
-        return Query::start()->setTable($table);
-    }
-}
-
-if (!exist('union'))
-{
-    /**
-     * @param int    $mode
-     * @param string $firstTable
-     * @param string $secondTable
-     * @param array  $firstColumns
-     * @param array  $secondColumns
-     *
-     * @return Query
-     */
-    function union(int $mode,string $firstTable,string $secondTable,array $firstColumns,array $secondColumns): Query
-    {
-        return Query::start()->union($mode,$firstTable,$secondTable,$firstColumns,$secondColumns);
+        return $query->set_current_table_name($table);
     }
 }
 
@@ -1648,72 +2140,51 @@ if (!exist('getValues'))
 
 }
 
-if (!exist('joins'))
-{
-    /**
-     * generate a join clause
-     *
-     * @param int    $type
-     * @param string $firstTable
-     * @param string $secondTable
-     * @param string $firstParam
-     * @param string $secondParam
-     * @param array  $firstColumns
-     * @param string $condition
-     *
-     * @return Query
-     */
-    function joins(int $type,string $firstTable,string $secondTable,string $firstParam,string $secondParam,array $firstColumns = [], string $condition ='='): Query
-    {
-        return Query::start()->join($type,$firstTable,$secondTable,$firstParam,$secondParam,$firstColumns,$condition);
-    }
-}
 
 if (!exist('pagination'))
 {
     /**
      * create a pagination
      *
-     * @param int $perPage
-     * @param string $instance
-     * @param int $current
-     * @param int $total
-     * @param string $startChar
-     * @param string $endChar
-     *
-     * @param string $ulClass
-     * @param string $startCssClass
-     * @param string $endCssClass
+     * @param int $limit_per_page
+     * @param string $pagination_prefix_url
+     * @param int $current_page
+     * @param int $total_of_records
+     * @param string $start_pagination_text
+     * @param string $end_pagination_text
+     * @param string $ul_class
+     * @param string $li_class
      *
      * @return string
      */
-    function pagination(int $perPage,string $instance,int $current,int $total,string $startChar,string $endChar,string $ulClass = 'pagination',string $startCssClass = 'page-item',string $endCssClass = 'page-item'): string
+    function pagination(int $limit_per_page,string $pagination_prefix_url,int $current_page,int $total_of_records,string $start_pagination_text,string $end_pagination_text,string $ul_class = 'pagination',string $li_class = 'page-item'): string
     {
-        return Pagination::paginate($perPage,$instance)->setTotal($total)->setStartChar($startChar)->setEndChar($endChar)->setUlCssClass($ulClass)->setStartCssClass($startCssClass)->setEndCssClass($endCssClass)->setCurrent($current)->get('');
+        return Pagination::paginate($limit_per_page,$pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
     }
 }
-if (!exist('userAdd'))
+if (!exist('user_add'))
 {
     /**
      * create a new user
      *
-     * @param string $driver
      * @param string $user
      * @param string $password
      * @param string $rights
-     * @param PDO    $connexion
      *
+     * @param Connect $connexion
      * @return bool
+     *
+     * @throws Exception
      */
-    function userAdd(string $driver,string $user,string $password,string $rights,PDO $connexion): bool
+    function user_add(string $user,string $password,string $rights,Connect $connexion): bool
     {
-        switch($driver)
+        switch($connexion->get_driver())
         {
-            case Connexion::MYSQL:
-                return execute($connexion,"CREATE USER '$user'@'localhost' IDENTIFIED BY '$password' $rights");
+            case Connect::MYSQL:
+                return $connexion->execute("CREATE USER '$user'@'localhost' IDENTIFIED BY '$password' $rights");
             break;
-            case Connexion::POSTGRESQL:
-                return execute($connexion,"CREATE ROLE $user PASSWORD '$password' $rights");
+            case Connect::POSTGRESQL:
+                return $connexion->execute("CREATE ROLE $user PASSWORD '$password' $rights");
             break;
             default:
                 return false;
@@ -1762,12 +2233,16 @@ if (!exist('imperium'))
      * @param Users $users
      * @param Query $query
      * @param Model $model
-     *
+     * @param Connect $connect
+     * @param string $btn_class
+     * @param string $btn_danger_class
      * @return Imperium
+     *
+     * @throws Exception
      */
-    function imperium(Base $base, Table $table, Users $users,Query $query,Model $model): Imperium
+    function imperium(Base $base, Table $table, Users $users,Query $query,Model $model,Connect $connect,string $btn_class,string $btn_danger_class): Imperium
     {
-        return new  Imperium($base,$table,$users,$query,$model);
+        return new  Imperium($base,$table,$users,$query,$model,$connect,$btn_class,$btn_danger_class);
     }
 }
 if (!exist('icon'))
@@ -1828,29 +2303,46 @@ if (!exist('cssLoader'))
     /**
      * load a css files
      *
-     * @param string $url
+     * @param string[] $urls
      *
      * @return string
      */
-    function cssLoader(string $url): string
+    function css_loader(string ...$urls): string
     {
-        return '<link href="'.$url.'" rel="stylesheet">';
+        $code = '';
+        foreach ($urls as $url)
+            append($code ,'<link href="'.$url.'" rel="stylesheet">');
+
+        return $code;
     }
 }
 
-if (!exist('jsLoader'))
+if (!exist('append'))
+{
+    function append(&$variable,...$contents)
+    {
+        foreach ($contents as $content)
+            $variable .= $content;
+
+    }
+}
+
+
+if (!exist('js_loader'))
 {
     /**
      * load a js files
      *
-     * @param string $url
-     * @param string $type
-     *
+     * @param string[] $urls
      * @return string
      */
-    function jsLoader(string $url,string $type = 'text/javascript'): string
+    function js_loader(string ...$urls): string
     {
-        return '<script src="'.$url.'" type="'.$type.'"></script>';
+        $code = '';
+        foreach ($urls as $url)
+            append($code,'<script src="'.$url.'"></script>');
+
+        return $code;
     }
 }
 
@@ -1904,10 +2396,7 @@ if (!exist('glyph'))
      */
     function glyph(string $icon,$type = 'svg'): string
     {
-        if ($type == 'svg')
-            return '<svg-icon><src href="'.$icon.'"/></svg-icon>';
-        else
-            return '<img src="'.$icon.'"/>';
+        return equal($type ,'svg') ? '<svg-icon><src href="'.$icon.'"/></svg-icon>' :  '<img src="'.$icon.'"/>';
     }
 }
 
@@ -1940,6 +2429,7 @@ if (!exist('today')) {
         return Carbon::today($tz);
     }
 }
+
 if (!exist('now')) {
     /**
      * Create a new Carbon instance for the current date.
@@ -2056,14 +2546,14 @@ if (!exist('mysql_loaded'))
     }
 }
 
-if (!exist('pgsql_loaded'))
+if (!exist('postgresql_loaded'))
 {
     /**
      * check if mysql is loaded
      *
      * @return bool
      */
-    function pgsql_loaded(): bool
+    function postgresql_loaded(): bool
     {
         return extension_loaded('pdo_pgsql');
     }

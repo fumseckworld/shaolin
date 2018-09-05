@@ -28,6 +28,11 @@
         "psr-4": {
             "Imperium\\": "imperium/"
         },
+        "autoload-dev":{
+            "psr-4":{
+                "Testing\\": "tests/"
+            }
+        },
         "files": [
             "app/helpers.php"
         ]

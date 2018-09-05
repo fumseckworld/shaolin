@@ -22,26 +22,30 @@
 namespace Imperium\Databases\Eloquent\Query {
 
 
+    use Imperium\Connexion\Connect;
     use Imperium\Databases\Eloquent\Tables\Table;
-    use PDO;
+
 
     interface EloquentQueryBuilder
     {
+
+
         /**
-         * start the query builder
+         * Query constructor
          *
-         * @return Query
+         * @param Table $table
+         * @param Connect $connect
          */
-        public static function start(): Query;
+        public function __construct(Table $table, Connect $connect);
 
         /**
          * set pdo instance
          *
-         * @param PDO $pdo
+         * @param Connect $connect
          *
          * @return Query
          */
-        public function setPdo(PDO $pdo): Query;
+        public function connect(Connect $connect): Query;
 
         /**
          * @param Table $table
@@ -63,7 +67,7 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @return array
          */
-        public function getRecords(): array;
+        public function get(): array;
 
         /**
          * set mode
@@ -72,7 +76,7 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @return Query
          */
-        public function setMode(string $mode = Query::SELECT): Query;
+        public function set_query_mode(string $mode = Query::SELECT): Query;
 
         /**
          * run a delete query
@@ -81,23 +85,6 @@ namespace Imperium\Databases\Eloquent\Query {
          */
         public function delete(): bool;
 
-        /**
-         * execute a statement
-         *
-         * @param string $statement
-         *
-         * @return bool
-         */
-        public function query(string $statement): bool;
-
-        /**
-         * execute a statement
-         *
-         * @param string $statement
-         *
-         * @return array
-         */
-        public function request(string $statement): array;
 
         /**
          * define a limit
@@ -117,16 +104,9 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @return Query
          */
-        public function setTable(string $table): Query;
+        public function set_current_table_name(string $table): Query;
 
-        /**
-         * set database driver
-         *
-         * @param string $driver
-         *
-         * @return \Imperium\Databases\Eloquent\Query\Query
-         */
-        public function setDriver(string $driver): Query;
+
 
         /**
          * select columns
@@ -135,14 +115,14 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @return Query
          */
-        public function setColumns(array $columns = []): Query;
+        public function set_columns(array $columns = []): Query;
 
         /**
          * get the query result
          *
          * @return string
          */
-        public function get(): string;
+        public function sql(): string;
 
         /**
          * where clause
@@ -166,7 +146,7 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @return Query
          */
-        public function orderBy(string $key, string $order = 'desc'): Query;
+        public function order_by(string $key, string $order = 'desc'): Query;
 
         /**
          * join clause
@@ -196,12 +176,6 @@ namespace Imperium\Databases\Eloquent\Query {
          */
         public function union(int $mode,string $firstTable,string $secondTable,array $firstColumns,array $secondColumns): Query;
 
-        /**
-         * execute the query
-         *
-         * @return bool
-         */
-        public function execute(): bool;
 
 
     }

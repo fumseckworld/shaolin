@@ -22,8 +22,9 @@
 namespace Imperium\Databases\Core {
 
 
+    use Imperium\Connexion\Connect;
     use Imperium\Databases\Eloquent\Users\Users;
-    use PDO;
+
 
     interface UserManagement
     {
@@ -35,6 +36,13 @@ namespace Imperium\Databases\Core {
          * @return bool
          */
         public function drop(string $user): bool;
+
+        /**
+         * User constructor.
+         *
+         * @param Connect $connect
+         */
+        public function __construct(Connect $connect);
 
         /**
          * return all users
@@ -50,7 +58,7 @@ namespace Imperium\Databases\Core {
          *
          * @return Users
          */
-        public function setName(string $name): Users;
+        public function set_name(string $name): Users;
 
         /**
          * define user password
@@ -59,7 +67,7 @@ namespace Imperium\Databases\Core {
          *
          * @return Users
          */
-        public function setPassword(string $password): Users;
+        public function set_password(string $password): Users;
 
         /**
          * create a new user
@@ -75,7 +83,7 @@ namespace Imperium\Databases\Core {
          *
          * @return Users
          */
-        public function setRights(string $rights): Users;
+        public function set_rights(string $rights): Users;
 
         /**
          * check if a user exist
@@ -93,7 +101,7 @@ namespace Imperium\Databases\Core {
          *
          * @return bool
          */
-        public function updatePassword(string $user, string $password): bool;
+        public function update_password(string $user, string $password): bool;
 
         /**
          * define hidden users
@@ -102,29 +110,7 @@ namespace Imperium\Databases\Core {
          *
          * @return Users
          */
-        public function setHidden(array $users): Users;
+        public function hidden(array $users): Users;
 
-        /**
-         * define user type
-         *
-         * @param string $driver
-         *
-         * @return Users
-         */
-        public function setDriver(string $driver): Users;
-
-        /**
-         * start query builder
-         *
-         * @return Users
-         */
-        public static function manage(): Users;
-
-        /**
-         * Get a pdo instance
-         *
-         * @return null|PDO
-         */
-        public function getInstance();
     }
 }

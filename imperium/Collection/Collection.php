@@ -4,7 +4,6 @@ namespace Imperium\Collection;
 
 
 use ArrayAccess;
-use Exception;
 use Iterator;
 
 class Collection implements ArrayAccess, Iterator
@@ -38,6 +37,16 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
+     * check if array is empty
+     *
+     * @return bool
+     */
+    public function isEmpty()
+    {
+        return empty($this->data);
+    }
+
+    /**
      * init the counter
      *
      * @return int
@@ -62,96 +71,101 @@ class Collection implements ArrayAccess, Iterator
      * @param string $htmlCodeBeforeAll
      * @param string $htmlCodeAfterAll
      *
-     * @throws Exception
+     * @return string
      */
-    public function print( bool $printATable = true ,array $columns =[],bool $printCards = false,string $htmlHeadCode= '',string $htmlEndHead ='',string $bodyHtmlElement= '',string $bodyElementClass= '',string $bodyElementSeparator= '',string $htmlCodeBeforeAll = '<div class="row">',string $htmlCodeAfterAll = '</div>')
+    public function print( bool $printATable = true ,array $columns =[],bool $printCards = false,string $htmlHeadCode= '',string $htmlEndHead ='',string $bodyHtmlElement= '',string $bodyElementClass= '',string $bodyElementSeparator= '',string $htmlCodeBeforeAll = '<div class="row">',string $htmlCodeAfterAll = '</div>'): string
     {
         $this->rewind();
-        $secure = false;
+
 
         if (!$printATable && !$printCards)
         {
-            _html($secure,$htmlCodeBeforeAll);
+            $code = '';
+            append($code,$htmlCodeBeforeAll);
             while ($this->valid())
             {
                 $values = $this->current();
 
-                _html($secure,$htmlHeadCode);
+                append($code,$htmlHeadCode,'<'.$bodyHtmlElement.' class="'.$bodyElementClass.'">');
 
-                _html($secure,'<'.$bodyHtmlElement.' class="'.$bodyElementClass.'">');
 
                 foreach ($values as $k => $v)
                 {
-                    _html($secure,"<$bodyElementSeparator> {$values->$k} </$bodyElementSeparator>");
+                    append($code,"<$bodyElementSeparator> {$values->$k} </$bodyElementSeparator>");
 
                 }
 
-                _html($secure,'</'.$bodyHtmlElement.'>');
-                _html($secure,$htmlEndHead);
+                append($code,'</'.$bodyHtmlElement.'>',$htmlEndHead);
 
 
                 $this->next();
             }
-            _html($secure,$htmlCodeAfterAll);
+            append($code,$htmlCodeAfterAll);
+           return $code;
         }
 
         if (!$printATable && $printCards)
         {
-            _html($secure,'<div class="row">');
+            $code = '';
+
+            append($code,'<div class="row">');
+
 
             while ($this->valid())
             {
                 $values = $this->current();
-                _html($secure,'<div class="col-lg-4"><div class="card ml-4 mr-4 mt-4 mb-4"><div class="card-body">');
+                append($code,'<div class="col-lg-4"><div class="card ml-4 mr-4 mt-4 mb-4"><div class="card-body">');
+
 
                 foreach ($values as $k => $v)
                 {
-                    _html($secure,"<p> {$values->$k} </p>");
+                    append($code,"<p> {$values->$k} </p>");
 
                 }
 
-                _html($secure,'</div></div></div>');
+                append($code,'</div></div></div>');
 
                 $this->next();
             }
-            _html($secure,'</div>');
+            append($code,'</div>');
+
+            return $code;
         }
 
         if ($printATable && !$printCards)
         {
-            _html($secure,'<table class="table table-bordered table-hover"><thead><tr>');
+            $code = '';
+            append($code,'<table class="table table-bordered table-hover"><thead><tr>');
 
             foreach ($columns as $column)
             {
-                _html($secure, '<th>'.$column.'</th>');
+                append($code, '<th>'.$column.'</th>');
 
             }
-            _html($secure, '</tr></thead><tbody>');
+            append($code,'</tr></thead><tbody>');
 
             while ($this->valid())
             {
 
                 $values = $this->current();
-                _html($secure,'<tr>');
+                append($code,'<tr>');
 
                 foreach ($values as $k => $v)
                 {
-                    _html($secure,"<td> {$values->$k} </td>");
+                    append($code,"<td> {$values->$k} </td>");
 
                 }
 
-                _html($secure,'</tr> ');
+                append($code,'</tr> ');
 
 
                 $this->next();
             }
-            _html($secure,'</tbody></table>');
+            append($code,'</tbody></table>');
+            return $code;
         }
+        return '';
 
-        if ( $printCards &&  $printATable)
-        {
-            throw new Exception('Choose to build a card a able or your choose');
-        }
     }
 
     /**
@@ -162,40 +176,47 @@ class Collection implements ArrayAccess, Iterator
     {
         return $this->data;
     }
+
     /**
      * add data in the array
      *
-     * @return Collection
-     */
-    public function push(): Collection
-    {
-        foreach (func_get_args() as $arg)
-            array_push($this->data,$arg);
-
-        return $this;
-    }
-
-    /**
-     * Pop the element off the end of array
+     * @param mixed $values
      *
      * @return Collection
      */
-    public function pop(): Collection
+    public function push(...$values): Collection
     {
-        array_pop($this->data);
+        foreach ($values as $value)
+            push($this->data,$value);
+
 
         return $this;
     }
 
     /**
-     * @param array ...$array
+     * create a stack
+     *
+     * @param mixed $values
+     *
+     * @return Collection
+     */
+    public function stack(...$values): Collection
+    {
+        foreach ($values as $value)
+            stack($this->data,$value);
+
+        return $this;
+    }
+
+    /**
+     * @param array ...$array ...$array
      *
      * @return Collection
      */
     public function merge(array ...$array): Collection
     {
-        foreach($array as $elem)
-          $this->data =  array_merge($this->data,$elem);
+        foreach($array as  $v)
+            merge($this->data,$v);
 
         return $this;
     }
@@ -239,9 +260,9 @@ class Collection implements ArrayAccess, Iterator
      * @return Collection
      */
 
-    public function set( $value,$key = null): Collection
+    public function set($value,$key = ''): Collection
     {
-        if (is_null($key))
+        if (not_def($key))
         {
             $this->data[] = $value;
         } else {
@@ -249,51 +270,6 @@ class Collection implements ArrayAccess, Iterator
         }
         return $this;
 
-    }
-
-    /**
-     * get last key in the array
-     *
-     * @return mixed
-     */
-    public function lastKey()
-    {
-        $array = $this->data;
-        return array_keys($array)[count($array)-1];
-    }
-
-    /**
-     * get the first key
-     *
-     * @return mixed
-     */
-    public function firstKey()
-    {
-        $data = $this->getKeys();
-        return reset($data);
-    }
-
-    /**
-     * get the first key
-     *
-     * @return mixed
-     */
-    public function firstValue()
-    {
-        $data = $this->getValues();
-        return reset($data);
-    }
-
-
-    /**
-     * get the last value in array
-     *
-     * @return mixed
-     */
-    public function lastValue()
-    {
-        $array = $this->data;
-        return array_values($array)[count($array)-1];
     }
 
     /**
@@ -348,7 +324,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return bool
      */
-    public function has($key ): bool
+    public function has($key): bool
     {
         return key_exists($key,$this->data);
     }
@@ -360,7 +336,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function getValues(): array
     {
-        return array_values($this->data);
+        return values($this->data);
     }
 
     /**
@@ -380,7 +356,8 @@ class Collection implements ArrayAccess, Iterator
      */
     public function before()
     {
-        return prev($this->data);
+        $this->position--;
+        return $this->current();
     }
 
     /**
@@ -390,7 +367,8 @@ class Collection implements ArrayAccess, Iterator
      */
     public function after()
     {
-        return next($this->data);
+        $this->position++;
+        return $this->current();
     }
 
 
@@ -403,7 +381,43 @@ class Collection implements ArrayAccess, Iterator
      */
     public function exist($value): bool
     {
-        return in_array($value,$this->data);
+        return has($value,$this->data);
+    }
+
+    /**
+     * verify is a value nt exist
+     *
+     * @param $value
+     *
+     * @return bool
+     */
+    public function notExist($value): bool
+    {
+        return ! $this->exist($value);
+    }
+
+    /**
+     * verify if value is numeric
+     *
+     * @param $value
+     *
+     * @return bool
+     */
+    public function isNumeric($value): bool
+    {
+        return is_numeric($value);
+    }
+
+    /**
+     * verify is a value is a string
+     *
+     * @param $value
+     *
+     * @return bool
+     */
+    public function isString($value): bool
+    {
+        return is_string($value);
     }
 
     /**
@@ -415,7 +429,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function get($key)
     {
-        return $this->has($key) ? $this->data[$key] : null;
+        return $this->has($key) ? $this->data[$key] : '';
 
     }
 
@@ -426,7 +440,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return Collection
      */
-    public function unset($key): Collection
+    public function remove($key): Collection
     {
         if ($this->has($key))
           unset($this->data[$key]);
@@ -439,12 +453,21 @@ class Collection implements ArrayAccess, Iterator
      *
      * @param string $glue
      *
+     * @param bool $replace
+     * @param string $search
+     * @param string $new_value
+     *
      * @return string
      */
-    public function join(string $glue): string
+    public function join(string $glue,bool $replace = false,string $search= '',string $new_value =''): string
     {
-        return implode($glue,$this->data);
+        $code = implode($glue,$this->data);
+        if ($replace)
+            $code = str_replace($search,$new_value,$code);
+
+        return $code;
     }
+
 
     /**
      * empty the data
@@ -457,21 +480,6 @@ class Collection implements ArrayAccess, Iterator
 
         return $this;
     }
-
-    /**
-     * searches the array for a given value and returns the first corresponding key if successful
-     *
-     * @param string $needle
-     * @param bool $strict
-     *
-     * @return false|int|string
-     */
-    public function search(string $needle,$strict = true)
-    {
-        return array_search($needle,$this->data,$strict);
-    }
-
-
 
     /**
      * Whether a offset exists
@@ -532,7 +540,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function offsetUnset($offset)
     {
-       $this->unset($offset);
+        $this->remove($offset);
     }
 
     /**
@@ -591,6 +599,4 @@ class Collection implements ArrayAccess, Iterator
     {
         ++$this->position;
     }
-
-
 }

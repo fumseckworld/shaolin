@@ -1,4 +1,0 @@
-ENV=laravel
-DB=mars
-DB_USERNAME=imperium
-DB_PASSWORD=pass

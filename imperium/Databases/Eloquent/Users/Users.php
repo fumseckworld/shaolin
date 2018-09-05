@@ -22,39 +22,54 @@
 
 namespace Imperium\Databases\Eloquent\Users {
 
+    use Exception;
+    use Imperium\Connexion\Connect;
     use Imperium\Databases\Core\UserManagement;
-    use Imperium\Databases\Eloquent\Connexion\Connexion;
     use Imperium\Databases\Eloquent\Share;
-    use PDO;
-    use PDOException;
+
 
     class Users implements UserManagement
     {
         use Share;
 
         /**
-         * delete an user
+         * @var string
+         */
+        private $rights;
+
+        /**
+         * user password
          *
+         * @var string
+         */
+        private $password;
+
+        /**
+         * username
+         *
+         * @var string
+         */
+        private $username;
+
+        /**
          * @param string $user
          *
          * @return bool
+         *
+         * @throws Exception
          */
         public function drop(string $user): bool
         {
 
-            switch ($this->driver)
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::MYSQL:
-                    return execute($this->getInstance(),"DROP USER '$user'@'localhost'");
+                case Connect::MYSQL:
+                    return $this->connexion->execute("DROP USER '$user'@'localhost'");
                 break;
 
-                case Connexion::POSTGRESQL:
-                    return execute($this->getInstance(),"DROP ROLE $user;");
+                case Connect::POSTGRESQL:
+                    return $this->connexion->execute("DROP ROLE $user");
                 break;
-                case Connexion::ORACLE:
-                    return execute($this->getInstance(),"DROP USER $user");
-                break;
-
                 default:
                     return false;
                 break;
@@ -63,64 +78,51 @@ namespace Imperium\Databases\Eloquent\Users {
         }
 
         /**
-         * return all users
+         * show user
          *
          * @return array
+         *
+         * @throws Exception
          */
         public function show(): array
         {
-            $users = array();
-
-            switch ($this->driver)
+            $users = collection();
+            if (def($this->hidden))
+                $hidden = collection($this->hidden);
+            else
+                $hidden = collection();
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::MYSQL:
-                    try{
-                        $query = $this->getInstance()->prepare('SELECT user from mysql.user');
-                        $query->execute();
-                    }catch (PDOException $e)
+                case Connect::MYSQL:
+                    foreach ($this->connexion->request("SELECT user from mysql.user") as $user)
                     {
-                        return $users;
-                    }
-                break;
-                case Connexion::POSTGRESQL:
-                    try{
-                        $query = $this->getInstance()->prepare('SELECT rolname FROM pg_roles;');
-                        $query->execute();
-                    }catch (PDOException $e)
-                    {
-                        return $users;
-                    }
+                        $x = current($user);
+                        if ($hidden->isEmpty())
+                        {
 
-                break;
-                case Connexion::ORACLE:
-                    try{
-                        $query = $this->getInstance()->prepare('select username from dba_users;');
-                        $query->execute();
-                    }catch (PDOException $e)
-                    {
-                        return $users;
+                            $users->push($x);
+                        } else {
+                            if ($hidden->notExist($x))
+                                $users->push($x);
+                        }
                     }
-
                 break;
-                default:
-                    return $users;
+                case Connect::POSTGRESQL:
+                    foreach ($this->connexion->request( "SELECT rolname FROM pg_roles") as $user)
+                    {
+                        $x = current($user);
+                        if ($hidden->isEmpty())
+                        {
+
+                            $users->push($x);
+                        } else {
+                            if ($hidden->notExist($x))
+                                $users->push($x);
+                        }
+                    }
                 break;
             }
-
-            foreach ($query->fetchAll() as $user)
-            {
-                if (!empty($this->hidden))
-                {
-                    if (!has(current($user), $this->hidden))
-                    {
-                        push($users, current($user));
-                    }
-                } else {
-                    push($users, current($user));
-                }
-
-            }
-            return $users;
+            return $users->getCollection();
         }
 
         /**
@@ -130,7 +132,7 @@ namespace Imperium\Databases\Eloquent\Users {
          *
          * @return Users
          */
-        public function setName(string $name): Users
+        public function set_name(string $name): Users
         {
             $this->username = $name;
 
@@ -144,7 +146,7 @@ namespace Imperium\Databases\Eloquent\Users {
          *
          * @return Users
          */
-        public function setPassword(string $password): Users
+        public function set_password(string $password): Users
         {
             $this->password = $password;
 
@@ -152,14 +154,24 @@ namespace Imperium\Databases\Eloquent\Users {
         }
 
         /**
-         * create a new user
-         *
          * @return bool
+         *
+         * @throws Exception
          */
         public function create(): bool
         {
-            return userAdd($this->driver,$this->username,$this->password,$this->rights,$this->getInstance());
-
+            switch ($this->connexion->get_driver())
+            {
+                case Connect::MYSQL:
+                    return $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password' $this->rights");
+                break;
+                case Connect::POSTGRESQL:
+                    return $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password' $this->rights");
+                break;
+                default:
+                    return false;
+                break;
+            }
         }
 
         /**
@@ -169,24 +181,23 @@ namespace Imperium\Databases\Eloquent\Users {
          *
          * @return Users
          */
-        public function setRights(string $rights): Users
+        public function set_rights(string $rights): Users
         {
             $this->rights = $rights;
+            
             return $this;
         }
 
         /**
-         * check if a user exist
-         *
          * @param string $user
+         *
          * @return bool
+         *
+         * @throws Exception
          */
         public function exist(string  $user = ''): bool
         {
-            if (!empty($user))
-                return has($user,$this->show());
-            else
-                return has($this->username,$this->show());
+            return def($user) ? collection($this->show())->exist($user) : collection($this->show())->exist($this->username);
         }
 
         /**
@@ -196,19 +207,18 @@ namespace Imperium\Databases\Eloquent\Users {
          * @param string $password
          *
          * @return bool
+         *
+         * @throws Exception
          */
-        public function updatePassword(string $user, string $password): bool
+        public function update_password(string $user, string $password): bool
         {
-            switch ($this->driver)
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::MYSQL:
-                    return execute($this->getInstance(),"SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES");
+                case Connect::MYSQL:
+                    return $this->connexion->execute("SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES");
                 break;
-                case Connexion::POSTGRESQL:
-                    return execute($this->getInstance(),"ALTER ROLE $user WITH PASSWORD '$password'");
-                break;
-                case Connexion::ORACLE:
-                    return execute($this->getInstance(),"ALTER USER $user IDENTIFIED BY $password;");
+                case Connect::POSTGRESQL:
+                    return $this->connexion->execute("ALTER ROLE $user WITH PASSWORD '$password'");
                 break;
                 default:
                     return false;
@@ -223,60 +233,22 @@ namespace Imperium\Databases\Eloquent\Users {
          *
          * @return Users
          */
-        public function setHidden(array $users): Users
+        public function hidden(array $users): Users
         {
             $this->hidden = $users;
 
             return $this;
         }
 
-        /**
-         * define user type
-         *
-         * @param string $driver
-         *
-         * @return Users
-         */
-        public function setDriver(string $driver): Users
-        {
-            $this->driver = $driver;
-
-            return $this;
-        }
 
         /**
-         * start query builder
+         * User constructor.
          *
-         * @return Users
+         * @param Connect $connect
          */
-        public static function manage(): Users
+        public function __construct(Connect $connect)
         {
-            return new static();
-        }
-
-        /**
-         * Get a pdo instance
-         *
-         * @return null|PDO
-         */
-        public function getInstance()
-        {
-            switch ($this->driver)
-            {
-                case Connexion::SQLITE:
-                    if (empty($this->database))
-                        return connect($this->driver);
-                    else
-                        return connect($this->driver,$this->database);
-                break;
-
-                default:
-                    if (empty($this->database))
-                        return connect($this->driver,'',$this->username,$this->password);
-                    return connect($this->driver,$this->database,$this->username,$this->password);
-
-                break;
-            }
+            $this->connexion = $connect;
         }
     }
 }

@@ -22,13 +22,10 @@
 
 namespace Imperium\Databases\Eloquent\Bases {
 
+    use Exception;
+    use Imperium\Connexion\Connect;
     use Imperium\Databases\Core\DatabasesManagement;
-    use Imperium\Databases\Dumper\Databases\MySQLDatabase;
-    use Imperium\Databases\Dumper\Databases\PostgreSQLDatabase;
-    use Imperium\Databases\Dumper\Databases\SQLiteDatabase;
-    use Imperium\Databases\Eloquent\Connexion\Connexion;
     use Imperium\Databases\Eloquent\Share;
-    use Imperium\Databases\Exception\IdentifierException;
     use Imperium\File\File;
     use PDO;
 
@@ -36,91 +33,105 @@ namespace Imperium\Databases\Eloquent\Bases {
     {
         use Share;
 
+        private $options;
+
+        /**
+         * the collation
+         *
+         * @var string
+         */
+        private $collation;
+
         /**
          * @var string
          */
-        private $options;
+        private $charset;
+
+        /**
+         * database name
+         *
+         * @var string
+         */
+        private $database;
+
+        /**
+         * pdo fetch mode
+         *
+         * @var int
+         */
+        private $fetch;
 
         /**
          * show databases
          *
-         * @throws IdentifierException
          * @return array
+         *
+         * @throws Exception
          */
         public function show(): array
         {
-            $databases = array();
+            $databases = collection();
 
-            if (is_null($this->getInstance()))
-                throw IdentifierException::incorrectIdentifiers();
+            if (def($this->hidden))
+                $hidden = collection($this->hidden);
+            else
+                $hidden = collection();
 
-            switch ($this->driver)
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::MYSQL:
-                    $query = $this->getInstance()->prepare('SHOW DATABASES');
-                    $query->execute();
-                break;
-                case Connexion::POSTGRESQL:
-                    $query = $this->getInstance()->prepare('select datname from pg_database');
-                    $query->execute();
-                break;
-                case Connexion::ORACLE:
-                    $query = $this->getInstance()->prepare('SELECT NAME FROM V$DATABASE;');
-                    $query->execute();
-                break;
-                default:
-                    return $databases;
-                break;
-            }
+                case Connect::MYSQL:
 
-            foreach ($query->fetchAll() as $database)
-            {
-                if (!empty($this->hidden))
-                {
-                    if (!has(current($database), $this->hidden))
+                    foreach ($this->connexion->request('SHOW DATABASES') as $db)
                     {
-                        push($databases, current($database));
+                        $x = current($db);
+                        if ($hidden->isEmpty())
+                        {
+
+                            $databases->push($x);
+                        } else {
+                            if ($hidden->notExist($x))
+                                $databases->push($x);
+                        }
                     }
-                } else {
-                    push($databases, current($database));
-                }
+                break;
+                case Connect::POSTGRESQL:
+                    foreach ($this->connexion->request('select datname from pg_database') as $db)
+                    {
+                        $x = current($db);
+                        if ($hidden->isEmpty())
+                        {
+
+                            $databases->push($x);
+                        } else {
+                            if ($hidden->notExist($x))
+                                $databases->push($x);
+                        }
+                    }
+                break;
             }
-            return $databases;
+            return $databases->getCollection();
         }
 
         /**
          * create database
          * @param string $database
-         * @throws IdentifierException
          *
          * @return bool
+         *
+         * @throws Exception
          */
         public function create(string $database): bool
         {
-            if (is_null($this->getInstance()))
-                throw IdentifierException::incorrectIdentifiers();
-
-            switch ($this->driver)
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::MYSQL:
-                    if (empty($this->collation) && empty($this->encoding))
-                        return execute($this->getInstance()," CREATE DATABASE IF NOT EXISTS $database");
-
-                    return execute($this->getInstance()," CREATE DATABASE IF NOT EXISTS $database DEFAULT CHARACTER SET {$this->encoding} DEFAULT COLLATE {$this->collation};");
+                case Connect::MYSQL:
+                    return empty($this->collation) && empty($this->encoding) ? $this->connexion->execute("CREATE DATABASE $database") :  $this->connexion->execute("CREATE DATABASE $database CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
                 break;
-                case Connexion::POSTGRESQL:
-                    if(empty($this->collation) && empty($this->encoding))
-                        return execute($this->getInstance(),"CREATE DATABASE $database TEMPLATE template0");
-                    return execute($this->getInstance(),"CREATE DATABASE  $database ENCODING '{$this->encoding}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0; ");
+                case Connect::POSTGRESQL:
+                    return empty($this->collation) && empty($this->encoding) ? $this->connexion->execute("CREATE DATABASE $database  TEMPLATE template0") :  $this->connexion->execute("CREATE DATABASE  $database ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;");
                 break;
-                case Connexion::ORACLE:
-                    if(empty($this->options) && empty($this->encoding))
-                        return execute($this->getInstance()," CREATE DATABASE IF NOT EXISTS $database");
-                    return execute($this->getInstance(),"CREATE DATABASE $database {$this->options} '{$this->encoding}';");
-                break;
-                case Connexion::SQLITE:
-                    new PDO("sqlite:$database",null,null);
-                    return chmod($database,0777);
+                case Connect::SQLITE:
+                    return  new PDO("sqlite:$database",null,null) && chmod($database,0777);
                 break;
                 default:
                     return false;
@@ -129,72 +140,30 @@ namespace Imperium\Databases\Eloquent\Bases {
         }
 
         /**
-         * set database encoding
+         * set database charset
          *
-         * @param string $encoding
+         * @param string $charset
          *
          * @return Base
          */
-        public function setEncoding(string $encoding): Base
+        public function set_charset(string $charset): Base
         {
-            $this->encoding = $encoding;
+            $this->charset = $charset;
 
             return $this;
         }
 
         /**
-         * set database charset
+         * set database collation
          *
          * @param string $collation
          *
          * @return Base
          *
          */
-        public function setCollation(string $collation): Base
+        public function set_collation(string $collation): Base
         {
             $this->collation = $collation;
-
-            return $this;
-        }
-
-        /**
-         * set database type
-         *
-         * @param string $driver
-         *
-         * @return Base
-         */
-        public function setDriver(string $driver): Base
-        {
-            $this->driver = $driver;
-
-            return $this;
-        }
-
-        /**
-         * set database password
-         *
-         * @param string $password
-         *
-         * @return Base
-         */
-        public function setPassword(string $password): Base
-        {
-            $this->password = $password;
-
-            return $this;
-        }
-
-        /**
-         * set database user
-         *
-         * @param string $username
-         *
-         * @return Base
-         */
-        public function setUser(string $username): Base
-        {
-            $this->username = $username;
 
             return $this;
         }
@@ -206,7 +175,7 @@ namespace Imperium\Databases\Eloquent\Bases {
          *
          * @return Base
          */
-        public function setName(string $name): Base
+        public function set_name(string $name): Base
         {
             $this->database = $name;
 
@@ -219,149 +188,94 @@ namespace Imperium\Databases\Eloquent\Bases {
          * @param string $database
          *
          * @return bool
-         * @throws IdentifierException
+         * @throws \Exception
          */
         public function drop(string $database): bool
         {
-            if (is_null($this->getInstance()))
-                throw IdentifierException::incorrectIdentifiers();
-
-            switch ($this->driver)
+            
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::SQLITE:
+                case Connect::SQLITE:
                     return File::delete($database);
                 break;
                 default:
-                    return execute($this->getInstance(),"DROP DATABASE $database;");
+                    return $this->connexion->execute("DROP DATABASE $database;");
                 break;
             }
         }
 
         /**
          * dump a database
+         *
+         * @throws Exception
          */
         public function dump()
         {
-            $filename = "{$this->path}/{$this->database}.sql";
-            switch ($this->driver)
-            {
-                case Connexion::MYSQL:
-
-                    MySQLDatabase::dump()
-                        ->setDbName($this->database)
-                        ->setPassword($this->password)
-                        ->setUserName($this->username)
-                        ->dumpToFile($filename, $this->path);
-
-                    File::download($filename);
-
-                break;
-                case Connexion::POSTGRESQL:
-
-                    PostgreSQLDatabase::dump()
-                        ->setDbName($this->database)
-                        ->setUserName($this->username)
-                        ->setPassword($this->password)
-                        ->dumpToFile($filename, $this->path);
-
-                    File::download($filename);
-                break;
-                case Connexion::SQLITE:
-                    SQLiteDatabase::dump()->setDbName($this->database)->dumpToFile($filename,$this->path);
-
-                    File::download($filename);
-                break;
-            }
+            return dumper($this->connexion);
         }
 
-       /**
-        * check if a database exist
-        *
-        * @param string $base
-        * @throws IdentifierException
-        *
-        * @return bool
-        */
+        /**
+         * verify if a table exist
+         *
+         * @param string $base
+         *
+         * @return bool
+         *
+         * @throws Exception
+         */
         public function exist(string $base = ''): bool
         {
-            if (!empty($base))
-                return has($base,$this->show());
-            else
-                return has($this->database,$this->show());
+            return def($base) ? collection($this->show())->exist($base) : collection($this->show())->exist($this->database);
+        }
 
+
+        /**
+         * get charset
+         *
+         * @return array
+         *
+         * @throws Exception
+         */
+        public function charsets(): array
+        {
+            $charset = collection();
+
+            switch ($this->connexion->get_driver())
+            {
+                case Connect::MYSQL:
+                    foreach ($this->connexion->request('SHOW CHARACTER SET') as $char)
+                        $charset->push(current($char));
+                break;
+                case Connect::POSTGRESQL:
+                    foreach ($this->connexion->request('SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1') as $char)
+                        $charset->push(current($char));
+                break;
+            }
+            return $charset->getCollection();
         }
 
         /**
-         * get database charset
+         * get the collation
          *
          * @return array
-         * @throws IdentifierException
-         */
-        public function getCharset(): array
-        {
-            $charset = array();
-
-            if (is_null($this->getInstance()))
-                throw IdentifierException::incorrectIdentifiers();
-
-            switch ($this->driver)
-            {
-                case Connexion::MYSQL:
-                    $query = $this->getInstance()->prepare('SHOW CHARACTER SET');
-                    $query->execute();
-                break;
-                case Connexion::POSTGRESQL:
-                    $query = $this->getInstance()->prepare("SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
-                    $query->execute();
-                break;
-                case Connexion::ORACLE:
-                    $query = $this->getInstance()->prepare("select * from database_properties");
-                    $query->execute();
-                break;
-                default:
-                    return $charset;
-                break;
-            }
-
-            foreach ($query->fetchAll() as $char)
-            {
-                push($charset, current($char));
-            }
-            return $charset;
-        }
-
-        /**
-         * get database collation
          *
-         * @return array
-         * @throws IdentifierException
+         * @throws Exception
          */
-        public function getCollation(): array
+        public function collations(): array
         {
-            if (is_null($this->getInstance()))
-                throw IdentifierException::incorrectIdentifiers();
-
-            $collation = array();
-            switch ($this->driver)
+            $collation = collection();
+            switch ($this->connexion->get_driver())
             {
-                case Connexion::MYSQL:
-                    $query = $this->getInstance()->prepare('SHOW COLLATION');
-                    $query->execute();
+                case Connect::MYSQL:
+                    foreach ($this->connexion->request('SHOW COLLATION') as $char)
+                        $collation->push(current($char));
                 break;
-                case Connexion::POSTGRESQL:
-                    $query = $this->getInstance()->prepare("SELECT collname FROM pg_collation");
-                    $query->execute();
-                break;
-                default:
-                    return $collation;
+                case Connect::POSTGRESQL:
+                    foreach ($this->connexion->request("SELECT collname FROM pg_collation") as $char)
+                        $collation->push(current($char));
                 break;
             }
-
-            foreach ($query->fetchAll() as $char)
-            {
-                push($collation, current($char));
-            }
-            return $collation;
+            return $collation->getCollection();
         }
 
         /**
@@ -371,44 +285,9 @@ namespace Imperium\Databases\Eloquent\Bases {
          *
          * @return Base
          */
-        public function setHidden(array $databases): Base
+        public function hidden(array $databases): Base
         {
             $this->hidden = $databases;
-
-            return $this;
-        }
-
-        /**
-         * start query builder
-         *
-         * @return Base
-         */
-        public static function manage(): Base
-        {
-            return new static();
-        }
-
-        /**
-         * Get a pdo instance
-         *
-         * @return PDO|null
-         */
-        public function getInstance()
-        {
-            return connect($this->driver,$this->database,$this->username,$this->password);
-        }
-
-
-        /**
-         * set dump directory path
-         *
-         * @param string $path
-         *
-         * @return Base
-         */
-        public function setDumpDirectory(string $path): Base
-        {
-            $this->path = $path;
 
             return $this;
         }
@@ -420,7 +299,7 @@ namespace Imperium\Databases\Eloquent\Bases {
          *
          * @return Base
          */
-        public function setEncodingOptions(string $option): Base
+        public function set_encoding_option(string $option): Base
         {
             $this->options = $option;
 
@@ -428,18 +307,43 @@ namespace Imperium\Databases\Eloquent\Bases {
         }
 
         /**
-         * delete all database hosted on server not ignored
+         * drop all database
          *
          * @return bool
-         * @throws IdentifierException
+         *
+         * @throws Exception
          */
-        public function dropAll(): bool
+        public function drop_all_databases(): bool
         {
            foreach ($this->show() as $base)
                if (!$this->drop($base))
                    return false;
 
-           return true;
+           return empty($this->show());
+        }
+
+        /**
+         * Database constructor.
+         * 
+         * @param Connect $connect
+         */
+        public function __construct(Connect $connect)
+        {
+            $this->connexion = $connect;
+        }
+
+        /**
+         * define the fetch mode
+         *
+         * @param int $mode
+         *
+         * @return Base
+         */
+        public function set_fetch_mode(int $mode = PDO::FETCH_OBJ): Base
+        {
+           $this->fetch = $mode;
+
+           return $this;
         }
     }
 }

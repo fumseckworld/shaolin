@@ -3,67 +3,63 @@
 
 namespace Imperium\Model;
 
-
-
 use Exception;
+use Imperium\Connexion\Connect;
 use Imperium\Databases\Eloquent\Query\Query;
+use Imperium\Databases\Eloquent\Share;
 use Imperium\Databases\Eloquent\Tables\Table;
 use PDO;
 
 class Model
 {
-
-
-    /**
-     * @var Query
-     */
-    private $sql;
+     use Share;
 
     /**
-     * @var string
+     * Model constructor.
+     *
+     * @param Connect $connect
+     * @param Table $table
+     * @param string $current_table_name
+     * @param string $oder_by
+     * @throws Exception
      */
-    private $primary;
-
-    /**
-     * @var string
-     */
-    private $table;
-
-    /**
-     * @var Table
-     */
-    private $instance;
-
-
-    public function __construct(PDO $pdo,Table $instance, string $table,int $pdoMode = PDO::FETCH_OBJ,string $oderBy = 'desc')
+    public function __construct(Connect $connect,Table $table, string $current_table_name,string $oder_by= 'desc')
     {
-        $this->instance = $instance->setName($table);
-        $this->primary = $this->instance->primaryKey();
-        $this->sql = sql($table)->setPdo($pdo)->orderBy($this->primary,$oderBy)->setPdoMode($pdoMode);
+        $this->connexion = $connect;
 
-        $this->table = $table;
-
+        $this->tables = $table->set_current_table($current_table_name);
+        $this->primary = $this->tables->get_primary_key();
+        $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name)->order_by($this->primary,$oder_by);
+        $this->table  = $current_table_name;
     }
 
     /**
      * show all tables
      *
      * @return array
+     *
+     * @throws Exception
      */
-    public function showTables():array
+    public function show_tables():array
     {
-        return $this->instance->show();
+        return $this->tables->show();
     }
 
+    public function query()
+    {
+        return $this->sql;
+    }
     /**
      * get all records with an order by
      *
-     *
+     * @param string $order
      * @return array
+     *
+     * @throws Exception
      */
-    public function all(): array
+    public function all(string $order = 'desc'): array
     {
-        return $this->sql->getRecords();
+       return $this->tables->getRecords($order);
     }
 
     /**
@@ -72,10 +68,12 @@ class Model
      * @param int $id
      *
      * @return array
+     *
+     * @throws Exception
      */
     public function find(int $id):array
     {
-        return $this->sql->where($this->primary,'=',$id)->getRecords();
+        return $this->sql->where($this->primary,'=',$id)->get();
     }
 
     /**
@@ -91,7 +89,7 @@ class Model
     {
         $data = $this->find($id);
 
-        if (empty($data))
+        if (not_def($data))
             throw new Exception('Record not found');
         else
             return $data;
@@ -100,17 +98,19 @@ class Model
     /**
      * get records by a where clause
      *
-     * @param string $param
-     * @param string $condition
+     * @param $param
+     * @param $condition
      * @param $expected
      *
      * @return array
+     *
+     * @throws Exception
      */
-    public function where(string $param,string $condition,$expected): array
+    public function where($param,$condition,$expected): array
     {
-        return $this->sql->where($param,$condition,$expected)->getRecords();
-    }
+        return equal($condition,'LIKE') ?  $this->sql->like($this->tables,$expected)->get() : $this->sql->where($param,html_entity_decode($condition),$expected)->get();
 
+    }
 
     /**
      * remove a record
@@ -118,8 +118,10 @@ class Model
      * @param int $id
      *
      * @return bool
+     *
+     * @throws Exception
      */
-    public function delete(int $id): bool
+    public function remove(int $id): bool
     {
         return $this->sql->where($this->primary,'=',$id)->delete();
     }
@@ -128,13 +130,16 @@ class Model
      * save data in the table
      *
      * @param array $data
+     * @param string $table
      * @param array $ignore
      *
      * @return bool
+     *
+     * @throws Exception
      */
-    public function insert(array $data,array $ignore = []): bool
+    public function insert(array $data,string $table ,array $ignore = []): bool
     {
-        return $this->instance->insert($data,$ignore);
+        return $this->tables->insert($data,$ignore,$table);
     }
 
 
@@ -142,20 +147,24 @@ class Model
      * count record
      *
      * @return array|int
+     *
+     * @throws Exception
      */
     public function count()
     {
-        return $this->instance->count();
+        return $this->tables->count();
     }
 
     /**
      * truncate a table
      *
      * @return bool
+     *
+     * @throws Exception
      */
     public function truncate(): bool
     {
-        return $this->instance->truncate();
+        return $this->tables->truncate();
     }
 
 
@@ -167,29 +176,71 @@ class Model
      * @param array $ignore
      *
      * @return bool
+     *
+     * @throws Exception
      */
     public function update(int $id,array $data,array $ignore =[]): bool
     {
-        return $this->instance->update($id,$data,$ignore);
+        return $this->tables->update($id,$data,$ignore);
     }
 
     /**
      * get all table columns
      *
      * @return array
+     *
+     * @throws Exception
      */
-    public function getColumns(): array
+    public function columns(): array
     {
-        return $this->instance->getColumns();
+        return $this->tables->get_columns();
     }
 
     /**
      * check if a table is empty
      *
      * @return bool
+     *
+     * @throws Exception
      */
     public function isEmpty(): bool
     {
-        return $this->instance->isEmpty();
+        return $this->tables->is_empty();
+    }
+
+    /**
+     * get pdo instance
+     *
+     * @return PDO
+     *
+     * @throws Exception
+     */
+    public function getInstance(): PDO
+    {
+        return $this->connexion->instance();
+    }
+
+    /**
+     * @param string $query
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
+    public function request(string $query):array
+    {
+        return $this->connexion->request($query);
+    }
+
+    /**
+     * @param string $query
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public function execute(string $query):bool
+    {
+        return $this->connexion->execute($query);
     }
 }

@@ -193,6 +193,11 @@ class Form implements FormBuilder
     private $inputSize;
 
     /**
+     * @var bool
+     */
+    private $validate;
+
+    /**
      * start the form
      *
      * @param string $action
@@ -278,13 +283,18 @@ class Form implements FormBuilder
      * @param bool $required
      * @param bool $autofocus
      * @param bool $autoComplete
+     * @param string $success_text
+     * @param string $error_text
+     *
      * @return string
+     *
+     * @throws Exception
      */
-    private function generateInput(string $start, string $end, string $input, string $name, string $placeholder, string $value, bool $required, bool $autofocus, bool $autoComplete)
+    private function generateInput(string $start, string $end, string $input, string $name, string $placeholder, string $value, bool $required, bool $autofocus, bool $autoComplete,string $success_text = '',string $error_text = '')
     {
 
-
         $size = $this->inputSize;
+
         if (def( $size))
             $class = $size;
         else
@@ -294,6 +304,19 @@ class Form implements FormBuilder
         if ($input === Form::FILE)
             $class =  $class .' form-control-file';
 
+
+        if ($this->validate)
+        {
+            if (not_def($error_text,$success_text))
+                throw new Exception('missing validation text');
+            else
+                $validation =  $this->valid($success_text,$error_text);
+
+ 
+        }
+        else{
+            $validation = '';
+        }
         if ($required) // WITH REQUIRED
         {
 
@@ -301,14 +324,14 @@ class Form implements FormBuilder
             {
                 if ($autoComplete)
                 {
-                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="on" > ' . $end . '';
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="on" > ' . $validation . $end .'';
                 }
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="off" > ' . $end . '';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="off" > '  . $validation . $end .'';
             }
             if ($autoComplete)
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="on" > ' . $end . '';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="on" > ' .    $end . $validation . '';
             else
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="off" > ' . $end . '';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="off" > ' . $validation . $end .'';
 
         } else {
 
@@ -317,15 +340,15 @@ class Form implements FormBuilder
             {
                 if ($autoComplete) // AUTO FOCUS , AND AUTO COMPLETE
                 {
-                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
                 }
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" placeholder="' . $placeholder . '"  autocomplete="off" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" placeholder="' . $placeholder . '"  autocomplete="off" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
             } else {   // WITHOUT AUTO FOCUS
                 if ($autoComplete) //   AUTO FOCUS , AND AUTO COMPLETE
                 {
-                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
                 }   // AUTO FOCUS , WITHOUT AUTO COMPLETE
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="off" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > ' . $end . '';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="off" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
             }
         }
     }
@@ -336,6 +359,8 @@ class Form implements FormBuilder
      * @param string $type
      * @param string $name
      * @param string $placeholder
+     * @param string $success_text
+     * @param string $error_text
      * @param string $icon
      * @param string $value
      * @param bool $required
@@ -343,10 +368,10 @@ class Form implements FormBuilder
      * @param bool $autoComplete
      *
      * @return Form
+     * @throws Exception
      */
-    public function input(string $type, string $name, string $placeholder, string $icon = '', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
+    public function input(string $type, string $name, string $placeholder,string $success_text = '',string $error_text ='', string $icon = '', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
     {
-
         if (empty($icon))
         {
 
@@ -354,14 +379,14 @@ class Form implements FormBuilder
 
             $end = "</div></div>";
 
-            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
+            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$success_text,$error_text);
         } else {
 
             $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
 
             $end = "</div></div></div> ";
 
-            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete);
+            $this->form .= $this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$success_text,$error_text);
         }
 
 
@@ -496,7 +521,7 @@ class Form implements FormBuilder
     public function submit(string $text, string $class, string $id, string $icon = ''): Form
     {
 
-        $this->form .= '<div class="'.self::AUTO_COL.'">  <div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $class . '" id="' . $id . '">' . $icon . ' ' . $text . '</button></div></div>';
+        $this->form .= '<div class="'.self::AUTO_COL.'">  <div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $class . '" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>';
 
 
         return $this;
@@ -519,17 +544,25 @@ class Form implements FormBuilder
         return $this;
     }
 
+    private function valid(string $success,string $error)
+    {
+        return '<div class="valid-feedback"> ' .$success.'</div><div class="invalid-feedback">'.$error.'</div>' ;
+    }
     /**
      * generate a select input
      *
      * @param string $name
      * @param array $options
+     * @param $
+     * @param string $success_text
+     * @param string $error_text
      * @param string|null $icon
      *
+     * @param bool $required
      * @param bool $multiple
      * @return Form
      */
-    public function select(string $name, array $options, string $icon = '', bool $multiple = false): Form
+    public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $required = true, bool $multiple = false): Form
     {
         $size = $this->inputSize;
         if (def($size))
@@ -538,45 +571,83 @@ class Form implements FormBuilder
             $class = self::CUSTOM_SELECT_CLASS;
 
 
-        if (empty($icon))
+        if ($this->validate)
+            $validation = $this->valid($success_text,$error_text);
+        else
+            $validation = '';
+
+        if ($required)
         {
-            if ($multiple)
-                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><select class="' . $class . '"  name="' . $name . '" multiple>';
-            else
-                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '">';
-            foreach ($options as $k=> $v)
+            if (empty($icon))
             {
-                if (!empty($k) && !is_numeric($k))
-                    $this->form .= '<option value="' . $k . '">' . $v . '</option>';
+                if ($multiple)
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><select class="' . $class . '"  name="' . $name . '" multiple required="required">';
                 else
-                    $this->form .= '<option value="' . $v . '">' . $v . '</option>';
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '" required="required">';
+                foreach ($options as $k=> $v)
+                {
+                    if (is_string($k) || is_numeric($k))
+                        $this->form .= '<option value="'.$k.'"> '.$v.'</option>';
+                    else
+                        $this->form .= '<option value="'.$v.'"> '.$v.'</option>';
 
+                }
+                $this->form .= '</select>'.$validation.'</div></div>';
+
+            } else {
+
+                if ($multiple)
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple required="required">';
+                else
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" required="required">';
+
+                foreach ($options as $k => $v)
+                {
+                    if (is_string($k) || is_numeric($k))
+                        $this->form .= '<option value="'.$k.'"> '.$v.'</option>';
+                    else
+                        $this->form .= '<option value="'.$v.'"> '.$v.'</option>';
+                }
+
+                $this->form .= '</select>'.$validation.'</div></div></div>';
             }
-            $this->form .= '</select></div></div>';
 
-        } else {
-
-            if ($multiple)
-                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>';
-            else
-                $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">';
-
-
-
-
-            foreach ($options as $k => $v)
+        }else{
+            if (empty($icon))
             {
-                if (!empty($k) && !is_numeric($k))
-                    $this->form .= '<option value="' . $k . '">' . $v . '</option>';
+                if ($multiple)
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><select class="' . $class . '"  name="' . $name . '" multiple>';
                 else
-                    $this->form .= '<option value="' . $v . '">' . $v . '</option>';
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '">';
+                foreach ($options as $k=> $v)
+                {
+                    if (is_string($k) || is_numeric($k))
+                        $this->form .= '<option value="'.$k.'"> '.$v.'</option>';
+                    else
+                        $this->form .= '<option value="'.$v.'"> '.$v.'</option>';
 
+                }
+                $this->form .= '</select>'.$validation.'</div></div>';
 
+            } else {
+
+                if ($multiple)
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>';
+                else
+                    $this->form .= '<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">';
+
+                foreach ($options as $k => $v)
+                {
+                    if (is_string($k) || is_numeric($k))
+                        $this->form .= '<option value="'.$k.'"> '.$v.'</option>';
+                    else
+                        $this->form .= '<option value="'.$v.'"> '.$v.'</option>';
+                }
+                $this->form .= '</select>'.$validation.'</div></div></div>';
             }
 
-
-            $this->form .= '</select> </div></div> </div>';
         }
+
 
 
         return $this;
@@ -675,10 +746,10 @@ class Form implements FormBuilder
     }
 
 
-
     /**
      * generate a form
      *
+     * @param int $form_grid
      * @param string $table
      * @param Table $instance
      * @param string $submitText
@@ -691,35 +762,14 @@ class Form implements FormBuilder
      * @return string
      * @throws Exception
      */
-    public function generate(string $table, Table $instance, string $submitText, string $submitClass, string $submitId, string $submitIcon = '', int $mode = Form::CREATE, int $id = 0): string
+    public function generate(int $form_grid,string $table, Table $instance, string $submitText, string $submitClass, string $submitId, string $submitIcon = '', int $mode = Form::CREATE, int $id = 0): string
     {
-        $instance = $instance->setName($table);
-        $types = $instance->getColumnsTypes();
-        $columns = $instance->getColumns();
-        $primary = $instance->primaryKey();
+        $instance = $instance->set_current_table($table);
+        $types = $instance->get_columns_types();
+        $columns = $instance->get_columns();
+        $primary = $instance->get_primary_key();
 
-
-        if (is_null($primary))
-            throw new Exception('We have not found a primary key');
-
-
-        $number = array(
-            'smallint',
-            'integer',
-            'bigint',
-            'decimal',
-            'numeric',
-            'real',
-            'double',
-            'double precision',
-            'smallserial',
-            'serial',
-            'integer',
-            'int',
-            'bigserial',
-            'smallint',
-            'float',
-        );
+        $i = count($columns);
 
         $date = array(
             'date',
@@ -733,85 +783,86 @@ class Form implements FormBuilder
         );
 
 
-        if ($mode == Form::EDIT)
+        if (equal($mode,Form::EDIT))
         {
-            $records = $instance->selectById($id);
+            $records = $instance->select_by_id($id);
 
             if (count($records) > 1)
                 throw new Exception('The primary key are not unique');
             if (empty($records))
                 throw  new Exception('Record was not found');
 
+
             foreach ($records as $record)
             {
                 foreach ($columns as $k => $column)
                 {
-                    $type = $types[$k];
 
                     if (is_null($record->$column))
                         $record->$column = '';
 
-                    if ($column != $primary)
+                    if (different($column,$primary))
                     {
-                        $type = explode('(', $type);
-                        $type = $type[0];
 
-                        switch ($type)
+                        if ($i % $form_grid === 0)
                         {
-                            case has($type, $number):
-                                $this->input(Form::NUMBER, $column, $column, '', $record->$column);
-                            break;
-                            case has($type, $date):
-                                $this->input(Form::DATETIME, $column, $column, '', $record->$column);
-                            break;
-                            default:
-                                $this->textarea($column, $column, 10, 10, false, $record->$column);
-                            break;
-
+                            $this->textarea($column, $column, 10, 10, false, $record->$column);
+                            $this->endRowAndNew();
+                        }else{
+                            $this->textarea($column, $column, 10, 10, false, $record->$column);
                         }
+
                     } else {
-                        $this->input(Form::HIDDEN, $column, $column, '', $record->$column);
+                        $this->input(Form::HIDDEN, $column, $column,'',$record->$column)->startRow();
+
                     }
+                    $i--;
                 }
+
             }
-            $this->submit($submitText, $submitClass, $submitId, $submitIcon);
-            return $this->end();
+            $this->endRowAndNew()->submit($submitText, $submitClass, $submitId, $submitIcon);
+            return $this->endRow()->get();
         }
 
-        if ($mode == Form::CREATE)
+        if (equal($mode,Form::CREATE))
         {
             foreach ($types as $k => $type)
             {
                 $column = $columns[$k];
 
-                if ($column != $primary)
+                if (different($column,$primary))
                 {
-
                     $current = date('Y-m-d');
 
                     $type = explode('(', $type);
 
                     $type = $type[0];
 
-                    switch ($type)
+                    if ($i % $form_grid === 0)
                     {
-                        case has($type, $number):
-                            $this->input(Form::NUMBER, $column, $column);
-                        break;
-                        case has($type, $date):
-                            $this->input(Form::DATE, $column, $column, '', $current);
-                        break;
-                        default:
+                        if (has($type,$date))
+                            $this->textarea($column, $column, 10, 10,false,$current);
+                        else
                             $this->textarea($column, $column, 10, 10);
-                        break;
-                    }
-                } else {
-                    $this->input(Form::HIDDEN, $column, $column);
-                }
 
+                        $this->endRowAndNew();
+                    }else
+                    {
+                        if (has($type,$date))
+                            $this->textarea($column, $column, 10, 10,false,$current);
+                        else
+
+                            $this->textarea($column, $column, 10, 10);
+                    }
+
+                } else {
+
+                    $this->input(Form::HIDDEN, $column, $column)->startRow();
+                }
+                $i--;
             }
-            $this->submit($submitText, $submitClass, $submitId, $submitIcon);
-            return $this->end();
+            $this->endRowAndNew()->submit($submitText, $submitClass, $submitId, $submitIcon);
+            return $this->endRow()->get();
         }
         throw new Exception('missing mode edit or create');
     }
@@ -896,5 +947,16 @@ class Form implements FormBuilder
     public function get(): string
     {
             return $this->end();
+    }
+
+
+    /**
+     * @return Form
+     */
+    public function validate(): Form
+    {
+        $this->validate = true;
+
+        return $this;
     }
 }

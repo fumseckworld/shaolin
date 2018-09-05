@@ -22,7 +22,8 @@
 
 namespace Imperium\Databases\Core {
 
-
+    use Exception;
+    use Imperium\Connexion\Connect;
     use Imperium\Databases\Eloquent\Bases\Base;
     use Imperium\Databases\Exception\IdentifierException;
     use PDO;
@@ -33,6 +34,8 @@ namespace Imperium\Databases\Core {
          * show databases
          *
          * @return array
+         *
+         * @throws Exception
          */
         public function show(): array;
 
@@ -40,9 +43,17 @@ namespace Imperium\Databases\Core {
          * delete all database hosted on server not ignored
          *
          * @return bool
+         *
          * @throws IdentifierException
          */
-        public function dropAll():bool;
+        public function drop_all_databases():bool;
+
+        /**
+         * Database constructor.
+         *
+         * @param Connect $connect
+         */
+        public function __construct(Connect $connect);
 
         /**
          * create database
@@ -60,16 +71,25 @@ namespace Imperium\Databases\Core {
          *
          * @return Base
          */
-        public function setEncodingOptions(string $option): Base;
+        public function set_encoding_option(string $option): Base;
 
         /**
-         * set database encoding
+         * define the fetch mode
          *
-         * @param string $encoding
+         * @param int $mode
          *
          * @return Base
          */
-        public function setEncoding(string $encoding): Base;
+        public function set_fetch_mode(int $mode = PDO::FETCH_OBJ): Base;
+
+        /**
+         * set database charset
+         *
+         * @param string $charset
+         *
+         * @return Base
+         */
+        public function set_charset(string $charset): Base;
 
         /**
          * set database charset
@@ -79,34 +99,7 @@ namespace Imperium\Databases\Core {
          * @return Base
          *
          */
-        public function setCollation(string $collation): Base;
-
-        /**
-         * set database type
-         *
-         * @param string $driver
-         *
-         * @return Base
-         */
-        public function setDriver(string $driver): Base;
-
-        /**
-         * set database password
-         *
-         * @param string $password
-         *
-         * @return Base
-         */
-        public function setPassword(string $password): Base;
-
-        /**
-         * set database user
-         *
-         * @param string $username
-         *
-         * @return Base
-         */
-        public function setUser(string $username): Base;
+        public function set_collation(string $collation): Base;
 
         /**
          * set database name
@@ -115,18 +108,18 @@ namespace Imperium\Databases\Core {
          *
          * @return Base
          */
-        public function setName(string $name): Base;
+        public function set_name(string $name): Base;
 
         /**
          * delete a database
          *
          * @param string $database
          *
-         * @return bool
+         * @return  bool
+         *
+         * @throws \Exception
          */
         public function drop(string $database): bool;
-
-
 
         /**
          * dump a database
@@ -146,14 +139,14 @@ namespace Imperium\Databases\Core {
          *
          * @return array
          */
-        public function getCharset(): array;
+        public function charsets(): array;
 
         /**
          * get database collation
          *
          * @return array
          */
-        public function getCollation(): array;
+        public function collations(): array;
 
         /**
          * define hidden databases
@@ -162,30 +155,7 @@ namespace Imperium\Databases\Core {
          *
          * @return Base
          */
-        public function setHidden(array $databases): Base;
+        public function hidden(array $databases): Base;
 
-        /**
-         * start query builder
-         *
-         * @return Base
-         */
-        public static function manage(): Base;
-
-        /**
-         * Get a pdo instance
-         *
-         * @return PDO|null
-         */
-        public function getInstance();
-
-
-        /**
-         * set dump directory path
-         *
-         * @param string $path
-         *
-         * @return Base
-         */
-        public function setDumpDirectory(string $path) : Base;
     }
 }

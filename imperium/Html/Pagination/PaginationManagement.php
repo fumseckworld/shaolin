@@ -140,7 +140,7 @@ interface PaginationManagement
      *
      * @return \Imperium\Html\Pagination\Pagination
      */
-    public function setStartCssClass(string $startClass): Pagination;
+    public function setLiCssClass(string $startClass): Pagination;
 
     /**
      * define ul pagination class
