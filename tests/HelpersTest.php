@@ -622,6 +622,22 @@ class HelpersTest extends DatabaseTest
 
         $this->assertTrue(dumper($this->get_mysql()->connect(),false,$this->table));
         $this->assertTrue(dumper($this->get_pgsql()->connect(),false,$this->table));
-        $this->assertTrue(dumper($this->get_sqlite()->connect(),false,$this->table)); 
+        $this->assertTrue(dumper($this->get_sqlite()->connect(),false,$this->table));
+
+    }
+
+    public function test_not_in()
+    {
+        $data = array('red','apple','orange','purple','green');
+
+        $this->assertTrue(not_in($data,'alex'));
+        $this->assertTrue(not_in($data,'blue'));
+        $this->assertTrue(not_in($data,'cyan'));
+
+        $this->assertFalse(not_in($data,'red'));
+        $this->assertFalse(not_in($data,'apple'));
+        $this->assertFalse(not_in($data,'orange'));
+        $this->assertFalse(not_in($data,'purple'));
+        $this->assertFalse(not_in($data,'green'));
     }
 }

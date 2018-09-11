@@ -26,6 +26,10 @@ namespace Imperium\Directory {
     class Dir
     {
 
+        const IGNORE = array(
+            '.gitignore',
+            '.hgignore',
+        );
         /**
          * delete a folder with files
          *
@@ -40,7 +44,7 @@ namespace Imperium\Directory {
                $files = array_diff(scandir($directory), array('.','..'));
                foreach ($files as $file)
                {
-                   if($file != '.gitignore')
+                   if(not_in(self::IGNORE,$file))
                    {
                        (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::delete("$directory/$file");
                    }
@@ -59,10 +63,7 @@ namespace Imperium\Directory {
          */
         public static function create(string $directory): bool
         {
-            if (!self::is($directory))
-                return mkdir($directory);
-
-            return false;
+            return !self::is($directory) ? mkdir($directory):  false;
         }
 
         /**
@@ -74,10 +75,7 @@ namespace Imperium\Directory {
          */
         public static function remove(string $directory): bool
         {
-            if (self::is($directory))
-                return rmdir($directory);
-
-            return false;
+            return self::is($directory) ? rmdir($directory) : false;
         }
 
         /**

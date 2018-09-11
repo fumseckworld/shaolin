@@ -2017,6 +2017,14 @@ if (!exist('d'))
         die();
     }
 }
+
+if (!exist('not_in'))
+{
+    function not_in(array $array,$value)
+    {
+        return !in_array($value,$array,true);
+    }
+}
 if (!exist('dumper'))
 {
 
