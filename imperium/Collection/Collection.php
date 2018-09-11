@@ -314,7 +314,8 @@ class Collection implements ArrayAccess, Iterator
                 else
                     return $this->beforeValue;
         }
-        return $key;
+        return $this->has($key) ? $this->data[$key] : $key;
+
     }
 
     /**

@@ -1415,7 +1415,7 @@ if (!exist('git'))
     }
 }
 
-if (!exist('getCurrentBranch'))
+if (!exist('current_branch'))
 {
     /**
      * get the current git branch
@@ -1426,7 +1426,7 @@ if (!exist('getCurrentBranch'))
      *
      * @throws \Cz\Git\GitException
      */
-    function getCurrentBranch(string $repository): string
+    function current_branch(string $repository): string
     {
         return (new GitRepository($repository))->getCurrentBranchName();
     }
@@ -2089,7 +2089,7 @@ if (!exist('sql'))
     }
 }
 
-if (!exist('getLines'))
+if (!exist('lines'))
 {
     /**
      * get all lines in filename
@@ -2098,12 +2098,12 @@ if (!exist('getLines'))
      *
      * @return array
      */
-     function getLines(string $filename): array
+     function lines(string $filename): array
      {
          return File::getLines($filename);
      }
 }
-if (!exist('getKeys'))
+if (!exist('file_keys'))
 {
     /**
      * get all keys in filename
@@ -2113,14 +2113,14 @@ if (!exist('getKeys'))
      *
      * @return array
      */
-    function getKeys(string $filename,string $delimiter): array
+    function file_keys(string $filename,string $delimiter): array
     {
         return File::getKeys($filename,$delimiter);
     }
 
 }
 
-if (!exist('getValues'))
+if (!exist('file_values'))
 {
     /**
      * get all values in filename
@@ -2130,7 +2130,7 @@ if (!exist('getValues'))
      *
      * @return array
      */
-    function getValues(string $filename,string $delimiter): array
+    function file_values(string $filename,string $delimiter): array
     {
         return File::getValues($filename,$delimiter);
     }

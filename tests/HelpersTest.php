@@ -8,6 +8,7 @@ use Exception;
 use Faker\Generator;
 use Imperium\Connexion\Connect;
 use Imperium\Databases\Eloquent\Query\Query;
+use Imperium\Imperium;
 use PDO;
 use Testing\DatabaseTest;
 
@@ -561,4 +562,52 @@ class HelpersTest extends DatabaseTest
 
     }
 
+    public function test_imperium_instance()
+    {
+        $this->assertInstanceOf(Imperium::class,$this->get_mysql());
+        $this->assertInstanceOf(Imperium::class,$this->get_pgsql());
+        $this->assertInstanceOf(Imperium::class,$this->get_sqlite());
+    }
+
+    public function test_import()
+    {
+        $this->assertNotEmpty(bootstrap_js());
+        $this->assertNotEmpty(bootswatch());
+        $this->assertNotEmpty(foundation());
+        $this->assertNotEmpty(fontAwesome());
+    }
+
+    /**
+     * @throws \Cz\Git\GitException
+     */
+    public function test_current_branch()
+    {
+        $this->assertEquals('master',current_branch('.'));
+    }
+
+    public function test_array_prev()
+    {
+        $array = array(1 => 2,3=> 4,5=> 6,7=>8,9=> 10);
+
+        $this->assertEquals(8,array_prev($array,9));
+        $this->assertEquals(6,array_prev($array,7));
+        $this->assertEquals(4,array_prev($array,5));
+        $this->assertEquals(2,array_prev($array,3));
+        $this->assertEquals(null,array_prev($array,1));
+    }
+
+    public function test_lines()
+    {
+        $this->assertNotEmpty(lines('composer.json'));
+
+        $this->assertNotEmpty(file_keys('composer.json',','));
+
+        $this->assertNotEmpty(file_values('composer.json',','));
+
+        $this->assertNotEmpty(lines('README.md'));
+
+        $this->assertNotEmpty(file_keys('README.md','#'));
+        
+        $this->assertNotEmpty(file_values('README.md','#'));
+    }
 }
