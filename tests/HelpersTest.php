@@ -177,22 +177,29 @@ class HelpersTest extends DatabaseTest
         $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_sqlite()->model(),Query::SELECT,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
 
 
+        $mysql_data = execute_query(10,$this->get_mysql()->model(), $this->get_mysql()->table(),Query::UPDATE,'id','=',5,$this->table,$this->get_mysql()->class(),'update','');
+        $pgsql_data = execute_query(10,$this->get_pgsql()->model(), $this->get_pgsql()->table(),Query::UPDATE,'id','=',5,$this->table,$this->get_pgsql()->class(),'update','');
+        $sqlite_data = execute_query(10,$this->get_sqlite()->model(), $this->get_sqlite()->table(),Query::UPDATE,'id','=',5,$this->table,$this->get_sqlite()->class(),'update','');
 
+        $this->assertCount(1,$mysql_data);
+        $this->assertCount(1,$pgsql_data);
+        $this->assertCount(1,$sqlite_data);
 
         $query = execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_mysql()->class(),'update','');
 
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_mysql()->model(),Query::DELETE,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
-
+        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_mysql()->model(),Query::DELETE,$query,$this->get_mysql()->columns(),$success,$failure,$failure));
 
         $query = execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_pgsql()->class(),'update','');
 
         $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_pgsql()->model(),Query::DELETE,$query,$this->get_pgsql()->columns(),$success,$failure,$failure));
 
-
         $query = execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_sqlite()->class(),'update','');
 
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_sqlite()->model(),Query::DELETE,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
+        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_sqlite()->model(),Query::DELETE,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
 
+        $this->assertNotEmpty(query_result($this->get_mysql()->model(),Query::UPDATE,$mysql_data,$this->get_mysql()->columns(),$success,$failure,$failure));
+        $this->assertNotEmpty(query_result($this->get_pgsql()->model(),Query::UPDATE,$mysql_data,$this->get_pgsql()->columns(),$success,$failure,$failure));
+        $this->assertNotEmpty(query_result($this->get_sqlite()->model(),Query::UPDATE,$mysql_data,$this->get_sqlite()->columns(),$success,$failure,$failure));
     }
 
     public function test_merge()
@@ -529,6 +536,9 @@ class HelpersTest extends DatabaseTest
         $this->assertInstanceOf(Query::class,sql($this->table,$this->get_mysql()->query()));
         $this->assertInstanceOf(Query::class,sql($this->table,$this->get_pgsql()->query()));
         $this->assertInstanceOf(Query::class,sql($this->table,$this->get_sqlite()->query()));
+        $this->assertInstanceOf(Query::class,query($this->get_mysql()->table(),$this->get_mysql()->connect()));
+        $this->assertInstanceOf(Query::class, query($this->get_pgsql()->table(),$this->get_pgsql()->connect()));
+        $this->assertInstanceOf(Query::class,query($this->get_sqlite()->table(),$this->get_sqlite()->connect()));
     }
 
     /**

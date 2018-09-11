@@ -188,7 +188,7 @@ if (!exist('query_result'))
      */
     function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text): string
     {
-        if (equal($mode,'UPDATE'))
+        if (equal($mode,Query::UPDATE))
         {
             $code = '';
             foreach ($data as $datum)
@@ -228,10 +228,10 @@ if (!exist('execute_query'))
     function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action )
     {
 
-        if (equal($mode,'UPDATE'))
+        if (equal($mode,Query::UPDATE))
         {
             $code = collection();
-            foreach ($model->where($column_name,html_entity_decode($condition),$expected) as $record)
+            foreach ( $model->query()->set_current_table_name($current_table_name)->set_query_mode()->where($column_name,html_entity_decode($condition),$expected)->get()  as $record)
             {
                 $id = $table->set_current_table($current_table_name)->get_primary_key();
                 $code->push(form($form_update_action,uniqid())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
@@ -242,7 +242,7 @@ if (!exist('execute_query'))
         if (equal($mode,Query::DELETE))
         {
             $data = $model->where($column_name,$condition,$expected);
-            return empty($data) ? $data :  $model->query()->where($column_name, html_entity_decode($condition), $expected)->delete() ;
+            return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, html_entity_decode($condition), $expected)->delete() ;
         }
 
 

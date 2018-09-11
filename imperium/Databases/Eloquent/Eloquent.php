@@ -70,6 +70,8 @@ namespace  Imperium\Databases\Eloquent {
 
         const DELETE = 'DELETE';
 
+        const UPDATE = 'UPDATE';
+
         const MODE = array(Eloquent::SELECT,Eloquent::DELETE);
 
         const BETWEEN = "BETWEEN";
