@@ -558,6 +558,26 @@ class HelpersTest extends DatabaseTest
 
     }
 
+    public function test_id()
+    {
+        $this->assertNotEmpty(id());
+        $this->assertNotEmpty(id('alexandra'));
+        $this->assertNotEmpty(id(faker()->email));
+        $this->assertNotEmpty(id(faker()->text()));
+        $this->assertNotEmpty(id());
+        $this->assertNotEmpty(id(time()));
+        $this->assertNotEmpty(id(future('day',1)));
+    }
+    public function test_submit()
+    {
+
+        $this->assertFalse(submit(id()));
+        $this->assertFalse(submit(id(),false));
+        $_GET['a'] = 20;
+        $_POST['a'] = 20;
+        $this->assertTrue(submit('a'));
+        $this->assertTrue(submit('a',false));
+    }
     /**
      * @throws Exception
      */

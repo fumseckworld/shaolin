@@ -1060,6 +1060,20 @@ if (!exist('html'))
 }
 
 
+if (!exist('id'))
+{
+    /**
+     * generate an id
+     *
+     * @param string $prefix
+     *
+     * @return string
+     */
+    function id(string $prefix =''): string
+    {
+        return uniqid($prefix);
+    }
+}
 if (!exist('submit'))
 {
     /**
@@ -1071,7 +1085,7 @@ if (!exist('submit'))
      */
     function submit(string $key,bool $post = true): bool
     {
-        return $post ? isset($_POST[$key])  : isset($_GET[$key])  ;
+        return $post ?  isset($_POST[$key])   : isset($_GET[$key])  ;
     }
 }
 if (!exist('bootswatch'))
