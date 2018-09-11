@@ -16,6 +16,12 @@ class HelpersTest extends DatabaseTest
 {
 
 
+    public function test_instance()
+    {
+        $this->assertInstanceOf(Imperium::class,$this->get_mysql());
+        $this->assertInstanceOf(Imperium::class,$this->get_pgsql());
+        $this->assertInstanceOf(Imperium::class,$this->get_sqlite());
+    }
     /**
      * @throws \Exception
      */
