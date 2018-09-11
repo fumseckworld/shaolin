@@ -607,7 +607,21 @@ class HelpersTest extends DatabaseTest
         $this->assertNotEmpty(lines('README.md'));
 
         $this->assertNotEmpty(file_keys('README.md','#'));
-        
+
         $this->assertNotEmpty(file_values('README.md','#'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_dumper()
+    {
+        $this->assertTrue(dumper($this->get_mysql()->connect()));
+        $this->assertTrue(dumper($this->get_pgsql()->connect()));
+        $this->assertTrue(dumper($this->get_sqlite()->connect()));
+
+        $this->assertTrue(dumper($this->get_mysql()->connect(),false,$this->table));
+        $this->assertTrue(dumper($this->get_pgsql()->connect(),false,$this->table));
+        $this->assertTrue(dumper($this->get_sqlite()->connect(),false,$this->table)); 
     }
 }
