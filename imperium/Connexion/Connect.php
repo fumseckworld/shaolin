@@ -29,40 +29,40 @@ class Connect
      *
      * @var string
      */
-    private   $database;
+    private $database;
 
     /**
      * database username
      *
      * @var string
      */
-    private   $username;
+    private $username;
 
     /**
      * database password
      *
      * @var string
      */
-    private   $password;
+    private $password;
 
     /**
      * php driver
      *
      * @var string
      */
-    private  $driver;
+    private $driver;
 
     /**
      * fetch mode
      *
      * @var int
      */
-    private   $mode;
+    private  $mode;
 
     /**
      * @var PDO
      */
-    private   $instance;
+    private $instance;
 
     /**
      * @var string
@@ -93,8 +93,7 @@ class Connect
 
         $this->dump_path    = $dump_path;
 
-        $this->instance     = $this->getInstance();
-
+        $this->instance  = $this->getInstance();
     }
 
     /**
@@ -211,14 +210,13 @@ class Connect
      */
     public Function request(string $request): array
     {
-         $query = $this->instance()->prepare($request);
-         if ($query->execute())
-         {
-             $data = $query->fetchAll($this->mode);
-             $query->closeCursor();
-             return $data;
-         }
-         return [];
+         $query = $this->instance()->query($request);
+         $data = $query->fetchAll($this->get_fetch_mode());
+         $query->closeCursor();
+
+         return $data;
+
+
     }
 
     /**
@@ -232,10 +230,9 @@ class Connect
      */
     public Function execute(string $request): bool
     {
-         $query = $this->instance()->prepare($request);
-         $data = $query->execute();
-         $query->closeCursor();
-         return $data;
+         $response = $this->instance()->query($request,$this->get_fetch_mode());
+
+         return $response->closeCursor();
     }
 
     /**
@@ -244,54 +241,58 @@ class Connect
      */
     private function getInstance()
     {
-
         $database   = $this->database;
         $username   = $this->username;
         $password   = $this->password;
         $driver     = $this->driver;
 
-        if (equal($driver,Connect::SQLITE))
+        if (is_null($this->instance))
         {
+;            if (equal($driver,Connect::SQLITE))
+            {
+                if (def($database))
+                {
+                    try
+                    {
+                        return new PDO("$driver:$database");
+                    }catch (PDOException $e)
+                    {
+                        return $e->getMessage();
+                    }
+                }else{
+                    try
+                    {
+                        return new PDO("$driver::memory:");
+                    }catch (PDOException $e)
+                    {
+                        return $e->getMessage();
+                    }
+                }
+
+            }
             if (def($database))
             {
                 try
                 {
-                    return new PDO("$driver:$database");
+                    return new PDO("$driver:host=localhost;dbname=$database",$username,$password);
                 }catch (PDOException $e)
                 {
                     return $e->getMessage();
                 }
-            }else{
+            }
+            else
+            {
                 try
                 {
-                    return new PDO("$driver::memory:");
+                    return new PDO( "$driver:host=localhost;",$username,$password);
                 }catch (PDOException $e)
                 {
                     return $e->getMessage();
                 }
             }
+        }
+        return $this->instance;
 
-        }
-        if (def($database))
-        {
-            try
-            {
-                return new PDO("$driver:host=localhost;dbname=$database",$username,$password);
-            }catch (PDOException $e)
-            {
-                return $e->getMessage();
-            }
-        }
-       else
-       {
-           try
-           {
-               return new PDO( "$driver:host=localhost;",$username,$password);
-           }catch (PDOException $e)
-           {
-               return $e->getMessage();
-           }
-       }
     }
 
 }

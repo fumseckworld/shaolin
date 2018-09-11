@@ -51,18 +51,16 @@ if (!exist('instance'))
      *
      * @throws Exception
      */
-    function instance(string $driver,string $user,string $base,string $root_user,string $root_password,string $table ='',string $btn_class ='btn btn-outline-primary',string $btn_danger_class = 'btn btn-outline-danger',int $fetch_mode = PDO::FETCH_OBJ ,string $order_by = 'desc',string $password = '',string $dump_path = 'dump'): Imperium
+    function instance (string $driver,string $user,string $base,string $root_user,string $root_password,string $table ='',string $btn_class ='btn btn-outline-primary',string $btn_danger_class = 'btn btn-outline-danger',int $fetch_mode = PDO::FETCH_OBJ ,string $order_by = 'desc',string $password = '',string $dump_path = 'dump'): Imperium
     {
-
         $connexion          = connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
-        $root_connexion     = connect($driver,$base,$root_user,$root_password,$fetch_mode,$dump_path);
-        $users              = user($root_connexion);
-        $bases              = base($root_connexion);
+        $connexion_root     = connect($driver,$base,$root_user,$root_password,$fetch_mode,$dump_path);
+        $users              = user($connexion_root);
+        $bases              = base($connexion_root);
         $tables             = table($connexion)->path($dump_path);
         $query              = query($tables,$connexion);
         $sql                = $query->set_current_table_name($table);
         $model              = model($connexion,$tables,$table,$order_by);
-
         return imperium($bases,$tables,$users,$sql,$model,$connexion,$btn_class,$btn_danger_class);
     }
 }
@@ -309,7 +307,6 @@ if (!exist('connect'))
      *
      * @param string $dump_path
      * @return Connect
-     *
      */
     function connect(string $driver,string $base,string $user,string $password,int $fetch_mode,string $dump_path): Connect
     {

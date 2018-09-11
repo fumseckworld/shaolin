@@ -7,7 +7,7 @@
 
 
 * [**Discord**](https://discord.gg/qn6yptm)
-    * [**Coverage**](coverage/index.html)
+    * [**Coverage**](https://imperium.fumseck.eu)
 
 > run make in order to see the coverage and run tests
 

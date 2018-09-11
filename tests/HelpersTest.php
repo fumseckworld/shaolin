@@ -24,7 +24,7 @@ class HelpersTest extends DatabaseTest
         $not_found = 'records was not found';
         $table_empty = 'the current table is empty';
 
-        $code = query_view(2,"index.php",$this->mysql->model(),$this->mysql->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->mysql->class(),'record was removed successfully',$not_found,$table_empty);
+        $code = query_view(2,"index.php",$this->get_mysql()->model(),$this->get_mysql()->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->get_mysql()->class(),'record was removed successfully',$not_found,$table_empty);
 
 
         $this->assertContains('action="index.php"', $code);
@@ -40,28 +40,9 @@ class HelpersTest extends DatabaseTest
         $this->assertContains('remove', $code);
         $this->assertContains('select', $code);
         $this->assertContains('execute', $code);
-        $this->assertContains($this->mysql->class(), $code);
+        $this->assertContains($this->get_mysql()->class(), $code);
 
-        $code = query_view(2,"index.php",$this->pgsql->model(),$this->pgsql->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->pgsql->class(),'record was removed successfully',$not_found,$table_empty);
-
-
-        $this->assertContains('action="index.php"', $code);
-
-        $this->assertNotContains($not_found, $code);
-        $this->assertContains('expected"', $code);
-        $this->assertContains('superior ', $code);
-        $this->assertContains('superior or equal', $code);
-        $this->assertContains('inferior', $code);
-        $this->assertContains('inferior or equal', $code);
-        $this->assertContains('different', $code);
-        $this->assertContains('equal', $code);
-        $this->assertContains('like', $code);
-        $this->assertContains('remove', $code);
-        $this->assertContains('select', $code);
-        $this->assertContains('execute', $code);
-        $this->assertContains($this->mysql->class(), $code);
-
-        $code = query_view(2,"index.php",$this->sqlite->model(),$this->sqlite->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->sqlite->class(),'record was removed successfully',$not_found,$table_empty);
+        $code = query_view(2,"index.php",$this->get_pgsql()->model(),$this->get_pgsql()->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->get_pgsql()->class(),'record was removed successfully',$not_found,$table_empty);
 
 
         $this->assertContains('action="index.php"', $code);
@@ -78,7 +59,26 @@ class HelpersTest extends DatabaseTest
         $this->assertContains('remove', $code);
         $this->assertContains('select', $code);
         $this->assertContains('execute', $code);
-        $this->assertContains($this->sqlite->class(), $code);
+        $this->assertContains($this->get_mysql()->class(), $code);
+
+        $code = query_view(2,"index.php",$this->get_sqlite()->model(),$this->get_sqlite()->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->get_sqlite()->class(),'record was removed successfully',$not_found,$table_empty);
+
+
+        $this->assertContains('action="index.php"', $code);
+
+        $this->assertNotContains($not_found, $code);
+        $this->assertContains('expected"', $code);
+        $this->assertContains('superior ', $code);
+        $this->assertContains('superior or equal', $code);
+        $this->assertContains('inferior', $code);
+        $this->assertContains('inferior or equal', $code);
+        $this->assertContains('different', $code);
+        $this->assertContains('equal', $code);
+        $this->assertContains('like', $code);
+        $this->assertContains('remove', $code);
+        $this->assertContains('select', $code);
+        $this->assertContains('execute', $code);
+        $this->assertContains($this->get_sqlite()->class(), $code);
 
 
     }
@@ -121,35 +121,35 @@ class HelpersTest extends DatabaseTest
      */
     public function test_execute_query()
     {
-        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','=',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','!=',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','<=',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
-        $this->assertTrue(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','<',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','>',1,$this->table,$this->mysql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
+        $this->assertTrue(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
 
-        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','=',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','!=',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','<=',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
-        $this->assertTrue(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','<',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','>',1,$this->table,$this->pgsql->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
+        $this->assertTrue(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
 
-        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','=',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','!=',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','<=',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
-        $this->assertTrue(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','<',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','>',1,$this->table,$this->sqlite->class(),'update',''))->isEmpty());
-
-
-        $this->assertTrue(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::DELETE,'id','=',1,$this->table,$this->mysql->class(),'a',''));
-        $this->assertEmpty(execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::SELECT,'id','=',1,$this->table,$this->mysql->class(),'a',''));
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
+        $this->assertTrue(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
 
 
-        $this->assertTrue(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::DELETE,'id','=',1,$this->table,$this->pgsql->class(),'a',''));
-        $this->assertEmpty(execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::SELECT,'id','=',1,$this->table,$this->pgsql->class(),'a',''));
+        $this->assertTrue(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_mysql()->class(),'a',''));
+        $this->assertEmpty(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'a',''));
 
 
-        $this->assertTrue(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::DELETE,'id','=',1,$this->table,$this->sqlite->class(),'a',''));
-        $this->assertEmpty(execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::SELECT,'id','=',1,$this->table,$this->sqlite->class(),'a',''));
+        $this->assertTrue(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_pgsql()->class(),'a',''));
+        $this->assertEmpty(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'a',''));
+
+
+        $this->assertTrue(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_sqlite()->class(),'a',''));
+        $this->assertEmpty(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'a',''));
 
     }
 
@@ -162,38 +162,36 @@ class HelpersTest extends DatabaseTest
         $failure = 'record was not found';
 
 
-        $query = execute_query(10,$this->mysql->model(), $this->mysql->table(),Query::SELECT,'id','=',1,$this->table,$this->mysql->class(),'update','');
+        $query = execute_query(10,$this->get_mysql()->model(), $this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'update','');
 
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->mysql->model(),Query::SELECT,$query,$this->mysql->columns(),$success,$failure,$failure));
-
-
-        $query = execute_query(1,$this->pgsql->model(), $this->pgsql->table(),Query::SELECT,'id','=',1,$this->table,$this->pgsql->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->pgsql->model(),Query::SELECT,$query,$this->pgsql->columns(),$success,$failure,$failure));
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_mysql()->model(),Query::SELECT,$query,$this->get_mysql()->columns(),$success,$failure,$failure));
 
 
-        $query = execute_query(1,$this->sqlite->model(), $this->sqlite->table(),Query::SELECT,'id','=',1,$this->table,$this->sqlite->class(),'update','');
+        $query = execute_query(1,$this->get_pgsql()->model(), $this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'update','');
 
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->sqlite->model(),Query::SELECT,$query,$this->sqlite->columns(),$success,$failure,$failure));
-
-
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_pgsql()->model(),Query::SELECT,$query,$this->get_pgsql()->columns(),$success,$failure,$failure));
 
 
-        $query = execute_query(1,$this->mysql->model(),$this->mysql->table(),Query::DELETE,'id','=',2,$this->table,$this->mysql->class(),'update','');
+        $query = execute_query(1,$this->get_sqlite()->model(), $this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'update','');
 
-        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->mysql->model(),Query::DELETE,$query,$this->sqlite->columns(),$success,$failure,$failure));
-
-
-        $query = execute_query(1,$this->pgsql->model(),$this->pgsql->table(),Query::DELETE,'id','=',2,$this->table,$this->pgsql->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->pgsql->model(),Query::DELETE,$query,$this->pgsql->columns(),$success,$failure,$failure));
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_sqlite()->model(),Query::SELECT,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
 
 
-        $query = execute_query(1,$this->sqlite->model(),$this->sqlite->table(),Query::DELETE,'id','=',2,$this->table,$this->sqlite->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->sqlite->model(),Query::DELETE,$query,$this->sqlite->columns(),$success,$failure,$failure));
 
 
+        $query = execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_mysql()->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_mysql()->model(),Query::DELETE,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
+
+
+        $query = execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_pgsql()->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_pgsql()->model(),Query::DELETE,$query,$this->get_pgsql()->columns(),$success,$failure,$failure));
+
+
+        $query = execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_sqlite()->class(),'update','');
+
+        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_sqlite()->model(),Query::DELETE,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
 
     }
 
@@ -240,33 +238,33 @@ class HelpersTest extends DatabaseTest
     {
 
         $choose = 'select a table';
-        $select = tables_select($this->mysql->table(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->get_mysql()->table(),'imperium',$this->table,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->mysql->table(),'imperium',$this->table,$choose,true);
+        $select = tables_select($this->get_mysql()->table(),'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->pgsql->table(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->get_pgsql()->table(),'imperium',$this->table,$choose,false);
 
         $this->assertNotContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->pgsql->table(),'imperium',$this->table,$choose,true);
+        $select = tables_select($this->get_pgsql()->table(),'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
 
-        $select = tables_select($this->sqlite->table(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->get_sqlite()->table(),'imperium',$this->table,$choose,false);
 
         $this->assertNotContains('location',$select);
         $this->assertContains($choose,$select);
@@ -274,7 +272,7 @@ class HelpersTest extends DatabaseTest
         $this->assertNotEmpty($select);
 
 
-        $select = tables_select($this->sqlite->table(),'imperium',$this->table,$choose,true);
+        $select = tables_select($this->get_sqlite()->table(),'imperium',$this->table,$choose,true);
 
         $this->assertContains($choose,$select);
         $this->assertContains('location',$select);
@@ -289,26 +287,26 @@ class HelpersTest extends DatabaseTest
     {
 
         $choose = 'select an user';
-        $select = users_select($this->mysql->user(),'imperium',$this->table,$choose,false);
+        $select = users_select($this->get_mysql()->user(),'imperium',$this->table,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = users_select($this->mysql->user(),'imperium',$this->table,$choose,true);
+        $select = users_select($this->get_mysql()->user(),'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = users_select($this->pgsql->user(),'imperium',$this->table,$choose,false);
+        $select = users_select($this->get_pgsql()->user(),'imperium',$this->table,$choose,false);
 
         $this->assertNotContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = users_select($this->pgsql->user(),'imperium',$this->table,$choose,true);
+        $select = users_select($this->get_pgsql()->user(),'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
@@ -323,25 +321,25 @@ class HelpersTest extends DatabaseTest
     {
 
         $choose = 'select a database';
-        $select = bases_select($this->mysql->base(),'imperium',$this->base,$choose,false);
+        $select = bases_select($this->get_mysql()->base(),'imperium',$this->base,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = bases_select($this->mysql->base(),'imperium',$this->base,$choose,true);
+        $select = bases_select($this->get_mysql()->base(),'imperium',$this->base,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
         $this->assertNotEmpty($select);
 
-        $select = bases_select($this->pgsql->base(),'imperium',$this->base,$choose,false);
+        $select = bases_select($this->get_pgsql()->base(),'imperium',$this->base,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = bases_select($this->pgsql->base(),'imperium',$this->base,$choose,true);
+        $select = bases_select($this->get_pgsql()->base(),'imperium',$this->base,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
@@ -445,11 +443,9 @@ class HelpersTest extends DatabaseTest
      */
     public function test_pass()
     {
-        $this->assertTrue(pass($this->mysql->connect(),self::MYSQL_USER,self::MYSQL_USER));
-        $this->assertTrue(pass($this->mysql->connect(),self::MYSQL_USER,self::MYSQL_PASS));
+        $this->assertTrue(pass($this->get_mysql()->connect(),self::MYSQL_USER,self::MYSQL_PASS));
 
-        $this ->assertTrue(pass($this->pgsql->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_USER));
-        $this->assertTrue(pass($this->pgsql->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
+        $this ->assertTrue(pass($this->get_pgsql()->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
 
     }
 
@@ -502,13 +498,13 @@ class HelpersTest extends DatabaseTest
     {
         $user = 'alexandra';
 
-        $this->assertTrue(user_add($user,$user,'',$this->mysql->connect()));
-        $this->assertTrue(user_add($user,$user,'',$this->pgsql->connect()));
-        $this->assertFalse(user_add($user,$user,'',$this->sqlite->connect()));
+        $this->assertTrue(user_add($user,$user,'',$this->get_mysql()->connect()));
+        $this->assertTrue(user_add($user,$user,'',$this->get_pgsql()->connect()));
+        $this->assertFalse(user_add($user,$user,'',$this->get_sqlite()->connect()));
 
-        $this->assertTrue(remove_users($this->mysql->connect(),$user));
-        $this->assertTrue(remove_users($this->pgsql->connect(),$user));
-        $this->assertFalse(remove_users($this->sqlite->connect(),$user));
+        $this->assertTrue(remove_users($this->get_mysql()->connect(),$user));
+        $this->assertTrue(remove_users($this->get_pgsql()->connect(),$user));
+        $this->assertFalse(remove_users($this->get_sqlite()->connect(),$user));
     }
 
 
@@ -525,11 +521,14 @@ class HelpersTest extends DatabaseTest
         $this->assertEquals("$scriptFirst$scriptSecond",$loader);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_sql()
     {
-        $this->assertInstanceOf(Query::class,sql($this->table,$this->mysql->query()));
-        $this->assertInstanceOf(Query::class,sql($this->table,$this->pgsql->query()));
-        $this->assertInstanceOf(Query::class,sql($this->table,$this->sqlite->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->get_mysql()->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->get_pgsql()->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->get_sqlite()->query()));
     }
 
     /**
@@ -537,8 +536,8 @@ class HelpersTest extends DatabaseTest
      */
     public function test_collation()
     {
-        $this->assertFalse(collection(collation($this->mysql->connect()))->isEmpty());
-        $this->assertFalse(collection(collation($this->pgsql->connect()))->isEmpty());
+        $this->assertFalse(collection(collation($this->get_mysql()->connect()))->isEmpty());
+        $this->assertFalse(collection(collation($this->get_pgsql()->connect()))->isEmpty());
 
     }
 
@@ -547,8 +546,8 @@ class HelpersTest extends DatabaseTest
      */
     public function test_charset()
     {
-        $this->assertFalse(collection(charset($this->mysql->connect()))->isEmpty());
-        $this->assertFalse(collection(charset($this->pgsql->connect()))->isEmpty());
+        $this->assertFalse(collection(charset($this->get_mysql()->connect()))->isEmpty());
+        $this->assertFalse(collection(charset($this->get_pgsql()->connect()))->isEmpty());
 
     }
 

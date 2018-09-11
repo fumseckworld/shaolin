@@ -11,13 +11,17 @@ endif
 
 all: dbs pgsql mysql sqlite
 	@clear
-	@vendor/bin/phpunit --coverage-html coverage
-
+	@vendor/bin/phpunit --coverage-html H:\laragon\coverage\imperium
 conf: dbs pgsql mysql sqlite
 
 serve: ## Start php server
 	clear
 	@php -S localhost:8000 -d display_errors=1
+
+tests: all ## Start php server
+	clear
+	@php -S localhost:3000 -t coverage
+
 
 add: ## Add a library
 	${COMPOSER} require $(COMPOSER_ARGS)
@@ -46,9 +50,9 @@ sqlite:
 
 dbs: drop
 	psql -c "create database $(BASE);" -U postgres
-	mysql -uroot -e "CREATE DATABASE $(BASE);"
+	mysql -uroot  -e "CREATE DATABASE $(BASE);"
 	touch $(BASE) && chmod 777 $(BASE)
 drop:
 	psql -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
-	mysql -uroot -e "DROP DATABASE IF EXISTS $(BASE);"
+	mysql -uroot  -e "DROP DATABASE IF EXISTS $(BASE);"
 	$(RM) $(BASE)

@@ -118,7 +118,7 @@ namespace Imperium\Databases\Eloquent\Query {
 
         public function sql(): string
         {
-            $mode = empty($this->mode) ? Query::SELECT : Query::DELETE;
+            $mode = def($this->mode) ?  $this->mode  : Query::SELECT;
 
             switch ($mode)
             {

@@ -208,24 +208,24 @@ class CollectionTest extends DatabaseTest
      */
     public function test_print()
     {
-        $data = collection($this->mysql->model()->all());
+        $data = collection($this->get_mysql()->model()->all());
 
-        $this->assertNotEmpty($data->print(true,$this->mysql->model()->columns()));
+        $this->assertNotEmpty($data->print(true,$this->get_mysql()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
-        $this->assertNotEmpty($data->print(false,$this->mysql->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,$this->get_mysql()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
 
-        $data = collection( $this->pgsql->model()->all());
-        $this->assertNotEmpty($data->print(true,$this->pgsql->model()->columns()));
+        $data = collection( $this->get_pgsql()->model()->all());
+        $this->assertNotEmpty($data->print(true,$this->get_pgsql()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
-        $this->assertNotEmpty($data->print(false,$this->pgsql->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,$this->get_pgsql()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
 
-        $data = \collection($this->sqlite->model()->all());
+        $data = \collection($this->get_sqlite()->model()->all());
 
-        $this->assertNotEmpty($data->print(true,$this->sqlite->model()->columns()));
+        $this->assertNotEmpty($data->print(true,$this->get_sqlite()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
-        $this->assertNotEmpty($data->print(false,$this->sqlite->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,$this->get_sqlite()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
 
     }

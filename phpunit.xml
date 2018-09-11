@@ -13,9 +13,10 @@
         <testsuite name="Application Test Suite">
             <directory suffix="Test.php">./tests</directory>
         </testsuite>
+
     </testsuites>
     <filter>
-        <whitelist proceessUncoveredFromWhitelist="true">
+        <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">imperium/</directory>
             <directory suffix=".php">app/</directory>
         </whitelist>
