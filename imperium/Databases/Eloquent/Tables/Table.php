@@ -872,7 +872,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
             $value = '(' .$val->join(', ') . ')';
 
-            $command = "INSERT INTO  $this->table  $columns VALUES $value   ";
+            $command = "INSERT INTO  $this->table  $columns VALUES $value";
 
 
 

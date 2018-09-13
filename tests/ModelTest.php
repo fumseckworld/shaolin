@@ -88,7 +88,7 @@ class ModelTest extends DatabaseTest
 
     public function test_insert()
     {
-        $number = 100;
+        $number = 5;
         for ($i = 0; $i != $number; ++$i)
         {
             $data = [
