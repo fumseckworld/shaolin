@@ -125,4 +125,18 @@ class ModelTest extends DatabaseTest
         $this->assertCount($number,$this->get_pgsql()->model()->all());
         $this->assertCount($number,$this->get_sqlite()->model()->all());
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_driver()
+    {
+        $this->assertTrue($this->get_mysql()->connect()->mysql());
+        $this->assertTrue($this->get_pgsql()->connect()->postgresql());
+        $this->assertTrue($this->get_sqlite()->connect()->sqlite());
+
+        $this->assertFalse($this->get_mysql()->connect()->postgresql());
+        $this->assertFalse($this->get_pgsql()->connect()->sqlite());
+        $this->assertFalse($this->get_sqlite()->connect()->mysql());
+    }
 }

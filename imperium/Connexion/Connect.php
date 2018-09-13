@@ -163,7 +163,7 @@ class Connect
      */
     public function mysql(): bool
     {
-        return $this->driver = self::MYSQL;
+        return equal($this->driver,self::MYSQL);
     }
 
     /**
@@ -173,7 +173,7 @@ class Connect
      */
     public function postgresql(): bool
     {
-        return $this->driver = self::POSTGRESQL;
+        return equal($this->driver,self::POSTGRESQL);
     }
 
     /**
@@ -183,7 +183,7 @@ class Connect
      */
     public function sqlite(): bool
     {
-        return $this->driver = self::SQLITE;
+        return equal($this->driver,self::SQLITE);
     }
 
     /**
