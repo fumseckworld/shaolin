@@ -10,7 +10,9 @@ namespace tests;
 
 
 use Exception;
+use Imperium\Connexion\Connect;
 use Imperium\Databases\Eloquent\Query\Query;
+use PDO;
 use Testing\DatabaseTest;
 
 class ModelTest extends DatabaseTest
@@ -138,5 +140,43 @@ class ModelTest extends DatabaseTest
         $this->assertFalse($this->get_mysql()->connect()->postgresql());
         $this->assertFalse($this->get_pgsql()->connect()->sqlite());
         $this->assertFalse($this->get_sqlite()->connect()->mysql());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_get_instance()
+    {
+        $expected = PDO::class;
+        $x = new Connect(Connect::MYSQL,'',self::MYSQL_USER,self::MYSQL_PASS);
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::POSTGRESQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $this->assertInstanceOf($expected,$x->instance());
+
+
+        $x = new Connect(Connect::SQLITE,'','','');
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::MYSQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS);
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $this->assertInstanceOf($expected,$x->instance());
+
+
+        $x = new Connect(Connect::SQLITE,$this->base,'','');
+        $this->assertInstanceOf ($expected,$x->instance());
+
+        $this->expectException(Exception::class);
+
+        $x = new Connect(Connect::POSTGRESQL,'',self::MYSQL_USER,self::MYSQL_PASS);
+        $x->instance();
+        $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $x->instance();
+        $x =  new Connect(Connect::POSTGRESQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS);
+        $x->instance();
+        $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $x->instance();
     }
 }
