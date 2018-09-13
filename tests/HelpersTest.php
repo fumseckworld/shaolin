@@ -427,6 +427,9 @@ class HelpersTest extends DatabaseTest
         html('',$class,$content);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_login()
     {
         $login = login('index.php','login','username','password','login',$this->class,'login-id');

@@ -10,6 +10,7 @@ namespace tests;
 
 
 use Exception;
+use Imperium\Databases\Eloquent\Query\Query;
 use Testing\DatabaseTest;
 
 class ModelTest extends DatabaseTest
@@ -78,14 +79,29 @@ class ModelTest extends DatabaseTest
      */
     public function test_truncate()
     {
+        $empty = 'the table is empty';
+        $success = 'records was found';
+
         $this->assertTrue($this->get_mysql()->model()->truncate());
+        $result = query_result($this->get_mysql()->model(),Query::SELECT,$this->get_mysql()->records(),$this->get_mysql()->columns(),$success,$empty,$empty);
+
         $this->assertCount(0,$this->get_mysql()->model()->all());
+        $this->assertContains($empty,$result);
+
         $this->assertTrue($this->get_pgsql()->model()->truncate());
+        $result = query_result($this->get_pgsql()->model(),Query::SELECT,$this->get_pgsql()->records(),$this->get_pgsql()->columns(),$success,$empty,$empty);
         $this->assertCount(0,$this->get_pgsql()->model()->all());
+        $this->assertContains($empty,$result);
+
         $this->assertTrue($this->get_sqlite()->model()->truncate());
+        $result = query_result($this->get_sqlite()->model(),Query::SELECT,$this->get_sqlite()->records(),$this->get_sqlite()->columns(),$success,$empty,$empty);
         $this->assertCount(0,$this->get_sqlite()->model()->all());
+        $this->assertContains($empty,$result);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_insert()
     {
         $number = 5;
