@@ -100,11 +100,11 @@ class CollectionTest extends DatabaseTest
     {
         $data =  collection();
 
-        $this->assertTrue($data->isNumeric('1'));
-        $this->assertTrue($data->isNumeric(12));
-        $this->assertTrue($data->isString("azadz"));
-        $this->assertTrue($data->isString("lerfzz"));
-        $this->assertTrue($data->isEmpty());
+        $this->assertTrue($data->numeric('1'));
+        $this->assertTrue($data->numeric(12));
+        $this->assertTrue($data->string("azadz"));
+        $this->assertTrue($data->string("lerfzz"));
+        $this->assertTrue($data->empty());
     }
 
     public function test_get()

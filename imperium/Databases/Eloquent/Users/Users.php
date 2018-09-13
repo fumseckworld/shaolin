@@ -97,12 +97,12 @@ namespace Imperium\Databases\Eloquent\Users {
                     foreach ($this->connexion->request("SELECT user from mysql.user") as $user)
                     {
                         $x = current($user);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
 
                             $users->push($x);
                         } else {
-                            if ($hidden->notExist($x))
+                            if ($hidden->not_exist($x))
                                 $users->push($x);
                         }
                     }
@@ -111,12 +111,12 @@ namespace Imperium\Databases\Eloquent\Users {
                     foreach ($this->connexion->request( "SELECT rolname FROM pg_roles") as $user)
                     {
                         $x = current($user);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
 
                             $users->push($x);
                         } else {
-                            if ($hidden->notExist($x))
+                            if ($hidden->not_exist($x))
                                 $users->push($x);
                         }
                     }

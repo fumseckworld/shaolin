@@ -85,4 +85,28 @@ class ModelTest extends DatabaseTest
         $this->assertTrue($this->get_sqlite()->model()->truncate());
         $this->assertCount(0,$this->get_sqlite()->model()->all());
     }
+
+    public function test_insert()
+    {
+        $number = 100;
+        for ($i = 0; $i != $number; ++$i)
+        {
+            $data = [
+                'id' => null,
+                'name' => faker()->name(),
+                'age' => faker()->numberBetween(1,80),
+                'sex' => rand(1,2) == 1 ? 'M': 'F',
+                'status' => faker()->text(20),
+                'date' => faker()->date()
+            ];
+
+            $this->assertTrue($this->get_mysql()->model()->insert($data,$this->table));
+            $this->assertTrue($this->get_pgsql()->model()->insert($data,$this->table));
+            $this->assertTrue($this->get_sqlite()->model()->insert($data,$this->table));
+        }
+
+        $this->assertCount($number,$this->get_mysql()->model()->all());
+        $this->assertCount($number,$this->get_pgsql()->model()->all());
+        $this->assertCount($number,$this->get_sqlite()->model()->all());
+    }
 }

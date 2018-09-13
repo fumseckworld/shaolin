@@ -58,7 +58,7 @@ if (!exist('instance'))
         $users              = user($connexion_root);
         $bases              = base($connexion_root);
         $tables             = table($connexion)->path($dump_path);
-        $query              = query($tables,$connexion);
+        $query              = query($tables,$connexion)->set_current_table_name($table);
         $sql                = $query->set_current_table_name($table);
         $model              = model($connexion,$tables,$table,$order_by);
         return imperium($bases,$tables,$users,$sql,$model,$connexion,$btn_class,$btn_danger_class);
@@ -328,7 +328,10 @@ if (!exist('login'))
      * @param string $csrf
      * @param string $submit_icon
      *
+     * @param string $user_icon
+     * @param string $password_icon
      * @return string
+     * @throws Exception
      */
     function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $csrf ='',string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
@@ -987,7 +990,6 @@ if (!exist('_html'))
                     echo html_entity_decode($x,ENT_QUOTES,'UTF-8');
                 }
             }
-
         }
 
     }
@@ -1491,9 +1493,7 @@ if (!exist('pass'))
      */
     function pass(Connect $connect,string $username ,string $new_password) : bool
     {
-
         return user($connect)->update_password($username,$new_password);
-
     }
 }
 
@@ -1509,10 +1509,7 @@ if (!exist('os'))
      */
     function os(bool $name = false)
     {
-        if ($name)
-            return (new Os())->getName();
-        else
-            return new Os();
+        return $name ?  (new Os())->getName() : new Os();
     }
 }
 
@@ -1527,10 +1524,7 @@ if (!exist('device'))
      */
     function device(bool $name = false)
     {
-        if ($name)
-            return (new Device())->getName();
-        else
-            return new Device();
+        return $name ?  (new Device())->getName() : new Device();
     }
 }
 
@@ -1546,10 +1540,7 @@ if (!exist('browser'))
      */
     function browser(bool $name = false)
     {
-        if ($name)
-            return (new Browser())->getName();
-        else
-            return new Browser();
+        return $name ?  (new Browser())->getName(): new Browser();
     }
 }
 
@@ -1599,57 +1590,23 @@ if (!exist('create'))
 if (!exist('databases_view'))
 {
     /**
-     * create a view to create  database, user or table
-     *
      * @param Imperium $imperium
-     *
      * @param $create_database_action
+     * @param string $drop_database_action
      * @param $name_of_database_placeholder
      * @param $create_database_submit
-     *
-     * @param $database_was_created_successfully
-     * @param $database_creation_failed
-     * @param string $database_already_exist
      * @param string $drop_database_submit_text
-     * @param string $database_was_removed_successfully
-     * @param string $remove_database_failed
+     *
      * @return string
      *
      * @throws Exception
      */
-    function databases_view(Imperium $imperium,$create_database_action,$name_of_database_placeholder,$create_database_submit,$database_was_created_successfully,$database_creation_failed,string $database_already_exist,string $drop_database_submit_text,string $database_was_removed_successfully,string $remove_database_failed): string
+    function databases_view(Imperium $imperium,$create_database_action,string $drop_database_action,$name_of_database_placeholder,$create_database_submit,string $drop_database_submit_text): string
     {
         $code = '';
-        if (post('name'))
-        {
-            $base = post('name');
-            if ($imperium->database_exist($base))
-            {
-                append($code,html('div',$database_already_exist,'alert alert-danger'));
-            }else{
-                if ($imperium->base()->set_charset(post('charset'))->set_collation(post('collation'))->create(post('name')))
-                {
-                    append($code,html('div',$database_was_created_successfully,'alert alert-success'));
-                }else{
-                    append($code,html('div',$database_creation_failed,'alert alert-danger'));
-                }
-            }
-
-        }
-
-        if (post('database'))
-        {
-            $code = '';
-            if ($imperium->base()->drop(post('database')))
-            {
-                append($code,html('div',$database_was_removed_successfully,'alert alert-success'));
-            }else{
-                append($code,html('div',$remove_database_failed,'alert alert-danger'));
-            }
-        }
 
         append($code,html('div',form($create_database_action,uniqid())->startRow()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->endRowAndNew()->input(Form::TEXT,'name',$name_of_database_placeholder)->endRowAndNew()->submit($create_database_submit,$imperium->class(),uniqid())->get(),'mt-5 mb-5'));
-        append($code,html('div',form($create_database_action,uniqid())->startRow()->select('database',$imperium->show_databases())->endRowAndNew()->submit($drop_database_submit_text,$imperium->class(false),uniqid())->get(),'mt-5 mb-5'));
+        append($code,html('div',form($drop_database_action,uniqid())->startRow()->select('database',$imperium->show_databases())->endRowAndNew()->submit($drop_database_submit_text,$imperium->class(false),uniqid())->get(),'mt-5 mb-5'));
 
         return $code;
     }

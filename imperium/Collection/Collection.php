@@ -41,7 +41,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return bool
      */
-    public function isEmpty()
+    public function empty()
     {
         return empty($this->data);
     }
@@ -392,7 +392,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return bool
      */
-    public function notExist($value): bool
+    public function not_exist($value): bool
     {
         return ! $this->exist($value);
     }
@@ -404,7 +404,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return bool
      */
-    public function isNumeric($value): bool
+    public function numeric($value): bool
     {
         return is_numeric($value);
     }
@@ -416,7 +416,7 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return bool
      */
-    public function isString($value): bool
+    public function string($value): bool
     {
         return is_string($value);
     }

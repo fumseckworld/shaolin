@@ -7,6 +7,7 @@ namespace  tests;
 use Exception;
 use Faker\Generator;
 use Imperium\Connexion\Connect;
+use Imperium\Databases\Eloquent\Bases\Base;
 use Imperium\Databases\Eloquent\Query\Query;
 use Imperium\Imperium;
 use PDO;
@@ -128,23 +129,23 @@ class HelpersTest extends DatabaseTest
      */
     public function test_execute_query()
     {
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
-        $this->assertTrue(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_mysql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
-        $this->assertTrue(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_pgsql()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
-        $this->assertTrue(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_sqlite()->class(),'update',''))->isEmpty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
 
 
         $this->assertTrue(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_mysql()->class(),'a',''));
@@ -553,8 +554,8 @@ class HelpersTest extends DatabaseTest
      */
     public function test_collation()
     {
-        $this->assertFalse(collection(collation($this->get_mysql()->connect()))->isEmpty());
-        $this->assertFalse(collection(collation($this->get_pgsql()->connect()))->isEmpty());
+        $this->assertFalse(collection(collation($this->get_mysql()->connect()))->empty());
+        $this->assertFalse(collection(collation($this->get_pgsql()->connect()))->empty());
 
     }
 
@@ -583,8 +584,8 @@ class HelpersTest extends DatabaseTest
      */
     public function test_charset()
     {
-        $this->assertFalse(collection(charset($this->get_mysql()->connect()))->isEmpty());
-        $this->assertFalse(collection(charset($this->get_pgsql()->connect()))->isEmpty());
+        $this->assertFalse(collection(charset($this->get_mysql()->connect()))->empty());
+        $this->assertFalse(collection(charset($this->get_pgsql()->connect()))->empty());
 
     }
 
@@ -665,5 +666,15 @@ class HelpersTest extends DatabaseTest
         $this->assertFalse(not_in($data,'orange'));
         $this->assertFalse(not_in($data,'purple'));
         $this->assertFalse(not_in($data,'green'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_base()
+    {
+        $this->assertInstanceOf(Base::class,\base($this->get_mysql()->connect()));
+        $this->assertInstanceOf(Base::class,\base($this->get_pgsql()->connect()));
+        $this->assertInstanceOf(Base::class,\base($this->get_sqlite()->connect()));
     }
 }

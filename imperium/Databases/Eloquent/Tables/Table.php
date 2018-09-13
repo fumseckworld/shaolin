@@ -26,7 +26,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
     use Imperium\Connexion\Connect;
     use Imperium\Databases\Eloquent\Eloquent;
     use Imperium\Databases\Eloquent\Share;
- 
+
 
     class Table extends Eloquent implements EloquentTableBuilder
     {
@@ -832,8 +832,8 @@ namespace  Imperium\Databases\Eloquent\Tables {
                 $this->table = $table;
 
             $primary = $this->get_primary_key();
-            $columns = '(' . collection($this->get_columns())->join(', ',true,"$primary, ",'') .') ';
 
+            $columns = '(' . collection($this->get_columns())->join(', ') .') ';
 
             $val = collection();
             $ignore = collection($toIgnore);
@@ -841,24 +841,40 @@ namespace  Imperium\Databases\Eloquent\Tables {
             foreach ($values as $key => $value)
             {
 
-                if ($key !== $primary)
+                if (different($key,$primary))
                 {
-                    if ($ignore->notExist($value))
+                    if ($ignore->not_exist($value))
                     {
-                        if ($val->notExist($value))
+                        if ($val->not_exist($value))
                         {
-                            if ($val->isNumeric($value))
+                            if ($val->numeric($value))
                                 $val->push($value);
                             else
                                 $val->push("'".addslashes($value)."'");
                         }
                     }
                 }
+                else
+                {
+
+                    switch ($this->connexion->get_driver())
+                    {
+                        case Connect::POSTGRESQL:
+                           $val->push(" DEFAULT");
+                        break;
+                        default:
+                            $val->push('NULL');
+                        break;
+                    }
+                }
+
             }
 
             $value = '(' .$val->join(', ') . ')';
 
-            $command = "INSERT INTO  $this->table  $columns VALUES $value";
+            $command = "INSERT INTO  $this->table  $columns VALUES $value   ";
+
+
 
             return $this->connexion->execute($command);
         }
@@ -913,11 +929,11 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     foreach ($this->connexion->request("SHOW TABLES") as $table)
                     {
                         $tab = current($table);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
                             $tables->push($tab);
                         }else{
-                            if ($hidden->notExist($tab))
+                            if ($hidden->not_exist($tab))
                                 $tables->push($tab);
                         }
                     }
@@ -928,11 +944,11 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     foreach ($this->connexion->request("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');") as $table)
                     {
                         $tab = current($table);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
                             $tables->push($tab);
                         }else {
-                            if ($hidden->notExist($tab))
+                            if ($hidden->not_exist($tab))
                                 $tables->push($tab);
                         }
                     }
@@ -943,11 +959,11 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     foreach ($this->connexion->request("SELECT tbl_name FROM sqlite_master") as $table)
                     {
                         $tab = current($table);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
                             $tables->push($tab);
                         }else {
-                            if ($hidden->notExist($tab))
+                            if ($hidden->not_exist($tab))
                                 $tables->push($tab);
                         }
                     }
@@ -1095,17 +1111,17 @@ namespace  Imperium\Databases\Eloquent\Tables {
             {
                 if ($k != $primary)
                 {
-                    if ($ignoreValues->isEmpty())
+                    if ($ignoreValues->empty())
                     {
-                        if ($columns->isNumeric($value))
+                        if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                         else
                             $columns->push("$k = ' ".addslashes($value)."'");
 
                     }else {
-                        if ($ignoreValues->notExist($value))
+                        if ($ignoreValues->not_exist($value))
                         {
-                            if ($columns->isNumeric($value))
+                            if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                             else
                                 $columns->push("$k = ' ".addslashes($value)."'");
@@ -1219,7 +1235,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
         {
             $hidden = collection($this->hidden);
 
-            if ($hidden->isEmpty())
+            if ($hidden->empty())
             {
                 foreach ($this->show() as $table)
                     if (!$this->drop($table))
@@ -1228,7 +1244,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
             {
                 foreach ($this->show() as $table)
                 {
-                    if ($hidden->notExist($table))
+                    if ($hidden->not_exist($table))
                     {
                         if (!$this->drop($table))
                             return false;

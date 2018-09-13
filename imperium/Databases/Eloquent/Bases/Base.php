@@ -84,12 +84,12 @@ namespace Imperium\Databases\Eloquent\Bases {
                     foreach ($this->connexion->request('SHOW DATABASES') as $db)
                     {
                         $x = current($db);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
 
                             $databases->push($x);
                         } else {
-                            if ($hidden->notExist($x))
+                            if ($hidden->not_exist($x))
                                 $databases->push($x);
                         }
                     }
@@ -98,12 +98,12 @@ namespace Imperium\Databases\Eloquent\Bases {
                     foreach ($this->connexion->request('select datname from pg_database') as $db)
                     {
                         $x = current($db);
-                        if ($hidden->isEmpty())
+                        if ($hidden->empty())
                         {
 
                             $databases->push($x);
                         } else {
-                            if ($hidden->notExist($x))
+                            if ($hidden->not_exist($x))
                                 $databases->push($x);
                         }
                     }

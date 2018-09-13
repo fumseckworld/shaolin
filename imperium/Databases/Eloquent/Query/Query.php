@@ -97,7 +97,7 @@ namespace Imperium\Databases\Eloquent\Query {
             foreach ($keys as $key)
                 $values->push(is_null($key));
 
-            return $values->notExist(false);
+            return $values->not_exist(false);
 
 
         }
@@ -113,7 +113,7 @@ namespace Imperium\Databases\Eloquent\Query {
             foreach ($keys as $key)
                 $values->push(is_null($key));
 
-            return $values->notExist(true);
+            return $values->not_exist(true);
         }
 
         public function sql(): string

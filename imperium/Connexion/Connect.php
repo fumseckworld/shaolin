@@ -230,9 +230,13 @@ class Connect
      */
     public Function execute(string $request): bool
     {
-         $response = $this->instance()->query($request,$this->get_fetch_mode());
 
-         return $response->closeCursor();
+        $response = $this->instance->prepare($request);
+
+        $data = $response->execute();
+        $response->closeCursor();
+        return $data;
+
     }
 
     /**
