@@ -10,6 +10,15 @@ use Imperium\Databases\Eloquent\Share;
 use Imperium\Databases\Eloquent\Tables\Table;
 use PDO;
 
+
+/**
+ *  Table content management
+ *
+ * Class Model
+ *
+ * @package Imperium\Model
+ *
+ */
 class Model
 {
      use Share;
@@ -34,56 +43,75 @@ class Model
     }
 
     /**
-     * show all tables
+     *
+     * Display all tables in current database
      *
      * @return array
      *
      * @throws Exception
+     *
      */
-    public function show_tables():array
+    public function show_tables(): array
     {
         return $this->tables->show();
     }
 
-    public function query()
+    /**
+     *
+     * Return the sql builder instance
+     *
+     * @return Query
+     *
+     */
+    public function query(): Query
     {
         return $this->sql;
     }
+
     /**
-     * get all records with an order by
+     *
+     * Get all records in current table
+     * with an order by
      *
      * @param string $order
      * @return array
      *
      * @throws Exception
+     *
      */
     public function all(string $order = 'desc'): array
     {
        return $this->tables->getRecords($order);
     }
 
+
     /**
-     * find a record by id
+     *
+     * Select a record by this id
      *
      * @param int $id
      *
      * @return array
      *
      * @throws Exception
+     *
      */
-    public function find(int $id):array
+    public function find(int $id): array
     {
-          return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,'=',$id)->get();
+        return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,'=',$id)->get();
     }
 
     /**
-     * find a record or fail
+     *
+     * Select a record by this id
+     * or throw exception if record was not found
      *
      * @param int $id
      *
      * @return array
      *
      * @throws Exception
+     *
      */
     public function findOrFail(int $id): array
     {
@@ -96,7 +124,9 @@ class Model
     }
 
     /**
-     * get records by a where clause
+     *
+     * Select only one or multiples
+     * records with a clause where
      *
      * @param $param
      * @param $condition
@@ -105,6 +135,7 @@ class Model
      * @return array
      *
      * @throws Exception
+     *
      */
     public function where($param,$condition,$expected): array
     {
@@ -113,13 +144,15 @@ class Model
     }
 
     /**
-     * remove a record
+     *
+     * Remove a record by this id
      *
      * @param int $id
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
     public function remove(int $id): bool
     {
@@ -127,7 +160,9 @@ class Model
     }
 
     /**
-     * save data in the table
+     *
+     * Insert data in the table
+     *
      *
      * @param array $data
      * @param string $table
@@ -136,31 +171,35 @@ class Model
      * @return bool
      *
      * @throws Exception
+     *
      */
     public function insert(array $data,string $table ,array $ignore = []): bool
     {
         return $this->tables->insert($data,$ignore,$table);
     }
 
-
     /**
-     * count record
      *
-     * @return array|int
+     * Return number of record inside the current table
+     *
+     * @return int
      *
      * @throws Exception
+     *
      */
-    public function count()
+    public function count(): int
     {
         return $this->tables->count();
     }
 
     /**
-     * truncate a table
+     *
+     * Empty the table
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
     public function truncate(): bool
     {
@@ -169,7 +208,8 @@ class Model
 
 
     /**
-     * update a record
+     *
+     * Update a record by this id
      *
      * @param int $id
      * @param array $data
@@ -178,6 +218,7 @@ class Model
      * @return bool
      *
      * @throws Exception
+     *
      */
     public function update(int $id,array $data,array $ignore =[]): bool
     {
@@ -185,11 +226,12 @@ class Model
     }
 
     /**
-     * get all table columns
+     * Display all columns inside the current table
      *
      * @return array
      *
      * @throws Exception
+     *
      */
     public function columns(): array
     {
@@ -197,13 +239,14 @@ class Model
     }
 
     /**
-     * check if a table is empty
+     * Check if the current table has not record
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    public function isEmpty(): bool
+    public function empty(): bool
     {
         return $this->tables->is_empty();
     }
@@ -215,31 +258,39 @@ class Model
      *
      * @throws Exception
      */
-    public function getInstance(): PDO
+    public function pdo(): PDO
     {
         return $this->connexion->instance();
     }
 
     /**
+     *
+     * return the results of the custom query in an array
+     *
      * @param string $query
      *
      * @return array
      *
      * @throws Exception
+     *
      */
-    public function request(string $query):array
+    public function request(string $query): array
     {
         return $this->connexion->request($query);
     }
 
     /**
+     *
+     * Execute a custom query
+     *
      * @param string $query
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    public function execute(string $query):bool
+    public function execute(string $query): bool
     {
         return $this->connexion->execute($query);
     }

@@ -231,7 +231,7 @@ class CollectionTest extends DatabaseTest
         $this->assertNotEmpty($data->print(false,$this->get_sqlite()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
         $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
-    
+
     }
 
     public function test()

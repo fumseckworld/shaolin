@@ -428,7 +428,7 @@ class Imperium
      *
      * @throws Exception
      */
-    public function getPdo(): PDO
+    public function pdo(): PDO
     {
         return $this->connexion->instance();
     }

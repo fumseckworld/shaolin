@@ -35,8 +35,47 @@ class ModelTest extends DatabaseTest
         $this->assertNotContains($this->table,$this->get_pgsql()->show_tables([$this->table]));
         $this->assertNotContains($this->table,$this->get_sqlite()->show_tables([$this->table]));
 
+
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_request()
+    {
+        $table = $this->table;
+        $this->assertNotEmpty($this->get_mysql()->model()->request('SHOW DATABASES'));
+        $this->assertNotEmpty($this->get_pgsql()->model()->request("SELECT * FROM $table"));
+        $this->assertNotEmpty($this->get_sqlite()->model()->request("SELECT * FROM $table"));
+    }
+
+    /**
+    * @throws Exception
+    */
+    public function test_execute()
+    {
+        $table = $this->table;
+        $this->assertTrue($this->get_mysql()->model()->execute('SHOW DATABASES'));
+        $this->assertTrue($this->get_pgsql()->model()->execute("SELECT * FROM $table"));
+        $this->assertTrue($this->get_sqlite()->model()->execute("SELECT * FROM $table"));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_pdo()
+    {
+        $this->assertInstanceOf(PDO::class,$this->get_mysql()->pdo());
+        $this->assertInstanceOf(PDO::class,$this->get_mysql()->model()->pdo());
+
+        $this->assertInstanceOf(PDO::class,$this->get_pgsql()->pdo());
+        $this->assertInstanceOf(PDO::class,$this->get_pgsql()->model()->pdo());
+
+        $this->assertInstanceOf(PDO::class,$this->get_sqlite()->pdo());
+        $this->assertInstanceOf(PDO::class,$this->get_sqlite()->model()->pdo());
+
+
+    }
     /**
      * @throws \Exception
      */
@@ -89,17 +128,40 @@ class ModelTest extends DatabaseTest
 
         $this->assertCount(0,$this->get_mysql()->model()->all());
         $this->assertContains($empty,$result);
+        $this->assertTrue( $this->get_mysql()->model()->empty());
 
         $this->assertTrue($this->get_pgsql()->model()->truncate());
         $result = query_result($this->get_pgsql()->model(),Query::SELECT,$this->get_pgsql()->records(),$this->get_pgsql()->columns(),$success,$empty,$empty);
         $this->assertCount(0,$this->get_pgsql()->model()->all());
         $this->assertContains($empty,$result);
+        $this->assertTrue( $this->get_pgsql()->model()->empty());
 
         $this->assertTrue($this->get_sqlite()->model()->truncate());
         $result = query_result($this->get_sqlite()->model(),Query::SELECT,$this->get_sqlite()->records(),$this->get_sqlite()->columns(),$success,$empty,$empty);
         $this->assertCount(0,$this->get_sqlite()->model()->all());
         $this->assertContains($empty,$result);
+        $this->assertTrue( $this->get_sqlite()->model()->empty());
     }
+
+    /**
+     * @throws Exception
+     */
+
+    public function test_update()
+    {
+        $data = [
+            'id' => 6,
+            'name' => faker()->name(),
+            'age' => faker()->numberBetween(1,80),
+            'sex' => rand(1,2) == 1 ? 'M': 'F',
+            'status' => faker()->text(20),
+            'date' => faker()->date()
+        ];
+        $this->assertTrue($this->get_mysql()->update(6,$data));
+        $this->assertTrue($this->get_pgsql()->update(6,$data));
+        $this->assertTrue($this->get_sqlite()->update(6,$data));
+    }
+
 
     /**
      * @throws Exception
@@ -124,9 +186,15 @@ class ModelTest extends DatabaseTest
         }
 
         $this->assertCount($number,$this->get_mysql()->model()->all());
+        $this->assertEquals($number,$this->get_mysql()->model()->count());
+
         $this->assertCount($number,$this->get_pgsql()->model()->all());
+        $this->assertEquals($number,$this->get_pgsql()->model()->count());
+
         $this->assertCount($number,$this->get_sqlite()->model()->all());
+        $this->assertEquals($number,$this->get_sqlite()->model()->count());
     }
+
 
     /**
      * @throws Exception

@@ -984,33 +984,32 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function count(string $table = '',int $mode = Eloquent::MODE_ONE_TABLE)
         {
-            if (def($table) && $mode == Eloquent::MODE_ONE_TABLE)
+
+            switch ($mode)
             {
-                foreach ($this->connexion->request("SELECT COUNT(*) FROM {$table}") as $number)
-                    return current($number);
-            }
+                case Eloquent::MODE_ONE_TABLE && def($table):
+                    foreach ($this->connexion->request("SELECT COUNT(*) FROM {$table}") as $number)
+                        return current($number);
+                break;
 
-            if ($mode == Eloquent::MODE_ONE_TABLE && ! empty($this->table))
-            {
-                foreach ($this->connexion->request("SELECT COUNT(*) FROM {$this->table}") as $number)
-                    return current($number);
+                case Eloquent::MODE_ONE_TABLE && def($this->table):
+                    foreach ($this->connexion->request("SELECT COUNT(*) FROM {$this->table}") as $number)
+                        return current($number);
+                break;
+                default:
+                    $numbers = collection();
 
-            }
-
-            if ($mode == Eloquent::MODE_ALL_TABLES)
-            {
-                $numbers = collection();
-
-                foreach ($this->show() as $table)
-                {
-                    foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
+                    foreach ($this->show() as $table)
                     {
-                        $numbers->merge([$table => current($number)]);
+                        foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
+                        {
+                            $numbers->merge([$table => current($number)]);
+                        }
                     }
-                }
-                return $numbers->collection();
+                    return $numbers->collection();
+                break;
             }
-            return null;
+            return '';
         }
 
 
