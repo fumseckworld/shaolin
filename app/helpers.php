@@ -341,16 +341,19 @@ if (!exist('login'))
 
 if(!exist('collection'))
 {
+
     /**
-     * manage the array
      *
-     * @param array $array
+     * Get an instance of collection
+     *
+     * @param array $data
      *
      * @return Collection
+     *
      */
-    function collection(array $array = []): Collection
+    function collection(array $data = []): Collection
     {
-        return new Collection($array);
+        return new Collection($data);
     }
 }
 

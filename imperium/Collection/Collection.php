@@ -50,25 +50,11 @@ class Collection implements ArrayAccess, Iterator
      * Save or create an array to manage
      *
      * @param array $data
-     * @param string[] $values
      *
      */
-    public function __construct(array $data = [],string ...$values)
+    public function __construct(array $data = [])
     {
-        if (def($values))
-        {
-            $val = '';
-            foreach ($values as $value)
-                append($val,",$value");
-
-            $data =  explode(',',$val);
-            array_shift($data);
-            $this->data = $data;
-        }else
-        {
-            $this->data = $data;
-        }
-
+        $this->data = $data;
 
         $this->position = 0;
     }

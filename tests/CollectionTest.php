@@ -47,6 +47,7 @@ class CollectionTest extends DatabaseTest
         $this->assertEquals(0,$data->init());
 
     }
+ 
 
     public function test_end()
     {
