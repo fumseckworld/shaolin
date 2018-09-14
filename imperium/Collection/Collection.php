@@ -6,40 +6,79 @@ namespace Imperium\Collection;
 use ArrayAccess;
 use Iterator;
 
+/**
+ * Management of array
+ *
+ * Class Collection
+ *
+ * @package Imperium\Collection
+ */
 class Collection implements ArrayAccess, Iterator
 {
+
     /**
+     *
+     * the array to manage
+     *
      * @var array
+     *
      */
     private $data = array();
 
     /**
-     * current position
+     *
+     * the current position
      *
      * @var int
+     *
      */
     private $position;
 
     /**
+     *
+     * the value before a key
+     *
      * @var mixed
+     *
      */
     private $beforeValue;
 
-
     /**
+     *
      * Collection constructor.
+     *
+     * Save or create an array to manage
+     *
      * @param array $data
+     * @param string[] $values
+     *
      */
-    public function __construct(array $data = [])
+    public function __construct(array $data = [],string ...$values)
     {
-        $this->data = $data;
+        if (def($values))
+        {
+            $val = '';
+            foreach ($values as $value)
+                append($val,",$value");
+
+            $data =  explode(',',$val);
+            array_shift($data);
+            $this->data = $data;
+        }else
+        {
+            $this->data = $data;
+        }
+
+
         $this->position = 0;
     }
 
     /**
+     *
      * check if array is empty
      *
      * @return bool
+     *
      */
     public function empty()
     {
@@ -47,9 +86,11 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * init the counter
+     *
+     * Initialize the position to 0 and return the position
      *
      * @return int
+     *
      */
     public function init()
     {
@@ -58,7 +99,8 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * print data from a table
+     *
+     * Generate personal, table, card code to see records information
      *
      * @param bool $printATable
      * @param bool $printCards
@@ -72,6 +114,7 @@ class Collection implements ArrayAccess, Iterator
      * @param string $htmlCodeAfterAll
      *
      * @return string
+     *
      */
     public function print( bool $printATable = true ,array $columns =[],bool $printCards = false,string $htmlHeadCode= '',string $htmlEndHead ='',string $bodyHtmlElement= '',string $bodyElementClass= '',string $bodyElementSeparator= '',string $htmlCodeBeforeAll = '<div class="row">',string $htmlCodeAfterAll = '</div>'): string
     {
@@ -169,82 +212,99 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * get
+     *
+     * get the array modified
+     *
      * @return array
+     *
      */
-    public function getCollection(): array
+    public function collection(): array
     {
         return $this->data;
     }
 
     /**
-     * add data in the array
+     *
+     *  Add to the end of the array
      *
      * @param mixed $values
      *
      * @return Collection
+     *
      */
     public function push(...$values): Collection
     {
         foreach ($values as $value)
-            push($this->data,$value);
+            array_push($this->data,$value);
 
 
         return $this;
     }
 
     /**
-     * create a stack
+     *
+     * Add to the begin of the array
      *
      * @param mixed $values
      *
      * @return Collection
+     *
      */
     public function stack(...$values): Collection
     {
         foreach ($values as $value)
-            stack($this->data,$value);
+            array_unshift($this->data,$value);
 
         return $this;
     }
 
     /**
+     *
+     * Merge multiple array inside the array
+     *
      * @param array ...$array ...$array
      *
      * @return Collection
+     *
      */
     public function merge(array ...$array): Collection
     {
-        foreach($array as  $v)
-            merge($this->data,$v);
+        foreach($array as  $x)
+           $this->data = array_merge($this->data,$x);
 
         return $this;
     }
 
     /**
-     * get the last element in an array
+     *
+     * Return the last element inside the array
      *
      * @return mixed
+     *
      */
-    public function end()
+    public function last()
     {
         return end($this->data);
     }
 
     /**
-     * get the first element of an array
+     *
+     * Return the first element inside the array
      *
      * @return mixed
+     *
      */
-    public function start()
+    public function begin()
     {
         return reset($this->data);
     }
 
     /**
-     * count the total of elements in the array
+     *
+     * Return the number of elements inside the array
      *
      * @return int
+     *
      */
     public function length(): int
     {
@@ -252,32 +312,31 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * define a value with a key
+     *
+     * Add inside the array a value with and optional key
      *
      * @param string $key
      * @param $value
      *
      * @return Collection
+     *
      */
 
-    public function set($value,$key = ''): Collection
+    public function add($value,$key = ''): Collection
     {
-        if (not_def($key))
-        {
-            $this->data[] = $value;
-        } else {
-            $this->data[$key] = $value;
-        }
-        return $this;
+        not_def($key) ?  $this->data[] = $value :  $this->data[$key] = $value;
 
+        return $this;
     }
 
     /**
-     * reverse an array
+     *
+     * Return the reverse of the array
      *
      * @param bool $preserveKey
      *
      * @return array
+     *
      */
     public function reverse($preserveKey= false): array
     {
@@ -286,16 +345,18 @@ class Collection implements ArrayAccess, Iterator
 
 
     /**
-     * get the value of the array before a key
+     *
+     * Return the value of the array before a key
      *
      * @param $key
      *
      * @return mixed
+     *
      */
-    public function valueBeforeKey($key)
+    public function value_before_key($key)
     {
         $length = $this->length();
-        if ($this->has($key) && $length > 1)
+        if ($this->has_key($key) && $length > 1)
         {
 
             foreach ($this->data as $k => $v)
@@ -314,18 +375,20 @@ class Collection implements ArrayAccess, Iterator
                 else
                     return $this->beforeValue;
         }
-        return $this->has($key) ? $this->data[$key] : $key;
+        return $this->has_key($key) ? $this->data[$key] : $key;
 
     }
 
     /**
-     * verify if a key exist in the array
+     *
+     * Check if the key exist inside the array
      *
      * @param $key
      *
      * @return bool
+     *
      */
-    public function has($key): bool
+    public function has_key($key): bool
     {
         return key_exists($key,$this->data);
     }
@@ -335,9 +398,9 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return array
      */
-    public function getValues(): array
+    public function values(): array
     {
-        return values($this->data);
+        return array_values($this->data);
     }
 
     /**
@@ -345,15 +408,19 @@ class Collection implements ArrayAccess, Iterator
      *
      * @return array
      */
-    public function getKeys(): array
+    public function keys(): array
     {
         return array_keys($this->data);
     }
 
     /**
-     * get the before value in the array
+     *
+     * Move the current position before
+     * the current position
+     * and return the current value
      *
      * @return mixed
+     *
      */
     public function before()
     {
@@ -362,9 +429,13 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * get the prev value in the array
+     *
+     * Move the current position after
+     * the current position
+     * and return the current value
      *
      * @return mixed
+     *
      */
     public function after()
     {
@@ -374,23 +445,27 @@ class Collection implements ArrayAccess, Iterator
 
 
     /**
-     * verify if a value exist in an array
+     *
+     * Check if the value exist inside the array
      *
      * @param $value
      *
      * @return bool
+     *
      */
     public function exist($value): bool
     {
-        return has($value,$this->data);
+        return in_array($value,$this->data);
     }
 
     /**
-     * verify is a value nt exist
+     *
+     * Check if the value not exist inside the array
      *
      * @param $value
      *
      * @return bool
+     *
      */
     public function not_exist($value): bool
     {
@@ -398,11 +473,13 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * verify if value is numeric
+     *
+     * Check if the value is numeric
      *
      * @param $value
      *
      * @return bool
+     *
      */
     public function numeric($value): bool
     {
@@ -410,11 +487,13 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * verify is a value is a string
+     *
+     * Check if the value is a string
      *
      * @param $value
      *
      * @return bool
+     *
      */
     public function string($value): bool
     {
@@ -422,43 +501,47 @@ class Collection implements ArrayAccess, Iterator
     }
 
     /**
-     * get the value of a key in the array
+     *
+     * Get a value inside the array by a key
      *
      * @param $key
      *
-     * @return bool|mixed
+     * @return mixed
+     *
      */
     public function get($key)
     {
-        return $this->has($key) ? $this->data[$key] : '';
-
+        return $this->has_key($key) ? $this->data[$key] : '';
     }
 
     /**
-     * remove a value in the array
+     *
+     * Remove a value inside the array by a key
      *
      * @param $key
      *
      * @return Collection
+     *
      */
     public function remove($key): Collection
     {
-        if ($this->has($key))
+        if ($this->has_key($key))
           unset($this->data[$key]);
 
         return $this;
     }
 
     /**
-     * join values by a the glue
+     *
+     * Join all values inside the array by a string
      *
      * @param string $glue
-     *
      * @param bool $replace
      * @param string $search
      * @param string $new_value
      *
      * @return string
+     *
      */
     public function join(string $glue,bool $replace = false,string $search= '',string $new_value =''): string
     {
@@ -471,9 +554,11 @@ class Collection implements ArrayAccess, Iterator
 
 
     /**
-     * empty the data
+     *
+     * Empty the array
      *
      * @return Collection
+     *
      */
     public function clear(): Collection
     {
@@ -496,7 +581,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function offsetExists($offset)
     {
-       return $this->has($offset);
+       return $this->has_key($offset);
     }
 
     /**
@@ -527,7 +612,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function offsetSet($offset, $value)
     {
-        $this->set($offset,$value);
+        $this->add($offset,$value);
     }
 
     /**
@@ -575,7 +660,6 @@ class Collection implements ArrayAccess, Iterator
      */
     public function valid()
     {
-
         return isset($this->data[$this->position]);
     }
 

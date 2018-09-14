@@ -122,7 +122,7 @@ namespace Imperium\Databases\Eloquent\Users {
                     }
                 break;
             }
-            return $users->getCollection();
+            return $users->collection();
         }
 
         /**

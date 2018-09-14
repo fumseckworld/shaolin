@@ -180,7 +180,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
                 break;
             }
-            return $types->getCollection();
+            return $types->collection();
         }
 
         /**
@@ -216,7 +216,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                 break;
             }
 
-            return $fields->getCollection();
+            return $fields->collection();
         }
 
         /**
@@ -969,7 +969,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     }
                 break;
             }
-            return $tables->getCollection();
+            return $tables->collection();
         }
 
         /**
@@ -1008,7 +1008,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                         $numbers->merge([$table => current($number)]);
                     }
                 }
-                return $numbers->getCollection();
+                return $numbers->collection();
             }
             return null;
         }

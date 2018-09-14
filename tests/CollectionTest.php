@@ -29,15 +29,15 @@ class CollectionTest extends DatabaseTest
         $data = collection();
 
         $data->push(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
-        $this->assertEquals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],$data->getCollection());
-        $this->assertEquals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],$data->getCollection());
+        $this->assertEquals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],$data->collection());
+        $this->assertEquals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20],$data->collection());
     }
     public function test_stack()
     {
         $data = collection();
 
         $data->stack(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
-        $this->assertEquals([20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],$data->getCollection());
+        $this->assertEquals([20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1],$data->collection());
 
     }
 
@@ -52,7 +52,7 @@ class CollectionTest extends DatabaseTest
     {
         $data = collection([1,2,3]);
 
-        $this->assertEquals(3,$data->end());
+        $this->assertEquals(3,$data->last());
     }
 
     public function test_key()
@@ -67,7 +67,7 @@ class CollectionTest extends DatabaseTest
     {
         $data = collection([1,2,3]);
 
-        $this->assertEquals(1,$data->start());
+        $this->assertEquals(1,$data->begin());
     }
 
     public function test_length()
@@ -84,15 +84,15 @@ class CollectionTest extends DatabaseTest
     {
         $data = collection();
 
-        $data->set('alex')->set('marc')->set('marion');
+        $data->add('alex')->add('marc')->add('marion');
 
-        $this->assertEquals(['alex','marc','marion'],$data->getCollection());
+        $this->assertEquals(['alex','marc','marion'],$data->collection());
 
         $data =  collection();
 
-        $data->set(10,'note')->set(15,'age')->set(25 ,'euros');
+        $data->add(10,'note')->add(15,'age')->add(25 ,'euros');
 
-        $this->assertEquals(['note' => 10,'age' => 15,'euros' => 25] ,$data->getCollection());
+        $this->assertEquals(['note' => 10,'age' => 15,'euros' => 25] ,$data->collection());
 
     }
 
@@ -111,7 +111,7 @@ class CollectionTest extends DatabaseTest
     {
         $data =  collection();
 
-        $data->set(10,'note')->set(15,'age')->set(25 ,'euros');
+        $data->add(10,'note')->add(15,'age')->add(25 ,'euros');
 
         $this->assertEquals(10,$data->get('note'));
         $this->assertEquals(15,$data->get('age'));
@@ -122,10 +122,10 @@ class CollectionTest extends DatabaseTest
     {
         $data =  collection();
 
-        $data->set(10,'note')->set(15,'age')->set(25 ,'euros');
+        $data->add(10,'note')->add(15,'age')->add(25 ,'euros');
 
         $data->remove('note');
-        $this->assertNotContains('note',$data->getCollection());
+        $this->assertNotContains('note',$data->collection());
     }
 
     public function test_join()
@@ -141,9 +141,9 @@ class CollectionTest extends DatabaseTest
     public function test_get_values()
     {
         $data = collection();
-        $data->set('i','a')->set('am','b')->set('a','c')->set('boy','d');
-        $this->assertEquals(['i','am','a','boy'],$data->getValues());
-        $this->assertEquals(['a','b','c','d'],$data->getKeys());
+        $data->add('i','a')->add('am','b')->add('a','c')->add('boy','d');
+        $this->assertEquals(['i','am','a','boy'],$data->values());
+        $this->assertEquals(['a','b','c','d'],$data->keys());
     }
 
     public function test_for()
@@ -160,14 +160,14 @@ class CollectionTest extends DatabaseTest
     public function test_array_prev()
     {
         $data = collection(['note' =>10 ,'age' => 18,'phone' => 564]);
-        $this->assertEquals(10,$data->valueBeforeKey('age'));
-        $this->assertEquals(18,$data->valueBeforeKey('phone'));
+        $this->assertEquals(10,$data->value_before_key('age'));
+        $this->assertEquals(18,$data->value_before_key('phone'));
 
         $data = collection([10 , 18, 564]);
-        $this->assertEquals(10,$data->valueBeforeKey(18));
-        $this->assertEquals(18,$data->valueBeforeKey(564));
+        $this->assertEquals(10,$data->value_before_key(18));
+        $this->assertEquals(18,$data->value_before_key(564));
         $data = collection([10]);
-        $this->assertEquals(10,$data->valueBeforeKey(10));
+        $this->assertEquals(10,$data->value_before_key(10));
 
     }
 

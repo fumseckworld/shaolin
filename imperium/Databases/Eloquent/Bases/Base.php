@@ -86,7 +86,6 @@ namespace Imperium\Databases\Eloquent\Bases {
                         $x = current($db);
                         if ($hidden->empty())
                         {
-
                             $databases->push($x);
                         } else {
                             if ($hidden->not_exist($x))
@@ -109,7 +108,7 @@ namespace Imperium\Databases\Eloquent\Bases {
                     }
                 break;
             }
-            return $databases->getCollection();
+            return $databases->collection();
         }
 
         /**
@@ -251,7 +250,7 @@ namespace Imperium\Databases\Eloquent\Bases {
                         $charset->push(current($char));
                 break;
             }
-            return $charset->getCollection();
+            return $charset->collection();
         }
 
         /**
@@ -275,7 +274,7 @@ namespace Imperium\Databases\Eloquent\Bases {
                         $collation->push(current($char));
                 break;
             }
-            return $collation->getCollection();
+            return $collation->collection();
         }
 
         /**

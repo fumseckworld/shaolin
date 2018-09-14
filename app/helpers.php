@@ -158,7 +158,7 @@ if (!exist('register'))
             $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate();
 
             if ($multiple_languages)
-                $form->startRow()->select('locale',$languages->getCollection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->endRow();
+                $form->startRow()->select('locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->endRow();
 
            return   $form->startRow()->input(Form::TEXT,'name',$username_placeholder,$username_success_text,$username_error_text,$username_icon,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_success_text,$email_error_text,$email_icon,post('email'),true)->endRowAndNew()
                 ->input(Form::PASSWORD,'password',$password_placeholder,$password_valid_text,$password_invalid_text,$password_icon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_valid_text,$password_invalid_text,  $password_icon,post('password_confirmation'),true)->endRowAndNew()
@@ -236,7 +236,7 @@ if (!exist('execute_query'))
                 $id = $table->set_current_table($current_table_name)->get_primary_key();
                 $code->push(form($form_update_action,uniqid())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
             }
-            return $code->getCollection();
+            return $code->collection();
 
         }
         if (equal($mode,Query::DELETE))
@@ -412,7 +412,7 @@ if (!exist('zones'))
         foreach (DateTimeZone::listIdentifiers() as $x)
             $zones->merge([$x => $x]);
 
-        return $zones->getCollection();
+        return $zones->collection();
     }
 }
 
@@ -563,7 +563,7 @@ if (!exist('tables_select'))
 
         }
 
-        return $use_a_redirect_select ? form('',uniqid())->startRow()->csrf($csrf_token_field)->redirectSelect('table',$tables->getCollection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf_token_field)->startRow()->select('table',$tables->getCollection(),$icon)->endRow()->get();
+        return $use_a_redirect_select ? form('',uniqid())->startRow()->csrf($csrf_token_field)->redirectSelect('table',$tables->collection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf_token_field)->startRow()->select('table',$tables->collection(),$icon)->endRow()->get();
      }
 }
 
@@ -596,7 +596,7 @@ if (!exist('users_select'))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->startRow()->redirectSelect('users',$users->getCollection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('users',$users->getCollection(),$icon)->endRow()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->startRow()->redirectSelect('users',$users->collection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('users',$users->collection(),$icon)->endRow()->get();
      }
 }
 
@@ -631,7 +631,7 @@ if (!exist('bases_select'))
 
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->startRow()->csrf($csrf)->redirectSelect('bases',$bases->getCollection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('bases',$bases->getCollection(),$icon)->endRow()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->startRow()->csrf($csrf)->redirectSelect('bases',$bases->collection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('bases',$bases->collection(),$icon)->endRow()->get();
      }
 }
 
@@ -1319,7 +1319,7 @@ if (!exist('generate'))
      */
     function generate(string $formId,string $class,string $action,string $table,Table $instance,string $submitText,string $submitClass,string $submitIcon,string $submitId,string $csrfToken = '',int $mode = Form::CREATE,int $id = 0): string
     {
-        return form($action,$formId,$class)->csrf($csrfToken)->generate($table,$instance,$submitText,$submitClass,$submitId,$submitIcon,$mode,$id);
+        return form($action,$formId,$class)->csrf($csrfToken)->generate(1,$table,$instance,$submitText,$submitClass,$submitId,$submitIcon,$mode,$id);
     }
 }
 
@@ -1381,7 +1381,7 @@ if (!exist('collation'))
             break;
 
         }
-        return $collation->getCollection();
+        return $collation->collection();
     }
 }
 if (!exist('charset'))
@@ -1411,7 +1411,7 @@ if (!exist('charset'))
 
             break;
         }
-        return $encoding->getCollection();
+        return $encoding->collection();
     }
 }
 
@@ -1703,7 +1703,7 @@ if(!exist('array_prev'))
 
         $collection = new  Collection($array);
 
-        return $collection->valueBeforeKey($key);
+        return $collection->value_before_key($key);
     }
 
 }
