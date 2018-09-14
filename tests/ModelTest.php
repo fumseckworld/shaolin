@@ -12,6 +12,7 @@ namespace tests;
 use Exception;
 use Imperium\Connexion\Connect;
 use Imperium\Databases\Eloquent\Query\Query;
+use Imperium\Model\Model;
 use PDO;
 use Testing\DatabaseTest;
 
@@ -49,6 +50,15 @@ class ModelTest extends DatabaseTest
         $this->assertNotEmpty($this->get_sqlite()->model()->request("SELECT * FROM $table"));
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_construct()
+    {
+        $this->assertInstanceOf(Model::class,new Model($this->get_mysql()->connect(),$this->get_mysql()->table(),$this->table));
+        $this->assertInstanceOf(Model::class,new Model($this->get_pgsql()->connect(),$this->get_pgsql()->table(),$this->table));
+        $this->assertInstanceOf(Model::class,new Model($this->get_sqlite()->connect(),$this->get_sqlite()->table(),$this->table));
+    }
     /**
     * @throws Exception
     */
