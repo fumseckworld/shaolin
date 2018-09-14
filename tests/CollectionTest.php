@@ -47,7 +47,7 @@ class CollectionTest extends DatabaseTest
         $this->assertEquals(0,$data->init());
 
     }
- 
+
 
     public function test_end()
     {
@@ -215,12 +215,14 @@ class CollectionTest extends DatabaseTest
         $this->assertNotEmpty($data->print(true));
         $this->assertNotEmpty($data->print(false,$this->get_mysql()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
+        $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
 
         $data = collection( $this->get_pgsql()->model()->all());
         $this->assertNotEmpty($data->print(true,$this->get_pgsql()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
         $this->assertNotEmpty($data->print(false,$this->get_pgsql()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
+        $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
 
         $data = \collection($this->get_sqlite()->model()->all());
 
@@ -228,7 +230,8 @@ class CollectionTest extends DatabaseTest
         $this->assertNotEmpty($data->print(true));
         $this->assertNotEmpty($data->print(false,$this->get_sqlite()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
-
+        $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
+    
     }
 
     public function test()

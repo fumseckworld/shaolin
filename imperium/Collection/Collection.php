@@ -107,32 +107,6 @@ class Collection implements ArrayAccess, Iterator
         $this->rewind();
 
 
-        if (!$printATable && !$printCards)
-        {
-            $code = '';
-            append($code,$htmlCodeBeforeAll);
-            while ($this->valid())
-            {
-                $values = $this->current();
-
-                append($code,$htmlHeadCode,'<'.$bodyHtmlElement.' class="'.$bodyElementClass.'">');
-
-
-                foreach ($values as $k => $v)
-                {
-                    append($code,"<$bodyElementSeparator> {$values->$k} </$bodyElementSeparator>");
-
-                }
-
-                append($code,'</'.$bodyHtmlElement.'>',$htmlEndHead);
-
-
-                $this->next();
-            }
-            append($code,$htmlCodeAfterAll);
-           return $code;
-        }
-
         if (!$printATable && $printCards)
         {
             $code = '';
@@ -159,9 +133,7 @@ class Collection implements ArrayAccess, Iterator
             append($code,'</div>');
 
             return $code;
-        }
-
-        if ($printATable && !$printCards)
+        }elseif ($printATable && !$printCards)
         {
             $code = '';
             append($code,'<table class="table table-bordered table-hover"><thead><tr>');
@@ -192,8 +164,32 @@ class Collection implements ArrayAccess, Iterator
             }
             append($code,'</tbody></table>');
             return $code;
+        }else
+        {
+
+            $code = '';
+            append($code,$htmlCodeBeforeAll);
+            while ($this->valid())
+            {
+                $values = $this->current();
+
+                append($code,$htmlHeadCode,'<'.$bodyHtmlElement.' class="'.$bodyElementClass.'">');
+
+
+                foreach ($values as $k => $v)
+                {
+                    append($code,"<$bodyElementSeparator> {$values->$k} </$bodyElementSeparator>");
+
+                }
+
+                append($code,'</'.$bodyHtmlElement.'>',$htmlEndHead);
+
+
+                $this->next();
+            }
+            append($code,$htmlCodeAfterAll);
+            return $code;
         }
-        return '';
 
     }
 
