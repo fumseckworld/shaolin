@@ -57,6 +57,41 @@ class Model
     }
 
     /**
+     * Return true if the current connexion is mysql
+     *
+     * @return bool
+     *
+     */
+    public function is_mysql()
+    {
+        return $this->connexion->mysql();
+    }
+
+    /**
+     *
+     * Return true if the current connexion is postgresql
+     *
+     * @return bool
+     *
+     */
+    public function is_postgresql()
+    {
+        return $this->connexion->postgresql();
+    }
+
+    /**
+     *
+     * Return true if the current connexion is sqlite
+     *
+     * @return bool
+     *
+     */
+    public function is_sqlite()
+    {
+        return $this->connexion->sqlite();
+    }
+
+    /**
      *
      * Return the sql builder instance
      *

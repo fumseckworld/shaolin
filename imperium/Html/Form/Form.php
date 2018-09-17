@@ -548,18 +548,19 @@ class Form implements FormBuilder
     {
         return '<div class="valid-feedback"> ' .$success.'</div><div class="invalid-feedback">'.$error.'</div>' ;
     }
+
     /**
      * generate a select input
      *
-     * @param string $name
-     * @param array $options
-     * @param $
-     * @param string $success_text
-     * @param string $error_text
+     * @param string      $name
+     * @param array       $options
+     * @param string      $success_text
+     * @param string      $error_text
      * @param string|null $icon
      *
-     * @param bool $required
-     * @param bool $multiple
+     * @param bool        $required
+     * @param bool        $multiple
+     *
      * @return Form
      */
     public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $required = true, bool $multiple = false): Form
@@ -797,8 +798,8 @@ class Form implements FormBuilder
             {
                 foreach ($columns as $k => $column)
                 {
-
                     if (is_null($record->$column))
+
                         $record->$column = '';
 
                     if (different($column,$primary))

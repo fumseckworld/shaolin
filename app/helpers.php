@@ -103,6 +103,26 @@ if (!exist('different'))
         return strcmp($first,$second) !== 0;
     }
 }
+if (!exist('debug'))
+{
+    /**
+     *
+     * Debug code filter by a condition
+     *
+     * @param bool  $condition
+     * @param mixed ...$values
+     *
+     * @return      void
+     *
+     */
+    function debug(bool $condition,...$values)
+    {
+        if ($condition)
+        {
+           d($values);
+        }
+    }
+}
 if (!exist('register'))
 {
 
@@ -205,6 +225,28 @@ if (!exist('query_result'))
 
     }
 }
+
+if (!exist('length'))
+{
+    /**
+     *
+     * Return the length of the data
+     *
+     * @param $data
+     *
+     * @return int
+     *
+     * @throws Exception
+     *
+     */
+    function length($data): int
+    {
+        if (is_numeric($data) || is_null($data) || is_bool($data))
+            throw new Exception('The parameter must be a string or an array');
+
+        return is_array($data) ? count($data) : strlen($data);
+    }
+}
 if (!exist('execute_query'))
 {
     /**
@@ -228,25 +270,26 @@ if (!exist('execute_query'))
     function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action )
     {
 
-        if (equal($mode,Query::UPDATE))
+        switch ($mode)
         {
-            $code = collection();
-            foreach ( $model->query()->set_current_table_name($current_table_name)->set_query_mode()->where($column_name,html_entity_decode($condition),$expected)->get()  as $record)
-            {
-                $id = $table->set_current_table($current_table_name)->get_primary_key();
-                $code->push(form($form_update_action,uniqid())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
-            }
-            return $code->collection();
+            case Query::UPDATE:
+                $code = collection();
+                foreach ( $model->query()->set_current_table_name($current_table_name)->set_query_mode($mode)->where($column_name,html_entity_decode($condition),$expected)->get()  as $record)
+                {
+                    $id = $table->set_current_table($current_table_name)->get_primary_key();
 
+                    $code->push(form($form_update_action,id())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
+                }
+                return $code->collection();
+            break;
+            case Query::DELETE:
+                $data = $model->where($column_name,$condition,$expected);
+                return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, html_entity_decode($condition), $expected)->delete() ;
+            break;
+            default:
+               return $model->query()->set_query_mode($mode)->set_current_table_name($current_table_name)->where($column_name,$condition,$expected)->get();
+            break;
         }
-        if (equal($mode,Query::DELETE))
-        {
-            $data = $model->where($column_name,$condition,$expected);
-            return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, html_entity_decode($condition), $expected)->delete() ;
-        }
-
-
-        return $model->where($column_name,$condition,$expected);
     }
 }
 

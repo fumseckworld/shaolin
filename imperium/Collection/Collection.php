@@ -75,12 +75,13 @@ class Collection implements ArrayAccess, Iterator
      *
      * Initialize the position to 0 and return the position
      *
-     * @return int
+     * @param int $i
      *
+     * @return int
      */
-    public function init()
+    public function init(int $i = 0)
     {
-        $this->position = 0;
+        $this->position = $i;
         return $this->position;
     }
 
@@ -244,10 +245,9 @@ class Collection implements ArrayAccess, Iterator
      *
      * Merge multiple array inside the array
      *
-     * @param array ...$array ...$array
+     * @param array ...$array
      *
      * @return Collection
-     *
      */
     public function merge(array ...$array): Collection
     {
@@ -664,6 +664,6 @@ class Collection implements ArrayAccess, Iterator
      */
     public function next()
     {
-        ++$this->position;
+        $this->position++;
     }
 }

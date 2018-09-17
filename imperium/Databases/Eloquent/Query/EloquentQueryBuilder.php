@@ -76,7 +76,7 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @return Query
          */
-        public function set_query_mode(string $mode = Query::SELECT): Query;
+        public function set_query_mode(string $mode): Query;
 
         /**
          * run a delete query

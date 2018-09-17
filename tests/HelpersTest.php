@@ -162,52 +162,36 @@ class HelpersTest extends DatabaseTest
     }
 
     /**
+     * @throws Exception
+     */
+    public function test_length()
+    {
+        $data = 'je';
+        $array = ['a','a'];
+        $this->assertEquals(2,length($data));
+        $this->assertEquals(2,length($array));
+        $this->expectException(Exception::class);
+        length(1);
+        length(true);
+        length(false);
+        length(null);
+    }
+    /**
      * @throws \Exception
      */
     public function test_print_result()
     {
-        $success = 'record was found';
-        $failure = 'record was not found';
+        $query = execute_query(2,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',8,$this->table,$this->get_mysql()->class(),'azda','');
 
 
-        $query = execute_query(10,$this->get_mysql()->model(), $this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'update','');
+        $this->assertCount(1,$query);
 
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_mysql()->model(),Query::SELECT,$query,$this->get_mysql()->columns(),$success,$failure,$failure));
+        $query = execute_query(2,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',8,$this->table,$this->get_pgsql()->class(),'','');
+        $this->assertCount(1,$query);
 
+        $query = execute_query(2,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',8,$this->table,$this->get_sqlite()->class(),'','');
+        $this->assertCount(1,$query);
 
-        $query = execute_query(1,$this->get_pgsql()->model(), $this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_pgsql()->model(),Query::SELECT,$query,$this->get_pgsql()->columns(),$success,$failure,$failure));
-
-
-        $query = execute_query(1,$this->get_sqlite()->model(), $this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-danger">'.$failure.'</div>',query_result($this->get_sqlite()->model(),Query::SELECT,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
-
-
-        $mysql_data = execute_query(10,$this->get_mysql()->model(), $this->get_mysql()->table(),Query::UPDATE,'id','=',5,$this->table,$this->get_mysql()->class(),'update','');
-        $pgsql_data = execute_query(10,$this->get_pgsql()->model(), $this->get_pgsql()->table(),Query::UPDATE,'id','=',5,$this->table,$this->get_pgsql()->class(),'update','');
-        $sqlite_data = execute_query(10,$this->get_sqlite()->model(), $this->get_sqlite()->table(),Query::UPDATE,'id','=',5,$this->table,$this->get_sqlite()->class(),'update','');
-
-        $this->assertCount(1,$mysql_data);
-        $this->assertCount(1,$pgsql_data);
-        $this->assertCount(1,$sqlite_data);
-
-        $query = execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_mysql()->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_mysql()->model(),Query::DELETE,$query,$this->get_mysql()->columns(),$success,$failure,$failure));
-
-        $query = execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_pgsql()->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_pgsql()->model(),Query::DELETE,$query,$this->get_pgsql()->columns(),$success,$failure,$failure));
-
-        $query = execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::DELETE,'id','=',2,$this->table,$this->get_sqlite()->class(),'update','');
-
-        $this->assertEquals('<div class="alert alert-success">'.$success.'</div>',query_result($this->get_sqlite()->model(),Query::DELETE,$query,$this->get_sqlite()->columns(),$success,$failure,$failure));
-
-        $this->assertNotEmpty(query_result($this->get_mysql()->model(),Query::UPDATE,$mysql_data,$this->get_mysql()->columns(),$success,$failure,$failure));
-        $this->assertNotEmpty(query_result($this->get_pgsql()->model(),Query::UPDATE,$mysql_data,$this->get_pgsql()->columns(),$success,$failure,$failure));
-        $this->assertNotEmpty(query_result($this->get_sqlite()->model(),Query::UPDATE,$mysql_data,$this->get_sqlite()->columns(),$success,$failure,$failure));
     }
 
     public function test_merge()

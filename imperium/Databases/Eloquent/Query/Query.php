@@ -32,7 +32,8 @@ namespace Imperium\Databases\Eloquent\Query {
     class Query extends Eloquent implements EloquentQueryBuilder
     {
         use Share;
-       
+
+
         /**
          * sql mode
          * 
@@ -116,9 +117,20 @@ namespace Imperium\Databases\Eloquent\Query {
             return $values->not_exist(true);
         }
 
+        /**
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
         public function sql(): string
         {
-            $mode = def($this->mode) ?  $this->mode  : Query::SELECT;
+            if (empty($this->mode))
+                throw new Exception('Missing the query mode select or delete');
+
+
+            $mode = $this->mode;
 
             switch ($mode)
             {
@@ -510,7 +522,7 @@ namespace Imperium\Databases\Eloquent\Query {
          *
          * @throws Exception
          */
-        public function set_query_mode(string $mode = Query::SELECT): Query
+        public function set_query_mode(string $mode): Query
         {
             if (!has($mode,Query::MODE,true))
                 throw new Exception('select or delete mode was not found');

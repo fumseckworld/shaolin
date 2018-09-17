@@ -22,6 +22,8 @@
 
 namespace  Imperium\Databases\Eloquent {
 
+    use Imperium\Databases\Eloquent\Query\Query;
+
     class Eloquent
     {
         const MYSQL      = 1;
@@ -72,7 +74,7 @@ namespace  Imperium\Databases\Eloquent {
 
         const UPDATE = 'UPDATE';
 
-        const MODE = array(Eloquent::SELECT,Eloquent::DELETE);
+        const MODE = array(Query::SELECT,Query::DELETE,Query::UPDATE);
 
         const BETWEEN = "BETWEEN";
 
@@ -94,6 +96,7 @@ namespace  Imperium\Databases\Eloquent {
 
         const FIELD_NULLABLE = 'nullable';
 
+        const DROP_CONSTRAINT = 'drop_constraint';
         /**
         |-------------------------------|
         |          DATA TYPES           |

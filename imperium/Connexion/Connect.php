@@ -70,14 +70,16 @@ class Connect
     private $dump_path;
 
     /**
-     * Connect constructor
+     *
+     * Connect constructor.
      *
      * @param string $driver
      * @param string $database
      * @param string $username
      * @param string $password
-     * @param int $pdoFetchMode
+     * @param int    $pdoFetchMode
      * @param string $dump_path
+     *
      */
     public function __construct(string $driver,string $database,string $username,string $password,int $pdoFetchMode = PDO::FETCH_OBJ,string $dump_path = 'dump')
     {
@@ -211,6 +213,10 @@ class Connect
     public Function request(string $request): array
     {
          $query = $this->instance()->query($request);
+
+         if (is_bool($query))
+            throw new Exception("Invalid request : $request");
+
          $data = $query->fetchAll($this->get_fetch_mode());
          $query->closeCursor();
 
@@ -231,6 +237,8 @@ class Connect
     public Function execute(string $request): bool
     {
         $response = $this->instance->prepare($request);
+        if (is_bool($response))
+            throw new Exception("Invalid request : $request");
 
         $data = $response->execute();
         $response->closeCursor();
@@ -251,7 +259,7 @@ class Connect
 
         if (is_null($this->instance))
         {
-;            if (equal($driver,Connect::SQLITE))
+            if (equal($driver,Connect::SQLITE))
             {
                 if (def($database))
                 {
@@ -294,7 +302,7 @@ class Connect
                 }
             }
         }
-        return $this->instance;
+       return $this->instance;
 
     }
 

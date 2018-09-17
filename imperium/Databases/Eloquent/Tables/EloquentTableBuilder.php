@@ -73,22 +73,16 @@ namespace Imperium\Databases\Eloquent\Tables {
          */
         public function set_current_table(string $current_table_name): Table;
 
-        /**
-         * define new name of table
-         *
-         * @param string $new_name
-         *
-         * @return Table
-         */
-        public function set_new_name(string $new_name): Table;
 
 
         /**
          * rename a table
          *
+         * @param string $new_name
+         *
          * @return bool
          */
-        public function rename(): bool;
+        public function rename(string $new_name): bool;
 
         /**
          * check if current database has table
@@ -105,6 +99,17 @@ namespace Imperium\Databases\Eloquent\Tables {
          * @return bool
          */
         public function has_column(string $column): bool;
+
+        /**
+         *
+         * Check if the current table has specific columns types
+         *
+         * @param string ...$types
+         *
+         * @return bool
+         *
+         */
+        public function has_column_type(string ...$types): bool;
 
 
         /**
@@ -169,11 +174,11 @@ namespace Imperium\Databases\Eloquent\Tables {
          * @param string $type
          * @param int    $size
          * @param bool   $unique
-         * @param bool   $nullable
+         *
          *
          * @return bool
          */
-        public function append_column(string $column, string $type, int $size = 0, bool $unique = true, bool $nullable = false): bool;
+        public function append_column(string $column, string $type, int $size = 0, bool $unique = true): bool;
 
         /**
          * create the table
@@ -256,7 +261,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function deleteColumn(string $column): bool;
+        public function remove_column(string $column): bool;
 
         /**
          * check if a table exist
