@@ -101,7 +101,7 @@ class TableTest extends DatabaseTest
         $table = $this->table;
 
         $instance = $this->get_mysql()->table()->set_current_table($table);
-        $this->assertTrue($instance->append_column($column,Table::VARCHAR,255));
+        $this->assertTrue($instance->append_column($column,Table::VARCHAR,255,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
@@ -111,7 +111,7 @@ class TableTest extends DatabaseTest
 
 
         $instance = $this->get_pgsql()->table()->set_current_table($table);
-        $this->assertTrue($instance->append_column($column,Table::CHARACTER_VARYING,255));
+        $this->assertTrue($instance->append_column($column,Table::CHARACTER_VARYING,255,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 

@@ -178,7 +178,7 @@ namespace Imperium\Databases\Eloquent\Tables {
          *
          * @return bool
          */
-        public function append_column(string $column, string $type, int $size = 0, bool $unique = true): bool;
+        public function append_column(string $column, string $type, int $size, bool $unique): bool;
 
         /**
          * create the table
@@ -196,12 +196,6 @@ namespace Imperium\Databases\Eloquent\Tables {
          */
         public function set_engine(string $engine): Table;
 
-        /**
-         * return create table sql query
-         *
-         * @return string
-         */
-        public function get(): string;
 
         /**
          * dump a table

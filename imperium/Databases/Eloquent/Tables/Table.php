@@ -28,7 +28,6 @@ namespace  Imperium\Databases\Eloquent\Tables {
     use Imperium\Databases\Eloquent\Eloquent;
     use Imperium\Databases\Eloquent\Query\Query;
     use Imperium\Databases\Eloquent\Share;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\C;
 
     /**
      *
@@ -376,13 +375,11 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * @param int    $size
          * @param bool   $unique
          *
-         * @param bool   $nullable
-         *
          * @return bool
          *
          * @throws Exception
          */
-        public function append_column(string $name, string $type, int $size = 0, bool $unique = true): bool
+        public function append_column(string $name, string $type, int $size, bool $unique): bool
         {
             $driver = $this->connexion->get_driver();
             $data = collection();
@@ -398,7 +395,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
 
             if ($unique)
-                $data->add($this->alter_table(Query::FIELD_UNIQUE,$name,$type,$size,$driver));
+                $data->add($this->alter_table(Query::FIELD_UNIQUE,$name,$driver));
 
 
             return $data->not_exist(false);
@@ -410,25 +407,21 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * @param string $constraint
          * @param string $column
          *
-         * @param string $type
-         * @param string $size
          * @param string $driver
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
-        public function alter_table(string $constraint,string $column,string $type,string $size,string $driver)
+        public function alter_table(string $constraint,string $column,string  $driver)
         {
             if (equal($driver,Connect::MYSQL))
             {
-
                 if (equal($constraint,Query::FIELD_UNIQUE))
                 {
                     return $this->connexion->execute("ALTER TABLE $this->table ADD CONSTRAINT  UNIQUE($column)");
                 }
-
-
             }
 
             if (equal($driver,Connect::POSTGRESQL))
@@ -438,9 +431,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     return $this->connexion->execute("ALTER TABLE $this->table ADD UNIQUE ($column);");
                 }
             }
-
-
-
+            return false;
         }
 
 
@@ -745,7 +736,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     $query .= ')';
 
 
-                     $this->set_new_name($tmp)->rename();
+                     $this->rename($tmp);
                      $this->connexion->execute($query);
                      $this->connexion->execute("INSERT INTO $this->table SELECT * FROM '$tmp'") ;
                      return $this->drop($tmp);
@@ -788,7 +779,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     if ($this->exist($new))
                         $this->drop($new);
 
-                    $this->set_current_table($this->table)->set_new_name($new)->rename();
+                    $this->set_current_table($this->table)->rename($new);
                     $table = $this->set_current_table($new);
 
                     foreach ($origin->collection() as $k => $value)
@@ -1219,31 +1210,6 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     return false;
                 break;
             }
-        }
-
-        /**
-         * return create table sql query
-         *
-         * @return string
-         * @throws Exception
-         */
-        public function get(): string
-        {
-            $command = $this->startCreateCommand();
-
-            foreach ($this->columns->collection() as $column)
-
-
-                $command .= $this->updateCreateCommand($column);
-
-            $command .= ')';
-
-            if ($this->connexion->mysql() && !is_null($this->engine))
-                $command .= " ENGINE = $this->engine";
-
-            $this->columns = [];
-
-            return $command;
         }
 
         /**
