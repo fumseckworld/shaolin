@@ -7,10 +7,8 @@
  */
 
 namespace tests;
-
-
-use Imperium\Databases\Eloquent\Eloquent;
-use Imperium\Databases\Eloquent\Tables\Table;
+ 
+use Imperium\Imperium;
 use Testing\DatabaseTest;
 
 class TableTest extends DatabaseTest
@@ -23,9 +21,9 @@ class TableTest extends DatabaseTest
     public function test_primary_key()
     {
         $expected = 'id';
-        $this->assertEquals($expected,$this->get_mysql()->table()->get_primary_key());
-        $this->assertEquals($expected,$this->get_pgsql()->table()->get_primary_key());
-        $this->assertEquals($expected,$this->get_sqlite()->table()->get_primary_key());
+        $this->assertEquals($expected,$this->mysql()->tables()->get_primary_key());
+        $this->assertEquals($expected,$this->postgresql()->tables()->get_primary_key());
+        $this->assertEquals($expected,$this->sqlite()->tables()->get_primary_key());
     }
 
     /**
@@ -35,14 +33,14 @@ class TableTest extends DatabaseTest
     {
 
             $table = 'country';
-        $this->assertContains($table,$this->get_mysql()->table()->show());
-        $this->assertContains($table,$this->get_mysql()->show_tables());
+        $this->assertContains($table,$this->mysql()->tables()->show());
+        $this->assertContains($table,$this->mysql()->show_tables());
 
-        $this->assertContains($table,$this->get_pgsql()->show_tables());
-        $this->assertContains($table,$this->get_pgsql()->table()->show());
+        $this->assertContains($table,$this->postgresql()->show_tables());
+        $this->assertContains($table,$this->postgresql()->tables()->show());
 
-        $this->assertContains($table,$this->get_sqlite()->show_tables());
-        $this->assertContains($table,$this->get_sqlite()->table()->show());
+        $this->assertContains($table,$this->sqlite()->show_tables());
+        $this->assertContains($table,$this->sqlite()->tables()->show());
 
 
     }
@@ -53,13 +51,13 @@ class TableTest extends DatabaseTest
     {
         $table = 'country';
         $new = 'alex';
-        $this->assertTrue($this->get_mysql()->table()->set_current_table($table)->rename($new));
-        $this->assertTrue($this->get_pgsql()->table()->set_current_table($table)->rename($new));
-        $this->assertTrue($this->get_sqlite()->table()->set_current_table($table)->rename($new));
+        $this->assertTrue($this->mysql()->tables()->set_current_table($table)->rename($new));
+        $this->assertTrue($this->postgresql()->tables()->set_current_table($table)->rename($new));
+        $this->assertTrue($this->sqlite()->tables()->set_current_table($table)->rename($new));
 
-        $this->assertTrue($this->get_mysql()->table()->set_current_table($new)->rename($table));
-        $this->assertTrue($this->get_pgsql()->table()->set_current_table($new)->rename($table));
-        $this->assertTrue($this->get_sqlite()->table()->set_current_table($new)->rename($table));
+        $this->assertTrue($this->mysql()->tables()->set_current_table($new)->rename($table));
+        $this->assertTrue($this->postgresql()->tables()->set_current_table($new)->rename($table));
+        $this->assertTrue($this->sqlite()->tables()->set_current_table($new)->rename($table));
 
     }
 
@@ -69,17 +67,17 @@ class TableTest extends DatabaseTest
     public function test_has()
     {
         $table = 'country';
-        $this->assertTrue($this->get_mysql()->table()->has());
-        $this->assertTrue($this->get_pgsql()->table()->has());
-        $this->assertTrue($this->get_sqlite()->table()->has());
+        $this->assertTrue($this->mysql()->tables()->has());
+        $this->assertTrue($this->postgresql()->tables()->has());
+        $this->assertTrue($this->sqlite()->tables()->has());
 
-        $this->assertTrue($this->get_mysql()->table()->set_current_table($table)->has_column('id'));
-        $this->assertTrue($this->get_pgsql()->table()->set_current_table($table)->has_column('id'));
-        $this->assertTrue($this->get_sqlite()->table()->set_current_table($table)->has_column('id'));
+        $this->assertTrue($this->mysql()->tables()->set_current_table($table)->has_column('id'));
+        $this->assertTrue($this->postgresql()->tables()->set_current_table($table)->has_column('id'));
+        $this->assertTrue($this->sqlite()->tables()->set_current_table($table)->has_column('id'));
 
-        $this->assertFalse($this->get_mysql()->table()->set_current_table($table)->has_column('ids'));
-        $this->assertFalse($this->get_pgsql()->table()->set_current_table($table)->has_column('ids'));
-        $this->assertFalse($this->get_sqlite()->table()->set_current_table($table)->has_column('ids'));
+        $this->assertFalse($this->mysql()->tables()->set_current_table($table)->has_column('ids'));
+        $this->assertFalse($this->postgresql()->tables()->set_current_table($table)->has_column('ids'));
+        $this->assertFalse($this->sqlite()->tables()->set_current_table($table)->has_column('ids'));
     }
 
     /**
@@ -88,7 +86,7 @@ class TableTest extends DatabaseTest
     public function test_create()
     {
         $name = 'alexandra';
-        $this->assertTrue($this->get_mysql()->table()->set_current_table($name)->append_field(Table::INT,'id',true)->append_field(Table::VARCHAR,'name',false,255)->append_field(Table::DATE,'date')->create());
+        $this->assertTrue($this->mysql()->tables()->set_current_table($name)->append_field(Imperium::INT,'id',true)->append_field(Imperium::VARCHAR,'name',false,255)->append_field(Imperium::DATE,'date')->create());
     }
 
     /**
@@ -100,22 +98,22 @@ class TableTest extends DatabaseTest
 
         $table = $this->table;
 
-        $instance = $this->get_mysql()->table()->set_current_table($table);
-        $this->assertTrue($instance->append_column($column,Table::VARCHAR,255,true));
+        $instance = $this->mysql()->tables()->set_current_table($table);
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Table::VARCHAR,255,false));
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
 
-        $instance = $this->get_pgsql()->table()->set_current_table($table);
-        $this->assertTrue($instance->append_column($column,Table::CHARACTER_VARYING,255,true));
+        $instance = $this->postgresql()->tables()->set_current_table($table);
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Table::CHARACTER_VARYING,255,false));
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
@@ -128,13 +126,13 @@ class TableTest extends DatabaseTest
     {
         $table = 'country';
 
-        $this->assertTrue($this->get_mysql()->table()->truncate($table));
-        $this->assertTrue($this->get_mysql()->table()->truncate($table));
-        $this->assertTrue($this->get_mysql()->table()->truncate($table));
+        $this->assertTrue($this->mysql()->tables()->truncate($table));
+        $this->assertTrue($this->mysql()->tables()->truncate($table));
+        $this->assertTrue($this->mysql()->tables()->truncate($table));
 
-        $this->assertTrue($this->get_mysql()->table()->truncate($table,Eloquent::MODE_ALL_TABLES));
-        $this->assertTrue($this->get_pgsql()->table()->truncate($table,Eloquent::MODE_ALL_TABLES));
-        $this->assertTrue($this->get_sqlite()->table()->truncate($table,Eloquent::MODE_ALL_TABLES));
+        $this->assertTrue($this->mysql()->tables()->truncate($table));
+        $this->assertTrue($this->postgresql()->tables()->truncate($table));
+        $this->assertTrue($this->sqlite()->tables()->truncate($table));
 
     }
 }

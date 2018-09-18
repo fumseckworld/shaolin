@@ -209,26 +209,26 @@ class CollectionTest extends DatabaseTest
      */
     public function test_print()
     {
-        $data = collection($this->get_mysql()->model()->all());
+        $data = collection($this->mysql()->model()->all());
 
-        $this->assertNotEmpty($data->print(true,$this->get_mysql()->model()->columns()));
+        $this->assertNotEmpty($data->print(true,$this->mysql()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
-        $this->assertNotEmpty($data->print(false,$this->get_mysql()->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,$this->mysql()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
         $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
 
-        $data = collection( $this->get_pgsql()->model()->all());
-        $this->assertNotEmpty($data->print(true,$this->get_pgsql()->model()->columns()));
+        $data = collection( $this->postgresql()->model()->all());
+        $this->assertNotEmpty($data->print(true,$this->postgresql()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
-        $this->assertNotEmpty($data->print(false,$this->get_pgsql()->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,$this->postgresql()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
         $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
 
-        $data = \collection($this->get_sqlite()->model()->all());
+        $data = \collection($this->sqlite()->model()->all());
 
-        $this->assertNotEmpty($data->print(true,$this->get_sqlite()->model()->columns()));
+        $this->assertNotEmpty($data->print(true,$this->sqlite()->model()->columns()));
         $this->assertNotEmpty($data->print(true));
-        $this->assertNotEmpty($data->print(false,$this->get_sqlite()->model()->columns(),true));
+        $this->assertNotEmpty($data->print(false,$this->sqlite()->model()->columns(),true));
         $this->assertNotEmpty($data->print(false,[],true));
         $this->assertNotEmpty($data->print(false,[],false,'<header>','</header>','<h1>','text-uppercase','<hr>'));
 

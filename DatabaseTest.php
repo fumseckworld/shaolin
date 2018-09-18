@@ -23,22 +23,19 @@ class DatabaseTest extends TestCase
     protected $class = 'btn btn-outline-primary';
 
 
-
-    public function get_mysql(): Imperium
+    public function mysql(): Imperium
     {
         return instance_mysql();
     }
 
-
-    public function get_pgsql(): Imperium
+    public function postgresql(): Imperium
     {
         return instance_pgsql();
     }
 
-    public function get_sqlite(): Imperium
+    public function sqlite(): Imperium
     {
         return instance_sqlite();
     }
-
 
 }

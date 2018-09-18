@@ -4,15 +4,15 @@
  * The 11/09/17 at 08:56
  *
  * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General public License as published by
  * the Free Software Foundation, either version 3 of the License, or any later version.
  *
  * imperium is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ * See the GNU General public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @package : imperium
@@ -20,17 +20,14 @@
  **/
 
 
-namespace Imperium\Databases\Eloquent\Users {
+namespace Imperium\Users {
+
 
     use Exception;
     use Imperium\Connexion\Connect;
-    use Imperium\Databases\Core\UserManagement;
-    use Imperium\Databases\Eloquent\Share;
 
-
-    class Users implements UserManagement
-    {
-        use Share;
+    class Users 
+    { 
 
         /**
          * @var string
@@ -50,6 +47,16 @@ namespace Imperium\Databases\Eloquent\Users {
          * @var string
          */
         private $username;
+
+        /**
+         * @var Connect 
+         */
+        private $connexion;
+        
+        /**
+         * @var array
+         */
+        private $hidden;
 
         /**
          * @param string $user
@@ -75,6 +82,35 @@ namespace Imperium\Databases\Eloquent\Users {
                 break;
             }
 
+        }
+
+
+        /**
+         *
+         * Check if a server has users
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function has(): bool
+        {
+            return def($this->show());
+        }
+
+        /**
+         * Set hidden users
+         *
+         * @param array $hidden
+         *
+         * @return Users
+         */
+        public function hidden(array $hidden): Users
+        {
+            $this->hidden = $hidden;
+
+            return $this;
         }
 
         /**
@@ -226,19 +262,7 @@ namespace Imperium\Databases\Eloquent\Users {
             }
         }
 
-        /**
-         * define hidden users
-         *
-         * @param array $users
-         *
-         * @return Users
-         */
-        public function hidden(array $users): Users
-        {
-            $this->hidden = $users;
 
-            return $this;
-        }
 
 
         /**

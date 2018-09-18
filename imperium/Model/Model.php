@@ -3,13 +3,14 @@
 
 namespace Imperium\Model;
 
+
+
 use Exception;
 use Imperium\Connexion\Connect;
-use Imperium\Databases\Eloquent\Query\Query;
-use Imperium\Databases\Eloquent\Share;
-use Imperium\Databases\Eloquent\Tables\Table;
+use Imperium\Imperium;
+use Imperium\Query\Query;
+use Imperium\Tables\Table;
 use PDO;
-
 
 /**
  *  Table content management
@@ -21,7 +22,32 @@ use PDO;
  */
 class Model
 {
-     use Share;
+     private $connexion;
+
+    /**
+     * @var Table
+     */
+    private $table;
+
+    /**
+     * current table
+     *
+     * @var string
+     */
+    private $current;
+
+    /**
+     * the primary key
+     *
+     * @var string
+     */
+    private $primary;
+
+    /**
+     * @var \Imperium\Query\Query
+     */
+    private $sql;
+
 
     /**
      * Model constructor.
@@ -30,16 +56,17 @@ class Model
      * @param Table $table
      * @param string $current_table_name
      * @param string $oder_by
+
      * @throws Exception
      */
     public function __construct(Connect $connect,Table $table, string $current_table_name,string $oder_by= 'desc')
     {
         $this->connexion = $connect;
 
-        $this->tables = $table->set_current_table($current_table_name);
-        $this->primary = $this->tables->get_primary_key();
+        $this->table = $table->set_current_table($current_table_name);
+        $this->primary = $this->table->get_primary_key();
         $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name)->order_by($this->primary,$oder_by);
-        $this->table  = $current_table_name;
+        $this->current  = $current_table_name;
     }
 
     /**
@@ -53,7 +80,7 @@ class Model
      */
     public function show_tables(): array
     {
-        return $this->tables->show();
+        return $this->table->show();
     }
 
     /**
@@ -116,7 +143,7 @@ class Model
      */
     public function all(string $order = 'desc'): array
     {
-       return $this->tables->getRecords($order);
+       return $this->table->getRecords($order);
     }
 
 
@@ -133,7 +160,7 @@ class Model
      */
     public function find(int $id): array
     {
-        return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,'=',$id)->get();
+        return $this->sql->set_query_mode(Imperium::SELECT)->where($this->primary,'=',$id)->get();
     }
 
     /**
@@ -174,7 +201,7 @@ class Model
      */
     public function where($param,$condition,$expected): array
     {
-        return equal($condition,'LIKE') ?  $this->sql->like($this->tables,$expected)->get() : $this->sql->where($param,html_entity_decode($condition),$expected)->get();
+        return equal($condition,'LIKE') ?  $this->sql->like($this->table,$expected)->get() : $this->sql->where($param,html_entity_decode($condition),$expected)->get();
 
     }
 
@@ -210,7 +237,7 @@ class Model
      */
     public function insert(array $data,string $table ,array $ignore = []): bool
     {
-        return $this->tables->insert($data,$ignore,$table);
+        return $this->table->insert($data,$ignore,$table);
     }
 
     /**
@@ -224,7 +251,7 @@ class Model
      */
     public function count(): int
     {
-        return $this->tables->count();
+        return $this->table->count();
     }
 
     /**
@@ -238,7 +265,7 @@ class Model
      */
     public function truncate(): bool
     {
-        return $this->tables->truncate();
+        return $this->table->truncate();
     }
 
 
@@ -257,7 +284,7 @@ class Model
      */
     public function update(int $id,array $data,array $ignore =[]): bool
     {
-        return $this->tables->update($id,$data,$ignore);
+        return $this->table->update($id,$data,$ignore);
     }
 
     /**
@@ -270,7 +297,7 @@ class Model
      */
     public function columns(): array
     {
-        return $this->tables->get_columns();
+        return $this->table->get_columns();
     }
 
     /**
@@ -283,7 +310,7 @@ class Model
      */
     public function empty(): bool
     {
-        return $this->tables->is_empty();
+        return $this->table->is_empty();
     }
 
     /**

@@ -1,36 +1,10 @@
 <?php
-/**
- * fumseck added Eloquent.php to imperium
- * The 09/09/17 at 19:01
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- */
+
+namespace Imperium {
 
 
-namespace  Imperium\Databases\Eloquent {
-
-    use Imperium\Databases\Eloquent\Query\Query;
-
-    class Eloquent
+    class Zen
     {
-        const MYSQL      = 1;
-
-        const POSTGRESQL = 2;
-
-        const SQLITE     = 3;
 
         const MODE_ALL_TABLES = 10;
 
@@ -52,8 +26,6 @@ namespace  Imperium\Databases\Eloquent {
 
         const MODE_UNION_ALL = 19;
 
-        const SUPPORTED = array(Eloquent::MYSQL, Eloquent::POSTGRESQL, Eloquent::SQLITE);
-
         const INNER_JOIN = 20;
 
         const CROSS_JOIN = 21;
@@ -74,7 +46,7 @@ namespace  Imperium\Databases\Eloquent {
 
         const UPDATE = 'UPDATE';
 
-        const MODE = array(Query::SELECT,Query::DELETE,Query::UPDATE);
+        const MODE = array(self::SELECT,self::DELETE,self::UPDATE);
 
         const BETWEEN = "BETWEEN";
 
@@ -155,5 +127,6 @@ namespace  Imperium\Databases\Eloquent {
         const NONE = 'NONE';
         const NUMBER = 'NUMBER';
         const VARCHAR2 = 'VARCHAR2';
+
     }
 }

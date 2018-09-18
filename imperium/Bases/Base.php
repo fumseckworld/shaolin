@@ -4,15 +4,15 @@
  * The 11/09/17 at 09:36
  *
  * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General public License as published by
  * the Free Software Foundation, either version 3 of the License, or any later version.
  *
  * imperium is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ * See the GNU General public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @package : imperium
@@ -20,18 +20,17 @@
  **/
 
 
-namespace Imperium\Databases\Eloquent\Bases {
+namespace Imperium\Bases {
+
 
     use Exception;
     use Imperium\Connexion\Connect;
-    use Imperium\Databases\Core\DatabasesManagement;
-    use Imperium\Databases\Eloquent\Share;
     use Imperium\File\File;
     use PDO;
 
-    class Base implements DatabasesManagement
+    class Base
     {
-        use Share;
+         
 
         private $options;
 
@@ -60,6 +59,20 @@ namespace Imperium\Databases\Eloquent\Bases {
          * @var int
          */
         private $fetch;
+        /**
+         * @var Connect 
+         */
+        private $connexion;
+        
+        /**
+         * @var array
+         */
+        private $hidden;
+
+        /**
+         * @var string
+         */
+        private $driver;
 
         /**
          * show databases
@@ -67,6 +80,7 @@ namespace Imperium\Databases\Eloquent\Bases {
          * @return array
          *
          * @throws Exception
+         * 
          */
         public function show(): array
         {
@@ -329,6 +343,7 @@ namespace Imperium\Databases\Eloquent\Bases {
         public function __construct(Connect $connect)
         {
             $this->connexion = $connect;
+            $this->driver = $connect->get_driver();
         }
 
         /**
@@ -344,5 +359,70 @@ namespace Imperium\Databases\Eloquent\Bases {
 
            return $this;
         }
+
+        /**
+         *
+         * Check if a server has bases
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function has(): bool
+        {
+            return def($this->show());
+        }
+        /**
+         *
+         * Change  collation
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function change_collation(): bool
+        {
+            switch ($this->driver)
+            {
+                case Connect::MYSQL;
+                break;
+                case Connect::POSTGRESQL:
+                break;
+                case Connect::SQLITE:
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
+
+        /**
+         *
+         * Change charset
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function change_charset(): bool
+        {
+            switch ($this->driver)
+            {
+                case Connect::MYSQL;
+                break;
+                case Connect::POSTGRESQL:
+                break;
+                case Connect::SQLITE:
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
+
+
     }
 }

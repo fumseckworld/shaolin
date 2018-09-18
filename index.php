@@ -1,9 +1,13 @@
 <?php
 
-require_once 'vendor/autoload.php';
- include_once 'config.php';
-echo fontAwesome();
-echo css_loader('lily/lily-dark.css');
+use Imperium\Connexion\Connect;
+use Imperium\Imperium;
 
-$a = new \Imperium\Collection\Collection(['a','b','c']);
-d($a->collection());
+require_once 'vendor/autoload.php';
+
+
+$connect = new  Connect(\Imperium\Connexion\Connect::MYSQL,'zen','root','');
+$app = new Imperium($connect,'doctors');
+
+d($app->show_databases());
+echo collection($app->all())->print(true);

@@ -1,19 +1,16 @@
 <?php
 
+
 use Carbon\Carbon;
 use Cz\Git\GitRepository;
+use Imperium\Bases\Base;
 use Imperium\Collection\Collection;
 use Imperium\Connexion\Connect;
-use Imperium\Databases\Dumper\MySql;
-use Imperium\Databases\Dumper\PostgreSql;
-use Imperium\Databases\Dumper\Sqlite;
-use Imperium\Databases\Eloquent\Bases\Base;
-use Imperium\Databases\Eloquent\Eloquent;
-use Imperium\Databases\Eloquent\Query\Query;
-use Imperium\Databases\Eloquent\Tables\Table;
-use Imperium\Databases\Eloquent\Users\Users;
 use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
+use Imperium\Dump\MySql;
+use Imperium\Dump\PostgreSql;
+use Imperium\Dump\Sqlite;
 use Imperium\File\File;
 use Imperium\Html\Bar\Icon;
 use Imperium\Html\Canvas\Canvas;
@@ -22,13 +19,15 @@ use Imperium\Html\Pagination\Pagination;
 use Imperium\Html\Records\Records;
 use Imperium\Imperium;
 use Imperium\Model\Model;
+use Imperium\Query\Query;
+use Imperium\Tables\Table;
+use Imperium\Users\Users;
 use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Os;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
-
 
 if (!exist('instance'))
 {
@@ -38,30 +37,19 @@ if (!exist('instance'))
      * @param string $driver
      * @param string $user
      * @param string $base
-     * @param string $root_user
-     * @param string $root_password
-     * @param string $table
-     * @param string $btn_class
-     * @param string $btn_danger_class
-     * @param int $fetch_mode
-     * @param string $order_by
      * @param string $password
+     * @param int $fetch_mode
      * @param string $dump_path
+     * @param string $current_table
+     * ²
      * @return Imperium
      *
      * @throws Exception
      */
-    function instance (string $driver,string $user,string $base,string $root_user,string $root_password,string $table ='',string $btn_class ='btn btn-outline-primary',string $btn_danger_class = 'btn btn-outline-danger',int $fetch_mode = PDO::FETCH_OBJ ,string $order_by = 'desc',string $password = '',string $dump_path = 'dump'): Imperium
+    function instance (string $driver,string $user,string $base,string $password,int $fetch_mode,string $dump_path,string $current_table): Imperium
     {
         $connexion          = connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
-        $connexion_root     = connect($driver,$base,$root_user,$root_password,$fetch_mode,$dump_path);
-        $users              = user($connexion_root);
-        $bases              = base($connexion_root);
-        $tables             = table($connexion)->path($dump_path);
-        $query              = query($tables,$connexion)->set_current_table_name($table);
-        $sql                = $query->set_current_table_name($table);
-        $model              = model($connexion,$tables,$table,$order_by);
-        return imperium($bases,$tables,$users,$sql,$model,$connexion,$btn_class,$btn_danger_class);
+        return imperium($connexion,$current_table);
     }
 }
 
@@ -103,7 +91,7 @@ if (!exist('different'))
         return strcmp($first,$second) !== 0;
     }
 }
-if (!exist('debug'))
+if (!exist('dd'))
 {
     /**
      *
@@ -115,7 +103,7 @@ if (!exist('debug'))
      * @return      void
      *
      */
-    function debug(bool $condition,...$values)
+    function dd(bool $condition,...$values)
     {
         if ($condition)
         {
@@ -208,7 +196,7 @@ if (!exist('query_result'))
      */
     function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text): string
     {
-        if (equal($mode,Query::UPDATE))
+        if (equal($mode,Imperium::UPDATE))
         {
             $code = '';
             foreach ($data as $datum)
@@ -272,7 +260,7 @@ if (!exist('execute_query'))
 
         switch ($mode)
         {
-            case Query::UPDATE:
+            case Imperium::UPDATE:
                 $code = collection();
                 foreach ( $model->query()->set_current_table_name($current_table_name)->set_query_mode($mode)->where($column_name,html_entity_decode($condition),$expected)->get()  as $record)
                 {
@@ -282,7 +270,7 @@ if (!exist('execute_query'))
                 }
                 return $code->collection();
             break;
-            case Query::DELETE:
+            case Imperium::DELETE:
                 $data = $model->where($column_name,$condition,$expected);
                 return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, html_entity_decode($condition), $expected)->delete() ;
             break;
@@ -335,7 +323,7 @@ if (!exist('query_view'))
         $columns = $table->get_columns();
         $condition = array('=' => $equal_text,'!=' => $different_text,'<' => $inferior_text,'>' => $superior_text,'<=' => $inferior_or_equal_text,'>=' =>$superior_or_equal_text,'LIKE' => $like_text);
 
-        return post('mode') ?  form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
+        return post('mode') ?  form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
     }
 }
 
@@ -619,6 +607,7 @@ if (!exist('users_select'))
      * build a form to select an user
      *
      * @param Users $instance
+     * @param array $hidden
      * @param string $urlPrefix
      * @param string $currentUser
      * @param string $chooseText
@@ -630,13 +619,14 @@ if (!exist('users_select'))
      * @return string
      *
      * @throws Exception
+     *
      */
-    function users_select(Users $instance,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-user"></i>'): string
+    function users_select(Users $instance,array $hidden,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-user"></i>'): string
     {
 
         $users = collection(array('' => $chooseText));
 
-        foreach ($instance->show() as $x)
+        foreach ($instance->hidden($hidden)->show() as $x)
         {
             if (different($x,$currentUser))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
@@ -653,6 +643,7 @@ if (!exist('bases_select'))
      * build a form to select a base
      *
      * @param Base $instance
+     * @param array $hidden
      * @param string $urlPrefix
      * @param string $currentBase
      * @param string $chooseText
@@ -665,12 +656,12 @@ if (!exist('bases_select'))
      *
      * @throws Exception
      */
-    function bases_select(Base $instance,string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
+    function bases_select(Base $instance,array $hidden,string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
     {
 
         $bases = collection(array('' => $chooseText));
 
-        foreach ($instance->show() as $x)
+        foreach ($instance->hidden($hidden)->show() as $x)
         {
             if (different($x, $currentBase))
                 $bases->merge(["$urlPrefix$separator$x" => $x]);
@@ -1705,13 +1696,13 @@ if(!exist('show'))
     {
         switch ($mode)
         {
-            case Eloquent::MODE_ALL_DATABASES:
+            case Imperium::MODE_ALL_DATABASES:
                 return $imperium->show_databases($hidden);
             break;
-            case Eloquent::MODE_ALL_USERS:
+            case Imperium::MODE_ALL_USERS:
                 return $imperium->show_users($hidden);
             break;
-            case Eloquent::MODE_ALL_TABLES:
+            case Imperium::MODE_ALL_TABLES:
                  return $imperium->show_tables($hidden);
             break;
             default:
@@ -1725,13 +1716,14 @@ if(!exist('show'))
 if(!exist('whoops'))
 {
     /**
-     * load whoops
+     *
+     * @return Run
      */
-   function whoops()
+   function whoops(): Run
     {
         $whoops = new Run;
         $whoops->pushHandler(new PrettyPageHandler);
-        $whoops->register();
+       return $whoops->register();
     }
 }
 if(!exist('array_prev'))
@@ -2250,21 +2242,16 @@ if (!exist('imperium'))
     /**
      * all possibilities of management
      *
-     * @param Base $base
-     * @param Table $table
-     * @param Users $users
-     * @param Query $query
-     * @param Model $model
      * @param Connect $connect
-     * @param string $btn_class
-     * @param string $btn_danger_class
+     * @param string $current_table
+     *
      * @return Imperium
      *
      * @throws Exception
      */
-    function imperium(Base $base, Table $table, Users $users,Query $query,Model $model,Connect $connect,string $btn_class,string $btn_danger_class): Imperium
+    function imperium(Connect $connect,string $current_table): Imperium
     {
-        return new  Imperium($base,$table,$users,$query,$model,$connect,$btn_class,$btn_danger_class);
+        return new  Imperium($connect,$current_table );
     }
 }
 if (!exist('icon'))
@@ -2309,14 +2296,15 @@ if(!exist('fa'))
     /**
      * generate a fa icon
      *
+     * @param string $prefix
      * @param string $icon
      * @param string $options
      *
      * @return string
      */
-    function fa(string $icon, string $options = ''): string
+    function fa(string $prefix,string $icon, string $options = ''): string
     {
-        return '<i class="fas '.$icon.' '.$options.'" ></i>';
+        return '<i class="'.$prefix.'  '.$icon.' '.$options.'" ></i>';
     }
 }
 
@@ -2444,7 +2432,9 @@ if (!exist('today')) {
      * Create a new Carbon instance for the current date.
      *
      * @param  \DateTimeZone|string|null $tz
+     *
      * @return Carbon
+     *
      */
     function today($tz = null): Carbon
     {

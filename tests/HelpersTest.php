@@ -3,13 +3,14 @@
 namespace  tests;
 
 
-
+ 
 use Exception;
+
 use Faker\Generator;
+use Imperium\Bases\Base;
 use Imperium\Connexion\Connect;
-use Imperium\Databases\Eloquent\Bases\Base;
-use Imperium\Databases\Eloquent\Query\Query;
 use Imperium\Imperium;
+use Imperium\Query\Query;
 use PDO;
 use Testing\DatabaseTest;
 
@@ -19,9 +20,9 @@ class HelpersTest extends DatabaseTest
 
     public function test_instance()
     {
-        $this->assertInstanceOf(Imperium::class,$this->get_mysql());
-        $this->assertInstanceOf(Imperium::class,$this->get_pgsql());
-        $this->assertInstanceOf(Imperium::class,$this->get_sqlite());
+        $this->assertInstanceOf(Imperium::class,$this->mysql());
+        $this->assertInstanceOf(Imperium::class,$this->postgresql());
+        $this->assertInstanceOf(Imperium::class,$this->sqlite());
     }
     /**
      * @throws \Exception
@@ -32,7 +33,7 @@ class HelpersTest extends DatabaseTest
         $not_found = 'records was not found';
         $table_empty = 'the current table is empty';
 
-        $code = query_view(2,"index.php",$this->get_mysql()->model(),$this->get_mysql()->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->get_mysql()->class(),'record was removed successfully',$not_found,$table_empty);
+        $code = query_view(2,"index.php",$this->mysql()->model(),$this->mysql()->tables(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty);
 
 
         $this->assertContains('action="index.php"', $code);
@@ -48,28 +49,9 @@ class HelpersTest extends DatabaseTest
         $this->assertContains('remove', $code);
         $this->assertContains('select', $code);
         $this->assertContains('execute', $code);
-        $this->assertContains($this->get_mysql()->class(), $code);
+        $this->assertContains('btn btn-primary', $code);
 
-        $code = query_view(2,"index.php",$this->get_pgsql()->model(),$this->get_pgsql()->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->get_pgsql()->class(),'record was removed successfully',$not_found,$table_empty);
-
-
-        $this->assertContains('action="index.php"', $code);
-
-        $this->assertNotContains($not_found, $code);
-        $this->assertContains('expected"', $code);
-        $this->assertContains('superior ', $code);
-        $this->assertContains('superior or equal', $code);
-        $this->assertContains('inferior', $code);
-        $this->assertContains('inferior or equal', $code);
-        $this->assertContains('different', $code);
-        $this->assertContains('equal', $code);
-        $this->assertContains('like', $code);
-        $this->assertContains('remove', $code);
-        $this->assertContains('select', $code);
-        $this->assertContains('execute', $code);
-        $this->assertContains($this->get_mysql()->class(), $code);
-
-        $code = query_view(2,"index.php",$this->get_sqlite()->model(),$this->get_sqlite()->table(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute',$this->get_sqlite()->class(),'record was removed successfully',$not_found,$table_empty);
+        $code = query_view(2,"index.php",$this->postgresql()->model(),$this->postgresql()->tables(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty);
 
 
         $this->assertContains('action="index.php"', $code);
@@ -86,7 +68,26 @@ class HelpersTest extends DatabaseTest
         $this->assertContains('remove', $code);
         $this->assertContains('select', $code);
         $this->assertContains('execute', $code);
-        $this->assertContains($this->get_sqlite()->class(), $code);
+        $this->assertContains('btn btn-primary', $code);
+
+        $code = query_view(2,"index.php",$this->sqlite()->model(),$this->sqlite()->tables(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty);
+
+
+        $this->assertContains('action="index.php"', $code);
+
+        $this->assertNotContains($not_found, $code);
+        $this->assertContains('expected"', $code);
+        $this->assertContains('superior ', $code);
+        $this->assertContains('superior or equal', $code);
+        $this->assertContains('inferior', $code);
+        $this->assertContains('inferior or equal', $code);
+        $this->assertContains('different', $code);
+        $this->assertContains('equal', $code);
+        $this->assertContains('like', $code);
+        $this->assertContains('remove', $code);
+        $this->assertContains('select', $code);
+        $this->assertContains('execute', $code);
+        $this->assertContains('btn btn-primary', $code);
 
 
     }
@@ -129,40 +130,40 @@ class HelpersTest extends DatabaseTest
      */
     public function test_execute_query()
     {
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_mysql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_pgsql()->class(),'update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','!=',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<=',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','<',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','>',1,$this->table,$this->get_sqlite()->class(),'update',''))->empty());
-
-
-        $this->assertTrue(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_mysql()->class(),'a',''));
-        $this->assertEmpty(execute_query(1,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_mysql()->class(),'a',''));
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
 
 
-        $this->assertTrue(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_pgsql()->class(),'a',''));
-        $this->assertEmpty(execute_query(1,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_pgsql()->class(),'a',''));
+        $this->assertTrue(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a',''));
+        $this->assertEmpty(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a',''));
 
 
-        $this->assertTrue(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::DELETE,'id','=',1,$this->table,$this->get_sqlite()->class(),'a',''));
-        $this->assertEmpty(execute_query(1,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',1,$this->table,$this->get_sqlite()->class(),'a',''));
+        $this->assertTrue(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a',''));
+        $this->assertEmpty(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a',''));
+
+
+        $this->assertTrue(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a',''));
+        $this->assertEmpty(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a',''));
 
     }
 
     /**
-     * @throws Exception
+     * @throws Exception 
      */
     public function test_length()
     {
@@ -181,15 +182,15 @@ class HelpersTest extends DatabaseTest
      */
     public function test_print_result()
     {
-        $query = execute_query(2,$this->get_mysql()->model(),$this->get_mysql()->table(),Query::SELECT,'id','=',8,$this->table,$this->get_mysql()->class(),'azda','');
+        $query = execute_query(2,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','azda','');
 
 
         $this->assertCount(1,$query);
 
-        $query = execute_query(2,$this->get_pgsql()->model(),$this->get_pgsql()->table(),Query::SELECT,'id','=',8,$this->table,$this->get_pgsql()->class(),'','');
+        $query = execute_query(2,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','','');
         $this->assertCount(1,$query);
 
-        $query = execute_query(2,$this->get_sqlite()->model(),$this->get_sqlite()->table(),Query::SELECT,'id','=',8,$this->table,$this->get_sqlite()->class(),'','');
+        $query = execute_query(2,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','','');
         $this->assertCount(1,$query);
 
     }
@@ -237,33 +238,33 @@ class HelpersTest extends DatabaseTest
     {
 
         $choose = 'select a table';
-        $select = tables_select($this->get_mysql()->table(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->mysql()->tables(),'imperium',$this->table,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->get_mysql()->table(),'imperium',$this->table,$choose,true);
+        $select = tables_select($this->mysql()->tables(),'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->get_pgsql()->table(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->postgresql()->tables(),'imperium',$this->table,$choose,false);
 
         $this->assertNotContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->get_pgsql()->table(),'imperium',$this->table,$choose,true);
+        $select = tables_select($this->postgresql()->tables(),'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
 
-        $select = tables_select($this->get_sqlite()->table(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->sqlite()->tables(),'imperium',$this->table,$choose,false);
 
         $this->assertNotContains('location',$select);
         $this->assertContains($choose,$select);
@@ -271,7 +272,7 @@ class HelpersTest extends DatabaseTest
         $this->assertNotEmpty($select);
 
 
-        $select = tables_select($this->get_sqlite()->table(),'imperium',$this->table,$choose,true);
+        $select = tables_select($this->sqlite()->tables(),'imperium',$this->table,$choose,true);
 
         $this->assertContains($choose,$select);
         $this->assertContains('location',$select);
@@ -286,26 +287,26 @@ class HelpersTest extends DatabaseTest
     {
 
         $choose = 'select an user';
-        $select = users_select($this->get_mysql()->user(),'imperium',$this->table,$choose,false);
+        $select = users_select($this->mysql()->users(),[],'imperium',$this->table,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = users_select($this->get_mysql()->user(),'imperium',$this->table,$choose,true);
+        $select = users_select($this->mysql()->users(),[],'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = users_select($this->get_pgsql()->user(),'imperium',$this->table,$choose,false);
+        $select = users_select($this->postgresql()->users(),[],'imperium',$this->table,$choose,false);
 
         $this->assertNotContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = users_select($this->get_pgsql()->user(),'imperium',$this->table,$choose,true);
+        $select = users_select($this->postgresql()->users(),[],'imperium',$this->table,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->table,$select);
@@ -320,25 +321,25 @@ class HelpersTest extends DatabaseTest
     {
 
         $choose = 'select a database';
-        $select = bases_select($this->get_mysql()->base(),'imperium',$this->base,$choose,false);
+        $select = bases_select($this->mysql()->bases(),[],'imperium',$this->base,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = bases_select($this->get_mysql()->base(),'imperium',$this->base,$choose,true);
+        $select = bases_select($this->mysql()->bases(),[],'imperium',$this->base,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
         $this->assertNotEmpty($select);
 
-        $select = bases_select($this->get_pgsql()->base(),'imperium',$this->base,$choose,false);
+        $select = bases_select($this->postgresql()->bases(),[],'imperium',$this->base,$choose,false);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
         $this->assertNotContains('location',$select);
         $this->assertNotEmpty($select);
 
-        $select = bases_select($this->get_pgsql()->base(),'imperium',$this->base,$choose,true);
+        $select = bases_select($this->postgresql()->bases(),[],'imperium',$this->base,$choose,true);
         $this->assertContains('location',$select);
         $this->assertContains($choose,$select);
         $this->assertNotContains($this->base,$select);
@@ -445,9 +446,9 @@ class HelpersTest extends DatabaseTest
      */
     public function test_pass()
     {
-        $this->assertTrue(pass($this->get_mysql()->connect(),self::MYSQL_USER,self::MYSQL_PASS));
+        $this->assertTrue(pass($this->mysql()->connect(),self::MYSQL_USER,self::MYSQL_PASS));
 
-        $this ->assertTrue(pass($this->get_pgsql()->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
+        $this ->assertTrue(pass($this->postgresql()->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
 
     }
 
@@ -500,13 +501,13 @@ class HelpersTest extends DatabaseTest
     {
         $user = 'alexandra';
 
-        $this->assertTrue(user_add($user,$user,'',$this->get_mysql()->connect()));
-        $this->assertTrue(user_add($user,$user,'',$this->get_pgsql()->connect()));
-        $this->assertFalse(user_add($user,$user,'',$this->get_sqlite()->connect()));
+        $this->assertTrue(user_add($user,$user,'',$this->mysql()->connect()));
+        $this->assertTrue(user_add($user,$user,'',$this->postgresql()->connect()));
+        $this->assertFalse(user_add($user,$user,'',$this->sqlite()->connect()));
 
-        $this->assertTrue(remove_users($this->get_mysql()->connect(),$user));
-        $this->assertTrue(remove_users($this->get_pgsql()->connect(),$user));
-        $this->assertFalse(remove_users($this->get_sqlite()->connect(),$user));
+        $this->assertTrue(remove_users($this->mysql()->connect(),$user));
+        $this->assertTrue(remove_users($this->postgresql()->connect(),$user));
+        $this->assertFalse(remove_users($this->sqlite()->connect(),$user));
     }
 
 
@@ -528,12 +529,12 @@ class HelpersTest extends DatabaseTest
      */
     public function test_sql()
     {
-        $this->assertInstanceOf(Query::class,sql($this->table,$this->get_mysql()->query()));
-        $this->assertInstanceOf(Query::class,sql($this->table,$this->get_pgsql()->query()));
-        $this->assertInstanceOf(Query::class,sql($this->table,$this->get_sqlite()->query()));
-        $this->assertInstanceOf(Query::class,query($this->get_mysql()->table(),$this->get_mysql()->connect()));
-        $this->assertInstanceOf(Query::class, query($this->get_pgsql()->table(),$this->get_pgsql()->connect()));
-        $this->assertInstanceOf(Query::class,query($this->get_sqlite()->table(),$this->get_sqlite()->connect()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->mysql()->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->postgresql()->query()));
+        $this->assertInstanceOf(Query::class,sql($this->table,$this->sqlite()->query()));
+        $this->assertInstanceOf(Query::class,query($this->mysql()->tables(),$this->mysql()->connect()));
+        $this->assertInstanceOf(Query::class, query($this->postgresql()->tables(),$this->postgresql()->connect()));
+        $this->assertInstanceOf(Query::class,query($this->sqlite()->tables(),$this->sqlite()->connect()));
     }
 
     /**
@@ -541,8 +542,8 @@ class HelpersTest extends DatabaseTest
      */
     public function test_collation()
     {
-        $this->assertFalse(collection(collation($this->get_mysql()->connect()))->empty());
-        $this->assertFalse(collection(collation($this->get_pgsql()->connect()))->empty());
+        $this->assertFalse(collection(collation($this->mysql()->connect()))->empty());
+        $this->assertFalse(collection(collation($this->postgresql()->connect()))->empty());
 
     }
 
@@ -571,16 +572,16 @@ class HelpersTest extends DatabaseTest
      */
     public function test_charset()
     {
-        $this->assertFalse(collection(charset($this->get_mysql()->connect()))->empty());
-        $this->assertFalse(collection(charset($this->get_pgsql()->connect()))->empty());
+        $this->assertFalse(collection(charset($this->mysql()->connect()))->empty());
+        $this->assertFalse(collection(charset($this->postgresql()->connect()))->empty());
 
     }
 
     public function test_imperium_instance()
     {
-        $this->assertInstanceOf(Imperium::class,$this->get_mysql());
-        $this->assertInstanceOf(Imperium::class,$this->get_pgsql());
-        $this->assertInstanceOf(Imperium::class,$this->get_sqlite());
+        $this->assertInstanceOf(Imperium::class,$this->mysql());
+        $this->assertInstanceOf(Imperium::class,$this->postgresql());
+        $this->assertInstanceOf(Imperium::class,$this->sqlite());
     }
 
     public function test_import()
@@ -630,13 +631,13 @@ class HelpersTest extends DatabaseTest
      */
     public function test_dumper()
     {
-        $this->assertTrue(dumper($this->get_mysql()->connect()));
-        $this->assertTrue(dumper($this->get_pgsql()->connect()));
-        $this->assertTrue(dumper($this->get_sqlite()->connect()));
+        $this->assertTrue(dumper($this->mysql()->connect()));
+        $this->assertTrue(dumper($this->postgresql()->connect()));
+        $this->assertTrue(dumper($this->sqlite()->connect()));
 
-        $this->assertTrue(dumper($this->get_mysql()->connect(),false,$this->table));
-        $this->assertTrue(dumper($this->get_pgsql()->connect(),false,$this->table));
-        $this->assertTrue(dumper($this->get_sqlite()->connect(),false,$this->table));
+        $this->assertTrue(dumper($this->mysql()->connect(),false,$this->table));
+        $this->assertTrue(dumper($this->postgresql()->connect(),false,$this->table));
+        $this->assertTrue(dumper($this->sqlite()->connect(),false,$this->table));
 
     }
 
@@ -658,10 +659,10 @@ class HelpersTest extends DatabaseTest
     /**
      * @throws Exception
      */
-    public function test_base()
+    public function test_bases()
     {
-        $this->assertInstanceOf(Base::class,\base($this->get_mysql()->connect()));
-        $this->assertInstanceOf(Base::class,\base($this->get_pgsql()->connect()));
-        $this->assertInstanceOf(Base::class,\base($this->get_sqlite()->connect()));
+        $this->assertInstanceOf(Base::class,\base($this->mysql()->connect()));
+        $this->assertInstanceOf(Base::class,\base($this->postgresql()->connect()));
+        $this->assertInstanceOf(Base::class,\base($this->sqlite()->connect()));
     }
 }

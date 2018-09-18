@@ -19,24 +19,22 @@
  * @author  : fumseck
  */
 
-namespace Imperium\Databases\Eloquent\Query {
+namespace Imperium\Query {
+
 
     use Exception;
     use Imperium\Connexion\Connect;
-    use Imperium\Databases\Eloquent\Eloquent;
-    use Imperium\Databases\Eloquent\Share;
-    use Imperium\Databases\Eloquent\Tables\Table;
+    use Imperium\Imperium;
+    use Imperium\Tables\Table;
 
-
-
-    class Query extends Eloquent implements EloquentQueryBuilder
+    class Query
     {
-        use Share;
+
 
 
         /**
          * sql mode
-         * 
+         *
          * @var string
          */
         private $mode;
@@ -65,6 +63,23 @@ namespace Imperium\Databases\Eloquent\Query {
          * @var string
          */
         private $where;
+        /**
+         *
+         * @var Connect
+         */
+        private $connexion;
+
+        /**
+         * @var Table
+         */
+        private $tables;
+
+        /**
+         * @var string
+         */
+        private $table;
+        private $order;
+        private $limit;
 
         /**
         * Query constructor
@@ -134,7 +149,7 @@ namespace Imperium\Databases\Eloquent\Query {
 
             switch ($mode)
             {
-                case Query::SELECT:
+                case Imperium::SELECT:
 
                     // DEFAULT CLAUSE
 
@@ -373,7 +388,7 @@ namespace Imperium\Databases\Eloquent\Query {
                     // END TABLE CLAUSE
 
                 break;
-                case Query::DELETE:
+                case Imperium::DELETE:
                     if (def($this->table) && def($this->where))
                         return "$mode {$this->table} {$this->where}";
                 break;
@@ -524,7 +539,7 @@ namespace Imperium\Databases\Eloquent\Query {
          */
         public function set_query_mode(string $mode): Query
         {
-            if (!has($mode,Query::MODE,true))
+            if (!has($mode,Imperium::MODE,true))
                 throw new Exception('select or delete mode was not found');
 
             $this->mode = $mode;
@@ -541,7 +556,7 @@ namespace Imperium\Databases\Eloquent\Query {
          */
         public function delete(): bool
         {
-            return def($this->table) && def($this->where) ? $this->connexion->execute($this->set_query_mode(Query::DELETE)->sql()) : false;
+            return def($this->table) && def($this->where) ? $this->connexion->execute($this->set_query_mode(Imperium::DELETE)->sql()) : false;
         }
 
         /**
@@ -565,37 +580,37 @@ namespace Imperium\Databases\Eloquent\Query {
 
             switch ($type)
             {
-                case Query::INNER_JOIN:
+                case Imperium::INNER_JOIN:
                     if ($columnsDefine)
                         $this->join = "$mode $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "$mode * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Query::CROSS_JOIN:
+                case Imperium::CROSS_JOIN:
                     if ($columnsDefine)
                         $this->join = "$mode $select FROM $firstTable CROSS JOIN $secondTable";
                     else
                         $this->join = "$mode * FROM $firstTable CROSS JOIN $secondTable";
                 break;
-                case Query::LEFT_JOIN:
+                case Imperium::LEFT_JOIN:
                     if ($columnsDefine)
                         $this->join = "$mode $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "$mode * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Query::RIGHT_JOIN:
+                case Imperium::RIGHT_JOIN:
                     if ($columnsDefine)
                         $this->join = "$mode $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "$mode * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Query::FULL_JOIN:
+                case Imperium::FULL_JOIN:
                     if ($columnsDefine)
                         $this->join = "$mode $select FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "$mode * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Query::NATURAL_JOIN:
+                case Imperium::NATURAL_JOIN:
                     if ($columnsDefine)
                         $this->join = "$mode $select FROM $firstTable NATURAL JOIN $secondTable";
                     else
@@ -623,14 +638,14 @@ namespace Imperium\Databases\Eloquent\Query {
 
             switch ($mode)
             {
-                case Query::MODE_UNION:
+                case Imperium::MODE_UNION:
                     if (empty($firstColumns) && empty($secondColumns))
                         $this->union = "SELECT * FROM $firstTable UNION SELECT * FROM $secondTable";
                     else
                         $this->union = "SELECT $first FROM $firstTable UNION SELECT $second FROM $secondTable";
                 break;
 
-                case Query::MODE_UNION_ALL:
+                case Imperium::MODE_UNION_ALL:
                     if (empty($firstColumns) && empty($secondColumns))
                         $this->union = "SELECT * FROM $firstTable UNION ALL SELECT * FROM $secondTable";
                     else
@@ -656,7 +671,6 @@ namespace Imperium\Databases\Eloquent\Query {
 
             $driver = $this->connexion->get_driver();
 
-
             if (has($driver,[Connect::POSTGRESQL,Connect::MYSQL]))
             {
                 $columns = join(', ', $table->get_columns());
@@ -666,7 +680,7 @@ namespace Imperium\Databases\Eloquent\Query {
 
             if (has($driver,[Connect::SQLITE]))
             {
-                $fields = $table->get_columns();
+                $fields = $this->tables->get_columns();
                 $end = end($fields);
                 $columns = '';
 

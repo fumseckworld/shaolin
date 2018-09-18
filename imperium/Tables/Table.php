@@ -4,15 +4,15 @@
  * The 09/09/17 at 19:39
  *
  * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
+ * it under the terms of the GNU General public License as published by
  * the Free Software Foundation, either version 3 of the License, or any later version.
  *
  * imperium is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
+ * See the GNU General public License for more details.
  *
- * You should have received a copy of the GNU General Public License
+ * You should have received a copy of the GNU General public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @package : imperium
@@ -20,14 +20,13 @@
  */
 
 
-namespace  Imperium\Databases\Eloquent\Tables {
+namespace  Imperium\Tables {
 
     use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
-    use Imperium\Databases\Eloquent\Eloquent;
-    use Imperium\Databases\Eloquent\Query\Query;
-    use Imperium\Databases\Eloquent\Share;
+    use Imperium\Imperium;
+
 
     /**
      *
@@ -37,29 +36,13 @@ namespace  Imperium\Databases\Eloquent\Tables {
      *
      * @package Imperium\Databases\Eloquent\Tables
      */
-    class Table extends Eloquent implements EloquentTableBuilder
+    class Table  
     {
-
-        use Share;
-        
-        /**
-         * New table name
-         * 
-         * @var string
-         */
-        private $new;
-
         /**
          * @var Collection
          */
         private $columns;
-
-        /**
-         * Mysql engine
-         *
-         * @var string
-         */
-        private $engine;
+ 
 
         /**
          *
@@ -69,6 +52,50 @@ namespace  Imperium\Databases\Eloquent\Tables {
          *
          */
         private $added_columns;
+        
+        /**
+         * @var Connect 
+         */
+        private $connexion;
+        
+        /**
+         * Current table
+         * 
+         * @var string
+         */
+        private $table;
+
+        /**
+         * 
+         * Current driver
+         * 
+         * @var string 
+         */
+        private $driver;
+       
+        /**
+         * @var array
+         */
+        private $hidden;
+        /**
+         * @var string
+         */
+        private $engine;
+        
+        /**
+         * @var string
+         */
+        private $path;
+
+        /**
+         * @var string
+         */
+        private $collation;
+
+        /**
+         * @var string
+         */
+        private $charset;
 
         /**
          *
@@ -98,54 +125,9 @@ namespace  Imperium\Databases\Eloquent\Tables {
         public function __construct(Connect $connect)
         {
              $this->connexion =  $connect;
+             $this->driver  =  $connect->get_driver();
              $this->columns = collection();
              $this->added_columns = collection();
-        }
-
-        /**
-         *
-         * Rename a table
-         *
-         * @param string $new_name
-         *
-         * @return bool
-         *
-         * @throws Exception
-         */
-        public function rename(string $new_name = ''): bool
-        {
-            if (not_def($new_name))
-                $new_name = "_$this->table";
-
-
-            switch ($this->connexion->get_driver())
-            {
-                case Connect::MYSQL :
-                    $data =  $this->connexion->execute("RENAME TABLE {$this->table} TO $new_name");
-                    if ($data)
-                        $this->table = $new_name;
-
-                    return $data;
-                break;
-                case Connect::POSTGRESQL:
-                    $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
-                    if ($data)
-                        $this->table = $new_name;
-
-                    return $data;
-                break;
-                case Connect::SQLITE:
-                    $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
-                    if ($data)
-                        $this->table = $new_name;
-
-                    return $data;
-
-                break;
-                default:
-                    return false;
-                break;
-            }
         }
 
         public function get_current_table()
@@ -166,6 +148,58 @@ namespace  Imperium\Databases\Eloquent\Tables {
         {
             return def($this->show());
         }
+
+
+        /**
+         *
+         * Change  collation
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function change_collation(): bool
+        {
+            switch ($this->driver)
+            {
+                case Connect::MYSQL;
+                break;
+                case Connect::POSTGRESQL:
+                break;
+                case Connect::SQLITE:
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
+
+        /**
+         *
+         * Change charset
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function change_charset(): bool
+        {
+            switch ($this->driver)
+            {
+                case Connect::MYSQL;
+                break;
+                case Connect::POSTGRESQL:
+                break;
+                case Connect::SQLITE:
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
+
 
         /**
          *
@@ -192,35 +226,6 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * @throws Exception
          *
          */
-        public function get_columns_types(): array
-        {
-            $types = collection();
-
-            switch ($this->connexion->get_driver())
-            {
-                case Connect::MYSQL:
-
-                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM $this->table") as $type)
-                        $types->push($type->Type);
-
-                break;
-
-                case Connect::POSTGRESQL:
-
-                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='$this->table';") as $type)
-                        $types->push($type->data_type);
-
-                break;
-
-                case Connect::SQLITE:
-
-                    foreach ($this->connexion->request("PRAGMA table_info($this->table)") as $type)
-                        $types->push($type->type);
-
-                break;
-            }
-            return $types->collection();
-        }
 
         /**
          *
@@ -235,7 +240,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
         {
             $fields = collection();
 
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL :
 
@@ -278,69 +283,38 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
         /**
          *
-         * Empty one or all tables
+         * Empty a table
          *
          * @param string $table
-         * @param int    $mode
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function truncate(string $table = '',int $mode = Eloquent::MODE_ONE_TABLE): bool
+        public function truncate(string $table = ''): bool
         {
             if (def($table))
                 $this->table = $table;
-
-            switch ($mode)
+            
+            switch ($this->driver)
             {
-                case Eloquent::MODE_ONE_TABLE:
-                    switch ($this->connexion->get_driver())
-                    {
-                        case Connect::MYSQL :
-                            return $this->connexion->execute("TRUNCATE TABLE {$this->table}");
+                case Connect::MYSQL :
+                    return $this->connexion->execute("TRUNCATE TABLE {$this->table}");
 
-                        case Connect::POSTGRESQL :
-                            return $this->connexion->execute("TRUNCATE TABLE {$this->table}  RESTART IDENTITY");
-                            break;
+                case Connect::POSTGRESQL :
+                    return $this->connexion->execute("TRUNCATE TABLE {$this->table}  RESTART IDENTITY");
+                    break;
 
-                        case Connect::SQLITE :
-                            return $this->truncateSqliteTable($this->table);
-                            break;
-                        default:
-                            return false;
-                        break;
-                    }
-                break;
-
-                case Eloquent::MODE_ALL_TABLES:
-                    foreach ($this->show() as $table)
-                    {
-                        switch ($this->connexion->get_driver())
-                        {
-                            case Connect::MYSQL :
-                                if (!$this->connexion->execute("TRUNCATE TABLE $table"))
-                                    return false;
-                                break;
-
-                            case Connect::POSTGRESQL :
-                                if (!$this->connexion->execute("TRUNCATE TABLE $table RESTART IDENTITY"))
-                                    return false;
-                                break;
-                            case Connect::SQLITE :
-                                if (!$this->truncateSqliteTable($table))
-                                    return false;
-                                break;
-                        }
-                        return true;
-                    }
-                break;
+                case Connect::SQLITE :
+                    return $this->truncateSqliteTable($this->table);
+                    break;
                 default:
                     return false;
                 break;
             }
-            return false;
+     
+             
         }
 
         /**
@@ -359,7 +333,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function append_field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = true, bool $nullable = false): Table
         {
-            $new =  $this->columns->add($name,Table::FIELD_NAME)->add($type,Table::FIELD_TYPE)->add($primary, Table::FIELD_PRIMARY)->add($length, Table::FIELD_LENGTH )->add($unique,Table::FIELD_UNIQUE)->add($nullable,Table::FIELD_NULLABLE)->collection();
+            $new =  $this->columns->add($name,Imperium::FIELD_NAME)->add($type,Imperium::FIELD_TYPE)->add($primary, Imperium::FIELD_PRIMARY)->add($length, Imperium::FIELD_LENGTH )->add($unique,Imperium::FIELD_UNIQUE)->add($nullable,Imperium::FIELD_NULLABLE)->collection();
 
             $this->added_columns->push($new);
 
@@ -381,7 +355,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function append_column(string $name, string $type, int $size, bool $unique): bool
         {
-            $driver = $this->connexion->get_driver();
+            $driver = $this->driver;
             $data = collection();
             $command = "ALTER TABLE {$this->table} ADD COLUMN ";
 
@@ -395,7 +369,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
 
             if ($unique)
-                $data->add($this->alter_table(Query::FIELD_UNIQUE,$name,$driver));
+                $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name,$driver));
 
 
             return $data->not_exist(false);
@@ -418,7 +392,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
         {
             if (equal($driver,Connect::MYSQL))
             {
-                if (equal($constraint,Query::FIELD_UNIQUE))
+                if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
                     return $this->connexion->execute("ALTER TABLE $this->table ADD CONSTRAINT  UNIQUE($column)");
                 }
@@ -426,7 +400,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
             if (equal($driver,Connect::POSTGRESQL))
             {
-                if (equal($constraint,Query::FIELD_UNIQUE))
+                if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
                     return $this->connexion->execute("ALTER TABLE $this->table ADD UNIQUE ($column);");
                 }
@@ -449,7 +423,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function remove_constraint(string $column,string $constraint)
         {
-            $driver = $this->connexion->get_driver();
+            $driver = $this->driver;
             if (equal(Connect::POSTGRESQL,$driver))
                 return $this->connexion->execute("ALTER TABLE {$this->table} ALTER COLUMN $column DROP $constraint;");
 
@@ -474,7 +448,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
 
             foreach ($columns->collection() as $column)
             {
-                $end = has($column[Table::FIELD_NAME],$columns->last());
+                $end = has($column[Imperium::FIELD_NAME],$columns->last());
                 append($command,$this->updateCreateCommand($column,$end));
             }
 
@@ -492,7 +466,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          *
          * @return string
          */
-        protected function startCreateCommand() : string
+        public function startCreateCommand() : string
         {
             return $this->connexion->mysql() ? "CREATE TABLE IF NOT EXISTS `{$this->table}` ( " : "CREATE TABLE IF NOT EXISTS {$this->table} ( ";
         }
@@ -525,21 +499,21 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * @return string
          *
          */
-        protected function updateCreateCommand(array $field,bool $end) : string
+        public function updateCreateCommand(array $field,bool $end) : string
         {
             $x = collection($field);
 
-            $size = $x->get(Table::FIELD_LENGTH);
+            $size = $x->get(Imperium::FIELD_LENGTH);
 
             $command = '';
 
-            append($command,"`{$x->get(Table::FIELD_NAME)}` ");
+            append($command,"`{$x->get(Imperium::FIELD_NAME)}` ");
 
-            $size ? append($command," {$x->get(Table::FIELD_TYPE)}($size)") : append($command," {$x->get(Table::FIELD_TYPE)} ");
+            $size ? append($command," {$x->get(Imperium::FIELD_TYPE)}($size)") : append($command," {$x->get(Imperium::FIELD_TYPE)} ");
 
-            if ($x->get(Table::FIELD_PRIMARY))
+            if ($x->get(Imperium::FIELD_PRIMARY))
             {
-                switch ($this->connexion->get_driver())
+                switch ($this->driver)
                 {
                     case Connect::MYSQL:
                          append($command,' AUTO_INCREMENT PRIMARY KEY');
@@ -553,8 +527,8 @@ namespace  Imperium\Databases\Eloquent\Tables {
                     }
                 }
 
-                if ($x->get(Table::FIELD_UNIQUE)){ append($command,' UNIQUE'); }
-                if ($x->get(Table::FIELD_NULLABLE)){ append($command,'  NOT NULL'); }
+                if ($x->get(Imperium::FIELD_UNIQUE)){ append($command,' UNIQUE'); }
+                if ($x->get(Imperium::FIELD_NULLABLE)){ append($command,'  NOT NULL'); }
 
                 if (!$end)
                     append($command,', ');
@@ -601,7 +575,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         private function detectPrimaryKey(): string
         {
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
 
@@ -683,7 +657,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          *
          * @throws Exception
          */
-        public function delete_by_id(int $id): bool
+        public function remove_by_id(int $id): bool
         {
             return $this->connexion->execute("DELETE FROM {$this->table} WHERE {$this->get_primary_key()} = $id");
         }
@@ -700,7 +674,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function rename_column(string $old, string $new): bool
         {
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
                 case Connect::POSTGRESQL:
@@ -757,7 +731,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function remove_column(string $column): bool
         {
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
 
                 case Connect::MYSQL:
@@ -886,7 +860,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
                 else
                 {
 
-                    switch ($this->connexion->get_driver())
+                    switch ($this->driver)
                     {
                         case Connect::POSTGRESQL:
                            $val->push(" DEFAULT");
@@ -951,7 +925,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
             else
                 $hidden = collection();
 
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL :
 
@@ -1012,17 +986,17 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * @throws Exception
          *
          */
-        public function count(string $table = '',int $mode = Eloquent::MODE_ONE_TABLE)
+        public function count(string $table = '',int $mode = Imperium::MODE_ONE_TABLE)
         {
 
             switch ($mode)
             {
-                case Eloquent::MODE_ONE_TABLE && def($table):
+                case Imperium::MODE_ONE_TABLE && def($table):
                     foreach ($this->connexion->request("SELECT COUNT(*) FROM {$table}") as $number)
                         return current($number);
                 break;
 
-                case Eloquent::MODE_ONE_TABLE && def($this->table):
+                case Imperium::MODE_ONE_TABLE && def($this->table):
                     foreach ($this->connexion->request("SELECT COUNT(*) FROM {$this->table}") as $number)
                         return current($number);
                 break;
@@ -1054,7 +1028,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * 
          * @throws Exception
          */
-        protected function truncateSqliteTable(string $table) : bool
+        public function truncateSqliteTable(string $table) : bool
         {
             $fields = collection($this->get_columns());
             $types = collection($this->get_columns_types());
@@ -1188,7 +1162,7 @@ namespace  Imperium\Databases\Eloquent\Tables {
          */
         public function modifyColumn(string $column,string $type,int $size = 0): bool
         {
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
 
@@ -1265,7 +1239,6 @@ namespace  Imperium\Databases\Eloquent\Tables {
          * @param Table $instance
          * @param array $new_columns_names
          * @param array $new_columns_types
-         * @param array $new_columns_length
          * @param array $new_column_order
          * @param array $existing_columns_selected
          * @param array $unique
@@ -1275,13 +1248,13 @@ namespace  Imperium\Databases\Eloquent\Tables {
          *
          * @throws Exception
          */
-        public function append_columns(string $table, Table $instance, array  $new_columns_names, array $new_columns_types, array $new_columns_length, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
+        public function append_columns(string $table, Table $instance, array  $new_columns_names, array $new_columns_types, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
         {
             $table_columns = $instance->set_current_table($table)->get_columns();
 
             $the_end_of_new_columns =  end($new_columns_names);
 
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
 
@@ -1532,6 +1505,119 @@ namespace  Imperium\Databases\Eloquent\Tables {
             }
             return true;
         }
+
+        /**
+         * @param string $new_name
+         *
+         * @return bool
+         * 
+         * @throws Exception
+         * 
+         */
+        public function rename(string $new_name): bool
+        {
+
+            if (not_def($new_name))
+                $new_name = "_$this->table";
+
+
+            switch ($this->driver)
+            {
+                case Connect::MYSQL :
+                    $data =  $this->connexion->execute("RENAME TABLE {$this->table} TO $new_name");
+                    if ($data)
+                        $this->table = $new_name;
+
+                    return $data;
+                    break;
+                case Connect::POSTGRESQL:
+                    $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
+                    if ($data)
+                        $this->table = $new_name;
+
+                    return $data;
+                    break;
+                case Connect::SQLITE:
+                    $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
+                    if ($data)
+                        $this->table = $new_name;
+
+                    return $data;
+
+                    break;
+                default:
+                    return false;
+                    break;
+            }
+        }
+
+        /**
+         * Display columns type
+         * 
+         * @return array
+         * 
+         * @throws Exception
+         * 
+         */
+        public function get_columns_types(): array 
+        {
+            $types = collection();
+
+            switch ($this->driver)
+            {
+                case Connect::MYSQL:
+
+                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM $this->table") as $type)
+                        $types->push($type->Type);
+
+                    break;
+
+                case Connect::POSTGRESQL:
+
+                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='$this->table';") as $type)
+                        $types->push($type->data_type);
+
+                    break;
+
+                case Connect::SQLITE:
+
+                    foreach ($this->connexion->request("PRAGMA table_info($this->table)") as $type)
+                        $types->push($type->type);
+
+                    break;
+            }
+            return $types->collection();
+        }
+
+
+        /**
+         *
+         * Set new collation
+         *
+         * @param string $new_collation
+         *
+         * @return Table
+         */
+        public function set_collation(string $new_collation): Table
+        {
+            $this->collation = $new_collation;
+            return $this;
+        }
+
+        /**
+         *
+         * Set new collation
+         *
+         * @param string $new_charset
+         *
+         * @return Table
+         */
+        public function set_charset(string $new_charset): Table
+        {
+            $this->charset = $new_charset;
+            return $this;
+        }
+
     }
 
 }

@@ -22,12 +22,13 @@
 
 namespace Imperium\Html\Form;
 
+
+
+
 use Exception;
-use Imperium\Databases\Eloquent\Tables\Table;
-use Imperium\Html\Form\Core\FormBuilder;
+use Imperium\Tables\Table;
 
-
-class Form implements FormBuilder
+class Form
 {
 
     const GRID_ROW = 'row';
@@ -680,12 +681,12 @@ class Form implements FormBuilder
      *
      * @param string $name
      * @param string $text
-     * @param string $class
      * @param bool $checked
      *
      * @return Form
+     *
      */
-    public function radio(string $name, string $text, string $class, bool $checked = false): Form
+    public function radio(string $name, string $text,bool $checked = false): Form
     {
         if ($checked)
         {
