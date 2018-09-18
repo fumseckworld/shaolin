@@ -58,6 +58,9 @@ class BaseTest extends DatabaseTest
         $this->assertTrue($this->mysql()->bases()->create($base));
         $this->assertTrue($this->mysql()->bases()->drop($base));
 
+        $this->assertTrue($this->sqlite()->bases()->create($base));
+        $this->assertTrue($this->sqlite()->bases()->drop($base));
+
         $this->assertTrue($this->postgresql()->bases()->create($base));
         $this->assertTrue($this->postgresql()->bases()->drop($base));
 
@@ -96,5 +99,8 @@ class BaseTest extends DatabaseTest
 
         $this->assertTrue(dumper($this->mysql()->connect(),false,$this->table));
         $this->assertTrue(dumper($this->postgresql()->connect(),false,$this->table));
+
+        $this->assertTrue($this->mysql()->bases()->dump());
+        $this->assertTrue($this->postgresql()->bases()->dump());
     }
 }

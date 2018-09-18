@@ -45,14 +45,7 @@ namespace Imperium\Bases {
          */
         private $charset;
 
-        /**
-         * database name
-         *
-         * @var string
-         */
-        private $database;
-
-        /**
+         /**
          * @var Connect 
          */
         private $connexion;
@@ -131,10 +124,10 @@ namespace Imperium\Bases {
             switch ($this->connexion->get_driver())
             {
                 case Connect::MYSQL:
-                    return empty($this->collation) && empty($this->encoding) ? $this->connexion->execute("CREATE DATABASE $database") :  $this->connexion->execute("CREATE DATABASE $database CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
+                    return not_def($this->collation,$this->charset) ? $this->connexion->execute("CREATE DATABASE $database") :  $this->connexion->execute("CREATE DATABASE $database CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
                 break;
                 case Connect::POSTGRESQL:
-                    return empty($this->collation) && empty($this->encoding) ? $this->connexion->execute("CREATE DATABASE $database  TEMPLATE template0") :  $this->connexion->execute("CREATE DATABASE  $database ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;");
+                    return not_def($this->collation,$this->charset) ? $this->connexion->execute("CREATE DATABASE $database  TEMPLATE template0") :  $this->connexion->execute("CREATE DATABASE  $database ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;");
                 break;
                 case Connect::SQLITE:
                     return  new PDO("sqlite:$database",null,null) && chmod($database,0777);
@@ -175,20 +168,6 @@ namespace Imperium\Bases {
         }
 
         /**
-         * set database name
-         *
-         * @param string $name
-         *
-         * @return Base
-         */
-        public function set_name(string $name): Base
-        {
-            $this->database = $name;
-
-            return $this;
-        }
-
-        /**
          * delete a database
          *
          * @param string $database
@@ -199,7 +178,7 @@ namespace Imperium\Bases {
         public function drop(string $database): bool
         {
             
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::SQLITE:
                     return File::delete($database);
@@ -229,9 +208,9 @@ namespace Imperium\Bases {
          *
          * @throws Exception
          */
-        public function exist(string $base = ''): bool
+        public function exist(string $base): bool
         {
-            return def($base) ? collection($this->show())->exist($base) : collection($this->show())->exist($this->database);
+            return collection($this->show())->exist($base);
         }
 
 
@@ -246,7 +225,7 @@ namespace Imperium\Bases {
         {
             $charset = collection();
 
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
                     foreach ($this->connexion->request('SHOW CHARACTER SET') as $char)
@@ -270,7 +249,7 @@ namespace Imperium\Bases {
         public function collations(): array
         {
             $collation = collection();
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
                     foreach ($this->connexion->request('SHOW COLLATION') as $char)
