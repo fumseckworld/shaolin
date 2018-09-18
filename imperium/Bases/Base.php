@@ -61,6 +61,11 @@ namespace Imperium\Bases {
         private $driver;
 
         /**
+         * @var string
+         */
+        private $database;
+
+        /**
          * show databases
          *
          * @return array
@@ -315,13 +320,23 @@ namespace Imperium\Bases {
          */
         public function change_collation(): bool
         {
+            if (def($this->database))
+                $base = $this->database;
+            else
+                $base = $this->connexion->get_database();
+            if (not_def($this->collation))
+                throw new Exception("We have not found required collation");
+
+            if (not_in($this->collations(),$this->collation))
+                throw new Exception("Invalid collation name");
+
             switch ($this->driver)
             {
                 case Connect::MYSQL;
+                    return $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'");
                 break;
                 case Connect::POSTGRESQL:
-                break;
-                case Connect::SQLITE:
+                    return  $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
                 break;
                 default:
                     return false;
@@ -340,18 +355,42 @@ namespace Imperium\Bases {
          */
         public function change_charset(): bool
         {
+            if (def($this->database))
+                $base = $this->database;
+            else
+                $base = $this->connexion->get_database();
+
+            if (not_def($this->charset))
+
+                throw new Exception("We have not found required charset");
+
+            if (not_in($this->charsets(),$this->charset))
+                throw new Exception("Invalid charset name");
             switch ($this->driver)
             {
                 case Connect::MYSQL;
+                    return $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}");
                 break;
                 case Connect::POSTGRESQL:
-                break;
-                case Connect::SQLITE:
+                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
                 break;
                 default:
                     return false;
                 break;
             }
+        }
+
+        /**
+         *
+         * @param string $base
+         *
+         * @return Base
+         */
+        public function set_name(string $base): Base
+        {
+            $this->database = $base;
+
+            return $this;
         }
 
 

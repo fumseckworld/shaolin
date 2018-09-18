@@ -9,6 +9,7 @@
 namespace tests;
 
 
+use Exception;
 use Testing\DatabaseTest;
 
 class BaseTest extends DatabaseTest
@@ -102,5 +103,40 @@ class BaseTest extends DatabaseTest
 
         $this->assertTrue($this->mysql()->bases()->dump());
         $this->assertTrue($this->postgresql()->bases()->dump());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_change()
+    {
+        $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->change_charset());
+        $this->assertTrue($this->mysql()->bases()->set_collation('utf8_general_ci')->change_collation());
+
+        $this->assertTrue($this->postgresql()->bases()->set_collation('C')->change_collation());
+        $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
+
+        $this->assertTrue($this->mysql()->change_base_charset($this->base,'utf8'));
+        $this->assertTrue($this->mysql()->change_base_collation($this->base,'utf8_general_ci'));
+
+        $this->assertTrue($this->postgresql()->change_base_charset($this->base,'UTF8'));
+        $this->assertTrue($this->postgresql()->change_base_collation($this->base,'C'));
+
+        $this->assertTrue($this->postgresql()->bases()->set_collation('C')->change_collation());
+        $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
+ 
+
+        $bidon = faker()->text(5);
+        $this->expectException(Exception::class);
+        $this->mysql()->bases()->change_collation();
+        $this->mysql()->bases()->change_charset();
+        $this->postgresql()->bases()->change_charset();
+        $this->postgresql()->bases()->change_collation();
+
+        $this->mysql()->bases()->set_collation($bidon)->change_collation();
+        $this->mysql()->bases()->set_charset($bidon)->change_charset();
+        $this->postgresql()->bases()->set_charset($bidon)->change_charset();
+        $this->postgresql()->bases()->set_collation($bidon)->change_collation();
+
     }
 }
