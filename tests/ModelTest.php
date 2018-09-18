@@ -39,6 +39,22 @@ class ModelTest extends DatabaseTest
 
     }
 
+    public function test_is()
+    {
+        $this->assertTrue($this->mysql()->model()->is_mysql());
+        $this->assertFalse($this->postgresql()->model()->is_mysql());
+        $this->assertFalse($this->sqlite()->model()->is_mysql());
+
+        $this->assertTrue($this->postgresql()->model()->is_postgresql());
+        $this->assertFalse($this->mysql()->model()->is_postgresql());
+        $this->assertFalse($this->sqlite()->model()->is_postgresql());
+
+        $this->assertTrue($this->sqlite()->model()->is_sqlite());
+        $this->assertFalse($this->mysql()->model()->is_sqlite());
+        $this->assertFalse($this->postgresql()->model()->is_sqlite());
+
+    }
+
     /**
      * @throws Exception
      *
@@ -124,6 +140,9 @@ class ModelTest extends DatabaseTest
         $this->assertTrue($this->mysql()->remove_record(4));
         $this->assertTrue($this->postgresql()->remove_record(4));
         $this->assertTrue($this->sqlite()->remove_record(4));
+        $this->assertTrue($this->mysql()->model()->remove(7));
+        $this->assertTrue($this->postgresql()->model()->remove(7));
+        $this->assertTrue($this->sqlite()->model()->remove(7));
     }
 
     /**
@@ -171,6 +190,10 @@ class ModelTest extends DatabaseTest
         $this->assertTrue($this->mysql()->update_record(6,$data,[]));
         $this->assertTrue($this->postgresql()->update_record(6,$data,[]));
         $this->assertTrue($this->sqlite()->update_record(6,$data,[]));
+
+        $this->assertTrue($this->mysql()->model()->update(6,$data,[]));
+        $this->assertTrue($this->postgresql()->model()->update(6,$data,[]));
+        $this->assertTrue($this->sqlite()->model()->update(6,$data,[]));
     }
 
 

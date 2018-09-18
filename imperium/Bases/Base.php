@@ -32,7 +32,6 @@ namespace Imperium\Bases {
     {
          
 
-        private $options;
 
         /**
          * the collation
@@ -53,12 +52,6 @@ namespace Imperium\Bases {
          */
         private $database;
 
-        /**
-         * pdo fetch mode
-         *
-         * @var int
-         */
-        private $fetch;
         /**
          * @var Connect 
          */
@@ -305,35 +298,6 @@ namespace Imperium\Bases {
             return $this;
         }
 
-        /**
-         * set the encoding option
-         *
-         * @param string $option
-         *
-         * @return Base
-         */
-        public function set_encoding_option(string $option): Base
-        {
-            $this->options = $option;
-
-            return $this;
-        }
-
-        /**
-         * drop all database
-         *
-         * @return bool
-         *
-         * @throws Exception
-         */
-        public function drop_all_databases(): bool
-        {
-           foreach ($this->show() as $base)
-               if (!$this->drop($base))
-                   return false;
-
-           return empty($this->show());
-        }
 
         /**
          * Database constructor.
@@ -346,19 +310,7 @@ namespace Imperium\Bases {
             $this->driver = $connect->get_driver();
         }
 
-        /**
-         * define the fetch mode
-         *
-         * @param int $mode
-         *
-         * @return Base
-         */
-        public function set_fetch_mode(int $mode = PDO::FETCH_OBJ): Base
-        {
-           $this->fetch = $mode;
 
-           return $this;
-        }
 
         /**
          *

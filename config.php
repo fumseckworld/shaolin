@@ -20,25 +20,20 @@ function instance_mysql():  \Imperium\Imperium
      global $mysql;
     
      return $mysql;
-
 }
 
 
- function instance_pgsql():  \Imperium\Imperium
- {
+function instance_pgsql():  \Imperium\Imperium
+{
      global $pgsql;
 
      return $pgsql;
+}
 
- }
-
-
-
- function instance_sqlite():  \Imperium\Imperium
- {
+function instance_sqlite():  \Imperium\Imperium
+{
      global $sqlite;
 
      return $sqlite;
-
- }
+}
 
