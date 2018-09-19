@@ -124,7 +124,7 @@ class BaseTest extends DatabaseTest
 
         $this->assertTrue($this->postgresql()->bases()->set_collation('C')->change_collation());
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
- 
+
 
         $bidon = faker()->text(5);
         $this->expectException(Exception::class);
@@ -133,6 +133,7 @@ class BaseTest extends DatabaseTest
         $this->postgresql()->bases()->change_charset();
         $this->postgresql()->bases()->change_collation();
 
+        $this->expectException(Exception::class);
         $this->mysql()->bases()->set_collation($bidon)->change_collation();
         $this->mysql()->bases()->set_charset($bidon)->change_charset();
         $this->postgresql()->bases()->set_charset($bidon)->change_charset();
