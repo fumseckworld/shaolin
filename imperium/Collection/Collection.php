@@ -61,6 +61,24 @@ class Collection implements ArrayAccess, Iterator
 
     /**
      *
+     * @param callable $callable
+     *
+     * @return Collection
+     */
+    public function each(callable $callable): Collection
+    {
+        $result = collection();
+        foreach ($this->data as $datum)
+        {
+            $result->push($callable($datum));
+        }
+        $this->data  = $result->collection();
+        return $this;
+    }
+
+
+    /**
+     *
      * check if array is empty
      *
      * @return bool

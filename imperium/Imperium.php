@@ -36,20 +36,6 @@ class Imperium extends Zen implements Management
      */
     private $table;
 
-    /**
-     * All columns in a table
-     *
-     * @var Collection\Collection
-     */
-    private $columns;
-
-    /**
-     *
-     * Added columns
-     *
-     * @var Collection\Collection
-     */
-    private $added_columns;
 
     /**
      *
@@ -727,8 +713,7 @@ class Imperium extends Zen implements Management
         $this->connect = $connect;
         $this->driver = $connect->get_driver();
         $this->table = new Table($connect);
-        $this->columns = collection();
-        $this->added_columns = collection();
+
         $this->query = new  Query($this->table,$connect);
         $this->base = new Base($connect);
         $this->users = new Users($connect);

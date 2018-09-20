@@ -30,7 +30,29 @@ namespace Imperium\Query {
     class Query
     {
 
+        const EQUAL = '=';
 
+        const DIFFERENT = '!=';
+
+        const SUPERIOR = '>';
+        
+        const INFERIOR = '<';
+        
+        const SUPERIOR_OR_EQUAL = '>=';
+        
+        const INFERIOR_OR_EQUAL = '<=';
+
+        const LIKE = 'LIKE';
+
+        const DELETE = 'DELETE';
+
+        const SELECT = 'SELECT';
+
+        const VALID_OPERATORS =  [
+            self::EQUAL,self::DIFFERENT,self::INFERIOR,self::INFERIOR_OR_EQUAL,self::SUPERIOR,self::SUPERIOR_OR_EQUAL,self::LIKE
+        ];
+
+        const UPDATE = 'UPDATE';
 
         /**
          * sql mode
@@ -109,13 +131,7 @@ namespace Imperium\Query {
 
         private function notDefine(array $keys)
         {
-            $values = collection();
-            foreach ($keys as $key)
-                $values->push(is_null($key));
-
-            return $values->not_exist(false);
-
-
+            return collection($keys)->each('is_null')->not_exist(false);
         }
 
         private function deleteSpace(string $key): string
@@ -125,11 +141,7 @@ namespace Imperium\Query {
 
         private function isNotNull(array $keys)
         {
-            $values = collection();
-            foreach ($keys as $key)
-                $values->push(is_null($key));
-
-            return $values->not_exist(true);
+            return collection($keys)->each('is_null')->not_exist(true);
         }
 
         /**
@@ -141,7 +153,8 @@ namespace Imperium\Query {
          */
         public function sql(): string
         {
-            if (empty($this->mode))
+          
+            if (not_def($this->mode))
                 throw new Exception('Missing the query mode select or delete');
 
 
@@ -401,43 +414,51 @@ namespace Imperium\Query {
         /**
          * where clause
          *
-         * @param string      $param
-         * @param string      $condition
-         * @param mixed       $expected
-         * @param string      $like
-         * @param null        $betweenOne
-         * @param null        $betweenTwo
+         * @param string $param
+         * @param string $condition
+         * @param mixed $expected
          *
          * @return Query
+         *
+         * @throws Exception
+         *
          */
-        public function where(string $param, string $condition, $expected,string $like = '',$betweenOne = null,$betweenTwo = null ): Query
+        public function where(string $param, string $condition, $expected): Query
         {
-            $likeClause = empty($like) ? false : true;
-            $betweenClause  = is_null($betweenOne) && is_null($betweenTwo) ? false : true;
+            $condition =  html_entity_decode($condition);
 
-            if ($likeClause)
-            {
-                $this->where = "FROM {$this->table} WHERE $param LIKE '%$like%'";
-            }
+            if(not_in(self::VALID_OPERATORS,$condition))
+                throw new Exception("The operator is invalid");
 
-            if ($betweenClause)
-            {
-                if (is_string($betweenOne) && is_string($betweenTwo))
-                    $this->where = "FROM {$this->table} WHERE $param BETWEEN '$betweenOne' AND '$betweenTwo'";
-                else
-                    $this->where = "FROM {$this->table} WHERE $param BETWEEN $betweenOne AND $betweenTwo";
-            }
+            if (is_string($expected))
+                $this->where = "WHERE $param $condition '$expected'";
+            else
+                $this->where = "WHERE $param $condition $expected";
 
-            if (!$likeClause && !$betweenClause)
-            {
-                if (is_string($expected))
-                    $this->where = "WHERE $param $condition '$expected'";
-                else
-                    $this->where = "WHERE $param $condition $expected";
-            }
 
             return $this;
 
+        }
+
+        /**
+         *
+         * Build a between clause
+         *
+         * @param string $column
+         * @param $begin
+         * @param $end
+         *
+         * @return Query
+         *
+         */
+        public function between(string $column,$begin,$end): Query
+        {
+            if (is_string($begin) && is_string($end))
+                $this->where = "WHERE $column BETWEEN '$begin' AND '$end'";
+            else
+                $this->where = "WHERE $column BETWEEN $begin AND $end";
+
+            return $this;
         }
 
         /**
@@ -450,8 +471,10 @@ namespace Imperium\Query {
          */
         public function order_by(string $key, string $order = 'DESC'): Query
         {
-            $this->order = "ORDER BY $key $order";
-
+            if(def($this->mode))
+                different($this->mode,self::DELETE) ? $this->order = "ORDER BY $key $order" : $this->order = '';
+            else
+                $this->order = "ORDER BY $key $order";
             return $this;
         }
 
@@ -465,7 +488,7 @@ namespace Imperium\Query {
          */
         public function set_columns(array $columns = []): Query
         {
-            $this->columns = join(', ', $columns);
+            $this->columns = collection($columns)->join(', ');
 
             return $this;
         }
@@ -493,9 +516,7 @@ namespace Imperium\Query {
          */
         public function count(): int
         {
-            $data =  $this->connexion->request("SELECT * $this->table");
-
-            return count($data);
+            return  count($this->connexion->request("SELECT * {$this->table}"));
         }
 
 
@@ -541,8 +562,8 @@ namespace Imperium\Query {
         {
             if (!has($mode,Imperium::MODE,true))
                 throw new Exception('select or delete mode was not found');
-
-            $this->mode = $mode;
+            else
+                $this->mode = $mode;
 
             return $this;
         }
@@ -556,7 +577,7 @@ namespace Imperium\Query {
          */
         public function delete(): bool
         {
-            return def($this->table) && def($this->where) ? $this->connexion->execute($this->set_query_mode(Imperium::DELETE)->sql()) : false;
+            return def($this->table,$this->where,$this->mode) ? $this->connexion->execute( $this->sql()) : false;
         }
 
         /**
@@ -658,15 +679,13 @@ namespace Imperium\Query {
         }
 
 
-
         /**
          * @param Table $table
-         * @param string $like
-         *
+         * @param string $value
          * @return Query
-         * @throws \Exception
+         * @throws Exception
          */
-        public function like(Table $table,string $like): Query
+        public function like(Table $table,string $value): Query
         {
 
             $driver = $this->connexion->get_driver();
@@ -675,7 +694,7 @@ namespace Imperium\Query {
             {
                 $columns = join(', ', $table->get_columns());
 
-                $this->where = "WHERE CONCAT($columns) LIKE '%$like%'";
+                $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             }
 
             if (has($driver,[Connect::SQLITE]))
@@ -686,10 +705,10 @@ namespace Imperium\Query {
 
                 foreach ($fields as $column)
                 {
-                    if ($column != $end)
-                        $columns .= "$column LIKE '%$like%' OR ";
+                    if (different($column , $end))
+                        append($columns,"$column LIKE '%$value%' OR ");
                     else
-                        $columns .= "$column LIKE '%$like%'";
+                        append($columns ,"$column LIKE '%$value%'");
                 }
 
                 $this->where = "WHERE  $columns";

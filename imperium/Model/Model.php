@@ -181,8 +181,9 @@ class Model
 
         if (not_def($data))
             throw new Exception('Record not found');
-        else
-            return $data;
+         
+
+        return $data;
     }
 
     /**
@@ -201,8 +202,7 @@ class Model
      */
     public function where($param,$condition,$expected): array
     {
-        return equal($condition,'LIKE') ?  $this->sql->like($this->table,$expected)->get() : $this->sql->where($param,html_entity_decode($condition),$expected)->get();
-
+        return equal($condition,'LIKE') ?$this->sql->set_query_mode(Imperium::SELECT)->like($this->table,$expected)->get() : $this->sql->set_query_mode(Imperium::SELECT)->where($param,$condition,$expected)->get();
     }
 
     /**

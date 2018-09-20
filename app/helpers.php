@@ -260,9 +260,9 @@ if (!exist('execute_query'))
 
         switch ($mode)
         {
-            case Imperium::UPDATE:
+            case Query::UPDATE:
                 $code = collection();
-                foreach ( $model->query()->set_current_table_name($current_table_name)->set_query_mode($mode)->where($column_name,html_entity_decode($condition),$expected)->get()  as $record)
+                foreach ( $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->get()  as $record)
                 {
                     $id = $table->set_current_table($current_table_name)->get_primary_key();
 
@@ -270,12 +270,13 @@ if (!exist('execute_query'))
                 }
                 return $code->collection();
             break;
-            case Imperium::DELETE:
+            case Query::DELETE:
+            
                 $data = $model->where($column_name,$condition,$expected);
-                return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, html_entity_decode($condition), $expected)->delete() ;
+                return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
             default:
-               return $model->query()->set_query_mode($mode)->set_current_table_name($current_table_name)->where($column_name,$condition,$expected)->get();
+               return $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->get();
             break;
         }
     }
@@ -284,7 +285,6 @@ if (!exist('execute_query'))
 if (!exist('query_view'))
 {
     /**
-     * @param int $form_grid
      * @param string $query_action
      * @param Model $model
      * @param Table $instance
@@ -314,13 +314,15 @@ if (!exist('query_view'))
      *
      * @throws Exception
      */
-    function query_view(int $form_grid,string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text): string
+    function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text): string
     {
-        if (equal($form_grid,0))
-            $form_grid = 2;
-
         $table = $instance->set_current_table($current_table_name);
         $columns = $table->get_columns();
+      
+        $i = count($columns);
+
+        equal(0,$i % 2) ?  $form_grid =  2 :  $form_grid =  3;
+
         $condition = array('=' => $equal_text,'!=' => $different_text,'<' => $inferior_text,'>' => $superior_text,'<=' => $inferior_or_equal_text,'>=' =>$superior_or_equal_text,'LIKE' => $like_text);
 
         return post('mode') ?  form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;

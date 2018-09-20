@@ -588,7 +588,7 @@ class Form
                     $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '" required="required">';
                 foreach ($options as $k=> $v)
                 {
-                    if (is_string($k) || is_numeric($k))
+                    if (is_string($k))
                         $this->form .= '<option value="'.$k.'"> '.$v.'</option>';
                     else
                         $this->form .= '<option value="'.$v.'"> '.$v.'</option>';
