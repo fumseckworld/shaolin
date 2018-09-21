@@ -21,7 +21,7 @@ class DatabaseTest extends TestCase
     protected $table = 'doctors';
     protected $base = 'zen';
     protected $class = 'btn btn-outline-primary';
-
+    protected $second_table = 'patients';
 
     public function mysql(): Imperium
     {

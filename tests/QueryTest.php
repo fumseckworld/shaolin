@@ -3,12 +3,14 @@
 namespace tests;
 
  
+use Exception;
 use Imperium\Query\Query;
 use Testing\DatabaseTest;
 
 
 class QueryTest extends DatabaseTest 
 {
+
 
     /**
      * @throws \Exception
@@ -23,9 +25,9 @@ class QueryTest extends DatabaseTest
         $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::SELECT)->where('name','!=','will')->get());
         $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::SELECT)->where('name','!=','will')->get());
     
-        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::SELECT)->like($this->mysql()->tables(),'b')->get());
-        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::SELECT)->like($this->postgresql()->tables(),'b')->get());
-        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::SELECT)->like($this->sqlite()->tables(),'b')->get());
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::SELECT)->like($this->mysql()->tables(),'a')->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::SELECT)->like($this->postgresql()->tables(),'a')->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::SELECT)->like($this->sqlite()->tables(),'a')->get());
 
         
         $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::SELECT)->between('id',1,16)->get());
@@ -53,8 +55,24 @@ class QueryTest extends DatabaseTest
         $this->postgresql()->query()->where('id','azd','5')->get();
         $this->sqlite()->query()->where('id','azd','5')->get();
 
-
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_union()
+    {
+
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
+    }
+ 
 
     /**
      * @throws \Exception

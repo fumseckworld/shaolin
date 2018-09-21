@@ -33,7 +33,6 @@ class Doctorstable extends AbstractMigration
             ->addColumn('age', 'integer')
             ->addColumn('sex', 'string')
             ->addColumn('status','string')
-            ->addColumn('date','datetime')
             ->create();
     }
 }

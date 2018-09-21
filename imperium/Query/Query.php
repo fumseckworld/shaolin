@@ -24,7 +24,6 @@ namespace Imperium\Query {
 
     use Exception;
     use Imperium\Connexion\Connect;
-    use Imperium\Imperium;
     use Imperium\Tables\Table;
 
     class Query
@@ -48,11 +47,33 @@ namespace Imperium\Query {
 
         const SELECT = 'SELECT';
 
+        const INNER_JOIN = 'INNER_JOIN';
+
+        const CROSS_JOIN = 'CROSS_JOIN';
+
+        const LEFT_JOIN = 'LEFT_JOIN';
+
+        const RIGHT_JOIN = 'RIGHT_JOIN';
+
+        const FULL_JOIN = 'FULL_JOIN';
+
+        const NATURAL_JOIN = 'NATURAL_JOIN';
+
+        const UPDATE = 'UPDATE';
+
+        const UNION = 'UNION';
+
+        const UNION_ALL = 'UNION_ALL';
+
+
         const VALID_OPERATORS =  [
             self::EQUAL,self::DIFFERENT,self::INFERIOR,self::INFERIOR_OR_EQUAL,self::SUPERIOR,self::SUPERIOR_OR_EQUAL,self::LIKE
         ];
 
-        const UPDATE = 'UPDATE';
+        const MODE = [
+            self::UPDATE,self::SELECT,self::DELETE,self::UNION,self::UNION_ALL,self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN,self::NATURAL_JOIN
+        ];
+
 
         /**
          * sql mode
@@ -129,20 +150,6 @@ namespace Imperium\Query {
             return $this;
         }
 
-        private function notDefine(array $keys)
-        {
-            return collection($keys)->each('is_null')->not_exist(false);
-        }
-
-        private function deleteSpace(string $key): string
-        {
-            return trim($key);
-        }
-
-        private function isNotNull(array $keys)
-        {
-            return collection($keys)->each('is_null')->not_exist(true);
-        }
 
         /**
          *
@@ -153,260 +160,30 @@ namespace Imperium\Query {
          */
         public function sql(): string
         {
-          
-            if (not_def($this->mode))
-                throw new Exception('Missing the query mode select or delete');
 
+            $where  = def($this->where) ? $this->where : '';
+            $table  = def($this->table) ? $this->table : '';
+            $limit  = def($this->limit) ? $this->limit : '';
+            $join   = def($this->join)  ? $this->join  : '';
+            $union  = def($this->union) ? $this->union : '';
+            $mode   = def($this->mode)  ? $this->mode  : '';
+            $columns = def($this->columns) ? $this->columns : "*";
 
-            $mode = $this->mode;
+            if (not_def($mode))
+                throw new Exception('The query mode is not define');
 
-            switch ($mode)
-            {
-                case Imperium::SELECT:
+            if (equal($mode,Query::SELECT))
+                return "$mode $columns $table $where $limit";
 
-                    // DEFAULT CLAUSE
+            if (equal($mode,Query::DELETE))
+                return "$mode $table $where";
 
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->order,$this->limit,$this->join,$this->union]))
-                        return '';
+            if (equal($mode,Query::UNION) || equal($mode,Query::UNION_ALL))
+                return "$union $limit";
 
-                    if ($this->notDefine([$this->table,$this->join,$this->union]))
-                        return '';
+            if (collection([self::NATURAL_JOIN,self::FULL_JOIN,self::RIGHT_JOIN,self::LEFT_JOIN,self::CROSS_JOIN,self::INNER_JOIN])->exist($mode))
+                return "$join $limit";
 
-                    if ($this->notDefine([$this->table,$this->limit,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->order,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->order,$this->limit,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->columns, $this->limit,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table, $this->columns,$this->order,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->order,$this->limit,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->where,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->where,$this->order ,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->where,$this->order,$this->limit,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->limit,$this->join,$this->union]))
-                        return '';
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->join,$this->union]))
-                        return '';
-
-
-                    // END DEFAULT CLAUSE
-
-                    // START JOIN CLAUSE
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->order,$this->limit,$this->union]))
-                        return "{$this->deleteSpace($this->join)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->order,$this->limit,$this->union]) && $this->isNotNull([$this->where]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->union]) && $this->isNotNull([$this->where,$this->limit,$this->order]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->limit,$this->union]) && $this->isNotNull([$this->order,$this->where]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->order,$this->union]) && $this->isNotNull([$this->where,$this->limit]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->order,$this->limit,$this->union]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->union]) && $this->isNotNull([$this->order,$this->limit]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->limit,$this->union]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->order,$this->union]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->limit)}";
-
-                    // END JOIN CLAUSE
-
-                    // START UNION CLAUSE
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->order,$this->limit,$this->join]))
-                        return "{$this->deleteSpace($this->union)}";
-
-                    if ($this->notDefine([$this->table, $this->columns,$this->join]) && $this->isNotNull([$this->where,$this->limit,$this->order]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->limit,$this->join]) && $this->isNotNull([$this->order,$this->where]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->order,$this->join]) && $this->isNotNull([$this->limit,$this->where]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->columns,$this->order,$this->limit,$this->join]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->join]) && $this->isNotNull([$this->order,$this->limit]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->join]) && $this->isNotNull([$this->order,$this->limit]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->limit,$this->join]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->table,$this->where,$this->columns,$this->order,$this->join]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->limit)}";
-
-                    // END UNION CLAUSE
-
-                    // START TABLE CLAUSE
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->order,$this->limit,$this->join,$this->union]))
-                        return "SELECT * {$this->deleteSpace($this->table)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->limit,$this->join,$this->union]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->join,$this->union]) && $this->isNotNull([$this->where,$this->columns,$this->order,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->order,$this->limit,$this->join,$this->union]) && $this->isNotNull([$this->where,$this->columns]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->columns,$this->union]) && $this->isNotNull([$this->join,$this->where,$this->order,$this->limit]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->columns,$this->join]) && $this->isNotNull([$this->union,$this->where,$this->limit,$this->order]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->columns,$this->join,$this->union]) && $this->isNotNull([$this->where,$this->order,$this->limit]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->columns, $this->limit,$this->union]) && $this->isNotNull([$this->join,$this->where]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->columns,$this->limit,$this->join,$this->union]) && $this->isNotNull([$this->order,$this->where]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->columns,$this->limit,$this->join]) && $this->isNotNull([$this->order,$this->where,$this->union]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->columns,$this->limit,$this->union]) && $this->isNotNull([$this->order,$this->where,$this->join]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->join]) && $this->isNotNull([$this->limit,$this->union,$this->where]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->union]) && $this->isNotNull([$this->limit,$this->join,$this->where]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->join,$this->union]) && $this->isNotNull([$this->limit,$this->where]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->limit,$this->join,$this->union]) && $this->isNotNull([$this->where]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->limit,$this->join]) && $this->isNotNull([$this->where,$this->union]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->columns,$this->order,$this->limit,$this->union]) && $this->isNotNull([$this->join,$this->where]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->where)}";
-
-                    if ($this->notDefine([$this->where,$this->join,$this->union]) && $this->isNotNull([$this->columns,$this->order,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where ,$this->union]) && $this->isNotNull([$this->columns,$this->order,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where ,$this->join]) && $this->isNotNull([$this->columns,$this->order,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->limit,$this->join,$this->union]) && $this->isNotNull([$this->columns,$this->order]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->where,$this->limit,$this->union]) && $this->isNotNull([$this->columns,$this->order]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->where,$this->limit,$this->join]) && $this->isNotNull([$this->columns,$this->order]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->where,$this->order,$this->join,$this->union]) && $this->isNotNull([$this->columns,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->order,$this->union]) && $this->isNotNull([$this->columns,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->order,$this->join]) && $this->isNotNull([$this->columns,$this->limit]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where, $this->order,$this->limit,$this->join]) && $this->isNotNull([$this->columns]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)}";
-
-                    if ($this->notDefine([$this->where, $this->order,$this->limit,$this->union]) && $this->isNotNull([$this->columns]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)}";
-
-                    if ($this->notDefine([$this->where,$this->order,$this->limit,$this->join,$this->union]))
-                        return "SELECT {$this->deleteSpace($this->columns)} {$this->deleteSpace($this->table)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->join]) && $this->isNotNull([$this->union,$this->order,$this->limit]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->union]) && $this->isNotNull([$this->join,$this->order,$this->limit]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->join,$this->union]) && $this->isNotNull([$this->limit,$this->order]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->limit,$this->union]) && $this->isNotNull([$this->order,$this->join]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->limit,$this->join]) && $this->isNotNull([$this->order,$this->union]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->limit,$this->join,$this->union]) && $this->isNotNull([$this->order]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->order)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->order,$this->union]) && $this->isNotNull([$this->join,$this->limit]))
-                        return "{$this->deleteSpace($this->join)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->order,$this->join]) && $this->isNotNull([$this->limit,$this->union]))
-                        return "{$this->deleteSpace($this->union)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->order,$this->join,$this->union]))
-                        return "SELECT * {$this->deleteSpace($this->table)} {$this->deleteSpace($this->limit)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->order,$this->limit,$this->union]))
-                        return "{$this->deleteSpace($this->join)}";
-
-                    if ($this->notDefine([$this->where,$this->columns,$this->order,$this->limit,$this->join]))
-                        return "{$this->deleteSpace($this->union)}";
-
-                    // END TABLE CLAUSE
-
-                break;
-                case Imperium::DELETE:
-                    if (def($this->table) && def($this->where))
-                        return "$mode {$this->table} {$this->where}";
-                break;
-
-            }
             return '';
         }
 
@@ -560,8 +337,8 @@ namespace Imperium\Query {
          */
         public function set_query_mode(string $mode): Query
         {
-            if (!has($mode,Imperium::MODE,true))
-                throw new Exception('select or delete mode was not found');
+            if (!has($mode,Query::MODE,true))
+                throw new Exception("The current mode is not valid");
             else
                 $this->mode = $mode;
 
@@ -583,59 +360,63 @@ namespace Imperium\Query {
         /**
          * join clause
          *
-         * @param int    $type
          * @param string $firstTable
          * @param string $secondTable
          * @param string $firstParam
          * @param string $secondParam
-         * @param array $columns
          * @param string $condition
+         * @param array $columns
          *
          * @return Query
+         *
+         * @throws Exception
+         *
          */
-        public function join(int $type, string $firstTable,string $secondTable,string $firstParam ,string $secondParam,array $columns = [], string $condition = '=') : Query
+        public function join( string $firstTable,string $secondTable,string $firstParam ,string $secondParam,string $condition = '=',array $columns = []) : Query
         {
-            $columnsDefine = empty($columns) ? false : true;
-            $select = join(', ',$columns);
-            $mode = empty($this->mode) ? "SELECT" : $this->mode;
+            if (not_def($this->mode))
+                throw new Exception('The mode was not found');
 
-            switch ($type)
+            $columnsDefine = def($columns);
+            $select = join(', ',$columns);
+            $mode = $this->mode;
+            switch ($mode)
             {
-                case Imperium::INNER_JOIN:
+                case Query::INNER_JOIN:
                     if ($columnsDefine)
-                        $this->join = "$mode $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
-                        $this->join = "$mode * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Imperium::CROSS_JOIN:
+                case Query::CROSS_JOIN:
                     if ($columnsDefine)
-                        $this->join = "$mode $select FROM $firstTable CROSS JOIN $secondTable";
+                        $this->join = "SELECT $select FROM $firstTable CROSS JOIN $secondTable";
                     else
-                        $this->join = "$mode * FROM $firstTable CROSS JOIN $secondTable";
+                        $this->join = "SELECT * FROM $firstTable CROSS JOIN $secondTable";
                 break;
-                case Imperium::LEFT_JOIN:
+                case Query::LEFT_JOIN:
                     if ($columnsDefine)
-                        $this->join = "$mode $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
-                        $this->join = "$mode * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Imperium::RIGHT_JOIN:
+                case Query::RIGHT_JOIN:
                     if ($columnsDefine)
-                        $this->join = "$mode $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
-                        $this->join = "$mode * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Imperium::FULL_JOIN:
+                case Query::FULL_JOIN:
                     if ($columnsDefine)
-                        $this->join = "$mode $select FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
-                        $this->join = "$mode * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
-                case Imperium::NATURAL_JOIN:
+                case Query::NATURAL_JOIN:
                     if ($columnsDefine)
-                        $this->join = "$mode $select FROM $firstTable NATURAL JOIN $secondTable";
+                        $this->join = "SELECT $select FROM $firstTable NATURAL JOIN $secondTable";
                     else
-                        $this->join = "$mode * FROM $firstTable NATURAL JOIN $secondTable";
+                        $this->join = "SELECT * FROM $firstTable NATURAL JOIN $secondTable";
                 break;
             }
             return $this;
@@ -644,29 +425,34 @@ namespace Imperium\Query {
         /**
          * union clause
          *
-         * @param int    $mode
          * @param string $firstTable
          * @param string $secondTable
-         * @param array  $firstColumns
-         * @param array  $secondColumns
+         * @param array $firstColumns
+         * @param array $secondColumns
          *
          * @return Query
+         *
+         * @throws Exception
+         *
          */
-        public function union(int $mode,string $firstTable,string $secondTable,array $firstColumns,array $secondColumns): Query
+        public function union(string $firstTable,string $secondTable,array $firstColumns,array $secondColumns): Query
         {
+            if (not_def($this->mode))
+                throw new Exception('The query mode was not found');
+
             $first = join(', ',$firstColumns);
             $second = join(', ',$secondColumns);
 
-            switch ($mode)
+            switch ($this->mode)
             {
-                case Imperium::MODE_UNION:
+                case Query::UNION:
                     if (empty($firstColumns) && empty($secondColumns))
                         $this->union = "SELECT * FROM $firstTable UNION SELECT * FROM $secondTable";
                     else
                         $this->union = "SELECT $first FROM $firstTable UNION SELECT $second FROM $secondTable";
                 break;
 
-                case Imperium::MODE_UNION_ALL:
+                case Query::UNION_ALL:
                     if (empty($firstColumns) && empty($secondColumns))
                         $this->union = "SELECT * FROM $firstTable UNION ALL SELECT * FROM $secondTable";
                     else
@@ -674,7 +460,6 @@ namespace Imperium\Query {
                 break;
 
             }
-
             return $this;
         }
 
