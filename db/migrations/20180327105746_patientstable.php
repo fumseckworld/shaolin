@@ -33,6 +33,7 @@ class Patientstable extends AbstractMigration
             ->addColumn('age', 'integer')
             ->addColumn('sex', 'string')
             ->addColumn('status','string')
+            ->addColumn('date','date')
             ->create();
     }
 }

@@ -125,6 +125,11 @@ namespace Imperium\Query {
         private $limit;
 
         /**
+         * @var int
+         */
+        private $fetch;
+
+        /**
         * Query constructor
         *
         * @param Table $table
@@ -150,7 +155,12 @@ namespace Imperium\Query {
             return $this;
         }
 
+        public function pdo(int $mode)
+        {
+            $this->fetch = $mode;
 
+            return $this;
+        }
         /**
          *
          * @return string
@@ -170,7 +180,7 @@ namespace Imperium\Query {
             $union  = def($this->union) ? $this->union : '';
             $mode   = def($this->mode)  ? $this->mode  : '';
             $columns = def($this->columns) ? $this->columns : "*";
-            
+
             if (equal($mode,Query::SELECT))
                 return "$mode $columns $table $where $limit";
 
@@ -237,6 +247,7 @@ namespace Imperium\Query {
             return $this;
         }
 
+
         /**
          * define the order by
          *
@@ -247,10 +258,7 @@ namespace Imperium\Query {
          */
         public function order_by(string $key, string $order = 'DESC'): Query
         {
-            if(def($this->mode))
-                different($this->mode,self::DELETE) ? $this->order = "ORDER BY $key $order" : $this->order = '';
-            else
-                $this->order = "ORDER BY $key $order";
+            $this->order = "ORDER BY $key $order";
             return $this;
         }
 
@@ -373,9 +381,6 @@ namespace Imperium\Query {
          */
         public function join( string $firstTable,string $secondTable,string $firstParam ,string $secondParam,string $condition = '=',array $columns = []) : Query
         {
-            if (not_def($this->mode))
-                throw new Exception('The mode was not found');
-
             $columnsDefine = def($columns);
             $select = join(', ',$columns);
             $mode = $this->mode;
@@ -436,8 +441,6 @@ namespace Imperium\Query {
          */
         public function union(string $firstTable,string $secondTable,array $firstColumns,array $secondColumns): Query
         {
-            if (not_def($this->mode))
-                throw new Exception('The query mode was not found');
 
             $first = join(', ',$firstColumns);
             $second = join(', ',$secondColumns);

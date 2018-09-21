@@ -184,7 +184,8 @@ class ModelTest extends DatabaseTest
             'name' => faker()->name(),
             'age' => faker()->numberBetween(1,80),
             'sex' => rand(1,2) == 1 ? 'M': 'F',
-            'status' => faker()->text(20)
+            'status' => faker()->text(20),
+            'date' => faker()->date()
         ];
         $this->assertTrue($this->mysql()->update_record(6,$data,[]));
         $this->assertTrue($this->postgresql()->update_record(6,$data,[]));
@@ -209,7 +210,8 @@ class ModelTest extends DatabaseTest
                 'name' => faker()->name(),
                 'age' => faker()->numberBetween(1,80),
                 'sex' => rand(1,2) == 1 ? 'M': 'F',
-                'status' => faker()->text(20)
+                'status' => faker()->text(20),
+                'date' => faker()->date()
             ];
 
             $this->assertTrue($this->mysql()->model()->insert($data,$this->table));

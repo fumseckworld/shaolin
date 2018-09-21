@@ -33,6 +33,9 @@ class QueryTest extends DatabaseTest
      */
     public function test_where()
     {
+
+
+
         $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
         $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
         $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
@@ -50,11 +53,11 @@ class QueryTest extends DatabaseTest
         $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::SELECT)->between('id',1,16)->get());
         $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::SELECT)->between('id',1,16)->get());
 
-
-
         $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::SELECT)->set_columns(['id'])->between('id',1,16)->get());
         $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::SELECT)->set_columns(['id'])->between('id',1,16)->get());
         $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::SELECT)->set_columns(['id'])->between('id',1,16)->get());
+
+
 
 
         $this->assertNotContains("ORDER BY ",$this->mysql()->query()->set_query_mode(Query::DELETE)->where('id','=',16)->sql());

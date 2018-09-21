@@ -23,7 +23,8 @@ class DoctorsSeeds extends AbstractSeed
                 'name' => faker()->name(),
                 'age' => faker()->numberBetween(1,80),
                 'sex' => rand(1,2) == 1 ? 'M': 'F',
-                'status' => faker()->text(20)
+                'status' => faker()->text(20),
+                'date' => faker()->date()
             ];
         }
         $this->insert('doctors', $doctors);

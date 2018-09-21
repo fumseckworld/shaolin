@@ -781,6 +781,7 @@ class Imperium extends Zen implements Management
         return $this->table->set_current_table($table)->rename($new_name);
     }
 
+
     /**
      *
      * @return Model
