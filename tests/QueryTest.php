@@ -13,6 +13,22 @@ class QueryTest extends DatabaseTest
 
 
     /**
+     * @throws Exception
+     */
+    public function test_set()
+    {
+        $this->expectException(Exception::class);
+
+        $mode = faker()->text(5);
+        $this->mysql()->query()->set_query_mode($mode)->get();
+        $this->postgresql()->query()->set_query_mode($mode)->get();
+        $this->sqlite()->query()->set_query_mode($mode)->get();
+        $this->mysql()->query()->get();
+        $this->postgresql()->query()->get();
+        $this->sqlite()->query()->get();
+    }
+
+    /**
      * @throws \Exception
      */
     public function test_where()
@@ -64,6 +80,10 @@ class QueryTest extends DatabaseTest
     {
 
 
+         $limit = 10;
+
+         $columns = ['id','name'];
+
         $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
         $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
         $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
@@ -71,6 +91,44 @@ class QueryTest extends DatabaseTest
         $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
         $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
         $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+        
+
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+
+        $this->assertNotEmpty($this->mysql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->postgresql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite()->query()->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->limit($limit,0)->get());
+
+
+        $this->assertCount($limit,$this->mysql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->postgresql()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->sqlite()->query()->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+
+
+        $this->assertCount($limit,$this->mysql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->postgresql()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->sqlite()->query()->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+
+
     }
  
 

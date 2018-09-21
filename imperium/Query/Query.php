@@ -160,6 +160,8 @@ namespace Imperium\Query {
          */
         public function sql(): string
         {
+            if (not_def($this->mode))
+                throw new Exception('The query mode is not define');
 
             $where  = def($this->where) ? $this->where : '';
             $table  = def($this->table) ? $this->table : '';
@@ -168,10 +170,7 @@ namespace Imperium\Query {
             $union  = def($this->union) ? $this->union : '';
             $mode   = def($this->mode)  ? $this->mode  : '';
             $columns = def($this->columns) ? $this->columns : "*";
-
-            if (not_def($mode))
-                throw new Exception('The query mode is not define');
-
+            
             if (equal($mode,Query::SELECT))
                 return "$mode $columns $table $where $limit";
 
@@ -460,6 +459,7 @@ namespace Imperium\Query {
                 break;
 
             }
+
             return $this;
         }
 
