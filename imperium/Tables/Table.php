@@ -989,20 +989,15 @@ namespace  Imperium\Tables {
         public function count(string $table = '',int $mode = Imperium::MODE_ONE_TABLE)
         {
 
+            $x = def($table) ? $table : $this->table;
             switch ($mode)
             {
-                case Imperium::MODE_ONE_TABLE && def($table):
-                    foreach ($this->connexion->request("SELECT COUNT(*) FROM {$table}") as $number)
+                case Imperium::MODE_ONE_TABLE:
+                    foreach ($this->connexion->request("SELECT COUNT(*) FROM {$x}") as $number)
                         return current($number);
                 break;
-
-                case Imperium::MODE_ONE_TABLE && def($this->table):
-                    foreach ($this->connexion->request("SELECT COUNT(*) FROM {$this->table}") as $number)
-                        return current($number);
-                break;
-                default:
+                case Imperium::MODE_ALL_TABLES:
                     $numbers = collection();
-
                     foreach ($this->show() as $table)
                     {
                         foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
@@ -1012,9 +1007,11 @@ namespace  Imperium\Tables {
                     }
                     return $numbers->collection();
                 break;
-
+                default:
+                    return '';
+                break;
             }
-        return '';
+            return '';
         }
 
 

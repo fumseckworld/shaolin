@@ -160,6 +160,9 @@ class HelpersTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_show()
     {
         $this->assertNotEmpty(show($this->mysql(),Imperium::MODE_ALL_TABLES));

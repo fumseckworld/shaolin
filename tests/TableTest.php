@@ -103,6 +103,10 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
+        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false));
+        $this->assertTrue($instance->has_column($column));
+        $this->assertTrue($instance->remove_column($column));
+
         $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
@@ -113,12 +117,39 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
+
+        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false));
+        $this->assertTrue($instance->has_column($column));
+        $this->assertTrue($instance->remove_column($column));
+        
         $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function test_count()
+    {
+        $this->assertNotEmpty($this->mysql()->tables()->count());
+        $this->assertNotEmpty($this->postgresql()->tables()->count());
+        $this->assertNotEmpty($this->sqlite()->tables()->count());
+
+
+        $this->assertNotEmpty($this->mysql()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
+        $this->assertNotEmpty($this->postgresql()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
+        $this->assertNotEmpty($this->sqlite()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
+
+    }
+    public function test_current()
+    {
+        $table = $this->table;
+        $this->assertEquals($table,$this->mysql()->tables()->get_current_table());
+        $this->assertEquals($table,$this->postgresql()->tables()->get_current_table());
+        $this->assertEquals('country',$this->sqlite()->tables()->get_current_table());
+    }
     /**
      * @throws \Exception
      */
