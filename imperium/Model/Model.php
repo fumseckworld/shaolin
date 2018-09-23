@@ -47,11 +47,6 @@ class Model
      * @var \Imperium\Query\Query
      */
     private $sql;
-    /**
-     * @var
-     */
-    private $fetch;
-
 
     /**
      * Model constructor.
@@ -59,11 +54,10 @@ class Model
      * @param Connect $connect
      * @param Table $table
      * @param string $current_table_name
-     * @param int $fetch_mode
      * @param string $oder_by
      * @throws Exception
      */
-    public function __construct(Connect $connect,Table $table, string $current_table_name,int $fetch_mode = PDO::FETCH_OBJ,string $oder_by= 'desc')
+    public function __construct(Connect $connect,Table $table, string $current_table_name,string $oder_by= 'desc')
     {
         $this->connexion = $connect;
 
@@ -71,7 +65,6 @@ class Model
         $this->primary = $this->table->get_primary_key();
         $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name)->order_by($this->primary,$oder_by);
         $this->current  = $current_table_name;
-        $this->fetch = $fetch_mode;
     }
 
     /**

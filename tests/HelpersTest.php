@@ -10,9 +10,12 @@ use Faker\Generator;
 use Imperium\Bases\Base;
 use Imperium\Connexion\Connect;
 use Imperium\Imperium;
+use Imperium\Model\Model;
 use Imperium\Query\Query;
+use Imperium\Tables\Table;
 use PDO;
 use Testing\DatabaseTest;
+use Whoops\Run;
 
 class HelpersTest extends DatabaseTest
 {
@@ -125,6 +128,68 @@ class HelpersTest extends DatabaseTest
         $this->assertFalse(different('aadz','aadz'));
     }
 
+
+    public function test_show()
+    {
+        $this->assertNotEmpty(show($this->mysql(),Imperium::MODE_ALL_TABLES));
+        $this->assertNotEmpty(show($this->mysql(),Imperium::MODE_ALL_USERS));
+        $this->assertNotEmpty(show($this->mysql(),Imperium::MODE_ALL_DATABASES));
+
+        $this->assertNotEmpty(show($this->postgresql(),Imperium::MODE_ALL_TABLES));
+        $this->assertNotEmpty(show($this->postgresql(),Imperium::MODE_ALL_USERS));
+        $this->assertNotEmpty(show($this->postgresql(),Imperium::MODE_ALL_DATABASES));
+
+        $this->assertNotEmpty(show($this->sqlite(),Imperium::MODE_ALL_TABLES));
+
+    }
+
+    /**
+     *
+     */
+    public function test_whoops()
+    {
+        $this->assertInstanceOf(Run::class,whoops());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_request()
+    {
+        $this->assertNotEmpty(req($this->mysql()->connect(),'SHOW DATABASES'));
+        $this->assertNotEmpty(req($this->postgresql()->connect(),'SELECT * FROM patients'));
+        $this->assertNotEmpty(req($this->sqlite()->connect(),'SELECT * FROM patients'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_model()
+    {
+        $this->assertInstanceOf(Model::class,\model($this->mysql()->connect(),$this->mysql()->tables(),$this->table));
+        $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->tables(),$this->table));
+        $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->tables(),$this->table));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_table()
+    {
+        $this->assertInstanceOf(Table::class,\table($this->mysql()->connect()));
+        $this->assertInstanceOf(Table::class,\table($this->postgresql()->connect()));
+        $this->assertInstanceOf(Table::class,\table($this->sqlite()->connect()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_execute()
+    {
+        $this->assertTrue(execute($this->mysql()->connect(),'SHOW DATABASES'));
+        $this->assertTrue(execute($this->postgresql()->connect(),'SELECT * FROM patients'));
+        $this->assertTrue(execute($this->sqlite()->connect(),'SELECT * FROM patients'));
+    }
     /**
      * @throws \Exception
      */
