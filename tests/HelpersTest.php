@@ -130,6 +130,13 @@ class HelpersTest extends DatabaseTest
      */
     public function test_execute_query()
     {
+
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
+
         $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
         $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
         $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());

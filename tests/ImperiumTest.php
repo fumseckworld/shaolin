@@ -40,7 +40,7 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->table_exist($this->table));
 
         $this->assertTrue($this->sqlite()->table_exist($this->second_table));
-        
+
     }
 
     /**
@@ -78,4 +78,6 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->has_bases());
         $this->assertFalse($this->sqlite()->has_bases());
     }
+
+
 }
