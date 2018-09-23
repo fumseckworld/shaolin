@@ -718,8 +718,9 @@ class Imperium extends Zen implements Management
         $this->base = new Base($connect);
         $this->users = new Users($connect);
         $this->model = new Model($connect,$this->table,$current_table);
+        
     }
-
+    
     /**
      *
      * Rename a base

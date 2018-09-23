@@ -179,6 +179,14 @@ class CollectionTest extends DatabaseTest
         $this->assertEquals(['i','am','a','boy'],$data->reverse());
     }
 
+    public function test_each()
+    {
+        $data =  collection(['boy','a','am','i']);
+
+        $this->assertEquals(['BOY','A','AM','I'],$data->each('strtoupper')->collection());
+        $this->assertEquals(['boy','a','am','i'],$data->each('strtoupper')->each('strtolower')->collection());
+    }
+
     public function test_before_and_after()
     {
         $data = collection(['do','re','mi','fa','sol','la','si','do']);
