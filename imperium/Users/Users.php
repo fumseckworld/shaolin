@@ -149,7 +149,6 @@ namespace Imperium\Users {
                         $x = current($user);
                         if ($hidden->empty())
                         {
-
                             $users->push($x);
                         } else {
                             if ($hidden->not_exist($x))
@@ -231,9 +230,9 @@ namespace Imperium\Users {
          *
          * @throws Exception
          */
-        public function exist(string  $user = ''): bool
+        public function exist(string  $user): bool
         {
-            return def($user) ? collection($this->show())->exist($user) : collection($this->show())->exist($this->username);
+            return collection($this->show())->exist($user);
         }
 
         /**
