@@ -20,12 +20,43 @@ use Whoops\Run;
 class HelpersTest extends DatabaseTest
 {
 
-
+    /**
+     * @throws Exception
+     */
     public function test_instance()
     {
         $this->assertInstanceOf(Imperium::class,$this->mysql());
         $this->assertInstanceOf(Imperium::class,$this->postgresql());
         $this->assertInstanceOf(Imperium::class,$this->sqlite());
+
+        $mysql = instance(Connect::MYSQL,self::MYSQL_USER,$this->base,'',PDO::FETCH_OBJ,'dump',$this->table);
+        $postgresql = instance(Connect::POSTGRESQL,self::POSTGRESQL_USER,$this->base,'',PDO::FETCH_OBJ,'dump',$this->table);
+        $sqlite = instance(Connect::SQLITE,'',$this->base,'',PDO::FETCH_OBJ,'dump',$this->table);
+
+        $this->assertInstanceOf(Imperium::class,$mysql);
+        $this->assertInstanceOf(Imperium::class,$postgresql);
+        $this->assertInstanceOf(Imperium::class,$sqlite);
+
+        $this->assertEquals($this->base,$mysql->connect()->get_database());
+        $this->assertEquals($this->base,$postgresql->connect()->get_database());
+        $this->assertEquals($this->base,$sqlite->connect()->get_database());
+
+        $this->assertEquals(PDO::FETCH_OBJ,$mysql->connect()->get_fetch_mode());
+        $this->assertEquals(PDO::FETCH_OBJ,$postgresql->connect()->get_fetch_mode());
+        $this->assertEquals(PDO::FETCH_OBJ,$sqlite->connect()->get_fetch_mode());
+
+        $this->assertEquals(Connect::MYSQL,$mysql->connect()->get_driver());
+        $this->assertEquals(Connect::POSTGRESQL,$postgresql->connect()->get_driver());
+        $this->assertEquals(Connect::SQLITE,$sqlite->connect()->get_driver());
+
+        $this->assertEquals(self::MYSQL_USER,$mysql->connect()->get_username());
+        $this->assertEquals(self::POSTGRESQL_USER,$postgresql->connect()->get_username());
+
+
+        $this->assertEmpty($mysql->connect()->get_password());
+        $this->assertEmpty($postgresql->connect()->get_password());
+
+
     }
     /**
      * @throws \Exception
@@ -512,6 +543,7 @@ class HelpersTest extends DatabaseTest
         root(Connect::POSTGRESQL,self::MYSQL_USER,self::MYSQL_PASS)->instance();
 
     }
+
 
     /**
      * @throws Exception
