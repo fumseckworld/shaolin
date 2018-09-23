@@ -620,15 +620,14 @@ class HelpersTest extends DatabaseTest
 
     public function test_loaders()
     {
-        $scriptFirst = '<script src="app.js"></script>';
-        $scriptSecond = '<script src="main.js"></script>';
-        $loader = js_loader("app.js","main.js");
-        $this->assertEquals("$scriptFirst$scriptSecond",$loader);
+        $expected = '<script src="imperium.js"></script><script src="main.js"></script><script src="db.js"></script>';
+        $loader = js_loader("imperium.js","main.js",'db.js');
+        $this->assertEquals($expected,$loader);
 
-        $scriptFirst = '<link href="app.css" rel="stylesheet">';
-        $scriptSecond = '<link href="main.css" rel="stylesheet">';
+        $expected = '<link href="app.css" rel="stylesheet"><link href="main.css" rel="stylesheet">';
+
         $loader = css_loader("app.css","main.css");
-        $this->assertEquals("$scriptFirst$scriptSecond",$loader);
+        $this->assertEquals("$expected",$loader);
     }
 
     /**

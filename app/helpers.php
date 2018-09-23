@@ -2346,10 +2346,12 @@ if (!exist('js_loader'))
      * load a js files
      *
      * @param string[] $urls
+     *
      * @return string
      */
     function js_loader(string ...$urls): string
     {
+
         $code = '';
         foreach ($urls as $url)
             append($code,'<script src="'.$url.'"></script>');
