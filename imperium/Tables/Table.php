@@ -114,6 +114,22 @@ namespace  Imperium\Tables {
         }
 
 
+        /**
+         * @param string $column
+         * @return mixed
+         * @throws Exception
+         */
+        public function  type(string $column)
+        {
+            $columns = collection($this->get_columns());
+            $types = collection($this->get_columns_types());
+
+            for ($i=$columns->init();$i<$columns->length();$columns->next())
+                if (equal($columns->current(),$column))
+                    return $types->get($columns->key());
+
+            return '';
+        }
 
         /**
          *
@@ -674,24 +690,32 @@ namespace  Imperium\Tables {
          */
         public function rename_column(string $old, string $new): bool
         {
+
+
+            $table = $this->table;
+            $type = $this->type($old);
+
             switch ($this->driver)
             {
                 case Connect::MYSQL:
+                    return equal($old,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->table} CHANGE  $old $new $type ");
+                break;
                 case Connect::POSTGRESQL:
-                    return $old === $this->get_primary_key() ? false : $this->connexion->execute("ALTER TABLE $this->table RENAME $old TO $new");
+                    return equal($old,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->table} RENAME COLUMN $old TO $new");
                 break;
                 case Connect::SQLITE:
                     $newColumns = collection();
-                    $columns = $this->get_columns();
+                    $columns = collection($this->get_columns());
                     $types = $this->get_columns_types();
                     $tmp = "_$this->table";
+                    $primary = $this->get_primary_key();
 
-                    foreach ($columns as $k => $column)
+                    foreach ($columns->collection() as $k => $column)
                     {
                         switch ($column)
                         {
-                            case $this->get_primary_key():
-                                $column == $old ? $newColumns->push("'$new' $types[$k] PRIMARY KEY AUTOINCREMENT ") : $newColumns->push(" '$column' $types[$k] PRIMARY KEY AUTOINCREMENT ");
+                            case $primary:
+                                equal($column,$old) ? $newColumns->push("'$new' $types[$k] PRIMARY KEY AUTOINCREMENT ") : $newColumns->push(" '$column' $types[$k] PRIMARY KEY AUTOINCREMENT ");
                             break;
                             case $old:
                                 $newColumns->push(" '$new' $types[$k] ");
@@ -702,18 +726,23 @@ namespace  Imperium\Tables {
                         }
 
                     }
+                    
+                    $cols = $columns->join(', ');
 
                     $columns = $newColumns->join(', ');
 
                     $query = "CREATE TABLE IF NOT EXISTS $this->table (";
-                    $query .= $columns;
-                    $query .= ')';
 
+                    append($query ,$columns,')');
 
-                     $this->rename($tmp);
-                     $this->connexion->execute($query);
-                     $this->connexion->execute("INSERT INTO $this->table SELECT * FROM '$tmp'") ;
-                     return $this->drop($tmp);
+                    $this->rename($tmp);
+
+                    $this->connexion->execute($query);
+
+                    $this->connexion->execute("INSERT INTO $table SELECT $cols FROM '$tmp'");
+
+                    return $this->drop($tmp);
+
                 break;
                 default:
                     return false;
@@ -1513,10 +1542,6 @@ namespace  Imperium\Tables {
          */
         public function rename(string $new_name): bool
         {
-
-            if (not_def($new_name))
-                $new_name = "_$this->table";
-
 
             switch ($this->driver)
             {

@@ -59,6 +59,15 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->tables()->set_current_table($new)->rename($table));
         $this->assertTrue($this->sqlite()->tables()->set_current_table($new)->rename($table));
 
+
+
+        $this->assertTrue($this->mysql()->tables()->rename_column('name','username'));
+        $this->assertTrue($this->mysql()->tables()->rename_column('username','name'));
+
+        $this->assertTrue($this->postgresql()->tables()->rename_column('name','username'));
+        $this->assertTrue($this->postgresql()->tables()->rename_column('username','name'));
+
+        $this->assertTrue($this->sqlite()->tables()->rename_column('name','username'));
     }
 
     /**
@@ -127,6 +136,7 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->remove_column($column));
 
     }
+
 
     /**
      * @throws \Exception
