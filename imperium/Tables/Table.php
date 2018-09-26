@@ -42,7 +42,6 @@ namespace  Imperium\Tables {
          * @var Collection
          */
         private $columns;
- 
 
         /**
          *
@@ -115,20 +114,19 @@ namespace  Imperium\Tables {
 
 
         /**
+         *
+         * Return the type of a column
+         *
          * @param string $column
+         *
          * @return mixed
+         *
          * @throws Exception
+         *
          */
-        public function  type(string $column)
+        public function type(string $column)
         {
-            $columns = collection($this->get_columns());
-            $types = collection($this->get_columns_types());
-
-            for ($i=$columns->init();$i<$columns->length();$columns->next())
-                if (equal($columns->current(),$column))
-                    return $types->get($columns->key());
-
-            return '';
+            return collection($this->get_columns())->search($column)->set_new_data($this->get_columns_types())->search_result();
         }
 
         /**

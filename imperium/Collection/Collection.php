@@ -44,6 +44,13 @@ class Collection implements ArrayAccess, Iterator
     private $beforeValue;
 
     /**
+     * search result
+     *
+     * @var mixed
+     */
+    private $search;
+
+    /**
      *
      * Collection constructor.
      *
@@ -61,6 +68,21 @@ class Collection implements ArrayAccess, Iterator
 
     /**
      *
+     * Define new data
+     *
+     * @param array $data
+     *
+     * @return Collection
+     *
+     */
+    public function set_new_data(array $data)
+    {
+        $this->data = $data;
+
+        return $this;
+    }
+    /**
+     *
      * @param callable $callable
      *
      * @return Collection
@@ -76,6 +98,37 @@ class Collection implements ArrayAccess, Iterator
         return $this;
     }
 
+    /**
+     *
+     * Search a value
+     *
+     * @param $value
+     *
+     * @return Collection
+     *
+     */
+    public function search($value): Collection
+    {
+        $this->search =  array_search($value,$this->data);
+
+        return $this;
+    }
+
+    public function get_search()
+    {
+        return $this->search;
+    }
+    /**
+     *
+     * Return the result key
+     *
+     * @return mixed
+     *
+     */
+    public function search_result()
+    {
+        return $this->get($this->search);
+    }
 
     /**
      *
