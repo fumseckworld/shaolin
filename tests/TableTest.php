@@ -32,7 +32,7 @@ class TableTest extends DatabaseTest
     public function test_show()
     {
 
-            $table = 'country';
+        $table = 'country';
         $this->assertContains($table,$this->mysql()->tables()->show());
         $this->assertContains($table,$this->mysql()->show_tables());
 
@@ -68,6 +68,22 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->tables()->rename_column('username','name'));
 
         $this->assertTrue($this->sqlite()->tables()->rename_column('name','username'));
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function test_type()
+    {
+        foreach ($this->mysql()->set_current_table($this->table)->show_columns() as $column)
+            $this->assertNotEmpty($this->mysql()->tables()->type($column));
+
+        foreach ($this->postgresql()->set_current_table($this->table)->show_columns() as $column)
+            $this->assertNotEmpty($this->postgresql()->tables()->type($column));
+
+        foreach ($this->sqlite()->set_current_table($this->table)->show_columns() as $column)
+            $this->assertNotEmpty($this->sqlite()->tables()->type($column));
     }
 
     /**
@@ -135,6 +151,12 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
+
+        $instance = $this->sqlite()->tables()->set_current_table($table);
+        $this->assertTrue($instance->append_column($column,Imperium::TEXT,255,false));
+        $this->assertTrue($instance->has_column($column));
+        $this->assertTrue($instance->remove_column($column));
+
     }
 
 
@@ -143,10 +165,10 @@ class TableTest extends DatabaseTest
      */
     public function test_count()
     {
+
         $this->assertNotEmpty($this->mysql()->tables()->count());
         $this->assertNotEmpty($this->postgresql()->tables()->count());
         $this->assertNotEmpty($this->sqlite()->tables()->count());
-
 
         $this->assertNotEmpty($this->mysql()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
         $this->assertNotEmpty($this->postgresql()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
@@ -158,7 +180,7 @@ class TableTest extends DatabaseTest
         $table = $this->table;
         $this->assertEquals($table,$this->mysql()->tables()->get_current_table());
         $this->assertEquals($table,$this->postgresql()->tables()->get_current_table());
-        $this->assertEquals('country',$this->sqlite()->tables()->get_current_table());
+        $this->assertEquals($table,$this->sqlite()->tables()->get_current_table());
     }
     /**
      * @throws \Exception

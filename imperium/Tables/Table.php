@@ -375,11 +375,7 @@ namespace  Imperium\Tables {
             $data = collection();
             $command = "ALTER TABLE {$this->table} ADD COLUMN ";
 
-            if (different($size,0))
-                append($command,"$name $type($size)");
-            else
-                append($command,"$name $type ");
-
+            different($size,0) ?  append($command,"$name $type($size)") :  append($command,"$name $type ");
 
             $data->add($this->connexion->execute($command));
 
@@ -415,6 +411,14 @@ namespace  Imperium\Tables {
             }
 
             if (equal($driver,Connect::POSTGRESQL))
+            {
+                if (equal($constraint,Imperium::FIELD_UNIQUE))
+                {
+                    return $this->connexion->execute("ALTER TABLE $this->table ADD UNIQUE ($column);");
+                }
+            }
+
+            if (equal($driver,Connect::SQLITE))
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
@@ -726,7 +730,7 @@ namespace  Imperium\Tables {
                         }
 
                     }
-                    
+
                     $cols = $columns->join(', ');
 
                     $columns = $newColumns->join(', ');
@@ -771,58 +775,20 @@ namespace  Imperium\Tables {
                 break;
                 case Connect::SQLITE:
 
-                    $new    = "_$this->table";
-                    $origin = collection($this->get_columns());
+                    $current = $this->table;
 
-                    $primary = $this->get_primary_key();
-                    $types  = collection($this->get_columns_types());
-                    $columns = collection();
-                    $fields = collection();
+                    $columns =  collection($this->get_columns())->remove_values($column)->join(', ');
 
-                    if ($this->exist($new))
-                        $this->drop($new);
+                    $new = "_$current";
 
-                    $this->set_current_table($this->table)->rename($new);
-                    $table = $this->set_current_table($new);
+                    $this->rename($new);
 
-                    foreach ($origin->collection() as $k => $value)
-                    {
-                        $parts = collection(explode('(',trim($types->get($k),')')));
-                        if (equal($primary,$value))
-                        {
-                            if ($parts->has_key(1))
-                                $table->append_field($parts->get(0),$origin->get($k),true,$parts->get(1));
-                            else
-                                $table->append_field($types->get($k),$origin->get($k),true);
-                        }
-                        if (different($column,$value))
-                        {
-                            $columns->push($origin->get($k) . ' ' . $types->get($k));
-                            $fields->push($origin->get($k));
+                    $this->connexion->execute("CREATE TABLE $current AS SELECT $columns FROM $this->table");
 
-                            if ($parts->has_key(1))
-                                $table->append_field($parts->get(0),$origin->get($k),false,$parts->get(1));
-                            else
-                                $table->append_field($types->get($k),$origin->get($k));
+                    $this->connexion->execute("INSERT INTO $current SELECT $columns FROM $this->table");
 
-                        }
+                    return $this->set_current_table($current)->drop($new);
 
-                    }
-                    $table->create();
-
-
-                    append($query,$columns->join(', '));
-
-                    append($query,')');
-
-                    $tableFields = '(' .$fields->join(', '). ')';
-
-                    $old =   $fields->join(', ') ;
-
-
-
-                    $this->connexion->execute("INSERT INTO $this->table  $tableFields  SELECT $old FROM $new");
-                    return $this->connexion->execute("DROP TABLE $new");
                 break;
                 default:
                     return false;
@@ -1018,7 +984,8 @@ namespace  Imperium\Tables {
         public function count(string $table = '',int $mode = Imperium::MODE_ONE_TABLE)
         {
 
-            $x = def($table) ? $table : $this->table;
+
+            $x = def($table) ? $table :  $this->table;
             switch ($mode)
             {
                 case Imperium::MODE_ONE_TABLE:

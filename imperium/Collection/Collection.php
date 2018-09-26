@@ -526,10 +526,21 @@ class Collection implements ArrayAccess, Iterator
     public function remove($key): Collection
     {
         if ($this->has_key($key))
-          unset($this->data[$key]);
+            unset($this->data[$key]);
+
+           return $this;
+    }
+
+    public function remove_values(string ...$values)
+    {
+        foreach ($values as $value)
+        {
+            unset($this->data[array_search($value, $this->data)]);
+        }
 
         return $this;
     }
+
 
     /**
      *
