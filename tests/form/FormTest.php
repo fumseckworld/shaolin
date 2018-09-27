@@ -265,6 +265,23 @@ class FormTest extends DatabaseTest
         $this->assertNotEmpty($form);
     }
 
+    public function test_link()
+    {
+        $icon = fa('fas','fa-home');
+        $form = \form('a','a')->link('/','btn-primary','home')->get();
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('home',$form);
+        $this->assertContains('href="/"',$form);
+        $this->assertNotContains($icon,$form);
+        $form = \form('a','a')->link('/','','home')->get();
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('home',$form);
+        $this->assertContains('href="/"',$form);
+        $form = \form('a','a')->link('/','','home',$icon)->get();
+        $this->assertContains($icon,$form);
+        $this->assertContains('home',$form);
+        $this->assertContains('href="/"',$form);
+    }
     /**
      * @throws \Exception
      */
@@ -275,5 +292,5 @@ class FormTest extends DatabaseTest
         form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
         form('a','a')->validate()->select('a',['1',2,3])->get();
         form('a','adz')->validate()->textarea('a','adza',10,10)->get();
-    }
+    }   
 }
