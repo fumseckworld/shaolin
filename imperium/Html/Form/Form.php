@@ -245,7 +245,7 @@ class Form
      *
      * @return Form
      */
-    public function startHide(): Form
+    public function hide(): Form
     {
         append($this->form,'<div class="'.self::HIDE_CLASS.'">');
 
@@ -257,7 +257,7 @@ class Form
      *
      * @return Form
      */
-    public function endHide(): Form
+    public function end_hide(): Form
     {
         append($this->form ,'</div>');
 
@@ -504,26 +504,6 @@ class Form
         return $this;
     }
 
-    /**
-     * generate a image
-     *
-     * @param string $src
-     * @param string $alt
-     * @param string $class
-     * @param string $width
-     *
-     * @return Form
-     */
-    public function img(string $src, string $alt, string $class = '', string $width = '100%'): Form
-    {
-
-        if (not_def($class))
-            append($this->form,'<div class="'.self::FORM_SEPARATOR.'"><div class="'.self::AUTO_COL.'"><img src="' . $src . '" alt="' . $alt . '"  width="' . $width . '" class="'.$class.'"></div></div>');
-        else
-            append($this->form,'<div class="'.self::FORM_SEPARATOR.'"><div class="'.self::AUTO_COL.'"><img src="' . $src . '" alt="' . $alt . '"  width="' . $width . '"></div></div>');
-
-        return $this;
-    }
 
     /**
      * call form builder
@@ -732,7 +712,7 @@ class Form
      * @param string $icon
      * @return Form
      */
-    public function redirectSelect(string $name, array $options, string $icon = ''): Form
+    public function redirect(string $name, array $options, string $icon = ''): Form
     {
         if (not_def($icon))
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>');
@@ -815,21 +795,21 @@ class Form
                         if ($i % $form_grid === 0)
                         {
                             $this->textarea($column, $column, 10, 10, false, $record->$column);
-                            $this->endRowAndNew();
+                            $this->end_row_and_new();
                         }else{
                             $this->textarea($column, $column, 10, 10, false, $record->$column);
                         }
 
                     } else {
-                        $this->input(Form::HIDDEN, $column, $column,'',$record->$column)->startRow();
+                        $this->input(Form::HIDDEN, $column, $column,'',$record->$column)->row();
 
                     }
                     $i--;
                 }
 
             }
-            $this->endRowAndNew()->submit($submitText, $submitClass, $submitId, $submitIcon);
-            return $this->endRow()->get();
+            $this->end_row_and_new()->submit($submitText, $submitClass, $submitId, $submitIcon);
+            return $this->end_row()->get();
         }
 
         if (equal($mode,Form::CREATE))
@@ -853,7 +833,7 @@ class Form
                         else
                             $this->textarea($column, $column, 10, 10);
 
-                        $this->endRowAndNew();
+                        $this->end_row_and_new();
                     }else
                     {
                         if (has($type,$date))
@@ -865,12 +845,12 @@ class Form
 
                 } else {
 
-                    $this->input(Form::HIDDEN, $column, $column)->startRow();
+                    $this->input(Form::HIDDEN, $column, $column)->row();
                 }
                 $i--;
             }
-            $this->endRowAndNew()->submit($submitText, $submitClass, $submitId, $submitIcon);
-            return $this->endRow()->get();
+            $this->end_row_and_new()->submit($submitText, $submitClass, $submitId, $submitIcon);
+            return $this->end_row()->get();
         }
         throw new Exception('missing mode edit or create');
     }
@@ -882,7 +862,7 @@ class Form
      *
      * @return Form
      */
-    public function setLargeInput(bool $large): Form
+    public function large(bool $large = true): Form
     {
         if ($large)
         {
@@ -906,7 +886,7 @@ class Form
      *
      * @return Form
      */
-    public function setSmallInput(bool $small): Form
+    public function small(bool $small = true): Form
     {
         if ($small)
         {
@@ -925,7 +905,7 @@ class Form
      *
      * @return Form
      */
-    public function startRow(): Form
+    public function row(): Form
     {
        $this->form .= '<div class="'.self::GRID_ROW.'">';
 
@@ -937,7 +917,7 @@ class Form
      *
      * @return Form
      */
-    public function endRow(): Form
+    public function end_row(): Form
     {
         $this->form .= '</div>';
 
@@ -949,10 +929,10 @@ class Form
      *
      * @return Form
      */
-    public function endRowAndNew(): Form
+    public function end_row_and_new(): Form
     {
-         $this->endRow();
-         $this->startRow();
+         $this->end_row();
+         $this->row();
 
        return $this;
     }
@@ -978,3 +958,4 @@ class Form
         return $this;
     }
 }
+

@@ -166,11 +166,11 @@ if (!exist('register'))
             $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate();
 
             if ($multiple_languages)
-                $form->startRow()->select('locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->endRow();
+                $form->row()->select('locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
 
-           return   $form->startRow()->input(Form::TEXT,'name',$username_placeholder,$username_success_text,$username_error_text,$username_icon,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_success_text,$email_error_text,$email_icon,post('email'),true)->endRowAndNew()
-                ->input(Form::PASSWORD,'password',$password_placeholder,$password_valid_text,$password_invalid_text,$password_icon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_valid_text,$password_invalid_text,  $password_icon,post('password_confirmation'),true)->endRowAndNew()
-                ->submit($submit_text,$submit_button_class,$submit_id,$submit_icon)->endRow()->get();
+           return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_success_text,$username_error_text,$username_icon,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_success_text,$email_error_text,$email_icon,post('email'),true)->end_row_and_new()
+                ->input(Form::PASSWORD,'password',$password_placeholder,$password_valid_text,$password_invalid_text,$password_icon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_valid_text,$password_invalid_text,  $password_icon,post('password_confirmation'),true)->end_row_and_new()
+                ->submit($submit_text,$submit_button_class,$submit_id,$submit_icon)->end_row()->get();
 
         }
         return '';
@@ -325,7 +325,7 @@ if (!exist('query_view'))
 
         $condition = array('=' => $equal_text,'!=' => $different_text,'<' => $inferior_text,'>' => $superior_text,'<=' => $inferior_or_equal_text,'>=' =>$superior_or_equal_text,'LIKE' => $like_text);
 
-        return post('mode') ?  form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->startRow()->select('column',$columns)->select('condition',$condition)->endRowAndNew()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->endRowAndNew()->submit($submit_query_text,$submit_class,uniqid())->endRow()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
+        return post('mode') ?  form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->end_row_and_new()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->end_row_and_new()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
     }
 }
 
@@ -368,7 +368,7 @@ if (!exist('login'))
      */
     function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $csrf ='',string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
-        return form($action,$id)->csrf($csrf)->startRow()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->endRowAndNew()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->endRow()->get();
+        return form($action,$id)->csrf($csrf)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->end_row()->get();
     }
 }
 
@@ -599,7 +599,7 @@ if (!exist('tables_select'))
 
         }
 
-        return $use_a_redirect_select ? form('',uniqid())->startRow()->csrf($csrf_token_field)->redirectSelect('table',$tables->collection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf_token_field)->startRow()->select('table',$tables->collection(),$icon)->endRow()->get();
+        return $use_a_redirect_select ? form('',uniqid())->row()->csrf($csrf_token_field)->redirect('table',$tables->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf_token_field)->row()->select('table',$tables->collection(),$icon)->end_row()->get();
      }
 }
 
@@ -634,7 +634,7 @@ if (!exist('users_select'))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->startRow()->redirectSelect('users',$users->collection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('users',$users->collection(),$icon)->endRow()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->row()->redirect('users',$users->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select('users',$users->collection(),$icon)->end_row()->get();
      }
 }
 
@@ -670,7 +670,7 @@ if (!exist('bases_select'))
 
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->startRow()->csrf($csrf)->redirectSelect('bases',$bases->collection(),$icon)->endRow()->get() : form('',uniqid())->csrf($csrf)->startRow()->select('bases',$bases->collection(),$icon)->endRow()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->row()->csrf($csrf)->redirect('bases',$bases->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select('bases',$bases->collection(),$icon)->end_row()->get();
      }
 }
 
@@ -1644,8 +1644,8 @@ if (!exist('databases_view'))
     {
         $code = '';
 
-        append($code,html('div',form($create_database_action,uniqid())->startRow()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->endRowAndNew()->input(Form::TEXT,'name',$name_of_database_placeholder)->endRowAndNew()->submit($create_database_submit,$imperium->class(),uniqid())->get(),'mt-5 mb-5'));
-        append($code,html('div',form($drop_database_action,uniqid())->startRow()->select('database',$imperium->show_databases())->endRowAndNew()->submit($drop_database_submit_text,$imperium->class(false),uniqid())->get(),'mt-5 mb-5'));
+        append($code,html('div',form($create_database_action,uniqid())->row()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->end_rowAndNew()->input(Form::TEXT,'name',$name_of_database_placeholder)->end_rowAndNew()->submit($create_database_submit,$imperium->class(),uniqid())->get(),'mt-5 mb-5'));
+        append($code,html('div',form($drop_database_action,uniqid())->row()->select('database',$imperium->show_databases())->end_rowAndNew()->submit($drop_database_submit_text,$imperium->class(false),uniqid())->get(),'mt-5 mb-5'));
 
         return $code;
     }

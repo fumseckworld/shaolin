@@ -43,8 +43,8 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 
 
-# [Collection](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php)
-
+# [Collection](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php) [Coverage](https://imperium.fumseck.eu/imperium/Collection/Collection.php.html)
+ 
 | Method                | arguments | return                     | do                                                                                       |    
 |-----------------------|-----------|----------------------------|------------------------------------------------------------------------------------------|    
 | __construct           |   mixed   | An instance of Collection  | Save or create an array to manage                                                        |
@@ -82,3 +82,32 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | rewind                |   void    | void                       | Rewind the Iterator to the first element                                                 |                
 | next                  |   void    | void                       | Move forward to next element                                                             |                
             
+
+# [Form](https://git.fumseck.eu/cgit/imperium/tree/imperium/Html/Form/Form.php) [Coverage](https://imperium.fumseck.eu/imperium/Html/Form/Form.php.html)
+| Method                | arguments | return                           |   do                                                               |    
+|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
+| start                 |   mixed   | An instance of the form builder  | Open the form                                                      |
+| hide                  |   void    | An instance of the form builder  | Open the hidden block                                              |
+| end_hide              |   void    | An instance of the form builder  | Close the hidden block                                             |
+| file                  |   mixed   | An instance of the form builder  | Create a file input                                                |
+| input                 |   mixed   | An instance of the form builder  | Create a input                                                     |
+| button                |   mixed   | An instance of the form builder  | Create a button                                                    |
+| csrf                  |   string  | An instance of the form builder  | Add the csrf token field                                           |
+| reset                 |   string  | An instance of the form builder  | Create a reset button                                              |
+| textarea              |   mixed   | An instance of the form builder  | Create a textarea                                                  |
+| create                |   void    | An instance of the form builder  | Return an instance of the form builder                             |
+| submit                |   string  | An instance of the form builder  | Create a submit button                                             |
+| link                  |   string  | An instance of the form builder  | Create a link button                                               |
+| select                |   mixed   | An instance of the form builder  | Create a select input                                              |
+| checkbox              |   mixed   | An instance of the form builder  | Create a checkbox input                                            |
+| radio                 |   mixed   | An instance of the form builder  | Create a radio input                                               |
+| large                 |   bool    | An instance of the form builder  | Set the form size to large                                         | 
+| small                 |   bool    | An instance of the form builder  | Set the form size to small                                         | 
+| row                   |   void    | An instance of the form builder  | Start a new row                                                    | 
+| end_row               |   void    | An instance of the form builder  | Close the row                                                      | 
+| end_row_and_new       |   void    | An instance of the form builder  | Close the row and start a new row                                  | 
+| validate              |   void    | An instance of the form builder  | Enable the validation                                              | 
+| redirect              |   mixed   | An instance of the form builder  | Create a redirect select                                           |
+| generate              |   mixed   | A form                           | Create a form to create or update data inside a table              |
+| end                   |   void    | The form                         | Close the form and return it                                       |
+| get                   |   void    | The form                         | Close the form and return it                                       |             
