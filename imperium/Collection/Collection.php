@@ -118,6 +118,7 @@ class Collection implements ArrayAccess, Iterator
     {
         return $this->search;
     }
+
     /**
      *
      * Return the result key
@@ -127,7 +128,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function search_result()
     {
-        return $this->get($this->search);
+        return $this->get($this->get_search());
     }
 
     /**

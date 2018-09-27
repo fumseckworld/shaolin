@@ -123,12 +123,7 @@ namespace Imperium\Query {
         private $table;
         private $order;
         private $limit;
-
-        /**
-         * @var int
-         */
-        private $fetch;
-
+ 
         /**
         * Query constructor
         *
@@ -155,12 +150,6 @@ namespace Imperium\Query {
             return $this;
         }
 
-        public function pdo(int $mode)
-        {
-            $this->fetch = $mode;
-
-            return $this;
-        }
         /**
          *
          * @return string

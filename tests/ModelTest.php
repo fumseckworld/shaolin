@@ -13,6 +13,7 @@ use Exception;
 use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Model\Model;
+use Imperium\Query\Query;
 use PDO;
 use Testing\DatabaseTest;
 
@@ -229,6 +230,22 @@ class ModelTest extends DatabaseTest
         $this->assertEquals($number,$this->sqlite()->model()->count());
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_get()
+    {
+        $id = 1;
+
+        $this->assertNotEmpty($this->mysql()->model()->get('id', $id,'name'));
+        $this->assertNotEmpty($this->postgresql()->model()->get('id',$id,'name'));
+        $this->assertNotEmpty($this->sqlite()->model()->get('id',$id,'name'));
+
+        $this->assertNotEmpty($this->mysql()->model()->get('id',$id,collection($this->mysql()->model()->columns())->join(', ')));
+        $this->assertNotEmpty($this->postgresql()->model()->get('id',$id,collection($this->postgresql()->model()->columns())->join(', ')));
+        $this->assertNotEmpty($this->sqlite()->model()->get('id',$id,collection($this->sqlite()->model()->columns())->join(', ')));
+
+    }
 
     /**
      * @throws Exception
