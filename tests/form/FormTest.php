@@ -1,6 +1,6 @@
 <?php
 
-namespace Testing;
+namespace tests\form;
 
 
 use Imperium\Html\Form\Form;

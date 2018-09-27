@@ -1,12 +1,7 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fumse
- * Date: 14/09/2018
- * Time: 15:03
- */
 
-namespace tests;
+
+namespace tests\table;
  
 use Imperium\Imperium;
 use Testing\DatabaseTest;
