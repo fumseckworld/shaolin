@@ -255,16 +255,18 @@ class Form
     }
 
     /**
-     * generate a file input
+     *
+     * Generate a file input
      *
      * @param string $name
      * @param string $text
-     * @param string $locale
      * @param string $ico
+     * @param string $locale
      *
      * @return Form
+     *
      */
-    public function file(string $name, string $text, string $locale = 'en',string $ico = ''): Form
+    public function file(string $name, string $text,string $ico = '', string $locale = 'en'): Form
     {
         if (empty($ico))
             $this->form .= '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="custom-file"><input type="file"  name="' . $name . '" class="custom-file-input"   lang="' . $locale . '"><label class="custom-file-label" for="customFile">' . $text . '</label></div></div></div>';

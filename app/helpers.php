@@ -2007,7 +2007,7 @@ if (!exist('form'))
      */
     function form(string $action, string $id, string $class = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf8')
     {
-        return Form::create()->start($action,$id,$class,$enctype,$method,$charset);
+        return Form::create()->start($action,$id,$class,$enctype,strtolower($method),$charset);
     }
 }
 

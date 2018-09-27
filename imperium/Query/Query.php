@@ -123,7 +123,7 @@ namespace Imperium\Query {
         private $table;
         private $order;
         private $limit;
- 
+
         /**
         * Query constructor
         *
