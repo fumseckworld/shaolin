@@ -283,7 +283,7 @@ class Form
 
     private function get_btn_class(): string
     {
-        return def($this->btn_size) ? $this->btn_size .' ' . self::BTN_BASIC_CLASS : self::BTN_BASIC_CLASS;
+        return def($this->btn_size) ? self::BTN_BASIC_CLASS .  ' ' . $this->btn_size : self::BTN_BASIC_CLASS;
     }
 
     /**
@@ -528,7 +528,7 @@ class Form
     public function submit(string $text, string $class, string $id, string $icon = ''): Form
     {
 
-        append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $class . ' ' .$this->get_btn_class().'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
+        append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="' . self::FORM_SEPARATOR . '"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
 
 
         return $this;
@@ -546,7 +546,7 @@ class Form
      */
     public function link(string $url, string $class, string $text, string $icon = ''): Form
     {
-       append($this->form ,'<div class="'.self::AUTO_COL.'"> <div class="'.self::FORM_SEPARATOR.'"><a href="' . $url . '" class="' . $class . ' '.$this->get_btn_class().'">  ' . $icon . ' ' . $text . '</a></div></div>');
+       append($this->form ,'<div class="'.self::AUTO_COL.'"> <div class="'.self::FORM_SEPARATOR.'"><a href="' . $url . '" class="' . $this->get_btn_class() . ' '.$class.'">  ' . $icon . ' ' . $text . '</a></div></div>');
 
         return $this;
     }
@@ -658,9 +658,9 @@ class Form
     public function checkbox(string $name, string $text,string $class = '',bool $checked = false): Form
     {
         if ($checked)
-            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ');
+            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ');
         else
-            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  class="custom-control-input '.$class.'" id="' . $name . '"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> </div> ');
+            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"> <div class="custom-control custom-checkbox"><input type="checkbox"  class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> </div> ');
 
         return $this;
     }
@@ -756,6 +756,9 @@ class Form
         $types = $instance->get_columns_types();
         $columns = $instance->get_columns();
         $primary = $instance->get_primary_key();
+
+        if (equal($form_grid,0))
+            $form_grid = 2;
 
         $i = count($columns);
 

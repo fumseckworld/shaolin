@@ -4,9 +4,9 @@ namespace tests\form;
 
 
 use Imperium\Html\Form\Form;
-use PHPUnit\Framework\TestCase;
+use Testing\DatabaseTest;
 
-class FormTest extends TestCase
+class FormTest extends DatabaseTest
 {
 
     public function test_start()
@@ -111,5 +111,169 @@ class FormTest extends TestCase
         $this->assertContains(Form::SMALL_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
 
+    }
+
+    public function test_checkbox()
+    {
+        $class = 'form-control';
+        $form = form('a','a')->checkbox('super','check me')->get();
+        $this->assertContains('name="super"',$form);
+        $this->assertContains('check me',$form);
+        $this->assertNotContains($class,$form);
+        $this->assertNotContains('checked',$form);
+
+        $form = form('a','a')->checkbox('super','check me',$class)->get();
+        $this->assertContains('name="super"',$form);
+        $this->assertContains('check me',$form);
+        $this->assertContains($class,$form);
+        $this->assertNotContains('checked',$form);
+
+        $form = form('a','a')->checkbox('super','check me',$class,true)->get();
+        $this->assertContains('name="super"',$form);
+        $this->assertContains('check me',$form);
+        $this->assertContains($class,$form);
+        $this->assertContains('checked',$form);
+    }
+
+
+    public function test_radio()
+    {
+
+        $form = form('a','a')->radio('super','check me')->get();
+        $this->assertContains('name="super"',$form);
+        $this->assertContains('check me',$form);
+        $this->assertNotContains('checked',$form);
+
+        $form = form('a','a')->radio('super','check me',true)->get();
+        $this->assertContains('name="super"',$form);
+        $this->assertContains('check me',$form);
+        $this->assertContains('checked',$form);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_generate()
+    {
+        $form = form('a','a')->generate(2,$this->table,$this->mysql()->tables(),'append','btn-primary',"submit-id");
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertNotEmpty($form);
+
+        $icon = fa('fas','fa-rocket');
+        $form = form('a','a')->generate(2,$this->table,$this->mysql()->tables(),'append','btn-primary',"submit-id",$icon);
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->mysql()->tables(),'append','btn-primary',"submit-id",$icon,Form::EDIT,1);
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->postgresql()->tables(),'append','btn-primary',"submit-id");
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertNotEmpty($form);
+
+        $icon = fa('fas','fa-rocket');
+        $form = form('a','a')->generate(2,$this->table,$this->postgresql()->tables(),'append','btn-primary',"submit-id",$icon);
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->postgresql()->tables(),'append','btn-primary',"submit-id",$icon,Form::EDIT,1);
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->sqlite()->tables(),'append','btn-primary',"submit-id");
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertNotEmpty($form);
+
+        $icon = fa('fas','fa-rocket');
+        $form = form('a','a')->generate(2,$this->table,$this->sqlite()->tables(),'append','btn-primary',"submit-id",$icon);
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->sqlite()->tables(),'append','btn-primary',"submit-id",$icon,Form::EDIT,1);
+
+        $this->assertContains('class="btn btn-primary"',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+
+        $form = form('a','a')->generate(2,$this->table,$this->mysql()->tables(),'append','',"submit-id",$icon,Form::EDIT,1);
+
+        $this->assertContains('class="btn "',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->postgresql()->tables(),'append','',"submit-id",$icon,Form::EDIT,1);
+
+        $this->assertContains('class="btn "',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+
+        $form = form('a','a')->generate(2,$this->table,$this->sqlite()->tables(),'append','',"submit-id",$icon,Form::EDIT,1);
+
+        $this->assertContains('class="btn "',$form);
+        $this->assertContains('id="submit-id"',$form);
+        $this->assertContains('id="a"',$form);
+        $this->assertContains('append',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotEmpty($form);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_validation_exception()
+    {
+        $this->expectException(\Exception::class);
+
+        form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
+        form('a','a')->validate()->select('a',['1',2,3])->get();
+        form('a','adz')->validate()->textarea('a','adza',10,10)->get();
     }
 }
