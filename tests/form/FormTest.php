@@ -73,4 +73,43 @@ class FormTest extends TestCase
         $this->assertContains('sql file',$form);
         $this->assertContains($ico,$form);
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_size()
+    {
+        $form =  form('a','a')->setLargeInput(true)->input(Form::TEXT,'sql','sql file')->get();
+        $this->assertContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->setSmallInput(true)->input(Form::TEXT,'sql','sql file')->get();
+        $this->assertContains(Form::SMALL_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+
+        $form =  form('a','a')->setLargeInput(true)->select('table',[1,2,3])->get();
+        $this->assertContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->setSmallInput(true)->select('table',[1,2,3])->get();
+        $this->assertContains(Form::SMALL_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+
+        $form =  form('a','a')->setLargeInput(true)->textarea('table','a',10,10)->get();
+        $this->assertContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->setSmallInput(true)->textarea('table','a',10,10)->get();
+        $this->assertContains(Form::SMALL_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+
+        $form =  form('a','a')->setLargeInput(true)->file('table','a')->get();
+        $this->assertContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->setSmallInput(true)->file('table','a')->get();
+        $this->assertContains(Form::SMALL_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+
+    }
 }
