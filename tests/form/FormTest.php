@@ -74,18 +74,36 @@ class FormTest extends DatabaseTest
         $this->assertContains($ico,$form);
     }
 
+    public function test_input()
+    {
+        $icon = fa('fas','fa-linux');
+        $form = form('a','a')->input(Form::TEXT,'name','name')->get();
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon)->get();
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+    }
     /**
      * @throws \Exception
      */
     public function test_size()
     {
-        $form =  form('a','a')->large()->input(Form::TEXT,'sql','sql file')->get();
+        $small = 'btn btn-sm btn-primary';
+        $large = 'btn btn-lg btn-primary';
+        $submit_class = 'btn-primary';
+        $form =  form('a','a')->large()->input(Form::TEXT,'sql','sql file')->submit('a',$submit_class,'submit')->get();
         $this->assertContains(Form::LARGE_CLASS,$form);
         $this->assertNotContains(Form::SMALL_CLASS,$form);
+        $this->assertContains($large,$form);
 
-        $form =  form('a','a')->small()->input(Form::TEXT,'sql','sql file')->get();
+        $form =  form('a','a')->small()->input(Form::TEXT,'sql','sql file')->submit('a',$submit_class,'a')->get();
         $this->assertContains(Form::SMALL_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertContains($small,$form);
+        $this->assertContains($small,$form);
 
         $form =  form('a','a')->large()->select('table',[1,2,3])->get();
         $this->assertContains(Form::LARGE_CLASS,$form);
@@ -111,6 +129,45 @@ class FormTest extends DatabaseTest
         $this->assertContains(Form::SMALL_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
 
+
+        $form =  form('a','a')->large(false)->input(Form::TEXT,'sql','sql file')->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->small(false)->input(Form::TEXT,'sql','sql file')->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+        $form =  form('a','a')->large(false)->select('table',[1,2,3])->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->small(false)->select('table',[1,2,3])->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->large(false)->textarea('table','a',10,10)->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->small(false)->textarea('table','a',10,10)->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->large(false)->file('table','a')->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
+
+        $form =  form('a','a')->small(false)->file('table','a')->get();
+        $this->assertContains(Form::BASIC_CLASS,$form);
+        $this->assertNotContains(Form::LARGE_CLASS,$form);
+        $this->assertNotContains(Form::SMALL_CLASS,$form);
     }
 
     public function test_checkbox()
@@ -265,6 +322,19 @@ class FormTest extends DatabaseTest
         $this->assertNotEmpty($form);
     }
 
+    public function test_redirect()
+    {
+        $icon = fa('fas','fa-trash');
+        $form = \form('a','a')->redirect('a',['a' => 2])->get();
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('name="a"',$form);
+        $this->assertContains('location',$form);
+
+        $form = \form('a','a')->redirect('a',['a' => 2],$icon)->get();
+        $this->assertContains($icon,$form);
+        $this->assertContains('location',$form);
+        $this->assertContains('name="a"',$form);
+    }
     public function test_link()
     {
         $icon = fa('fas','fa-home');
@@ -292,5 +362,5 @@ class FormTest extends DatabaseTest
         form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
         form('a','a')->validate()->select('a',['1',2,3])->get();
         form('a','adz')->validate()->textarea('a','adza',10,10)->get();
-    }   
+    }
 }

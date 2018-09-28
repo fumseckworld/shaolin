@@ -396,7 +396,7 @@ class Form
      * @return Form
      * @throws Exception
      */
-    public function input(string $type, string $name, string $placeholder,string $success_text = '',string $error_text ='', string $icon = '', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
+    public function input(string $type, string $name, string $placeholder,string $icon= '',string $success_text = '',string $error_text ='', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
     {
         if (not_def($icon))
         {
@@ -714,7 +714,7 @@ class Form
      */
     public function redirect(string $name, array $options, string $icon = ''): Form
     {
-        if (not_def($icon))
+        if (def($icon))
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>');
         else
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . '">');
@@ -725,7 +725,7 @@ class Form
             append($this->form ,'<option value="' . $k . '"> ' . $option . '</option>');
 
 
-        if (not_def($icon))
+        if (def($icon))
             append($this->form ,'</select></div></div></div>');
         else
             append($this->form ,'</select></div></div>');
