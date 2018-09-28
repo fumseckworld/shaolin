@@ -74,17 +74,239 @@ class FormTest extends DatabaseTest
         $this->assertContains($ico,$form);
     }
 
+    public function test_textarea()
+    {
+        $form = form('a','a')->textarea('name','value',10,10,false,'')->get();
+
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains('10',$form);
+
+        $form = form('a','a')->textarea('name','value',10,10,false,'maximus')->get();
+
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains('10',$form);
+        $this->assertContains('maximus',$form);
+
+        $form = form('a','a')->textarea('name','value',10,10,true,'')->get();
+
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains('10',$form);
+
+        $form = form('a','a')->textarea('name','value',10,10,true,'maximus')->get();
+
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains('10',$form);
+        $this->assertContains('maximus',$form);
+
+
+        $form = form('a','a')->textarea('name','value',10,10,false,'maximus')->get();
+
+        $this->assertContains('placeholder="value"',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains('10',$form);
+        $this->assertContains('maximus',$form);
+    }
+
+    public function test_reset()
+    {
+        $icon = fa('fas','fa-linux');
+        $form = \form('a','a')->reset('reset','btn-danger','')->get();
+
+        $this->assertContains('reset',$form);
+        $this->assertContains('btn btn-danger',$form);
+        $this->assertNotContains($icon,$form);
+
+        $form = \form('a','a')->reset('reset','btn-danger',$icon)->get();
+
+        $this->assertContains('reset',$form);
+        $this->assertContains('btn btn-danger',$form);
+        $this->assertContains($icon,$form);
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function test_input()
     {
         $icon = fa('fas','fa-linux');
+
         $form = form('a','a')->input(Form::TEXT,'name','name')->get();
+
         $this->assertContains('placeholder="name"',$form);
         $this->assertContains('name="name"',$form);
         $this->assertNotContains($icon,$form);
+
         $form = form('a','a')->input(Form::TEXT,'name','name',$icon)->get();
+
         $this->assertContains('placeholder="name"',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','maximus',false,false,false)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('maximus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','maximus',false,true,false)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('maximus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','maximus',false,false,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('maximus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',false,true,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,false,false)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,false,true)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,true,false)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,true,true)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name','','','','maximus',false,false,false)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('maximus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name','','','','maximus',false,true,false)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('maximus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name','','','','maximus',false,false,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('maximus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',false,true,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,false,false)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains($icon,$form);
+
+
+
+        $form = form('a','a')->input(Form::TEXT,'name','name','','','','',true,false,true)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertNotContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name','','','','',true,true,false)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertNotContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
+
+        $form = form('a','a')->input(Form::TEXT,'name','name','','','','',true,true,true)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('autocomplete="on"',$form);
+        $this->assertContains('placeholder="name"',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertNotContains($icon,$form);
     }
     /**
      * @throws \Exception
@@ -192,6 +414,62 @@ class FormTest extends DatabaseTest
         $this->assertContains('checked',$form);
     }
 
+    public function test_button()
+    {
+        $form = form('a','a')->button(Form::SUBMIT,'submit','btn-primary')->get();
+
+        $this->assertContains('type="submit"',$form);
+        $form = form('a','a')->button(Form::RESET,'submit','btn-primary')->get();
+
+        $this->assertContains('type="reset"',$form);
+        $form = form('a','a')->button(Form::BUTTON,'submit','btn-primary')->get();
+
+        $this->assertContains('type="button"',$form);
+    }
+
+
+
+    public function test_select()
+    {
+        $form =  form('a','a')->select('age',[15,18,19],'','','',false,false)->get();
+        $icon = fa('fas','fa-trash');
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains($icon,$form);
+        $this->assertNotContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+
+        $form = form('a','a')->select('age',[15,18,19],'','','',false,true)->get();
+        $this->assertNotContains($icon,$form);
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+
+        $form = form('a','a')->select('age',[15,18,19],'','','',true,true)->get();
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('required',$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+
+
+        $form = form('a','a')->select('age',[15,18,19],'','',$icon,true,true)->get();
+        $this->assertContains($icon,$form);
+        $this->assertContains('required',$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+    }
 
     public function test_radio()
     {

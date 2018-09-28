@@ -475,7 +475,7 @@ class Form
      */
     public function reset(string $text, string $class, string $icon = ''): Form
     {
-        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><button class="' . $class . ' ' .$this->get_btn_class().'" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>');
+        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'.self::FORM_SEPARATOR.'"><button class="' . $this->get_btn_class(). ' ' .$class.'" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>');
 
         return $this;
     }
@@ -587,10 +587,10 @@ class Form
                     append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><select class="' . $class . '"  name="' . $name . '" multiple required="required">');
                 else
                     append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '" required="required">');
-                foreach ($options as $k=> $v)
+                foreach ($options as $k => $v)
                 {
 
-                    is_string($k) ? append($this->form,'<option value="'.$k.'"> '.$v.'</option>') : append($this->form, '<option value="'.$v.'"> '.$v.'</option>');
+                    is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
 
                 }
                 append($this->form,'</select>'.$validation.'</div></div>');
@@ -604,7 +604,7 @@ class Form
 
                 foreach ($options as $k => $v)
                 {
-                    is_string($k) ? append($this->form,'<option value="'.$k.'"> '.$v.'</option>') : append($this->form, '<option value="'.$v.'"> '.$v.'</option>');
+                    is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
                 }
 
                 append($this->form,'</select>'.$validation.'</div></div></div>');
@@ -619,7 +619,7 @@ class Form
                     append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR .'"><select class="' . $class . '"  name="' . $name . '">');
                 foreach ($options as $k=> $v)
                 {
-                    is_string($k) ? append($this->form,'<option value="'.$k.'"> '.$v.'</option>') : append($this->form, '<option value="'.$v.'"> '.$v.'</option>');
+                    is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
 
                 }
                 $this->form .= '</select>'.$validation.'</div></div>';
@@ -633,7 +633,7 @@ class Form
 
                 foreach ($options as $k => $v)
                 {
-                    is_string($k) ? append($this->form,'<option value="'.$k.'"> '.$v.'</option>') : append($this->form, '<option value="'.$v.'"> '.$v.'</option>');
+                    is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
                 }
                 append($this->form,'</select>'.$validation.'</div></div></div>');
             }
