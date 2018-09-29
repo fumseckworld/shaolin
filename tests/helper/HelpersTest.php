@@ -14,13 +14,79 @@ use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Tables\Table;
 use PDO;
-use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 use Testing\DatabaseTest;
 use Whoops\Run;
 
 class HelpersTest extends DatabaseTest
 {
 
+    /**
+     * @throws Exception
+     */
+    public function test_register()
+    {
+        $current_ip = '127.0.0.1';
+        $username_placeholder = 'username';
+        $username_success= 'username will be use';
+        $username_fail = 'username cannot be empty';
+        $email_placeholder = 'email address';
+        $email_success = "email will be use";
+        $email_fail = "email cannot  be empty";
+
+        $password_placeholder = 'password';
+        $password_success = "password will be use";
+        $password_fail = "password cannot  be empty";
+        $languages = ['fr' => 'French','es' => 'Spanish'];
+
+        $form = register('a','a',$current_ip,$username_placeholder,$username_success,$username_fail,$email_placeholder, $email_success,$email_fail,$password_placeholder,$password_success,$password_fail,$password_placeholder,'create account',id());
+
+        $this->assertEmpty($form);
+
+        $form = register('a',$current_ip,$current_ip,$username_placeholder,$username_success,$username_fail,$email_placeholder, $email_success,$email_fail,$password_placeholder,$password_success,$password_fail,$password_placeholder,'create account',id());
+
+
+        $this->assertNotContains('French',$form);
+        $this->assertNotContains('Spanish',$form);
+
+        $this->assertContains($username_placeholder,$form);
+        $this->assertContains($username_success,$form);
+        $this->assertContains($username_fail,$form);
+        $this->assertContains($email_placeholder,$form);
+        $this->assertContains($email_success,$form);
+        $this->assertContains($email_fail,$form);
+        $this->assertContains($password_placeholder,$form);
+        $this->assertContains($password_success,$form);
+        $this->assertContains($password_fail,$form);
+
+        $choose_language = "choose a language";
+        $choose_zone = "choose a zone";
+        $lang_valid = "language will be used";
+        $lang_fail ='languages must not be empty';
+        $valid_zone = 'time zone will be used';
+        $error_zone ='error';
+        $form = register('a',$current_ip,$current_ip,$username_placeholder,$username_success,$username_fail,$email_placeholder, $email_success,$email_fail,$password_placeholder,$password_success,$password_fail,$password_placeholder,'create account',id(),true,$languages,$choose_language,$lang_valid,$lang_fail,$choose_zone,$valid_zone,$error_zone);
+
+
+        $this->assertContains('French',$form);
+        $this->assertContains('Spanish',$form);
+
+        $this->assertContains($username_placeholder,$form);
+        $this->assertContains($username_success,$form);
+        $this->assertContains($username_fail,$form);
+        $this->assertContains($email_placeholder,$form);
+        $this->assertContains($email_success,$form);
+        $this->assertContains($email_fail,$form);
+        $this->assertContains($password_placeholder,$form);
+        $this->assertContains($password_success,$form);
+        $this->assertContains($password_fail,$form);
+        $this->assertContains($choose_zone,$form);
+        $this->assertContains($choose_language,$form);
+        $this->assertContains($lang_valid,$form);
+        $this->assertContains($lang_fail,$form);
+        $this->assertContains($valid_zone,$form);
+        $this->assertContains($error_zone,$form);
+
+    }
     /**
      * @throws Exception
      */
