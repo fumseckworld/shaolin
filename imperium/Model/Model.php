@@ -188,13 +188,11 @@ class Model
      * @throws Exception
      *
      */
-    public function findOrFail(int $id): array
+    public function find_or_fail(int $id): array
     {
         $data = $this->find($id);
 
-        if (not_def($data))
-            throw new Exception('Record not found');
-         
+        inferior($data,1,true,'Record not found');
 
         return $data;
     }

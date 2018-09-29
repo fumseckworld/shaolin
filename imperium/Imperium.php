@@ -572,7 +572,7 @@ class Imperium extends Zen implements Management
      */
     public function find_or_fail(int $id): array
     {
-       return $this->model->findOrFail($id);
+       return $this->model->find_or_fail($id);
     }
 
     /**
