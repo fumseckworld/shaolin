@@ -458,8 +458,10 @@ class FormTest extends DatabaseTest
 
     public function test_select()
     {
-        $form =  form('a','a')->select('age',[15,18,19],'','','',false,false)->get();
         $icon = fa('fas','fa-trash');
+
+        $form =  form('a','a')->select('age',[15,18,19],'','','',false,false)->get();
+
         $this->assertNotContains('required',$form);
         $this->assertNotContains($icon,$form);
         $this->assertNotContains('multiple',$form);
@@ -468,34 +470,94 @@ class FormTest extends DatabaseTest
         $this->assertContains('<option value="18">18</option>',$form);
         $this->assertContains('<option value="19">19</option>',$form);
 
-        $form = form('a','a')->select('age',[15,18,19],'','','',false,true)->get();
-        $this->assertNotContains($icon,$form);
+        $form =  form('a','a')->select('age',[15,18,19],'','',$icon,false,false)->get();
 
         $this->assertNotContains('required',$form);
-        $this->assertContains('multiple',$form);
-        $this->assertContains('name="age"',$form);
-        $this->assertContains('<option value="15">15</option>',$form);
-        $this->assertContains('<option value="18">18</option>',$form);
-        $this->assertContains('<option value="19">19</option>',$form);
-
-        $form = form('a','a')->select('age',[15,18,19],'','','',true,true)->get();
-        $this->assertNotContains($icon,$form);
-        $this->assertContains('required',$form);
-        $this->assertContains('multiple',$form);
-        $this->assertContains('name="age"',$form);
-        $this->assertContains('<option value="15">15</option>',$form);
-        $this->assertContains('<option value="18">18</option>',$form);
-        $this->assertContains('<option value="19">19</option>',$form);
-
-
-        $form = form('a','a')->select('age',[15,18,19],'','',$icon,true,true)->get();
         $this->assertContains($icon,$form);
-        $this->assertContains('required',$form);
+        $this->assertNotContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+
+
+        $form =  form('a','a')->select('age',[15,18,19],'','','',false,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains($icon,$form);
         $this->assertContains('multiple',$form);
         $this->assertContains('name="age"',$form);
         $this->assertContains('<option value="15">15</option>',$form);
         $this->assertContains('<option value="18">18</option>',$form);
         $this->assertContains('<option value="19">19</option>',$form);
+
+        $form =  form('a','a')->select('age',[15,18,19],'','',$icon,false,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains($icon,$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+
+        $form =  form('a','a')->select('age',[15,18,19],'','','',false,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+
+        $form =  form('a','a')->select('age',[15,18,19],'','',$icon,false,true)->get();
+
+        $this->assertNotContains('required',$form);
+        $this->assertContains($icon,$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+
+        $form =  form('a','a')->select('age',[15,18,19],'','','',true,false)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertNotContains($icon,$form);
+        $this->assertNotContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+
+        $form =  form('a','a')->select('age',[15,18,19],'','',$icon,true,false)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertContains($icon,$form);
+        $this->assertNotContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+
+
+        $form =  form('a','a')->select('age',[15,18,19],'','','',true,true)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertNotContains($icon,$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+        $this->assertContains('<option value="19">19</option>',$form);
+
+        $form =  form('a','a')->select('age',[15,18,19],'','',$icon,true,true)->get();
+
+        $this->assertContains('required',$form);
+        $this->assertContains($icon,$form);
+        $this->assertContains('multiple',$form);
+        $this->assertContains('name="age"',$form);
+        $this->assertContains('<option value="15">15</option>',$form);
+        $this->assertContains('<option value="18">18</option>',$form);
+
+
     }
 
     public function test_radio()
