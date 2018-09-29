@@ -2183,9 +2183,30 @@ if (!exist('d'))
 
 if (!exist('not_in'))
 {
-    function not_in(array $array,$value)
+    /**
+     *
+     * Check if the value is not inside an array
+     *
+     * @param array $array
+     * @param $value
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function not_in(array $array, $value, bool $run_exception = false, string $message = '')
     {
-        return !in_array($value,$array,true);
+        $x =  !in_array($value,$array,true);
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+
+        }
+        return $x;
     }
 }
 if (!exist('dumper'))

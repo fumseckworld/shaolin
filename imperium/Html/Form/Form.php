@@ -589,7 +589,7 @@ class Form
      * @return Form
      *
      * @throws Exception
-     * 
+     *
      */
     public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $required = true, bool $multiple = false): Form
     {
@@ -779,7 +779,8 @@ class Form
         $primary = $instance->get_primary_key();
 
         equal($form_grid,0,true,"Zero is not a valid number");
-
+        not_in([Form::EDIT,Form::CREATE],$mode,true,"The mode used is not a valid mode");
+        
         $i = count($columns);
 
         $date = array(
@@ -868,7 +869,7 @@ class Form
             $this->end_row_and_new()->submit($submitText, $submitClass, $submitId, $submitIcon);
             return $this->end_row()->get();
         }
-        throw new Exception('missing mode edit or create');
+        return '';
     }
 
     /**
