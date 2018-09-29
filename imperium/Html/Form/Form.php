@@ -487,19 +487,35 @@ class Form
      * @param string $placeholder
      * @param int $cols
      * @param int $row
+     * @param string $validation_success_text
+     * @param string $validation_error_text
      * @param bool $autofocus
      * @param string $value
+     *
      * @return Form
+     *
+     * @throws Exception
      */
-    public function textarea(string $name, string $placeholder, int $cols, int $row, bool $autofocus = false, string $value = ''): Form
+    public function textarea(string $name, string $placeholder, int $cols, int $row,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false, string $value = ''): Form
     {
+
+
+        if ($this->validate)
+        {
+            if (not_def($validation_success_text,$validation_error_text))
+                throw new Exception('missing validation text');
+            else
+                $validation =  $this->valid($validation_success_text,$validation_error_text);
+        }else{
+            $validation = '';
+        }
 
         $class = $this->get_input_complete_class();
 
         if ($autofocus)
-            append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="' . self::FORM_SEPARATOR  .'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >' . $value . '</textarea></div></div>');
+            append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="' . self::FORM_SEPARATOR  .'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >' . $value . '</textarea>'.$validation.'</div></div>');
         else
-            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >' . $value . '</textarea></div></div>');
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR.'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >' . $value . '</textarea> '.$validation.'</div></div>');
 
         return $this;
     }

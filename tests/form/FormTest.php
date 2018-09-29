@@ -74,28 +74,31 @@ class FormTest extends DatabaseTest
         $this->assertContains($ico,$form);
     }
 
+    /**
+     * @throws \Exception
+     */
     public function test_textarea()
     {
-        $form = form('a','a')->textarea('name','value',10,10,false,'')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',false,'')->get();
 
         $this->assertNotContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
 
-        $form = form('a','a')->textarea('name','value',10,10,false,'maximus')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',false,'maximus')->get();
 
         $this->assertNotContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
         $this->assertContains('maximus',$form);
 
-        $form = form('a','a')->textarea('name','value',10,10,true,'')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',true,'')->get();
 
         $this->assertContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
 
-        $form = form('a','a')->textarea('name','value',10,10,true,'maximus')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',true,'maximus')->get();
 
         $this->assertContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
@@ -103,13 +106,37 @@ class FormTest extends DatabaseTest
         $this->assertContains('maximus',$form);
 
 
-        $form = form('a','a')->textarea('name','value',10,10,false,'maximus')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',false,'maximus')->get();
 
         $this->assertContains('placeholder="value"',$form);
         $this->assertNotContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
         $this->assertContains('maximus',$form);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_validation()
+    {
+        $success ="success";
+        $fail ="fail";
+
+        $form = form('a','a')->validate()->input(Form::TEXT,'name','name','',$success,$fail)->get();
+
+        $this->assertContains($success,$form);
+        $this->assertContains($fail,$form);
+
+        $form = form('a','a')->validate()->select('select',['a','a'],$success,$fail)->get();
+
+        $this->assertContains($success,$form);
+        $this->assertContains($fail,$form);
+
+        $form = form('a','a')->validate()->textarea('name','name',10,10,$success,$fail)->get();
+
+        $this->assertContains($success,$form);
+        $this->assertContains($fail,$form);
     }
 
     public function test_reset()
