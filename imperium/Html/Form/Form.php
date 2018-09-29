@@ -792,10 +792,9 @@ class Form
 
         if (equal($mode,Form::EDIT))
         {
-            $records = $instance->select_by_id($id);
+            $records = $instance->select_by_id_or_fail($id);
 
-            if (count($records) > 1)
-                throw new Exception('The primary key are not unique');
+
             if (not_def($records))
                 throw  new Exception('Record was not found');
 
@@ -811,7 +810,7 @@ class Form
                     if (different($column,$primary))
                     {
 
-                        if ($i % $form_grid === 0)
+                        if (equal($i % $form_grid,0))
                         {
                             $this->textarea($column, $column, 10, 10, false, $record->$column);
                             $this->end_row_and_new();

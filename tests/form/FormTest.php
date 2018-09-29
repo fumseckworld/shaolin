@@ -4,6 +4,7 @@ namespace tests\form;
 
 
 use Imperium\Html\Form\Form;
+use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 use Testing\DatabaseTest;
 
 class FormTest extends DatabaseTest
@@ -719,15 +720,21 @@ class FormTest extends DatabaseTest
         $this->assertContains('home',$form);
         $this->assertContains('href="/"',$form);
     }
+
     /**
      * @throws \Exception
      */
-    public function test_validation_exception()
+    public function test_exception()
     {
+
         $this->expectException(\Exception::class);
 
+        form('a','a')->validate()->textarea('name','a',10,10)->get();
         form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
         form('a','a')->validate()->select('a',['1',2,3])->get();
         form('a','adz')->validate()->textarea('a','adza',10,10)->get();
+        form('a','adz')->generate(2,$this->table,$this->mysql()->tables(),'submit','btn-primary',id(),'',500,1);
+        form('a','adz')->generate(2,$this->table,$this->mysql()->tables(),'submit','btn-primary',id(),'',500); 
     }
+
 }

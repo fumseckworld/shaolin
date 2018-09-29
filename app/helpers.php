@@ -63,32 +63,54 @@ if (!exist('query'))
 if (!exist('equal'))
 {
     /**
-     * test if two strings are equal
+     * test if two variables are equal
      *
-     * @param string $first
-     * @param string $second
+     * @param $parameter
+     * @param $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
+     *
+     * @throws Exception
      */
-    function equal(string $first,string $second): bool
+    function equal( $parameter, $expected,$run_exception = false,string $message = ''): bool
     {
-        return strcmp($first,$second) === 0;
+        $x = strcmp($parameter,$expected) === 0;
+
+        if ($run_exception)
+            if ($x)
+                throw new Exception($message);
+
+
+        return $x;
     }
 }
 
 if (!exist('different'))
 {
     /**
-     * test if first is not equal to second
+     * test  if two variables are different
      *
-     * @param string $first
-     * @param string $second
+     * @param $parameter
+     * @param $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
+     *
+     * @throws Exception
      */
-    function different(string $first,string $second): bool
+    function different($parameter,$expected,$run_exception = false,string $message = ''): bool
     {
-        return strcmp($first,$second) !== 0;
+        $x = strcmp($parameter,$expected) !== 0;
+
+        if ($run_exception)
+            if ($x)
+                throw new Exception($message);
+
+
+        return $x;
     }
 }
 if (!exist('dd'))
@@ -1626,6 +1648,136 @@ if (!exist('create'))
     }
 }
 
+if (!exist('superior'))
+{
+
+    /**
+     *
+     * check if the var is superior
+     * of the expected value
+     *
+     * @param $parameter
+     * @param $expected
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function superior($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    {
+        if (is_array($parameter))
+            $parameter = count($parameter);
+
+        $x = $parameter > $expected;
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+        return $x;
+    }
+}
+
+if (!exist('superior_or_equal'))
+{
+
+    /**
+     *
+     * check if the var is superior or equal
+     * of the expected value
+     *
+     * @param $parameter
+     * @param $expected
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function superior_or_equal($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    {
+        if (is_array($parameter))
+            $parameter = count($parameter);
+
+        $x = $parameter >= $expected;
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+        return $x;
+    }
+}
+if (!exist('inferior'))
+{
+
+    /**
+     *
+     * check if the var is inferior
+     * of the expected value
+     *
+     * @param $parameter
+     * @param $expected
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function inferior($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    {
+        if (is_array($parameter))
+            $parameter = count($parameter);
+
+        $x = $parameter < $expected;
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+        return $x;
+    }
+}
+
+if (!exist('inferior_or_equal'))
+{
+
+    /**
+     *
+     * check if the var is inferior or equal
+     * of the expected value
+     *
+     * @param $parameter
+     * @param $expected
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function inferior_or_equal($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    {
+        if (is_array($parameter))
+            $parameter = count($parameter);
+
+        $x = $parameter <= $expected;
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+     return $x;
+    }
+}
 if (!exist('databases_view'))
 {
     /**

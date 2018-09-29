@@ -14,6 +14,7 @@ use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Tables\Table;
 use PDO;
+use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 use Testing\DatabaseTest;
 use Whoops\Run;
 
@@ -58,6 +59,63 @@ class HelpersTest extends DatabaseTest
 
 
     }
+
+    /**
+     * @throws Exception
+     */
+    public function test_superior()
+    {
+
+        $this->assertTrue(superior(1,0));
+        $this->assertTrue(superior(50,10));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+        superior(2,1,true,"matrix");
+        superior(20,10,true,"matrix");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_superior_or_equal()
+    {
+
+        $this->assertTrue(superior_or_equal(1,1));
+        $this->assertTrue(superior(50,20));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+        superior_or_equal(1,1,true,"matrix");
+        superior_or_equal(20,10,true,"matrix");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_inferior()
+    {
+
+        $this->assertTrue(inferior(1,2));
+        $this->assertTrue(inferior(50,100));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+        inferior(2,10,true,"matrix");
+        inferior(20,30,true,"matrix");
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_inferior_or_equal()
+    {
+
+        $this->assertTrue(inferior_or_equal(1,1));
+        $this->assertTrue(inferior_or_equal(50,200));
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+        inferior_or_equal(1,1,true,"matrix");
+        inferior_or_equal(20,100,true,"matrix");
+    }
+
     /**
      * @throws \Exception
      */
@@ -126,6 +184,9 @@ class HelpersTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_equal()
     {
         $this->assertTrue(equal(1,1));
@@ -139,6 +200,11 @@ class HelpersTest extends DatabaseTest
         $this->assertFalse(equal("","adz"));
         $this->assertFalse(equal("a","adz"));
 
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+
+        equal(1,1,true,"matrix");
+        equal(10,10,true,"matrix");
     }
 
     public function test_append()
@@ -148,6 +214,9 @@ class HelpersTest extends DatabaseTest
         $this->assertEquals('i am very happy',$code);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_different()
     {
         $this->assertTrue(different('','adz'));
@@ -157,6 +226,12 @@ class HelpersTest extends DatabaseTest
         $this->assertFalse(different('adz','adz'));
         $this->assertFalse(different('a','a'));
         $this->assertFalse(different('aadz','aadz'));
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+
+        different(1,12,true,"matrix");
+        different(10,210,true,"matrix");
     }
 
 

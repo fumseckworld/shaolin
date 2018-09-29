@@ -666,6 +666,30 @@ namespace  Imperium\Tables {
             return $this->connexion->request("SELECT * FROM {$this->table} WHERE {$this->get_primary_key()} = $id" );
         }
 
+
+        /**
+         *
+         * select a record by id or fail
+         *
+         * @param int $id
+         *
+         * @return array
+         *
+         * @throws Exception
+         *
+         */
+        public function select_by_id_or_fail(int $id): array
+        {
+            $data = $this->connexion->request("SELECT * FROM {$this->table} WHERE {$this->get_primary_key()} = $id" );
+
+
+            superior($data,1,true,"The primary key is not unique");
+
+            inferior($data,1,true,"The records was not found");
+
+            return $data;
+        }
+
         /**
          * delete a record by id
          *
