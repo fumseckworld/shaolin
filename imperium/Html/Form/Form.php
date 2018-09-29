@@ -274,6 +274,8 @@ class Form
 
     /**
      * @return string
+     *
+     * @throws Exception
      */
     private function get_input_complete_class(): string
     {
@@ -575,16 +577,19 @@ class Form
     /**
      * generate a select input
      *
-     * @param string      $name
-     * @param array       $options
-     * @param string      $success_text
-     * @param string      $error_text
+     * @param string $name
+     * @param array $options
+     * @param string $success_text
+     * @param string $error_text
      * @param string|null $icon
      *
-     * @param bool        $required
-     * @param bool        $multiple
+     * @param bool $required
+     * @param bool $multiple
      *
      * @return Form
+     *
+     * @throws Exception
+     * 
      */
     public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $required = true, bool $multiple = false): Form
     {
@@ -773,8 +778,7 @@ class Form
         $columns = $instance->get_columns();
         $primary = $instance->get_primary_key();
 
-        if (equal($form_grid,0))
-            $form_grid = 2;
+        equal($form_grid,0,true,"Zero is not a valid number");
 
         $i = count($columns);
 
@@ -792,14 +796,8 @@ class Form
 
         if (equal($mode,Form::EDIT))
         {
-            $records = $instance->select_by_id_or_fail($id);
 
-
-            if (not_def($records))
-                throw  new Exception('Record was not found');
-
-
-            foreach ($records as $record)
+            foreach ($instance->select_by_id_or_fail($id) as $record)
             {
                 foreach ($columns as $k => $column)
                 {
