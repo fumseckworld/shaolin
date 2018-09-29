@@ -13,3 +13,4 @@ lily
 a
 env
 .vscode
+*.json

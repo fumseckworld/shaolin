@@ -1407,6 +1407,19 @@ namespace Imperium\File {
         }
 
         /**
+         *
+         * remove a file if exist
+         *
+         * @param string $filename
+         *
+         * @return bool
+         */
+        public static function remove_if_exist(string $filename)
+        {
+            return self::exist($filename)? self::delete($filename) : false;
+        }
+
+        /**
          * quit app with a different message
          *
          * @param string $message

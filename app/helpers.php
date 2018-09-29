@@ -18,6 +18,7 @@ use Imperium\Html\Form\Form;
 use Imperium\Html\Pagination\Pagination;
 use Imperium\Html\Records\Records;
 use Imperium\Imperium;
+use Imperium\Json\Json;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Tables\Table;
@@ -84,6 +85,20 @@ if (!exist('equal'))
 
 
         return $x;
+    }
+}
+if (!exist('is_not_false'))
+{
+    /**
+     * check if a data is not equal to false
+     *
+     * @param $data
+     *
+     * @return bool
+     */
+    function is_not_false($data): bool
+    {
+        return $data !== false;
     }
 }
 
@@ -198,6 +213,98 @@ if (!exist('register'))
         return '';
     }
 }
+
+
+
+if (!exist('bases_to_json'))
+{
+    /**
+     *
+     * generate a json with all databases
+     *
+     * @param Base $base
+     * @param $filename
+     * @param string $key
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function bases_to_json(Base $base,$filename,string $key =''): bool
+    {
+        $json = json($filename);
+        return def($key) ? $json->create([$key => $base->show()]) : $json->create($base->show());
+
+    }
+}
+
+if (!exist('users_to_json'))
+{
+    /**
+     *
+     * generate a json with all users
+     *
+     * @param Users $users
+     * @param $filename
+     * @param string $key
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function users_to_json(Users $users,$filename,string $key = '') : bool
+    {
+        $json = json($filename);
+
+        return def($key) ? $json->create([$key => $users->show()]) : $json->create($users->show());
+    }
+}
+
+if (!exist('tables_to_json'))
+{
+    /**
+     *
+     * generate a json with all users
+     *
+     * @param Table $table
+     * @param $filename
+     *
+     * @param string $key
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function tables_to_json(Table $table,$filename,string $key= '') : bool
+    {
+        $json = json($filename);
+
+        return def($key) ? $json->create([$key => $table->show()]) : $json->create($table->show());
+    }
+}
+
+if (!exist('sql_to_json'))
+{
+    /**
+     *
+     * generate a json with all result of the query
+     *
+     * @param Connect $connect
+     * @param string $query
+     * @param $filename
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    function sql_to_json(Connect $connect,string $query,$filename) : bool
+    {
+        $data = $connect->request($query);
+        return  Json::create($filename,$data);
+    }
+}
+
+
 
 if (!exist('query_result'))
 {
@@ -393,7 +500,20 @@ if (!exist('login'))
         return form($action,$id)->csrf($csrf)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->end_row()->get();
     }
 }
-
+if (!exist('json'))
+{
+    /**
+     * Return an instance to manage json
+     *
+     * @param string $filename
+     *
+     * @return Json
+     */
+    function json(string $filename): Json
+    {
+        return new Json($filename);
+    }
+}
 if(!exist('collection'))
 {
 

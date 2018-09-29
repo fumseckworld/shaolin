@@ -173,7 +173,7 @@ class Model
      */
     public function find(int $id): array
     {
-        return $this->sql->set_query_mode(Imperium::SELECT)->where($this->primary,'=',$id)->get();
+        return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,'=',$id)->get();
     }
 
     /**

@@ -10,10 +10,9 @@ use Testing\DatabaseTest;
 class CollectionTest extends DatabaseTest
 {
 
-
-    public function test_instance()
+   public function test_instance()
     {
-        $data = [];
+      $data = [];
         $this->assertInstanceOf(Collection::class,collection());
         $this->assertInstanceOf(Collection::class,collection($data));
         $this->assertInstanceOf(Collection::class,collection(array('1',2,3,3,5)));
@@ -76,21 +75,7 @@ class CollectionTest extends DatabaseTest
 
     }
 
-    public function test_set()
-    {
-        $data = collection();
 
-        $data->add('alex')->add('marc')->add('marion');
-
-        $this->assertEquals(['alex','marc','marion'],$data->collection());
-
-        $data =  collection();
-
-        $data->add(10,'note')->add(15,'age')->add(25 ,'euros');
-
-        $this->assertEquals(['note' => 10,'age' => 15,'euros' => 25] ,$data->collection());
-
-    }
 
     public function test_is()
     {
