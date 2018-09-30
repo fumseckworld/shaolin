@@ -330,8 +330,8 @@ if (!exist('sql_to_json'))
      */
     function sql_to_json(Connect $connect,string $query,$filename) : bool
     {
-        $data = $connect->request($query);
-        return  Json::create($filename,$data);
+        $json = json($filename);
+        return  $json->create($connect->request($query));
     }
 }
 

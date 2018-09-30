@@ -55,6 +55,16 @@ class JsonTest extends DatabaseTest
     /**
      * @throws \Exception
      */
+    public function test_sql_to_json()
+    {
+        $this->assertTrue(sql_to_json($this->mysql()->connect(),'SHOW DATABASES','base.json'));
+        $this->assertTrue(sql_to_json($this->postgresql()->connect(),'select datname from pg_database','base.json'));
+        $this->assertTrue(sql_to_json($this->sqlite()->connect(),"select * from {$this->table}",'base.json'));
+    }
+
+    /**
+     * @throws \Exception
+     */
     public function test_tables_to_json()
     {
 

@@ -86,7 +86,7 @@ namespace Imperium\Bases {
 
             $request = '';
             $hidden = def($this->hidden) ? collection($this->hidden) : collection();
-            equal($driver,Connect::MYSQL) ?  assign(true,$request,'SHOW DATABASES') :             assign(true,$request,'select datname from pg_database');
+            equal($driver,Connect::MYSQL) ?  assign(true,$request,'SHOW DATABASES') : assign(true,$request,'select datname from pg_database');
 
             foreach ($this->connexion->request($request) as $db)
             {
