@@ -20,6 +20,20 @@ use Whoops\Run;
 class HelpersTest extends DatabaseTest
 {
 
+
+    public function test_is_pair()
+    {
+        $this->assertFalse(is_pair(1));
+        $this->assertTrue(is_pair(2));
+        $this->assertFalse(is_pair(3));
+        $this->assertTrue(is_pair(4));
+        $this->assertFalse(is_pair(5));
+        $this->assertTrue(is_pair(6));
+        $this->assertFalse(is_pair(7));
+        $this->assertTrue(is_pair(8));
+        $this->assertFalse(is_pair(9));
+        $this->assertTrue(is_pair(10));
+    }
     /**
      * @throws Exception
      */

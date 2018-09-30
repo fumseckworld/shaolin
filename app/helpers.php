@@ -61,6 +61,19 @@ if (!exist('query'))
         return new Query($table,$connect);
     }
 }
+
+if (!exist('is_pair'))
+{
+    /**
+     * @param int $x
+     *
+     * @return bool
+     */
+    function is_pair(int $x): bool
+    {
+        return $x % 2 === 0;
+    }
+}
 if (!exist('equal'))
 {
     /**
