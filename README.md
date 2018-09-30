@@ -121,7 +121,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | redirect              |   mixed   | An instance of the form builder  | Create a redirect select                                           |
 | generate              |   mixed   | A form                           | Create a form to create or update data inside a table              |
 | end                   |   void    | The form                         | Close the form and return it                                       |
-| get      
+ 
 
 
 # [Json](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php) [Coverage](https://imperium.fumseck.eu/imperium/Json/Json.php.html)
@@ -174,12 +174,12 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | find_or_fail          |   int     | An array                                  | Return one record selected by a id on success or throw exception   |
 | where                 |   mixed   | An array                                  | Return selected records by a where clause                          |
 | remove                |   int     | A boolean                                 | Remove a record inside the table by an id                          |
-| remove                |   int     | A boolean                                 | Remove a record by an id                                           |                                                      | 
-| insert                |   mixed   | A boolean                                 | Insert data inside the table                                       |                                                      | 
-| count                 |   void    | A integer                                 | Count all data in a table                                          |                                                      | 
-| truncate              |   void    | A boolean                                 | Empty all records inside the table                                 |                                                      | 
-| update                |   mixed   | A boolean                                 | Update a record inside the table                                   |                                                      | 
-| columns               |   void    | An array                                  | Display all columns inside the table                               |                                                      | 
+| remove                |   int     | A boolean                                 | Remove a record by an id                                           |                                                    
+| insert                |   mixed   | A boolean                                 | Insert data inside the table                                       |                                                    
+| count                 |   void    | A integer                                 | Count all data in a table                                          |                                                    
+| truncate              |   void    | A boolean                                 | Empty all records inside the table                                 |                                                     
+| update                |   mixed   | A boolean                                 | Update a record inside the table                                   |                                                     
+| columns               |   void    | An array                                  | Display all columns inside the table                               |                                                     
 | is_empty              |   void    | A boolean                                 | Check if the table is empty                                        |
 | pdo                   |   void    | An instance of pdo                        | Return the pdo instance                                            |
 | request               |   string  | An array                                  | Return the result of the query inside an array                     |
