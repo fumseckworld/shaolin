@@ -195,11 +195,15 @@ namespace Imperium\Bases {
         }
 
         /**
-         * dump a database
+         *
+         * Dump a database
+         *
+         * @return  bool
          *
          * @throws Exception
+         *
          */
-        public function dump()
+        public function dump(): bool
         {
             return dumper($this->connexion);
         }

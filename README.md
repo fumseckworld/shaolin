@@ -123,3 +123,25 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | sql                   |   mixed   | An instance of the json manager  | Add inside the array value(s) with the result of a query           |
 | generate              |   void    | True on success                  | Generate json file with data added by add or sql function          |              
 | decode                |   bool    | Data on success                  | Decode a json file or a json string encoded to utf8                |
+
+
+
+# [Base](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php) [Coverage](https://imperium.fumseck.eu/imperium/Bases/Base.php.html)
+
+| Method                | arguments | return                           |   do                                                               |    
+|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
+| __construct           |   Connect | An instance of Base              | Save the connection and the driver                                                  |
+| show                  |   void    | Return an array with bases       | Detect databases hosted inside the server                          |
+| create                |   string  | Return true on success           | Create the database                                                |
+| set_charset           |   string  | Return an instance of Base       | Save the charset for the database                                  |
+| set_collation         |   string  | Return an instance of Base       | Save the collation for the database                                |
+| drop                  |   string  | Return true on success           | Remove the database                                                |
+| dump                  |   void    | Return true on success           | Dump the database                                                  |
+| exist                 |   string  | Return true if exist             | Check if a database exist                                          |
+| charsets              |   void    | Return array with charset        | Display all charset possibilities                                  |
+| collations            |   void    | Return array with collations     | Display all collations possibilities                               |
+| hidden                |   array   | Return an instance of base       | Set the database to no display in the app                          |
+| has                   |   bool    | Return an true if found bases    | Detect if server has databases                                     |
+| change_collation      |   void    | Return an true on success        | Change the base collation                                          |
+| change_charset        |   void    | Return an true on success        | Change the base charset                                            |
+| set_name              |   string  | Return an instance of base       | Save the name                                                      | 

@@ -2333,14 +2333,19 @@ if (!exist('dumper'))
 {
 
     /**
+     *
+     * dump a table or a database
+     *
      * @param Connect $connect
      * @param bool $base
      * @param string $table
+     *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function dumper(Connect $connect,bool $base = true,string $table ='')
+    function dumper(Connect $connect,bool $base = true,string $table =''): bool
     {
 
         $database = $connect->get_database();
