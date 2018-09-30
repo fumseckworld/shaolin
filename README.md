@@ -5,11 +5,21 @@
 <img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence"> 
 </p>
 
-
+* [**Imperium**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Imperium.php)
+    * [**Bases**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php)
+    * [**Users**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Users/Users.php)
+    * [**Tables**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Tables/Table.php)
+    * [**Model**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php)
+    * [**Collection**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php)
+    * [**Connexion**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Connexion/Connect.php)
+    * [**Debug**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Debug)
+    * [**Directory**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Directory/Dir.php)
+    * [**File**](https://git.fumseck.eu/cgit/imperium/tree/imperium/File/File.php)
+    * [**Json**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php)
+    * [**Query**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php)
+    * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
+* [**Coverage**](https://imperium.fumseck.eu)
 * [**Discord**](https://discord.gg/qn6yptm)
-    * [**Coverage**](https://imperium.fumseck.eu)
-
-> run make in order to see the coverage and run tests
 
 # What it's ?
 
@@ -25,7 +35,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 # **Installation**
 
-`$ composer require imperium/imperium`
+`composer require imperium/imperium`
 
 # Type of databases
 
@@ -48,34 +58,34 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | Method                | arguments | return                     | do                                                                                       |    
 |-----------------------|-----------|----------------------------|------------------------------------------------------------------------------------------|    
 | __construct           |   mixed   | An instance of Collection  | Save or create an array to manage                                                        |
-| empty                 |   void    | bool                       | Check if array is empty                                                                  |
-| init                  |   void    | int                        | Initialize the position to 0 and return the position                                     |
-| collection            |   void    | array                      | Return the array modified                                                                |               
+| empty                 |   void    | A boolean                  | Check if array is empty                                                                  |
+| init                  |   void    | An integer                 | Initialize the position to 0 and return the position                                     |
+| collection            |   void    | An array                   | Return the array modified                                                                |               
 | push                  |   mixed   | An instance of Collection  | Add to the end of the array                                                              |                  
 | stack                 |   mixed   | An instance of Collection  | Add to the begin of the array                                                            |               
 | merge                 |   mixed   | An instance of Collection  | Merge multiple array inside the array                                                    |               
 | last                  |   void    | mixed                      | Return the last element inside the array                                                 |               
 | begin                 |   void    | mixed                      | Return the first element inside the array                                                |               
-| length                |   void    | int                        | Return the number of elements inside the array                                           |               
+| length                |   void    | An integer                 | Return the number of elements inside the array                                           |               
 | add                   |   mixed   | An instance of Collection  | Add inside the array a value with and optional key                                       |               
-| reverse               |   bool    | array                      | Return the reverse of the array                                                          |                
+| reverse               |   bool    | An array                   | Return the reverse of the array                                                          |                
 | value_before_key      |   mixed   | mixed                      | Return the value of the array before a key                                               |                   
-| has_key               |   mixed   | bool                       | Check if the key exist inside the array                                                  |                       
-| exist                 |   mixed   | bool                       | Check if the value exist inside the array                                                |                
-| not_exist             |   mixed   | bool                       | Check if the value not exist inside the array                                            |                
-| values                |   void    | array                      | Return all values inside the array                                                       |                
-| keys                  |   void    | array                      | Return all keys inside the array                                                         |                
+| has_key               |   mixed   | A boolean                  | Check if the key exist inside the array                                                  |                       
+| exist                 |   mixed   | A boolean                  | Check if the value exist inside the array                                                |                
+| not_exist             |   mixed   | A boolean                  | Check if the value not exist inside the array                                            |                
+| values                |   void    | An array                   | Return all values inside the array                                                       |                
+| keys                  |   void    | An array                   | Return all keys inside the array                                                         |                
 | before                |   void    | mixed                      | Move the current position before the current position and return the current value       |                
 | after                 |   void    | mixed                      | Move the current position after the current position and return the current value        |                
-| numeric               |   mixed   | bool                       | Check if the value is numeric                                                            |                
-| string                |   mixed   | bool                       | Check if the value is a string                                                           |                
+| numeric               |   mixed   | A boolean                  | Check if the value is numeric                                                            |                
+| string                |   mixed   | A boolean                  | Check if the value is a string                                                           |                
 | get                   |   mixed   | mixed                      | Get a value inside the array by a key                                                    |                
 | remove                |   mixed   | An instance of Collection  | Remove a value inside the array by a key                                                 |                
-| join                  |   mixed   | sting                      | Join all values inside the array by a string                                       |                
+| join                  |   mixed   | A string                   | Join all values inside the array by a string                                       |                
 | clear                 |   mixed   | An instance of Collection  | Empty the array                                                                          |                
-| join                  |   mixed   | sting                      | Join all values inside the array by a  separator                                         |                
-| print                 |   mixed   | sting                      | Generate personal, table, card code to see records information                           |                
-| collection            |   void    | array                      | Return the array modified                                                                |                
+| join                  |   mixed   | A string                   | Join all values inside the array by a  separator                                         |                
+| print                 |   mixed   | A string                   | Generate personal, table, card code to see records information                           |                
+| collection            |   void    | An array                   | Return the array modified                                                                |                
 | current               |   void    | mixed                      | Return the current element                                                               |                
 | key                   |   void    | mixed                      | Return the key of the current element                                                    |            
 | valid                 |   void    | mixed                      | Checks if current position is valid                                                      |                
@@ -84,6 +94,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
             
 
 # [Form](https://git.fumseck.eu/cgit/imperium/tree/imperium/Html/Form/Form.php) [Coverage](https://imperium.fumseck.eu/imperium/Html/Form/Form.php.html)
+
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
 | start                 |   mixed   | An instance of the form builder  | Open the form                                                      |
@@ -118,11 +129,11 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
 | __construct           |   string  | An instance of the json manager  | Save the filename                                                  |
-| create                |   array   | Return true on success           | Create the json                                                    |
+| create                |   array   | A boolean                        | Create the json                                                    |
 | add                   |   string  | An instance of the json manager  | Add inside the array value(s) with optional key                    |
 | sql                   |   mixed   | An instance of the json manager  | Add inside the array value(s) with the result of a query           |
-| generate              |   void    | True on success                  | Generate json file with data added by add or sql function          |              
-| decode                |   bool    | Data on success                  | Decode a json file or a json string encoded to utf8                |
+| generate              |   void    | A boolean                        | Generate json file with data added by add or sql function          |              
+| decode                |   bool    | mixed                            | Decode a json file or a json string encoded to utf8                |
 
 
 
@@ -130,18 +141,46 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
-| __construct           |   Connect | An instance of Base              | Save the connection and the driver                                                  |
-| show                  |   void    | Return an array with bases       | Detect databases hosted inside the server                          |
-| create                |   string  | Return true on success           | Create the database                                                |
-| set_charset           |   string  | Return an instance of Base       | Save the charset for the database                                  |
-| set_collation         |   string  | Return an instance of Base       | Save the collation for the database                                |
-| drop                  |   string  | Return true on success           | Remove the database                                                |
-| dump                  |   void    | Return true on success           | Dump the database                                                  |
-| exist                 |   string  | Return true if exist             | Check if a database exist                                          |
-| charsets              |   void    | Return array with charset        | Display all charset possibilities                                  |
-| collations            |   void    | Return array with collations     | Display all collations possibilities                               |
+| __construct           |   Connect | An instance of Base              | Save the connection and the driver                                 |
+| show                  |   void    | An array                         | Display all databases inside the server                            |
+| create                |   string  | A boolean                        | Create the database                                                |
+| set_charset           |   string  | An instance of Base              | Save the charset for the database                                  |
+| set_collation         |   string  | An instance of Base              | Save the collation for the database                                |
+| drop                  |   string  | A boolean                        | Remove the database                                                |
+| dump                  |   void    | A boolean                        | Dump the database                                                  |
+| exist                 |   string  | A boolean                        | Check if a database exist                                          |
+| charsets              |   void    | An array                         | Display all charset possibilities                                  |
+| collations            |   void    | An array                         | Display all collations possibilities                               |
 | hidden                |   array   | Return an instance of base       | Set the database to no display in the app                          |
-| has                   |   bool    | Return an true if found bases    | Detect if server has databases                                     |
-| change_collation      |   void    | Return an true on success        | Change the base collation                                          |
-| change_charset        |   void    | Return an true on success        | Change the base charset                                            |
+| has                   |   bool    | A boolean                        | Detect if server has databases                                     |
+| change_collation      |   void    | A boolean                        | Change the base collation                                          |
+| change_charset        |   void    | A boolean                        | Change the base charset                                            |
 | set_name              |   string  | Return an instance of base       | Save the name                                                      | 
+
+
+# [Model](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php) [Coverage](https://imperium.fumseck.eu/imperium/Model/Model.php.html)
+
+| Method                | arguments | return                                    |   do                                                               |    
+|-----------------------|-----------|-------------------------------------------|--------------------------------------------------------------------|    
+| __construct           |   mixed   | An instance of Model                      | Save the data                                                      |
+| show_tables           |   void    | An array                                  | Display all tables inside a base                                   |
+| is_mysql              |   void    | A boolean                                 | Check if current driver is mysql                                   |
+| is_mysql              |   void    | A boolean                                 | Check if current driver is postgresql                              |
+| is_sqlite             |   void    | A boolean                                 | Check if current driver is sqlite                                  |
+| get                   |   mixed   | An array                                  | Display selected columns information                               |
+| query                 |   void    | An instance of the query builder          | Return query builder                                               |
+| all                   |   void    | An array                                  | Return all record inside the table                                 |
+| find                  |   int     | An array                                  | Return one record selected by a id                                 |
+| find_or_fail          |   int     | An array                                  | Return one record selected by a id on success or throw exception   |
+| where                 |   mixed   | An array                                  | Return selected records by a where clause                          |
+| remove                |   int     | A boolean                                 | Remove a record inside the table by an id                          |
+| remove                |   int     | A boolean                                 | Remove a record by an id                                           |                                                      | 
+| insert                |   mixed   | A boolean                                 | Insert data inside the table                                       |                                                      | 
+| count                 |   void    | A integer                                 | Count all data in a table                                          |                                                      | 
+| truncate              |   void    | A boolean                                 | Empty all records inside the table                                 |                                                      | 
+| update                |   mixed   | A boolean                                 | Update a record inside the table                                   |                                                      | 
+| columns               |   void    | An array                                  | Display all columns inside the table                               |                                                      | 
+| is_empty              |   void    | A boolean                                 | Check if the table is empty                                        |
+| pdo                   |   void    | An instance of pdo                        | Return the pdo instance                                            |
+| request               |   string  | An array                                  | Return the result of the query inside an array                     |
+| execute               |   string  | A boolean                                 | Return the return of the query execution                           |

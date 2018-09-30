@@ -1,10 +1,5 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fumse
- * Date: 06/09/2018
- * Time: 14:28
- */
+
 
 namespace tests;
 
@@ -159,19 +154,19 @@ class ModelTest extends DatabaseTest
 
         $this->assertCount(0,$this->mysql()->model()->all());
         $this->assertContains($empty,$result);
-        $this->assertTrue( $this->mysql()->model()->empty());
+        $this->assertTrue( $this->mysql()->model()->is_empty());
 
         $this->assertTrue($this->postgresql()->model()->truncate());
         $result = query_result($this->postgresql()->model(),Imperium::SELECT,$this->postgresql()->all(),$this->postgresql()->show_columns(),$success,$empty,$empty);
         $this->assertCount(0,$this->postgresql()->model()->all());
         $this->assertContains($empty,$result);
-        $this->assertTrue( $this->postgresql()->model()->empty());
+        $this->assertTrue( $this->postgresql()->model()->is_empty());
 
         $this->assertTrue($this->sqlite()->model()->truncate());
         $result = query_result($this->sqlite()->model(),Imperium::SELECT,$this->sqlite()->all(),$this->sqlite()->show_columns(),$success,$empty,$empty);
         $this->assertCount(0,$this->sqlite()->model()->all());
         $this->assertContains($empty,$result);
-        $this->assertTrue( $this->sqlite()->model()->empty());
+        $this->assertTrue( $this->sqlite()->model()->is_empty());
     }
 
     /**

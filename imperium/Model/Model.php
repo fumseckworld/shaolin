@@ -7,7 +7,6 @@ namespace Imperium\Model;
 
 use Exception;
 use Imperium\Connexion\Connect;
-use Imperium\Imperium;
 use Imperium\Query\Query;
 use Imperium\Tables\Table;
 use PDO;
@@ -55,6 +54,7 @@ class Model
      * @param Table $table
      * @param string $current_table_name
      * @param string $oder_by
+     *
      * @throws Exception
      */
     public function __construct(Connect $connect,Table $table, string $current_table_name,string $oder_by= 'desc')
@@ -101,7 +101,7 @@ class Model
      *
      * @throws Exception
      */
-    public function get($parameter,$expected,string ...$columns)
+    public function get($parameter,$expected,string ...$columns): array
     {
         return $this->query()->set_query_mode(Query::SELECT)->set_columns($columns)->where($parameter,Query::EQUAL,$expected)->get();
     }
@@ -213,7 +213,7 @@ class Model
      */
     public function where($param,$condition,$expected): array
     {
-        return equal($condition,'LIKE') ?$this->sql->set_query_mode(Imperium::SELECT)->like($this->table,$expected)->get() : $this->sql->set_query_mode(Imperium::SELECT)->where($param,$condition,$expected)->get();
+        return equal($condition,'LIKE') ?$this->sql->set_query_mode(Query::SELECT)->like($this->table,$expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($param,$condition,$expected)->get();
     }
 
     /**
@@ -319,7 +319,7 @@ class Model
      * @throws Exception
      *
      */
-    public function empty(): bool
+    public function is_empty(): bool
     {
         return $this->table->is_empty();
     }
