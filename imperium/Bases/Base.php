@@ -66,6 +66,7 @@ namespace Imperium\Bases {
         private $database;
 
         /**
+         *
          * show databases
          *
          * @return array
@@ -77,12 +78,9 @@ namespace Imperium\Bases {
         {
             $databases = collection();
 
-            if (def($this->hidden))
-                $hidden = collection($this->hidden);
-            else
-                $hidden = collection();
+            $hidden = def($this->hidden) ? collection($this->hidden) : collection();
 
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
 
@@ -92,7 +90,8 @@ namespace Imperium\Bases {
                         if ($hidden->empty())
                         {
                             $databases->push($x);
-                        } else {
+                        } else
+                        {
                             if ($hidden->not_exist($x))
                                 $databases->push($x);
                         }
@@ -104,9 +103,9 @@ namespace Imperium\Bases {
                         $x = current($db);
                         if ($hidden->empty())
                         {
-
                             $databases->push($x);
-                        } else {
+                        } else
+                        {
                             if ($hidden->not_exist($x))
                                 $databases->push($x);
                         }
@@ -117,16 +116,19 @@ namespace Imperium\Bases {
         }
 
         /**
-         * create database
+         *
+         * Create the database
+         *
          * @param string $database
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function create(string $database): bool
         {
-            switch ($this->connexion->get_driver())
+            switch ($this->driver)
             {
                 case Connect::MYSQL:
                     return not_def($this->collation,$this->charset) ? $this->connexion->execute("CREATE DATABASE $database") :  $this->connexion->execute("CREATE DATABASE $database CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
@@ -144,11 +146,13 @@ namespace Imperium\Bases {
         }
 
         /**
-         * set database charset
+         *
+         * Set database charset
          *
          * @param string $charset
          *
          * @return Base
+         *
          */
         public function set_charset(string $charset): Base
         {
@@ -158,7 +162,8 @@ namespace Imperium\Bases {
         }
 
         /**
-         * set database collation
+         *
+         * Set database collation
          *
          * @param string $collation
          *
@@ -173,12 +178,14 @@ namespace Imperium\Bases {
         }
 
         /**
-         * delete a database
+         *
+         * Remove a database
          *
          * @param string $database
          *
          * @return bool
-         * @throws \Exception
+         *
+         * @throws Exception
          */
         public function drop(string $database): bool
         {
@@ -209,13 +216,15 @@ namespace Imperium\Bases {
         }
 
         /**
-         * verify if a table exist
+         *
+         * Check if a base exist
          *
          * @param string $base
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function exist(string $base): bool
         {
@@ -224,11 +233,13 @@ namespace Imperium\Bases {
 
 
         /**
-         * get charset
+         *
+         * Display all charsets available
          *
          * @return array
          *
          * @throws Exception
+         *
          */
         public function charsets(): array
         {
@@ -249,11 +260,13 @@ namespace Imperium\Bases {
         }
 
         /**
-         * get the collation
+         *
+         * Display all collations available
          *
          * @return array
          *
          * @throws Exception
+         *
          */
         public function collations(): array
         {
@@ -273,11 +286,13 @@ namespace Imperium\Bases {
         }
 
         /**
-         * define hidden databases
+         *
+         * Define all hidden databases
          *
          * @param array $databases
          *
          * @return Base
+         *
          */
         public function hidden(array $databases): Base
         {
@@ -288,9 +303,11 @@ namespace Imperium\Bases {
 
 
         /**
-         * Database constructor.
+         *
+         * Base constructor.
          * 
          * @param Connect $connect
+         *
          */
         public function __construct(Connect $connect)
         {
@@ -302,7 +319,7 @@ namespace Imperium\Bases {
 
         /**
          *
-         * Check if a server has bases
+         * Check if the server has bases
          *
          * @return bool
          *
@@ -313,9 +330,10 @@ namespace Imperium\Bases {
         {
             return def($this->show());
         }
+
         /**
          *
-         * Change  collation
+         * Change  the base collation
          *
          * @return bool
          *
@@ -324,10 +342,8 @@ namespace Imperium\Bases {
          */
         public function change_collation(): bool
         {
-            if (def($this->database))
-                $base = $this->database;
-            else
-                $base = $this->connexion->get_database();
+            $base = $this->base();
+
             if (not_def($this->collation))
                 throw new Exception("We have not found required collation");
 
@@ -349,6 +365,15 @@ namespace Imperium\Bases {
         }
 
         /**
+         * @return string
+         */
+        private function base(): string
+        {
+            return def($this->database) ?  $this->database:  $this->connexion->get_database();
+        }
+
+
+        /**
          *
          * Change charset
          *
@@ -359,17 +384,14 @@ namespace Imperium\Bases {
          */
         public function change_charset(): bool
         {
-            if (def($this->database))
-                $base = $this->database;
-            else
-                $base = $this->connexion->get_database();
+            $base = $this->base();
 
             if (not_def($this->charset))
-
                 throw new Exception("We have not found required charset");
 
             if (not_in($this->charsets(),$this->charset))
                 throw new Exception("Invalid charset name");
+
             switch ($this->driver)
             {
                 case Connect::MYSQL;
@@ -396,7 +418,5 @@ namespace Imperium\Bases {
 
             return $this;
         }
-
-
     }
 }
