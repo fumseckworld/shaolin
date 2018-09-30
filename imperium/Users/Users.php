@@ -33,12 +33,7 @@ namespace Imperium\Users {
      *
      */
     class Users 
-    { 
-
-        /**
-         * @var string
-         */
-        private $rights;
+    {
 
         /**
          * user password
@@ -189,21 +184,7 @@ namespace Imperium\Users {
             $driver = $this->driver;
             $this->check($driver);
 
-            return equal($driver,Connect::MYSQL) ? $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password' $this->rights") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password' $this->rights");
-        }
-
-        /**
-         * set user rights
-         *
-         * @param string $rights
-         *
-         * @return Users
-         */
-        public function set_rights(string $rights): Users
-        {
-            $this->rights = $rights;
-            
-            return $this;
+            return equal($driver,Connect::MYSQL) ? $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password'") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password'");
         }
 
         /**

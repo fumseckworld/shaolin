@@ -336,7 +336,6 @@ if (!exist('sql_to_json'))
 }
 
 
-
 if (!exist('query_result'))
 {
     /**

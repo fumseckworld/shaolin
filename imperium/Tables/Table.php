@@ -163,7 +163,6 @@ namespace  Imperium\Tables {
             return def($this->show());
         }
 
-
         /**
          *
          * Change  collation

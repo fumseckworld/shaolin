@@ -183,4 +183,20 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | is_empty              |   void    | A boolean                                 | Check if the table is empty                                        |
 | pdo                   |   void    | An instance of pdo                        | Return the pdo instance                                            |
 | request               |   string  | An array                                  | Return the result of the query inside an array                     |
-| execute               |   string  | A boolean                                 | Return the return of the query execution                           |
+| execute               |   string  | A boolean            
+
+
+# [Users](https://git.fumseck.eu/cgit/imperium/tree/imperium/Users/Users.php) [Coverage](https://imperium.fumseck.eu/imperium/Users/Users.php.html)
+
+| Method                | arguments | return                                    |   do                                                               |    
+|-----------------------|-----------|-------------------------------------------|--------------------------------------------------------------------|    
+| __construct           |   Connect | An instance of Users                      | Save the data                                                      |
+| drop                  |   string  | A boolean                                 | Remove an user                                                     |
+| has                   |   void    | A boolean                                 | Check if a server has users                                        |
+| hidden                |   array   | An instance of users                      | Make the user not visible                                          |
+| show                  |   void    | A array                                   | Show all users not hidden                                          |
+| set_name              |   string  | An instance of users                      | Set the username                                                   |
+| set_password          |   string  | An instance of users                      | Set the user password                                              |
+| create                |   void    | A boolean                                 | Create an user                                                     |
+| exist                 |   string  | A boolean                                 | Check if an user exist                                             |
+| update_password       |   string  | A boolean                                 | Change the user password                                           |
