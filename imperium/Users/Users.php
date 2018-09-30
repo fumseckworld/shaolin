@@ -26,6 +26,12 @@ namespace Imperium\Users {
     use Exception;
     use Imperium\Connexion\Connect;
 
+    /**
+     * Management of users
+     *
+     * @package Imperium\Users
+     *
+     */
     class Users 
     { 
 
@@ -59,6 +65,11 @@ namespace Imperium\Users {
         private $hidden;
 
         /**
+         * @var string
+         */
+        private $driver;
+
+        /**
          * @param string $user
          *
          * @return bool
@@ -67,21 +78,11 @@ namespace Imperium\Users {
          */
         public function drop(string $user): bool
         {
+            $driver = $this->driver;
 
-            switch ($this->connexion->get_driver())
-            {
-                case Connect::MYSQL:
-                    return $this->connexion->execute("DROP USER '$user'@'localhost'");
-                break;
+            $this->check($driver);
 
-                case Connect::POSTGRESQL:
-                    return $this->connexion->execute("DROP ROLE $user");
-                break;
-                default:
-                    return false;
-                break;
-            }
-
+            return equal($driver,Connect::MYSQL) ?  $this->connexion->execute("DROP USER '$user'@'localhost'") :  $this->connexion->execute("DROP ROLE $user");
         }
 
 
@@ -122,41 +123,31 @@ namespace Imperium\Users {
          */
         public function show(): array
         {
-            $users = collection();
-            if (def($this->hidden))
-                $hidden = collection($this->hidden);
-            else
-                $hidden = collection();
-            switch ($this->connexion->get_driver())
-            {
-                case Connect::MYSQL:
-                    foreach ($this->connexion->request("SELECT user from mysql.user") as $user)
-                    {
-                        $x = current($user);
-                        if ($hidden->empty())
-                        {
+            $driver = $this->driver;
 
-                            $users->push($x);
-                        } else {
-                            if ($hidden->not_exist($x))
-                                $users->push($x);
-                        }
-                    }
-                break;
-                case Connect::POSTGRESQL:
-                    foreach ($this->connexion->request( "SELECT rolname FROM pg_roles") as $user)
-                    {
-                        $x = current($user);
-                        if ($hidden->empty())
-                        {
-                            $users->push($x);
-                        } else {
-                            if ($hidden->not_exist($x))
-                                $users->push($x);
-                        }
-                    }
-                break;
+            $this->check($driver);
+
+            $users = collection();
+
+            $hidden = def($this->hidden) ? collection($this->hidden) : collection();
+
+            $request = '';
+
+            equal($driver,Connect::MYSQL) ?  assign(true,$request,"SELECT user from mysql.user") :   assign(true,$request,"SELECT rolname FROM pg_roles");
+
+            foreach ($this->connexion->request($request) as $user)
+            {
+                $x = current($user);
+                if ($hidden->empty())
+                {
+                    $users->push($x);
+                } else
+                {
+                    if ($hidden->not_exist($x))
+                        $users->push($x);
+                }
             }
+
             return $users->collection();
         }
 
@@ -195,18 +186,10 @@ namespace Imperium\Users {
          */
         public function create(): bool
         {
-            switch ($this->connexion->get_driver())
-            {
-                case Connect::MYSQL:
-                    return $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password' $this->rights");
-                break;
-                case Connect::POSTGRESQL:
-                    return $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password' $this->rights");
-                break;
-                default:
-                    return false;
-                break;
-            }
+            $driver = $this->driver;
+            $this->check($driver);
+
+            return equal($driver,Connect::MYSQL) ? $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password' $this->rights") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password' $this->rights");
         }
 
         /**
@@ -247,23 +230,13 @@ namespace Imperium\Users {
          */
         public function update_password(string $user, string $password): bool
         {
-            switch ($this->connexion->get_driver())
-            {
-                case Connect::MYSQL:
-                    return $this->connexion->execute("SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES");
-                break;
-                case Connect::POSTGRESQL:
-                    return $this->connexion->execute("ALTER ROLE $user WITH PASSWORD '$password'");
-                break;
-                default:
-                    return false;
-                break;
-            }
+            $driver = $this->driver;
+            $this->check($driver);
+
+            return equal($driver,Connect::MYSQL) ? $this->connexion->execute("SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES") : $this->connexion->execute( "ALTER ROLE $user WITH PASSWORD '$password'");
         }
 
-
-
-
+        
         /**
          * User constructor.
          *
@@ -272,6 +245,16 @@ namespace Imperium\Users {
         public function __construct(Connect $connect)
         {
             $this->connexion = $connect;
+            $this->driver = $connect->get_driver();
+        }
+
+        /**
+         * @param $driver
+         * @throws Exception
+         */
+        public function check($driver)
+        {
+            not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The current driver is not supported");
         }
     }
 }

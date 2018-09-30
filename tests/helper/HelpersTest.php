@@ -34,6 +34,19 @@ class HelpersTest extends DatabaseTest
         $this->assertFalse(is_pair(9));
         $this->assertTrue(is_pair(10));
     }
+
+    public function test_assign()
+    {
+        $request = '';
+        assign(false,$request,"value");
+        $this->assertEquals('',$request);
+
+        assign(true,$request,"value");
+        $this->assertEquals('value',$request);
+
+        assign(false,$request,"adzvalue");
+        $this->assertEquals('value',$request);
+    }
     /**
      * @throws Exception
      */

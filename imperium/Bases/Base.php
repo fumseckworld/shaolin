@@ -28,11 +28,14 @@ namespace Imperium\Bases {
     use Imperium\File\File;
     use PDO;
 
+    /**
+     * Management of base
+     *
+     * @package Imperium\Bases
+     *
+     */
     class Base
     {
-         
-
-
         /**
          * the collation
          *
@@ -76,42 +79,28 @@ namespace Imperium\Bases {
          */
         public function show(): array
         {
+            $driver = $this->driver;
+            $this->check($driver);
+
             $databases = collection();
 
+            $request = '';
             $hidden = def($this->hidden) ? collection($this->hidden) : collection();
+            equal($driver,Connect::MYSQL) ?  assign(true,$request,'SHOW DATABASES') :             assign(true,$request,'select datname from pg_database');
 
-            switch ($this->driver)
+            foreach ($this->connexion->request($request) as $db)
             {
-                case Connect::MYSQL:
-
-                    foreach ($this->connexion->request('SHOW DATABASES') as $db)
-                    {
-                        $x = current($db);
-                        if ($hidden->empty())
-                        {
-                            $databases->push($x);
-                        } else
-                        {
-                            if ($hidden->not_exist($x))
-                                $databases->push($x);
-                        }
-                    }
-                break;
-                case Connect::POSTGRESQL:
-                    foreach ($this->connexion->request('select datname from pg_database') as $db)
-                    {
-                        $x = current($db);
-                        if ($hidden->empty())
-                        {
-                            $databases->push($x);
-                        } else
-                        {
-                            if ($hidden->not_exist($x))
-                                $databases->push($x);
-                        }
-                    }
-                break;
+                $x = current($db);
+                if ($hidden->empty())
+                {
+                    $databases->push($x);
+                } else
+                {
+                    if ($hidden->not_exist($x))
+                        $databases->push($x);
+                }
             }
+
             return $databases->collection();
         }
 
@@ -189,16 +178,7 @@ namespace Imperium\Bases {
          */
         public function drop(string $database): bool
         {
-            
-            switch ($this->driver)
-            {
-                case Connect::SQLITE:
-                    return File::delete($database);
-                break;
-                default:
-                    return $this->connexion->execute("DROP DATABASE $database;");
-                break;
-            }
+            return equal($this->driver,Connect::SQLITE) ? File::delete($database) : $this->connexion->execute("DROP DATABASE $database");
         }
 
         /**
@@ -243,19 +223,18 @@ namespace Imperium\Bases {
          */
         public function charsets(): array
         {
+            $driver = $this->driver;
+            $this->check($driver);
+
+            $request = '';
+
+            equal(Connect::MYSQL,$driver) ? assign(true,$request,'SHOW CHARACTER SET') :  assign(true,$request,'SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1');
+
             $charset = collection();
 
-            switch ($this->driver)
-            {
-                case Connect::MYSQL:
-                    foreach ($this->connexion->request('SHOW CHARACTER SET') as $char)
-                        $charset->push(current($char));
-                break;
-                case Connect::POSTGRESQL:
-                    foreach ($this->connexion->request('SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1') as $char)
-                        $charset->push(current($char));
-                break;
-            }
+            foreach ($this->connexion->request($request) as $char)
+                $charset->push(current($char));
+
             return $charset->collection();
         }
 
@@ -270,19 +249,22 @@ namespace Imperium\Bases {
          */
         public function collations(): array
         {
-            $collation = collection();
-            switch ($this->driver)
-            {
-                case Connect::MYSQL:
-                    foreach ($this->connexion->request('SHOW COLLATION') as $char)
-                        $collation->push(current($char));
-                break;
-                case Connect::POSTGRESQL:
-                    foreach ($this->connexion->request("SELECT collname FROM pg_collation") as $char)
-                        $collation->push(current($char));
-                break;
-            }
-            return $collation->collection();
+            $driver = $this->driver;
+
+            $this->check($driver);
+
+            $request = '';
+
+            equal($driver,Connect::MYSQL) ? assign(true,$request,'SHOW COLLATION') :  assign(true,$request,'SELECT collname FROM pg_collation');
+
+            $collations = collection();
+
+            foreach ($this->connexion->request($request) as $char)
+                $collations->push(current($char));
+
+            return $collations->collection();
+
+
         }
 
         /**
@@ -344,24 +326,18 @@ namespace Imperium\Bases {
         {
             $base = $this->base();
 
+            $driver = $this->driver;
+
+            $this->check($driver);
+
             if (not_def($this->collation))
                 throw new Exception("We have not found required collation");
 
             if (not_in($this->collations(),$this->collation))
                 throw new Exception("Invalid collation name");
 
-            switch ($this->driver)
-            {
-                case Connect::MYSQL;
-                    return $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'");
-                break;
-                case Connect::POSTGRESQL:
-                    return  $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
-                break;
-                default:
-                    return false;
-                break;
-            }
+            return equal(Connect::MYSQL,$driver) ? $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'") : $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
+
         }
 
         /**
@@ -386,24 +362,17 @@ namespace Imperium\Bases {
         {
             $base = $this->base();
 
+            $driver = $this->driver;
+
+            $this->check($driver);
+
             if (not_def($this->charset))
                 throw new Exception("We have not found required charset");
 
             if (not_in($this->charsets(),$this->charset))
                 throw new Exception("Invalid charset name");
 
-            switch ($this->driver)
-            {
-                case Connect::MYSQL;
-                    return $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}");
-                break;
-                case Connect::POSTGRESQL:
-                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
-                break;
-                default:
-                    return false;
-                break;
-            }
+            return equal(Connect::MYSQL,$driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
         }
 
         /**
@@ -417,6 +386,17 @@ namespace Imperium\Bases {
             $this->database = $base;
 
             return $this;
+        }
+
+        /**
+         *
+         * @param $driver
+         *
+         * @throws Exception
+         */
+        public function check($driver)
+        {
+            not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The current driver is not supported");
         }
     }
 }

@@ -54,6 +54,24 @@ if (!exist('instance'))
     }
 }
 
+if (!exist(''))
+{
+    /**
+     * assign value in a variable by a condition
+     *
+     * @param bool $condition
+     * @param $variable
+     * @param $value
+     *
+     */
+    function assign(bool $condition,&$variable,$value)
+    {
+        if ($condition)
+        {
+            $variable = $value;
+        }
+    }
+}
 if (!exist('query'))
 {
     function query(Table $table,Connect $connect): Query
@@ -2342,6 +2360,8 @@ if (!exist('not_in'))
         return $x;
     }
 }
+
+
 if (!exist('dumper'))
 {
 

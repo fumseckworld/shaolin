@@ -64,7 +64,6 @@ class ImperiumTest extends DatabaseTest
 
         $this->assertTrue($this->mysql()->has_users());
         $this->assertTrue($this->postgresql()->has_users());
-        $this->assertFalse($this->sqlite()->has_users());
 
         $this->assertTrue($this->mysql()->has_tables());
         $this->assertTrue($this->postgresql()->has_tables());
@@ -72,7 +71,10 @@ class ImperiumTest extends DatabaseTest
 
         $this->assertTrue($this->mysql()->has_bases());
         $this->assertTrue($this->postgresql()->has_bases());
-        $this->assertFalse($this->sqlite()->has_bases());
+
+        $this->expectException(\Exception::class);
+        $this->sqlite()->has_bases();
+        $this->sqlite()->has_users();
     }
 
 
