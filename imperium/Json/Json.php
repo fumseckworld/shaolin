@@ -86,8 +86,22 @@ class Json
      * @throws \Exception
      *
      */
-    public function generate():bool
+    public function generate(): bool
     {
         return $this->create($this->data->collection());
+    }
+
+    /**
+     *
+     * Decode a json file or a json string
+     *
+     * @param bool $assoc
+     *
+     * @return mixed
+     *
+     */
+    public function decode(bool $assoc = false)
+    {
+       return File::exist($this->filename) && File::isJson($this->filename) ? json_decode(utf8_encode(File::getContent($this->filename)),$assoc) :  json_decode(utf8_encode($this->filename),$assoc);
     }
 }

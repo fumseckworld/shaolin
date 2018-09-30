@@ -64,4 +64,20 @@ class JsonTest extends DatabaseTest
         $this->assertTrue(tables_to_json($this->mysql()->tables(),'base.json'));
         $this->assertTrue(tables_to_json($this->postgresql()->tables(),'base.json'));
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_decode()
+    {
+        $x = '{"users":["mysql.session","mysql.sys","root"],"bases":["information_schema","mysql","performance_schema","sys","zen"]}';
+        $json = json($x);
+        $this->assertNotEmpty($json->decode());
+
+        $json = json('d.json');
+        $json->add($this->mysql()->show_users(),'users')->add($this->mysql()->show_databases(),'bases')->add($this->mysql()->show_tables(),'tables')->generate();
+
+        $this->assertNotEmpty($json->decode());
+
+    }
 }

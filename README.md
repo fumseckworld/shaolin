@@ -110,4 +110,16 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | redirect              |   mixed   | An instance of the form builder  | Create a redirect select                                           |
 | generate              |   mixed   | A form                           | Create a form to create or update data inside a table              |
 | end                   |   void    | The form                         | Close the form and return it                                       |
-| get                   |   void    | The form                         | Close the form and return it                                       |             
+| get      
+
+
+# [Json](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php) [Coverage](https://imperium.fumseck.eu/imperium/Json/Json.php.html)
+
+| Method                | arguments | return                           |   do                                                               |    
+|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
+| __construct           |   string  | An instance of the json manager  | Save the filename                                                  |
+| create                |   array   | Return true on success           | Create the json                                                    |
+| add                   |   string  | An instance of the json manager  | Add inside the array value(s) with optional key                    |
+| sql                   |   mixed   | An instance of the json manager  | Add inside the array value(s) with the result of a query           |
+| generate              |   void    | True on success                  | Generate json file with data added by add or sql function          |              
+| decode                |   bool    | Data on success                  | Decode a json file or a json string encoded to utf8                |
