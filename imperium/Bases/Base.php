@@ -116,8 +116,8 @@ namespace Imperium\Bases {
          */
         public function create_multiples(string ...$bases): bool
         {
-            foreach ($bases as $base)
-                is_not_true($this->create($base),true,"Failed to create the database");
+            foreach ($bases as $x)
+                is_not_true($this->create($x),true,"Failed to create the database : $x");
 
             return true;
         }

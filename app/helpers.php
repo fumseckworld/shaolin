@@ -2282,8 +2282,9 @@ if (!exist('remove_users'))
     function remove_users(Users $user,string ...$users): bool
     {
         foreach ($users as $x)
-            if (!$user->drop($x))
-                return false;
+            is_not_true($user->drop($x),true,"Failed to remove the user : $x");
+
+
 
         return true;
     }
@@ -2306,8 +2307,8 @@ if (!exist('remove_tables'))
     function remove_tables(Table $table,string ...$tables): bool
     {
         foreach ($tables as $x)
-            if (!$table->drop($x))
-                return false;
+            is_not_true($table->drop($x),true,"Failed to remove the table : $x");
+
 
         return true;
     }
@@ -2329,9 +2330,8 @@ if (!exist('remove_bases'))
      */
     function remove_bases(Base $base,string ...$databases): bool
     {
-        foreach ($databases as $database)
-            if (!$base->drop($database))
-                return false;
+        foreach ($databases as $x)
+            is_not_true($base->drop($x),true,"Failed to remove the database : $x");
 
         return true;
     }
