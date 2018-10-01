@@ -37,7 +37,7 @@ class JsonTest extends DatabaseTest
     public function test_sql()
     {
         $json = json('sql.json');
-        $this->assertTrue($json->sql($this->mysql()->connect(),"SELECT * FROM country")->generate());
+        $this->assertTrue($json->sql($this->mysql()->connect(),"SELECT * FROM patients")->generate());
     }
     /**
      * @throws \Exception

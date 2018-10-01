@@ -52,18 +52,28 @@ class BaseTest extends DatabaseTest
         $this->assertTrue($this->mysql()->bases()->create($base));
         $this->assertTrue($this->mysql()->bases()->drop($base));
 
+        $this->assertTrue($this->mysql()->bases()->create($base));
+        $this->assertTrue(remove_bases($this->mysql()->bases(),$base));
+
         $this->assertTrue($this->sqlite()->bases()->create($base));
         $this->assertTrue($this->sqlite()->bases()->drop($base));
 
         $this->assertTrue($this->postgresql()->bases()->create($base));
+        $this->assertTrue(remove_bases($this->postgresql()->bases(),$base));
+
+        $this->assertTrue($this->postgresql()->bases()->create($base));
         $this->assertTrue($this->postgresql()->bases()->drop($base));
 
+        $this->assertTrue($this->sqlite()->bases()->create($base));
+        $this->assertTrue(remove_bases($this->sqlite()->bases(),$base));
 
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->set_collation('C')->create($base));
         $this->assertTrue($this->postgresql()->bases()->drop($base));
 
         $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->set_collation('utf8_general_ci')->create($base));
         $this->assertTrue($this->mysql()->bases()->drop($base));
+
+
     }
 
     /**

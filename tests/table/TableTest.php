@@ -27,7 +27,7 @@ class TableTest extends DatabaseTest
     public function test_show()
     {
 
-        $table = 'country';
+        $table = 'patients';
         $this->assertContains($table,$this->mysql()->tables()->show());
         $this->assertContains($table,$this->mysql()->show_tables());
 
@@ -44,7 +44,7 @@ class TableTest extends DatabaseTest
      */
     public function test_rename()
     {
-        $table = 'country';
+        $table = 'patients';
         $new = 'alex';
         $this->assertTrue($this->mysql()->tables()->set_current_table($table)->rename($new));
         $this->assertTrue($this->postgresql()->tables()->set_current_table($table)->rename($new));
@@ -86,7 +86,7 @@ class TableTest extends DatabaseTest
      */
     public function test_has()
     {
-        $table = 'country';
+        $table = 'patients';
         $this->assertTrue($this->mysql()->tables()->has());
         $this->assertTrue($this->postgresql()->tables()->has());
         $this->assertTrue($this->sqlite()->tables()->has());
@@ -182,7 +182,7 @@ class TableTest extends DatabaseTest
      */
     public function test_truncate()
     {
-        $table = 'country';
+        $table = 'patients  ';
 
         $this->assertTrue($this->mysql()->tables()->truncate($table));
         $this->assertTrue($this->mysql()->tables()->truncate($table));

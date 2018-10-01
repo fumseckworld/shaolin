@@ -121,15 +121,112 @@ if (!exist('equal'))
 if (!exist('is_not_false'))
 {
     /**
+     *
      * check if a data is not equal to false
      *
      * @param $data
      *
+     * @param bool $run_exception
+     * @param string $message
+     *
      * @return bool
+     *
+     * @throws Exception
+     *
      */
-    function is_not_false($data): bool
+    function is_not_false($data,bool $run_exception = false,string $message =''): bool
     {
-        return $data !== false;
+        $x = $data !== false;
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+
+        }
+        return $x;
+    }
+}
+
+if (!exist('is_not_true'))
+{
+    /**
+     * check if a data is not equal to false
+     *
+     * @param $data
+     *
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function is_not_true($data,bool $run_exception = false,string $message =''): bool
+    {
+        $x =  $data !== true;
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+        return $x;
+    }
+}
+
+if (!exist('is_false'))
+{
+    /**
+     * check if a data is not equal to false
+     *
+     * @param $data
+     *
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    function is_false($data,bool $run_exception = false,string $message =''): bool
+    {
+        $x = $data === false;
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+        return $x;
+    }
+}
+
+if (!exist('is_true'))
+{
+    /**
+     *
+     * check if a data is not equal to false
+     *
+     * @param $data
+     *
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    function is_true($data,bool $run_exception = false,string $message =''): bool
+    {
+        $x =  $data === true;
+
+        if ($run_exception)
+        {
+            if ($x)
+                throw new Exception($message);
+        }
+        return $x;
     }
 }
 
@@ -2174,32 +2271,20 @@ if (!exist('remove_users'))
     /**
      * remove users
      *
-     * @param Connect $connexion
-     *
+     * @param Users $user
      * @param string[] $users
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function remove_users(Connect $connexion,string ...$users): bool
+    function remove_users(Users $user,string ...$users): bool
     {
-        switch ($connexion->get_driver())
-        {
-            case Connect::MYSQL:
-                foreach ($users as $user)
-                    if (!$connexion->execute("DROP USER '$user'@'localhost'"))
-                        return false;
-            break;
-            case Connect::POSTGRESQL:
-                foreach ($users as $user)
-                    if (!$connexion->execute("DROP USER $user"))
-                        return false;
-            break;
-            default:
+        foreach ($users as $x)
+            if (!$user->drop($x))
                 return false;
-            break;
-        }
+
         return true;
     }
 }
@@ -2207,30 +2292,23 @@ if (!exist('remove_users'))
 if (!exist('remove_tables'))
 {
     /**
-     * remove users
      *
-     * @param Connect $connexion
+     * Remove tables
      *
+     * @param Table $table
      * @param string[] $tables
+     *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function remove_tables(Connect $connexion,string ...$tables): bool
+    function remove_tables(Table $table,string ...$tables): bool
     {
-        switch ($connexion->get_driver())
-        {
-            case Connect::MYSQL:
-            case Connect::SQLITE:
-            case Connect::POSTGRESQL:
-                foreach ($tables as $table)
-                    if (!$connexion->execute("DROP TABLE $table"))
-                        return false;
-            break;
-            default:
+        foreach ($tables as $x)
+            if (!$table->drop($x))
                 return false;
-            break;
-        }
+
         return true;
     }
 }
@@ -2238,35 +2316,23 @@ if (!exist('remove_tables'))
 if (!exist('remove_bases'))
 {
     /**
-     * remove databases
      *
-     * @param Connect $connexion
+     * Remove databases
      *
+     * @param Base $base
      * @param string[] $databases
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function remove_bases(Connect $connexion,string ...$databases): bool
+    function remove_bases(Base $base,string ...$databases): bool
     {
-        switch ($connexion->get_driver())
-        {
-            case Connect::MYSQL:
-            case Connect::POSTGRESQL:
-                foreach ($databases as $database)
-                    if (!$connexion->execute("DROP DATABASE $database"))
-                        return false;
-            break;
-            case Connect::SQLITE:
-                foreach ($databases as $database)
-                    if (!File::delete($database))
-                        return false;
-            break;
-            default:
+        foreach ($databases as $database)
+            if (!$base->drop($database))
                 return false;
-            break;
-        }
+
         return true;
     }
 }
@@ -2486,34 +2552,51 @@ if (!exist('pagination'))
         return Pagination::paginate($limit_per_page,$pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
     }
 }
-if (!exist('user_add'))
+if (!exist('add_user'))
 {
     /**
-     * create a new user
      *
+     * Add a new user
+     *
+     * @param Users $users
      * @param string $user
      * @param string $password
-     * @param string $rights
      *
-     * @param Connect $connexion
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function user_add(string $user,string $password,string $rights,Connect $connexion): bool
+    function add_user(Users $users,string $user,string $password): bool
     {
-        switch($connexion->get_driver())
-        {
-            case Connect::MYSQL:
-                return $connexion->execute("CREATE USER '$user'@'localhost' IDENTIFIED BY '$password' $rights");
-            break;
-            case Connect::POSTGRESQL:
-                return $connexion->execute("CREATE ROLE $user PASSWORD '$password' $rights");
-            break;
-            default:
-                return false;
-            break;
-        }
+        return $users->set_name($user)->set_password($password)->create();
+    }
+}
+
+if (!exist('add_base'))
+{
+    /**
+     *
+     * Add new bases
+     *
+     * @param Base $base
+     * @param string $collation
+     * @param string $charset
+     * @param string[] $bases
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    function add_base(Base $base,string $collation,string $charset,string ...$bases): bool
+    {
+        foreach ($bases as $x)
+             is_not_true($base->set_collation($collation)->set_charset($charset)->create($x),true,"Failed to create database");
+
+
+
+        return true;
     }
 }
 if (!exist('jasnyCss'))

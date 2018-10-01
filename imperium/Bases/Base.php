@@ -106,6 +106,24 @@ namespace Imperium\Bases {
 
         /**
          *
+         * Create multiple base
+         *
+         * @param string ...$bases
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function create_multiples(string ...$bases): bool
+        {
+            foreach ($bases as $base)
+                is_not_true($this->create($base),true,"Failed to create the database");
+
+            return true;
+        }
+
+        /**
+         *
          * Create the database
          *
          * @param string $database

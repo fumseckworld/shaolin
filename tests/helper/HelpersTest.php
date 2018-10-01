@@ -221,6 +221,33 @@ class HelpersTest extends DatabaseTest
         inferior_or_equal([20,2,3],100,true,"matrix");
     }
 
+    public function test_ago()
+    {
+        $this->assertNotEmpty(ago('en',now()));
+        $this->assertNotEmpty(ago('fr',now()));
+        $this->assertNotEmpty(ago('es',now()));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_remove_helpers()
+    {
+        $tables = 'country';
+
+        $this->assertTrue(remove_tables($this->mysql()->tables(), $tables));
+        $this->assertTrue(remove_tables($this->postgresql()->tables(), $tables));
+        $this->assertTrue(remove_tables($this->sqlite()->tables(), $tables));
+
+
+        $this->assertTrue($this->mysql()->users()->set_name($tables)->set_password($tables)->create());
+        $this->assertTrue($this->postgresql()->users()->set_name($tables)->set_password($tables)->create());
+
+        $this->assertTrue(remove_users($this->mysql()->users(),$tables));
+        $this->assertTrue(remove_users($this->postgresql()->users(),$tables));
+
+
+    }
     /**
      * @throws \Exception
      */
@@ -786,15 +813,12 @@ class HelpersTest extends DatabaseTest
      */
     public function test_user_del()
     {
-        $user = 'alexandra';
+        $user = 'marion';
 
-        $this->assertTrue(user_add($user,$user,'',$this->mysql()->connect()));
-        $this->assertTrue(user_add($user,$user,'',$this->postgresql()->connect()));
-        $this->assertFalse(user_add($user,$user,'',$this->sqlite()->connect()));
-
-        $this->assertTrue(remove_users($this->mysql()->connect(),$user));
-        $this->assertTrue(remove_users($this->postgresql()->connect(),$user));
-        $this->assertFalse(remove_users($this->sqlite()->connect(),$user));
+        $this->assertTrue(add_user($this->mysql()->users(),$user,$user));
+        $this->assertTrue(add_user($this->postgresql()->users(),$user,$user));
+        $this->assertTrue(remove_users($this->mysql()->users(),$user));
+        $this->assertTrue(remove_users($this->postgresql()->users(),$user));
     }
 
 
