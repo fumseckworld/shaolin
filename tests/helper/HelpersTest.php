@@ -174,11 +174,16 @@ class HelpersTest extends DatabaseTest
     {
 
         $this->assertTrue(superior_or_equal(1,1));
+        $this->assertTrue(superior_or_equal(['a'],1));
+
         $this->assertTrue(superior(50,20));
+        $this->assertTrue(superior([1,2,3,4],2));
+
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('matrix');
         superior_or_equal(1,1,true,"matrix");
-        superior_or_equal(20,10,true,"matrix");
+        superior_or_equal(['a'],1,true,"matrix");
+        superior_or_equal(['a','b'],1,true,"matrix");
     }
 
     /**
@@ -188,11 +193,15 @@ class HelpersTest extends DatabaseTest
     {
 
         $this->assertTrue(inferior(1,2));
-        $this->assertTrue(inferior(50,100));
+        $this->assertTrue(inferior([1],2));
+        $this->assertTrue(inferior([1,2],10));
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('matrix');
         inferior(2,10,true,"matrix");
         inferior(20,30,true,"matrix");
+
+        inferior(['a','b'],10,true,"matrix");
+        inferior(['a','b','c'],30,true,"matrix");
     }
 
     /**
@@ -202,11 +211,14 @@ class HelpersTest extends DatabaseTest
     {
 
         $this->assertTrue(inferior_or_equal(1,1));
+        $this->assertTrue(inferior_or_equal([1],1));
         $this->assertTrue(inferior_or_equal(50,200));
+        $this->assertTrue(inferior_or_equal([1,2,3,4,5,6],200));
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('matrix');
         inferior_or_equal(1,1,true,"matrix");
-        inferior_or_equal(20,100,true,"matrix");
+        inferior_or_equal([1],1,true,"matrix");
+        inferior_or_equal([20,2,3],100,true,"matrix");
     }
 
     /**

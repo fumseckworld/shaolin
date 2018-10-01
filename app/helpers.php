@@ -1548,21 +1548,7 @@ if (!exist('root'))
      */
     function root(string $driver,string $user,string $password = '',string $dump_path = 'dump',$pdo_mode = PDO::FETCH_OBJ): Connect
     {
-
-        switch ($driver)
-        {
-            case Connect::MYSQL:
-                return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
-            break;
-            case Connect::POSTGRESQL:
-                return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
-            break;
-            default:
-                return null;
-            break;
-        }
-
-
+        return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
     }
 }
 if (!exist('collation'))
@@ -1580,18 +1566,13 @@ if (!exist('collation'))
     {
         $collation = collection();
 
-        switch ($connexion->get_driver())
-        {
-            case Connect::MYSQL:
-                foreach ($connexion->request("SHOW COLLATION") as $char)
-                        $collation->push(current($char));
-            break;
-            case Connect::POSTGRESQL:
-                foreach ($connexion->request("SELECT collname FROM pg_collation") as $char)
-                    $collation->push(current($char));
-            break;
+        $driver = $connexion->get_driver();
+        $request = '';
+        equal($driver,Connect::MYSQL) ? assign(true,$request,"SHOW COLLATION") : assign(true,$request,"SELECT collname FROM pg_collation");
 
-        }
+        foreach ($connexion->request($request) as $char)
+            $collation->push(current($char));
+
         return $collation->collection();
     }
 }
@@ -1608,21 +1589,18 @@ if (!exist('charset'))
      */
     function charset(Connect $connexion): array
     {
-        $encoding = collection();
-        switch ($connexion->get_driver())
-        {
-            case Connect::MYSQL:
-                foreach ($connexion->request('SHOW CHARACTER SET') as $char)
-                    $encoding->push(current($char));
-            break;
 
-            case Connect::POSTGRESQL:
-                foreach ($connexion->request('SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1') as $char)
-                    $encoding->push(current($char));
+        $collation = collection();
 
-            break;
-        }
-        return $encoding->collection();
+        $driver = $connexion->get_driver();
+        $request = '';
+        equal($driver,Connect::MYSQL) ? assign(true,$request,"SHOW CHARACTER SET") : assign(true,$request,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
+
+        foreach ($connexion->request($request) as $char)
+            $collation->push(current($char));
+
+        return $collation->collection();
+
     }
 }
 
