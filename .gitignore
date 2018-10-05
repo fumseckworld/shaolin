@@ -13,4 +13,9 @@ lily
 a
 env
 .vscode
-*.json
+coverage
+d.json
+base.json
+sql.json
+app.json
+*.sqlite3

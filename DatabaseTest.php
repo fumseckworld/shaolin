@@ -13,10 +13,10 @@ class DatabaseTest extends TestCase
 {
 
     const MYSQL_USER = 'root';
-    const MYSQL_PASS = '';
+    const MYSQL_PASS = 'root';
 
     const POSTGRESQL_USER = 'postgres';
-    const POSTGRESQL_PASS = '';
+    const POSTGRESQL_PASS = 'postgres';
 
     protected $table = 'doctors';
     protected $base = 'zen';

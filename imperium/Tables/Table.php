@@ -20,7 +20,7 @@
  */
 
 
-namespace  Imperium\Tables {
+namespace Imperium\Tables {
 
     use Exception;
     use Imperium\Collection\Collection;

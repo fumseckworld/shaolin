@@ -1,34 +1,34 @@
 <?php
 
 
+use Whoops\Run;
 use Carbon\Carbon;
-use Cz\Git\GitRepository;
-use Imperium\Bases\Base;
-use Imperium\Collection\Collection;
-use Imperium\Connexion\Connect;
-use Imperium\Debug\Dumper;
-use Imperium\Directory\Dir;
-use Imperium\Dump\MySql;
-use Imperium\Dump\PostgreSql;
-use Imperium\Dump\Sqlite;
-use Imperium\File\File;
-use Imperium\Html\Bar\Icon;
-use Imperium\Html\Canvas\Canvas;
-use Imperium\Html\Form\Form;
-use Imperium\Html\Pagination\Pagination;
-use Imperium\Html\Records\Records;
 use Imperium\Imperium;
+use Imperium\File\File;
 use Imperium\Json\Json;
+use Imperium\Bases\Base;
+use Cz\Git\GitRepository;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
-use Imperium\Tables\Table;
 use Imperium\Users\Users;
+use Imperium\Debug\Dumper;
+use Imperium\Tables\Table;
+use Imperium\Directory\Dir;
+use Imperium\Html\Bar\Icon;
+use Imperium\Html\Form\Form;
+use Imperium\Connexion\Connect;
+use Sinergi\BrowserDetector\Os;
+use Imperium\Html\Canvas\Canvas;
+use Imperium\Html\Records\Records;
+use Imperium\Collection\Collection;
+use Sinergi\BrowserDetector\Device;
 use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
-use Sinergi\BrowserDetector\Device;
-use Sinergi\BrowserDetector\Os;
+use Spatie\DbDumper\Databases\MySql;
+use Spatie\DbDumper\Databases\Sqlite;
 use Whoops\Handler\PrettyPageHandler;
-use Whoops\Run;
+use Imperium\Html\Pagination\Pagination;
+use Spatie\DbDumper\Databases\PostgreSql;
 
 if (!exist('instance'))
 {
@@ -54,7 +54,7 @@ if (!exist('instance'))
     }
 }
 
-if (!exist(''))
+if (!exist('assign'))
 {
     /**
      * assign value in a variable by a condition

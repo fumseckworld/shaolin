@@ -123,9 +123,9 @@ class HelpersTest extends DatabaseTest
         $this->assertInstanceOf(Imperium::class,$this->postgresql());
         $this->assertInstanceOf(Imperium::class,$this->sqlite());
 
-        $mysql = instance(Connect::MYSQL,self::MYSQL_USER,$this->base,'',PDO::FETCH_OBJ,'dump',$this->table);
-        $postgresql = instance(Connect::POSTGRESQL,self::POSTGRESQL_USER,$this->base,'',PDO::FETCH_OBJ,'dump',$this->table);
-        $sqlite = instance(Connect::SQLITE,'',$this->base,'',PDO::FETCH_OBJ,'dump',$this->table);
+        $mysql = instance(Connect::MYSQL,self::MYSQL_USER,$this->base,'root',PDO::FETCH_OBJ,'dump',$this->table);
+        $postgresql = instance(Connect::POSTGRESQL,self::POSTGRESQL_USER,$this->base,'postgres',PDO::FETCH_OBJ,'dump',$this->table);
+        $sqlite = instance(Connect::SQLITE,'',"zen.sqlite3",'',PDO::FETCH_OBJ,'dump',$this->table);
 
         $this->assertInstanceOf(Imperium::class,$mysql);
         $this->assertInstanceOf(Imperium::class,$postgresql);
@@ -133,7 +133,7 @@ class HelpersTest extends DatabaseTest
 
         $this->assertEquals($this->base,$mysql->connect()->get_database());
         $this->assertEquals($this->base,$postgresql->connect()->get_database());
-        $this->assertEquals($this->base,$sqlite->connect()->get_database());
+        $this->assertEquals("zen.sqlite3",$sqlite->connect()->get_database());
 
         $this->assertEquals(PDO::FETCH_OBJ,$mysql->connect()->get_fetch_mode());
         $this->assertEquals(PDO::FETCH_OBJ,$postgresql->connect()->get_fetch_mode());
@@ -147,8 +147,8 @@ class HelpersTest extends DatabaseTest
         $this->assertEquals(self::POSTGRESQL_USER,$postgresql->connect()->get_username());
 
 
-        $this->assertEmpty($mysql->connect()->get_password());
-        $this->assertEmpty($postgresql->connect()->get_password());
+        $this->assertNotEmpty($mysql->connect()->get_password());
+        $this->assertNotEmpty($postgresql->connect()->get_password());
 
 
     }

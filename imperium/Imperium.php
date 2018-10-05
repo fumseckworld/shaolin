@@ -710,14 +710,13 @@ class Imperium extends Zen implements Management
      */
     public function __construct(Connect $connect,string $current_table)
     {
-        $this->connect = $connect;
-        $this->driver = $connect->get_driver();
-        $this->table = new Table($connect);
-
-        $this->query = new  Query($this->table,$connect);
-        $this->base = new Base($connect);
-        $this->users = new Users($connect);
-        $this->model = new Model($connect,$this->table,$current_table);
+        $this->connect   = $connect;
+        $this->driver    = $connect->get_driver();
+        $this->table     = new Table($connect);
+        $this->query     = new Query($this->table,$connect);
+        $this->base      = new Base($connect);
+        $this->users     = new Users($connect);
+        $this->model     = new Model($connect,$this->table,$current_table);
         
     }
     

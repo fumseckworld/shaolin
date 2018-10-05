@@ -62,6 +62,9 @@ class ImperiumTest extends DatabaseTest
         $this->assertFalse($this->postgresql()->has_column('c'));
         $this->assertFalse($this->sqlite()->has_column('c'));
 
+        $this->mysql()->users()->hidden([]);
+        $this->postgresql()->users()->hidden([]);
+        
         $this->assertTrue($this->mysql()->has_users());
         $this->assertTrue($this->postgresql()->has_users());
 

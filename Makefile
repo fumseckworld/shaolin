@@ -1,6 +1,8 @@
 .PHONY:serve all serve add mysql pgsql sqlite dbs drop
 
 BASE=zen
+POSTGRESQL_PASSWORD=postgres
+MYSQL_PASSWORD=root
 
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -9,10 +11,10 @@ ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   $(eval $(PHINX):;@:)
 endif
 
-all: dbs pgsql mysql sqlite
-	@clear
-	@vendor/bin/phpunit --coverage-html H:\laragon\coverage\imperium
-conf: dbs pgsql mysql sqlite
+all: dbs migrate
+	@vendor/bin/phpunit --coverage-html coverage
+
+migrate: pgsql mysql sqlite
 
 serve: ## Start php server
 	clear
@@ -50,9 +52,9 @@ sqlite:
 
 dbs: drop
 	psql -c "create database $(BASE);" -U postgres
-	mysql -uroot  -e "CREATE DATABASE $(BASE);"
-	touch $(BASE) && chmod 777 $(BASE)
+	mysql -uroot -p$(MYSQL_PASSWORD) -e "CREATE DATABASE $(BASE);"
+	touch $(BASE).sqlite3 && chmod 777 $(BASE).sqlite3
 drop:
-	psql -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
-	mysql -uroot  -e "DROP DATABASE IF EXISTS $(BASE);"
-	$(RM) $(BASE)
+	psql  -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
+	mysql -uroot -p$(MYSQL_PASSWORD) -e "DROP DATABASE IF EXISTS $(BASE);"
+	$(RM) $(BASE).sqlite3

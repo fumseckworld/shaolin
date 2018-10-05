@@ -10,9 +10,9 @@ $table  = 'doctors';
 
 
 
-$mysql  = instance(Connect::MYSQL,'root',$base,'',$mode,'dump',$table);
-$pgsql  = instance(Connect::POSTGRESQL,'postgres',$base,'',$mode,'dump',$table);
-$sqlite = instance(Connect::SQLITE,  '',$base,'',$mode,'dump',$table);
+$mysql  = instance(Connect::MYSQL,'root',$base,'root',$mode,'dump',$table);
+$pgsql  = instance(Connect::POSTGRESQL,'postgres',$base,'postgres',$mode,'dump',$table);
+$sqlite = instance(Connect::SQLITE,  '','zen.sqlite3','',$mode,'dump',$table);
 
 
 function instance_mysql():  \Imperium\Imperium
