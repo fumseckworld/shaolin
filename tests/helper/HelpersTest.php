@@ -907,7 +907,7 @@ class HelpersTest extends DatabaseTest
      */
     public function test_current_branch()
     {
-        $this->assertEquals('master',current_branch('.'));
+        $this->assertEquals('develop',current_branch('.'));
     }
 
     public function test_array_prev()
