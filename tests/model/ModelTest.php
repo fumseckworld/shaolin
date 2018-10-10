@@ -228,6 +228,39 @@ class ModelTest extends DatabaseTest
     /**
      * @throws Exception
      */
+    public function test_save()
+    {
+        $number = 5;
+        for ($i = 0; $i != $number; ++$i)
+        {
+            $data = [
+                'id' => null,
+                'name' => faker()->name(),
+                'age' => faker()->numberBetween(1,80),
+                'sex' => rand(1,2) == 1 ? 'M': 'F',
+                'status' => faker()->text(20),
+                'date' => faker()->date()
+            ];
+
+            $this->assertTrue($this->mysql()->save($data,[]));
+            $this->assertTrue($this->postgresql()->save($data,[]));
+            $this->assertTrue($this->sqlite()->save($data,[]));
+        }
+
+        $number = $number *2;
+        $this->assertCount($number,$this->mysql()->model()->all());
+        $this->assertEquals($number,$this->mysql()->model()->count());
+
+        $this->assertCount($number,$this->postgresql()->model()->all());
+        $this->assertEquals($number,$this->postgresql()->model()->count());
+
+        $this->assertCount($number,$this->sqlite()->model()->all());
+        $this->assertEquals($number,$this->sqlite()->model()->count());
+    }
+
+    /**
+     * @throws Exception
+     */
     public function test_get()
     {
         $id = 1;

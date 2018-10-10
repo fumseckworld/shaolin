@@ -44,7 +44,25 @@ class ImperiumTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function test_add_databases()
+    {
+        $name = 'alexandra';
+        $this->assertTrue($this->mysql()->add_database($name,'utf8','utf8_general_ci'));
+        $this->assertTrue($this->mysql()->remove_database($name));
 
+        $this->assertTrue($this->postgresql()->add_database($name,'UTF-8','C'));
+        $this->assertTrue($this->postgresql()->remove_database($name));
+
+        $this->assertTrue($this->mysql()->add_database($name));
+        $this->assertTrue($this->mysql()->remove_database($name));
+
+
+        $this->assertTrue($this->postgresql()->add_database($name));
+        $this->assertTrue($this->postgresql()->remove_database($name));
+    }
     /**
      * @throws \Exception
      */
@@ -58,6 +76,29 @@ class ImperiumTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function test_remove_user()
+    {
+        $name = 'marion';
+
+        $this->assertTrue(add_user($this->mysql()->users(),$name,$name));
+        $this->assertTrue($this->mysql()->remove_user($name));
+
+        $this->assertTrue(add_user($this->postgresql()->users(),$name,$name));
+        $this->assertTrue($this->postgresql()->remove_user($name));
+    }
+
+    /**
+     * @throws \Exception
+     */
+
+    public function test_pass()
+    {
+        $this->assertTrue($this->mysql()->change_user_password(self::MYSQL_USER,self::MYSQL_PASS));
+        $this->assertTrue($this->postgresql()->change_user_password(self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
+    }
     /**
      * @throws \Exception
      */

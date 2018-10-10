@@ -140,9 +140,9 @@ class QueryTest extends DatabaseTest
      */
     public function test_count()
     {
-        $this->assertEquals(5,$this->mysql()->query()->count());
-        $this->assertEquals(5,$this->postgresql()->query()->count());
-        $this->assertEquals(5,$this->sqlite()->query()->count());
+        $this->assertEquals(10,$this->mysql()->query()->count());
+        $this->assertEquals(10,$this->postgresql()->query()->count());
+        $this->assertEquals(10,$this->sqlite()->query()->count());
     }
 
 
