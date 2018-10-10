@@ -3,6 +3,7 @@
 namespace tests\imperium;
 
 
+use Imperium\Imperium;
 use Testing\DatabaseTest;
 
 class ImperiumTest extends DatabaseTest
@@ -29,6 +30,24 @@ class ImperiumTest extends DatabaseTest
     /**
      * @throws \Exception
      */
+    public function test_drop()
+    {
+        $current_table_name = 'luxoria';
+
+        $this->assertTrue($this->mysql()->tables()->set_current_table($current_table_name)->append_field(Imperium::INT,'id',true)->create());
+        $this->assertTrue($this->postgresql()->tables()->set_current_table($current_table_name)->append_field(Imperium::SERIAL,'id',true)->create());
+        $this->assertTrue($this->sqlite()->tables()->set_current_table($current_table_name)->append_field(Imperium::INTEGER,'id',true)->create());
+
+        $this->assertTrue($this->mysql()->remove_table($current_table_name));
+        $this->assertTrue($this->postgresql()->remove_table($current_table_name));
+        $this->assertTrue($this->sqlite()->remove_table($current_table_name));
+
+    }
+
+
+    /**
+     * @throws \Exception
+     */
     public function test_exist()
     {
         $this->assertTrue($this->mysql()->table_exist($this->table));
@@ -44,9 +63,13 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_show_columns()
     {
-        $this->assertNotEmpty($this->mysql()->show_columns_types());
-        $this->assertNotEmpty($this->postgresql()->show_columns_types());
-        $this->assertNotEmpty($this->sqlite()->show_columns_types());
+        $this->assertNotEmpty($this->mysql()->tables()->set_current_table($this->table)->get_columns_types());
+        $this->assertNotEmpty($this->postgresql()->tables()->set_current_table($this->table)->get_columns_types());
+        $this->assertNotEmpty($this->sqlite()->tables()->set_current_table($this->table)->get_columns_types());
+
+        $this->assertNotEmpty($this->mysql()->show_columns());
+        $this->assertNotEmpty($this->postgresql()->show_columns());
+        $this->assertNotEmpty($this->sqlite()->show_columns());
     }
 
     /**

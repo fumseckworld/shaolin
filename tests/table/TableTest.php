@@ -100,15 +100,7 @@ class TableTest extends DatabaseTest
         $this->assertFalse($this->sqlite()->tables()->set_current_table($table)->has_column('ids'));
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function test_create()
-    {
-        $name = 'alexandra';
-        $this->assertTrue($this->mysql()->tables()->set_current_table($name)->append_field(Imperium::INT,'id',true)->append_field(Imperium::VARCHAR,'name',false,255)->append_field(Imperium::DATE,'date')->create());
-    }
-
+    
     /**
      * @throws \Exception
      */

@@ -50,6 +50,7 @@ class Collection implements ArrayAccess, Iterator
      */
     private $search;
 
+
     /**
      *
      * Collection constructor.
@@ -58,13 +59,17 @@ class Collection implements ArrayAccess, Iterator
      *
      * @param array $data
      *
+     * @throws \Exception
      */
     public function __construct(array $data = [])
     {
-        $this->data = $data;
+
+         $this->data = $data;
+
 
         $this->position = 0;
     }
+
 
     /**
      *

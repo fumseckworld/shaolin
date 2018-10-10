@@ -476,6 +476,7 @@ namespace Imperium\Tables {
                 append($command ," ENGINE = {$this->engine}");
 
             return $this->connexion->execute($command);
+
         }
 
         /**
@@ -524,9 +525,10 @@ namespace Imperium\Tables {
 
             $command = '';
 
-            append($command,"`{$x->get(Imperium::FIELD_NAME)}` ");
+            append($command,"{$x->get(Imperium::FIELD_NAME)} ");
 
             $size ? append($command," {$x->get(Imperium::FIELD_TYPE)}($size)") : append($command," {$x->get(Imperium::FIELD_TYPE)} ");
+
 
             if ($x->get(Imperium::FIELD_PRIMARY))
             {
@@ -544,8 +546,10 @@ namespace Imperium\Tables {
                     }
                 }
 
-                if ($x->get(Imperium::FIELD_UNIQUE)){ append($command,' UNIQUE'); }
-                if ($x->get(Imperium::FIELD_NULLABLE)){ append($command,'  NOT NULL'); }
+                if (!$end)
+                    if ($x->get(Imperium::FIELD_UNIQUE)){ append($command,' UNIQUE'); }
+
+                    if ($x->get(Imperium::FIELD_NULLABLE)){ append($command,'  NOT NULL'); }
 
                 if (!$end)
                     append($command,', ');
