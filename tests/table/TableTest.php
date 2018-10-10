@@ -100,7 +100,7 @@ class TableTest extends DatabaseTest
         $this->assertFalse($this->sqlite()->tables()->set_current_table($table)->has_column('ids'));
     }
 
-    
+
     /**
      * @throws \Exception
      */
