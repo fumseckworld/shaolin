@@ -1,6 +1,7 @@
 .idea
 vendor
 composer.lock
+node_modules
 dump
 lion
 *_link
