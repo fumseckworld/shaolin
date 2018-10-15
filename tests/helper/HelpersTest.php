@@ -319,6 +319,30 @@ class HelpersTest extends DatabaseTest
     /**
      * @throws Exception
      */
+    public function test_is()
+    {
+        $this->assertTrue(is_true(true));
+        $this->assertTrue(is_not_false(true));
+
+        $this->assertTrue(is_true(equal('1','1')));
+        $this->assertTrue(is_not_false(equal('1','1')));
+
+        $this->assertTrue(is_false(false));
+        $this->assertTrue(is_not_true(false));
+
+        $this->assertTrue(is_false(equal('a','b')));
+        $this->assertTrue(is_not_true(equal('a','b')));
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+        is_not_false(true,true,"matrix");
+        is_not_true(false,true,"matrix");
+        is_false(false,true,'matrix');
+        is_true(true,true,'matrix');
+    }
+    /**
+     * @throws Exception
+     */
     public function test_equal()
     {
         $this->assertTrue(equal(1,1));
@@ -431,6 +455,7 @@ class HelpersTest extends DatabaseTest
         $this->assertTrue(execute($this->postgresql()->connect(),'SELECT * FROM patients'));
         $this->assertTrue(execute($this->sqlite()->connect(),'SELECT * FROM patients'));
     }
+
     /**
      * @throws \Exception
      */
@@ -528,13 +553,17 @@ class HelpersTest extends DatabaseTest
       $this->assertEquals([9,8,7,6,5,4,3,2,1,0],$data);
     }
 
+
     public function test_def_and_not_def()
     {
         $a = 'define';
         $c ='';
         $x = null;
         $this->assertTrue(def($a));
+        $this->assertFalse(def($x,$c));
+
         $this->assertTrue(not_def($x,$c));
+        $this->assertFalse(not_def($a));
     }
 
     public function test_zones()
@@ -821,6 +850,10 @@ class HelpersTest extends DatabaseTest
         $this->assertTrue(remove_users($this->postgresql()->users(),$user));
     }
 
+    public function test_now()
+    {
+        $this->assertNotEmpty(now());
+    }
 
     public function test_loaders()
     {
@@ -951,6 +984,9 @@ class HelpersTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_not_in()
     {
         $data = array('red','apple','orange','purple','green');
@@ -964,6 +1000,10 @@ class HelpersTest extends DatabaseTest
         $this->assertFalse(not_in($data,'orange'));
         $this->assertFalse(not_in($data,'purple'));
         $this->assertFalse(not_in($data,'green'));
+
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage('matrix');
+        not_in($data,"alex",true,"matrix");
     }
 
     /**

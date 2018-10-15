@@ -11,11 +11,12 @@ ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   $(eval $(PHINX):;@:)
 endif
 
-all: vendor dbs migrate
-	@vendor/bin/phpunit --coverage-html coverage
+all: vendor seed
+	@vendor/bin/phpunit --coverage-html ~/coverage/imperium
 
 vendor:
 	@composer install
+
 seed: dbs migrate
 
 migrate: pgsql mysql sqlite
