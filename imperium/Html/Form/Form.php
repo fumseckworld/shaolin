@@ -802,19 +802,21 @@ class Form
             {
                 foreach ($columns as $k => $column)
                 {
-                    if (is_null($record->$column))
 
+                    if (is_null($record->$column))
                         $record->$column = '';
+
+
 
                     if (different($column,$primary))
                     {
 
                         if (equal($i % $form_grid,0))
                         {
-                            $this->textarea($column, $column, 10, 10, false, $record->$column);
+                            $this->textarea($column, $column, 10, 10, '','',false, $record->$column);
                             $this->end_row_and_new();
                         }else{
-                            $this->textarea($column, $column, 10, 10, false, $record->$column);
+                            $this->textarea($column, $column, 10, 10, '', '',false,$record->$column);
                         }
 
                     } else {
@@ -846,7 +848,7 @@ class Form
                     if ($i % $form_grid === 0)
                     {
                         if (has($type,$date))
-                            $this->textarea($column, $column, 10, 10,false,$current);
+                            $this->textarea($column, $column, 10, 10,'','',false,$current);
                         else
                             $this->textarea($column, $column, 10, 10);
 
@@ -854,9 +856,8 @@ class Form
                     }else
                     {
                         if (has($type,$date))
-                            $this->textarea($column, $column, 10, 10,false,$current);
+                            $this->textarea($column, $column, 10, 10,'','',false,$current);
                         else
-
                             $this->textarea($column, $column, 10, 10);
                     }
 

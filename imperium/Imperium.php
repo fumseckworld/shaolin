@@ -637,11 +637,10 @@ class Imperium extends Zen implements Management
      * @return bool
      *
      * @throws Exception
-     *
      */
     public function rename_column(string $column, string $new_name): bool
     {
-        return $this->table->set_current_table($this->current_table)->rename_column($column,$new_name);
+        return $this->table->rename_column($column,$new_name);
     }
 
     /**
@@ -657,7 +656,7 @@ class Imperium extends Zen implements Management
      */
     public function remove_column(string $column): bool
     {
-        return $this->table->set_current_table($this->current_table)->remove_column($column);
+        return $this->table->remove_column($column);
     }
 
     /**

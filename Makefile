@@ -14,6 +14,9 @@ endif
 all: dbs migrate
 	@vendor/bin/phpunit --coverage-html coverage
 
+
+seed: dbs migrate
+
 migrate: pgsql mysql sqlite
 
 serve: ## Start php server

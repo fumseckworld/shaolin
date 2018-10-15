@@ -163,6 +163,7 @@ namespace Imperium\Query {
                 throw new Exception('The query mode is not define');
 
             $where  = def($this->where) ? $this->where : '';
+            $order  = def($this->order) ? $this->order : '';
             $table  = def($this->table) ? $this->table : '';
             $limit  = def($this->limit) ? $this->limit : '';
             $join   = def($this->join)  ? $this->join  : '';
@@ -171,16 +172,16 @@ namespace Imperium\Query {
             $columns = def($this->columns) ? $this->columns : "*";
 
             if (equal($mode,Query::SELECT))
-                return "$mode $columns $table $where $limit";
+                return "$mode $columns $table $where $limit $order";
 
             if (equal($mode,Query::DELETE))
                 return "$mode $table $where";
 
             if (equal($mode,Query::UNION) || equal($mode,Query::UNION_ALL))
-                return "$union $limit";
+                return "$union $limit $order";
 
             if (collection([self::NATURAL_JOIN,self::FULL_JOIN,self::RIGHT_JOIN,self::LEFT_JOIN,self::CROSS_JOIN,self::INNER_JOIN])->exist($mode))
-                return "$join $limit";
+                return "$join $limit $order";
 
             return '';
         }
@@ -350,7 +351,7 @@ namespace Imperium\Query {
          */
         public function delete(): bool
         {
-            return def($this->table,$this->where,$this->mode) ? $this->connexion->execute( $this->sql()) : false;
+            return def($this->table,$this->where,$this->mode) ? $this->connexion->execute($this->sql()) : false;
         }
 
         /**

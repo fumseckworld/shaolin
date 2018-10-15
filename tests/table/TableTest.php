@@ -9,6 +9,19 @@ use Testing\DatabaseTest;
 class TableTest extends DatabaseTest
 {
 
+    /**
+     * @throws \Exception
+     */
+    public function test_select()
+    {
+        $this->assertNotEmpty($this->mysql()->tables()->select_by_id(6));
+        $this->assertNotEmpty($this->postgresql()->tables()->select_by_id(6));
+
+        $this->assertNotEmpty($this->sqlite()->tables()->select_by_id(6));
+
+    }
+
+
 
     /**
      * @throws \Exception
@@ -44,8 +57,35 @@ class TableTest extends DatabaseTest
      */
     public function test_rename()
     {
+
+
+        $old = 'name';
+        $new = 'username';
+
+        $this->assertTrue($this->mysql()->tables()->rename_column($old, $new));
+        $this->assertTrue($this->mysql()->tables()->rename_column($new, $old));
+
+
+        $this->assertTrue($this->postgresql()->tables()->rename_column($old, $new));
+        $this->assertTrue($this->postgresql()->tables()->rename_column($new, $old));
+
+
+        $this->assertFalse($this->sqlite()->tables()->rename_column($old, $new));
+        $this->assertFalse($this->sqlite()->tables()->rename_column($new, $old));
+
+        $this->assertTrue($this->mysql()->rename_column($old, $new));
+        $this->assertTrue($this->mysql()->rename_column($new, $old));
+
+        $this->assertTrue($this->postgresql()->rename_column($old, $new));
+        $this->assertTrue($this->postgresql()->rename_column($new, $old));
+
+        $this->assertFalse($this->sqlite()->rename_column($old, $new));
+        $this->assertFalse($this->sqlite()->rename_column($new, $old));
+
+
         $table = 'patients';
         $new = 'alex';
+
         $this->assertTrue($this->mysql()->tables()->set_current_table($table)->rename($new));
         $this->assertTrue($this->postgresql()->tables()->set_current_table($table)->rename($new));
         $this->assertTrue($this->sqlite()->tables()->set_current_table($table)->rename($new));
@@ -55,14 +95,16 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->sqlite()->tables()->set_current_table($new)->rename($table));
 
 
+        $this->assertTrue($this->mysql()->rename_table($table,$new));
+        $this->assertTrue($this->postgresql()->rename_table($table,$new));
+        $this->assertTrue($this->sqlite()->rename_table($table,$new));
 
-        $this->assertTrue($this->mysql()->tables()->rename_column('name','username'));
-        $this->assertTrue($this->mysql()->tables()->rename_column('username','name'));
+        $this->assertTrue($this->mysql()->rename_table($new,$table));
+        $this->assertTrue($this->postgresql()->rename_table($new,$table));
+        $this->assertTrue($this->sqlite()->rename_table($new,$table));
 
-        $this->assertTrue($this->postgresql()->tables()->rename_column('name','username'));
-        $this->assertTrue($this->postgresql()->tables()->rename_column('username','name'));
 
-        $this->assertTrue($this->sqlite()->tables()->rename_column('name','username'));
+
     }
 
 
@@ -169,12 +211,28 @@ class TableTest extends DatabaseTest
         $this->assertEquals($table,$this->postgresql()->tables()->get_current_table());
         $this->assertEquals($table,$this->sqlite()->tables()->get_current_table());
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_dump()
+    {
+        $this->assertTrue($this->mysql()->tables()->dump());
+        $this->assertTrue($this->postgresql()->tables()->dump());
+        $this->assertTrue($this->sqlite()->tables()->dump());
+
+        $this->assertTrue($this->mysql()->tables()->dump($this->table));
+        $this->assertTrue($this->postgresql()->tables()->dump($this->table));
+        $this->assertTrue($this->sqlite()->tables()->dump($this->table));
+    }
+
+
     /**
      * @throws \Exception
      */
     public function test_truncate()
     {
-        $table = 'patients  ';
+        $table = 'patients';
 
         $this->assertTrue($this->mysql()->tables()->truncate($table));
         $this->assertTrue($this->mysql()->tables()->truncate($table));

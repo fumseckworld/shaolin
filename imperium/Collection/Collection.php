@@ -4,6 +4,7 @@ namespace Imperium\Collection;
 
 
 use ArrayAccess;
+use Exception;
 use Iterator;
 
 /**
@@ -58,8 +59,6 @@ class Collection implements ArrayAccess, Iterator
      * Save or create an array to manage
      *
      * @param array $data
-     *
-     * @throws \Exception
      */
     public function __construct(array $data = [])
     {
@@ -86,6 +85,7 @@ class Collection implements ArrayAccess, Iterator
 
         return $this;
     }
+
     /**
      *
      * @param callable $callable
@@ -102,6 +102,7 @@ class Collection implements ArrayAccess, Iterator
         $this->data  = $result->collection();
         return $this;
     }
+
 
     /**
      *
@@ -449,7 +450,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function has_key($key): bool
     {
-        return key_exists($key,$this->data);
+        return is_string($key) || is_numeric($key) ? key_exists($key,$this->data) : false;
     }
 
     /**
@@ -595,6 +596,26 @@ class Collection implements ArrayAccess, Iterator
         foreach ($values as $value)
         {
             unset($this->data[array_search($value, $this->data)]);
+        }
+
+        return $this;
+    }
+
+
+    /**
+     * @param $old
+     * @param $new
+     *
+     * @return Collection
+     *
+     * @throws Exception
+     */
+    public function change_value($old,$new): Collection
+    {
+        foreach ($this->data as $k => $v)
+        {
+            if (equal($v,$old) && $this->exist($old) && $this->has_key($k))
+                $this->data[$k] = $new;
         }
 
         return $this;

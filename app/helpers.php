@@ -256,7 +256,7 @@ if (!exist('different'))
         return $x;
     }
 }
-if (!exist('dd'))
+if (!exist('debug'))
 {
     /**
      *
@@ -268,7 +268,7 @@ if (!exist('dd'))
      * @return      void
      *
      */
-    function dd(bool $condition,...$values)
+    function debug(bool $condition,...$values)
     {
         if ($condition)
         {
@@ -452,7 +452,7 @@ if (!exist('query_result'))
      */
     function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text): string
     {
-        if (equal($mode,Imperium::UPDATE))
+        if (equal($mode,Query::UPDATE))
         {
             $code = '';
             foreach ($data as $datum)
@@ -507,18 +507,20 @@ if (!exist('execute_query'))
      * @param string $submit_class
      * @param $submit_update_text
      * @param string $form_update_action
+     * @param string $key
+     * @param string $order
      * @return array|bool
      *
      * @throws Exception
      */
-    function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action )
+    function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action ,string $key,string $order)
     {
 
         switch ($mode)
         {
             case Query::UPDATE:
                 $code = collection();
-                foreach ( $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->get()  as $record)
+                foreach ( $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
                 {
                     $id = $table->set_current_table($current_table_name)->get_primary_key();
 
@@ -532,7 +534,7 @@ if (!exist('execute_query'))
                 return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
             default:
-               return $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->get();
+               return $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
             break;
         }
     }
@@ -575,13 +577,13 @@ if (!exist('query_view'))
         $table = $instance->set_current_table($current_table_name);
         $columns = $table->get_columns();
       
-        $i = count($columns);
+        $x = count($columns);
 
-        equal(0,$i % 2) ?  $form_grid =  2 :  $form_grid =  3;
+        is_pair($x) ?  $form_grid =  2 :  $form_grid =  3;
 
-        $condition = array('=' => $equal_text,'!=' => $different_text,'<' => $inferior_text,'>' => $superior_text,'<=' => $inferior_or_equal_text,'>=' =>$superior_or_equal_text,'LIKE' => $like_text);
+        $condition = array(Query::EQUAL => $equal_text,Query::DIFFERENT => $different_text,Query::INFERIOR => $inferior_text,Query::SUPERIOR => $superior_text,Query::INFERIOR_OR_EQUAL => $inferior_or_equal_text,Query::SUPERIOR_OR_EQUAL =>$superior_or_equal_text,Query::LIKE => $like_text);
 
-        return post('mode') ?  form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->end_row_and_new()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->end_row_and_new()->input(Form::TEXT,'expected',$expected_placeholder)->select('mode',[Imperium::SELECT=> $select_mode_text,Imperium::DELETE=> $remove_mode_text,'UPDATE' => $update_mode_text])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
+        return post('mode') ?  form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->input(Form::TEXT,'expected',$expected_placeholder)->end_row_and_new()->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,Query::UPDATE => $update_mode_text])->select('key',$columns)->select('order',['asc','desc'])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action,post('key'),post('order')),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->input(Form::TEXT,'expected',$expected_placeholder)->end_row_and_new()->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,Query::UPDATE => $update_mode_text])->select('key',$columns)->select('order',['asc','desc'])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
     }
 }
 
@@ -641,6 +643,7 @@ if (!exist('json'))
         return new Json($filename);
     }
 }
+
 if(!exist('collection'))
 {
 
@@ -651,7 +654,6 @@ if(!exist('collection'))
      * @param array $data
      *
      * @return Collection
-     *
      */
     function collection(array $data = []): Collection
     {

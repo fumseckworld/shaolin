@@ -437,41 +437,41 @@ class HelpersTest extends DatabaseTest
     public function test_execute_query()
     {
 
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','!=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','<=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','<',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Query::UPDATE,'id','>',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
 
-        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertTrue(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update',''))->empty());
-        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update',''))->empty());
-
-
-        $this->assertTrue(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a',''));
-        $this->assertEmpty(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a',''));
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','!=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','<=',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertTrue(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','<',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
+        $this->assertFalse(collection(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','>',1,$this->table,'btn btn-primary','update','','id','desc'))->empty());
 
 
-        $this->assertTrue(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a',''));
-        $this->assertEmpty(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a',''));
+        $this->assertTrue(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a','','id','desc'));
+        $this->assertEmpty(execute_query(1,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a','','id','desc'));
 
 
-        $this->assertTrue(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a',''));
-        $this->assertEmpty(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a',''));
+        $this->assertTrue(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Query::DELETE,'id','=',1,$this->table,'btn btn-primary','a','','id','desc'));
+        $this->assertEmpty(execute_query(1,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a','','id','desc'));
+
+
+        $this->assertTrue(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::DELETE,'id','=',1,$this->table,'btn btn-primary','a','','id','desc'));
+        $this->assertEmpty(execute_query(1,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',1,$this->table,'btn btn-primary','a','','id','desc'));
 
     }
 
@@ -495,15 +495,15 @@ class HelpersTest extends DatabaseTest
      */
     public function test_print_result()
     {
-        $query = execute_query(2,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','azda','');
+        $query = execute_query(2,$this->mysql()->model(),$this->mysql()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','azda','','id','desc');
 
 
         $this->assertCount(1,$query);
 
-        $query = execute_query(2,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','','');
+        $query = execute_query(2,$this->postgresql()->model(),$this->postgresql()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','','','id','desc');
         $this->assertCount(1,$query);
 
-        $query = execute_query(2,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','','');
+        $query = execute_query(2,$this->sqlite()->model(),$this->sqlite()->tables(),Imperium::SELECT,'id','=',8,$this->table,'btn btn-primary','','','id','desc');
         $this->assertCount(1,$query);
 
     }
