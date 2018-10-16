@@ -49,7 +49,7 @@ if (!exist('instance'))
      */
     function instance (string $driver,string $user,string $base,string $password,int $fetch_mode,string $dump_path,string $current_table): Imperium
     {
-        $connexion          = connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
+        $connexion = connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
         return imperium($connexion,$current_table);
     }
 }
@@ -328,13 +328,12 @@ if (!exist('register'))
 
         if (equal($valid_ip,$current_ip))
         {
-            $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate();
-
+            $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate() ;
             if ($multiple_languages)
                 $form->row()->select('locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
 
-           return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_success_text,$username_error_text,$username_icon,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_success_text,$email_error_text,$email_icon,post('email'),true)->end_row_and_new()
-                ->input(Form::PASSWORD,'password',$password_placeholder,$password_valid_text,$password_invalid_text,$password_icon,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_valid_text,$password_invalid_text,  $password_icon,post('password_confirmation'),true)->end_row_and_new()
+           return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_icon,$username_success_text,$username_error_text,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_icon,$email_success_text,$email_error_text,post('email'),true)->end_row_and_new()
+                ->input(Form::PASSWORD,'password',$password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password_confirmation'),true)->end_row_and_new()
                 ->submit($submit_text,$submit_button_class,$submit_id,$submit_icon)->end_row()->get();
 
         }
@@ -446,11 +445,12 @@ if (!exist('query_result'))
      * @param $result_empty_text
      *
      * @param $table_empty_text
+     * @param string $sql
      * @return string
      *
      * @throws Exception
      */
-    function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text): string
+    function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text,string $sql): string
     {
         if (equal($mode,Query::UPDATE))
         {
@@ -461,11 +461,11 @@ if (!exist('query_result'))
             return $code;
         }
         if (is_bool($data) && $data)
-           return html('div',$success_text,'alert alert-success');
+           return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
         elseif(empty($model->all()))
-            return html('div',$table_empty_text,'alert alert-danger');
+            return html('code',$sql,'text-center'). html('div',$table_empty_text,'alert alert-danger mt-5');
         else
-           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : collection($data)->print(true,$columns);
+           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$columns);
 
     }
 }
@@ -513,7 +513,7 @@ if (!exist('execute_query'))
      *
      * @throws Exception
      */
-    function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action ,string $key,string $order)
+    function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action ,string $key,string $order,&$show_sql_variable)
     {
 
         switch ($mode)
@@ -531,9 +531,11 @@ if (!exist('execute_query'))
             case Query::DELETE:
             
                 $data = $model->where($column_name,$condition,$expected);
+                $show_sql_variable = $model->query()->set_query_mode($mode)->where($column_name,$condition,$expected)->sql();
                 return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
             default:
+                $show_sql_variable = $model->query()->set_query_mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
                return $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
             break;
         }
@@ -568,22 +570,75 @@ if (!exist('query_view'))
      * @param string $record_not_found_text
      * @param string $table_empty_text
      *
+     * @param string $select_where_column_text
+     * @param string $select_condition_column_text
+     * @param string $select_operation_column_text
+     * @param string $select_order_column_text
+     * @param $reset_form_text
+     * @param string $reset_form_class
+     * @param string $icon
      * @return string
      *
      * @throws Exception
      */
-    function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text): string
+    function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>'): string
     {
         $table = $instance->set_current_table($current_table_name);
         $columns = $table->get_columns();
-      
-        $x = count($columns);
 
-        is_pair($x) ?  $form_grid =  2 :  $form_grid =  3;
+
+        $x = count($columns);
 
         $condition = array(Query::EQUAL => $equal_text,Query::DIFFERENT => $different_text,Query::INFERIOR => $inferior_text,Query::SUPERIOR => $superior_text,Query::INFERIOR_OR_EQUAL => $inferior_or_equal_text,Query::SUPERIOR_OR_EQUAL =>$superior_or_equal_text,Query::LIKE => $like_text);
 
-        return post('mode') ?  form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->input(Form::TEXT,'expected',$expected_placeholder)->end_row_and_new()->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,Query::UPDATE => $update_mode_text])->select('key',$columns)->select('order',['asc','desc'])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() . query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action,post('key'),post('order')),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text) : form($query_action,uniqid())->row()->select('column',$columns)->select('condition',$condition)->input(Form::TEXT,'expected',$expected_placeholder)->end_row_and_new()->select('mode',[Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,Query::UPDATE => $update_mode_text])->select('key',$columns)->select('order',['asc','desc'])->end_row_and_new()->submit($submit_query_text,$submit_class,uniqid())->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
+        $columns_order = collection(['' => $select_order_column_text])->merge($columns)->collection();
+
+        $columns = collection(['' => $select_where_column_text])->merge($columns)->collection();
+
+
+
+        $condition = collection(['' => $select_condition_column_text])->merge($condition)->collection();
+
+        $operations = collection(['' => $select_operation_column_text])->merge([Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,Query::UPDATE => $update_mode_text])->collection();
+
+        is_pair($x) ?  $form_grid =  2 :  $form_grid =  3;
+
+        $sql = '';
+
+        return post('mode')
+
+            ?
+                form($query_action,uniqid(),Form::INVALIDATE)->validate()
+                ->reset($reset_form_text,$reset_form_class )
+                ->row()
+                    ->select('column',$columns,'success','error',$icon)
+                    ->select('condition',$condition,'success','error',$icon)
+                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,'success','error')
+                ->end_row_and_new()
+                    ->select('mode',$operations ,'success','error',$icon)
+                    ->select('key',$columns_order,'success','error',$icon)
+                    ->select('order',['asc','desc'],'success','faillure',$icon)
+                ->end_row_and_new()
+                    ->submit($submit_query_text,$submit_class,uniqid())
+                ->end_row()->get() .
+                query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
+
+            :
+                form($query_action,uniqid(),Form::INVALIDATE)->validate()
+                ->row()
+                    ->reset($reset_form_text,$reset_form_class)
+                ->end_row_and_new()
+                    ->select('column',$columns,'success','error',$icon)
+                    ->select('condition',$condition,'success','error',$icon)
+                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,'success','error')
+                ->end_row_and_new()
+                    ->select('mode',$operations ,'success','error',$icon)
+                    ->select('key',$columns_order,'success','error',$icon)
+                    ->select('order',['asc','desc'],'success','faillure',$icon)
+                ->end_row_and_new()
+                    ->submit($submit_query_text,$submit_class,uniqid())
+
+                ->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
     }
 }
 
@@ -1350,16 +1405,26 @@ if (!exist('html'))
             case 'ol':
             case 'ul':
             case 'pre':
+            case 'code':
 
-                $html = "<$element";
 
-                if (!empty($class))
-                    $html .= ' class="'.$class.'"';
+                $code = equal($element,'code');
 
-                if (!empty($id))
-                    $html .= ' id="'.$id.'"';
+                if ($code)
+                    $html = "<pre ";
+                else
+                    $html = "<$element";
 
-                $html .= '>' .$content . '</'.$element.'>';
+                if (def($class))
+                    append($html,' class="'.$class.'"');
+
+                if (def($id))
+                    append($html,' id="'.$id.'"');
+
+                if ($code)
+                    append($html, '><code>    ' .$content . '</code></pre>');
+                else
+                    append($html, '>' .$content . '</'.$element.'>');
 
                 return $html;
 

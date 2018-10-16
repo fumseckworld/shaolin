@@ -1,39 +1,66 @@
 <?php
 
 use Imperium\Connexion\Connect;
+use Imperium\Imperium;
 
 require_once  'vendor/autoload.php';
 
-$base = 'zen';
-$mode = PDO::FETCH_OBJ;
-$table  = 'doctors';
 
-
-
-$mysql  = instance(Connect::MYSQL,'root',$base,'root',$mode,'dump',$table);
-$pgsql  = instance(Connect::POSTGRESQL,'postgres',$base,'postgres',$mode,'dump',$table);
-$sqlite = instance(Connect::SQLITE,  '','zen.sqlite3','',$mode,'dump',$table);
-
-
-function instance_mysql():  \Imperium\Imperium
+trait config
 {
-     global $mysql;
-    
-     return $mysql;
+
+    private $mysql;
+    private $pgsql;
+    private $sqlite;
+
+
+
+
+    protected $base = 'zen';
+    protected $mode = PDO::FETCH_OBJ;
+    protected $table  = 'doctors';
+
+
+    /**
+     * @return Imperium
+     * @throws Exception
+     */
+   public function mysql():  Imperium
+    {
+        if ($this->mysql instanceof Imperium)
+            return $this->mysql;
+
+        $this->mysql = instance(Connect::MYSQL,'root',$this->base,'root',$this->mode,'dump',$this->table);
+        return $this->mysql;
+    }
+
+    /**
+     * @return Imperium
+     * @throws Exception
+     */
+   public function postgresql():  Imperium
+    {
+        if ($this->pgsql instanceof Imperium)
+            return $this->pgsql;
+
+        $this->pgsql = instance(Connect::POSTGRESQL,'postgres',$this->base,'postgres',$this->mode,'dump',$this->table);
+        return $this->pgsql;
+    }
+
+    /**
+     * @return Imperium
+     * @throws Exception
+     */
+   public function sqlite():  Imperium
+    {
+        if ($this->sqlite instanceof Imperium)
+            return $this->sqlite;
+
+
+        $this->sqlite = instance(Connect::SQLITE,'',"$this->base.sqlite3",'',$this->mode,'dump',$this->table);
+        return $this->sqlite;
+    }
+
+
+
 }
-
-
-function instance_pgsql():  \Imperium\Imperium
-{
-     global $pgsql;
-
-     return $pgsql;
-}
-
-function instance_sqlite():  \Imperium\Imperium
-{
-     global $sqlite;
-
-     return $sqlite;
-}
-

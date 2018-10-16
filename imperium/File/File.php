@@ -22,6 +22,8 @@
 namespace Imperium\File {
 
     use Exception;
+    use Imperium\Collection\Collection;
+    use Imperium\Directory\Dir;
     use Mimey\MimeTypes;
     use RecursiveDirectoryIterator;
     use RecursiveIteratorIterator;
@@ -96,11 +98,11 @@ namespace Imperium\File {
          *
          */
         const IMG =  array(
-            File::PNG,
-            File::JPEG,
-            File::JPG,
-            File::SVG,
-            File::GIF
+            self::PNG,
+            self::JPEG,
+            self::JPG,
+            self::SVG,
+            self::GIF
         );
 
         const MIME_TYPES = array(
@@ -381,10 +383,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::exist($filename))
-                return md5_file($filename);
-            else
-                return '';
+            return self::exist($filename) ?  md5_file($filename) :  '';
         }
 
         /**
@@ -394,14 +393,11 @@ namespace Imperium\File {
          *
          * @return bool|int
          */
-        public static function lastModified(string $filename)
+        public static function last_modified(string $filename)
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::exist($filename))
-                return filemtime($filename);
-            else
-                return false;
+            return self::exist($filename) ?  filemtime($filename) : false;
         }
 
 
@@ -443,14 +439,8 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$pattern],__FUNCTION__);
 
-            $files = array();
+            return glob($pattern,$flags);
 
-            foreach (glob($pattern,$flags) as $file)
-            {
-                array_push($files,$file);
-            }
-
-            return $files;
         }
 
         /**
@@ -464,12 +454,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (!self::exist($filename))
-            {
-                return touch($filename);
-            }
-
-            return false;
+            return self::exist($filename) ? false :  touch($filename);
         }
 
         /**
@@ -479,46 +464,43 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function delete(string $filename): bool
+        public static function remove(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (is_dir($filename))
+            if (Dir::is($filename))
             {
-                return self::deleteFolder($filename);
+                return self::remove_directory($filename);
             }
 
-            if (self::exist($filename))
-            {
-                return unlink($filename);
-            }
-            return false;
+            return self::exist($filename) ? unlink($filename) : false;
         }
 
         /**
          * delete a folder
          *
-         * @param $folder
+         * @param string $dir
          *
          * @return bool
          */
-        public static function deleteFolder(string $folder): bool
+        public static function remove_directory(string $dir): bool
         {
-            self::quitIfEmpty([$folder],__FUNCTION__);
+            self::quitIfEmpty([$dir],__FUNCTION__);
 
-            if (!is_dir($folder))
+            if (!Dir::is($dir))
             {
                 return false;
             }
 
-            $files = array_diff(scandir($folder), array('.','..'));
+            $files = array_diff(scandir($dir), array('.','..'));
 
             foreach ($files as $file)
             {
-                (is_dir("$folder/$file")) ? self::deleteFolder("$folder/$file") : unlink("$folder/$file");
+                (Dir::is("$dir/$file")) ? self::remove_directory("$dir/$file") : self::remove("$dir/$file");
             }
 
-            return rmdir($folder);
+           return Dir::remove($dir);
+
         }
 
         /**
@@ -529,7 +511,7 @@ namespace Imperium\File {
          *
          * @return array
          */
-        public static function getLines(string $filename, string $mode = File::READ): array
+        public static function lines(string $filename, string $mode = self::READ): array
         {
             self::quitIfEmpty([$filename,$mode],__FUNCTION__);
 
@@ -539,15 +521,16 @@ namespace Imperium\File {
 
                 if ($file)
                 {
-                    $lines = array();
+                    $lines = collection();
 
-                    while (!self::isEnd($file))
+                    while (!self::end($file))
                     {
-                        array_push($lines,fgets($file));
+                        $lines->add(fgets($file));
+
                     }
                     self::close($file);
 
-                    return $lines;
+                    return $lines->collection();
                 }
             }
             return array();
@@ -562,7 +545,7 @@ namespace Imperium\File {
          *
          * @return array
          */
-        public static function getKeys(string $filename,string $delimiter,string $mode = File::READ): array
+        public static function keys(string $filename,string $delimiter,string $mode = self::READ): array
         {
             self::quitIfEmpty([$filename,$mode],__FUNCTION__);
 
@@ -572,17 +555,17 @@ namespace Imperium\File {
 
                 if ($file)
                 {
-                    $lines = array();
+                    $lines = collection();
 
-                    while (!self::isEnd($file))
+                    while (!self::end($file))
                     {
-                        $parts = explode($delimiter,fgets($file));
-                        if (!empty($parts[0]))
-                            array_push($lines,$parts[0]);
+                        $parts = collection(explode($delimiter,fgets($file)));
+                        if ($parts->has_key(0))
+                            $lines->add($parts->get(0));
 
                     }
                     self::close($file);
-                    return $lines;
+                    return $lines->collection();
                 }
             }
             return array();
@@ -597,7 +580,7 @@ namespace Imperium\File {
          *
          * @return array
          */
-        public static function getValues(string $filename,string $delimiter,string $mode = File::READ): array
+        public static function values(string $filename,string $delimiter,string $mode = self::READ): array
         {
             self::quitIfEmpty([$filename,$mode],__FUNCTION__);
 
@@ -607,16 +590,16 @@ namespace Imperium\File {
 
                 if ($file)
                 {
-                    $lines = array();
+                    $lines = collection();
 
-                    while (!self::isEnd($file))
+                    while (!self::end($file))
                     {
-                        $parts = explode($delimiter,fgets($file));
-                        if (!empty($parts[1]))
-                            array_push($lines,rtrim($parts[1]));
+                        $parts = collection(explode($delimiter,fgets($file)));
+                        if ($parts->has_key(1))
+                            $lines->add(rtrim($parts->get(1)));
                     }
                     self::close($file);
-                    return $lines;
+                    return $lines->collection();
                 }
             }
             return array();
@@ -629,16 +612,11 @@ namespace Imperium\File {
          *
          * @return int
          */
-        public static function getSize(string $filename): int
+        public static function size(string $filename): int
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return filesize($filename);
-            }
-
-            return -1;
+            return self::verify($filename) ? filesize($filename) :  -1;
         }
 
         /**
@@ -648,16 +626,11 @@ namespace Imperium\File {
          *
          * @return string
          */
-        public static function getExtension(string $filename): string
+        public static function ext(string $filename): string
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return pathinfo($filename, PATHINFO_EXTENSION);
-            }
-
-            return '';
+            return self::verify($filename) ? pathinfo($filename, PATHINFO_EXTENSION) : '';
         }
 
         /**
@@ -665,16 +638,17 @@ namespace Imperium\File {
          *
          * @param string $source
          * @param string $destination
+         *
          * @return bool
          */
-        public static function copyFolder(string $source, string $destination)
+        public static function copy_directory(string $source, string $destination): bool
         {
             self::quitIfEmpty([$source,$destination],__FUNCTION__);
 
-            switch (is_dir($destination))
+            switch (Dir::is($destination))
             {
                 case true:
-                    File::deleteFolder($destination);
+                    self::remove_directory($destination);
                     mkdir($destination);
                 break;
                 default:
@@ -698,14 +672,15 @@ namespace Imperium\File {
                     break;
                 }
             }
+
             foreach($iterator as $element)
             {
                 switch ($element->isDir()) {
                     case true:
-                        if (!is_dir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName()))  { return false; }
+                        if (!Dir::is($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName()))  { return false; }
                     break;
                     default:
-                        if (!self::isFile($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName())) { return false; }
+                        if (!self::is($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName())) { return false; }
                     break;
                 }
             }
@@ -724,11 +699,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$source,$destination],__FUNCTION__);
 
-            if (self::exist($source))
-            {
-                return copy($source,$destination);
-            }
-            return false;
+            return self::exist($source) ? copy($source,$destination) : false;
         }
 
         /**
@@ -738,11 +709,11 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isReadable(string $filename): bool
+        public static function readable(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (is_dir($filename) && is_writable($filename))
+            if (Dir::is($filename) && is_writable($filename))
             {
                 $objects = scandir($filename);
 
@@ -750,7 +721,7 @@ namespace Imperium\File {
                 {
                     if ($object != "." && $object != "..")
                     {
-                        if (!self::isReadable($filename."/".$object))
+                        if (!self::readable($filename."/".$object))
                         {
                             return false;
 
@@ -762,11 +733,7 @@ namespace Imperium\File {
                 return true;
             }
 
-            if (self::exist($filename))
-            {
-                return is_readable($filename);
-            }
-            return false;
+            return self::exist($filename) ?is_readable($filename) : false;
         }
 
         /**
@@ -776,20 +743,16 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isWritable(string $filename): bool
+        public static function writable(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (is_dir($filename))
+            if (Dir::is($filename))
             {
                 return is_writable($filename);
             }
 
-            if (self::exist($filename))
-            {
-                return is_writable($filename);
-            }
-            return false;
+            return self::exist($filename) ?  is_writable($filename) :  false;
         }
 
 
@@ -801,15 +764,11 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function hardLink(string $target, string $link): bool
+        public static function hard_link(string $target, string $link): bool
         {
             self::quitIfEmpty([$target,$link],__FUNCTION__);
 
-            if (self::exist($target))
-            {
-                return link($target, $link);
-            }
-            return false;
+            return self::exist($target) ?link($target, $link) : false;
         }
 
         /**
@@ -824,11 +783,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$target,$link],__FUNCTION__);
 
-            if (self::exist($target))
-            {
-                return symlink($target, $link);
-            }
-            return false;
+            return self::exist($target) ?  symlink($target, $link) : false;
         }
 
         /**
@@ -838,14 +793,11 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isLink(string $filename): bool
+        public static function link(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
-            if (self::exist($filename))
-            {
-                return is_link($filename);
-            }
-            return false;
+            
+            return self::exist($filename) ? is_link($filename) : false;
         }
 
         /**
@@ -855,16 +807,11 @@ namespace Imperium\File {
          *
          * @return string
          */
-        public static function getMime(string $filename): string
+        public static function mime(string $filename): string
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return mime_content_type($filename);
-            }
-
-            return '';
+            return self::verify($filename) ? mime_content_type($filename) : '';
         }
 
         /**
@@ -874,20 +821,12 @@ namespace Imperium\File {
          *
          * @return array
          */
-        public static function getStat(string $filename): array
+        public static function stat(string $filename): array
         {
             self::quitIfEmpty([$filename], __FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                $stat = stat($filename);
-
-                if ($stat)
-                {
-                    return $stat;
-                }
-            }
-            return array();
+            
+            return self::verify($filename) ? stat($filename): array();
         }
 
         /**
@@ -902,12 +841,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename,$key],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                $file = self::getStat($filename);
-                return $file[$key];
-            }
-            return null;
+            return self::verify($filename) ?  collection(self::stat($filename))->get($key) : '';
         }
 
         /**
@@ -919,7 +853,7 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function write(string $filename, string $data,string $mode = File::READ_AND_WRITE): bool
+        public static function write(string $filename, string $data,string $mode = self::READ_AND_WRITE): bool
         {
             self::quitIfEmpty([$filename,$data,$mode],__FUNCTION__);
 
@@ -939,7 +873,7 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isFile(string $filename): bool
+        public static function is(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
             return is_file($filename);
@@ -955,14 +889,10 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isImg(string $filename): bool
+        public static function img(string $filename): bool
         {
-            self::quitIfEmpty([$filename],__FUNCTION__);
-            if (self::verify($filename))
-            {
-                return  in_array(self::getExtension($filename),File::IMG,true);
-            }
-            return false;
+            self::quitIfEmpty([$filename], __FUNCTION__);
+            return collection(self::IMG)->exist(self::ext($filename));
         }
 
         /**
@@ -971,14 +901,15 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         * 
+         * @throws Exception
+         * 
          */
-        public static function isHtml(string $filename): bool
+        public static function html(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
-            if (self::verify($filename))
-                return self::getExtension($filename) == File::HTML && strcmp('text/html', self::mimes()->getMimeType('html')) == 0;
-
-            return false;
+            
+            return self::verify($filename) ?  equal(self::ext($filename) ,self::HTML) && equal('text/html', self::mimes()->getMimeType('html')) : false;
         }
 
 
@@ -988,15 +919,15 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         * 
+         * @throws Exception
+         * 
          */
-        public static function isPhp(string $filename): bool
+        public static function php(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-                return self::getExtension($filename) == File::PHP && strcmp(mime_content_type($filename),'text/x-php') == 0;
-
-            return false;
+            return self::verify($filename) ? equal(self::ext($filename),self::PHP && equal(mime_content_type($filename),'text/x-php')): false;
         }
 
         /**
@@ -1005,15 +936,15 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         *
+         * @throws Exception
+         * 
          */
-        public static function isJS(string $filename): bool
+        public static function js(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-                return self::getExtension($filename) == File::JS  && strcmp('application/javascript',self::mimes()->getMimeType('js') == 0);
-
-            return false;
+            return  self::verify($filename) ? equal(self::ext($filename),self::JS)  && equal('application/javascript',self::mimes()->getMimeType('js')) : false;
         }
 
         /**
@@ -1022,14 +953,16 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         * 
+         * @throws Exception
+         * 
          */
-        public static function isJson(string $filename): bool
+        public static function json(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-                return self::getExtension($filename) == File::JSON  && strcmp('application/json',self::mimes()->getMimeType('json')) == 0;
-            return false;
+            
+            return self::verify($filename) ? equal(self::ext($filename),self::JSON)  && equal('application/json',self::mimes()->getMimeType('json')) : false;
         }
 
         /**
@@ -1038,13 +971,15 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         * 
+         * @throws Exception
+         * 
          */
-        public static function isXml(string $filename): bool
+        public static function xml(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
-            if (self::verify($filename))
-                return self::getExtension($filename) == File::XML  && strcmp('application/xml',self::mimes()->getMimeType('xml')) == 0;
-            return false;
+            
+            return self::verify($filename) ? equal(self::ext($filename),self::XML)  && equal('application/xml',self::mimes()->getMimeType('xml')) : false;
         }
 
         /**
@@ -1053,15 +988,15 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         * 
+         * @throws Exception
+         * 
          */
-        public static function isCss(string $filename): bool
+        public static function css(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-                return self::getExtension($filename) == File::CSS && strcmp('text/css',self::mimes()->getMimeType('css')) == 0;
-
-            return false;
+            return self::verify($filename) ?  equal(self::ext($filename),self::CSS )&& equal('text/css',self::mimes()->getMimeType('css')) : false;
         }
 
         /**
@@ -1070,16 +1005,14 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         *
+         * @throws Exception
          */
-        public static function isPdf(string $filename): bool
+        public static function pdf(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return self::getExtension($filename) === File::PDF && strcmp('application/pdf', self::mimes()->getMimeType('pdf')) == 0;
-            }
-            return false;
+            return self::verify($filename) ? equal(self::ext($filename),self::PDF) && equal('application/pdf', self::mimes()->getMimeType('pdf')) : false;
         }
 
         /**
@@ -1089,7 +1022,7 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isEnd($file): bool
+        public static function end($file): bool
         {
             self::quitIfEmpty([$file],__FUNCTION__);
 
@@ -1108,12 +1041,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return filegroup($filename);
-            }
-
-            return -1;
+            return self::verify($filename) ? filegroup($filename) : -1;
         }
 
         /**
@@ -1127,32 +1055,22 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return fileowner($filename);
-            }
-            return -1;
+            return self::verify($filename) ? fileowner($filename) : -1;
         }
 
         /**
          * Include in page all files passed by parameters
          *
-         * @throws Exception
-         *
+         * @param string[] $files
          * @return bool
+         * @throws Exception
          */
-        public static function loads(): bool
+        public static function loads(string ...$files): bool
         {
-            if (func_num_args() == 0)
-                throw new Exception("Load function require files in parameters");
 
-
-            foreach (func_get_args() as $file)
+            foreach ($files as $file)
             {
-                if (self::verify($file))
-                    require_once "$file";
-                else
-                    throw new Exception("$file not exist");
+                if (self::verify($file)) { require_once "$file"; } else { throw new Exception("$file not exist"); }
             }
             return true;
         }
@@ -1164,16 +1082,11 @@ namespace Imperium\File {
          *
          * @return string
          */
-        public static function getContent(string $filename): string
+        public static function content(string $filename): string
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return file_get_contents($filename);
-            }
-
-            return '';
+            return self::verify($filename) ? file_get_contents($filename) :  '';
         }
 
         /**
@@ -1185,95 +1098,94 @@ namespace Imperium\File {
          *
          * @return bool|int
          */
-        public static function putContents(string $filename, $data, int $flags = 0)
+        public static function put(string $filename, $data, int $flags = 0)
         {
             self::quitIfEmpty([$filename,$data],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return file_put_contents($filename,$data,$flags);
-            }
-            return false;
+            return self::verify($filename) ? file_put_contents($filename,$data,$flags) : false;
         }
 
         /**
          * return $_FILES
          *
-         * @return array
+         * @return Collection
          */
-        public static function getFile():array
+        public static function file(): Collection
         {
-            return $_FILES;
+            return collection($_FILES);
         }
 
         /**
          * get the uploaded files type
          *
-         * @param string $inputName
+         * @param string $input_name
          *
          * @return string
          */
-        public static function uploadedFileType(string $inputName): string
+        public static function uploaded_file_type(string $input_name): string
         {
-            self::quitIfEmpty([$inputName],__FUNCTION__);
+            self::quitIfEmpty([$input_name],__FUNCTION__);
 
-            return $_FILES[$inputName][File::FILE_TYPE];
+            return self::file()->has_key($input_name) ? $_FILES[$input_name][self::FILE_TYPE] : '';
         }
 
         /**
          * return the uploaded files size
          *
-         * @param string $inputName
+         * @param string $input_name
          *
          * @return int
          */
-        public static function uploadedFileSize(string $inputName): int
+        public static function uploaded_file_size(string $input_name): int
         {
-            self::quitIfEmpty([$inputName],__FUNCTION__);
+            self::quitIfEmpty([$input_name],__FUNCTION__);
 
-            return $_FILES[$inputName][File::FILE_SIZE];
+            return self::file()->has_key($input_name) ? $_FILES[$input_name][self::FILE_SIZE] : 1;
+
         }
 
         /**
          * return the uploaded files name
          *
-         * @param string $inputName
+         * @param string $input_name
          *
          * @return string
          */
-        public static function uploadedFileName(string $inputName): string
+        public static function uploaded_file_name(string $input_name): string
         {
-            self::quitIfEmpty([$inputName],__FUNCTION__);
+            self::quitIfEmpty([$input_name],__FUNCTION__);
 
-            return $_FILES[$inputName][File::FILE_NAME];
+            return self::file()->has_key($input_name) ? $_FILES[$input_name][self::FILE_NAME] : '';
+
         }
 
         /**
          *  return the uploaded files tmp directory
          *
-         * @param string $inputName
+         * @param string $input_name
          *
          * @return string
          */
-        public static function uploadedFileTmpPath(string $inputName): string
+        public static function uploaded_file_temp_path(string $input_name): string
         {
-            self::quitIfEmpty([$inputName],__FUNCTION__);
+            self::quitIfEmpty([$input_name],__FUNCTION__);
 
-            return $_FILES[$inputName][File::FILE_TMP];
+            return self::file()->has_key($input_name) ? $_FILES[$input_name][self::FILE_TMP] : '';
         }
 
         /**
          * return the uploaded errors
          *
-         * @param string $inputName
+         * @param string $input_name
          *
          * @return int
          */
-        public static function uploadedFileErrors(string $inputName): int
+        public static function uploadedFileErrors(string $input_name): int
         {
-            self::quitIfEmpty([$inputName],__FUNCTION__);
+            self::quitIfEmpty([$input_name],__FUNCTION__);
 
-            return $_FILES[$inputName][File::FILE_ERROR];
+            return self::file()->has_key($input_name) ? $_FILES[$input_name][self::FILE_ERROR] : 1;
+
         }
 
         /**
@@ -1288,23 +1200,20 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$old,$new],__FUNCTION__);
 
-            if (self::exist($old) && !self::exist($new))
-                return rename($old,$new);
-
-            return false;
+            return self::exist($old) && !self::exist($new) ? rename($old,$new) :  false;
         }
 
         /**
          * move a uploaded files to destination
          *
-         * @param string $inputName
+         * @param string $input_name
          * @param string $destination
          *
          * @return bool
          */
-        public static function moveUploadedFile(string $inputName,string $destination): bool
+        public static function move_uploaded_file(string $input_name,string $destination): bool
         {
-            return move_uploaded_file(self::uploadedFileTmpPath($inputName),$destination);
+            return move_uploaded_file(self::uploaded_file_temp_path($input_name),$destination);
         }
 
         /**
@@ -1318,7 +1227,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            return self::isFile($filename) && self::exist($filename);
+            return self::is($filename) && self::exist($filename);
         }
 
         /**
@@ -1342,7 +1251,7 @@ namespace Imperium\File {
          */
         private static function nameIsEmpty(string $function)
         {
-            die("Please enter the input name parameter on $function function");
+            die("Please enter the input name parameter on $function function\n");
         }
 
         /**
@@ -1368,12 +1277,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename,$mode],__FUNCTION__);
 
-            if (self::verify($filename))
-            {
-                return fopen($filename,$mode);
-            }
-
-            return false;
+            return self::verify($filename)  ? fopen($filename,$mode) :  false;
         }
 
         /**
@@ -1403,7 +1307,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            die("$filename does'nt exist ");
+            die("$filename does'nt exist\n");
         }
 
         /**
@@ -1416,19 +1320,9 @@ namespace Imperium\File {
          */
         public static function remove_if_exist(string $filename)
         {
-            return self::exist($filename)? self::delete($filename) : false;
+            return self::exist($filename)? self::remove($filename) : false;
         }
 
-        /**
-         * quit app with a different message
-         *
-         * @param string $message
-         */
-        private static function quit(string $message)
-        {
-            self::quitIfEmpty([$message],__FUNCTION__);
-            die($message);
-        }
 
         /**
          * close a files
@@ -1441,7 +1335,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            return fclose($filename);
+            return self::verify($filename) ? fclose($filename) : false;
         }
 
         /**
@@ -1451,13 +1345,11 @@ namespace Imperium\File {
          *
          * @return string
          */
-        public static function realPath(string $path): string
+        public static function path(string $path): string
         {
             self::quitIfEmpty([$path],__FUNCTION__);
-            if (self::verify($path))
-                return realpath($path);
 
-            return '';
+            return self::verify($path) ? realpath($path) : '';
         }
 
         /**
@@ -1471,9 +1363,8 @@ namespace Imperium\File {
         public static function chmod(string $filename, int $mode): bool
         {
             self::quitIfEmpty([$filename,$mode],__FUNCTION__);
-            if (self::verify($filename))
-                return chmod($filename,$mode);
-            return false;
+
+            return self::verify($filename) ? chmod($filename,$mode) : false;
         }
 
         /**
@@ -1487,10 +1378,8 @@ namespace Imperium\File {
         public static function chgrp(string $filename, $group): bool
         {
             self::quitIfEmpty([$filename,$group],__FUNCTION__);
-            if (self::verify($filename))
-                return chgrp($filename,$group);
 
-            return false;
+            return self::verify($filename) ? chgrp($filename,$group) : false;
         }
 
         /**
@@ -1505,7 +1394,8 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename,$group],__FUNCTION__);
 
-            return lchgrp($filename,$group);
+            return self::verify($filename) ? lchgrp($filename,$group) : false;
+
         }
 
         /**
@@ -1519,9 +1409,8 @@ namespace Imperium\File {
         public static function chown(string $filename, $user): bool
         {
             self::quitIfEmpty([$filename,$user],__FUNCTION__);
-            if (self::verify($filename))
-                return chown($filename,$user);
-            return false;
+
+            return self::verify($filename) ? chown($filename,$user) :  false;
         }
 
         /**
@@ -1531,11 +1420,11 @@ namespace Imperium\File {
          *
          * @return bool
          */
-        public static function isExecutable(string $filename): bool
+        public static function executable(string $filename): bool
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            return is_executable($filename);
+            return self::verify($filename) ? is_executable($filename) : false;
         }
 
         /**
@@ -1545,13 +1434,12 @@ namespace Imperium\File {
          *
          * @return string
          */
-        public static function getType(string $filename): string
+        public static function type(string $filename): string
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
-            if (self::verify($filename))
-                return filetype($filename);
 
-            return '';
+            return self::verify($filename) ? filetype($filename) :  '';
+
         }
 
         /**
@@ -1561,12 +1449,11 @@ namespace Imperium\File {
          *
          * @return int
          */
-        public static function fileTime(string $filename): int
+        public static function time(string $filename): int
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
-            if (self::verify($filename))
-                return fileatime($filename);
-            return -1;
+
+            return self::verify($filename) ?  fileatime($filename): -1;
         }
 
         /**
@@ -1576,14 +1463,11 @@ namespace Imperium\File {
          *
          * @return int
          */
-        public static function fileOwner(string $filename): int
+        public static function owner(string $filename): int
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            if (self::verify($filename))
-                return fileowner($filename);
-
-            return -1;
+            return self::verify($filename) ?  fileowner($filename) : -1;
         }
 
     }

@@ -30,12 +30,15 @@ namespace Imperium\Directory {
             '.gitignore',
             '.hgignore',
         );
+
         /**
          * delete a folder with files
          *
          * @param $directory
          *
          * @return bool
+         *
+         * @throws \Exception
          */
         public static function clear(string $directory)
         {

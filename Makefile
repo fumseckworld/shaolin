@@ -11,55 +11,60 @@ ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   $(eval $(PHINX):;@:)
 endif
 
-all: vendor seed
+ifeq (send,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  COMMIT := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(COMMIT):;@:)
+endif
+
+help: ## Display the help
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+send: ## Send to the server the modifications
+	git add .
+	git commit -m "$(COMMIT)"
+	git push origin --all
+
+test: vendor seed ## Run tests
 	@vendor/bin/phpunit --coverage-html ~/coverage/imperium
 
-vendor:
+vendor: ## Configure the app
 	@composer install
 
-seed: dbs migrate
+seed: dbs migrate ## Seed all databases
 
-migrate: pgsql mysql sqlite
+migrate: pgsql mysql sqlite ## Run all migrations
 
-serve: ## Start php server
-	clear
+serve: ## Start the development server
+	@clear
 	@php -S localhost:8000 -d display_errors=1 -t public
 
-tests: all ## Start php server
-	clear
-	@php -S localhost:3000 -t coverage
-
-
-add: ## Add a library
-	${COMPOSER} require $(COMPOSER_ARGS)
+coverage: test ## Start a server to display the coverage
+	@clear
+	@php -S localhost:3000 -t ~/coverage/imperium
 
 phinx: phinx.yml ## Create migration and seed
-	 vendor/bin/phinx create $(PHINX)table
-	 vendor/bin/phinx seed:create $(PHINX)Seeds
-sql:
-	./vendor/bin/phinx migrate -e $@
-	./vendor/bin/phinx seed:run -e $@
+	 @vendor/bin/phinx create $(PHINX)table
+	 @vendor/bin/phinx seed:create $(PHINX)Seeds
 
-pgsql:
-	./vendor/bin/phinx migrate -e $@
-	./vendor/bin/phinx seed:run -e $@
-lpgsql:
-	./vendor/bin/phinx migrate -e $@
-	./vendor/bin/phinx seed:run -e $@
+pgsql: ## Seed postgresql database
+	@vendor/bin/phinx migrate -e $@
+	@vendor/bin/phinx seed:run -e $@
 
-mysql:
-	./vendor/bin/phinx migrate -e $@
-	./vendor/bin/phinx seed:run -e $@
+mysql: ## Seed mysql database
+	@vendor/bin/phinx migrate -e $@
+	@vendor/bin/phinx seed:run -e $@
 
-sqlite:
-	./vendor/bin/phinx migrate -e $@
-	./vendor/bin/phinx seed:run -e $@
+sqlite: ## Seed sqlite database
+	@vendor/bin/phinx migrate -e $@
+	@vendor/bin/phinx seed:run -e $@
 
-dbs: drop
-	psql -c "create database $(BASE);" -U postgres
-	mysql -uroot -p$(MYSQL_PASSWORD) -e "CREATE DATABASE $(BASE);"
-	touch $(BASE).sqlite3 && chmod 777 $(BASE).sqlite3
-drop:
+dbs: clean ## Create all databases
+	@psql -c "create database $(BASE);" -U postgres
+	@mysql -uroot -p$(MYSQL_PASSWORD) -e "CREATE DATABASE $(BASE);"
+	@touch $(BASE).sqlite3 && chmod 777 $(BASE).sqlite3
+clean: ## Remove all databases
 	psql  -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
 	mysql -uroot -p$(MYSQL_PASSWORD) -e "DROP DATABASE IF EXISTS $(BASE);"
-	$(RM) $(BASE).sqlite3
+	$(RM) $(BASE).sqlite3  

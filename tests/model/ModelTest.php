@@ -8,7 +8,6 @@ use Exception;
 use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Model\Model;
-use Imperium\Query\Query;
 use PDO;
 use Testing\DatabaseTest;
 
@@ -35,6 +34,9 @@ class ModelTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_is()
     {
         $this->assertTrue($this->mysql()->model()->is_mysql());

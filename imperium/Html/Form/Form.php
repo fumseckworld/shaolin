@@ -188,6 +188,8 @@ class Form
 
     const BTN_SMALL_CLASS = 'btn-sm';
 
+    const INVALIDATE = 'was-validated';
+
 
     /**
      * @var string
@@ -571,7 +573,7 @@ class Form
 
     private function valid(string $success,string $error)
     {
-        return '<div class="valid-feedback"> ' .$success.'</div><div class="invalid-feedback">'.$error.'</div>' ;
+        return '<div class="valid-feedback text-right"> ' .$success.'</div><div class="invalid-feedback text-center">'.$error.'</div>' ;
     }
 
     /**

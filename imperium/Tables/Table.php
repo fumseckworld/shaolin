@@ -144,7 +144,15 @@ namespace Imperium\Tables {
              $this->added_columns = collection();
         }
 
-        public function get_current_table()
+
+        /**
+         *
+         * Return the current table name
+         *
+         * @return string
+         *
+         */
+        public function get_current_table(): string
         {
             return $this->table;
         }
@@ -314,14 +322,14 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL :
                     return $this->connexion->execute("TRUNCATE TABLE {$this->table}");
-
+                break;
                 case Connect::POSTGRESQL :
                     return $this->connexion->execute("TRUNCATE TABLE {$this->table}  RESTART IDENTITY");
-                    break;
+                break;
 
                 case Connect::SQLITE :
                     return $this->truncateSqliteTable($this->table);
-                    break;
+                break;
                 default:
                     return false;
                 break;
@@ -459,6 +467,7 @@ namespace Imperium\Tables {
         {
 
             $command = $this->startCreateCommand();
+
 
 
             $columns = $this->added_columns;
@@ -826,6 +835,9 @@ namespace Imperium\Tables {
                     return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE $this->table DROP COLUMN $column RESTRICT");
                 break;
                 case Connect::SQLITE:
+
+                    if (equal($column,$this->get_primary_key()))
+                        return false;
 
                     $current = $this->table;
 

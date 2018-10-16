@@ -14,16 +14,32 @@ class Json
      */
     private $data;
 
+
     /**
      * @var string
      */
     private $filename;
 
-    public function __construct(string $filename)
+
+    public function __construct(string $filename = '')
     {
         $this->data = collection();
+        $this->set_name($filename);
+
+    }
+
+    /**
+     *
+     * @param string $filename
+     *
+     * @return Json
+     *
+     */
+    public function set_name(string $filename): Json
+    {
         $this->filename = $filename;
 
+        return $this;
     }
 
     /**

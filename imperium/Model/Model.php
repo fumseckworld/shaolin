@@ -53,17 +53,15 @@ class Model
      * @param Connect $connect
      * @param Table $table
      * @param string $current_table_name
-     * @param string $oder_by
-     *
      * @throws Exception
      */
-    public function __construct(Connect $connect,Table $table, string $current_table_name,string $oder_by= 'desc')
+    public function __construct(Connect $connect,Table $table, string $current_table_name)
     {
         $this->connexion = $connect;
 
         $this->table = $table->set_current_table($current_table_name);
         $this->primary = $this->table->get_primary_key();
-        $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name)->order_by($this->primary,$oder_by);
+        $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name);
         $this->current  = $current_table_name;
     }
 
@@ -158,7 +156,6 @@ class Model
     {
        return $this->table->getRecords($order);
     }
-
 
     /**
      *

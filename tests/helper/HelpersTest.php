@@ -335,6 +335,7 @@ class HelpersTest extends DatabaseTest
 
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('matrix');
+        
         is_not_false(true,true,"matrix");
         is_not_true(false,true,"matrix");
         is_false(false,true,'matrix');

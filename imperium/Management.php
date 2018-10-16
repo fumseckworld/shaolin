@@ -359,14 +359,13 @@ namespace Imperium {
          *
          * @param string $name
          * @param string $password
-         * @param string $rights
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function add_user(string $name,string $password,string $rights = '') : bool;
+        public function add_user(string $name,string $password) : bool;
 
         /**
          *

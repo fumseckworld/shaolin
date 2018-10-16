@@ -6,6 +6,7 @@ use Exception;
 use Imperium\Bases\Base;
 use Imperium\Connexion\Connect;
 use Imperium\File\File;
+use Imperium\Json\Json;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Tables\Table;
@@ -36,7 +37,6 @@ class Imperium extends Zen implements Management
      */
     private $table;
 
-
     /**
      *
      * Current driver
@@ -64,6 +64,11 @@ class Imperium extends Zen implements Management
      * @var Model
      */
     private $model;
+
+    /**
+     * @var Json
+     */
+    private $json;
 
     /**
      *
@@ -480,16 +485,15 @@ class Imperium extends Zen implements Management
      *
      * @param string $name
      * @param string $password
-     * @param string $rights
      *
      * @return bool
      *
      * @throws Exception
      *
      */
-    public function add_user(string $name, string $password, string $rights = ''): bool
+    public function add_user(string $name, string $password): bool
     {
-        return $this->users->set_name($name)->set_password($password)->set_rights($rights)->create();
+        return $this->users->set_name($name)->set_password($password)->create();
     }
 
     /**
@@ -716,9 +720,115 @@ class Imperium extends Zen implements Management
         $this->base      = new Base($connect);
         $this->users     = new Users($connect);
         $this->model     = new Model($connect,$this->table,$current_table);
-        
+        $this->json      = new Json();
     }
-    
+
+    /**
+     *
+     * Management of json
+     *
+     * @return Json
+     *
+     */
+    public function json(): Json
+    {
+        return $this->json;
+    }
+
+    /**
+     *
+     * Generate a json with all database, all users, and all tables
+     *
+     * @param string $filename
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    public function bases_users_tables_to_json(string $filename): bool
+    {
+        return $this->json()->set_name($filename)->add($this->show_databases(),'bases')->add($this->show_users(),'users')->add($this->show_tables(),'tables')->generate();
+    }
+
+    /**
+     *
+     * Create a json
+     *
+     * @param string $filename
+     * @param array $data
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    public function create_json(string $filename,array $data): bool
+    {
+        return $this->json()->set_name($filename)->create($data);
+    }
+
+    /**
+     *
+     * Generate json with a query
+     *
+     * @param string $filename
+     * @param string $query
+     * @param string $key
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public function sql_to_json(string $filename,string $query,string $key = ''): bool
+    {
+        return $this->json()->set_name($filename)->sql($this->connect(),$query,$key)->generate();
+    }
+
+
+    /**
+     *
+     * Add data in the future json
+     *
+     * @param $value
+     * @param string $key
+     *
+     * @return Json
+     *
+     */
+    public function add_in_json($value,$key = ''): Json
+    {
+       return $this->json->add($value,$key);
+    }
+
+    /**
+     *
+     * Generate the json with multiple data
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    public function generate_json(): bool
+    {
+        return $this->json->generate();
+    }
+
+    /**
+     *
+     * Decode a json file or a json string
+     *
+     * @param string $data
+     * @param bool $assoc
+     *
+     * @return mixed
+     */
+    public function json_decode(string $data,bool $assoc = false)
+    {
+        return $this->json->set_name($data)->decode($assoc);
+
+    }
     /**
      *
      * Rename a base

@@ -3,11 +3,52 @@
 namespace tests\imperium;
 
 
+use Exception;
 use Imperium\Imperium;
 use Testing\DatabaseTest;
 
 class ImperiumTest extends DatabaseTest
 {
+
+    /**
+     * @throws \Exception
+     */
+    public function test_json()
+    {
+        $filename = 'app.json';
+        $this->assertTrue($this->mysql()->json()->set_name($filename)->add($this->mysql()->show_databases(),'database')->generate());
+        $this->assertTrue($this->postgresql()->json()->set_name($filename)->add($this->postgresql()->show_databases(),'database')->generate());
+
+
+        $this->assertTrue($this->mysql()->bases_users_tables_to_json($filename));
+        $this->assertTrue($this->postgresql()->bases_users_tables_to_json($filename));
+        $this->assertTrue($this->mysql()->bases_users_tables_to_json($filename));
+
+        $query = "SELECT * FROM $this->table";
+        $this->assertTrue($this->mysql()->json()->sql($this->mysql()->connect(), $query,'records')->generate());
+        $this->assertTrue($this->postgresql()->json()->sql($this->postgresql()->connect(),$query,'records')->generate());
+        $this->assertTrue($this->sqlite()->json()->sql($this->sqlite()->connect(),$query,'records')->generate());
+
+        $this->expectException(Exception::class);
+        $this->sqlite()->bases_users_tables_to_json($filename);
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function test_remove_column()
+    {
+        $this->assertFalse($this->mysql()->remove_column('id'));
+        $this->assertFalse($this->postgresql()->remove_column('id'));
+        $this->assertFalse($this->sqlite()->remove_column('id'));
+
+        $this->assertTrue($this->mysql()->remove_column('date'));
+        $this->assertTrue($this->postgresql()->remove_column('date'));
+        $this->assertTrue($this->sqlite()->remove_column('date'));
+    }
+
+
 
     /**
      * @throws \Exception
@@ -75,6 +116,8 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->sqlite()->table_exist($this->second_table));
 
     }
+
+
 
     /**
      * @throws \Exception
