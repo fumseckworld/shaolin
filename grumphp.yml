@@ -2,7 +2,7 @@ parameters:
     bin_dir: "./vendor/bin"
     git_dir: "."
     tasks:
-      make test: ~
+      make: ~
     ascii:
       failed: ~
       succeeded: ~

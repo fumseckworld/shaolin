@@ -18,6 +18,8 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
+all: tests
+
 help: ## Display the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -67,4 +69,4 @@ dbs: clean ## Create all databases
 clean: ## Remove all databases
 	psql  -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
 	mysql -uroot -p$(MYSQL_PASSWORD) -e "DROP DATABASE IF EXISTS $(BASE);"
-	$(RM) $(BASE).sqlite3  
+	$(RM) $(BASE).sqlite3
