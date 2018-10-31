@@ -7,6 +7,12 @@ use Testing\DatabaseTest;
 
 class JsonTest extends DatabaseTest
 {
+
+    public function setUp()
+    {
+        $this->table = 'model';
+    }
+
     /**
      * @throws \Exception
      */
@@ -37,7 +43,7 @@ class JsonTest extends DatabaseTest
     public function test_sql()
     {
         $json = json('sql.json');
-        $this->assertTrue($json->sql($this->mysql()->connect(),"SELECT * FROM patients")->generate());
+        $this->assertTrue($json->sql($this->mysql()->connect(),"SELECT * FROM $this->table")->generate());
     }
     /**
      * @throws \Exception

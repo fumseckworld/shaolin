@@ -30,7 +30,7 @@ use Whoops\Handler\PrettyPageHandler;
 use Imperium\Html\Pagination\Pagination;
 use Spatie\DbDumper\Databases\PostgreSql;
 
-if (!exist('instance'))
+if (not_exist('instance'))
 {
     /***
      * get all instance
@@ -54,7 +54,7 @@ if (!exist('instance'))
     }
 }
 
-if (!exist('assign'))
+if (not_exist('assign'))
 {
     /**
      * assign value in a variable by a condition
@@ -72,7 +72,7 @@ if (!exist('assign'))
         }
     }
 }
-if (!exist('query'))
+if (not_exist('query'))
 {
     function query(Table $table,Connect $connect): Query
     {
@@ -80,7 +80,7 @@ if (!exist('query'))
     }
 }
 
-if (!exist('is_pair'))
+if (not_exist('is_pair'))
 {
     /**
      * @param int $x
@@ -92,7 +92,7 @@ if (!exist('is_pair'))
         return $x % 2 === 0;
     }
 }
-if (!exist('equal'))
+if (not_exist('equal'))
 {
     /**
      * test if two variables are equal
@@ -118,7 +118,8 @@ if (!exist('equal'))
         return $x;
     }
 }
-if (!exist('is_not_false'))
+
+if (not_exist('is_not_false'))
 {
     /**
      *
@@ -137,17 +138,14 @@ if (!exist('is_not_false'))
     function is_not_false($data,bool $run_exception = false,string $message =''): bool
     {
         $x = $data !== false;
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
 
-        }
+        is_true($x,$run_exception,$message);
+
         return $x;
     }
 }
 
-if (!exist('is_not_true'))
+if (not_exist('is_not_true'))
 {
     /**
      * check if a data is not equal to false
@@ -165,16 +163,13 @@ if (!exist('is_not_true'))
     {
         $x =  $data !== true;
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
+        is_true($x,$run_exception,$message);
+
         return $x;
     }
 }
 
-if (!exist('is_false'))
+if (not_exist('is_false'))
 {
     /**
      * check if a data is not equal to false
@@ -192,16 +187,14 @@ if (!exist('is_false'))
     function is_false($data,bool $run_exception = false,string $message =''): bool
     {
         $x = $data === false;
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
+
+        is_true($x,$run_exception,$message);
+
         return $x;
     }
 }
 
-if (!exist('is_true'))
+if (not_exist('is_true'))
 {
     /**
      *
@@ -221,18 +214,18 @@ if (!exist('is_true'))
     {
         $x =  $data === true;
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
-        return $x;
+        if ($run_exception && $x)
+            throw new Exception($message);
+        else
+            return $x;
     }
 }
 
-if (!exist('different'))
+if (not_exist('different'))
 {
+
     /**
+     *
      * test  if two variables are different
      *
      * @param $parameter
@@ -243,20 +236,18 @@ if (!exist('different'))
      * @return bool
      *
      * @throws Exception
+     *
      */
     function different($parameter,$expected,$run_exception = false,string $message = ''): bool
     {
         $x = strcmp($parameter,$expected) !== 0;
 
-        if ($run_exception)
-            if ($x)
-                throw new Exception($message);
-
+        is_true($x,$run_exception,$message);
 
         return $x;
     }
 }
-if (!exist('debug'))
+if (not_exist('debug'))
 {
     /**
      *
@@ -276,7 +267,7 @@ if (!exist('debug'))
         }
     }
 }
-if (!exist('register'))
+if (not_exist('register'))
 {
 
     /**
@@ -343,7 +334,7 @@ if (!exist('register'))
 
 
 
-if (!exist('bases_to_json'))
+if (not_exist('bases_to_json'))
 {
     /**
      *
@@ -365,7 +356,7 @@ if (!exist('bases_to_json'))
     }
 }
 
-if (!exist('users_to_json'))
+if (not_exist('users_to_json'))
 {
     /**
      *
@@ -387,7 +378,7 @@ if (!exist('users_to_json'))
     }
 }
 
-if (!exist('tables_to_json'))
+if (not_exist('tables_to_json'))
 {
     /**
      *
@@ -409,7 +400,7 @@ if (!exist('tables_to_json'))
     }
 }
 
-if (!exist('sql_to_json'))
+if (not_exist('sql_to_json'))
 {
     /**
      *
@@ -432,7 +423,7 @@ if (!exist('sql_to_json'))
 }
 
 
-if (!exist('query_result'))
+if (not_exist('query_result'))
 {
     /**
      * @param Model $model
@@ -470,7 +461,7 @@ if (!exist('query_result'))
     }
 }
 
-if (!exist('length'))
+if (not_exist('length'))
 {
     /**
      *
@@ -491,7 +482,7 @@ if (!exist('length'))
         return is_array($data) ? count($data) : strlen($data);
     }
 }
-if (!exist('execute_query'))
+if (not_exist('execute_query'))
 {
     /**
      * search a value
@@ -522,7 +513,7 @@ if (!exist('execute_query'))
                 $code = collection();
                 foreach ( $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
                 {
-                    $id = $table->set_current_table($current_table_name)->get_primary_key();
+                    $id = $table->select($current_table_name)->get_primary_key();
 
                     $code->push(form($form_update_action,id())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
                 }
@@ -542,7 +533,7 @@ if (!exist('execute_query'))
     }
 }
 
-if (!exist('query_view'))
+if (not_exist('query_view'))
 {
     /**
      * @param string $query_action
@@ -583,7 +574,7 @@ if (!exist('query_view'))
      */
     function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>'): string
     {
-        $table = $instance->set_current_table($current_table_name);
+        $table = $instance->select($current_table_name);
         $columns = $table->get_columns();
 
 
@@ -642,7 +633,7 @@ if (!exist('query_view'))
     }
 }
 
-if (!exist('connect'))
+if (not_exist('connect'))
 {
     /**
      * @param string $driver
@@ -659,7 +650,7 @@ if (!exist('connect'))
         return new Connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
     }
 }
-if (!exist('login'))
+if (not_exist('login'))
 {
     /**
      * build a form to login user
@@ -684,7 +675,7 @@ if (!exist('login'))
         return form($action,$id)->csrf($csrf)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->end_row()->get();
     }
 }
-if (!exist('json'))
+if (not_exist('json'))
 {
     /**
      * Return an instance to manage json
@@ -699,7 +690,7 @@ if (!exist('json'))
     }
 }
 
-if(!exist('collection'))
+if(not_exist('collection'))
 {
 
     /**
@@ -716,7 +707,7 @@ if(!exist('collection'))
     }
 }
 
-if(!exist('def'))
+if(not_exist('def'))
 {
     /**
      * check if value are defined
@@ -738,7 +729,7 @@ if(!exist('def'))
     }
 }
 
-if(!exist('not_def'))
+if(not_exist('not_def'))
 {
     /**
      * check if value are not defined
@@ -758,7 +749,7 @@ if(!exist('not_def'))
     }
 }
 
-if (!exist('zones'))
+if (not_exist('zones'))
 {
     /**
      * get all time zone
@@ -778,7 +769,7 @@ if (!exist('zones'))
     }
 }
 
-if (!exist('web'))
+if (not_exist('web'))
 {
     /**
      * @param string $tab_name_for_manage_table
@@ -827,7 +818,7 @@ if (!exist('web'))
     }
 }
 
-if (!exist('records'))
+if (not_exist('records'))
 {
 
     /**
@@ -897,7 +888,7 @@ if (!exist('records'))
 }
 
 
-if (!exist('tables_select'))
+if (not_exist('tables_select'))
 {
     /**
      * @param Table $instance
@@ -929,7 +920,7 @@ if (!exist('tables_select'))
      }
 }
 
-if (!exist('users_select'))
+if (not_exist('users_select'))
 {
     /**
      * build a form to select an user
@@ -965,7 +956,7 @@ if (!exist('users_select'))
 }
 
 
-if (!exist('bases_select'))
+if (not_exist('bases_select'))
 {
     /**
      * build a form to select a base
@@ -1000,7 +991,7 @@ if (!exist('bases_select'))
      }
 }
 
-if (!exist('simply_view'))
+if (not_exist('simply_view'))
 {
     /**
      * generate an simply view to manage records
@@ -1028,7 +1019,7 @@ if (!exist('simply_view'))
      */
     function simply_view(string $current_table_name, Table $instance , array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right = true): string
     {
-        $instance = $instance->set_current_table($current_table_name);
+        $instance = $instance->select($current_table_name);
 
         $columns  = $instance->get_columns();
         $primary  = $instance->get_primary_key();
@@ -1095,7 +1086,7 @@ if (!exist('simply_view'))
 
 
 
-if (!exist('tables_view'))
+if (not_exist('tables_view'))
 {
     /**
     * generate alter table view
@@ -1111,7 +1102,7 @@ if (!exist('tables_view'))
 
 }
 
-if (!exist('users_view'))
+if (not_exist('users_view'))
 {
     /**
      * generate a view to manage users
@@ -1126,7 +1117,7 @@ if (!exist('users_view'))
     }
 
 }
-if (!exist('advanced_view'))
+if (not_exist('advanced_view'))
 {
     /**
      * @param string $current_table
@@ -1155,7 +1146,7 @@ if (!exist('advanced_view'))
     function advanced_view(string $current_table, Table $instance,array $records,string $form_action,string $select_table_code,string $action_save_text,string $action_edit_text,string $edit_text_class,string $remove_url_prefix,string $remove_button_class,string $remove_text,string $text_before_remove,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right,string $csrf_token_field ='',int  $textarea_row =  1): string
     {
 
-        $instance = $instance->set_current_table($current_table);
+        $instance = $instance->select($current_table);
         $types    = $instance->get_columns_types();
         $columns  = $instance->get_columns();
         $primary  = $instance->get_primary_key();
@@ -1266,7 +1257,7 @@ if (!exist('advanced_view'))
         return $code;
     }
 }
-if (!exist('get_records'))
+if (not_exist('get_records'))
 {
     /**
      * @param Table $instance
@@ -1285,7 +1276,7 @@ if (!exist('get_records'))
     {
 
 
-        $instance = $instance->set_current_table($current_table_name);
+        $instance = $instance->select($current_table_name);
 
         $key = $instance->get_primary_key();
 
@@ -1320,7 +1311,7 @@ if (!exist('get_records'))
 }
 
 
-if (!exist('bootstrap_js'))
+if (not_exist('bootstrap_js'))
 {
     /**
      * @return string
@@ -1332,7 +1323,7 @@ if (!exist('bootstrap_js'))
 }
 
 
-if (!exist('_html'))
+if (not_exist('_html'))
 {
 
     /***
@@ -1359,7 +1350,7 @@ if (!exist('_html'))
 
     }
 }
-if (!exist('html'))
+if (not_exist('html'))
 {
     /**
      * generate an element between the content
@@ -1437,7 +1428,7 @@ if (!exist('html'))
 }
 
 
-if (!exist('id'))
+if (not_exist('id'))
 {
     /**
      * generate an id
@@ -1451,7 +1442,7 @@ if (!exist('id'))
         return uniqid($prefix);
     }
 }
-if (!exist('submit'))
+if (not_exist('submit'))
 {
     /**
      * verify if a form is submit
@@ -1465,7 +1456,7 @@ if (!exist('submit'))
         return $post ?  isset($_POST[$key])   : isset($_GET[$key])  ;
     }
 }
-if (!exist('bootswatch'))
+if (not_exist('bootswatch'))
 {
     /**
      * generate bootswatch css link
@@ -1474,6 +1465,8 @@ if (!exist('bootswatch'))
      * @param string $version
      *
      * @return string
+     *
+     * @throws Exception
      */
     function bootswatch(string $theme = 'bootstrap',string $version = '4.0.0'): string
     {
@@ -1485,7 +1478,7 @@ if (!exist('bootswatch'))
     }
 }
 
-if (!exist('push'))
+if (not_exist('push'))
 {
     /**
      * push one or more elements onto the end of array
@@ -1501,7 +1494,7 @@ if (!exist('push'))
     }
 }
 
-if (!exist('stack'))
+if (not_exist('stack'))
 {
     /**
      * push one or more elements onto the end of array
@@ -1519,7 +1512,7 @@ if (!exist('stack'))
 
 
 
-if (!exist('has'))
+if (not_exist('has'))
 {
     /**
      * checks if a value exists in an array
@@ -1537,7 +1530,7 @@ if (!exist('has'))
     }
 }
 
-if (!exist('values'))
+if (not_exist('values'))
 {
     /**
      * Return all the values of an array
@@ -1552,7 +1545,7 @@ if (!exist('values'))
     }
 }
 
-if (!exist('merge'))
+if (not_exist('merge'))
 {
     /**
      * merge two array
@@ -1567,7 +1560,7 @@ if (!exist('merge'))
     }
 }
 
-if (!exist('session'))
+if (not_exist('session'))
 {
     /**
      * get a $_SESSION value
@@ -1585,7 +1578,7 @@ if (!exist('session'))
     }
 }
 
-if (!exist('cookie'))
+if (not_exist('cookie'))
 {
     /**
      * get a $_COOKIE value
@@ -1602,7 +1595,7 @@ if (!exist('cookie'))
         return '';
     }
 }
-if (!exist('get'))
+if (not_exist('get'))
 {
     /**
      * get a $_GET value
@@ -1620,7 +1613,7 @@ if (!exist('get'))
     }
 }
 
-if (!exist('files'))
+if (not_exist('files'))
 {
     /**
      * get a $_FILE value
@@ -1637,7 +1630,7 @@ if (!exist('files'))
         return '';
     }
 }
-if (!exist('server'))
+if (not_exist('server'))
 {
     /**
      * get a $_SERVER value
@@ -1655,7 +1648,7 @@ if (!exist('server'))
     }
 }
 
-if (!exist('post'))
+if (not_exist('post'))
 {
     /**
      * get a $_POST value
@@ -1671,7 +1664,7 @@ if (!exist('post'))
         return '';
     }
 }
-if (!exist('generate'))
+if (not_exist('generate'))
 {
     /**
      * generate a form to edit or create a record
@@ -1698,7 +1691,7 @@ if (!exist('generate'))
     }
 }
 
-if (!exist('root'))
+if (not_exist('root'))
 {
     /**
      * @param string $driver
@@ -1715,7 +1708,7 @@ if (!exist('root'))
         return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
     }
 }
-if (!exist('collation'))
+if (not_exist('collation'))
 {
     /**
      * get all collation
@@ -1740,7 +1733,7 @@ if (!exist('collation'))
         return $collation->collection();
     }
 }
-if (!exist('charset'))
+if (not_exist('charset'))
 {
     /**
      * get all charset
@@ -1768,7 +1761,7 @@ if (!exist('charset'))
     }
 }
 
-if (!exist('git'))
+if (not_exist('git'))
 {
     /**
      * manage git repository
@@ -1784,7 +1777,7 @@ if (!exist('git'))
     }
 }
 
-if (!exist('current_branch'))
+if (not_exist('current_branch'))
 {
     /**
      * get the current git branch
@@ -1802,7 +1795,7 @@ if (!exist('current_branch'))
 }
 
 
-if (!exist('base'))
+if (not_exist('base'))
 {
     /**
      * manage database
@@ -1817,7 +1810,7 @@ if (!exist('base'))
     }
 }
 
-if (!exist('user'))
+if (not_exist('user'))
 {
     /**
      * manage users
@@ -1832,7 +1825,7 @@ if (!exist('user'))
     }
 }
 
-if (!exist('pass'))
+if (not_exist('pass'))
 {
     /**
      * update user password
@@ -1851,7 +1844,7 @@ if (!exist('pass'))
 }
 
 
-if (!exist('os'))
+if (not_exist('os'))
 {
     /**
      * see os
@@ -1866,7 +1859,7 @@ if (!exist('os'))
     }
 }
 
-if (!exist('device'))
+if (not_exist('device'))
 {
     /**
      * see devices
@@ -1882,7 +1875,7 @@ if (!exist('device'))
 }
 
 
-if (!exist('browser'))
+if (not_exist('browser'))
 {
     /**
      * see browser
@@ -1897,7 +1890,7 @@ if (!exist('browser'))
     }
 }
 
-if (!exist('is_browser'))
+if (not_exist('is_browser'))
 {
     /**
      * check if is name is browser
@@ -1912,7 +1905,7 @@ if (!exist('is_browser'))
     }
 }
 
-if (!exist('is_mobile'))
+if (not_exist('is_mobile'))
 {
     /**
      * check if device is mobile
@@ -1925,7 +1918,7 @@ if (!exist('is_mobile'))
     }
 }
 
-if (!exist('create'))
+if (not_exist('create'))
 {
     /**
      * create a new database or user or table
@@ -1940,7 +1933,7 @@ if (!exist('create'))
     }
 }
 
-if (!exist('superior'))
+if (not_exist('superior'))
 {
 
     /**
@@ -1949,7 +1942,7 @@ if (!exist('superior'))
      * of the expected value
      *
      * @param $parameter
-     * @param $expected
+     * @param int $expected
      * @param bool $run_exception
      * @param string $message
      *
@@ -1957,23 +1950,18 @@ if (!exist('superior'))
      *
      * @throws Exception
      */
-    function superior($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    function superior($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
-        if (is_array($parameter))
-            $parameter = count($parameter);
 
-        $x = $parameter > $expected;
+        $x = is_array($parameter) ? count($parameter) > $expected : $parameter > $expected;
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
+        is_true($x,$run_exception,$message);
+
         return $x;
     }
 }
 
-if (!exist('superior_or_equal'))
+if (not_exist('superior_or_equal'))
 {
 
     /**
@@ -1982,7 +1970,7 @@ if (!exist('superior_or_equal'))
      * of the expected value
      *
      * @param $parameter
-     * @param $expected
+     * @param int $expected
      * @param bool $run_exception
      * @param string $message
      *
@@ -1990,22 +1978,17 @@ if (!exist('superior_or_equal'))
      *
      * @throws Exception
      */
-    function superior_or_equal($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    function superior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
-        if (is_array($parameter))
-            $parameter = count($parameter);
 
-        $x = $parameter >= $expected;
+        $x = is_array($parameter) ? count($parameter) >= $expected : $parameter >= $expected;
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
+        is_true($x,$run_exception,$message);
+
         return $x;
     }
 }
-if (!exist('inferior'))
+if (not_exist('inferior'))
 {
 
     /**
@@ -2014,7 +1997,7 @@ if (!exist('inferior'))
      * of the expected value
      *
      * @param $parameter
-     * @param $expected
+     * @param int $expected
      * @param bool $run_exception
      * @param string $message
      *
@@ -2022,23 +2005,18 @@ if (!exist('inferior'))
      *
      * @throws Exception
      */
-    function inferior($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    function inferior($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
-        if (is_array($parameter))
-            $parameter = count($parameter);
 
-        $x = $parameter < $expected;
+        $x = is_array($parameter) ? count($parameter) < $expected : $parameter < $expected;
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
+        is_true($x,$run_exception,$message);
+
         return $x;
     }
 }
 
-if (!exist('inferior_or_equal'))
+if (not_exist('inferior_or_equal'))
 {
 
     /**
@@ -2047,7 +2025,7 @@ if (!exist('inferior_or_equal'))
      * of the expected value
      *
      * @param $parameter
-     * @param $expected
+     * @param int $expected
      * @param bool $run_exception
      * @param string $message
      *
@@ -2055,22 +2033,17 @@ if (!exist('inferior_or_equal'))
      *
      * @throws Exception
      */
-    function inferior_or_equal($parameter,$expected,bool $run_exception = false,string $message ='') : bool
+    function inferior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
-        if (is_array($parameter))
-            $parameter = count($parameter);
 
-        $x = $parameter <= $expected;
+        $x = is_array($parameter) ? count($parameter) <= $expected : $parameter <= $expected;
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
-        }
-     return $x;
+        is_true($x,$run_exception,$message);
+
+        return $x;
     }
 }
-if (!exist('databases_view'))
+if (not_exist('databases_view'))
 {
     /**
      * @param Imperium $imperium
@@ -2080,22 +2053,23 @@ if (!exist('databases_view'))
      * @param $create_database_submit
      * @param string $drop_database_submit_text
      *
+     * @param string $submit_class
      * @return string
      *
      * @throws Exception
      */
-    function databases_view(Imperium $imperium,$create_database_action,string $drop_database_action,$name_of_database_placeholder,$create_database_submit,string $drop_database_submit_text): string
+    function databases_view(Imperium $imperium,$create_database_action,string $drop_database_action,$name_of_database_placeholder,$create_database_submit,string $drop_database_submit_text,string $submit_class): string
     {
         $code = '';
 
-        append($code,html('div',form($create_database_action,uniqid())->row()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->end_rowAndNew()->input(Form::TEXT,'name',$name_of_database_placeholder)->end_rowAndNew()->submit($create_database_submit,$imperium->class(),uniqid())->get(),'mt-5 mb-5'));
-        append($code,html('div',form($drop_database_action,uniqid())->row()->select('database',$imperium->show_databases())->end_rowAndNew()->submit($drop_database_submit_text,$imperium->class(false),uniqid())->get(),'mt-5 mb-5'));
+        append($code,html('div',form($create_database_action,uniqid())->row()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->end_row_and_new()->input(Form::TEXT,'name',$name_of_database_placeholder)->end_row_and_new()->submit($create_database_submit,$submit_class,uniqid())->get(),'mt-5 mb-5'));
+        append($code,html('div',form($drop_database_action,uniqid())->row()->select('database',$imperium->show_databases())->end_row_and_new()->submit($drop_database_submit_text,$submit_class,uniqid())->get(),'mt-5 mb-5'));
 
         return $code;
     }
 }
 
-if (!exist('remove'))
+if (not_exist('remove'))
 {
     /**
      * remove a database , user or table
@@ -2110,7 +2084,7 @@ if (!exist('remove'))
     }
 }
 
-if (!exist('remove_view'))
+if (not_exist('remove_view'))
 {
     /**
      * create a view to create  database, user or table
@@ -2125,7 +2099,7 @@ if (!exist('remove_view'))
     }
 }
 
-if(!exist('show'))
+if(not_exist('show'))
 {
     /**
      * show databases, users, tables
@@ -2159,7 +2133,7 @@ if(!exist('show'))
     }
 }
 
-if(!exist('whoops'))
+if(not_exist('whoops'))
 {
     /**
      *
@@ -2172,7 +2146,7 @@ if(!exist('whoops'))
        return $whoops->register();
     }
 }
-if(!exist('array_prev'))
+if(not_exist('array_prev'))
 {
     /**
      * get the prev value of array by the current key
@@ -2191,7 +2165,7 @@ if(!exist('array_prev'))
     }
 
 }
-if(!exist('req'))
+if(not_exist('req'))
 {
     /**
      * execute a query return an array with results
@@ -2209,7 +2183,7 @@ if(!exist('req'))
     }
 }
 
-if(!exist('execute'))
+if(not_exist('execute'))
 {
     /**
      * execute a query return a boolean
@@ -2226,7 +2200,7 @@ if(!exist('execute'))
         return $instance->execute($request);
     }
 }
-if (!exist('db'))
+if (not_exist('db'))
 {
     /**
      * create a new database with optional parameters
@@ -2246,7 +2220,7 @@ if (!exist('db'))
     }
 }
 
-if (!exist('drop'))
+if (not_exist('drop'))
 {
     /**
      * @param $instance
@@ -2280,7 +2254,7 @@ if (!exist('drop'))
 }
 
 
-if (!exist('model'))
+if (not_exist('model'))
 {
 
     /**
@@ -2289,18 +2263,17 @@ if (!exist('model'))
      * @param Connect $connect
      * @param Table $table
      * @param string $current_table_name
-     * @param string $order_by
      *
      * @return Model
      *
      * @throws Exception
      */
-    function model(Connect $connect,Table $table, string $current_table_name,string $order_by = 'desc'): Model
+    function model(Connect $connect,Table $table, string $current_table_name): Model
     {
-        return new Model($connect,$table,$current_table_name,$order_by);
+        return new Model($connect,$table,$current_table_name);
     }
 }
-if (!exist('table'))
+if (not_exist('table'))
 {
 
     /**
@@ -2317,7 +2290,7 @@ if (!exist('table'))
     }
 }
 
-if (!exist('faker'))
+if (not_exist('faker'))
 {
     /**
      * get an instance of faker
@@ -2333,7 +2306,7 @@ if (!exist('faker'))
 }
 
 
-if (!exist('remove_users'))
+if (not_exist('remove_users'))
 {
     /**
      * remove users
@@ -2357,7 +2330,7 @@ if (!exist('remove_users'))
     }
 }
 
-if (!exist('remove_tables'))
+if (not_exist('remove_tables'))
 {
     /**
      *
@@ -2381,7 +2354,7 @@ if (!exist('remove_tables'))
     }
 }
 
-if (!exist('remove_bases'))
+if (not_exist('remove_bases'))
 {
     /**
      *
@@ -2404,7 +2377,7 @@ if (!exist('remove_bases'))
     }
 }
 
-if (!exist('form'))
+if (not_exist('form'))
 {
     /**
      * start a form
@@ -2424,7 +2397,7 @@ if (!exist('form'))
     }
 }
 
-if (!exist('d'))
+if (not_exist('d'))
 {
     /**
      * debug values
@@ -2442,7 +2415,7 @@ if (!exist('d'))
     }
 }
 
-if (!exist('not_in'))
+if (not_exist('not_in'))
 {
     /**
      *
@@ -2472,7 +2445,7 @@ if (!exist('not_in'))
 }
 
 
-if (!exist('dumper'))
+if (not_exist('dumper'))
 {
 
     /**
@@ -2533,7 +2506,7 @@ if (!exist('dumper'))
     }
 }
 
-if (!exist('sql'))
+if (not_exist('sql'))
 {
     /**
      * sql table builder
@@ -2549,7 +2522,7 @@ if (!exist('sql'))
     }
 }
 
-if (!exist('lines'))
+if (not_exist('lines'))
 {
     /**
      * get all lines in filename
@@ -2560,10 +2533,10 @@ if (!exist('lines'))
      */
      function lines(string $filename): array
      {
-         return File::getLines($filename);
+         return File::lines($filename);
      }
 }
-if (!exist('file_keys'))
+if (not_exist('file_keys'))
 {
     /**
      * get all keys in filename
@@ -2575,12 +2548,12 @@ if (!exist('file_keys'))
      */
     function file_keys(string $filename,string $delimiter): array
     {
-        return File::getKeys($filename,$delimiter);
+        return File::keys($filename,$delimiter);
     }
 
 }
 
-if (!exist('file_values'))
+if (not_exist('file_values'))
 {
     /**
      * get all values in filename
@@ -2592,13 +2565,13 @@ if (!exist('file_values'))
      */
     function file_values(string $filename,string $delimiter): array
     {
-        return File::getValues($filename,$delimiter);
+        return File::values($filename,$delimiter);
     }
 
 }
 
 
-if (!exist('pagination'))
+if (not_exist('pagination'))
 {
     /**
      * create a pagination
@@ -2619,7 +2592,7 @@ if (!exist('pagination'))
         return Pagination::paginate($limit_per_page,$pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
     }
 }
-if (!exist('add_user'))
+if (not_exist('add_user'))
 {
     /**
      *
@@ -2640,7 +2613,7 @@ if (!exist('add_user'))
     }
 }
 
-if (!exist('add_base'))
+if (not_exist('add_base'))
 {
     /**
      *
@@ -2666,7 +2639,7 @@ if (!exist('add_base'))
         return true;
     }
 }
-if (!exist('jasnyCss'))
+if (not_exist('jasnyCss'))
 {
     function jasnyCss(string $version = '3.1.3')
     {
@@ -2674,14 +2647,14 @@ if (!exist('jasnyCss'))
     }
 }
 
-if (!exist('foundation'))
+if (not_exist('foundation'))
 {
     function foundation(string $version = '6.4.3')
     {
         return '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/'.$version.'/css/foundation.min.css"/>';
     }
 }
-if (!exist('loadFontAwesome'))
+if (not_exist('loadFontAwesome'))
 {
     function fontAwesome(string $version = 'v5.0.8')
     {
@@ -2689,7 +2662,7 @@ if (!exist('loadFontAwesome'))
     }
 }
 
-if (!exist('jasnyJs'))
+if (not_exist('jasnyJs'))
 {
     function jasnyJs(string $version ='3.1.3')
     {
@@ -2697,7 +2670,7 @@ if (!exist('jasnyJs'))
     }
 }
 
-if (!exist('imperium'))
+if (not_exist('imperium'))
 {
     /**
      * all possibilities of management
@@ -2714,7 +2687,7 @@ if (!exist('imperium'))
         return new  Imperium($connect,$current_table );
     }
 }
-if (!exist('icon'))
+if (not_exist('icon'))
 {
     /**
      * build and icon bar
@@ -2730,7 +2703,7 @@ if (!exist('icon'))
     }
 }
 
-if (!exist('canvas'))
+if (not_exist('canvas'))
 {
     /**
      * start canvas
@@ -2751,7 +2724,7 @@ if (!exist('canvas'))
 }
 
 
-if(!exist('fa'))
+if(not_exist('fa'))
 {
     /**
      * generate a fa icon
@@ -2768,7 +2741,7 @@ if(!exist('fa'))
     }
 }
 
-if (!exist('cssLoader'))
+if (not_exist('cssLoader'))
 {
     /**
      * load a css files
@@ -2787,7 +2760,7 @@ if (!exist('cssLoader'))
     }
 }
 
-if (!exist('append'))
+if (not_exist('append'))
 {
     function append(&$variable,...$contents)
     {
@@ -2798,7 +2771,7 @@ if (!exist('append'))
 }
 
 
-if (!exist('js_loader'))
+if (not_exist('js_loader'))
 {
     /**
      * load a js files
@@ -2819,7 +2792,7 @@ if (!exist('js_loader'))
 }
 
 
-if (!exist('iconic'))
+if (not_exist('iconic'))
 {
     /**
      * generate a iconic icon
@@ -2856,15 +2829,19 @@ if (!exist('iconic'))
     }
 }
 
-if (!exist('glyph'))
+if (not_exist('glyph'))
 {
     /**
-     * generate a glyph icon
+     *
+     * Generate a glyph icon
      *
      * @param string $icon
      * @param string $type
      *
      * @return string
+     *
+     * @throws Exception
+     *
      */
     function glyph(string $icon,$type = 'svg'): string
     {
@@ -2872,7 +2849,7 @@ if (!exist('glyph'))
     }
 }
 
-if (!exist('image'))
+if (not_exist('image'))
 {
     /**
      * manage image
@@ -2888,7 +2865,8 @@ if (!exist('image'))
     }
 }
 
-if (!exist('today')) {
+if (not_exist('today'))
+{
 
     /**
      * Create a new Carbon instance for the current date.
@@ -2904,7 +2882,9 @@ if (!exist('today')) {
     }
 }
 
-if (!exist('now')) {
+if (not_exist('now'))
+{
+
     /**
      * Create a new Carbon instance for the current date.
      *
@@ -2917,7 +2897,8 @@ if (!exist('now')) {
     }
 }
 
-if (!exist('future')) {
+if (not_exist('future'))
+{
 
     /**
      * Create a new future date.
@@ -2988,7 +2969,7 @@ if (!exist('future')) {
     }
 }
 
-if (!exist('ago'))
+if (not_exist('ago'))
 {
     /**
      * return time based on a time
@@ -3007,7 +2988,7 @@ if (!exist('ago'))
     }
 }
 
-if (!exist('mysql_loaded'))
+if (not_exist('mysql_loaded'))
 {
     /**
      * check if mysql is loaded
@@ -3020,7 +3001,7 @@ if (!exist('mysql_loaded'))
     }
 }
 
-if (!exist('postgresql_loaded'))
+if (not_exist('postgresql_loaded'))
 {
     /**
      * check if mysql is loaded
@@ -3033,7 +3014,7 @@ if (!exist('postgresql_loaded'))
     }
 }
 
-if (!exist('sqlite_loaded'))
+if (not_exist('sqlite_loaded'))
 {
     /**
      * check if mysql is loaded
@@ -3053,7 +3034,7 @@ if (!exist('sqlite_loaded'))
  *
  * @return bool
  */
-function exist(string $name) : bool
+function not_exist(string $name) : bool
 {
-    return function_exists($name);
+    return ! function_exists($name);
 }

@@ -49,7 +49,7 @@ namespace Imperium\Directory {
                {
                    if(not_in(self::IGNORE,$file))
                    {
-                       (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::delete("$directory/$file");
+                       (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::remove("$directory/$file");
                    }
 
                }

@@ -18,12 +18,12 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: tests
+all: test
 
 help: ## Display the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-send: ## Send to the server the modifications
+send: test ## Send to the server the modifications
 	git add .
 	git commit -m "$(COMMIT)"
 	git push origin --all
@@ -42,7 +42,7 @@ serve: ## Start the development server
 	@clear
 	@php -S localhost:8000 -d display_errors=1 -t public
 
-coverage: test ## Start a server to display the coverage
+coverage: ## Start a server to display the coverage
 	@clear
 	@php -S localhost:3000 -t ~/coverage/imperium
 

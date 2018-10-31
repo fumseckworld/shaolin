@@ -18,6 +18,22 @@ class CollectionTest extends DatabaseTest
         $this->assertInstanceOf(Collection::class,collection(array('1',2,3,3,5)));
     }
 
+    public function test_remove_values()
+    {
+        $data = [1,2,3,4,5,6,7,8,9];
+        $this->assertNotContains('8',collection($data)->remove_values(8)->collection());
+        $this->assertNotContains('9',collection($data)->remove_values(9)->collection());
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_change_value()
+    {
+        $data = [1,2,3,4,5,6,7,8,9];
+        $this->assertNotContains('9',collection($data)->change_value(9,10));
+    }
+
     public function test_push()
     {
         $data = collection();

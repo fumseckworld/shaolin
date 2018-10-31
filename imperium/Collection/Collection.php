@@ -129,12 +129,20 @@ class Collection implements ArrayAccess, Iterator
      *
      * Return the result key
      *
-     * @return mixed
+     * @param bool $length
      *
+     * @return mixed
      */
-    public function search_result()
+    public function search_result(bool $length = false)
     {
-        return $this->get($this->get_search());
+        if ($length)
+        {
+            $x = collection(explode('(',trim($this->get($this->get_search()),')')));
+            return $x->has_key(1) ? $x->get(1) : 0;
+        }
+
+        $x = collection(explode('(',trim($this->get($this->get_search()),')')));
+        return $x->has_key(0) ? $x->get(0) : '';
     }
 
     /**
@@ -591,7 +599,16 @@ class Collection implements ArrayAccess, Iterator
            return $this;
     }
 
-    public function remove_values(string ...$values)
+    /**
+     *
+     * Remove values
+     *
+     * @param string ...$values
+     *
+     * @return Collection
+     *
+     */
+    public function remove_values(string ...$values): Collection
     {
         foreach ($values as $value)
         {

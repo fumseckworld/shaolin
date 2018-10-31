@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: fumse
- * Date: 31/08/2018
- * Time: 17:56
- */
 
 namespace Imperium\Connexion;
 
@@ -77,9 +71,10 @@ class Connect
      * @param string $database
      * @param string $username
      * @param string $password
-     * @param int    $pdoFetchMode
+     * @param int $pdoFetchMode
      * @param string $dump_path
      *
+     * @throws Exception
      */
     public function __construct(string $driver,string $database,string $username,string $password,int $pdoFetchMode = PDO::FETCH_OBJ,string $dump_path = 'dump')
     {
@@ -162,6 +157,8 @@ class Connect
      * determine if the driver used is mysql
      *
      * @return bool
+     *
+     * @throws Exception
      */
     public function mysql(): bool
     {
@@ -172,6 +169,7 @@ class Connect
      * determine if the driver used is postgresql
      *
      * @return bool
+     * @throws Exception
      */
     public function postgresql(): bool
     {
@@ -182,6 +180,8 @@ class Connect
      * determine if the driver used is postgresql
      *
      * @return bool
+     *
+     * @throws Exception
      */
     public function sqlite(): bool
     {
@@ -249,6 +249,8 @@ class Connect
     /**
      *
      * @return string|PDO
+     *
+     * @throws Exception
      */
     private function getInstance()
     {

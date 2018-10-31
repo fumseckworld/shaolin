@@ -1,0 +1,80 @@
+#!/usr/bin/env php
+<?php
+
+require_once 'vendor/autoload.php';
+
+require_once 'config.php';
+
+define('SEED_LIMIT',200);
+
+if (different($argc,2))
+{
+    echo "* MISSING OPTIONS\n";
+    echo "\t* SEED\n";
+    exit(1);
+}
+
+
+
+if (equal($argv[1],"seed"))
+{
+    system('clear');
+
+    $run = now();
+
+    echo "* SEEDING : ".date('Y-m-d')."\n";
+
+    $hour = now();
+
+    echo "\t* MYSQL\n";
+
+    try {
+        $data = $mysql->seed_database(SEED_LIMIT, ['phinxlog']);
+        if ($data)
+            echo "\t* SUCCESS (".ago('en',$hour).")\n";
+        else
+            echo "\t* FAILURE ".ago('en',$hour)."\n";
+
+    } catch (Exception $e)
+    {
+        d($e->getMessage());
+    }
+
+    $hour = now();
+
+    echo "\t* POSTGRESQL\n";
+
+    try
+    {
+        $data = $pgsql->seed_database(SEED_LIMIT, ['phinxlog']);
+        if ($data)
+            echo "\t* SUCCESS (".ago('en',$hour).")\n";
+        else
+            echo "\t* FAILURE ".ago('en',$hour)."\n";
+
+    } catch (Exception $e) {
+        d($e->getMessage());
+    }
+
+    $hour = now();
+
+    echo "\t* SQLITE\n";
+
+    try
+    {
+        $data = $pgsql->seed_database(SEED_LIMIT, ['phinxlog','sqlite_sequence']);
+        if ($data)
+            echo "\t* SUCCESS (".ago('en',$hour).")\n";
+        else
+            echo "\t* FAILURE ".ago('en',$hour)."\n";
+
+    } catch (Exception $e) {
+        d($e->getMessage());
+    }
+    echo "* FINNISH : ".ago('en',$run)."\n";
+}
+
+
+
+
+

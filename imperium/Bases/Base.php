@@ -104,15 +104,16 @@ namespace Imperium\Bases {
             return $databases->collection();
         }
 
+
         /**
          *
          * Create multiple base
          *
          * @param string ...$bases
+         *
          * @return bool
          *
          * @throws Exception
-         *
          */
         public function create_multiples(string ...$bases): bool
         {
@@ -196,7 +197,7 @@ namespace Imperium\Bases {
          */
         public function drop(string $database): bool
         {
-            return equal($this->driver,Connect::SQLITE) ? File::delete($database) : $this->connexion->execute("DROP DATABASE $database");
+            return equal($this->driver,Connect::SQLITE) ? File::remove($database) : $this->connexion->execute("DROP DATABASE $database");
         }
 
         /**

@@ -3,7 +3,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class Countrytable extends AbstractMigration
+class Imperiumtable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,8 +28,14 @@ class Countrytable extends AbstractMigration
      */
     public function change()
     {
-        $this->table('country')
+        $this->table('imperium')
             ->addColumn('name', 'string')
+            ->addColumn('age', 'integer')
+            ->addColumn('phone', 'integer')
+            ->addColumn('sex', 'string')
+            ->addColumn('status','string')
+            ->addColumn('days','datetime')
+            ->addColumn('date','datetime')
             ->create();
     }
 }

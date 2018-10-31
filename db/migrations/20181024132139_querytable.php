@@ -3,7 +3,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class Workstable extends AbstractMigration
+class Querytable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,7 +28,8 @@ class Workstable extends AbstractMigration
      */
     public function change()
     {
-        $this->table('works')
+
+        $this->table('query')
             ->addColumn('name', 'string')
             ->addColumn('age', 'integer')
             ->addColumn('phone', 'integer')

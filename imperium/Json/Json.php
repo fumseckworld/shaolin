@@ -115,9 +115,10 @@ class Json
      *
      * @return mixed
      *
+     * @throws \Exception
      */
     public function decode(bool $assoc = false)
     {
-       return File::exist($this->filename) && File::isJson($this->filename) ? json_decode(utf8_encode(File::getContent($this->filename)),$assoc) :  json_decode(utf8_encode($this->filename),$assoc);
+       return File::exist($this->filename) && File::json($this->filename) ? json_decode(utf8_encode(File::content($this->filename)),$assoc) :  json_decode(utf8_encode($this->filename),$assoc);
     }
 }

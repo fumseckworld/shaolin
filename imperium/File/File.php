@@ -1251,7 +1251,7 @@ namespace Imperium\File {
          */
         private static function nameIsEmpty(string $function)
         {
-            die("Please enter the input name parameter on $function function\n");
+             die("Please enter the input name parameter on $function function\n");
         }
 
         /**
@@ -1335,7 +1335,7 @@ namespace Imperium\File {
         {
             self::quitIfEmpty([$filename],__FUNCTION__);
 
-            return self::verify($filename) ? fclose($filename) : false;
+            return fclose($filename);
         }
 
         /**

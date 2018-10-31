@@ -4,24 +4,104 @@
 namespace tests\table;
  
 use Imperium\Imperium;
+use Imperium\Tables\Table;
 use Testing\DatabaseTest;
 
 class TableTest extends DatabaseTest
 {
 
     /**
+     * @var Table
+     */
+    private $mysql_table;
+    
+    /**
+     * @var Table
+     */
+    private $pgsql_table;
+    
+    /**
+     * @var Table
+     */
+    private $sqlite_table;
+    
+    public function setUp()
+    {
+        $this->table = 'tbl';
+        $this->mysql_table = $this->mysql()->tables()->select($this->table);
+        $this->pgsql_table = $this->postgresql()->tables()->select($this->table);
+        $this->sqlite_table = $this->sqlite()->tables()->select($this->table);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_seed()
+    {
+        $this->assertTrue($this->mysql_table->seed(50));
+        $this->assertTrue($this->pgsql_table->seed(50));
+        $this->assertTrue($this->sqlite_table->seed(50));
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function test_insert_multiples()
+    {
+        $data= [];
+
+        $number = 100;
+        for ($i = 0; $i != $number ; $i++)
+        {
+            $data[] = [
+                'id' => null ,
+                'name' => faker()->name,
+                'age' => faker()->numberBetween(1,100),
+                'phone' => faker()->randomNumber(8),
+                'sex' => faker()->firstNameMale,
+                'status' => faker()->text(20),
+                'days' => faker()->date(),
+                'date' => faker()->date(),
+            ];
+        }
+
+        $this->assertTrue($this->mysql_table->insert_multiples($data));
+        $this->assertTrue($this->pgsql_table->insert_multiples($data));
+        $this->assertTrue($this->sqlite_table->insert_multiples($data));
+    }
+    /**
      * @throws \Exception
      */
     public function test_select()
     {
-        $this->assertNotEmpty($this->mysql()->tables()->select_by_id(6));
-        $this->assertNotEmpty($this->postgresql()->tables()->select_by_id(6));
-
-        $this->assertNotEmpty($this->sqlite()->tables()->select_by_id(6));
+ 
+        $this->assertNotEmpty($this->mysql_table->select_by_id(6));
+        $this->assertNotEmpty($this->pgsql_table->select_by_id(6));
+        $this->assertNotEmpty($this->sqlite_table->select_by_id(6));
 
     }
 
 
+    /**
+     * @throws \Exception
+     */
+    public function test_change()
+    {
+        $this->assertTrue($this->mysql_table->set_charset('utf8')->change_charset());
+        $this->assertTrue($this->mysql_table->set_collation('utf8_general_ci')->change_collation());
+
+        $this->assertFalse($this->pgsql_table->set_charset('utf8')->change_charset());
+        $this->assertFalse($this->pgsql_table->set_collation('utf8_general_ci')->change_collation());
+
+        $this->assertFalse($this->sqlite_table->set_charset('utf8')->change_charset());
+        $this->assertFalse($this->sqlite_table->set_collation('utf8_general_ci')->change_collation());
+
+
+        $this->assertTrue($this->mysql_table->convert('utf8','utf8_general_ci'));
+        $this->assertFalse($this->pgsql_table->convert('utf8','utf8_general_ci'));
+        $this->assertFalse($this->sqlite_table->convert('utf8','utf8_general_ci'));
+    }
 
     /**
      * @throws \Exception
@@ -29,9 +109,9 @@ class TableTest extends DatabaseTest
     public function test_primary_key()
     {
         $expected = 'id';
-        $this->assertEquals($expected,$this->mysql()->tables()->get_primary_key());
-        $this->assertEquals($expected,$this->postgresql()->tables()->get_primary_key());
-        $this->assertEquals($expected,$this->sqlite()->tables()->get_primary_key());
+        $this->assertEquals($expected,$this->mysql_table->get_primary_key());
+        $this->assertEquals($expected,$this->pgsql_table->get_primary_key());
+        $this->assertEquals($expected,$this->sqlite_table->get_primary_key());
     }
 
     /**
@@ -40,17 +120,41 @@ class TableTest extends DatabaseTest
     public function test_show()
     {
 
-        $table = 'patients';
-        $this->assertContains($table,$this->mysql()->tables()->show());
-        $this->assertContains($table,$this->mysql()->show_tables());
 
-        $this->assertContains($table,$this->postgresql()->show_tables());
-        $this->assertContains($table,$this->postgresql()->tables()->show());
+        $this->assertContains($this->table,$this->mysql_table->show());
+        $this->assertContains($this->table,$this->mysql()->show_tables());
 
-        $this->assertContains($table,$this->sqlite()->show_tables());
-        $this->assertContains($table,$this->sqlite()->tables()->show());
+        $this->assertContains($this->table,$this->pgsql_table->show());
+        $this->assertContains($this->table,$this->postgresql()->show_tables());
+
+        $this->assertContains($this->table,$this->sqlite_table->show());
+        $this->assertContains($this->table,$this->sqlite()->show_tables());
 
 
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_has_columns_type()
+    {
+
+        $this->assertTrue($this->mysql_table->has_column_type('datetime'));
+        $this->assertTrue($this->pgsql_table->has_column_type('character varying'));
+        $this->assertTrue($this->sqlite_table->has_column_type('DATETIME','INTEGER'));
+
+        $this->assertFalse($this->mysql_table->has_column_type('integer'));
+        $this->assertFalse($this->pgsql_table->has_column_type('text'));
+        $this->assertFalse($this->sqlite_table->has_column_type('character varying'));
+    }
+    /**
+     * @throws \Exception
+     */
+    public function test_get_tpm_name()
+    {
+        $this->assertNotEmpty($this->mysql_table->get_current_tmp_table());
+        $this->assertNotEmpty($this->pgsql_table->get_current_tmp_table());
+        $this->assertNotEmpty($this->sqlite_table->get_current_tmp_table());
     }
     /**
      * @throws \Exception
@@ -62,16 +166,16 @@ class TableTest extends DatabaseTest
         $old = 'name';
         $new = 'username';
 
-        $this->assertTrue($this->mysql()->tables()->rename_column($old, $new));
-        $this->assertTrue($this->mysql()->tables()->rename_column($new, $old));
+        $this->assertTrue($this->mysql_table->rename_column($old, $new));
+        $this->assertTrue($this->mysql_table->rename_column($new, $old));
 
 
-        $this->assertTrue($this->postgresql()->tables()->rename_column($old, $new));
-        $this->assertTrue($this->postgresql()->tables()->rename_column($new, $old));
+        $this->assertTrue($this->pgsql_table->rename_column($old, $new));
+        $this->assertTrue($this->pgsql_table->rename_column($new, $old));
 
 
-        $this->assertFalse($this->sqlite()->tables()->rename_column($old, $new));
-        $this->assertFalse($this->sqlite()->tables()->rename_column($new, $old));
+        $this->assertTrue($this->sqlite_table->rename_column($old, $new));
+        $this->assertTrue($this->sqlite_table->rename_column($new, $old));
 
         $this->assertTrue($this->mysql()->rename_column($old, $new));
         $this->assertTrue($this->mysql()->rename_column($new, $old));
@@ -79,29 +183,28 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->rename_column($old, $new));
         $this->assertTrue($this->postgresql()->rename_column($new, $old));
 
-        $this->assertFalse($this->sqlite()->rename_column($old, $new));
-        $this->assertFalse($this->sqlite()->rename_column($new, $old));
+        $this->assertTrue($this->sqlite()->rename_column($old, $new));
+        $this->assertTrue($this->sqlite()->rename_column($new, $old));
 
 
-        $table = 'patients';
         $new = 'alex';
 
-        $this->assertTrue($this->mysql()->tables()->set_current_table($table)->rename($new));
-        $this->assertTrue($this->postgresql()->tables()->set_current_table($table)->rename($new));
-        $this->assertTrue($this->sqlite()->tables()->set_current_table($table)->rename($new));
+        $this->assertTrue($this->mysql_table->rename($new));
+        $this->assertTrue($this->pgsql_table->rename($new));
+        $this->assertTrue($this->sqlite_table->rename($new));
 
-        $this->assertTrue($this->mysql()->tables()->set_current_table($new)->rename($table));
-        $this->assertTrue($this->postgresql()->tables()->set_current_table($new)->rename($table));
-        $this->assertTrue($this->sqlite()->tables()->set_current_table($new)->rename($table));
+        $this->assertTrue($this->mysql_table->rename($this->table));
+        $this->assertTrue($this->pgsql_table->rename($this->table));
+        $this->assertTrue($this->sqlite_table->rename($this->table));
 
 
-        $this->assertTrue($this->mysql()->rename_table($table,$new));
-        $this->assertTrue($this->postgresql()->rename_table($table,$new));
-        $this->assertTrue($this->sqlite()->rename_table($table,$new));
+        $this->assertTrue($this->mysql()->rename_table($this->table,$new));
+        $this->assertTrue($this->postgresql()->rename_table($this->table,$new));
+        $this->assertTrue($this->sqlite()->rename_table($this->table,$new));
 
-        $this->assertTrue($this->mysql()->rename_table($new,$table));
-        $this->assertTrue($this->postgresql()->rename_table($new,$table));
-        $this->assertTrue($this->sqlite()->rename_table($new,$table));
+        $this->assertTrue($this->mysql()->rename_table($new,$this->table));
+        $this->assertTrue($this->postgresql()->rename_table($new,$this->table));
+        $this->assertTrue($this->sqlite()->rename_table($new,$this->table));
 
 
 
@@ -113,14 +216,14 @@ class TableTest extends DatabaseTest
      */
     public function test_type()
     {
-        foreach ($this->mysql()->set_current_table($this->table)->show_columns() as $column)
-            $this->assertNotEmpty($this->mysql()->tables()->type($column));
+        foreach ($this->mysql_table->get_columns() as $column)
+            $this->assertNotEmpty($this->mysql_table->type($column));
 
-        foreach ($this->postgresql()->set_current_table($this->table)->show_columns() as $column)
-            $this->assertNotEmpty($this->postgresql()->tables()->type($column));
+        foreach ($this->pgsql_table->get_columns() as $column)
+            $this->assertNotEmpty($this->pgsql_table->type($column));
 
-        foreach ($this->sqlite()->set_current_table($this->table)->show_columns() as $column)
-            $this->assertNotEmpty($this->sqlite()->tables()->type($column));
+        foreach ($this->sqlite_table->get_columns() as $column)
+            $this->assertNotEmpty($this->sqlite_table->type($column));
     }
 
     /**
@@ -128,31 +231,63 @@ class TableTest extends DatabaseTest
      */
     public function test_has()
     {
-        $table = 'patients';
-        $this->assertTrue($this->mysql()->tables()->has());
-        $this->assertTrue($this->postgresql()->tables()->has());
-        $this->assertTrue($this->sqlite()->tables()->has());
+         
+        $this->assertTrue($this->mysql_table->has());
+        $this->assertTrue($this->pgsql_table->has());
+        $this->assertTrue($this->sqlite_table->has());
 
-        $this->assertTrue($this->mysql()->tables()->set_current_table($table)->has_column('id'));
-        $this->assertTrue($this->postgresql()->tables()->set_current_table($table)->has_column('id'));
-        $this->assertTrue($this->sqlite()->tables()->set_current_table($table)->has_column('id'));
+        $this->assertTrue($this->mysql_table->has_column('id'));
+        $this->assertTrue($this->pgsql_table->has_column('id'));
+        $this->assertTrue($this->sqlite_table->has_column('id'));
 
-        $this->assertFalse($this->mysql()->tables()->set_current_table($table)->has_column('ids'));
-        $this->assertFalse($this->postgresql()->tables()->set_current_table($table)->has_column('ids'));
-        $this->assertFalse($this->sqlite()->tables()->set_current_table($table)->has_column('ids'));
+        $this->assertFalse($this->mysql_table->has_column('ids'));
+        $this->assertFalse($this->pgsql_table->has_column('ids'));
+        $this->assertFalse($this->sqlite_table->has_column('ids'));
     }
 
 
     /**
      * @throws \Exception
      */
+
+    public function test_remove_by_id()
+    {
+        $this->assertTrue($this->mysql_table->remove_by_id(20));
+        $this->assertTrue($this->pgsql_table->remove_by_id(20));
+        $this->assertTrue($this->sqlite_table->remove_by_id(20));
+    }
+    /**
+     * @throws \Exception
+     */
+    public function test_the_last_field()
+    {
+
+        $columns = $this->mysql_table->get_columns();
+        $end = end($columns);
+        $this->assertFalse($this->mysql_table->is_the_last_field('id',$this->mysql_table->get_columns()));
+        $this->assertFalse($this->mysql_table->is_the_last_field('name',$this->mysql_table->get_columns()));
+
+        $this->assertFalse($this->pgsql_table->is_the_last_field('id',$this->mysql_table->get_columns()));
+        $this->assertFalse($this->pgsql_table->is_the_last_field('name',$this->mysql_table->get_columns()));
+
+        $this->assertFalse($this->sqlite_table->is_the_last_field('id',$this->mysql_table->get_columns()));
+        $this->assertFalse($this->sqlite_table->is_the_last_field('name',$this->mysql_table->get_columns()));
+
+        $this->assertTrue($this->mysql_table->is_the_last_field($end,$this->mysql_table->get_columns()));
+        $this->assertTrue($this->pgsql_table->is_the_last_field($end,$this->mysql_table->get_columns()));
+        $this->assertTrue($this->sqlite_table->is_the_last_field($end,$this->mysql_table->get_columns()));
+
+
+    }
+    /**
+     * @throws \Exception
+     */
     public function test_append_column()
     {
-        $column = 'phone';
+        $column = 'moria';
 
-        $table = $this->table;
+        $instance = $this->mysql_table;
 
-        $instance = $this->mysql()->tables()->set_current_table($table);
         $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
@@ -166,7 +301,7 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->remove_column($column));
 
 
-        $instance = $this->postgresql()->tables()->set_current_table($table);
+        $instance = $this->pgsql_table;
         $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
@@ -181,11 +316,38 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->remove_column($column));
 
 
-        $instance = $this->sqlite()->tables()->set_current_table($table);
+        $instance = $this->sqlite_table;
         $this->assertTrue($instance->append_column($column,Imperium::TEXT,255,false));
-        $this->assertTrue($instance->has_column($column));
-        $this->assertTrue($instance->remove_column($column));
 
+        $this->assertTrue($instance->has_column($column));
+
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function test_ignore()
+    {
+         $this->assertNotContains($this->table,$this->mysql()->tables()->hidden([$this->table])->show());
+         $this->assertNotContains($this->table,$this->postgresql()->tables()->hidden([$this->table])->show());
+         $this->assertNotContains($this->table,$this->sqlite()->tables()->hidden([$this->table])->show());
+
+         $this->assertContains($this->table,$this->mysql()->tables()->hidden([])->show());
+         $this->assertContains($this->table,$this->postgresql()->tables()->hidden([])->show());
+         $this->assertContains($this->table,$this->sqlite()->tables()->hidden([])->show());
+    }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function test_columns_to_string()
+    {
+
+        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->mysql_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->pgsql_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, status, days, date, moria',$this->sqlite_table->columns_to_string());
     }
 
 
@@ -195,52 +357,90 @@ class TableTest extends DatabaseTest
     public function test_count()
     {
 
-        $this->assertNotEmpty($this->mysql()->tables()->count());
-        $this->assertNotEmpty($this->postgresql()->tables()->count());
-        $this->assertNotEmpty($this->sqlite()->tables()->count());
-
-        $this->assertNotEmpty($this->mysql()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
-        $this->assertNotEmpty($this->postgresql()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
-        $this->assertNotEmpty($this->sqlite()->tables()->count($this->second_table,Imperium::MODE_ALL_TABLES));
+        $this->assertEquals(299,$this->mysql_table->count());
+        $this->assertEquals(299,$this->pgsql_table->count());
+        $this->assertEquals(299,$this->sqlite_table->count());
 
     }
+
+
+    /**
+     * @throws \Exception
+     */
+    public function test_found()
+    {
+        $table = 7;
+
+        $this->assertEquals($table,$this->mysql_table->found());
+        $this->assertEquals($table,$this->pgsql_table->found());
+        $this->assertEquals(9,$this->sqlite_table->found());
+
+    }
+
+
+    /**
+     * @throws \Exception
+     */
     public function test_current()
     {
-        $table = $this->table;
-        $this->assertEquals($table,$this->mysql()->tables()->get_current_table());
-        $this->assertEquals($table,$this->postgresql()->tables()->get_current_table());
-        $this->assertEquals($table,$this->sqlite()->tables()->get_current_table());
+
+        $this->assertEquals($this->table,$this->mysql_table->get_current_table());
+        $this->assertEquals($this->table,$this->pgsql_table->get_current_table());
+        $this->assertEquals($this->table,$this->sqlite_table->get_current_table());
     }
 
+
+    /**
+     * @throws \Exception
+     */
+    public function test_columns_not_exist()
+    {
+        $this->assertTrue($this->mysql_table->column_not_exist('excalibur'));
+        $this->assertTrue($this->pgsql_table->column_not_exist('excalibur'));
+        $this->assertTrue($this->sqlite_table->column_not_exist('excalibur'));
+
+        $this->assertFalse($this->mysql_table->column_not_exist('id'));
+        $this->assertFalse($this->pgsql_table->column_not_exist('id'));
+        $this->assertFalse($this->sqlite_table->column_not_exist('id'));
+    }
     /**
      * @throws \Exception
      */
     public function test_dump()
     {
-        $this->assertTrue($this->mysql()->tables()->dump());
-        $this->assertTrue($this->postgresql()->tables()->dump());
-        $this->assertTrue($this->sqlite()->tables()->dump());
 
-        $this->assertTrue($this->mysql()->tables()->dump($this->table));
-        $this->assertTrue($this->postgresql()->tables()->dump($this->table));
-        $this->assertTrue($this->sqlite()->tables()->dump($this->table));
+        $this->assertTrue($this->mysql_table->dump());
+        $this->assertTrue($this->pgsql_table->dump());
+        $this->assertTrue($this->sqlite_table->dump());
+
+        $this->assertTrue($this->mysql_table->dump($this->table));
+        $this->assertTrue($this->pgsql_table->dump($this->table));
+        $this->assertTrue($this->sqlite_table->dump($this->table));
     }
 
 
     /**
      * @throws \Exception
      */
+    public function test_modify_column()
+    {
+        $this->assertTrue($this->mysql_table->modify_column('status',Imperium::VARCHAR,200));
+        $this->assertTrue($this->pgsql_table->modify_column('status',Imperium::CHARACTER_VARYING,200));
+        $this->assertFalse($this->sqlite_table->modify_column('status',Imperium::TEXT,200));
+    }
+    /**
+     * @throws \Exception
+     */
     public function test_truncate()
     {
-        $table = 'patients';
 
-        $this->assertTrue($this->mysql()->tables()->truncate($table));
-        $this->assertTrue($this->mysql()->tables()->truncate($table));
-        $this->assertTrue($this->mysql()->tables()->truncate($table));
+        $this->assertTrue($this->mysql_table->truncate());
+        $this->assertTrue($this->pgsql_table->truncate());
+        $this->assertTrue($this->sqlite_table->truncate());
 
-        $this->assertTrue($this->mysql()->tables()->truncate($table));
-        $this->assertTrue($this->postgresql()->tables()->truncate($table));
-        $this->assertTrue($this->sqlite()->tables()->truncate($table));
+        $this->assertTrue($this->mysql_table->truncate($this->table));
+        $this->assertTrue($this->pgsql_table->truncate($this->table));
+        $this->assertTrue($this->sqlite_table->truncate($this->table));
 
     }
 }

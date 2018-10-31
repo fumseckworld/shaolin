@@ -5,6 +5,7 @@ namespace tests;
 
  
 use Exception;
+use function GuzzleHttp\Promise\all;
 use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Model\Model;
@@ -13,23 +14,117 @@ use Testing\DatabaseTest;
 
 class ModelTest extends DatabaseTest
 {
+
+    /**
+     * @var Model
+     */
+    private $mysql_model;
+
+    /**
+     * @var Model
+     */
+    private $pgsql_model;
+
+    /**
+     * @var Model
+     */
+    private $sqlite_model;
+
+    /**
+     * @throws Exception
+     */
+    public function setUp()
+    {
+        $this->table = 'model';
+        $this->mysql_model = $this->mysql()->model()->change_table($this->table);
+        $this->pgsql_model = $this->postgresql()->model()->change_table($this->table);
+        $this->sqlite_model = $this->sqlite()->model()->change_table($this->table);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_truncate()
+    {
+        $empty = 'the table is empty';
+        $success = 'records was found';
+
+        $sql ='';
+        $this->assertTrue($this->mysql()->model()->truncate());
+        $result = query_result($this->mysql()->model(),Imperium::SELECT,$this->mysql()->all(),$this->mysql()->show_columns(),$success,$empty,$empty,$sql);
+
+        $this->assertCount(0,$this->mysql()->model()->all());
+        $this->assertContains($empty,$result);
+        $this->assertTrue( $this->mysql()->model()->is_empty());
+
+        $this->assertTrue($this->postgresql()->model()->truncate());
+        $result = query_result($this->postgresql()->model(),Imperium::SELECT,$this->postgresql()->all(),$this->postgresql()->show_columns(),$success,$empty,$empty,$sql);
+        $this->assertCount(0,$this->postgresql()->model()->all());
+        $this->assertContains($empty,$result);
+        $this->assertTrue( $this->postgresql()->model()->is_empty());
+
+        $this->assertTrue($this->sqlite()->model()->truncate());
+        $result = query_result($this->sqlite()->model(),Imperium::SELECT,$this->sqlite()->all(),$this->sqlite()->show_columns(),$success,$empty,$empty,$sql);
+        $this->assertCount(0,$this->sqlite()->model()->all());
+        $this->assertContains($empty,$result);
+        $this->assertTrue( $this->sqlite()->model()->is_empty());
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public function test_insert()
+    {
+
+
+        $number = 5;
+        for ($i = 0; $i != $number; ++$i)
+        {
+            $data = [
+                'id' => null,
+                'name' => "'". faker()->name,
+                'age' => faker()->numberBetween(1,100),
+                'phone' => faker()->randomNumber(8),
+                'sex' => faker()->firstNameMale,
+                'status' =>  "'".faker()->text(20),
+                'days' => faker()->date(),
+                'date' => faker()->date(),
+            ];
+
+            $this->assertTrue($this->mysql_model->insert($data,$this->table));
+            $this->assertTrue($this->pgsql_model->insert($data,$this->table));
+            $this->assertTrue($this->sqlite_model->insert($data,$this->table));
+        }
+
+        $this->assertCount($number,$this->mysql_model->all());
+        $this->assertEquals($number,$this->mysql_model->count());
+
+        $this->assertCount($number,$this->pgsql_model->all());
+        $this->assertEquals($number,$this->pgsql_model->count());
+
+        $this->assertCount($number,$this->sqlite_model->all());
+        $this->assertEquals($number,$this->sqlite_model->count());
+    }
+
+
     /**
      * @throws \Exception
      */
     public function test_show_tables()
     {
-        $this->assertContains($this->table,$this->mysql()->model()->show_tables());
-        $this->assertContains($this->table,$this->postgresql()->model()->show_tables());
-        $this->assertContains($this->table,$this->sqlite()->model()->show_tables());
+        $this->assertContains($this->table,$this->mysql_model->show_tables());
+        $this->assertContains($this->table,$this->pgsql_model->show_tables());
+        $this->assertContains($this->table,$this->sqlite_model->show_tables());
 
-        $this->assertContains($this->table,$this->mysql()->show_tables());
-        $this->assertContains($this->table,$this->postgresql()->show_tables());
-        $this->assertContains($this->table,$this->sqlite()->show_tables());
+        $this->assertContains($this->table,$this->mysql_model->show_tables());
+        $this->assertContains($this->table,$this->pgsql_model->show_tables());
+        $this->assertContains($this->table,$this->sqlite_model->show_tables());
 
 
-        $this->assertNotContains($this->table,$this->mysql()->show_tables([$this->table]));
-        $this->assertNotContains($this->table,$this->postgresql()->show_tables([$this->table]));
-        $this->assertNotContains($this->table,$this->sqlite()->show_tables([$this->table]));
+        $this->assertNotContains($this->table,$this->mysql_model->show_tables([$this->table]));
+        $this->assertNotContains($this->table,$this->pgsql_model->show_tables([$this->table]));
+        $this->assertNotContains($this->table,$this->sqlite_model->show_tables([$this->table]));
 
 
     }
@@ -39,17 +134,17 @@ class ModelTest extends DatabaseTest
      */
     public function test_is()
     {
-        $this->assertTrue($this->mysql()->model()->is_mysql());
-        $this->assertFalse($this->postgresql()->model()->is_mysql());
-        $this->assertFalse($this->sqlite()->model()->is_mysql());
+        $this->assertTrue($this->mysql_model->is_mysql());
+        $this->assertFalse($this->pgsql_model->is_mysql());
+        $this->assertFalse($this->sqlite_model->is_mysql());
 
-        $this->assertTrue($this->postgresql()->model()->is_postgresql());
-        $this->assertFalse($this->mysql()->model()->is_postgresql());
-        $this->assertFalse($this->sqlite()->model()->is_postgresql());
+        $this->assertFalse($this->mysql_model->is_postgresql());
+        $this->assertTrue($this->pgsql_model->is_postgresql());
+        $this->assertFalse($this->sqlite_model->is_postgresql());
 
-        $this->assertTrue($this->sqlite()->model()->is_sqlite());
-        $this->assertFalse($this->mysql()->model()->is_sqlite());
-        $this->assertFalse($this->postgresql()->model()->is_sqlite());
+        $this->assertFalse($this->mysql_model->is_sqlite());
+        $this->assertFalse($this->pgsql_model->is_sqlite());
+        $this->assertTrue($this->sqlite_model->is_sqlite());
 
     }
 
@@ -59,30 +154,24 @@ class ModelTest extends DatabaseTest
      */
     public function test_request()
     {
-        $table = $this->table;
-        $this->assertNotEmpty($this->mysql()->model()->request('SHOW DATABASES'));
-        $this->assertNotEmpty($this->postgresql()->model()->request("SELECT * FROM $table"));
-        $this->assertNotEmpty($this->sqlite()->model()->request("SELECT * FROM $table"));
+
+        $req =  "select * from $this->table";
+        $this->assertNotEmpty($this->mysql_model->request($req));
+        $this->assertNotEmpty($this->pgsql_model->request($req));
+        $this->assertNotEmpty($this->sqlite_model->request($req));
     }
 
-    /**
-     * @throws Exception
-     */
-    public function test_construct()
-    {
-        $this->assertInstanceOf(Model::class,new Model($this->mysql()->connect(),$this->mysql()->tables(),$this->table));
-        $this->assertInstanceOf(Model::class,new Model($this->postgresql()->connect(),$this->postgresql()->tables(),$this->table));
-        $this->assertInstanceOf(Model::class,new Model($this->sqlite()->connect(),$this->sqlite()->tables(),$this->table));
-    }
+
     /**
     * @throws Exception
     */
     public function test_execute()
     {
-        $table = $this->table;
-        $this->assertTrue($this->mysql()->model()->execute('SHOW DATABASES'));
-        $this->assertTrue($this->postgresql()->model()->execute("SELECT * FROM $table"));
-        $this->assertTrue($this->sqlite()->model()->execute("SELECT * FROM $table"));
+
+        $req =  "select * from $this->table";
+        $this->assertTrue($this->mysql_model->execute($req));
+        $this->assertTrue($this->pgsql_model->execute($req));
+        $this->assertTrue($this->sqlite_model->execute($req));
     }
 
     /**
@@ -107,10 +196,9 @@ class ModelTest extends DatabaseTest
     public function test_find()
     {
 
-        $this->assertCount(1,$this->mysql()->find(10));
-        $this->assertCount(1,$this->postgresql()->find(10));
-        $this->assertCount(1,$this->sqlite()->find(10));
-
+        $this->assertCount(1,$this->mysql_model->find(2));
+        $this->assertCount(1,$this->pgsql_model->find(2));
+        $this->assertCount(1,$this->sqlite_model->find(2));
     }
 
     /**
@@ -119,14 +207,14 @@ class ModelTest extends DatabaseTest
     public function test_find_or_fail()
     {
 
-        $this->assertCount(1,$this->mysql()->find_or_fail(10));
-        $this->assertCount(1,$this->postgresql()->find_or_fail(10));
-        $this->assertCount(1,$this->sqlite()->find_or_fail(10));
+        $this->assertCount(1,$this->mysql_model->find_or_fail(2));
+        $this->assertCount(1,$this->pgsql_model->find_or_fail(2));
+        $this->assertCount(1,$this->sqlite_model->find_or_fail(2));
 
         $this->expectException(Exception::class);
-        $this->mysql()->find_or_fail(800);
-        $this->postgresql()->find_or_fail(800);
-        $this->sqlite()->find_or_fail(800);
+        $this->mysql_model->find_or_fail(800);
+        $this->pgsql_model->find_or_fail(800);
+        $this->sqlite_model->find_or_fail(800);
 
     }
 
@@ -135,41 +223,12 @@ class ModelTest extends DatabaseTest
      */
     public function test_remove()
     {
-        $this->assertTrue($this->mysql()->remove_record(4));
-        $this->assertTrue($this->postgresql()->remove_record(4));
-        $this->assertTrue($this->sqlite()->remove_record(4));
-        $this->assertTrue($this->mysql()->model()->remove(7));
-        $this->assertTrue($this->postgresql()->model()->remove(7));
-        $this->assertTrue($this->sqlite()->model()->remove(7));
+
+        $this->assertTrue($this->mysql_model->remove(4));
+        $this->assertTrue($this->pgsql_model->remove(4));
+        $this->assertTrue($this->sqlite_model->remove(4));
     }
 
-    /**
-     * @throws Exception
-     */
-    public function test_truncate()
-    {
-        $empty = 'the table is empty';
-        $success = 'records was found';
-
-        $this->assertTrue($this->mysql()->model()->truncate());
-        $result = query_result($this->mysql()->model(),Imperium::SELECT,$this->mysql()->all(),$this->mysql()->show_columns(),$success,$empty,$empty);
-
-        $this->assertCount(0,$this->mysql()->model()->all());
-        $this->assertContains($empty,$result);
-        $this->assertTrue( $this->mysql()->model()->is_empty());
-
-        $this->assertTrue($this->postgresql()->model()->truncate());
-        $result = query_result($this->postgresql()->model(),Imperium::SELECT,$this->postgresql()->all(),$this->postgresql()->show_columns(),$success,$empty,$empty);
-        $this->assertCount(0,$this->postgresql()->model()->all());
-        $this->assertContains($empty,$result);
-        $this->assertTrue( $this->postgresql()->model()->is_empty());
-
-        $this->assertTrue($this->sqlite()->model()->truncate());
-        $result = query_result($this->sqlite()->model(),Imperium::SELECT,$this->sqlite()->all(),$this->sqlite()->show_columns(),$success,$empty,$empty);
-        $this->assertCount(0,$this->sqlite()->model()->all());
-        $this->assertContains($empty,$result);
-        $this->assertTrue( $this->sqlite()->model()->is_empty());
-    }
 
     /**
      * @throws Exception
@@ -178,54 +237,21 @@ class ModelTest extends DatabaseTest
     public function test_update()
     {
         $data = [
-            'id' => 6,
-            'name' => faker()->name(),
-            'age' => faker()->numberBetween(1,80),
-            'sex' => rand(1,2) == 1 ? 'M': 'F',
+            'id' => null,
+            'name' => faker()->name,
+            'age' => faker()->numberBetween(1,100),
+            'phone' => faker()->randomNumber(8),
+            'sex' => faker()->firstNameMale,
             'status' => faker()->text(20),
-            'date' => faker()->date()
+            'days' => faker()->date(),
+            'date' => faker()->date(),
         ];
-        $this->assertTrue($this->mysql()->update_record(6,$data,[]));
-        $this->assertTrue($this->postgresql()->update_record(6,$data,[]));
-        $this->assertTrue($this->sqlite()->update_record(6,$data,[]));
-
-        $this->assertTrue($this->mysql()->model()->update(6,$data,[]));
-        $this->assertTrue($this->postgresql()->model()->update(6,$data,[]));
-        $this->assertTrue($this->sqlite()->model()->update(6,$data,[]));
+        $this->assertTrue($this->mysql_model->update(4,$data,[]));
+        $this->assertTrue($this->pgsql_model->update(4,$data,[]));
+        $this->assertTrue($this->sqlite_model->update(4,$data,[]));
     }
 
 
-    /**
-     * @throws Exception
-     */
-    public function test_insert()
-    {
-        $number = 5;
-        for ($i = 0; $i != $number; ++$i)
-        {
-            $data = [
-                'id' => null,
-                'name' => faker()->name(),
-                'age' => faker()->numberBetween(1,80),
-                'sex' => rand(1,2) == 1 ? 'M': 'F',
-                'status' => faker()->text(20),
-                'date' => faker()->date()
-            ];
-
-            $this->assertTrue($this->mysql()->model()->insert($data,$this->table));
-            $this->assertTrue($this->postgresql()->model()->insert($data,$this->table));
-            $this->assertTrue($this->sqlite()->model()->insert($data,$this->table));
-        }
-
-        $this->assertCount($number,$this->mysql()->model()->all());
-        $this->assertEquals($number,$this->mysql()->model()->count());
-
-        $this->assertCount($number,$this->postgresql()->model()->all());
-        $this->assertEquals($number,$this->postgresql()->model()->count());
-
-        $this->assertCount($number,$this->sqlite()->model()->all());
-        $this->assertEquals($number,$this->sqlite()->model()->count());
-    }
 
     /**
      * @throws Exception
@@ -237,27 +263,30 @@ class ModelTest extends DatabaseTest
         {
             $data = [
                 'id' => null,
-                'name' => faker()->name(),
-                'age' => faker()->numberBetween(1,80),
-                'sex' => rand(1,2) == 1 ? 'M': 'F',
+                'name' => faker()->name,
+                'age' => faker()->numberBetween(1,100),
+                'phone' => faker()->randomNumber(8),
+                'sex' => faker()->firstNameMale,
                 'status' => faker()->text(20),
-                'date' => faker()->date()
+                'days' => faker()->date(),
+                'date' => faker()->date(),
             ];
 
-            $this->assertTrue($this->mysql()->save($data,[]));
-            $this->assertTrue($this->postgresql()->save($data,[]));
-            $this->assertTrue($this->sqlite()->save($data,[]));
+            $this->assertTrue($this->mysql_model->save($data,$this->table,[]));
+            $this->assertTrue($this->pgsql_model->save($data,$this->table,[]));
+            $this->assertTrue($this->sqlite_model->save($data,$this->table,[]));
+
         }
 
-        $number = $number *2;
-        $this->assertCount($number,$this->mysql()->model()->all());
-        $this->assertEquals($number,$this->mysql()->model()->count());
+        $number = ($number *2) - 1;
+        $this->assertCount($number,$this->mysql_model->all());
+        $this->assertEquals($number,$this->mysql_model->count());
 
-        $this->assertCount($number,$this->postgresql()->model()->all());
-        $this->assertEquals($number,$this->postgresql()->model()->count());
+        $this->assertCount($number,$this->pgsql_model->all());
+        $this->assertEquals($number,$this->pgsql_model->count());
 
-        $this->assertCount($number,$this->sqlite()->model()->all());
-        $this->assertEquals($number,$this->sqlite()->model()->count());
+        $this->assertCount($number,$this->sqlite_model->all());
+        $this->assertEquals($number,$this->sqlite_model->count());
     }
 
     /**
@@ -267,13 +296,13 @@ class ModelTest extends DatabaseTest
     {
         $id = 1;
 
-        $this->assertNotEmpty($this->mysql()->model()->get('id', $id,'name'));
-        $this->assertNotEmpty($this->postgresql()->model()->get('id',$id,'name'));
-        $this->assertNotEmpty($this->sqlite()->model()->get('id',$id,'name'));
+        $this->assertNotEmpty($this->mysql_model->get('id', $id,'name'));
+        $this->assertNotEmpty($this->pgsql_model->get('id',$id,'name'));
+        $this->assertNotEmpty($this->sqlite_model->get('id',$id,'name'));
 
-        $this->assertNotEmpty($this->mysql()->model()->get('id',$id,collection($this->mysql()->model()->columns())->join(', ')));
-        $this->assertNotEmpty($this->postgresql()->model()->get('id',$id,collection($this->postgresql()->model()->columns())->join(', ')));
-        $this->assertNotEmpty($this->sqlite()->model()->get('id',$id,collection($this->sqlite()->model()->columns())->join(', ')));
+        $this->assertNotEmpty($this->mysql_model->get('id',$id,collection($this->mysql()->model()->columns())->join(', ')));
+        $this->assertNotEmpty($this->pgsql_model->get('id',$id,collection($this->postgresql()->model()->columns())->join(', ')));
+        $this->assertNotEmpty($this->sqlite_model->get('id',$id,collection($this->sqlite()->model()->columns())->join(', ')));
 
     }
 

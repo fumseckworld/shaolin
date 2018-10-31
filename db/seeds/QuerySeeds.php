@@ -3,7 +3,7 @@
 
 use Phinx\Seed\AbstractSeed;
 
-class WorksSeeds extends AbstractSeed
+class QuerySeeds extends AbstractSeed
 {
     /**
      * Run Method.
@@ -30,6 +30,6 @@ class WorksSeeds extends AbstractSeed
                 'date' => faker()->date(),
             ];
         }
-        $this->insert('works', $country);
+        $this->insert('query', $country);
     }
 }

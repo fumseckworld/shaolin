@@ -1,23 +1,4 @@
 <?php
-/**
- * fumseck added Builder.php to imperium
- * The 09/09/17 at 19:39
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General public License for more details.
- *
- * You should have received a copy of the GNU General public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- */
 
 
 namespace Imperium\Tables {
@@ -27,7 +8,6 @@ namespace Imperium\Tables {
     use Imperium\Connexion\Connect;
     use Imperium\Imperium;
 
-
     /**
      *
      * Management of table
@@ -36,13 +16,8 @@ namespace Imperium\Tables {
      *
      * @package Imperium\Databases\Eloquent\Tables
      */
-    class Table  
+    class Table
     {
-        /**
-         * @var Collection
-         */
-        private $columns;
-
         /**
          *
          * All columns added to create a new table
@@ -80,11 +55,6 @@ namespace Imperium\Tables {
          * @var string
          */
         private $engine;
-        
-        /**
-         * @var string
-         */
-        private $path;
 
         /**
          * @var string
@@ -100,18 +70,52 @@ namespace Imperium\Tables {
          *
          * Define name of the current  table
          *
-         * @param string $current_table_name
+         * @param string $table
          *
          * @return Table
          *
          */
-        public function set_current_table(string $current_table_name): Table
+        public function select(string $table): Table
         {
-            $this->table = $current_table_name;
+            $this->table = $table;
 
             return $this;
         }
 
+        const TYPE_OF_DATE = [
+            'date',
+            'datetime',
+            'interval',
+            'time',
+            'timestamp',
+            'timestamp with time zone',
+            'time with time zone',
+            'timestamp without time zone'
+        ];
+
+        const TYPE_OF_INTEGER = [
+            'int',
+            'bigserial',
+            'serial',
+            'smallserial',
+            'bigint',
+            'float',
+            'integer',
+            'tinyint',
+            'smallint',
+            'mediumint'
+        ];
+
+        const TYPE_OF_TEXT = [
+            'varchar',
+            'character varying',
+            'character',
+            'blob',
+            'text',
+            'mediumtext',
+            'tinytext',
+            'longtext'
+        ];
 
         /**
          *
@@ -140,7 +144,6 @@ namespace Imperium\Tables {
         {
              $this->connexion =  $connect;
              $this->driver  =  $connect->get_driver();
-             $this->columns = collection();
              $this->added_columns = collection();
         }
 
@@ -151,10 +154,11 @@ namespace Imperium\Tables {
          *
          * @return string
          *
+         * @throws Exception
          */
         public function get_current_table(): string
         {
-            return $this->table;
+            return  $this->table;
         }
 
         /**
@@ -162,7 +166,7 @@ namespace Imperium\Tables {
          * Check if current database has table
          *
          * @return bool
-         * 
+         *
          * @throws Exception
          *
          */
@@ -185,10 +189,7 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case Connect::MYSQL;
-                break;
-                case Connect::POSTGRESQL:
-                break;
-                case Connect::SQLITE:
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} COLLATE {$this->collation};");
                 break;
                 default:
                     return false;
@@ -210,10 +211,7 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case Connect::MYSQL;
-                break;
-                case Connect::POSTGRESQL:
-                break;
-                case Connect::SQLITE:
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHARACTER SET = {$this->charset};");
                 break;
                 default:
                     return false;
@@ -229,7 +227,7 @@ namespace Imperium\Tables {
          * @param string $column
          *
          * @return bool
-         * 
+         *
          * @throws Exception
          *
          */
@@ -238,12 +236,29 @@ namespace Imperium\Tables {
             return collection($this->get_columns())->exist($column);
         }
 
+
+        /**
+         *
+         * Check if a column exist
+         *
+         * @param string $column
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function column_not_exist(string $column): bool
+        {
+            return collection($this->get_columns())->not_exist($column);
+        }
+
         /**
          *
          * Return all columns types inside a table
          *
          * @return array
-         * 
+         *
          * @throws Exception
          *
          */
@@ -265,20 +280,20 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL :
 
-                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM $this->table") as $column)
+                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->get_current_table()}") as $column)
                         $fields->push($column->Field);
 
                 break;
 
                 case Connect::POSTGRESQL :
 
-                    foreach ($this->connexion->request("SELECT column_name FROM information_schema.columns WHERE table_name ='$this->table'") as $column)
+                    foreach ($this->connexion->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->get_current_table()}'") as $column)
                          $fields->push($column->column_name);
 
                 break;
 
                 case Connect::SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info($this->table)") as $column)
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->get_current_table()})") as $column)
                         $fields->push($column->name);
                 break;
             }
@@ -299,7 +314,7 @@ namespace Imperium\Tables {
          */
         public function drop(string $table = '' ): bool
         {
-            return def($table) ? $this->connexion->execute("DROP TABLE $table") :  $this->connexion->execute("DROP TABLE {$this->table}");
+            return def($table) ? $this->connexion->execute("DROP TABLE $table") :  $this->connexion->execute("DROP TABLE {$this->get_current_table()}");
         }
 
         /**
@@ -317,25 +332,26 @@ namespace Imperium\Tables {
         {
             if (def($table))
                 $this->table = $table;
-            
+
+
             switch ($this->driver)
             {
                 case Connect::MYSQL :
-                    return $this->connexion->execute("TRUNCATE TABLE {$this->table}");
+                    return $this->connexion->execute("TRUNCATE TABLE {$this->get_current_table()}");
                 break;
                 case Connect::POSTGRESQL :
-                    return $this->connexion->execute("TRUNCATE TABLE {$this->table}  RESTART IDENTITY");
+                    return $this->connexion->execute("TRUNCATE TABLE {$this->get_current_table()}  RESTART IDENTITY");
                 break;
 
                 case Connect::SQLITE :
-                    return $this->truncateSqliteTable($this->table);
+                    return $this->truncateSqliteTable($this->get_current_table());
                 break;
                 default:
                     return false;
                 break;
             }
-     
-             
+
+
         }
 
         /**
@@ -352,13 +368,21 @@ namespace Imperium\Tables {
          * @return Table
          *
          */
-        public function append_field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = true, bool $nullable = false): Table
+        public function field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = true, bool $nullable = false): Table
         {
-            $new =  $this->columns->add($name,Imperium::FIELD_NAME)->add($type,Imperium::FIELD_TYPE)->add($primary, Imperium::FIELD_PRIMARY)->add($length, Imperium::FIELD_LENGTH )->add($unique,Imperium::FIELD_UNIQUE)->add($nullable,Imperium::FIELD_NULLABLE)->collection();
 
-            $this->added_columns->push($new);
+            $x = collection()
+                ->add($name,Imperium::FIELD_NAME)
+                ->add($type,Imperium::FIELD_TYPE)
+                ->add($primary, Imperium::FIELD_PRIMARY)
+                ->add($length, Imperium::FIELD_LENGTH )
+                ->add($unique,Imperium::FIELD_UNIQUE)
+                ->add($nullable,Imperium::FIELD_NULLABLE)
+            ->collection();
 
-             return $this;
+            $this->added_columns->push($x);
+
+            return $this;
         }
 
         /**
@@ -376,11 +400,14 @@ namespace Imperium\Tables {
          */
         public function append_column(string $name, string $type, int $size, bool $unique): bool
         {
+
+
             $driver = $this->driver;
             $data = collection();
-            $command = "ALTER TABLE {$this->table} ADD COLUMN ";
+            $command = "ALTER TABLE {$this->get_current_table()} ADD COLUMN ";
 
-            different($size,0) ?  append($command,"$name $type($size)") :  append($command,"$name $type ");
+            different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
+
 
             $data->add($this->connexion->execute($command));
 
@@ -411,7 +438,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE $this->table ADD CONSTRAINT  UNIQUE($column)");
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD CONSTRAINT  UNIQUE($column)");
                 }
             }
 
@@ -419,7 +446,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE $this->table ADD UNIQUE ($column);");
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD UNIQUE ($column);");
                 }
             }
 
@@ -427,7 +454,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE $this->table ADD UNIQUE ($column);");
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD UNIQUE ($column);");
                 }
             }
             return false;
@@ -450,16 +477,17 @@ namespace Imperium\Tables {
         {
             $driver = $this->driver;
             if (equal(Connect::POSTGRESQL,$driver))
-                return $this->connexion->execute("ALTER TABLE {$this->table} ALTER COLUMN $column DROP $constraint;");
+                return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ALTER COLUMN $column DROP $constraint;");
 
             return false;
         }
+
         /**
          *
          * Create the new table
          *
          * @return bool
-         * 
+         *
          * @throws Exception
          *
          */
@@ -468,34 +496,35 @@ namespace Imperium\Tables {
 
             $command = $this->startCreateCommand();
 
-
-
             $columns = $this->added_columns;
+
 
             foreach ($columns->collection() as $column)
             {
-                $end = has($column[Imperium::FIELD_NAME],$columns->last());
+                $end =  has($column[Imperium::FIELD_NAME],$columns->last());
                 append($command,$this->updateCreateCommand($column,$end));
+
             }
 
 
-            append($command ,')');
+            append($command, ' )');
 
-            if ($this->connexion->mysql() && def($this->engine))
-                append($command ," ENGINE = {$this->engine}");
+            $this->added_columns = collection();
 
-            return $this->connexion->execute($command);
-
+            return  $this->connexion->execute($command);
         }
 
         /**
          * start creation of a table
          *
          * @return string
+         *
+         * @throws Exception
+         *
          */
-        public function startCreateCommand() : string
+        private function startCreateCommand() : string
         {
-            return $this->connexion->mysql() ? "CREATE TABLE IF NOT EXISTS `{$this->table}` ( " : "CREATE TABLE IF NOT EXISTS {$this->table} ( ";
+            return $this->connexion->mysql() ? "CREATE TABLE IF NOT EXISTS `{$this->get_current_table()}` ( " : "CREATE TABLE IF NOT EXISTS {$this->get_current_table()} ( ";
         }
 
         /**
@@ -526,7 +555,7 @@ namespace Imperium\Tables {
          * @return string
          *
          */
-        public function updateCreateCommand(array $field,bool $end) : string
+        private function updateCreateCommand(array $field,bool $end) : string
         {
             $x = collection($field);
 
@@ -567,6 +596,77 @@ namespace Imperium\Tables {
         }
 
         /**
+         *
+         * Seed current table
+         *
+         * @param int $records
+         *
+         * @return bool
+         *
+         * @throws Exception
+         */
+        public function seed(int $records): bool
+        {
+
+            $query = "INSERT INTO {$this->get_current_table()} ({$this->columns_to_string()}) VALUES ";
+
+            $primary = $this->get_primary_key();
+
+            $x = collection();
+
+            for($i=0;different($i,$records);$i++)
+            {
+
+                foreach ($this->get_columns() as $column)
+                {
+                    $type = strtolower($this->type($column));
+
+                    if (equal($column,$primary))
+                    {
+                        switch ($this->driver)
+                        {
+                            case Connect::MYSQL:
+                            case Connect::SQLITE:
+                                $x->add('NULL', $column);
+                            break;
+                            default:
+                                $x->add('DEFAULT',$column);
+                            break;
+                        }
+                    }
+                    else
+                    {
+
+                        if (has($type,self::TYPE_OF_DATE))
+                            $x->add($this->connexion->instance()->quote(faker()->date()),$column);
+
+                        if (has($type,self::TYPE_OF_INTEGER))
+                            $x->add(faker()->numberBetween(1,100),$column);
+
+                        if (has($type,self::TYPE_OF_TEXT))
+                            $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
+
+                    }
+
+                }
+
+
+                $value = '(' .$x->join(', ') . '),';
+
+                append($query,$value);
+
+                $x->clear();
+            }
+
+
+            $query = trim($query,',');
+
+
+            return $this->connexion->execute($query);
+
+
+        }
+        /**
          * set hidden tables
          *
          * @param array $hidden
@@ -591,7 +691,7 @@ namespace Imperium\Tables {
          */
         public function dump(string $table = ''): bool
         {
-            return def($table) ? dumper($this->connexion,false,$table) : dumper($this->connexion,false,$this->table);
+            return def($table) ? dumper($this->connexion,false,$table) : dumper($this->connexion,false,$this->get_current_table());
         }
 
 
@@ -602,33 +702,36 @@ namespace Imperium\Tables {
          */
         private function detectPrimaryKey(): string
         {
+
+
             switch ($this->driver)
             {
                 case Connect::MYSQL:
 
-                    foreach ($this->connexion->request("show columns from {$this->table} where `Key` = 'PRI';") as $key)
+                    foreach ($this->connexion->request("show columns from {$this->get_current_table()} where `Key` = 'PRI';") as $key)
                         return $key->Field;
 
-                    break;
+                break;
 
                 case Connect::POSTGRESQL:
 
-                    foreach($this->connexion->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '$this->table';") as $key)
+                    foreach($this->connexion->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->get_current_table()}';") as $key)
                         return $key->column_name;
-                    break;
+                break;
 
                 case Connect::SQLITE:
 
-                    foreach ($this->connexion->request("PRAGMA table_info($this->table)") as $field)
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->get_current_table()})") as $field)
                     {
                         if (def($field->pk))
                             return $field->name;
                     }
 
-                    break;
+                break;
             }
             return '';
         }
+
         /**
          * get the primary key
          *
@@ -658,8 +761,7 @@ namespace Imperium\Tables {
          */
         public function is_empty(): bool
         {
-            return empty($this->getRecords());
-
+            return empty($this->all());
         }
 
         /**
@@ -673,7 +775,7 @@ namespace Imperium\Tables {
          */
         public function select_by_id(int $id): array
         {
-            return $this->connexion->request("SELECT * FROM {$this->table} WHERE {$this->get_primary_key()} = $id" );
+            return $this->connexion->request("SELECT * FROM {$this->get_current_table()} WHERE {$this->get_primary_key()} = $id" );
         }
 
 
@@ -690,8 +792,7 @@ namespace Imperium\Tables {
          */
         public function select_by_id_or_fail(int $id): array
         {
-            $data = $this->connexion->request("SELECT * FROM {$this->table} WHERE {$this->get_primary_key()} = $id" );
-
+            $data = $this->connexion->request("SELECT * FROM {$this->get_current_table()} WHERE {$this->get_primary_key()} = $id" );
 
             superior($data,1,true,"The primary key is not unique");
 
@@ -711,44 +812,8 @@ namespace Imperium\Tables {
          */
         public function remove_by_id(int $id): bool
         {
-            return $this->connexion->execute("DELETE FROM {$this->table} WHERE {$this->get_primary_key()} = $id");
+            return $this->connexion->execute("DELETE FROM {$this->get_current_table()} WHERE {$this->get_primary_key()} = $id");
         }
-
-        /**
-         * @param string $table_name
-         *
-         * @param string ...$columns
-         * @return bool
-         *
-         * @throws Exception
-         */
-        public function create_as_select(string $table_name,string ...$columns): bool
-        {
-
-            if (equal($this->driver,Connect::SQLITE) && def($this->table))
-                return  $this->connexion->execute("CREATE TABLE $table_name AS SELECT $columns FROM $this->table");
-
-            return false;
-        }
-
-        /**
-         * @param string $table_name
-         * @param string $tmp_table
-         * @param bool $rename
-         * @param string $old
-         * @param string $new
-         * @param string $glue
-         * @return bool
-         * @throws Exception
-         */
-        public function insert_as_select(string $table_name,string $tmp_table,bool $rename = false,$old = '',$new = '',string $glue = ', '): bool
-        {
-
-            if (equal($this->driver,Connect::SQLITE) && def($this->table))
-                return  $rename ? $this->connexion->execute("INSERT INTO $table_name SELECT {$this->change_columns_name_to_string($old,$new,$glue)} FROM $tmp_table") : $this->connexion->execute("INSERT INTO $table_name SELECT {$this->columns_to_string()} FROM {$this->table}") ;
-            return false;
-        }
-
 
         /**
          *
@@ -783,7 +848,6 @@ namespace Imperium\Tables {
             return collection($this->get_columns())->change_value($old,$new)->join($glue);
         }
 
-
         /**
          * rename a existing column
          *
@@ -796,19 +860,22 @@ namespace Imperium\Tables {
         public function rename_column(string $old, string $new): bool
         {
 
-            $type = $this->type($old);
             switch ($this->driver)
             {
                 case Connect::MYSQL:
 
-                    return equal($old,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->table} CHANGE  $old $new $type ");
+                    $type = $this->type($old);
+
+                    $length = $this->length($old);
+
+                    $length = $length ?  "($length)" : '';
+
+                    return equal($old,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHANGE COLUMN  $old $new $type$length ;");
                 break;
                 case Connect::POSTGRESQL:
-
-                    return equal($old,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->table} RENAME COLUMN $old TO $new");
+                case Connect::SQLITE:
+                    return equal($old,$this->get_primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->get_current_table()} RENAME COLUMN $old TO $new;");
                 break;
-
-
                 default:
                     return false;
                 break;
@@ -817,42 +884,48 @@ namespace Imperium\Tables {
 
 
         /**
-         * @param string $column
+         *
+         * Convert a table
+         *
+         * @param string $charset
+         * @param string $collate
          *
          * @return bool
          *
          * @throws Exception
          */
-        public function remove_column(string $column): bool
+        public function convert(string $charset,string $collate): bool
         {
             switch ($this->driver)
             {
-
                 case Connect::MYSQL:
-                    return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE $this->table DROP $column");
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CONVERT TO CHARACTER SET $charset COLLATE $collate");
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
+
+        /**
+         *
+         * @param string $column
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function remove_column(string $column): bool
+        {
+
+            switch ($this->driver)
+            {
+                case Connect::MYSQL:
+                    return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP $column");
                 break;
                 case Connect::POSTGRESQL:
-                    return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE $this->table DROP COLUMN $column RESTRICT");
-                break;
-                case Connect::SQLITE:
-
-                    if (equal($column,$this->get_primary_key()))
-                        return false;
-
-                    $current = $this->table;
-
-                    $columns =  collection($this->get_columns())->remove_values($column)->join(', ');
-
-                    $new = "_$current";
-
-                    $this->rename($new);
-
-                    $this->connexion->execute("CREATE TABLE $current AS SELECT $columns FROM $this->table");
-
-                    $this->connexion->execute("INSERT INTO $current SELECT $columns FROM $this->table");
-
-                    return $this->set_current_table($current)->drop($new);
-
+                    return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP COLUMN $column RESTRICT");
                 break;
                 default:
                     return false;
@@ -887,102 +960,125 @@ namespace Imperium\Tables {
          *
          * @throws Exception
          */
-        public function insert(array $values,array $toIgnore = [],string $table = ''): bool
+        public function insert($values,array $toIgnore = [],string $table = ''): bool
         {
-
             if (def($table))
                 $this->table = $table;
 
             $primary = $this->get_primary_key();
+
+
 
             $columns = '(' . collection($this->get_columns())->join(', ') .') ';
 
             $val = collection();
             $ignore = collection($toIgnore);
 
-            foreach ($values as $key => $value)
+            if (is_array($values))
             {
-
-                if (different($key,$primary))
+                foreach ($values as $key => $value)
                 {
-                    if ($ignore->not_exist($value))
+
+                    if (different($key,$primary))
                     {
-                        if ($val->not_exist($value))
+                        if ($ignore->not_exist($value))
                         {
-                            if ($val->numeric($value))
-                                $val->push($value);
-                            else
-                                $val->push("'".addslashes($value)."'");
+                            if ($val->not_exist($value))
+                            {
+
+                                if ($val->numeric($value))
+                                    $val->push($value);
+                                else
+                                    $val->push($this->connexion->instance()->quote($value));
+                            }
                         }
                     }
-                }
-                else
-                {
-
-                    switch ($this->driver)
+                    else
                     {
-                        case Connect::POSTGRESQL:
-                           $val->push(" DEFAULT");
-                        break;
-                        default:
-                            $val->push('NULL');
-                        break;
+
+                        switch ($this->driver)
+                        {
+                            case Connect::POSTGRESQL:
+                                $val->push(" DEFAULT");
+                            break;
+                            default:
+                                $val->push('NULL');
+                            break;
+                        }
                     }
+
                 }
+
+
+                $value = '(' .$val->join(', ') . ')';
+
+                $command = "INSERT INTO  $this->table  $columns VALUES $value";
+
+                return $this->connexion->execute($command);
 
             }
 
-            $value = '(' .$val->join(', ') . ')';
+            if (is_object($values))
+            {
+                foreach ($this->get_columns() as $column)
+                {
 
-            $command = "INSERT INTO  $this->table  $columns VALUES $value";
+                    $value = $values->$column;
 
+                    if (different($value,$primary))
+                    {
+                        if ($ignore->not_exist($value))
+                        {
+                            if ($val->not_exist($value))
+                            {
+                                if ($val->numeric($value))
+                                    $val->push($value);
+                                else
+                                    $val->push($this->connexion->instance()->quote($value));
+                            }
+                        }
+                    }
+                    else
+                    {
 
+                        switch ($this->driver)
+                        {
+                            case Connect::POSTGRESQL:
+                                $val->push(" DEFAULT");
+                            break;
+                            default:
+                                $val->push('NULL');
+                            break;
+                        }
+                    }
 
-            return $this->connexion->execute($command);
+                }
+
+                $value = '(' .$val->join(', ') . ')';
+
+                $command = "INSERT INTO  $this->table  $columns VALUES $value";
+
+                return  $this->connexion->execute($command);
+            }
+            return false;
+
         }
 
-        /**
-         * set tables to ignore
-         *
-         * @param array $tables
-         *
-         * @return Table
-         */
-        public function ignore(array $tables): Table
-        {
-            $this->hidden = $tables;
 
-            return $this;
-        }
-
-        /**
-         * set the dump directory path
-         *
-         * @param string $path
-         *
-         * @return Table
-         */
-        public function path(string $path): Table
-        {
-            $this->path = $path;
-
-            return $this;
-        }
 
         /**
          * show all tables in a database
          *
          * @return array
-         * 
+         *
          * @throws Exception
          */
         public function show(): array
         {
             $tables = collection();
-            if (def($this->hidden))
-                $hidden = collection($this->hidden);
-            else
-                $hidden = collection();
+
+            $hidden = def($this->hidden) ?  collection($this->hidden) : collection();
+
 
             switch ($this->driver)
             {
@@ -1038,40 +1134,21 @@ namespace Imperium\Tables {
          * count number of records in a or multiples tables
          *
          * @param string|null $table
-         * @param int $mode
          *
-         * @return array|int
-         * 
+         * @return int
+         *
          * @throws Exception
-         *
          */
-        public function count(string $table = '',int $mode = Imperium::MODE_ONE_TABLE)
+        public function count(string $table = ''): int
         {
+            $x = def($table) ? $table : $this->table;
+
+            foreach ($this->connexion->request("SELECT COUNT(*) FROM {$x}") as $number)
+                return current($number);
 
 
-            $x = def($table) ? $table :  $this->table;
-            switch ($mode)
-            {
-                case Imperium::MODE_ONE_TABLE:
-                    foreach ($this->connexion->request("SELECT COUNT(*) FROM {$x}") as $number)
-                        return current($number);
-                break;
-                case Imperium::MODE_ALL_TABLES:
-                    $numbers = collection();
-                    foreach ($this->show() as $table)
-                    {
-                        foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
-                        {
-                            $numbers->merge([$table => current($number)]);
-                        }
-                    }
-                    return $numbers->collection();
-                break;
-                default:
-                    return '';
-                break;
-            }
-            return '';
+            return 0;
+
         }
 
 
@@ -1080,21 +1157,23 @@ namespace Imperium\Tables {
          * truncate a sqlite table
          *
          * @param string $table
-         * 
+         *
          * @return bool
-         * 
+         *
          * @throws Exception
          */
-        public function truncateSqliteTable(string $table) : bool
+        private function truncateSqliteTable(string $table) : bool
         {
+
             $fields = collection($this->get_columns());
+
             $types = collection($this->get_columns_types());
+
             $primary = $this->get_primary_key();
 
             $end = $fields->last();
 
             $this->drop($table);
-
 
             $query = "CREATE TABLE $table ( ";
 
@@ -1121,22 +1200,23 @@ namespace Imperium\Tables {
          * @param string $orderBy
          *
          * @return array
-         * 
+         *
          * @throws Exception
          */
-        public function getRecords(string $orderBy = 'desc'): array
+        public function all(string $orderBy = 'desc'): array
         {
             return def($orderBy) ? $this->connexion->request("SELECT * FROM {$this->table} ORDER BY {$this->get_primary_key()} $orderBy") : $this->connexion->request("SELECT * FROM {$this->table}");
         }
 
         /**
+         *
          * count all table in current database
          *
          * @return int
-         * 
+         *
          * @throws Exception
          */
-        public function countTable(): int
+        public function found(): int
         {
             return count($this->show());
         }
@@ -1164,7 +1244,7 @@ namespace Imperium\Tables {
             $ignoreValues = collection($ignore);
             foreach ($values  as $k => $value)
             {
-                if ($k != $primary)
+                if (different($k,$primary))
                 {
                     if ($ignoreValues->empty())
                     {
@@ -1173,7 +1253,9 @@ namespace Imperium\Tables {
                         else
                             $columns->push("$k = ' ".addslashes($value)."'");
 
-                    }else {
+                    }else
+                    {
+
                         if ($ignoreValues->not_exist($value))
                         {
                             if ($columns->numeric($value))
@@ -1214,14 +1296,15 @@ namespace Imperium\Tables {
          * @param int $size
          *
          * @return bool
-         * 
+         *
          * @throws Exception
          */
-        public function modifyColumn(string $column,string $type,int $size = 0): bool
+        public function modify_column(string $column,string $type,int $size = 0): bool
         {
             switch ($this->driver)
             {
                 case Connect::MYSQL:
+
 
                     if ($size)
                         return $this->connexion->execute("ALTER TABLE {$this->table} MODIFY $column $type($size)");
@@ -1261,7 +1344,7 @@ namespace Imperium\Tables {
          * delete all tables not ignored in database
          *
          * @return bool
-         * 
+         *
          * @throws Exception
          */
         public function drop_all_tables(): bool
@@ -1307,7 +1390,7 @@ namespace Imperium\Tables {
          */
         public function append_columns(string $table, Table $instance, array  $new_columns_names, array $new_columns_types, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
         {
-            $table_columns = $instance->set_current_table($table)->get_columns();
+            $table_columns = $instance->select($table)->get_columns();
 
             $the_end_of_new_columns =  end($new_columns_names);
 
@@ -1568,12 +1651,14 @@ namespace Imperium\Tables {
          * @param string $new_name
          *
          * @return bool
-         * 
+         *
          * @throws Exception
-         * 
+         *
          */
-        public function rename(string $new_name): bool
+        public function rename(string $new_name = ''): bool
         {
+            $new_name = def($new_name) ? $new_name : $this->get_current_tmp_table();
+
             switch ($this->driver)
             {
                 case Connect::MYSQL :
@@ -1583,16 +1668,10 @@ namespace Imperium\Tables {
                     return $data;
                 break;
                 case Connect::POSTGRESQL:
-                    $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
-                    if ($data)
-                        $this->table = $new_name;
-                    return $data;
-                break;
                 case Connect::SQLITE:
                     $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
                     if ($data)
                         $this->table = $new_name;
-
                     return $data;
                 break;
                 default:
@@ -1603,13 +1682,13 @@ namespace Imperium\Tables {
 
         /**
          * Display columns type
-         * 
+         *
          * @return array
-         * 
+         *
          * @throws Exception
-         * 
+         *
          */
-        public function get_columns_types(): array 
+        public function get_columns_types(): array
         {
             $types = collection();
 
@@ -1666,6 +1745,99 @@ namespace Imperium\Tables {
             $this->charset = $new_charset;
 
             return $this;
+        }
+
+        /**
+         *
+         * @param string $column
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function length(string $column)
+        {
+            return collection($this->get_columns())->search($column)->set_new_data($this->get_columns_types())->search_result(true);
+        }
+
+        /**
+         * @return string
+         *
+         * @throws Exception
+         */
+        public function get_current_tmp_table(): string
+        {
+            return '_'.sha1($this->get_current_table());
+        }
+
+
+        /**
+         * @param array $collection
+         * @param array $ignore
+         * @return bool
+         * @throws Exception
+         */
+        public function insert_multiples(array $collection,array $ignore = []): bool
+        {
+
+            $query = "INSERT INTO {$this->get_current_table()} ({$this->columns_to_string()}) VALUES ";
+
+            $primary = $this->get_primary_key();
+
+            $hidden = collection($ignore);
+            $values = collection();
+
+            foreach ($collection as  $items)
+            {
+
+
+                foreach ($items as $key => $value)
+                {
+
+                    if (different($key,$primary))
+                    {
+                        if ($hidden->not_exist($value))
+                        {
+                            if ($values->not_exist($value))
+                            {
+
+                                if ($values->numeric($value))
+                                    $values->push($value);
+                                else
+                                    $values->push($this->connexion->instance()->quote($value));
+                            }
+                        }
+                    }
+                    else
+                    {
+
+                        switch ($this->driver)
+                        {
+                            case Connect::POSTGRESQL:
+                                $values->push(" DEFAULT");
+                            break;
+                            default:
+                                $values->push('NULL');
+                            break;
+                        }
+                    }
+
+                }
+
+
+                $value = '(' .$values->join(', ') . '),';
+
+                append($query,$value);
+
+                $values->clear();
+            }
+
+            $query = trim($query,',');
+
+
+           return $this->connexion->execute($query);
+
         }
 
     }

@@ -59,7 +59,7 @@ class Model
     {
         $this->connexion = $connect;
 
-        $this->table = $table->set_current_table($current_table_name);
+        $this->table = $table->select($current_table_name);
         $this->primary = $this->table->get_primary_key();
         $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name);
         $this->current  = $current_table_name;
@@ -69,20 +69,35 @@ class Model
      *
      * Display all tables in current database
      *
+     * @param array $hidden
      * @return array
      *
      * @throws Exception
-     *
      */
-    public function show_tables(): array
+    public function show_tables(array $hidden = []): array
     {
-        return $this->table->show();
+        return $this->table->hidden($hidden)->show();
+    }
+
+    /**
+     *
+     * @param string $table
+     *
+     * @return Model
+     *
+     * @throws Exception
+     */
+    public function change_table(string $table): Model
+    {
+        return new static($this->connexion,$this->table,$table);
     }
 
     /**
      * Return true if the current connexion is mysql
      *
      * @return bool
+     *
+     * @throws Exception
      *
      */
     public function is_mysql()
@@ -101,13 +116,16 @@ class Model
      */
     public function get($parameter,$expected,string ...$columns): array
     {
-        return $this->query()->set_query_mode(Query::SELECT)->set_columns($columns)->where($parameter,Query::EQUAL,$expected)->get();
+      return $this->query()->set_query_mode(Query::SELECT)->set_columns($columns)->where($parameter,Query::EQUAL,$expected)->get();
     }
+
     /**
      *
      * Return true if the current connexion is postgresql
      *
      * @return bool
+     *
+     * @throws Exception
      *
      */
     public function is_postgresql()
@@ -120,6 +138,8 @@ class Model
      * Return true if the current connexion is sqlite
      *
      * @return bool
+     *
+     * @throws Exception
      *
      */
     public function is_sqlite()
@@ -154,7 +174,7 @@ class Model
      */
     public function all(string $order = 'desc'): array
     {
-       return $this->table->getRecords($order);
+       return $this->table->all($order);
     }
 
     /**
@@ -170,7 +190,7 @@ class Model
      */
     public function find(int $id): array
     {
-        return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,'=',$id)->get();
+       return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,Query::EQUAL,$id)->get();
     }
 
     /**
@@ -210,7 +230,7 @@ class Model
      */
     public function where($param,$condition,$expected): array
     {
-        return equal($condition,'LIKE') ?$this->sql->set_query_mode(Query::SELECT)->like($this->table,$expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($param,$condition,$expected)->get();
+        return equal($condition,Query::LIKE) ?$this->sql->set_query_mode(Query::SELECT)->like($this->table,$expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($param,$condition,$expected)->get();
     }
 
     /**
@@ -226,13 +246,32 @@ class Model
      */
     public function remove(int $id): bool
     {
-        return $this->sql->where($this->primary,'=',$id)->delete();
+        return $this->sql->set_query_mode(Query::DELETE)->where($this->primary,Query::EQUAL,$id)->delete();
     }
+
 
     /**
      *
      * Insert data in the table
      *
+     *
+     * @param array $data
+     * @param string $table
+     * @param array $ignore
+     *
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    public function save(array $data,string $table ,array $ignore = []): bool
+    {
+        return $this->insert($data,$table,$ignore);
+    }
+
+    /**
+     *
+     * Insert data in the table
      *
      * @param array $data
      * @param string $table

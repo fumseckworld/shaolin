@@ -3,7 +3,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class Patientstable extends AbstractMigration
+class Helperstable extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,12 +28,14 @@ class Patientstable extends AbstractMigration
      */
     public function change()
     {
-        $this->table('patients')
+        $this->table('helpers')
             ->addColumn('name', 'string')
             ->addColumn('age', 'integer')
+            ->addColumn('phone', 'integer')
             ->addColumn('sex', 'string')
             ->addColumn('status','string')
-            ->addColumn('date','date')
+            ->addColumn('days','datetime')
+            ->addColumn('date','datetime')
             ->create();
     }
 }

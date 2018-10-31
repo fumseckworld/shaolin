@@ -775,7 +775,7 @@ class Form
      */
     public function generate(int $form_grid,string $table, Table $instance, string $submitText, string $submitClass, string $submitId, string $submitIcon = '', int $mode = Form::CREATE, int $id = 0): string
     {
-        $instance = $instance->set_current_table($table);
+        $instance = $instance->select($table);
         $types = $instance->get_columns_types();
         $columns = $instance->get_columns();
         $primary = $instance->get_primary_key();

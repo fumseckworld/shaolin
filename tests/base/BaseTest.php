@@ -8,6 +8,11 @@ use Testing\DatabaseTest;
 class BaseTest extends DatabaseTest
 {
 
+    public function setUp()
+    {
+        $this->table = 'base';
+    }
+
     /***
      * @throws \Exception*
      */

@@ -74,6 +74,9 @@ namespace Imperium\Query {
             self::UPDATE,self::SELECT,self::DELETE,self::UNION,self::UNION_ALL,self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN,self::NATURAL_JOIN
         ];
 
+        const JOIN_MODE = [
+            self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN,self::NATURAL_JOIN
+        ];
 
         /**
          * sql mode
@@ -182,6 +185,8 @@ namespace Imperium\Query {
 
             if (collection([self::NATURAL_JOIN,self::FULL_JOIN,self::RIGHT_JOIN,self::LEFT_JOIN,self::CROSS_JOIN,self::INNER_JOIN])->exist($mode))
                 return "$join $limit $order";
+
+
 
             return '';
         }
@@ -378,7 +383,7 @@ namespace Imperium\Query {
             {
                 case Query::INNER_JOIN:
                     if ($columnsDefine)
-                        $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam = $secondTable.$secondParam";
                     else
                         $this->join = "SELECT * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;

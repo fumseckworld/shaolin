@@ -70,6 +70,8 @@ class Imperium extends Zen implements Management
      */
     private $json;
 
+
+
     /**
      *
      * Display all tables
@@ -144,6 +146,7 @@ class Imperium extends Zen implements Management
     {
         return $this->base->collations();
     }
+
 
     /**
      *
@@ -222,7 +225,7 @@ class Imperium extends Zen implements Management
      */
     public function change_table_collation(string $table, string $new_collation): bool
     {
-       return $this->table->set_current_table($table)->set_collation($new_collation)->change_collation();
+       return $this->table->select($table)->set_collation($new_collation)->change_collation();
     }
 
     /**
@@ -255,7 +258,7 @@ class Imperium extends Zen implements Management
      */
     public function change_table_charset(string $table, string $new_charset): bool
     {
-        return $this->table->set_current_table($table)->set_charset($new_charset)->change_charset();
+        return $this->table->select($table)->set_charset($new_charset)->change_charset();
     }
 
     /**
@@ -285,7 +288,7 @@ class Imperium extends Zen implements Management
      */
     public function create_table(string $table): bool
     {
-        return $this->table->set_current_table($table)->create();
+        return $this->table->select($table)->create();
     }
 
     /**
@@ -336,7 +339,7 @@ class Imperium extends Zen implements Management
      */
     public function append_field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = false, bool $null = false): Imperium
     {
-        $this->table->append_field($type,$name,$primary,$length,$unique,$null);
+        $this->table->field($type,$name,$primary,$length,$unique,$null);
       return $this;
     }
 
@@ -709,7 +712,24 @@ class Imperium extends Zen implements Management
      *
      * @param Connect $connect
      * @param string $current_table
+     *
+     * @return Imperium
+     *
      * @throws Exception
+     */
+    public static function get(Connect $connect,string $current_table): Imperium
+    {
+        return new static($connect,$current_table);
+    }
+
+    /**
+     * Imperium constructor.
+     *
+     * @param Connect $connect
+     * @param string $current_table
+     *
+     * @throws Exception
+     *
      */
     public function __construct(Connect $connect,string $current_table)
     {
@@ -765,7 +785,7 @@ class Imperium extends Zen implements Management
      */
     public function create_json(string $filename,array $data): bool
     {
-        return $this->json()->set_name($filename)->create($data);
+        return $this->set_json_name($filename)->create($data);
     }
 
     /**
@@ -782,38 +802,24 @@ class Imperium extends Zen implements Management
      */
     public function sql_to_json(string $filename,string $query,string $key = ''): bool
     {
-        return $this->json()->set_name($filename)->sql($this->connect(),$query,$key)->generate();
+        return $this->set_json_name($filename)->sql($this->connect(),$query,$key)->generate();
     }
+
 
 
     /**
      *
-     * Add data in the future json
+     * Define the name of the json file
      *
-     * @param $value
-     * @param string $key
+     * @param string $name
      *
      * @return Json
-     *
      */
-    public function add_in_json($value,$key = ''): Json
+    public function set_json_name(string $name): Json
     {
-       return $this->json->add($value,$key);
+        return $this->json()->set_name($name);
     }
 
-    /**
-     *
-     * Generate the json with multiple data
-     *
-     * @return bool
-     *
-     * @throws Exception
-     *
-     */
-    public function generate_json(): bool
-    {
-        return $this->json->generate();
-    }
 
     /**
      *
@@ -823,11 +829,34 @@ class Imperium extends Zen implements Management
      * @param bool $assoc
      *
      * @return mixed
+     *
+     * @throws Exception
+     *
      */
     public function json_decode(string $data,bool $assoc = false)
     {
         return $this->json->set_name($data)->decode($assoc);
 
+    }
+
+    /**
+     * @param int $records
+     * @param array $hidden
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public function seed_database(int $records = 100,$hidden = []): bool
+    {
+
+        $data = collection();
+
+        foreach ($this->show_tables($hidden) as $table)
+            $data->add($this->tables()->select($table)->seed($records));
+
+
+        return $data->not_exist(false);
     }
     /**
      *
@@ -873,6 +902,7 @@ class Imperium extends Zen implements Management
 
         return $this;
     }
+
     /**
      *
      * Rename a table
@@ -887,7 +917,7 @@ class Imperium extends Zen implements Management
      */
     public function rename_table(string $table, string $new_name): bool
     {
-        return $this->table->set_current_table($table)->rename($new_name);
+        return $this->table->select($table)->rename($new_name);
     }
 
 

@@ -10,6 +10,11 @@ use Testing\DatabaseTest;
 class FormTest extends DatabaseTest
 {
 
+    public function setUp()
+    {
+        $this->table = 'base';
+    }
+
     public function test_start()
     {
         $class = 'form-horizontal';
@@ -580,6 +585,8 @@ class FormTest extends DatabaseTest
      */
     public function test_generate()
     {
+
+        $icon = fa('fas','fa-rocket');
         $form = form('a','a')->generate(2,$this->table,$this->mysql()->tables(),'append','btn-primary',"submit-id");
 
         $this->assertContains('class="btn btn-primary"',$form);
@@ -588,7 +595,6 @@ class FormTest extends DatabaseTest
         $this->assertContains('append',$form);
         $this->assertNotEmpty($form);
 
-        $icon = fa('fas','fa-rocket');
         $form = form('a','a')->generate(2,$this->table,$this->mysql()->tables(),'append','btn-primary',"submit-id",$icon);
 
         $this->assertContains('class="btn btn-primary"',$form);
@@ -615,7 +621,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('append',$form);
         $this->assertNotEmpty($form);
 
-        $icon = fa('fas','fa-rocket');
+
         $form = form('a','a')->generate(2,$this->table,$this->postgresql()->tables(),'append','btn-primary',"submit-id",$icon);
 
         $this->assertContains('class="btn btn-primary"',$form);
@@ -642,7 +648,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('append',$form);
         $this->assertNotEmpty($form);
 
-        $icon = fa('fas','fa-rocket');
+
         $form = form('a','a')->generate(2,$this->table,$this->sqlite()->tables(),'append','btn-primary',"submit-id",$icon);
 
         $this->assertContains('class="btn btn-primary"',$form);

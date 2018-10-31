@@ -10,6 +10,12 @@ use Testing\DatabaseTest;
 class ImperiumTest extends DatabaseTest
 {
 
+
+    public function setUp()
+    {
+        $this->table = 'imperium';
+    }
+
     /**
      * @throws \Exception
      */
@@ -27,10 +33,34 @@ class ImperiumTest extends DatabaseTest
         $query = "SELECT * FROM $this->table";
         $this->assertTrue($this->mysql()->json()->sql($this->mysql()->connect(), $query,'records')->generate());
         $this->assertTrue($this->postgresql()->json()->sql($this->postgresql()->connect(),$query,'records')->generate());
-        $this->assertTrue($this->sqlite()->json()->sql($this->sqlite()->connect(),$query,'records')->generate());
+        $this->assertTrue($this->sqlite()->json()->set_name($filename)->sql($this->sqlite()->connect(),$query,'records')->generate());
+
+
+        $this->assertTrue($this->mysql()->sql_to_json($filename,$query));
+        $this->assertTrue($this->postgresql()->sql_to_json($filename,$query));
+        $this->assertTrue($this->sqlite()->sql_to_json($filename,$query));
+
+        $this->assertTrue($this->mysql()->create_json($filename,$this->mysql()->show_databases()));
+        $this->assertTrue($this->postgresql()->create_json($filename,$this->postgresql()->show_databases()));
+        $this->assertTrue($this->sqlite()->create_json($filename,$this->sqlite()->show_tables()));
+
+        $this->assertTrue($this->mysql()->json()->set_name($filename)->add($this->mysql()->show_databases())->generate());
+        $this->assertNotEmpty($this->mysql()->json()->decode($filename));
+        $this->assertNotEmpty($this->mysql()->json_decode($filename));
+
+        $this->assertTrue($this->postgresql()->json()->set_name($filename)->add($this->postgresql()->show_databases())->generate());
+        $this->assertNotEmpty($this->postgresql()->json()->decode($filename));
+        $this->assertNotEmpty($this->postgresql()->json_decode($filename));
+
+        $this->assertTrue($this->sqlite()->json()->set_name($filename)->add($this->sqlite()->show_tables())->generate());
+        $this->assertNotEmpty($this->sqlite()->json()->decode($filename));
+        $this->assertNotEmpty($this->sqlite()->json_decode($filename));
+
 
         $this->expectException(Exception::class);
         $this->sqlite()->bases_users_tables_to_json($filename);
+
+
     }
 
 
@@ -39,13 +69,13 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_remove_column()
     {
-        $this->assertFalse($this->mysql()->remove_column('id'));
+        $this->assertFalse($this->mysql()->tables()->select($this->table)->remove_column('id'));
         $this->assertFalse($this->postgresql()->remove_column('id'));
         $this->assertFalse($this->sqlite()->remove_column('id'));
 
         $this->assertTrue($this->mysql()->remove_column('date'));
         $this->assertTrue($this->postgresql()->remove_column('date'));
-        $this->assertTrue($this->sqlite()->remove_column('date'));
+        $this->assertFalse($this->sqlite()->remove_column('date'));
     }
 
 
@@ -75,9 +105,10 @@ class ImperiumTest extends DatabaseTest
     {
         $current_table_name = 'luxoria';
 
-        $this->assertTrue($this->mysql()->tables()->set_current_table($current_table_name)->append_field(Imperium::INT,'id',true)->create());
-        $this->assertTrue($this->postgresql()->tables()->set_current_table($current_table_name)->append_field(Imperium::SERIAL,'id',true)->create());
-        $this->assertTrue($this->sqlite()->tables()->set_current_table($current_table_name)->append_field(Imperium::INTEGER,'id',true)->create());
+        $this->assertTrue($this->mysql()->tables()->select($current_table_name)->field(Imperium::INT,'id',true)->field(Imperium::VARCHAR,'name',false,255)->create());
+        $this->assertTrue($this->postgresql()->tables()->select($current_table_name)->field(Imperium::SERIAL,'id',true)->field(Imperium::CHARACTER_VARYING,'name',false,255)->create());
+
+        $this->assertTrue($this->sqlite()->tables()->select($current_table_name)->field(Imperium::INTEGER,'id',true)->field(Imperium::TEXT,'name',false,255)->create());
 
         $this->assertTrue($this->mysql()->remove_table($current_table_name));
         $this->assertTrue($this->postgresql()->remove_table($current_table_name));
@@ -113,7 +144,7 @@ class ImperiumTest extends DatabaseTest
 
         $this->assertTrue($this->postgresql()->table_exist($this->table));
 
-        $this->assertTrue($this->sqlite()->table_exist($this->second_table));
+        $this->assertTrue($this->sqlite()->table_exist($this->table));
 
     }
 
@@ -147,9 +178,9 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_show_columns()
     {
-        $this->assertNotEmpty($this->mysql()->tables()->set_current_table($this->table)->get_columns_types());
-        $this->assertNotEmpty($this->postgresql()->tables()->set_current_table($this->table)->get_columns_types());
-        $this->assertNotEmpty($this->sqlite()->tables()->set_current_table($this->table)->get_columns_types());
+        $this->assertNotEmpty($this->mysql()->tables()->select($this->table)->get_columns_types());
+        $this->assertNotEmpty($this->postgresql()->tables()->select($this->table)->get_columns_types());
+        $this->assertNotEmpty($this->sqlite()->tables()->select($this->table)->get_columns_types());
 
         $this->assertNotEmpty($this->mysql()->show_columns());
         $this->assertNotEmpty($this->postgresql()->show_columns());
@@ -187,5 +218,15 @@ class ImperiumTest extends DatabaseTest
         $this->sqlite()->has_users();
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_seed()
+    {
 
+        $this->assertTrue($this->mysql()->seed_database(50,['phinxlog']));
+        $this->assertTrue($this->postgresql()->seed_database(50,['phinxlog']));
+        $this->assertTrue($this->sqlite()->seed_database(50,['phinxlog','sqlite_sequence']));
+
+    }
 }
