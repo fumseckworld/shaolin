@@ -106,6 +106,21 @@ class Model
     }
 
     /**
+     *
+     * Seed current table
+     *
+     * @param int $records
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public function seed(int $records): bool
+    {
+        return $this->table->seed($records);
+    }
+
+    /**
      * @param $parameter
      * @param $expected
      * @param string ...$columns

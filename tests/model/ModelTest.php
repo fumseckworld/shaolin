@@ -163,6 +163,15 @@ class ModelTest extends DatabaseTest
 
 
     /**
+     * @throws Exception
+     */
+    public function test_seed()
+    {
+        $this->assertTrue($this->mysql_model->seed(100));
+        $this->assertTrue($this->pgsql_model->seed(100));
+        $this->assertTrue($this->sqlite_model->seed(100));
+    }
+    /**
     * @throws Exception
     */
     public function test_execute()
@@ -278,7 +287,7 @@ class ModelTest extends DatabaseTest
 
         }
 
-        $number = ($number *2) - 1;
+        $number = 109;
         $this->assertCount($number,$this->mysql_model->all());
         $this->assertEquals($number,$this->mysql_model->count());
 
