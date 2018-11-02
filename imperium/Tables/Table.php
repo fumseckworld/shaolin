@@ -66,21 +66,7 @@ namespace Imperium\Tables {
          */
         private $charset;
 
-        /**
-         *
-         * Define name of the current  table
-         *
-         * @param string $table
-         *
-         * @return Table
-         *
-         */
-        public function select(string $table): Table
-        {
-            $this->table = $table;
 
-            return $this;
-        }
 
         const TYPE_OF_DATE = [
             'date',
@@ -135,10 +121,23 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Define name of the current  table
+         *
+         * @param string $table
+         *
+         * @return Table
+         *
+         */
+        public function select(string $table): Table
+        {
+            $this->table = $table;
+
+            return $this;
+        }
+        /**
+         * Table constructor.
+         *
          * @param Connect $connect
-         *
-         * @throws Exception
-         *
          */
         public function __construct(Connect $connect)
         {
@@ -425,16 +424,14 @@ namespace Imperium\Tables {
          * @param string $constraint
          * @param string $column
          *
-         * @param string $driver
-         *
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function alter_table(string $constraint,string $column,string  $driver)
+        public function alter_table(string $constraint,string $column): bool
         {
-            if (equal($driver,Connect::MYSQL))
+
+            if (equal($this->driver,Connect::MYSQL))
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
@@ -442,7 +439,7 @@ namespace Imperium\Tables {
                 }
             }
 
-            if (equal($driver,Connect::POSTGRESQL))
+            if (equal($this->driver,Connect::POSTGRESQL))
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
@@ -450,7 +447,7 @@ namespace Imperium\Tables {
                 }
             }
 
-            if (equal($driver,Connect::SQLITE))
+            if (equal($this->driver,Connect::SQLITE))
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
@@ -475,11 +472,16 @@ namespace Imperium\Tables {
          */
         public function remove_constraint(string $column,string $constraint)
         {
-            $driver = $this->driver;
-            if (equal(Connect::POSTGRESQL,$driver))
-                return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ALTER COLUMN $column DROP $constraint;");
+            switch ($this->driver)
+            {
+                case Connect::MYSQL;
+                    return  $this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP CONSTRAINT $constraint;");
+                break;
+                case Connect::SQLITE:
+                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ALTER COLUMN $column DROP $constraint;");
+                break;
+            }
 
-            return false;
         }
 
         /**
@@ -1131,13 +1133,15 @@ namespace Imperium\Tables {
         }
 
         /**
-         * count number of records in a or multiples tables
+         *
+         * Count number of records inside a table
          *
          * @param string|null $table
          *
          * @return int
          *
          * @throws Exception
+         *
          */
         public function count(string $table = ''): int
         {
@@ -1277,18 +1281,6 @@ namespace Imperium\Tables {
 
 
         /**
-         * optimize a table
-         *
-         * @return bool
-         *
-         * @throws Exception
-         */
-        public function optimize(): bool
-        {
-            return def($this->table) ? $this->connexion->execute("OPTIMIZE {$this->table}") : false;
-        }
-
-        /**
          * modify an existing column
          *
          * @param string $column
@@ -1304,21 +1296,10 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case Connect::MYSQL:
-
-
-                    if ($size)
-                        return $this->connexion->execute("ALTER TABLE {$this->table} MODIFY $column $type($size)");
-                    else
-                        return $this->connexion->execute("ALTER TABLE {$this->table} MODIFY $column $type");
-
+                    return $size ? $this->connexion->execute("ALTER TABLE {$this->table} MODIFY $column $type($size)"):  $this->connexion->execute("ALTER TABLE {$this->table} MODIFY $column $type");
                 break;
                 case Connect::POSTGRESQL:
-
-                    if ($size)
-                        return $this->connexion->execute("ALTER TABLE {$this->table} ALTER COLUMN $column TYPE $type($size)");
-                    else
-                        return $this->connexion->execute("ALTER TABLE {$this->table} ALTER COLUMN $column TYPE $type");
-
+                    return $size ? $this->connexion->execute("ALTER TABLE {$this->table} ALTER COLUMN $column TYPE $type($size)") : $this->connexion->execute("ALTER TABLE {$this->table} ALTER COLUMN $column TYPE $type");
                 break;
                 default:
                     return false;
@@ -1351,25 +1332,26 @@ namespace Imperium\Tables {
         {
             $hidden = collection($this->hidden);
 
+
             if ($hidden->empty())
             {
                 foreach ($this->show() as $table)
-                    if (!$this->drop($table))
-                        return false;
+                    is_false($this->drop($table),true,"Failed to remove the table : $table");
+
             }else
             {
                 foreach ($this->show() as $table)
                 {
                     if ($hidden->not_exist($table))
                     {
-                        if (!$this->drop($table))
-                            return false;
+                        is_false($this->drop($table),true,"Failed to remove the table : $table");
                     }
                 }
 
             }
             return true;
         }
+
 
 
         /**

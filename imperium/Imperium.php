@@ -563,7 +563,7 @@ class Imperium extends Zen implements Management
      */
     public function where(string $column, string $condition, $expected): array
     {
-        return $this->model->where($column,$condition,$expected);
+        return $this->model->where($column,$condition,$expected)->get();
     }
 
     /**
@@ -737,7 +737,7 @@ class Imperium extends Zen implements Management
         $this->driver    = $connect->get_driver();
         $this->table     = new Table($connect);
         $this->query     = new Query($this->table,$connect);
-        $this->base      = new Base($connect);
+        $this->base      = new Base($connect,$this->table);
         $this->users     = new Users($connect);
         $this->model     = new Model($connect,$this->table,$current_table);
         $this->json      = new Json();
@@ -849,14 +849,7 @@ class Imperium extends Zen implements Management
      */
     public function seed_database(int $records = 100,$hidden = []): bool
     {
-
-        $data = collection();
-
-        foreach ($this->show_tables($hidden) as $table)
-            $data->add($this->tables()->select($table)->seed($records));
-
-
-        return $data->not_exist(false);
+        return $this->bases()->seed($records,$hidden);
     }
     /**
      *

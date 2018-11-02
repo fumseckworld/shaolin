@@ -36,6 +36,19 @@ class BaseTest extends DatabaseTest
         $this->assertNotContains($this->base,$this->postgresql()->bases()->hidden([$this->base])->show());
     }
 
+
+    /**
+     * @throws Exception
+     */
+    public function test_multiples()
+    {
+        $this->assertTrue($this->mysql()->bases()->create_multiples('a','b','c'));
+        $this->assertTrue($this->postgresql()->bases()->create_multiples('a','b','c'));
+
+        $this->assertTrue($this->mysql()->bases()->drop_multiples('a','b','c'));
+        $this->assertTrue($this->postgresql()->bases()->drop_multiples('a','b','c'));
+
+    }
     /**
      * @throws \Exception
      */
@@ -118,6 +131,20 @@ class BaseTest extends DatabaseTest
      */
     public function test_change()
     {
+        $bidon = faker()->text(5);
+
+        $this->expectException(Exception::class);
+
+        $this->mysql()->bases()->change_collation();
+        $this->mysql()->bases()->change_charset();
+        $this->postgresql()->bases()->change_charset();
+        $this->postgresql()->bases()->change_collation();
+
+        $this->mysql()->bases()->set_collation($bidon)->change_collation();
+        $this->mysql()->bases()->set_charset($bidon)->change_charset();
+        $this->postgresql()->bases()->set_charset($bidon)->change_charset();
+        $this->postgresql()->bases()->set_collation($bidon)->change_collation();
+
         $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->change_charset());
         $this->assertTrue($this->mysql()->bases()->set_collation('utf8_general_ci')->change_collation());
 
@@ -134,18 +161,7 @@ class BaseTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
 
 
-        $bidon = faker()->text(5);
-        $this->expectException(Exception::class);
-        $this->mysql()->bases()->change_collation();
-        $this->mysql()->bases()->change_charset();
-        $this->postgresql()->bases()->change_charset();
-        $this->postgresql()->bases()->change_collation();
 
-        $this->expectException(Exception::class);
-        $this->mysql()->bases()->set_collation($bidon)->change_collation();
-        $this->mysql()->bases()->set_charset($bidon)->change_charset();
-        $this->postgresql()->bases()->set_charset($bidon)->change_charset();
-        $this->postgresql()->bases()->set_collation($bidon)->change_collation();
 
     }
 }

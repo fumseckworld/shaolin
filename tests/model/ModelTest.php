@@ -3,9 +3,7 @@
 
 namespace tests;
 
- 
 use Exception;
-use function GuzzleHttp\Promise\all;
 use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Model\Model;
@@ -301,17 +299,41 @@ class ModelTest extends DatabaseTest
     /**
      * @throws Exception
      */
+    public function test_found()
+
+    {
+        $this->assertEquals(6,$this->mysql_model->found());
+        $this->assertEquals(6,$this->pgsql_model->found());
+        $this->assertEquals(8,$this->sqlite_model->found());
+    }
+    /**
+     * @throws Exception
+     */
     public function test_get()
     {
         $id = 1;
 
-        $this->assertNotEmpty($this->mysql_model->get('id', $id,'name'));
-        $this->assertNotEmpty($this->pgsql_model->get('id',$id,'name'));
-        $this->assertNotEmpty($this->sqlite_model->get('id',$id,'name'));
+        $param = 'id';
 
-        $this->assertNotEmpty($this->mysql_model->get('id',$id,collection($this->mysql()->model()->columns())->join(', ')));
-        $this->assertNotEmpty($this->pgsql_model->get('id',$id,collection($this->postgresql()->model()->columns())->join(', ')));
-        $this->assertNotEmpty($this->sqlite_model->get('id',$id,collection($this->sqlite()->model()->columns())->join(', ')));
+        $condition = '=';
+
+        $this->expectException(Exception::class);
+
+        $this->mysql_model->only('name')->get();
+        $this->pgsql_model->only('name')->get();
+        $this->sqlite_model->only('name')->get();
+
+        $this->assertNotEmpty($this->mysql_model->where($param, $condition,$id)->only('name')->get());
+        $this->assertNotEmpty($this->pgsql_model->where($param, $condition,$id)->only('name')->get());
+        $this->assertNotEmpty($this->sqlite_model->where($param, $condition,$id)->only('name')->get());
+
+
+        $this->assertNotEmpty($this->mysql_model->where($param, $condition,$id)->only('name','phone')->get());
+        $this->assertNotEmpty($this->pgsql_model->where($param, $condition,$id)->only('name','phone')->get());
+        $this->assertNotEmpty($this->sqlite_model->where($param, $condition,$id)->only('name','phone')->get());
+
+
+
 
     }
 

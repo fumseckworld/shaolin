@@ -61,47 +61,18 @@ class QueryTest extends DatabaseTest
     {
 
 
-        $b  = $this->mysql()->model()->change_table($this->table)->get('id',1,'date');
-        $e  = $this->mysql()->model()->change_table($this->table)->get('id',100,'date');
+        $this->assertNotEmpty($this->mysql()->model()->change_table($this->table)->where('id','=',5)->only('date')->get());
+        $this->assertNotEmpty($this->mysql()->model()->change_table($this->table)->where('id','=',50)->only('date')->get());
 
-        $this->assertNotEmpty($b);
-        $this->assertNotEmpty($e);
+        $this->assertNotEmpty($this->postgresql()->model()->change_table($this->table)->where('id','=',5)->only('date')->get());
+        $this->assertNotEmpty($this->postgresql()->model()->change_table($this->table)->where('id','=',50)->only('date')->get());
 
-        $b  = $this->postgresql()->model()->change_table($this->table)->get('id',1,'date');
-        $e  = $this->postgresql()->model()->change_table($this->table)->get('id',100,'date');
+        $this->assertNotEmpty($this->sqlite()->model()->change_table($this->table)->where('id','=',5)->only('date')->get());
+        $this->assertNotEmpty($this->sqlite()->model()->change_table($this->table)->where('id','=',50)->only('date')->get());
 
-        $this->assertNotEmpty($b);
-        $this->assertNotEmpty($e);
-
-        $b  = $this->sqlite()->model()->change_table($this->table)->get('id',1,'date');
-        $e  = $this->sqlite()->model()->change_table($this->table)->get('id',100,'date');
-
-        $this->assertNotEmpty($b);
-        $this->assertNotEmpty($e);
-
-        $b  = $this->mysql()->model()->change_table($this->table)->get('id',1,'date','days');
-        $e  = $this->mysql()->model()->change_table($this->table)->get('id',100,'date','days');
-
-        $this->assertNotEmpty($b);
-        $this->assertNotEmpty($e);
-
-        $b  = $this->postgresql()->model()->change_table($this->table)->get('id',1,'date','days');
-        $e  = $this->postgresql()->model()->change_table($this->table)->get('id',100,'date','days');
-
-        $this->assertNotEmpty($b);
-        $this->assertNotEmpty($e);
-
-        $b  = $this->sqlite()->model()->change_table($this->table)->get('id',1,'date','days');
-        $e  = $this->sqlite()->model()->change_table($this->table)->get('id',100,'date','days');
-
-        $this->assertNotEmpty($b);
-        $this->assertNotEmpty($e);
 
         $b = '1988-07-15 00:00:00';
         $e = '2010-07-30 00:00:00';
-
-
-
 
         $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
         $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->where('id','!=',1)->get());

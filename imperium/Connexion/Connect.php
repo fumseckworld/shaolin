@@ -193,7 +193,7 @@ class Connect
      *
      * @throws Exception
      */
-    public function instance()
+    public function instance(): PDO
     {
         $instance = $this->instance;
         if (is_string($instance))

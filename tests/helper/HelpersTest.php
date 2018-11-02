@@ -1039,8 +1039,8 @@ class HelpersTest extends DatabaseTest
      */
     public function test_bases()
     {
-        $this->assertInstanceOf(Base::class,\base($this->mysql()->connect()));
-        $this->assertInstanceOf(Base::class,\base($this->postgresql()->connect()));
-        $this->assertInstanceOf(Base::class,\base($this->sqlite()->connect()));
+        $this->assertInstanceOf(Base::class,\base($this->mysql()->connect(),$this->mysql()->tables()));
+        $this->assertInstanceOf(Base::class,\base($this->postgresql()->connect(),$this->postgresql()->tables()));
+        $this->assertInstanceOf(Base::class,\base($this->sqlite()->connect(),$this->sqlite()->tables()));
     }
 }

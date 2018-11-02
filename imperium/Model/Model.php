@@ -21,6 +21,9 @@ use PDO;
  */
 class Model
 {
+    /**
+     * @var Connect
+     */
      private $connexion;
 
     /**
@@ -47,6 +50,18 @@ class Model
      */
     private $sql;
 
+    private $param;
+
+    private $condition;
+
+    private $expected;
+
+    /**
+     * @var
+     */
+    private $only;
+
+
     /**
      * Model constructor.
      *
@@ -70,9 +85,11 @@ class Model
      * Display all tables in current database
      *
      * @param array $hidden
+     *
      * @return array
      *
      * @throws Exception
+     *
      */
     public function show_tables(array $hidden = []): array
     {
@@ -81,19 +98,24 @@ class Model
 
     /**
      *
+     * Change of table
+     *
      * @param string $table
      *
      * @return Model
      *
      * @throws Exception
+     *
      */
     public function change_table(string $table): Model
     {
         return new static($this->connexion,$this->table,$table);
     }
 
+
     /**
-     * Return true if the current connexion is mysql
+     *
+     * Check the current driver is mysql
      *
      * @return bool
      *
@@ -114,6 +136,7 @@ class Model
      * @return bool
      *
      * @throws Exception
+     *
      */
     public function seed(int $records): bool
     {
@@ -121,17 +144,33 @@ class Model
     }
 
     /**
-     * @param $parameter
-     * @param $expected
+     *
+     * Return only columns results
+     *
      * @param string ...$columns
      *
+     * @return Model
+     *
+     * @throws Exception
+     */
+    public function only(string ...$columns): Model
+    {
+        $this->only = $columns;
+
+        return $this;
+    }
+
+    /**
      * @return array
      *
      * @throws Exception
      */
-    public function get($parameter,$expected,string ...$columns): array
+    public function get(): array
     {
-      return $this->query()->set_query_mode(Query::SELECT)->set_columns($columns)->where($parameter,Query::EQUAL,$expected)->get();
+        if (not_def($this->param,$this->expected,$this->condition))
+            throw new Exception("Where clause was not found");
+
+        return def($this->only) ? $this->sql->set_query_mode(Query::SELECT)->set_columns($this->only)->where($this->param,$this->condition,$this->expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($this->param,$this->condition,$this->expected)->get();
     }
 
     /**
@@ -189,7 +228,7 @@ class Model
      */
     public function all(string $order = 'desc'): array
     {
-       return $this->table->all($order);
+        return $this->table->all($order);
     }
 
     /**
@@ -238,15 +277,20 @@ class Model
      * @param $condition
      * @param $expected
      *
-     * @return array
+     * @return Model
      *
      * @throws Exception
      *
      */
-    public function where($param,$condition,$expected): array
+    public function where($param,$condition,$expected): Model
     {
-        return equal($condition,Query::LIKE) ?$this->sql->set_query_mode(Query::SELECT)->like($this->table,$expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($param,$condition,$expected)->get();
+        $this->param = $param;
+        $this->condition = $condition;
+        $this->expected = $expected;
+
+        return $this;
     }
+
 
     /**
      *
@@ -314,6 +358,20 @@ class Model
     public function count(): int
     {
         return $this->table->count();
+    }
+
+    /**
+     *
+     * Return the number of all tables found
+     *
+     * @return int
+     *
+     * @throws Exception
+     *
+     */
+    public function found(): int
+    {
+        return $this->table->found();
     }
 
     /**

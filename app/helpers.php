@@ -1802,11 +1802,12 @@ if (not_exist('base'))
      *
      * @param Connect $connect
      *
+     * @param Table $table
      * @return Base
      */
-    function base(Connect $connect): Base
+    function base(Connect $connect,Table $table): Base
     {
-        return new Base($connect);
+        return new Base($connect,$table);
     }
 }
 
@@ -2501,7 +2502,7 @@ if (not_exist('dumper'))
 
         }
 
-        return true;
+        return File::exist($filename);
 
     }
 }

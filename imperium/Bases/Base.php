@@ -1,24 +1,4 @@
 <?php
-/**
- * fumseck added Base.php to imperium
- * The 11/09/17 at 09:36
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General public License for more details.
- *
- * You should have received a copy of the GNU General public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- **/
-
 
 namespace Imperium\Bases {
 
@@ -26,6 +6,7 @@ namespace Imperium\Bases {
     use Exception;
     use Imperium\Connexion\Connect;
     use Imperium\File\File;
+    use Imperium\Tables\Table;
     use PDO;
 
     /**
@@ -64,13 +45,35 @@ namespace Imperium\Bases {
         private $driver;
 
         /**
-         * @var string
+         * @var Table
          */
-        private $database;
+        private $tables;
+
 
         /**
          *
-         * show databases
+         * Seed the database
+         *
+         * @param int $records
+         * @param array $hidden
+         * @return bool
+         *
+         * @throws Exception
+         */
+        public function seed(int $records = 100,array $hidden = []): bool
+        {
+            $data = collection();
+
+            foreach ($this->tables->hidden($hidden)->show() as $table)
+                $data->add($this->tables->select($table)->seed($records));
+
+            return $data->not_exist(false);
+        }
+
+
+        /**
+         *
+         * Display all databases inside the server
          *
          * @return array
          *
@@ -107,7 +110,26 @@ namespace Imperium\Bases {
 
         /**
          *
-         * Create multiple base
+         * Remove multiples databases
+         *
+         * @param string ...$bases
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function drop_multiples(string ...$bases): bool
+        {
+            foreach ($bases as $x)
+                is_not_true($this->drop($x),true,"Failed to create the database : $x");
+
+            return true;
+        }
+
+        /**
+         *
+         * Create multiples databases
          *
          * @param string ...$bases
          *
@@ -283,7 +305,6 @@ namespace Imperium\Bases {
 
             return $collations->collection();
 
-
         }
 
         /**
@@ -306,12 +327,13 @@ namespace Imperium\Bases {
         /**
          *
          * Base constructor.
-         * 
-         * @param Connect $connect
          *
+         * @param Connect $connect
+         * @param Table $table
          */
-        public function __construct(Connect $connect)
+        public function __construct(Connect $connect,Table $table)
         {
+            $this->tables = $table;
             $this->connexion = $connect;
             $this->driver = $connect->get_driver();
         }
@@ -364,7 +386,7 @@ namespace Imperium\Bases {
          */
         private function base(): string
         {
-            return def($this->database) ?  $this->database:  $this->connexion->get_database();
+            return $this->connexion->get_database();
         }
 
 
@@ -396,26 +418,18 @@ namespace Imperium\Bases {
 
         /**
          *
-         * @param string $base
+         * @param string $driver
          *
          * @return Base
-         */
-        public function set_name(string $base): Base
-        {
-            $this->database = $base;
-
-            return $this;
-        }
-
-        /**
-         *
-         * @param $driver
          *
          * @throws Exception
+         *
          */
-        public function check($driver)
+        public function check(string $driver): Base
         {
             not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The current driver is not supported");
+
+            return $this;
         }
     }
 }

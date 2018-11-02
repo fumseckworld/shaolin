@@ -19,7 +19,7 @@ class Collection implements ArrayAccess, Iterator
 
     /**
      *
-     * the array to manage
+     * The array to manage
      *
      * @var array
      *
@@ -62,9 +62,7 @@ class Collection implements ArrayAccess, Iterator
      */
     public function __construct(array $data = [])
     {
-
-         $this->data = $data;
-
+        $this->data = $data;
 
         $this->position = 0;
     }
@@ -79,7 +77,7 @@ class Collection implements ArrayAccess, Iterator
      * @return Collection
      *
      */
-    public function set_new_data(array $data)
+    public function set_new_data(array $data): Collection
     {
         $this->data = $data;
 
@@ -120,6 +118,13 @@ class Collection implements ArrayAccess, Iterator
         return $this;
     }
 
+    /**
+     *
+     * Get the search result
+     *
+     * @return mixed
+     *
+     */
     public function get_search()
     {
         return $this->search;
@@ -127,7 +132,7 @@ class Collection implements ArrayAccess, Iterator
 
     /**
      *
-     * Return the result key
+     * Return the result value
      *
      * @param bool $length
      *
@@ -596,7 +601,7 @@ class Collection implements ArrayAccess, Iterator
         if ($this->has_key($key))
             unset($this->data[$key]);
 
-           return $this;
+        return $this;
     }
 
     /**
@@ -620,12 +625,16 @@ class Collection implements ArrayAccess, Iterator
 
 
     /**
+     *
+     * Change old value to new
+     *
      * @param $old
      * @param $new
      *
      * @return Collection
      *
      * @throws Exception
+     *
      */
     public function change_value($old,$new): Collection
     {
