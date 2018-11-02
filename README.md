@@ -147,7 +147,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | insert_multiples                  |   array   | A boolean                  | Insert multiples values                                                                  |
  
  
- # [Model](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php) [Coverage](https://imperium.fumseck.eu/imperium/Model/Model.php.html)
+# [Model](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php) [Coverage](https://imperium.fumseck.eu/imperium/Model/Model.php.html)
  
 | Method                | arguments | return                                    |   do                                                               |    
 |-----------------------|-----------|-------------------------------------------|--------------------------------------------------------------------|    
