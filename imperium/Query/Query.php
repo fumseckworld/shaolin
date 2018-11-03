@@ -1,23 +1,4 @@
 <?php
-/**
- * fumseck added Query.php to imperium
- * The 09/09/17 at 18:59
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- */
 
 namespace Imperium\Query {
 
@@ -124,7 +105,9 @@ namespace Imperium\Query {
          * @var string
          */
         private $table;
+
         private $order;
+
         private $limit;
 
         /**
@@ -140,13 +123,15 @@ namespace Imperium\Query {
         }
 
         /**
-         * define name of table
+         *
+         * Define name of table
          *
          * @param string $table
          *
          * @return Query
+         *
          */
-        public function set_current_table_name(string $table): Query
+        public function from(string $table): Query
         {
             $this->table = "FROM $table";
 
@@ -183,7 +168,7 @@ namespace Imperium\Query {
             if (equal($mode,Query::UNION) || equal($mode,Query::UNION_ALL))
                 return "$union $limit $order";
 
-            if (collection([self::NATURAL_JOIN,self::FULL_JOIN,self::RIGHT_JOIN,self::LEFT_JOIN,self::CROSS_JOIN,self::INNER_JOIN])->exist($mode))
+            if (collection(self::JOIN_MODE)->exist($mode))
                 return "$join $limit $order";
 
 
@@ -268,20 +253,6 @@ namespace Imperium\Query {
         public function set_columns(array $columns = []): Query
         {
             $this->columns = collection($columns)->join(', ');
-
-            return $this;
-        }
-
-        /**
-         * set pdo instance
-         *
-         * @param Connect $connect
-         *
-         * @return Query
-         */
-        public function connect(Connect $connect): Query
-        {
-            $this->connexion = $connect;
 
             return $this;
         }

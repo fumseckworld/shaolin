@@ -297,5 +297,16 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | decode                |   bool    | mixed                            | Decode a json file or a json string encoded to utf8                |
 
 
+# [Query](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php) [Coverage](https://imperium.fumseck.eu/imperium/Query/Query.php.html)
 
-
+| Method                | arguments | return                           |   do                                                               |    
+|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
+| __construct           |   mixed   | An instance of the query builder | Save the connexion                                                 |
+| set_current_table_name|   string  | An instance of the query builder | Save the table name                                                |
+| sql                   |   void    | A string                         | Return the generated sql query                                     |
+| where                 |   mixed   | An instance of the query builder | Generate a where clause                                            |
+| between               |   mixed   | An instance of the query builder | Generate a where clause with between                               |
+| order_by              |   string  | An instance of the query builder | Generate a order by clause                                         |
+| set_columns           |   array   | An instance of the query builder | Define the columns to select                                       |
+| connect               |   Connect | An instance of the query builder | Define the connexion                                               |
+ 

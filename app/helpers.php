@@ -74,6 +74,15 @@ if (not_exist('assign'))
 }
 if (not_exist('query'))
 {
+    /**
+     *
+     * Get an instance of query
+     *
+     * @param Table $table
+     * @param Connect $connect
+     *
+     * @return Query
+     */
     function query(Table $table,Connect $connect): Query
     {
         return new Query($table,$connect);
@@ -83,6 +92,9 @@ if (not_exist('query'))
 if (not_exist('is_pair'))
 {
     /**
+     *
+     * Check if number is divisible by 2
+     *
      * @param int $x
      *
      * @return bool
@@ -92,10 +104,12 @@ if (not_exist('is_pair'))
         return $x % 2 === 0;
     }
 }
+
 if (not_exist('equal'))
 {
     /**
-     * test if two variables are equal
+     *
+     * Check if two variables are equal
      *
      * @param $parameter
      * @param $expected
@@ -105,6 +119,7 @@ if (not_exist('equal'))
      * @return bool
      *
      * @throws Exception
+     *
      */
     function equal( $parameter, $expected,$run_exception = false,string $message = ''): bool
     {
@@ -123,7 +138,7 @@ if (not_exist('is_not_false'))
 {
     /**
      *
-     * check if a data is not equal to false
+     * Check if  data is not equal to false
      *
      * @param $data
      *
@@ -148,16 +163,17 @@ if (not_exist('is_not_false'))
 if (not_exist('is_not_true'))
 {
     /**
-     * check if a data is not equal to false
+     *
+     * Check if a data is not equal to false
      *
      * @param $data
-     *
      * @param bool $run_exception
      * @param string $message
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
     function is_not_true($data,bool $run_exception = false,string $message =''): bool
     {
@@ -172,10 +188,10 @@ if (not_exist('is_not_true'))
 if (not_exist('is_false'))
 {
     /**
-     * check if a data is not equal to false
+     *
+     * Check if a data is not equal to false
      *
      * @param $data
-     *
      * @param bool $run_exception
      * @param string $message
      *
@@ -198,10 +214,9 @@ if (not_exist('is_true'))
 {
     /**
      *
-     * check if a data is not equal to false
+     * Check if a data is not equal to false
      *
      * @param $data
-     *
      * @param bool $run_exception
      * @param string $message
      *
@@ -226,7 +241,7 @@ if (not_exist('different'))
 
     /**
      *
-     * test  if two variables are different
+     * Check if two variables are different
      *
      * @param $parameter
      * @param $expected
@@ -267,11 +282,12 @@ if (not_exist('debug'))
         }
     }
 }
+
 if (not_exist('register'))
 {
 
     /**
-     * generate a register form
+     * Generate a register form
      *
      * @param string $action
      * @param string $valid_ip
@@ -308,6 +324,7 @@ if (not_exist('register'))
      * @return string
      *
      * @throws Exception
+     *
      */
     function register(string $action,string $valid_ip,string $current_ip,string $username_placeholder,string $username_success_text,string $username_error_text,string $email_placeholder,string $email_success_text,$email_error_text,string $password_placeholder,string $password_valid_text,string $password_invalid_text,string $confirm_password_placeholder,string $submit_text,string $submit_id,bool $multiple_languages = false,array $supported_languages =[],string $choose_language_text = '',string $choose_language_valid_text ='',string $choose_language_invalid_text = '',string $select_time_zone_text ='',string $valid_time_zone_text= '',string $time_zone_invalid_text = '',string $csrf_token_field = '',string $submit_button_class = 'btn btn-outline-primary',string $password_icon = '<i class="fas fa-key"></i>',string $username_icon = '<i class="fas fa-user"></i>',string $email_icon = '<i class="fas fa-envelope"></i>',string $submit_icon = '<i class="fas fa-user-plus"></i>',string $time_zone_icon = '<i class="fas fa-clock"></i>',string $lang_icon = '<i class="fas fa-globe"></i>')
     {
@@ -451,6 +468,7 @@ if (not_exist('query_result'))
 
             return $code;
         }
+
         if (is_bool($data) && $data)
            return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
         elseif(empty($model->all()))
@@ -476,7 +494,8 @@ if (not_exist('length'))
      */
     function length($data): int
     {
-        if (is_numeric($data) || is_null($data) || is_bool($data))
+
+        if (is_null($data) || is_resource($data) || is_object($data) || is_callable($data) || is_bool($data) || is_numeric($data))
             throw new Exception('The parameter must be a string or an array');
 
         return is_array($data) ? count($data) : strlen($data);
@@ -521,7 +540,7 @@ if (not_exist('execute_query'))
             break;
             case Query::DELETE:
             
-                $data = $model->where($column_name,$condition,$expected);
+                $data = $model->where($column_name,$condition,$expected)->get();
                 $show_sql_variable = $model->query()->set_query_mode($mode)->where($column_name,$condition,$expected)->sql();
                 return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
@@ -568,12 +587,14 @@ if (not_exist('query_view'))
      * @param $reset_form_text
      * @param string $reset_form_class
      * @param string $icon
+     * @param string $csrf
      * @return string
      *
      * @throws Exception
      */
-    function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>'): string
+    function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
     {
+
         $table = $instance->select($current_table_name);
         $columns = $table->get_columns();
 
@@ -599,9 +620,10 @@ if (not_exist('query_view'))
         return post('mode')
 
             ?
-                form($query_action,uniqid(),Form::INVALIDATE)->validate()
-                ->reset($reset_form_text,$reset_form_class )
+                form($query_action,uniqid(),Form::INVALIDATE)->csrf($csrf)->validate()
                 ->row()
+                    ->reset($reset_form_text,$reset_form_class)
+                ->end_row_and_new()
                     ->select('column',$columns,'success','error',$icon)
                     ->select('condition',$condition,'success','error',$icon)
                     ->input(Form::TEXT,'expected',$expected_placeholder,$icon,'success','error')
@@ -611,11 +633,12 @@ if (not_exist('query_view'))
                     ->select('order',['asc','desc'],'success','faillure',$icon)
                 ->end_row_and_new()
                     ->submit($submit_query_text,$submit_class,uniqid())
-                ->end_row()->get() .
+                ->end_row()->get()
+                 .
                 query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
-                form($query_action,uniqid(),Form::INVALIDATE)->validate()
+                form($query_action,uniqid(),Form::INVALIDATE)->csrf($csrf)->validate()
                 ->row()
                     ->reset($reset_form_text,$reset_form_class)
                 ->end_row_and_new()
@@ -636,6 +659,9 @@ if (not_exist('query_view'))
 if (not_exist('connect'))
 {
     /**
+     *
+     * Connect to the database
+     *
      * @param string $driver
      * @param string $base
      * @param string $user
@@ -644,6 +670,9 @@ if (not_exist('connect'))
      *
      * @param string $dump_path
      * @return Connect
+     *
+     * @throws Exception
+     *
      */
     function connect(string $driver,string $base,string $user,string $password,int $fetch_mode,string $dump_path): Connect
     {
@@ -694,8 +723,8 @@ if(not_exist('collection'))
 {
 
     /**
-     *
-     * Get an instance of collection
+     * 
+     * An instance to manage array
      *
      * @param array $data
      *
@@ -709,12 +738,15 @@ if(not_exist('collection'))
 
 if(not_exist('def'))
 {
+    
     /**
+     * 
      * check if value are defined
      *
      * @param mixed ...$values
      *
      * @return bool
+     * 
      */
     function def(...$values): bool
     {
@@ -731,12 +763,15 @@ if(not_exist('def'))
 
 if(not_exist('not_def'))
 {
+    
     /**
-     * check if value are not defined
+     *
+     * Check if value are not defined
      *
      * @param mixed ...$values
      *
      * @return bool
+     * 
      */
     function not_def(...$values): bool
     {
@@ -752,11 +787,13 @@ if(not_exist('not_def'))
 if (not_exist('zones'))
 {
     /**
-     * get all time zone
+     * 
+     * Get all time zones
      *
      * @param string $select_time_zone_text
      *
      * @return array
+     * 
      */
     function zones(string $select_time_zone_text) : array
     {
@@ -1293,17 +1330,17 @@ if (not_exist('get_records'))
                 $like = '';
 
             if (empty($like))
-                $records = sql($current_table_name,query($instance,$connect))->connect($connect)->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+                $records = sql($current_table_name,query($instance,$connect))->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
             else
-                $records = sql($current_table_name,\query($instance,$connect))->connect($connect)->like($instance, $like)->order_by($key,$order_by)->get();
+                $records = sql($current_table_name,\query($instance,$connect))->like($instance, $like)->order_by($key,$order_by)->get();
 
         }else
         {
             $like = get('search');
             if (empty($like))
-                $records = sql($current_table_name,query($instance,$connect))->connect($connect)->limit($limit_per_page,$offset)->order_by($key,$order_by)->get();
+                $records = sql($current_table_name,query($instance,$connect))->limit($limit_per_page,$offset)->order_by($key,$order_by)->get();
             else
-                $records = sql($current_table_name,query($instance,$connect))->connect($connect)->like($instance,$like)->order_by($key,$order_by)->get();
+                $records = sql($current_table_name,query($instance,$connect))->like($instance,$like)->order_by($key,$order_by)->get();
         }
 
         return $records;
@@ -1700,8 +1737,10 @@ if (not_exist('root'))
      *
      * @param string $dump_path
      * @param int $pdo_mode
+     *
      * @return Connect
      *
+     * @throws Exception
      */
     function root(string $driver,string $user,string $password = '',string $dump_path = 'dump',$pdo_mode = PDO::FETCH_OBJ): Connect
     {
@@ -2435,12 +2474,8 @@ if (not_exist('not_in'))
     {
         $x =  !in_array($value,$array,true);
 
-        if ($run_exception)
-        {
-            if ($x)
-                throw new Exception($message);
+        is_true($x,$run_exception,$message);
 
-        }
         return $x;
     }
 }
@@ -2519,7 +2554,7 @@ if (not_exist('sql'))
      */
     function sql(string $table,Query $query): Query
     {
-        return $query->set_current_table_name($table);
+        return $query->from($table);
     }
 }
 
@@ -2634,8 +2669,6 @@ if (not_exist('add_base'))
     {
         foreach ($bases as $x)
              is_not_true($base->set_collation($collation)->set_charset($charset)->create($x),true,"Failed to create database");
-
-
 
         return true;
     }
@@ -2763,6 +2796,14 @@ if (not_exist('cssLoader'))
 
 if (not_exist('append'))
 {
+    /**
+     *
+     * Append to variable contents
+     *
+     * @param $variable
+     * @param mixed ...$contents
+     *
+     */
     function append(&$variable,...$contents)
     {
         foreach ($contents as $content)

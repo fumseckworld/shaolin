@@ -76,7 +76,7 @@ class Model
 
         $this->table = $table->select($current_table_name);
         $this->primary = $this->table->get_primary_key();
-        $this->sql = query($table,$connect)->connect($connect)->set_current_table_name($current_table_name);
+        $this->sql = query($table,$connect)->from($current_table_name);
         $this->current  = $current_table_name;
     }
 

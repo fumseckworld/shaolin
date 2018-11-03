@@ -32,9 +32,9 @@ class QueryTest extends DatabaseTest
     {
         $this->table = 'query';
         $this->second_table = 'base';
-        $this->mysql_query = $this->mysql()->query()->set_current_table_name($this->table);
-        $this->pgsql_query = $this->postgresql()->query()->set_current_table_name($this->table);
-        $this->sqlite_query = $this->sqlite()->query()->set_current_table_name($this->table);
+        $this->mysql_query = $this->mysql()->query()->from($this->table);
+        $this->pgsql_query = $this->postgresql()->query()->from($this->table);
+        $this->sqlite_query = $this->sqlite()->query()->from($this->table);
 
     }
 
