@@ -81,8 +81,7 @@ class Model
 
         $this->table = $table->select($current_table_name);
         $this->primary = $this->table->get_primary_key();
-        $this->data = collection();
-        $this->set($this->primary,'null');
+        $this->data = collection()->add('null',$this->primary);
         $this->sql = query($table,$connect)->from($current_table_name);
         $this->current  = $current_table_name;
     }
@@ -196,6 +195,8 @@ class Model
     public function set($column_name,$value): Model
     {
         not_in($this->columns(),$column_name,true,"The column $column_name was not found in the {$this->current} table");
+
+        equal($column_name,$this->primary,true,"The primary key is already defined");
 
         $this->data->add($value,$column_name);
 

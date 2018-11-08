@@ -357,10 +357,14 @@ class ModelTest extends DatabaseTest
         $this->expectException(Exception::class);
 
         $this->mysql()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+        $this->mysql()->model()->set('id','null')->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
 
         $this->postgresql()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+        $this->postgresql()->model()->set('id','null')->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
 
         $this->sqlite()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+        $this->sqlite()->model()->set('id','null')->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+
     }
 
     /**
