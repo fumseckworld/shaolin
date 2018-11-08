@@ -174,9 +174,11 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 | is_empty              |   void    | A boolean                                 | Check if the table is empty                                        |
 | pdo                   |   void    | An instance of pdo                        | Return the pdo instance                                            |
 | request               |   string  | An array                                  | Return the result of the query inside an array                     |
-| execute               |   string  | A boolean            
-
-
+| request               |   string  | An array                                  | Return the result of the query inside an array                     |
+| set                   |   mixed   | An instance of Model                      | Set a new value for a column                                       |   
+| save                  |   void    | A boolean                                 | Insert the new record build with set method                        |   
+| news                  |   mixed   | An array                                  | Return the news added records with a limit and order by            |   
+| last                  |   mixed   | An array                                  | Return the lasts records with a limit and order by                 |   
 
 # [Collection](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php) [Coverage](https://imperium.fumseck.eu/imperium/Collection/Collection.php.html)
  

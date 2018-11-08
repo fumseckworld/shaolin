@@ -175,7 +175,7 @@ class Model
     public function get(): array
     {
         if (not_def($this->param,$this->expected,$this->condition))
-            throw new Exception("Where clause was not found");
+            throw new Exception("The where clause was not found");
 
         return def($this->only) ? $this->sql->set_query_mode(Query::SELECT)->set_columns($this->only)->where($this->param,$this->condition,$this->expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($this->param,$this->condition,$this->expected)->get();
     }
@@ -195,7 +195,7 @@ class Model
      */
     public function set($column_name,$value): Model
     {
-        not_in($this->columns(),$column_name,true,"The columns was not found in {$this->current} table");
+        not_in($this->columns(),$column_name,true,"The column $column_name was not found in the {$this->current} table");
 
         $this->data->add($value,$column_name);
 
@@ -212,7 +212,7 @@ class Model
      */
     public function save(): bool
     {
-        different(length($this->columns()),length($this->data->collection()),true,"Missing value");
+        different(length($this->columns()),length($this->data->collection()),true,"You have missing values");
 
         $data = collection();
 
@@ -261,7 +261,40 @@ class Model
         return $this->sql;
     }
 
+    /**
+     *
+     * Get the news records with a limit and order by clause
+     *
+     * @param string $order_column
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return array
+     *
+     * @throws Exception
+     *
+     */
+    public function news(string $order_column,int $limit,int $offset = 0): array
+    {
+        return $this->sql->set_query_mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column)->get();
+    }
 
+    /**
+     *
+     * Get the lasts record by a limit and an order by clause
+     *
+     * @param string $order_column
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
+    public function last(string $order_column,int $limit,int $offset = 0): array
+    {
+        return $this->sql->set_query_mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column,"asc")->get();
+    }
 
     /**
      *

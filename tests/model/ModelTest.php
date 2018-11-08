@@ -362,7 +362,33 @@ class ModelTest extends DatabaseTest
 
         $this->sqlite()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
     }
+
     /**
+     * @throws Exception
+     */
+    public function test_news_and_last()
+    {
+        $this->assertNotEmpty($this->mysql_model->news('name',20));
+        $this->assertNotEmpty($this->mysql_model->news('name',20,5));
+
+        $this->assertNotEmpty($this->pgsql_model->news('name',20));
+        $this->assertNotEmpty($this->pgsql_model->news('name',20,5));
+
+        $this->assertNotEmpty($this->sqlite_model->news('name',20));
+        $this->assertNotEmpty($this->sqlite_model->news('name',20,5));
+
+        $this->assertNotEmpty($this->mysql_model->last('name',20));
+        $this->assertNotEmpty($this->mysql_model->last('name',20,5));
+
+        $this->assertNotEmpty($this->pgsql_model->last('name',20));
+        $this->assertNotEmpty($this->pgsql_model->last('name',20,5));
+
+        $this->assertNotEmpty($this->sqlite_model->last('name',20));
+        $this->assertNotEmpty($this->sqlite_model->last('name',20,5));
+    }
+
+    /**
+     *
      * @throws Exception
      */
     public function test_driver()

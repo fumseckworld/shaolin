@@ -160,16 +160,16 @@ namespace Imperium\Query {
             $columns = def($this->columns) ? $this->columns : "*";
 
             if (equal($mode,Query::SELECT))
-                return "$mode $columns $table $where $limit $order";
+                return "$mode $columns $table $where $order $limit";
 
             if (equal($mode,Query::DELETE))
                 return "$mode $table $where";
 
             if (equal($mode,Query::UNION) || equal($mode,Query::UNION_ALL))
-                return "$union $limit $order";
+                return "$union $order $limit";
 
             if (collection(self::JOIN_MODE)->exist($mode))
-                return "$join $limit $order";
+                return "$join $order $limit";
 
 
 
@@ -290,6 +290,7 @@ namespace Imperium\Query {
          * @param int $offset
          *
          * @return Query
+         *
          */
         public function limit(int $limit,int $offset): Query
         {
