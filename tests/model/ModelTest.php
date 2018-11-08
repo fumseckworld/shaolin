@@ -279,9 +279,9 @@ class ModelTest extends DatabaseTest
                 'date' => faker()->date(),
             ];
 
-            $this->assertTrue($this->mysql_model->save($data,$this->table,[]));
-            $this->assertTrue($this->pgsql_model->save($data,$this->table,[]));
-            $this->assertTrue($this->sqlite_model->save($data,$this->table,[]));
+            $this->assertTrue($this->mysql_model->insert($data,$this->table,[]));
+            $this->assertTrue($this->pgsql_model->insert($data,$this->table,[]));
+            $this->assertTrue($this->sqlite_model->insert($data,$this->table,[]));
 
         }
 
@@ -337,6 +337,31 @@ class ModelTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_cool()
+    {
+
+        $dateString = now()->toDateTimeString();
+
+        $record = $this->mysql_model->set('name','will')->set('sex','M')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+        $this->assertTrue($record);
+
+        $record = $this->pgsql_model->set('name','will')->set('sex','M')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+        $this->assertTrue($record);
+
+        $record = $this->sqlite_model->set('name','will')->set('sex','M')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+        $this->assertTrue($record);
+
+        $this->expectException(Exception::class);
+
+        $this->mysql()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+
+        $this->postgresql()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+
+        $this->sqlite()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
+    }
     /**
      * @throws Exception
      */

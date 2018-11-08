@@ -57,6 +57,11 @@ class Model
     private $expected;
 
     /**
+     * @var \Imperium\Collection\Collection
+     */
+    private $data;
+
+    /**
      * @var
      */
     private $only;
@@ -76,6 +81,8 @@ class Model
 
         $this->table = $table->select($current_table_name);
         $this->primary = $this->table->get_primary_key();
+        $this->data = collection();
+        $this->set($this->primary,'null');
         $this->sql = query($table,$connect)->from($current_table_name);
         $this->current  = $current_table_name;
     }
@@ -173,6 +180,47 @@ class Model
         return def($this->only) ? $this->sql->set_query_mode(Query::SELECT)->set_columns($this->only)->where($this->param,$this->condition,$this->expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($this->param,$this->condition,$this->expected)->get();
     }
 
+
+    /**
+     *
+     * Define value of a column
+     *
+     * @param $column_name
+     * @param $value
+     *
+     * @return Model
+     *
+     * @throws Exception
+     *
+     */
+    public function set($column_name,$value): Model
+    {
+        not_in($this->columns(),$column_name,true,"The columns was not found in {$this->current} table");
+
+        $this->data->add($value,$column_name);
+
+        return $this;
+    }
+
+    /**
+     *
+     * Save new record in the table
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    public function save(): bool
+    {
+        different(length($this->columns()),length($this->data->collection()),true,"Missing value");
+
+        $data = collection();
+
+        foreach ($this->columns() as  $column)
+            $data->add($this->data->get($column),$column);
+
+        return $this->insert($data->collection(),$this->current);
+    }
     /**
      *
      * Return true if the current connexion is postgresql
@@ -306,26 +354,6 @@ class Model
     public function remove(int $id): bool
     {
         return $this->sql->set_query_mode(Query::DELETE)->where($this->primary,Query::EQUAL,$id)->delete();
-    }
-
-
-    /**
-     *
-     * Insert data in the table
-     *
-     *
-     * @param array $data
-     * @param string $table
-     * @param array $ignore
-     *
-     * @return bool
-     *
-     * @throws Exception
-     *
-     */
-    public function save(array $data,string $table ,array $ignore = []): bool
-    {
-        return $this->insert($data,$table,$ignore);
     }
 
     /**
