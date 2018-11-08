@@ -6,7 +6,9 @@ namespace Imperium {
 
 
     use Imperium\Bases\Base;
+    use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
+    use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Tables\Table;
@@ -120,7 +122,6 @@ namespace Imperium {
          *
          * Change base collation
          *
-         * @param string $base
          * @param string $new_collation
          *
          * @return bool
@@ -128,7 +129,7 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function change_base_collation(string $base, string $new_collation) : bool;
+        public function change_base_collation(string $new_collation) : bool;
 
         /**
          *
@@ -148,14 +149,23 @@ namespace Imperium {
          *
          * Change base charset
          *
-         * @param string $base
          * @param string $new_charset
+         *
          * @return bool
          *
-         * @throws Exception
+         */
+        public function change_base_charset(string $new_charset) : bool;
+
+        /**
+         *
+         * Management iof the array
+         *
+         * @param array $data
+         *
+         * @return Collection
          *
          */
-        public function change_base_charset(string $base, string $new_charset) : bool;
+        public function collection(array $data = []): Collection;
 
 
         /**
@@ -563,6 +573,11 @@ namespace Imperium {
          *
          */
         public function model(): Model;
+
+        /**
+         * @return Form
+         */
+        public function form(): Form;
 
         /**
          * @return Query

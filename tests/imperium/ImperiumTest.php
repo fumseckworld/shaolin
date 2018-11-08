@@ -4,7 +4,10 @@ namespace tests\imperium;
 
 
 use Exception;
+use Imperium\Collection\Collection;
+use Imperium\Html\Form\Form;
 use Imperium\Imperium;
+use Imperium\Users\Users;
 use Testing\DatabaseTest;
 
 class ImperiumTest extends DatabaseTest
@@ -228,5 +231,99 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->seed_database(50,['phinxlog']));
         $this->assertTrue($this->sqlite()->seed_database(50,['phinxlog','sqlite_sequence']));
 
+    }
+
+
+    /**
+     * @throws Exception
+     */
+    public function test_add_user()
+    {
+        $this->assertTrue($this->mysql()->add_user('linux','linux'));
+        $this->assertTrue($this->postgresql()->add_user('linux','linux'));
+
+        $this->assertTrue($this->mysql()->remove_user('linux'));
+        $this->assertTrue($this->postgresql()->remove_user('linux'));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_find()
+    {
+        $this->assertNotEmpty($this->mysql()->find(50));
+        $this->assertNotEmpty($this->mysql()->find_or_fail(50));
+
+        $this->assertNotEmpty($this->postgresql()->find(50));
+        $this->assertNotEmpty($this->postgresql()->find_or_fail(50));
+
+        $this->assertNotEmpty($this->sqlite()->find(50));
+        $this->assertNotEmpty($this->sqlite()->find_or_fail(50));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_dump()
+    {
+        $this->assertTrue($this->mysql()->dump());
+        $this->assertTrue($this->postgresql()->dump());
+        $this->assertTrue($this->sqlite()->dump());
+
+        $this->assertTrue($this->mysql()->dump(false,$this->table));
+        $this->assertTrue($this->postgresql()->dump(false,$this->table));
+        $this->assertTrue($this->sqlite()->dump(false,$this->table));
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_change()
+    {
+        $this->assertTrue($this->mysql()->change_base_collation("utf8_general_ci"));
+        $this->assertTrue($this->postgresql()->change_base_collation("C"));
+
+        $this->assertTrue($this->mysql()->change_table_charset($this->table,"utf8"));
+        $this->assertFalse($this->postgresql()->change_table_charset($this->table,"utf8"));
+
+        $this->assertTrue($this->mysql()->change_table_collation($this->table,"utf8_general_ci"));
+        $this->assertFalse($this->postgresql()->change_table_collation($this->table,"utf8"));
+    }
+
+    public function test_collection()
+    {
+       $this->assertInstanceOf(Collection::class,$this->mysql()->collection());
+       $this->assertInstanceOf(Collection::class,$this->postgresql()->collection());
+       $this->assertInstanceOf(Collection::class,$this->sqlite()->collection());
+
+       $this->assertEquals([],$this->mysql()->collection()->collection());
+       $this->assertEquals([],$this->postgresql()->collection()->collection());
+       $this->assertEquals([],$this->sqlite()->collection()->collection());
+
+       $this->assertEquals(['3'],$this->mysql()->collection(['3'])->collection());
+       $this->assertEquals(['2'],$this->postgresql()->collection(['2'])->collection());
+       $this->assertEquals(['1'],$this->sqlite()->collection(['1'])->collection());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function test_user()
+    {
+        $this->assertInstanceOf(Users::class,$this->mysql()->users());
+        $this->assertInstanceOf(Users::class,$this->postgresql()->users());
+
+        $this->assertNotEmpty($this->mysql()->users()->show());
+        $this->assertNotEmpty($this->postgresql()->users()->show());
+    }
+    public function test_form()
+    {
+        $this->assertInstanceOf(Form::class,$this->mysql()->form());
+        $this->assertInstanceOf(Form::class,$this->postgresql()->form());
+        $this->assertInstanceOf(Form::class,$this->sqlite()->form());
+
+        $this->assertEquals('</form>', $this->mysql()->form()->get());
+        $this->assertEquals('</form>', $this->postgresql()->form()->get());
+        $this->assertEquals('</form>', $this->sqlite()->form()->get());
     }
 }

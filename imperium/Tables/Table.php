@@ -190,6 +190,9 @@ namespace Imperium\Tables {
                 case Connect::MYSQL;
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} COLLATE {$this->collation};");
                 break;
+                case Connect::POSTGRESQL:
+                    return $this->connexion->execute("ALTER DATABASE {$this->connexion->get_database()} SET COLLATE TO {$this->collation} }");
+                break;
                 default:
                     return false;
                 break;
@@ -400,8 +403,6 @@ namespace Imperium\Tables {
         public function append_column(string $name, string $type, int $size, bool $unique): bool
         {
 
-
-            $driver = $this->driver;
             $data = collection();
             $command = "ALTER TABLE {$this->get_current_table()} ADD COLUMN ";
 
@@ -412,7 +413,7 @@ namespace Imperium\Tables {
 
 
             if ($unique)
-                $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name,$driver));
+                $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name));
 
 
             return $data->not_exist(false);
@@ -479,6 +480,9 @@ namespace Imperium\Tables {
                 break;
                 case Connect::SQLITE:
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ALTER COLUMN $column DROP $constraint;");
+                break;
+                default:
+                    return false;
                 break;
             }
 

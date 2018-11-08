@@ -4,8 +4,10 @@ namespace Imperium;
 
 use Exception;
 use Imperium\Bases\Base;
+use Imperium\Collection\Collection;
 use Imperium\Connexion\Connect;
 use Imperium\File\File;
+use Imperium\Html\Form\Form;
 use Imperium\Json\Json;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
@@ -198,7 +200,6 @@ class Imperium extends Zen implements Management
      *
      * Change base collation
      *
-     * @param string $base
      * @param string $new_collation
      *
      * @return bool
@@ -206,9 +207,9 @@ class Imperium extends Zen implements Management
      * @throws Exception
      *
      */
-    public function change_base_collation(string $base, string $new_collation): bool
+    public function change_base_collation(string $new_collation): bool
     {
-       return $this->base->set_name($base)->set_collation($new_collation)->change_collation();
+       return $this->base->set_collation($new_collation)->change_collation();
     }
 
     /**
@@ -232,16 +233,15 @@ class Imperium extends Zen implements Management
      *
      * Change base charset
      *
-     * @param string $base
      * @param string $new_charset
      *
      * @return bool
      *
      * @throws Exception
      */
-    public function change_base_charset(string $base, string $new_charset): bool
+    public function change_base_charset(string $new_charset): bool
     {
-        return $this->base->set_name($base)->set_charset($new_charset)->change_charset();
+        return $this->base->set_charset($new_charset)->change_charset();
     }
 
     /**
@@ -964,5 +964,28 @@ class Imperium extends Zen implements Management
     public function connect(): Connect
     {
        return $this->connect;
+    }
+
+    /**
+     *
+     * Management iof the array
+     *
+     * @param array $data
+     *
+     * @return Collection
+     *
+     */
+    public function collection(array $data = []): Collection
+    {
+        return new Collection($data);
+    }
+
+
+    /**
+     * @return Form
+     */
+    public function form(): Form
+    {
+        return new Form();
     }
 }

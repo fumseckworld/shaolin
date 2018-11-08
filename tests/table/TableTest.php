@@ -442,5 +442,9 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->pgsql_table->truncate($this->table));
         $this->assertTrue($this->sqlite_table->truncate($this->table));
 
+        $this->assertTrue($this->mysql()->empty_table($this->table));
+        $this->assertTrue($this->postgresql()->empty_table($this->table));
+        $this->assertTrue($this->sqlite()->empty_table($this->table));
+
     }
 }
