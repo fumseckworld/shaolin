@@ -138,7 +138,7 @@ class Model
 
         $table_select = tables_select($this->table,$table_url_prefix,$url_separator);
 
-        $pagination =   pagination( $limit_records_per_page,$pagination_prefix_url,$current_page,$this->count(),$start_pagination_text,$end_pagination_text);
+        $pagination = pagination( $limit_records_per_page,$pagination_prefix_url,$current_page,$this->count(),$start_pagination_text,$end_pagination_text);
         
         append($html,html('div',$table_select,'mt-2 mb-2'));
 
