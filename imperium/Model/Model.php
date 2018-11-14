@@ -102,6 +102,52 @@ class Model
         return $this->table->hidden($hidden)->show();
     }
 
+    
+    /**
+     * 
+     * Show records
+     * @param  string pagination_prefix_url
+     * @param  string $table_url_prefix
+     * @param  string $url_separator
+     * @param  int    $current_page
+     * @param  int    $limit_records_per_page
+     * @param  string $table_class
+     * @param  string $action_remove_text
+     * @param  string $confirm_text
+     * @param  string $remove_btn_class
+     * @param  string $remove_url_prefix
+     * @param  string $remove_icon
+     * @param  string $action_edit_text
+     * @param  string $edit_url_prefix
+     * @param  string $edit_btn_class
+     * @param  bool   $align_column
+     * @param  bool   $column_to_upper
+     * @param  bool   $framework
+     * @param  string $start_pagination_text
+     * @param  string $end_pagination_text
+     * @param  string $order_by
+     *
+     * @return string
+     * 
+     */
+    public function show(string $pagination_prefix_url,string $table_url_prefix,string $url_separator,int $current_page,int $limit_records_per_page,string $table_class,string $action_remove_text,string $confirm_text,string $remove_btn_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $edit_url_prefix,string $edit_icon,string $edit_btn_class,bool $align_column,bool $column_to_upper,bool $framework,string $start_pagination_text,string $end_pagination_text,string $order_by): string
+    {
+        $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
+
+        $records = get_records($this->table,$this->table->get_current_table(),$current_page,$limit_records_per_page,$this->connexion,$framework,$order_by);
+
+        $table_select = tables_select($this->table,$table_url_prefix,$url_separator);
+
+        $pagination =   pagination( $limit_records_per_page,$pagination_prefix_url,$current_page,$this->count(),$start_pagination_text,$end_pagination_text);
+        
+        append($html,html('div',$table_select,'mt-2 mb-2'));
+
+        append($html,simply_view($this->table->get_current_table(),$this->table,$this->all(),$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$align_column,$column_to_upper));
+        
+    
+        return $html;
+    }
+
     /**
      *
      * Change of table
@@ -184,7 +230,7 @@ class Model
      *
      * Define value of a column
      *
-     * @param $column_name
+     * @param string $column_name
      * @param $value
      *
      * @return Model
@@ -192,7 +238,7 @@ class Model
      * @throws Exception
      *
      */
-    public function set($column_name,$value): Model
+    public function set(string $column_name,$value): Model
     {
         not_in($this->columns(),$column_name,true,"The column $column_name was not found in the {$this->current} table");
 

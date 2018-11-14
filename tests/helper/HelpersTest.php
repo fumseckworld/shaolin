@@ -601,47 +601,22 @@ class HelpersTest extends DatabaseTest
      */
     public function test_tables_select()
     {
+        $select = tables_select($this->mysql()->tables(),'imperium');
 
-        $choose = 'select a table';
-        $select = tables_select($this->mysql()->tables(),'imperium',$this->table,$choose,false);
-        $this->assertContains($choose,$select);
-        $this->assertNotContains($this->table,$select);
-        $this->assertNotContains('location',$select);
-        $this->assertNotEmpty($select);
-
-        $select = tables_select($this->mysql()->tables(),'imperium',$this->table,$choose,true);
+        $this->assertNotContains($this->table,$select );
         $this->assertContains('location',$select);
-        $this->assertContains($choose,$select);
-        $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
 
-        $select = tables_select($this->postgresql()->tables(),'imperium',$this->table,$choose,false);
+        $select = tables_select($this->postgresql()->tables(),'imperium');
 
-        $this->assertNotContains('location',$select);
-        $this->assertContains($choose,$select);
-        $this->assertNotContains($this->table,$select);
-        $this->assertNotEmpty($select);
-
-        $select = tables_select($this->postgresql()->tables(),'imperium',$this->table,$choose,true);
+        $this->assertNotContains($this->table,$select );
         $this->assertContains('location',$select);
-        $this->assertContains($choose,$select);
-        $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
+        
+        $select = tables_select($this->sqlite()->tables(),'imperium');
 
-
-        $select = tables_select($this->sqlite()->tables(),'imperium',$this->table,$choose,false);
-
-        $this->assertNotContains('location',$select);
-        $this->assertContains($choose,$select);
-        $this->assertNotContains($this->table,$select);
-        $this->assertNotEmpty($select);
-
-
-        $select = tables_select($this->sqlite()->tables(),'imperium',$this->table,$choose,true);
-
-        $this->assertContains($choose,$select);
+        $this->assertNotContains($this->table,$select );
         $this->assertContains('location',$select);
-        $this->assertNotContains($this->table,$select);
         $this->assertNotEmpty($select);
     }
 

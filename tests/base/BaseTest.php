@@ -42,11 +42,14 @@ class BaseTest extends DatabaseTest
      */
     public function test_multiples()
     {
+
         $this->assertTrue($this->mysql()->bases()->create_multiples('a','b','c'));
         $this->assertTrue($this->postgresql()->bases()->create_multiples('a','b','c'));
+        $this->assertTrue($this->sqlite()->bases()->create_multiples('a','b','c'));
 
         $this->assertTrue($this->mysql()->bases()->drop_multiples('a','b','c'));
         $this->assertTrue($this->postgresql()->bases()->drop_multiples('a','b','c'));
+        $this->assertTrue($this->sqlite()->bases()->drop_multiples('a','b','c'));
 
     }
     /**

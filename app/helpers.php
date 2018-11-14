@@ -941,19 +941,18 @@ if (not_exist('tables_select'))
      *
      * @throws Exception
      */
-    function tables_select(Table $instance, string $url_prefix, string $current_table_name, string $choose_text, bool $use_a_redirect_select, string $csrf_token_field = '', string $separator = '/', string $icon = '<i class="fas fa-table"></i>'): string
+    function tables_select(Table $instance, string $url_prefix,string $separator = '/'): string
     {
 
-        $tables = collection(array('' => $choose_text));
+        $tables = collection();
 
         foreach ($instance->show() as $x)
         {
-            if (different($x,$current_table_name))
+            if (different($x,$instance->get_current_table()))
                 $tables->merge(["$url_prefix$separator$x" => $x]);
 
         }
-
-        return $use_a_redirect_select ? form('',uniqid())->row()->csrf($csrf_token_field)->redirect('table',$tables->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf_token_field)->row()->select('table',$tables->collection(),$icon)->end_row()->get();
+        return  form('',uniqid())->row()->redirect('table',$tables->collection())->end_row()->get() ;
      }
 }
 
@@ -1320,6 +1319,7 @@ if (not_exist('get_records'))
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 
 
+        $sql = sql($current_table_name,query($instance,$connect))->set_query_mode(Query::SELECT);
         if ($framework)
         {
             $parts = explode('/',server('REQUEST_URI'));
@@ -1330,17 +1330,17 @@ if (not_exist('get_records'))
                 $like = '';
 
             if (empty($like))
-                $records = sql($current_table_name,query($instance,$connect))->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+                $records = $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
             else
-                $records = sql($current_table_name,\query($instance,$connect))->like($instance, $like)->order_by($key,$order_by)->get();
+                $records = $sql->like($instance, $like)->order_by($key,$order_by)->get();
 
         }else
         {
             $like = get('search');
             if (empty($like))
-                $records = sql($current_table_name,query($instance,$connect))->limit($limit_per_page,$offset)->order_by($key,$order_by)->get();
+                $records = $sql->limit($limit_per_page,$offset)->order_by($key,$order_by)->get();
             else
-                $records = sql($current_table_name,query($instance,$connect))->like($instance,$like)->order_by($key,$order_by)->get();
+                $records = $sql->like($instance,$like)->order_by($key,$order_by)->get();
         }
 
         return $records;

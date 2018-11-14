@@ -980,7 +980,6 @@ class Imperium extends Zen implements Management
         return new Collection($data);
     }
 
-
     /**
      * @return Form
      */
