@@ -90,7 +90,7 @@ class Connect
 
         $this->dump_path    = $dump_path;
 
-        $this->instance  = $this->getInstance();
+        $this->instance     = $this->getInstance();
     }
 
     /**
@@ -210,7 +210,7 @@ class Connect
      *
      * @throws Exception
      */
-    public Function request(string $request): array
+    public function request(string $request): array
     {
          $query = $this->instance()->query($request);
 
@@ -234,7 +234,7 @@ class Connect
      *
      * @throws Exception
      */
-    public Function execute(string $request): bool
+    public function execute(string $request): bool
     {
         $response = $this->instance->prepare($request);
         if (is_bool($response))

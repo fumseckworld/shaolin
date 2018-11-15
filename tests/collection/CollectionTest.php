@@ -18,6 +18,15 @@ class CollectionTest extends DatabaseTest
         $this->assertInstanceOf(Collection::class,collection(array('1',2,3,3,5)));
     }
 
+    public function test_convert_to_json()
+    {
+        $this->assertTrue(collection($this->mysql()->show_databases())->convert_to_json('app.json'));
+        $this->assertTrue(collection($this->postgresql()->show_databases())->convert_to_json('app.json'));
+
+        $this->assertTrue(collection($this->mysql()->show_databases())->convert_to_json('app.json','bases'));
+        $this->assertTrue(collection($this->postgresql()->show_databases())->convert_to_json('app.json','bases'));
+    }
+
     public function test_remove_values()
     {
         $data = [1,2,3,4,5,6,7,8,9];

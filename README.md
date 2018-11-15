@@ -20,6 +20,7 @@
     * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
 * [**Coverage**](https://imperium.fumseck.eu)
 * [**Discord**](https://discord.gg/qn6yptm)
+* [**Trello**](https://trello.com/b/28tMSSDG/imperium)
 
 # What it's ?
 

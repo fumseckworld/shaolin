@@ -67,7 +67,10 @@ class Collection implements ArrayAccess, Iterator
         $this->position = 0;
     }
 
-
+    public function convert_to_json(string $filename,string $key = ''): bool
+    {
+        return json($filename)->add($this->data,$key)->generate();
+    }
     /**
      *
      * Define new data
