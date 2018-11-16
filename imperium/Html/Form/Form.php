@@ -785,17 +785,7 @@ class Form
         
         $i = count($columns);
 
-        $date = array(
-            'date',
-            'datetime',
-            'timestamp',
-            'time',
-            'interval',
-            'real',
-            'float4',
-            'timestamp without time zone'
-        );
-
+        $date = Table::TYPE_OF_DATE;
 
         if (equal($mode,Form::EDIT))
         {
@@ -807,8 +797,6 @@ class Form
 
                     if (is_null($record->$column))
                         $record->$column = '';
-
-
 
                     if (different($column,$primary))
                     {

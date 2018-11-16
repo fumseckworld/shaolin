@@ -125,9 +125,8 @@ if (not_exist('equal'))
     {
         $x = strcmp($parameter,$expected) === 0;
 
-        if ($run_exception)
-            if ($x)
-                throw new Exception($message);
+        if ($run_exception && $x)
+            throw new Exception($message);
 
 
         return $x;
@@ -231,8 +230,9 @@ if (not_exist('is_true'))
 
         if ($run_exception && $x)
             throw new Exception($message);
-        else
-            return $x;
+        
+        return $x;
+
     }
 }
 
@@ -367,9 +367,7 @@ if (not_exist('bases_to_json'))
      */
     function bases_to_json(Base $base,$filename,string $key =''): bool
     {
-        $json = json($filename);
-        return def($key) ? $json->create([$key => $base->show()]) : $json->create($base->show());
-
+        return json($filename)->add($base->show(),$key)->generate();
     }
 }
 
@@ -389,9 +387,7 @@ if (not_exist('users_to_json'))
      */
     function users_to_json(Users $users,$filename,string $key = '') : bool
     {
-        $json = json($filename);
-
-        return def($key) ? $json->create([$key => $users->show()]) : $json->create($users->show());
+        return json($filename)->add($users->show(),$key)->generate();
     }
 }
 
@@ -411,9 +407,7 @@ if (not_exist('tables_to_json'))
      */
     function tables_to_json(Table $table,$filename,string $key= '') : bool
     {
-        $json = json($filename);
-
-        return def($key) ? $json->create([$key => $table->show()]) : $json->create($table->show());
+        return json($filename)->add($table->show(),$key)->generate();
     }
 }
 
@@ -432,10 +426,9 @@ if (not_exist('sql_to_json'))
      * @throws Exception
      *
      */
-    function sql_to_json(Connect $connect,string $query,$filename) : bool
+    function sql_to_json(Connect $connect,string $query,$filename,string $key = '' ) : bool
     {
-        $json = json($filename);
-        return  $json->create($connect->request($query));
+        return json($filename)->add($connect->request($query),$key)->generate();
     }
 }
 
@@ -806,125 +799,6 @@ if (not_exist('zones'))
     }
 }
 
-if (not_exist('web'))
-{
-    /**
-     * @param string $tab_name_for_manage_table
-     * @param string $tab_name_for_manage_users
-     * @param string $tab_name_for_manage_database
-     * @param string $query_view_html
-     * @param string $select_table_view
-     * @param string $records_table_view
-     * @param string $select_user_view
-     * @param string $select_base_view
-     * @param string $manage_database_view
-     * @return string
-     *
-     * @throws Exception
-     */
-    function web(string $tab_name_for_manage_table,string $tab_name_for_manage_users,string $tab_name_for_manage_database,string $query_view_html,string $select_table_view,string $records_table_view,string $select_user_view,string $select_base_view,string $manage_database_view): string
-    {
-        $tables_management = '';
-        $users_management = '';
-        $base_management = '';
-
-        $class ='mt-5 mb-5';
-        append($tables_management,html('div',$select_table_view,$class,'select_table'),html('div',$query_view_html,$class,'query'),html('div',$records_table_view,$class));
-
-        append($users_management,html('div',$select_user_view,$class));
-        append($base_management,html('div',$select_base_view,$class),html('div',$manage_database_view,$class));
-
-        $code = ' <ul class="nav nav-tabs mt-5 mb-5" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active" id="'.$tab_name_for_manage_table.'-tab" data-toggle="tab" href="#'.$tab_name_for_manage_table.'" role="tab" aria-controls="'.$tab_name_for_manage_table.'" aria-selected="false">'.$tab_name_for_manage_table.'</a>
-                    </li>   
-                     <li class="nav-item">
-                        <a class="nav-link" id="'.$tab_name_for_manage_users.'-tab" data-toggle="tab" href="#'.$tab_name_for_manage_users.'" role="tab" aria-controls="'.$tab_name_for_manage_users.'" aria-selected="false">'.$tab_name_for_manage_users.'</a>
-                    </li>    
-                    <li class="nav-item">
-                        <a class="nav-link" id="'.$tab_name_for_manage_database.'-tab" data-toggle="tab" href="#'.$tab_name_for_manage_database.'" role="tab" aria-controls="'.$tab_name_for_manage_database.'" aria-selected="false">'.$tab_name_for_manage_database.'</a>
-                    </li>    
-                </ul>
-                <div class="tab-content">
-                  <div class="tab-pane fade show active" id="'.$tab_name_for_manage_table.'" role="tabpanel" aria-labelledby="'.$tab_name_for_manage_table.'-tab">'.$tables_management.'</div>
-                  <div class="tab-pane fade" id="'.$tab_name_for_manage_users.'" role="tabpanel" aria-labelledby="'.$tab_name_for_manage_users.'-tab">'.$users_management.'</div>
-                  <div class="tab-pane fade" id="'.$tab_name_for_manage_database.'" role="tabpanel" aria-labelledby="'.$tab_name_for_manage_database.'-tab">'.$base_management.'</div>
-                </div>';
-        append($code,bootstrap_js());
-        return $code;
-    }
-}
-
-if (not_exist('records'))
-{
-
-    /**
-     * @param string $html_table_class
-     * @param Table $instance
-     * @param string $current_table_name
-     * @param string $edit_url_prefix
-     * @param string $remove_url_prefix
-     * @param string $action_edit_text
-     * @param string $action_remove_text
-     * @param string $edit_button_class
-     * @param string $remove_button_class
-     * @param string $edit_icon
-     * @param string $remove_icon
-     * @param int $limit_records_per_page
-     * @param int $current_page
-     * @param string $pagination_prefix_url
-     * @param Connect $connect
-     * @param string $action_save_text
-     * @param string $confirm_before_remove_text
-     * @param string $start_pagination_text
-     * @param string $end_pagination_text
-     * @param string $advanced_view_tab_text
-     * @param string $simply_view_tab_text
-     * @param string $form_prefix_url
-     * @param string $table_view_bab_text
-     * @param string $table_url_prefix
-     * @param string $choose_text
-     * @param bool $align_column_center
-     * @param bool $column_to_upper
-     * @param string $csrf_token_field
-     * @param bool $pagination_to_right
-     * @param bool $framework
-     * @param bool $advanced_view_default
-     * @param string $url_separator
-     * @param int $textarea_row
-     * @param string $table_icon
-     * @param string $order_by
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    function records(
-        string $html_table_class, Table $instance, string $current_table_name,
-        string $edit_url_prefix, string $remove_url_prefix, string $action_edit_text,
-        string $action_remove_text, string $edit_button_class, string $remove_button_class,
-        string $edit_icon, string $remove_icon, int $limit_records_per_page, int $current_page,
-        string $pagination_prefix_url, Connect $connect, string $action_save_text,
-        string $confirm_before_remove_text, string $start_pagination_text,
-        string $end_pagination_text, string $advanced_view_tab_text, string $simply_view_tab_text,
-        string $form_prefix_url,string $table_view_bab_text,string $table_url_prefix,string $choose_text,bool $align_column_center,
-        bool $column_to_upper,string $csrf_token_field = '', bool $pagination_to_right = true, bool $framework = false,
-        bool $advanced_view_default = false,  string $url_separator = '/',int $textarea_row = 1, string $table_icon ='<i class="fas fa-table"></i>',string $order_by = 'desc'): string
-    {
-       return Records::show( $html_table_class,$instance, $current_table_name,
-                            $edit_url_prefix, $remove_url_prefix,$action_edit_text,
-                            $action_remove_text , $edit_button_class,   $remove_button_class,
-                            $edit_icon,$remove_icon, $limit_records_per_page,   $current_page,
-                            $pagination_prefix_url, $connect,   $action_save_text,
-                            $confirm_before_remove_text,   $start_pagination_text,
-                            $end_pagination_text,   $advanced_view_tab_text,   $simply_view_tab_text,
-                            $form_prefix_url,  $table_view_bab_text,  $table_url_prefix, $choose_text,$align_column_center,
-                            $column_to_upper,  $csrf_token_field ,$pagination_to_right , $framework,
-                            $advanced_view_default ,  $url_separator , $textarea_row ,$table_icon ,  $order_by);
-    }
-}
-
-
 if (not_exist('tables_select'))
 {
     /**
@@ -950,7 +824,6 @@ if (not_exist('tables_select'))
         {
             if (different($x,$instance->get_current_table()))
                 $tables->merge(["$url_prefix$separator$x" => $x]);
-
         }
         return  form('',uniqid())->row()->redirect('table',$tables->collection())->end_row()->get() ;
      }
@@ -1117,180 +990,6 @@ if (not_exist('simply_view'))
 
         return $code;
 
-    }
-}
-
-
-
-if (not_exist('tables_view'))
-{
-    /**
-    * generate alter table view
-    *
-    * @param Table $instance
-    *
-    * @return string
-    */
-    function tables_view( Table $instance): string
-    {
-        return '';
-    }
-
-}
-
-if (not_exist('users_view'))
-{
-    /**
-     * generate a view to manage users
-     *
-     * @param Users $instance
-     *
-     * @return string
-     */
-    function users_view(Users $instance): string
-    {
-        return '';
-    }
-
-}
-if (not_exist('advanced_view'))
-{
-    /**
-     * @param string $current_table
-     * @param Table $instance
-     * @param array $records
-     * @param string $form_action
-     * @param string $select_table_code
-     * @param string $action_save_text
-     * @param string $action_edit_text
-     * @param string $edit_text_class
-     * @param string $remove_url_prefix
-     * @param string $remove_button_class
-     * @param string $remove_text
-     * @param string $text_before_remove
-     * @param string $pagination
-     * @param bool $align_column_center
-     * @param bool $column_to_upper
-     * @param bool $pagination_to_right
-     * @param string $csrf_token_field
-     * @param int $textarea_row
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    function advanced_view(string $current_table, Table $instance,array $records,string $form_action,string $select_table_code,string $action_save_text,string $action_edit_text,string $edit_text_class,string $remove_url_prefix,string $remove_button_class,string $remove_text,string $text_before_remove,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right,string $csrf_token_field ='',int  $textarea_row =  1): string
-    {
-
-        $instance = $instance->select($current_table);
-        $types    = $instance->get_columns_types();
-        $columns  = $instance->get_columns();
-        $primary  = $instance->get_primary_key();
-
-        $number = array(
-            'smallint',
-            'integer',
-            'bigint',
-            'decimal',
-            'numeric',
-            'real',
-            'double',
-            'double precision',
-            'smallserial',
-            'serial',
-            'integer',
-            'int',
-            'bigserial',
-            'smallint',
-            'float',
-        );
-
-        $date = array(
-            'date',
-            'datetime',
-            'timestamp',
-            'time',
-            'interval',
-            'real',
-            'float4',
-            'timestamp without time zone'
-        );
-
-
-
-
-        $code = '';
-
-        append($code,html('div',$select_table_code,'mt-5 mb-5'));
-
-        append($code, '<script type="text/javascript">function sure(e,text){ if (!confirm(text)) {e.preventDefault()} }function edit(element)  { const btn = $(element);  const tr = btn.parent().parent();   const id = btn.attr("data-form-id"); if (btn.text() !== btn.attr("data-edit")){  $("#"+id).submit(); }  if (btn.text() === btn.attr("data-edit")){ btn.text(btn.attr("data-save"))}else{btn.text(btn.attr("data-edit"))} tr.find("DIV.td span").each(function(){  $(this).toggleClass("d-none"); });  tr.keypress(function(e) { if(e.which === 13) { $("#"+id).submit();  } }); }</script>');
-
-        append( $code ,' <div class="table-responsive"><div class="table"><div class="thead"><div class="tr">');
-
-        foreach ($columns as $column)
-        {
-            if (different($column,$primary))
-            {
-                append($code,' <div class="td ');
-                if ($column_to_upper)
-                    append($code,' text-uppercase');
-
-                if ($align_column_center)
-                    append($code,' text-center');
-
-                append($code,'">'.$column.'</div>');
-            }
-        }
-
-        append($code,'<div class="td">'.$action_edit_text.'</div><div class="td">'.$remove_text.'</div></div></div> <div class="tbody">');
-
-
-        foreach ($records as $record)
-        {
-            $id = uniqid().sha1($current_table.md5($record->$primary));
-
-           append($code,'<form class="tr" id="'.$id.'" method="post" action="'.$form_action.'">'.$csrf_token_field.'');
-
-            foreach ($columns as $k => $column)
-            {
-                $type = $types[$k];
-
-                if (is_null($record->$column))
-                    $record->$column = '';
-
-                if(different($column,$primary))
-                {
-                    $type = explode('(',$type);
-                    $type = $type[0];
-
-                    switch ($type)
-                    {
-                        case has($type,$number):
-                           append($code , '<div class="td"><span class="d-none td-input"><input type="number" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>');
-                        break;
-                        case has($type,$date):
-                            append($code ,'<div class="td"><span class="d-none td-input"><input type="datetime" name="'.$column.'" class="form-control form-control-lg" value="'.$record->$column.'"></span> <span class="record"> '.$record->$column.'</span></div>');
-                        break;
-                        default:
-                            append($code,'<div class="td"><span class="d-none td-input"><textarea name="'.$column.'" name="'.$column.'"  class="form-control form-control-lg"  rows="'.$textarea_row.'">'.$record->$column.'</textarea></span> <span class="record"> '.$record->$column.'</span></div>');
-                        break;
-                    }
-                } else {
-                   append( $code,'  <div class="td d-none"><input name="'.$primary.'"  value="'.$record->$primary.'"></div>  <div class="td d-none"><input name="table"  value="'.$current_table.'"></div>');
-
-                }
-            }
-
-            append($code,'<div class="td action btn-group"><button type="button" onclick="edit(this);" class="'.$edit_text_class.'" data-form-id="'.$id.'" data-edit="'.$action_edit_text.'" data-save="'.$action_save_text.'" >'.$action_edit_text.'</button> </div><div class="td  remove btn-group"><a href="'.$remove_url_prefix.'/'.  $record->$primary.'" onclick="sure(event,this.attributes[2].value)"  data-confirm="'.$text_before_remove.'" class="'.$remove_button_class.'" data-form-id="'.$id.'">'.$remove_text.'</a> </div></form>');
-        }
-
-        append($code, '</div></div></div>');
-        if ($pagination_to_right)
-            append($code ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div>');
-        else
-            append($code ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
-
-        return $code;
     }
 }
 if (not_exist('get_records'))
@@ -2083,61 +1782,6 @@ if (not_exist('inferior_or_equal'))
         return $x;
     }
 }
-if (not_exist('databases_view'))
-{
-    /**
-     * @param Imperium $imperium
-     * @param $create_database_action
-     * @param string $drop_database_action
-     * @param $name_of_database_placeholder
-     * @param $create_database_submit
-     * @param string $drop_database_submit_text
-     *
-     * @param string $submit_class
-     * @return string
-     *
-     * @throws Exception
-     */
-    function databases_view(Imperium $imperium,$create_database_action,string $drop_database_action,$name_of_database_placeholder,$create_database_submit,string $drop_database_submit_text,string $submit_class): string
-    {
-        $code = '';
-
-        append($code,html('div',form($create_database_action,uniqid())->row()->select('collation',collation($imperium->connect()))->select('charset',charset($imperium->connect()))->end_row_and_new()->input(Form::TEXT,'name',$name_of_database_placeholder)->end_row_and_new()->submit($create_database_submit,$submit_class,uniqid())->get(),'mt-5 mb-5'));
-        append($code,html('div',form($drop_database_action,uniqid())->row()->select('database',$imperium->show_databases())->end_row_and_new()->submit($drop_database_submit_text,$submit_class,uniqid())->get(),'mt-5 mb-5'));
-
-        return $code;
-    }
-}
-
-if (not_exist('remove'))
-{
-    /**
-     * remove a database , user or table
-     *
-     * @param Imperium $imperium
-     *
-     * @return bool
-     */
-    function remove( Imperium $imperium): bool
-    {
-
-    }
-}
-
-if (not_exist('remove_view'))
-{
-    /**
-     * create a view to create  database, user or table
-     *
-     * @param Imperium $imperium
-     *
-     * @return bool
-     */
-    function remove_view(Imperium $imperium): bool
-    {
-
-    }
-}
 
 if(not_exist('show'))
 {
@@ -2183,7 +1827,7 @@ if(not_exist('whoops'))
     {
         $whoops = new Run;
         $whoops->pushHandler(new PrettyPageHandler);
-       return $whoops->register();
+        return $whoops->register();
     }
 }
 if(not_exist('array_prev'))
@@ -2198,10 +1842,7 @@ if(not_exist('array_prev'))
      */
     function array_prev(array $array, $key)
     {
-
-        $collection = new  Collection($array);
-
-        return $collection->value_before_key($key);
+        return collection($array)->value_before_key($key);
     }
 
 }
@@ -2219,7 +1860,6 @@ if(not_exist('req'))
     function req(Connect $instance,string $request): array
     {
         return $instance->request($request);
-
     }
 }
 
@@ -2272,24 +1912,13 @@ if (not_exist('drop'))
      */
     function drop($instance,string ...$to): bool
     {
-        if ($instance instanceof Users)
-            foreach ($to as $user)
-                if (!$instance->drop($user))
-                    return false;
 
-        if ($instance instanceof Base)
-            foreach ($to as $base)
-                if (!$instance->drop($base))
-                    return false;
+        $data = collection();
 
-        if ($instance instanceof Table)
-            foreach ($to as $table)
-                if (!$instance->drop($table))
-                    return false;
+        foreach ($to as $x)
+            $data->add($instance->drop($x));
 
-
-
-        return true;
+       return $data->not_exist(false);
     }
 }
 

@@ -28,6 +28,7 @@ class HelpersTest extends DatabaseTest
 
     public function test_is_pair()
     {
+        $this->assertTrue(is_pair(0));
         $this->assertFalse(is_pair(1));
         $this->assertTrue(is_pair(2));
         $this->assertFalse(is_pair(3));
