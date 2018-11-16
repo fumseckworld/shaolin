@@ -414,21 +414,22 @@ if (not_exist('tables_to_json'))
 if (not_exist('sql_to_json'))
 {
     /**
+     * sql_to_json
      *
-     * generate a json with all result of the query
-     *
-     * @param Connect $connect
-     * @param string $query
-     * @param $filename
+     * @param  mixed $connect
+     * @param  mixed $filename
+     * @param  mixed $key
+     * @param  mixed $query
      *
      * @return bool
-     *
-     * @throws Exception
-     *
      */
-    function sql_to_json(Connect $connect,string $query,$filename,string $key = '' ) : bool
+    function sql_to_json(Connect $connect,string $filename,string ...$query) : bool
     {
-        return json($filename)->add($connect->request($query),$key)->generate();
+        $x =  json($filename);
+        foreach($query as $v)
+            $x->add($connect->request($v));
+
+        return $x->generate();
     }
 }
 

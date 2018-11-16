@@ -865,6 +865,12 @@ class HelpersTest extends DatabaseTest
         $this->assertEquals("$expected",$loader);
     }
 
+    public function test_sql_to_json()
+    {
+        $this->assertTrue(\sql_to_json($this->mysql()->connect(),'app.json','show databases',"select * from {$this->table}",'select * from mysql.user'));
+        $this->assertTrue(\sql_to_json($this->postgresql()->connect(),'app.json',"select * from {$this->table}","select * from {$this->table}"));
+        $this->assertTrue(\sql_to_json($this->sqlite()->connect(),'app.json',"select * from {$this->table}","select * from {$this->table}"));
+    }
     /**
      * @throws Exception
      */
