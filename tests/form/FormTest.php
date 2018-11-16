@@ -3,9 +3,10 @@
 namespace tests\form;
 
 
+use Exception;
+use Testing\DatabaseTest;
 use Imperium\Html\Form\Form;
 use Symfony\Component\DependencyInjection\Tests\Compiler\E;
-use Testing\DatabaseTest;
 
 class FormTest extends DatabaseTest
 {
@@ -19,14 +20,14 @@ class FormTest extends DatabaseTest
     {
         $class = 'form-horizontal';
 
-        $form =  form('a','a','','POST',true)->get();
+        $form =  form('a','a','','','POST',true)->get();
         $this->assertContains("enctype",$form);
         $this->assertContains('method="post"',$form);
         $this->assertContains('action="a"',$form);
         $this->assertContains('id="a"',$form);
         $this->assertNotContains($class,$form);
 
-        $form =  form('a','a',$class,'POST',true)->get();
+        $form =  form('a','a',$class,'','POST',true)->get();
         $this->assertContains("enctype",$form);
         $this->assertContains('method="post"',$form);
         $this->assertContains('action="a"',$form);
@@ -34,14 +35,14 @@ class FormTest extends DatabaseTest
         $this->assertContains($class,$form);
 
 
-        $form =  form('a','a','','POST',false)->get();
+        $form =  form('a','a','','','POST',false)->get();
         $this->assertNotContains("enctype",$form);
         $this->assertContains('method="post"',$form);
         $this->assertContains('action="a"',$form);
         $this->assertContains('id="a"',$form);
         $this->assertNotContains($class,$form);
 
-        $form =  form('a','a',$class,'POST',false)->get();
+        $form =  form('a','a',$class,'','POST',false)->get();
         $this->assertNotContains("enctype",$form);
         $this->assertContains('method="post"',$form);
         $this->assertContains('action="a"',$form);
@@ -55,7 +56,7 @@ class FormTest extends DatabaseTest
      */
     public function test_hide()
     {
-        $form =  form('a','a','','POST',false)->hide()->input(Form::HIDDEN,'id','')->end_hide()->get();
+        $form =  form('a','a','','','POST',false)->hide()->input(Form::HIDDEN,'id','')->end_hide()->get();
         $this->assertContains(Form::HIDE_CLASS,$form);
         $this->assertContains(Form::HIDDEN,$form);
         $this->assertStringEndsWith('</div></form>',$form);
@@ -68,12 +69,12 @@ class FormTest extends DatabaseTest
     public function test_file()
     {
         $ico = fa('fas','fa-file');
-        $form =  form('a','a','','POST',false)->file('sql','sql file')->get();
+        $form =  form('a','a','','','POST',false)->file('sql','sql file')->get();
         $this->assertContains('name="sql"',$form);
         $this->assertContains('sql file',$form);
         $this->assertNotContains($ico,$form);
 
-        $form =  form('a','a','','POST',false)->file('sql','sql file',$ico)->get();
+        $form =  form('a','a','','','POST',false)->file('sql','sql file',$ico)->get();
 
         $this->assertContains('name="sql"',$form);
         $this->assertContains('sql file',$form);
@@ -129,22 +130,36 @@ class FormTest extends DatabaseTest
         $success ="success";
         $fail ="fail";
 
-        $form = form('a','a')->validate()->input(Form::TEXT,'name','name','',$success,$fail)->get();
+        $form = new Form();
 
-        $this->assertContains($success,$form);
-        $this->assertContains($fail,$form);
+        $x = $form->validate()->start('a','a','','confirm')->input(Form::TEXT,'name','name','',$success,$fail)->get();
+        
+        $this->assertContains('confirm',$x);
+        $this->assertContains($success,$x);
+        $this->assertContains($fail,$x);
+        
+        $form = new Form();
+        $x = $form->validate()->start('a','a','','confirm',true)->select('select',['a','a'],$success,$fail)->get();
 
-        $form = form('a','a')->validate()->select('select',['a','a'],$success,$fail)->get();
+        $this->assertContains('confirm',$x);
+        $this->assertContains($success,$x);
+        $this->assertContains($fail,$x);
+        
+        $form = new Form();
+        $x = $form->validate()->start('a','a','form-control','confirm',true)->textarea('name','name',10,10,$success,$fail)->get();
+        $this->assertContains('confirm',$x);
 
-        $this->assertContains($success,$form);
-        $this->assertContains($fail,$form);
-
-        $form = form('a','a')->validate()->textarea('name','name',10,10,$success,$fail)->get();
-
-        $this->assertContains($success,$form);
-        $this->assertContains($fail,$form);
+        $this->assertContains($success,$x);
+        $this->assertContains($fail,$x);
     }
 
+    public function test_execp()
+    {
+        $this->expectException(Exception::class);
+
+        $x = new Form();
+        $x->validate()->start('a','a')->textarea('a','a',10,10)->get();
+    }
     public function test_reset()
     {
         $icon = fa('fas','fa-linux');

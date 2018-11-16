@@ -871,6 +871,12 @@ class HelpersTest extends DatabaseTest
         $this->assertTrue(\sql_to_json($this->postgresql()->connect(),'app.json',"select * from {$this->table}","select * from {$this->table}"));
         $this->assertTrue(\sql_to_json($this->sqlite()->connect(),'app.json',"select * from {$this->table}","select * from {$this->table}"));
     }
+
+    public function test_slug()
+    {
+         $this->assertEquals('mon-article',slug("Mon article"," "));
+         $this->assertEquals('alex-le-chat',slug("ALEX le Chat"," "));
+    }
     /**
      * @throws Exception
      */

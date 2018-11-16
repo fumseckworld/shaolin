@@ -199,7 +199,7 @@ class Form
     /**
      * @var bool
      */
-    private $validate;
+    private $validate = false;
 
     /**
      * @var string
@@ -223,20 +223,46 @@ class Form
      *
      * @return Form
      */
-    public function start(string $action, string $id, string $class = '', bool $enctype = false, string $method = Form::POST, string $charset = 'utf8'): Form
+    public function start(string $action, string $id, string $class = '',string $confirm ='',  bool $enctype = false, string $method = Form::POST,string $charset = 'utf8'): Form
     {
-        if ($enctype)
+     
+        if($this->validate)
         {
-            if (not_def($class))
-                append($this->form ,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">');
-            else
-                append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">');
-        } else {
-            if (not_def($class))
-                append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">');
-            else
-                append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">');
+            if ($enctype)
+            {
+                if (not_def($class))
+                    append($this->form ,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')" >');
+                else
+                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')">');
+            } else 
+            {
+                if (not_def($class))
+                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')">');
+                else
+                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')" >');
+            }
+        }else
+        {
+            if ($enctype)
+            {
+                if (not_def($class))
+                    append($this->form ,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">');
+                else
+                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">');
+            } else 
+            {
+                if (not_def($class))
+                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">');
+                else
+                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">');
+            }
+        
         }
+
+
+
+
+        
 
 
         return $this;

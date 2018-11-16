@@ -2061,9 +2061,25 @@ if (not_exist('form'))
      *
      * @return Form
      */
-    function form(string $action, string $id, string $class = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf8')
+    function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf8')
     {
-        return Form::create()->start($action,$id,$class,$enctype,strtolower($method),$charset);
+        return Form::create()->start($action,$id,$class,$confirm,$enctype,strtolower($method),$charset);
+    }
+}
+
+if(not_exist('slug'))
+{
+    /**
+     * slug
+     *
+     * @param  string $data
+     * @param  string $delimiter
+     *
+     * @return string
+     */
+    function slug(string $data,string $delimiter): string
+    {
+        return collection(explode($delimiter,$data))->each('strtolower')->join('-');
     }
 }
 
