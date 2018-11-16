@@ -43,7 +43,6 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->sqlite_table->seed(50));
     }
 
-
     /**
      * @throws \Exception
      */

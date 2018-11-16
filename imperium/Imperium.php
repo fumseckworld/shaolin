@@ -72,6 +72,11 @@ class Imperium extends Zen implements Management
      */
     private $json;
 
+    
+    /**
+     * @var Form
+     */
+    private $form;
 
 
     /**
@@ -741,6 +746,7 @@ class Imperium extends Zen implements Management
         $this->users     = new Users($connect);
         $this->model     = new Model($connect,$this->table,$current_table);
         $this->json      = new Json();
+        $this->form      = new Form();
     }
 
     /**
@@ -985,6 +991,6 @@ class Imperium extends Zen implements Management
      */
     public function form(): Form
     {
-        return new Form();
+        return $this->form;
     }
 }

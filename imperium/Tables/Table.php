@@ -74,17 +74,31 @@ namespace Imperium\Tables {
             'interval',
             'time',
             'timestamp',
+            'year',
+            'interval',
             'timestamp with time zone',
+            'time without time zone',
             'time with time zone',
             'timestamp without time zone'
         ];
 
         const TYPE_OF_INTEGER = [
             'int',
+            'decimal',
+            'double precision',
+            'bigint',
+            'real',
+            'double',
+            'numeric',
             'bigserial',
+            'bit',
             'serial',
             'smallserial',
+            'numeric',
             'bigint',
+            'bigserial',
+            'int2',
+            'int8',
             'float',
             'integer',
             'tinyint',
@@ -94,9 +108,13 @@ namespace Imperium\Tables {
 
         const TYPE_OF_TEXT = [
             'varchar',
+            'char',
+            'binary',
+            'varbinary',
             'character varying',
             'character',
             'blob',
+            'enum',
             'text',
             'mediumtext',
             'tinytext',
@@ -973,101 +991,48 @@ namespace Imperium\Tables {
 
             $primary = $this->get_primary_key();
 
-
-
             $columns = '(' . collection($this->get_columns())->join(', ') .') ';
 
             $val = collection();
             $ignore = collection($toIgnore);
 
-            if (is_array($values))
+            foreach ($values as $key => $value)
             {
-                foreach ($values as $key => $value)
+
+                if (different($key,$primary))
                 {
-
-                    if (different($key,$primary))
+                    if ($ignore->not_exist($value))
                     {
-                        if ($ignore->not_exist($value))
+                        if ($val->not_exist($value))
                         {
-                            if ($val->not_exist($value))
-                            {
 
-                                if ($val->numeric($value))
-                                    $val->push($value);
-                                else
-                                    $val->push($this->connexion->instance()->quote($value));
-                            }
+                            if ($val->numeric($value))
+                                $val->push($value);
+                            else
+                                $val->push($this->connexion->instance()->quote($value));
                         }
                     }
-                    else
-                    {
-
-                        switch ($this->driver)
-                        {
-                            case Connect::POSTGRESQL:
-                                $val->push(" DEFAULT");
-                            break;
-                            default:
-                                $val->push('NULL');
-                            break;
-                        }
-                    }
-
                 }
-
-
-                $value = '(' .$val->join(', ') . ')';
-
-                $command = "INSERT INTO  $this->table  $columns VALUES $value";
-
-                return $this->connexion->execute($command);
+                else
+                {
+                    switch ($this->driver)
+                    {
+                        case Connect::POSTGRESQL:
+                            $val->push(" DEFAULT");
+                        break;
+                        default:
+                            $val->push('NULL');
+                        break;
+                    }
+                }
 
             }
 
-            if (is_object($values))
-            {
-                foreach ($this->get_columns() as $column)
-                {
+            $value = '(' .$val->join(', ') . ')';
 
-                    $value = $values->$column;
+            $command = "INSERT INTO  $this->table  $columns VALUES $value";
 
-                    if (different($value,$primary))
-                    {
-                        if ($ignore->not_exist($value))
-                        {
-                            if ($val->not_exist($value))
-                            {
-                                if ($val->numeric($value))
-                                    $val->push($value);
-                                else
-                                    $val->push($this->connexion->instance()->quote($value));
-                            }
-                        }
-                    }
-                    else
-                    {
-
-                        switch ($this->driver)
-                        {
-                            case Connect::POSTGRESQL:
-                                $val->push(" DEFAULT");
-                            break;
-                            default:
-                                $val->push('NULL');
-                            break;
-                        }
-                    }
-
-                }
-
-                $value = '(' .$val->join(', ') . ')';
-
-                $command = "INSERT INTO  $this->table  $columns VALUES $value";
-
-                return  $this->connexion->execute($command);
-            }
-            return false;
-
+            return $this->connexion->execute($command);
         }
 
 
