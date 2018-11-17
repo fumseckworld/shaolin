@@ -1008,13 +1008,13 @@ if (not_exist('get_records'))
      *
      * @throws Exception
      */
-    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,bool $framework,string $order_by = 'DESC')
+    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,bool $framework,string $key = '',string $order_by = 'DESC')
     {
 
 
         $instance = $instance->select($current_table_name);
 
-        $key = $instance->get_primary_key();
+        $key = def($key) ? $key : $instance->get_primary_key();
 
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 

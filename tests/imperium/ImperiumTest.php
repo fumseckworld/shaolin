@@ -284,10 +284,10 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->change_base_collation("C"));
 
         $this->assertTrue($this->mysql()->change_table_charset($this->table,"utf8"));
-        $this->assertFalse($this->postgresql()->change_table_charset($this->table,"utf8"));
+        $this->assertTrue($this->postgresql()->change_table_charset($this->table,"utf8"));
 
         $this->assertTrue($this->mysql()->change_table_collation($this->table,"utf8_general_ci"));
-        $this->assertFalse($this->postgresql()->change_table_collation($this->table,"utf8"));
+        $this->assertTrue($this->postgresql()->change_table_collation($this->table,"en_US.utf8"));
     }
 
     public function test_collection()

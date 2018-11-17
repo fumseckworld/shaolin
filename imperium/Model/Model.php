@@ -130,11 +130,11 @@ class Model
      * @return string
      * 
      */
-    public function show(string $pagination_prefix_url,string $table_url_prefix,string $url_separator,int $current_page,int $limit_records_per_page,string $table_class,string $action_remove_text,string $confirm_text,string $remove_btn_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $edit_url_prefix,string $edit_icon,string $edit_btn_class,bool $align_column,bool $column_to_upper,bool $framework,string $start_pagination_text,string $end_pagination_text,string $order_by): string
+    public function show(string $pagination_prefix_url,string $table_url_prefix,string $url_separator,int $current_page,int $limit_records_per_page,string $table_class,string $action_remove_text,string $confirm_text,string $remove_btn_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $edit_url_prefix,string $edit_icon,string $edit_btn_class,bool $align_column,bool $column_to_upper,bool $framework,string $start_pagination_text,string $end_pagination_text,string $key,string $order_by): string
     {
         $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
 
-        $records = get_records($this->table,$this->table->get_current_table(),$current_page,$limit_records_per_page,$this->connexion,$framework,$order_by);
+        $records = get_records($this->table,$this->table->get_current_table(),$current_page,$limit_records_per_page,$this->connexion,$framework,$key,$order_by);
 
         $table_select = tables_select($this->table,$table_url_prefix,$url_separator);
 

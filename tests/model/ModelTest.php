@@ -41,7 +41,7 @@ class ModelTest extends DatabaseTest
 
     public function test_show()
     {
-        $record  = $this->mysql_model->show('imperium','?table=','/',1,5,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','desc');
+        $record  = $this->mysql_model->show('imperium','?table=','/',1,5,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
         
         $this->assertContains('?table=', $record);    
         $this->assertContains('remove', $record);    
@@ -55,7 +55,7 @@ class ModelTest extends DatabaseTest
         $this->assertContains('fa fa-trash', $record);    
         $this->assertContains('fa fa-edit', $record);    
         
-        $record  = $this->pgsql_model->show('imperium','?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','desc');
+        $record  = $this->pgsql_model->show('imperium','?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
         
         $this->assertContains('?table=', $record);    
         $this->assertContains('remove', $record);    
@@ -69,7 +69,7 @@ class ModelTest extends DatabaseTest
         $this->assertContains('fa fa-trash', $record);    
         $this->assertContains('fa fa-edit', $record);    
  
-        $record  = $this->sqlite_model->show('imperium','?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','desc');
+        $record  = $this->sqlite_model->show('imperium','?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
  
         $this->assertContains('?table=', $record);    
         $this->assertContains('remove', $record);    

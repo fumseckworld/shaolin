@@ -90,15 +90,15 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->mysql_table->set_charset('utf8')->change_charset());
         $this->assertTrue($this->mysql_table->set_collation('utf8_general_ci')->change_collation());
 
-        $this->assertFalse($this->pgsql_table->set_charset('utf8')->change_charset());
-        $this->assertFalse($this->pgsql_table->set_collation('utf8_general_ci')->change_collation());
+        $this->assertTrue($this->pgsql_table->set_charset('utf8')->change_charset());
+        $this->assertTrue($this->pgsql_table->set_collation('en_US.utf8')->change_collation());
 
         $this->assertFalse($this->sqlite_table->set_charset('utf8')->change_charset());
         $this->assertFalse($this->sqlite_table->set_collation('utf8_general_ci')->change_collation());
 
 
         $this->assertTrue($this->mysql_table->convert('utf8','utf8_general_ci'));
-        $this->assertFalse($this->pgsql_table->convert('utf8','utf8_general_ci'));
+        $this->assertTrue($this->pgsql_table->convert('utf8','en_US.utf8'));
         $this->assertFalse($this->sqlite_table->convert('utf8','utf8_general_ci'));
     }
 

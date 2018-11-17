@@ -209,7 +209,7 @@ namespace Imperium\Tables {
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} COLLATE {$this->collation};");
                 break;
                 case Connect::POSTGRESQL:
-                    return $this->connexion->execute("ALTER DATABASE {$this->connexion->get_database()} SET COLLATE TO {$this->collation} }");
+                    return $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '{$this->connexion->get_database()}'");
                 break;
                 default:
                     return false;
@@ -232,6 +232,9 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL;
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHARACTER SET = {$this->charset};");
+                break;
+                case Connect::POSTGRESQL:
+                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '{$this->connexion->get_database()}'");
                 break;
                 default:
                     return false;
@@ -924,6 +927,9 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL:
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CONVERT TO CHARACTER SET $charset COLLATE $collate");
+                break;
+                case Connect::POSTGRESQL:
+                    return $this->set_charset($charset)->change_charset() && $this->set_collation($collate)->change_collation();
                 break;
                 default:
                     return false;
@@ -1741,8 +1747,6 @@ namespace Imperium\Tables {
 
             foreach ($collection as  $items)
             {
-
-
                 foreach ($items as $key => $value)
                 {
 
