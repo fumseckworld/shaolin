@@ -728,6 +728,7 @@ class Imperium extends Zen implements Management
     }
 
     /**
+     * 
      * Imperium constructor.
      *
      * @param Connect $connect
@@ -987,10 +988,13 @@ class Imperium extends Zen implements Management
     }
 
     /**
+     * 
+     * @param bool $validate
+     * 
      * @return Form
      */
-    public function form(): Form
+    public function form(bool $validate = false): Form
     {
-        return $this->form;
+        return $validate ? $this->form->validate() : $this->form;
     }
 }
