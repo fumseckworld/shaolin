@@ -38,7 +38,6 @@ namespace Imperium\Query {
 
         const FULL_JOIN = 'FULL_JOIN';
 
-        const NATURAL_JOIN = 'NATURAL_JOIN';
 
         const UPDATE = 'UPDATE';
 
@@ -52,11 +51,11 @@ namespace Imperium\Query {
         ];
 
         const MODE = [
-            self::UPDATE,self::SELECT,self::DELETE,self::UNION,self::UNION_ALL,self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN,self::NATURAL_JOIN
+            self::UPDATE,self::SELECT,self::DELETE,self::UNION,self::UNION_ALL,self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN
         ];
 
         const JOIN_MODE = [
-            self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN,self::NATURAL_JOIN
+           self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN       
         ];
 
         /**
@@ -383,108 +382,49 @@ namespace Imperium\Query {
             $columnsDefine = def($columns);
             $mode = $this->mode;
             $condition = Query::EQUAL;
+            $select = '';
+            
+            if ($columnsDefine)
+            {
+                $end = collection($columns)->last();
+                foreach($columns as $column)
+                    if(different($column,$end))
+                        append($select,"$firstTable.$column, $secondTable.$column, ");
+                    else
+                        append($select,"$firstTable.$column, $secondTable.$column");
+            }
+
             switch ($mode)
             {
                 case Query::INNER_JOIN:
                     if ($columnsDefine)
-                    {
-                        $end = collection($columns)->last();
-                        $select = '';
-                        foreach($columns as $column)
-                            if(different($column,$end))
-                                append($select,"$firstTable.$column, $secondTable.$column, ");
-                            else
-                                append($select,"$firstTable.$column, $secondTable.$column");
-
                         $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    }
                     else
                         $this->join = "SELECT * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::CROSS_JOIN:
-                    if ($columnsDefine)
-                    {
-                        $end = collection($columns)->last();
-                        $select = '';
-                        foreach($columns as $column)
-                            if(different($column,$end))
-                                append($select,"$firstTable.$column, $secondTable.$column, ");
-                            else
-                                append($select,"$firstTable.$column, $secondTable.$column");
-
+                   if ($columnsDefine)
                         $this->join = "SELECT $select FROM $firstTable CROSS JOIN $secondTable";
-                    }
                     else
-                    {
                         $this->join = "SELECT * FROM $firstTable CROSS JOIN $secondTable";
-                    }
                 break;
                 case Query::LEFT_JOIN:
                     if ($columnsDefine)
-                    {
-                    
-                        $end = collection($columns)->last();
-                        $select = '';
-                        foreach($columns as $column)
-                            if(different($column,$end))
-                                append($select,"$firstTable.$column, ");
-                            else
-                                append($select,"$firstTable.$column");
-
                         $this->join = "SELECT $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    }
-                    
                     else
                         $this->join = "SELECT * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::RIGHT_JOIN:
                     if ($columnsDefine)
-                    {
-                    
-                        $end = collection($columns)->last();
-                        $select = '';
-                        foreach($columns as $column)
-                            if(different($column,$end))
-                                append($select,"$firstTable.$column, ");
-                            else
-                                append($select,"$firstTable.$column");
-
                             $this->join = "SELECT $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    }
-                    else{
+                    else
                         $this->join = "SELECT * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    }
-                        
                 break;
                 case Query::FULL_JOIN:
                     if ($columnsDefine)
-                    {
-                        $end = collection($columns)->last();
-                        $select = '';
-                        foreach($columns as $column)
-                            if(different($column,$end))
-                                append($select,"$firstTable.$column, $secondTable.$column , ");
-                            else
-                                append($select,"$firstTable.$column, $secondTable.$column ");
                         $this->join = "SELECT $select FROM $firstTable FULL  JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    }
                     else
                         $this->join = "SELECT * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                break;
-                case Query::NATURAL_JOIN:
-                    if ($columnsDefine)
-                    {
-                        $end = collection($columns)->last();
-                        $select = '';
-                        foreach($columns as $column)
-                            if(different($column,$end))
-                                append($select,"$firstTable.$column, $secondTable.$column , ");
-                            else
-                                append($select,"$firstTable.$column, $secondTable.$column ");
-                        $this->join = "SELECT $select FROM $firstTable NATURAL  JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    }
-                    else
-                        $this->join = "SELECT * FROM $firstTable NATURAL JOIN $secondTable";
                 break;
             }
             return $this;
