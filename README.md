@@ -293,6 +293,8 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | validate              |   void    | An instance of the form builder  | Enable the validation                                              | 
 | redirect              |   mixed   | An instance of the form builder  | Create a redirect select                                           |
 | generate              |   mixed   | A form                           | Create a form to create or update data inside a table              |
+| margin                |   int     | An instance of the form builder  | Add margin                                                         |
+| get_margin            |   void    | A string                         | Return the defined margin                                          |
 | end                   |   void    | The form                         | Close the form and return it                                       |
  
 

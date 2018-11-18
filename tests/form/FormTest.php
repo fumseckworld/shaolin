@@ -27,7 +27,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('id="a"',$form);
         $this->assertNotContains($class,$form);
 
-        $form =  form('a','a',$class,'','POST',true)->get();
+        $form =  form('a','a','',$class,'POST',true)->get();
         $this->assertContains("enctype",$form);
         $this->assertContains('method="post"',$form);
         $this->assertContains('action="a"',$form);
@@ -42,7 +42,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('id="a"',$form);
         $this->assertNotContains($class,$form);
 
-        $form =  form('a','a',$class,'','POST',false)->get();
+        $form =  form('a','a','',$class,'POST',false)->get();
         $this->assertNotContains("enctype",$form);
         $this->assertContains('method="post"',$form);
         $this->assertContains('action="a"',$form);
@@ -132,21 +132,21 @@ class FormTest extends DatabaseTest
 
         $form = new Form();
 
-        $x = $form->validate()->start('a','a','','confirm')->input(Form::TEXT,'name','name','',$success,$fail)->get();
+        $x = $form->validate()->start('a','a','confirm','')->input(Form::TEXT,'name','name','',$success,$fail)->get();
         
         $this->assertContains('confirm',$x);
         $this->assertContains($success,$x);
         $this->assertContains($fail,$x);
         
         $form = new Form();
-        $x = $form->validate()->start('a','a','','confirm',true)->select('select',['a','a'],$success,$fail)->get();
+        $x = $form->validate()->start('a','a','confirm','',true)->select('select',['a','a'],$success,$fail)->get();
 
         $this->assertContains('confirm',$x);
         $this->assertContains($success,$x);
         $this->assertContains($fail,$x);
         
         $form = new Form();
-        $x = $form->validate()->start('a','a','form-control','confirm',true)->textarea('name','name',10,10,$success,$fail)->get();
+        $x = $form->validate()->start('a','a','confirm','form-control',true)->textarea('name','name',10,10,$success,$fail)->get();
         $this->assertContains('confirm',$x);
 
         $this->assertContains($success,$x);
@@ -742,6 +742,12 @@ class FormTest extends DatabaseTest
         $this->assertContains('href="/"',$form);
     }
 
+    public function test_marge()
+    {
+        $marge = 2;
+        $form = form('a','a')->margin($marge)->input('text','name','username')->get();
+        $this->assertContains("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
+    }
     /**
      * @throws \Exception
      */
@@ -749,7 +755,8 @@ class FormTest extends DatabaseTest
     {
 
         $this->expectException(\Exception::class);
-
+        (new Form())->validate()->margin(20)->get();
+        (new Form())->validate()->margin(0)->get();
         form('a','a')->validate()->textarea('name','a',10,10)->get();
         form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
         form('a','a')->validate()->select('a',['1',2,3])->get();

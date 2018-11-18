@@ -18,6 +18,8 @@ class Connect
 
     const ORACLE = 'oci';
 
+    const LOCALHOST = 'localhost';
+
     /**
      * database name
      *

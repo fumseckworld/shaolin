@@ -263,10 +263,36 @@ class HelpersTest extends DatabaseTest
         $not_found = 'records was not found';
         $table_empty = 'the current table is empty';
 
-        $code = query_view("index.php",$this->mysql()->model(),$this->mysql()->tables(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty,'choose a column','condition','operation','order','reset');
+        $code = query_view("index.php",$this->mysql()->model(),$this->mysql()->tables(),'are you sure','create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty,'choose a column','condition','operation','order','reset');
 
 
         $this->assertContains('action="index.php"', $code);
+        $this->assertNotContains($not_found, $code);
+        $this->assertContains('expected"', $code);
+        $this->assertContains('are you sure', $code);
+        $this->assertContains('superior ', $code);
+        $this->assertContains('superior or equal', $code);
+        $this->assertContains('inferior', $code);
+        $this->assertContains('inferior or equal', $code);
+        $this->assertContains('different', $code);
+        $this->assertContains('equal', $code);
+        $this->assertContains('like', $code);
+        $this->assertContains('remove', $code);
+        $this->assertContains('select', $code);
+        $this->assertContains('execute', $code);
+        $this->assertContains('btn btn-primary', $code);
+        $this->assertContains('choose a column', $code);
+        $this->assertContains('condition', $code);
+        $this->assertContains('operation', $code);
+        $this->assertContains('order', $code);
+        $this->assertContains('reset', $code);
+
+       $code = query_view("index.php",$this->postgresql()->model(),$this->postgresql()->tables(),'are you sure','create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty,'choose a column','condition','operation','order','reset');
+
+
+        $this->assertContains('action="index.php"', $code);
+
+        $this->assertContains('are you sure', $code);
         $this->assertNotContains($not_found, $code);
         $this->assertContains('expected"', $code);
         $this->assertContains('superior ', $code);
@@ -286,34 +312,11 @@ class HelpersTest extends DatabaseTest
         $this->assertContains('order', $code);
         $this->assertContains('reset', $code);
 
-       $code = query_view("index.php",$this->postgresql()->model(),$this->postgresql()->tables(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty,'choose a column','condition','operation','order','reset');
-
-
-        $this->assertContains('action="index.php"', $code);
-
-        $this->assertNotContains($not_found, $code);
-        $this->assertContains('expected"', $code);
-        $this->assertContains('superior ', $code);
-        $this->assertContains('superior or equal', $code);
-        $this->assertContains('inferior', $code);
-        $this->assertContains('inferior or equal', $code);
-        $this->assertContains('different', $code);
-        $this->assertContains('equal', $code);
-        $this->assertContains('like', $code);
-        $this->assertContains('remove', $code);
-        $this->assertContains('select', $code);
-        $this->assertContains('execute', $code);
-        $this->assertContains('btn btn-primary', $code);
-        $this->assertContains('choose a column', $code);
-        $this->assertContains('condition', $code);
-        $this->assertContains('operation', $code);
-        $this->assertContains('order', $code);
-        $this->assertContains('reset', $code);
-
-        $code = query_view("index.php",$this->sqlite()->model(),$this->sqlite()->tables(),'create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty,'choose a column','condition','operation','order','reset');
+        $code = query_view("index.php",$this->sqlite()->model(),$this->sqlite()->tables(),'are you sure','create.php','update.php','create','update',$this->table,'expected','superior','superior or equal','inferior','inferior or equal','different','equal','like','select','remove','update','execute','btn btn-primary','record was removed successfully',$not_found,$table_empty,'choose a column','condition','operation','order','reset');
 
         $this->assertContains('action="index.php"', $code);
 
+        $this->assertContains('are you sure', $code);
         $this->assertNotContains($not_found, $code);
         $this->assertContains('expected"', $code);
         $this->assertContains('superior ', $code);

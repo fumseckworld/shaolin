@@ -587,7 +587,7 @@ if (not_exist('query_view'))
      *
      * @throws Exception
      */
-    function query_view(string $query_action,Model $model,Table $instance,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
+    function query_view(string $query_action,Model $model,Table $instance,string $confirm_message,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
     {
 
         $table = $instance->select($current_table_name);
@@ -615,7 +615,7 @@ if (not_exist('query_view'))
         return post('mode')
 
             ?
-                form($query_action,uniqid(),Form::INVALIDATE)->csrf($csrf)->validate()
+               (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
                 ->row()
                     ->reset($reset_form_text,$reset_form_class)
                 ->end_row_and_new()
@@ -633,7 +633,7 @@ if (not_exist('query_view'))
                 query_result($model,post('mode'),execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$model->columns(),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
-                form($query_action,uniqid(),Form::INVALIDATE)->csrf($csrf)->validate()
+                (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
                 ->row()
                     ->reset($reset_form_text,$reset_form_class)
                 ->end_row_and_new()
