@@ -50,6 +50,16 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
     * MongoDB 
 
 
+# Bugs reports
+
+Please send me an email at **bugzilla@laposte.fr**
+
+# Contribute
+
+Your help are welcome. 
+
+Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more simply.
+
 # [Base](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php) [Coverage](https://imperium.fumseck.eu/imperium/Bases/Base.php.html)
 
 | Method                | arguments | return                           |   do                                                               |    
