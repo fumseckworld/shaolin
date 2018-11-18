@@ -109,7 +109,25 @@ namespace Imperium\Query {
         private $order;
 
         private $limit;
+        
+        /**
+         * @var string
+         */
+        private $first_table;
+        
+        /**
+         * @var string
+         * 
+         */
+        private $second_table;
 
+        /**
+         * @var string
+         */
+        private $where_param;
+        private $where_condition;
+        private $where_expected;
+ 
         /**
         * Query constructor
         *
@@ -147,33 +165,42 @@ namespace Imperium\Query {
          */
         public function sql(): string
         {
-            if (not_def($this->mode))
-                throw new Exception('The query mode is not define');
-
-            $where  = def($this->where) ? $this->where : '';
-            $order  = def($this->order) ? $this->order : '';
-            $table  = def($this->table) ? $this->table : '';
-            $limit  = def($this->limit) ? $this->limit : '';
-            $join   = def($this->join)  ? $this->join  : '';
-            $union  = def($this->union) ? $this->union : '';
-            $mode   = def($this->mode)  ? $this->mode  : '';
-            $columns = def($this->columns) ? $this->columns : "*";
-
-            if (equal($mode,Query::SELECT))
-                return "$mode $columns $table $where $order $limit";
-
-            if (equal($mode,Query::DELETE))
-                return "$mode $table $where";
-
-            if (equal($mode,Query::UNION) || equal($mode,Query::UNION_ALL))
-                return "$union $order $limit";
-
-            if (collection(self::JOIN_MODE)->exist($mode))
-                return "$join $order $limit";
+            $where      = def($this->where) ? $this->where : '';
+            $order      = def($this->order) ? $this->order : '';
+            $table      = def($this->table) ? $this->table : '';
+            $limit      = def($this->limit) ? $this->limit : '';
+            $join       = def($this->join)  ? $this->join  : '';
+            $union      = def($this->union) ? $this->union : '';
+            $mode       = def($this->mode)  ? $this->mode  : '';
+            $columns    = def($this->columns) ? $this->columns : "*";
 
 
+            switch($mode)
+            {
+                case Query::SELECT:
+                    return "$mode $columns $table $where $order $limit";
+                break;
+                case Query::DELETE :
+                    return "$mode $table $where";
+                break;
+                case Query::UNION:
+                case Query::UNION_ALL:
+                    return "$union $order $limit";  
+                break;
+                case collection(self::JOIN_MODE)->exist($mode) :
 
-            return '';
+                    if(def($this->where_expected,$this->where_param,$this->where_condition))
+                    {
+                        $where= "WHERE {$this->first_table}.{$this->where_param}  {$this->where_condition} {$this->second_table}.{$this->where_param} ";
+                    
+                        return "$join $where $order $limit";
+                    }
+                    return "$join $order $limit";
+                break;
+                default:
+                      throw new Exception('The query mode is not define');
+                break;
+            }
         }
 
 
@@ -193,6 +220,9 @@ namespace Imperium\Query {
         {
             $condition =  html_entity_decode($condition);
 
+            $this->where_param = $param;
+            $this->where_condition = $condition;
+            $this->where_expected = $expected;    
             if(not_in(self::VALID_OPERATORS,$condition))
                 throw new Exception("The operator is invalid");
 
@@ -346,46 +376,113 @@ namespace Imperium\Query {
          * @throws Exception
          *
          */
-        public function join( string $firstTable,string $secondTable,string $firstParam ,string $secondParam,string $condition = '=',array $columns = []) : Query
+        public function join( string $firstTable,string $secondTable,string $firstParam ,string $secondParam,array $columns = []) : Query
         {
+            $this->first_table = $firstTable;
+            $this->second_table = $secondTable;
             $columnsDefine = def($columns);
-            $select = join(', ',$columns);
             $mode = $this->mode;
+            $condition = Query::EQUAL;
             switch ($mode)
             {
                 case Query::INNER_JOIN:
                     if ($columnsDefine)
-                        $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam = $secondTable.$secondParam";
+                    {
+                        $end = collection($columns)->last();
+                        $select = '';
+                        foreach($columns as $column)
+                            if(different($column,$end))
+                                append($select,"$firstTable.$column, $secondTable.$column, ");
+                            else
+                                append($select,"$firstTable.$column, $secondTable.$column");
+
+                        $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    }
                     else
                         $this->join = "SELECT * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::CROSS_JOIN:
                     if ($columnsDefine)
+                    {
+                        $end = collection($columns)->last();
+                        $select = '';
+                        foreach($columns as $column)
+                            if(different($column,$end))
+                                append($select,"$firstTable.$column, $secondTable.$column, ");
+                            else
+                                append($select,"$firstTable.$column, $secondTable.$column");
+
                         $this->join = "SELECT $select FROM $firstTable CROSS JOIN $secondTable";
+                    }
                     else
+                    {
                         $this->join = "SELECT * FROM $firstTable CROSS JOIN $secondTable";
+                    }
                 break;
                 case Query::LEFT_JOIN:
                     if ($columnsDefine)
+                    {
+                    
+                        $end = collection($columns)->last();
+                        $select = '';
+                        foreach($columns as $column)
+                            if(different($column,$end))
+                                append($select,"$firstTable.$column, ");
+                            else
+                                append($select,"$firstTable.$column");
+
                         $this->join = "SELECT $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    }
+                    
                     else
                         $this->join = "SELECT * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::RIGHT_JOIN:
                     if ($columnsDefine)
-                        $this->join = "SELECT $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    else
+                    {
+                    
+                        $end = collection($columns)->last();
+                        $select = '';
+                        foreach($columns as $column)
+                            if(different($column,$end))
+                                append($select,"$firstTable.$column, ");
+                            else
+                                append($select,"$firstTable.$column");
+
+                            $this->join = "SELECT $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    }
+                    else{
                         $this->join = "SELECT * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    }
+                        
                 break;
                 case Query::FULL_JOIN:
                     if ($columnsDefine)
-                        $this->join = "SELECT $select FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    {
+                        $end = collection($columns)->last();
+                        $select = '';
+                        foreach($columns as $column)
+                            if(different($column,$end))
+                                append($select,"$firstTable.$column, $secondTable.$column , ");
+                            else
+                                append($select,"$firstTable.$column, $secondTable.$column ");
+                        $this->join = "SELECT $select FROM $firstTable FULL  JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    }
                     else
                         $this->join = "SELECT * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::NATURAL_JOIN:
                     if ($columnsDefine)
-                        $this->join = "SELECT $select FROM $firstTable NATURAL JOIN $secondTable";
+                    {
+                        $end = collection($columns)->last();
+                        $select = '';
+                        foreach($columns as $column)
+                            if(different($column,$end))
+                                append($select,"$firstTable.$column, $secondTable.$column , ");
+                            else
+                                append($select,"$firstTable.$column, $secondTable.$column ");
+                        $this->join = "SELECT $select FROM $firstTable NATURAL  JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    }
                     else
                         $this->join = "SELECT * FROM $firstTable NATURAL JOIN $secondTable";
                 break;

@@ -3,6 +3,7 @@
 namespace tests\json;
 
 
+use Exception;
 use Testing\DatabaseTest;
 
 class JsonTest extends DatabaseTest
@@ -24,6 +25,21 @@ class JsonTest extends DatabaseTest
         $this->assertTrue($json->generate());
     }
 
+    public function test_json_encode_exception()
+    {
+        $this->expectException(Exception::class);
+        $this->mysql()->json()->set_name('app.json')->encode(78995);
+        $this->postgresql()->json()->set_name('app.json')->encode(78995);
+        $this->sqlite()->json()->set_name('app.json')->encode(78995);
+    }
+
+    public function test_json()
+    {
+        $this->assertNotEmpty($this->mysql()->json()->set_name('app.json')->add(['a' => 1],'fantasy')->encode());
+        $this->assertNotEmpty($this->postgresql()->json()->set_name('app.json')->add(['a' => 1],'fantasy')->encode());
+        $this->assertNotEmpty($this->sqlite()->json()->set_name('app.json')->add(['a' => 1],'fantasy')->encode());
+        
+    }
     /**
      * @throws \Exception
      */

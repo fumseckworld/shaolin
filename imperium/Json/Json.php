@@ -20,6 +20,7 @@ class Json
      */
     private $filename;
 
+    const VALID = [ 0,JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_NUMERIC_CHECK, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES, JSON_FORCE_OBJECT, JSON_PRESERVE_ZERO_FRACTION, JSON_UNESCAPED_UNICODE];
 
     public function __construct(string $filename = '')
     {
@@ -105,6 +106,13 @@ class Json
     public function generate(): bool
     {
         return $this->create($this->data->collection());
+    }
+
+    public function encode(int $option = 0,int $depth = 512)
+    {
+        not_in(self::VALID,$option,true,"The option used is not valid");
+        
+        return json_encode($this->data->collection(),$option,$depth);
     }
 
     /**
