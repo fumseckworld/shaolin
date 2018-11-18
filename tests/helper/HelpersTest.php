@@ -129,9 +129,9 @@ class HelpersTest extends DatabaseTest
         $this->assertInstanceOf(Imperium::class,$this->postgresql());
         $this->assertInstanceOf(Imperium::class,$this->sqlite());
 
-        $mysql = instance(Connect::MYSQL,self::MYSQL_USER,$this->base,'root',PDO::FETCH_OBJ,'dump',$this->table);
-        $postgresql = instance(Connect::POSTGRESQL,self::POSTGRESQL_USER,$this->base,'postgres',PDO::FETCH_OBJ,'dump',$this->table);
-        $sqlite = instance(Connect::SQLITE,'',"zen.sqlite3",'',PDO::FETCH_OBJ,'dump',$this->table);
+        $mysql = instance(Connect::MYSQL,self::MYSQL_USER,$this->base,'root','localhost',PDO::FETCH_OBJ,'dump',$this->table);
+        $postgresql = instance(Connect::POSTGRESQL,self::POSTGRESQL_USER,$this->base,'postgres','localhost',PDO::FETCH_OBJ,'dump',$this->table);
+        $sqlite = instance(Connect::SQLITE,'',"zen.sqlite3",'','',PDO::FETCH_OBJ,'dump',$this->table);
 
         $this->assertInstanceOf(Imperium::class,$mysql);
         $this->assertInstanceOf(Imperium::class,$postgresql);
@@ -772,13 +772,13 @@ class HelpersTest extends DatabaseTest
      */
     public function test_root()
     {
-        $this->assertInstanceOf(PDO::class,root(Connect::MYSQL,self::MYSQL_USER,self::MYSQL_PASS)->instance());
-        $this->assertInstanceOf(PDO::class,root(Connect::POSTGRESQL,self::POSTGRESQL_USER,self::POSTGRESQL_PASS)->instance());
+        $this->assertInstanceOf(PDO::class,root(Connect::MYSQL,self::MYSQL_USER,self::MYSQL_PASS,'localhost')->instance());
+        $this->assertInstanceOf(PDO::class,root(Connect::POSTGRESQL,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,'localhost')->instance());
 
         $this->expectException(Exception::class);
 
-        root(Connect::MYSQL,self::POSTGRESQL_USER,self::MYSQL_PASS)->instance();
-        root(Connect::POSTGRESQL,self::MYSQL_USER,self::MYSQL_PASS)->instance();
+        root(Connect::MYSQL,self::POSTGRESQL_USER,self::MYSQL_PASS,'localhost')->instance();
+        root(Connect::POSTGRESQL,self::MYSQL_USER,self::MYSQL_PASS,'localhost')->instance();
 
     }
 

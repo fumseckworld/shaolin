@@ -64,6 +64,11 @@ class Connect
     private $dump_path;
 
     /**
+     * @var string
+     */
+    private $host;
+
+    /**
      *
      * Connect constructor.
      *
@@ -76,7 +81,7 @@ class Connect
      *
      * @throws Exception
      */
-    public function __construct(string $driver,string $database,string $username,string $password,int $pdoFetchMode = PDO::FETCH_OBJ,string $dump_path = 'dump')
+    public function __construct(string $driver,string $database,string $username,string $password,string $host = 'localhost',int $pdoFetchMode = PDO::FETCH_OBJ,string $dump_path = 'dump')
     {
         $this->driver       = $driver;
 
@@ -89,8 +94,20 @@ class Connect
         $this->mode         = $pdoFetchMode;
 
         $this->dump_path    = $dump_path;
+        
+        $this->host         = $host;
 
         $this->instance     = $this->getInstance();
+    }
+
+    /**
+     * 
+     * Get hostname
+     * 
+     */
+    public function get_host(): string
+    {
+        return $this->host;
     }
 
     /**
@@ -258,6 +275,7 @@ class Connect
         $username   = $this->username;
         $password   = $this->password;
         $driver     = $this->driver;
+        $host       = $this->host;
 
         if (is_null($this->instance))
         {
@@ -287,7 +305,7 @@ class Connect
             {
                 try
                 {
-                    return new PDO("$driver:host=localhost;dbname=$database",$username,$password);
+                    return new PDO("$driver:host=$host;dbname=$database",$username,$password);
                 }catch (PDOException $e)
                 {
                     return $e->getMessage();
@@ -297,7 +315,7 @@ class Connect
             {
                 try
                 {
-                    return new PDO( "$driver:host=localhost;",$username,$password);
+                    return new PDO( "$driver:host=$host;",$username,$password);
                 }catch (PDOException $e)
                 {
                     return $e->getMessage();

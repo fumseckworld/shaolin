@@ -39,6 +39,7 @@ if (not_exist('instance'))
      * @param string $user
      * @param string $base
      * @param string $password
+     * @param string $host
      * @param int $fetch_mode
      * @param string $dump_path
      * @param string $current_table
@@ -47,9 +48,9 @@ if (not_exist('instance'))
      *
      * @throws Exception
      */
-    function instance (string $driver,string $user,string $base,string $password,int $fetch_mode,string $dump_path,string $current_table): Imperium
+    function instance (string $driver,string $user,string $base,string $password,string $host,int $fetch_mode,string $dump_path,string $current_table): Imperium
     {
-        $connexion = connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
+        $connexion = connect($driver,$base,$user,$password,$host,$fetch_mode,$dump_path);
         return imperium($connexion,$current_table);
     }
 }
@@ -660,6 +661,7 @@ if (not_exist('connect'))
      * @param string $base
      * @param string $user
      * @param string $password
+     * @param string $host
      * @param int $fetch_mode
      *
      * @param string $dump_path
@@ -668,9 +670,9 @@ if (not_exist('connect'))
      * @throws Exception
      *
      */
-    function connect(string $driver,string $base,string $user,string $password,int $fetch_mode,string $dump_path): Connect
+    function connect(string $driver,string $base,string $user,string $password,string $host,int $fetch_mode,string $dump_path): Connect
     {
-        return new Connect($driver,$base,$user,$password,$fetch_mode,$dump_path);
+        return new Connect($driver,$base,$user,$password,$host,$fetch_mode,$dump_path);
     }
 }
 if (not_exist('login'))
@@ -1442,9 +1444,9 @@ if (not_exist('root'))
      *
      * @throws Exception
      */
-    function root(string $driver,string $user,string $password = '',string $dump_path = 'dump',$pdo_mode = PDO::FETCH_OBJ): Connect
+    function root(string $driver,string $user,string $password ,string $host,string $dump_path = 'dump',$pdo_mode = PDO::FETCH_OBJ): Connect
     {
-        return connect($driver,'',$user,$password,$pdo_mode,$dump_path);
+        return connect($driver,'',$user,$password,$host,$pdo_mode,$dump_path);
     }
 }
 if (not_exist('collation'))

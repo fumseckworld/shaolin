@@ -28,7 +28,6 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->mysql()->json()->set_name($filename)->add($this->mysql()->show_databases(),'database')->generate());
         $this->assertTrue($this->postgresql()->json()->set_name($filename)->add($this->postgresql()->show_databases(),'database')->generate());
 
-
         $this->assertTrue($this->mysql()->bases_users_tables_to_json($filename));
         $this->assertTrue($this->postgresql()->bases_users_tables_to_json($filename));
         $this->assertTrue($this->mysql()->bases_users_tables_to_json($filename));
@@ -66,6 +65,11 @@ class ImperiumTest extends DatabaseTest
 
     }
 
+    public function test_get_host()
+    {
+        $this->assertEquals('localhost',$this->mysql()->connect()->get_host());
+        $this->assertEquals('localhost',$this->postgresql()->connect()->get_host());
+    }
 
     /**
      * @throws \Exception
