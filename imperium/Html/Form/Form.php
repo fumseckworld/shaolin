@@ -215,11 +215,32 @@ class Form
      * @var string 
      */
     private $margin = '';
-
     
     /**
+     * @var string
+     */
+    private $padding = '';
+
+        
+    /**
+     * Define the padding
+     *
+     * @param  int $lenght
+     *
+     * @return Form
+     */
+    public function padding(int $lenght): Form
+    {
+        not_in([1,2,3,4,5],$lenght,true,"The padding number must be an integer between 1 and 5");
+
+        $this->padding = "pt-$lenght pb-$lenght pl-$lenght pr-$lenght";
+
+        return $this;
+    }
+
+    /**
      * 
-     * set input marge
+     * Define the margin
      *
      * @param int $lenght
      *
@@ -229,13 +250,14 @@ class Form
     {
         not_in([1,2,3,4,5],$lenght,true,"The margin number must be an integer between 1 and 5");
 
-        $this->margin = "pt-$lenght pb-$lenght pl-$lenght pr-$lenght";
+        $this->margin = "mt-$lenght mb-$lenght ml-$lenght mr-$lenght";
 
         return $this;
     }
 
     /**
-     * get_margeget_margin() : string
+     * 
+     * Return the margin
      *
      * @return string
      */
@@ -244,6 +266,27 @@ class Form
         return def($this->margin) ? $this->margin : '';
     }
 
+   /**
+    * 
+    * Return the padding
+    *
+    */
+    public function get_padding(): string
+    {
+        return def($this->padding) ? $this->padding : '';
+    }
+
+    /**
+     * 
+     * Input sepeartor class 
+     *
+     * @return string
+     * 
+     */
+    private function separator(): string
+    {
+        return self::FORM_SEPARATOR .' ' . $this->get_margin() .' '. $this->get_padding();
+    }
     /**
      * start the form
      *
@@ -359,9 +402,9 @@ class Form
     {
 
         if (not_def($ico))
-            append(  $this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin().'"><div class="custom-file"><input type="file"  name="' . $name . '" class="custom-file-input '.$this->get_input_class().'"   lang="' . $locale . '"><label class="custom-file-label" for="'.$name.'">' . $text . '</label></div></div></div>');
+            append(  $this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="custom-file"><input type="file"  name="' . $name . '" class="custom-file-input '.$this->get_input_class().'"   lang="' . $locale . '"><label class="custom-file-label" for="'.$name.'">' . $text . '</label></div></div></div>');
         else
-            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >' . $ico . '</span></div><div class="custom-file"><input type="file" name="' . $name . '" class="custom-file-input '.$this->get_input_class().' " lang="' . $locale . '"><label class="custom-file-label" for="'.$name.'">' . $text . '</label></div></div></div></div>');
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"  >' . $ico . '</span></div><div class="custom-file"><input type="file" name="' . $name . '" class="custom-file-input '.$this->get_input_class().' " lang="' . $locale . '"><label class="custom-file-label" for="'.$name.'">' . $text . '</label></div></div></div></div>');
 
         return $this;
     }
@@ -458,14 +501,14 @@ class Form
         if (not_def($icon))
         {
 
-            $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'">';
+            $start = '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'">';
 
             $end = "</div></div>";
 
            append($this->form,$this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$success_text,$error_text));
         } else {
 
-            $start = '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
+            $start = '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
 
             $end = "</div></div></div> ";
             append($this->form,$this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$success_text,$error_text));
@@ -492,13 +535,13 @@ class Form
         switch ($type)
         {
             case Form::BUTTON:
-               append($this->form,'<div class="'.self::AUTO_COL.'"><div class=" ' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><button class="' . $class .' '. $this->get_btn_class().' " type="button">  ' . $icon . ' ' . $text . '</button></div></div>');
+               append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $class .' '. $this->get_btn_class().' " type="button">  ' . $icon . ' ' . $text . '</button></div></div>');
             break;
             case Form::RESET:
-                append($this->form, '<div class="'.self::AUTO_COL.'"><div class=" ' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><button  class="' . $class .' '. $this->get_btn_class().' "  type="reset">  ' . $icon . ' ' . $text . '</button></div></div>');
+                append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button  class="' . $class .' '. $this->get_btn_class().' "  type="reset">  ' . $icon . ' ' . $text . '</button></div></div>');
             break;
             case Form::SUBMIT:
-                append($this->form,'<div class="'.self::AUTO_COL.'"><div class=" ' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><button class="' . $class . ' '. $this->get_btn_class().'" type="submit">  ' . $icon . ' ' . $text . '</button></div></div>');
+                append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $class . ' '. $this->get_btn_class().'" type="submit">  ' . $icon . ' ' . $text . '</button></div></div>');
             break;
 
         }
@@ -532,7 +575,7 @@ class Form
      */
     public function reset(string $text, string $class, string $icon = ''): Form
     {
-        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><button class="' . $this->get_btn_class(). ' ' .$class.'" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>');
+        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $this->get_btn_class(). ' ' .$class.'" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>');
 
         return $this;
     }
@@ -570,9 +613,9 @@ class Form
         $class = $this->get_input_complete_class();
 
         if ($autofocus)
-            append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >' . $value . '</textarea>'.$validation.'</div></div>');
+            append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >' . $value . '</textarea>'.$validation.'</div></div>');
         else
-            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >' . $value . '</textarea> '.$validation.'</div></div>');
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >' . $value . '</textarea> '.$validation.'</div></div>');
 
         return $this;
     }
@@ -601,7 +644,7 @@ class Form
     public function submit(string $text, string $class, string $id, string $icon = ''): Form
     {
 
-        append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
+        append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
 
 
         return $this;
@@ -619,7 +662,7 @@ class Form
      */
     public function link(string $url, string $class, string $text, string $icon = ''): Form
     {
-       append($this->form ,'<div class="'.self::AUTO_COL.'"> <div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><a href="' . $url . '" class="' . $this->get_btn_class() . ' '.$class.'">  ' . $icon . ' ' . $text . '</a></div></div>');
+       append($this->form ,'<div class="'.self::AUTO_COL.'"> <div class="'. $this->separator().'"><a href="' . $url . '" class="' . $this->get_btn_class() . ' '.$class.'">  ' . $icon . ' ' . $text . '</a></div></div>');
 
         return $this;
     }
@@ -661,9 +704,9 @@ class Form
             if (not_def($icon))
             {
                 if ($multiple)
-                    append($this->form, '<div class="'.self::AUTO_COL.'"><div class=" ' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><select class="' . $class . '"  name="' . $name . '" multiple required="required">');
+                    append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" multiple required="required">');
                 else
-                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><select class="' . $class . '"  name="' . $name . '" required="required">');
+                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" required="required">');
                 foreach ($options as $k => $v)
                 {
 
@@ -675,9 +718,9 @@ class Form
             } else {
 
                 if ($multiple)
-                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple required="required">');
+                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple required="required">');
                 else
-                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" required="required">');
+                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" required="required">');
 
                 foreach ($options as $k => $v)
                 {
@@ -691,9 +734,9 @@ class Form
             if (not_def($icon))
             {
                 if ($multiple)
-                    append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><select class="' . $class . '"  name="' . $name . '" multiple>');
+                    append($this->form, '<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" multiple>');
                 else
-                    append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><select class="' . $class . '"  name="' . $name . '">');
+                    append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '">');
                 foreach ($options as $k=> $v)
                 {
                     is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
@@ -704,9 +747,9 @@ class Form
             } else {
 
                 if ($multiple)
-                    append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>');
+                    append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>');
                 else
-                    append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">');
+                    append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">');
 
                 foreach ($options as $k => $v)
                 {
@@ -735,9 +778,9 @@ class Form
     public function checkbox(string $name, string $text,string $class = '',bool $checked = false): Form
     {
         if ($checked)
-            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ');
+            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ');
         else
-            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"> <div class="custom-control custom-checkbox"><input type="checkbox"  class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> </div> ');
+            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"> <div class="custom-control custom-checkbox"><input type="checkbox"  class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div> </div> ');
 
         return $this;
     }
@@ -756,12 +799,12 @@ class Form
     {
         if ($checked)
         {
-            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"> <div class="custom-control custom-radio">
+            append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'""> <div class="custom-control custom-radio">
                           <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input" checked="checked">
                           <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
                         </div></div></div>');
         } else {
-            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="custom-control custom-radio">
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="custom-control custom-radio">
                           <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input">
                           <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
                         </div></div></div>');
@@ -792,9 +835,9 @@ class Form
     public function redirect(string $name, array $options, string $icon = ''): Form
     {
         if (def($icon))
-            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>');
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div>');
         else
-            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="' . self::FORM_SEPARATOR . ' '.$this->get_margin() .'">');
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'">');
 
         append($this->form, '<select class="'.self::CUSTOM_SELECT_CLASS  .' '. $this->get_input_class() . '" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">');
 

@@ -742,11 +742,26 @@ class FormTest extends DatabaseTest
         $this->assertContains('href="/"',$form);
     }
 
-    public function test_marge()
+    public function test_padding()
+    {
+        
+        $marge = 2;
+        $form = form('a','a')->padding($marge)->input('text','name','username')->get();
+        $this->assertContains("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
+    }
+    public function test_margin()
     {
         $marge = 2;
         $form = form('a','a')->margin($marge)->input('text','name','username')->get();
-        $this->assertContains("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
+        $this->assertContains("mt-$marge mb-$marge ml-$marge mr-$marge",$form);
+    }
+
+    public function test_margin_and_padding()
+    {
+        $marge = 2; 
+        $padding = 3;
+        $form = form('a','a')->margin($marge)->padding($padding)->input('text','name','username')->get();
+        $this->assertContains("mt-$marge mb-$marge ml-$marge mr-$marge pt-$padding pb-$padding pl-$padding pr-$padding",$form);
     }
     /**
      * @throws \Exception
@@ -755,7 +770,7 @@ class FormTest extends DatabaseTest
     {
 
         $this->expectException(\Exception::class);
-        (new Form())->validate()->margin(20)->get();
+        (new Form())->validate()->padding(20)->get();
         (new Form())->validate()->margin(0)->get();
         form('a','a')->validate()->textarea('name','a',10,10)->get();
         form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
