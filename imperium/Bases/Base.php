@@ -2,93 +2,133 @@
 
 namespace Imperium\Bases {
 
-
-    use Exception;
-    use Imperium\Connexion\Connect;
-    use Imperium\File\File;
-    use Imperium\Tables\Table;
-    use PDO;
+use PDO;
+use Exception;
+use Imperium\Connexion\Connect;
+use Imperium\File\File;
+use Imperium\Tables\Table;
 
     /**
-     * Management of base
-     *
-     * @package Imperium\Bases
-     *
-     */
+    *
+    * Bases management
+    *
+    * @author Willy Micieli <micieli@laposte.net>
+    *
+    * @package imperium
+    *
+    * @version 4
+    *
+    * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
+    *
+    **/
     class Base
     {
         /**
-         * the collation
+         *
+         * The base collation
          *
          * @var string
+         *
          */
         private $collation;
 
         /**
+         *
+         * The base charset
+         *
          * @var string
+         *
          */
         private $charset;
 
-         /**
-         * @var Connect 
-         */
+       /**
+        *
+        * The connexion to the base
+        *
+        * @var Connect
+        *
+        */
         private $connexion;
-        
-        /**
-         * @var array
-         */
-        private $hidden;
 
         /**
+         *
+         * The current driver used
+         *
          * @var string
+         *
          */
         private $driver;
 
         /**
+         * Table management
+         *
          * @var Table
+         *
          */
         private $tables;
 
+        /**
+         *
+         * All bases
+         *
+         * @var array
+         *
+         */
+        private $all;
 
         /**
          *
-         * Seed the database
+         * All hidden bases
          *
-         * @param int $records
-         * @param array $hidden
-         * @return bool
+         * @var array
          *
-         * @throws Exception
          */
-        public function seed(int $records = 100,array $hidden = []): bool
+        private $hidden_bases;
+
+       /**
+        *
+        * Create enregistrements in all tables not hidden
+        *
+        * @method seed
+        *
+        * @param  int   $records Number of records
+        *
+        * @return bool
+        *
+        */
+        public function seed(int $records = 100): bool
         {
             $data = collection();
 
-            foreach ($this->tables->hidden($hidden)->show() as $table)
+            foreach ($this->tables->show() as $table)
                 $data->add($this->tables->select($table)->seed($records));
 
             return $data->not_exist(false);
         }
 
-
         /**
-         *
-         * Display all databases inside the server
-         *
-         * @return array
-         *
-         * @throws Exception
-         * 
-         */
+        *
+        *  Display all bases
+        *
+        * @method show
+        *
+        * @return array
+        *
+        * @throws Exception
+        *
+        */
         public function show(): array
         {
             $driver = $this->driver;
+
             $this->check($driver);
 
             $databases = collection();
 
             $request = '';
-            $hidden = def($this->hidden) ? collection($this->hidden) : collection();
+
+            $hidden =  collection($this->hidden_bases);
+
             equal($driver,Connect::MYSQL) ?  assign(true,$request,'SHOW DATABASES') : assign(true,$request,'select datname from pg_database');
 
             foreach ($this->connexion->request($request) as $db)
@@ -107,67 +147,111 @@ namespace Imperium\Bases {
             return $databases->collection();
         }
 
-
         /**
          *
-         * Remove multiples databases
+         * Remove multiples bases
          *
-         * @param string ...$bases
+         * @method drop_multiples
+         *
+         * @param  string[] $names Bases to remove
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function drop_multiples(string ...$bases): bool
+        public function drop_multiples(string ...$names): bool
         {
-            foreach ($bases as $x)
-                is_not_true($this->drop($x),true,"Failed to create the database : $x");
+            foreach ($names as $x)
+                is_false($this->drop($x),true,"Failed to remove the database : $x");
 
             return true;
         }
 
         /**
          *
-         * Create multiples databases
+         *  Create multiples bases
          *
-         * @param string ...$bases
+         * @method create_multiples
+         *
+         * @param  string[] $names Bases to create
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
-        public function create_multiples(string ...$bases): bool
+        public function create_multiples(string ...$names): bool
         {
-            foreach ($bases as $x)
-                is_not_true($this->create($x),true,"Failed to create the database : $x");
+            if ($this->connexion->sqlite())
+            {
+                foreach ($names as $x)
+                {
+                    is_true(File::exist($x),true,"Cannot create the base $x, the base already exist");
+
+                    is_false($this->create($x),true,"Failed to create the database : $x");
+                }
+            }else
+            {
+                foreach ($names as $x)
+                {
+                    if ($this->not_exist($x))
+                        is_false($this->create($x),true,"Failed to create the database : $x");
+                    else
+                        throw new Exception("Cannot create the base $x, the base already exist");
+                }
+            }
 
             return true;
         }
 
         /**
          *
-         * Create the database
+         *  Check if a base not exist
          *
-         * @param string $database
+         * @method not_exist
+         *
+         * @param  string $name The base name
+         *
+         * @return bool
+         *
+         */
+        public function not_exist(string $name): bool
+        {
+            return collection($this->all)->not_exist($name);
+        }
+
+        /**
+         *
+         *  Create a base
+         *
+         * @method create
+         *
+         * @param  string $name The base name
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function create(string $database): bool
+        public function create(string $name): bool
         {
+            if ($this->connexion->sqlite())
+                return File::exist($name) ? false : new PDO("sqlite:$name",null,null) ;
+
+
+            if ($this->exist($name))
+                throw new Exception("The base $name already exist");
+
+            $not_define = not_def($this->collation,$this->charset);
+
             switch ($this->driver)
             {
                 case Connect::MYSQL:
-                    return not_def($this->collation,$this->charset) ? $this->connexion->execute("CREATE DATABASE $database") :  $this->connexion->execute("CREATE DATABASE $database CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
+                    return $not_define ? $this->connexion->execute("CREATE DATABASE $name") :  $this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
                 break;
                 case Connect::POSTGRESQL:
-                    return not_def($this->collation,$this->charset) ? $this->connexion->execute("CREATE DATABASE $database  TEMPLATE template0") :  $this->connexion->execute("CREATE DATABASE  $database ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;");
-                break;
-                case Connect::SQLITE:
-                    return  new PDO("sqlite:$database",null,null) && chmod($database,0777);
+                    return $not_define ? $this->connexion->execute("CREATE DATABASE $name  TEMPLATE template0") :  $this->connexion->execute("CREATE DATABASE  $name ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;");
                 break;
                 default:
                     return false;
@@ -177,15 +261,21 @@ namespace Imperium\Bases {
 
         /**
          *
-         * Set database charset
+         * Set the base charset
          *
-         * @param string $charset
+         * @method set_charset
+         *
+         * @param  string $charset The charset to use
          *
          * @return Base
+         *
+         * @throws Exception
          *
          */
         public function set_charset(string $charset): Base
         {
+            not_in($this->charsets(),$charset,true,"The charset is not valid");
+
             $this->charset = $charset;
 
             return $this;
@@ -193,15 +283,21 @@ namespace Imperium\Bases {
 
         /**
          *
-         * Set database collation
+         * Set the base collation
          *
-         * @param string $collation
+         * @method set_collation
+         *
+         * @param  string  $collation The collation to use
          *
          * @return Base
+         *
+         * @throws Exception
          *
          */
         public function set_collation(string $collation): Base
         {
+            not_in($this->collations(),$collation,true,"The collation is not valid");
+
             $this->collation = $collation;
 
             return $this;
@@ -211,20 +307,26 @@ namespace Imperium\Bases {
          *
          * Remove a database
          *
-         * @param string $database
+         * @param string $name The base name
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
-        public function drop(string $database): bool
+        public function drop(string $name): bool
         {
-            return equal($this->driver,Connect::SQLITE) ? File::remove($database) : $this->connexion->execute("DROP DATABASE $database");
+            if ($this->connexion->sqlite())
+                return File::exist($name) ? File::remove($name): false;
+
+            is_true($this->not_exist($name),true,"The base $name was not found");
+
+            return $this->connexion->execute("DROP DATABASE $name");
         }
 
         /**
          *
-         * Dump a database
+         * Dump the current base
          *
          * @return  bool
          *
@@ -238,9 +340,9 @@ namespace Imperium\Bases {
 
         /**
          *
-         * Check if a base exist
+         * Verify if a base exist
          *
-         * @param string $base
+         * @param string $base The base name
          *
          * @return bool
          *
@@ -249,7 +351,7 @@ namespace Imperium\Bases {
          */
         public function exist(string $base): bool
         {
-            return collection($this->show())->exist($base);
+            return collection($this->all)->exist($base);
         }
 
 
@@ -309,36 +411,40 @@ namespace Imperium\Bases {
 
         /**
          *
-         * Define all hidden databases
+         * Base Constructor
          *
-         * @param array $databases
+         * @method __construct
+         *
+         * @param  Connect     $connect
+         * @param  Table       $table
+         * @param  array       $hidden_tables
+         * @param  array       $hidden_bases
+         */
+        public function __construct(Connect $connect,Table $table,array $hidden_tables = [], $hidden_bases = [] )
+        {
+            $this->tables       = $table->hidden($hidden_tables);
+            $this->all          = $this->hidden($hidden_bases)->show();
+            $this->connexion    = $connect;
+            $this->driver       = $connect->get_driver();
+        }
+
+        /**
+         *
+         * Define all hidden base
+         *
+         * @method hidden
+         *
+         * @param  array  $base
          *
          * @return Base
          *
          */
-        public function hidden(array $databases): Base
+        public function hidden(array $base = []): Base
         {
-            $this->hidden = $databases;
+            $this->hidden_bases = $base;
 
             return $this;
         }
-
-
-        /**
-         *
-         * Base constructor.
-         *
-         * @param Connect $connect
-         * @param Table $table
-         */
-        public function __construct(Connect $connect,Table $table)
-        {
-            $this->tables = $table;
-            $this->connexion = $connect;
-            $this->driver = $connect->get_driver();
-        }
-
-
 
         /**
          *
@@ -346,17 +452,15 @@ namespace Imperium\Bases {
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
         public function has(): bool
         {
-            return def($this->show());
+            return def($this->all);
         }
 
         /**
          *
-         * Change  the base collation
+         * Change the current base collation
          *
          * @return bool
          *
@@ -374,9 +478,6 @@ namespace Imperium\Bases {
             if (not_def($this->collation))
                 throw new Exception("We have not found required collation");
 
-            if (not_in($this->collations(),$this->collation))
-                throw new Exception("Invalid collation name");
-
             return equal(Connect::MYSQL,$driver) ? $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'") : $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
 
         }
@@ -389,10 +490,9 @@ namespace Imperium\Bases {
             return $this->connexion->get_database();
         }
 
-
         /**
          *
-         * Change charset
+         * Change the current base charset
          *
          * @return bool
          *
@@ -410,13 +510,12 @@ namespace Imperium\Bases {
             if (not_def($this->charset))
                 throw new Exception("We have not found required charset");
 
-            if (not_in($this->charsets(),$this->charset))
-                throw new Exception("Invalid charset name");
-
             return equal(Connect::MYSQL,$driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
         }
 
         /**
+         *
+         * Check if current driver is not sqlite
          *
          * @param string $driver
          *

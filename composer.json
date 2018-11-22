@@ -24,7 +24,9 @@
         "ralouphie/mimey": "^1.0",
         "spatie/db-dumper": "^2.11",
         "ext-PDO": "^7.2",
-        "ext-json": "^1.6"
+        "ext-json": "^1.6",
+        "maximebf/debugbar": "^1.15",
+        "predis/predis": "^1.1"
     },
     "autoload-dev":{
         "psr-4":{

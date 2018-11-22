@@ -23,11 +23,6 @@ all: test
 help: ## Display the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-send: ## Send to the server the modifications
-	git add .
-	git commit -m "$(COMMIT)"
-	git push origin --all
-
 test: vendor seed ## Run tests
 	@vendor/bin/phpunit --coverage-html ~/coverage/imperium
 

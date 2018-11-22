@@ -26,27 +26,27 @@ namespace Imperium\Tables {
          *
          */
         private $added_columns;
-        
+
         /**
-         * @var Connect 
+         * @var Connect
          */
         private $connexion;
-        
+
         /**
          * Current table
-         * 
+         *
          * @var string
          */
         private $table;
 
         /**
-         * 
+         *
          * Current driver
-         * 
-         * @var string 
+         *
+         * @var string
          */
         private $driver;
-       
+
         /**
          * @var array
          */
@@ -278,16 +278,6 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Return all columns types inside a table
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-
-        /**
-         *
          * Return all columns inside a table
          *
          * @return array
@@ -421,7 +411,7 @@ namespace Imperium\Tables {
          *
          * @throws Exception
          */
-        public function append_column(string $name, string $type, int $size, bool $unique): bool
+        public function append_column(string $name, string $type, int $size, bool $unique,bool $nullable): bool
         {
 
             $data = collection();
@@ -429,16 +419,27 @@ namespace Imperium\Tables {
 
             different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
 
+            if($unique && different($this->driver,Connect::MYSQL))
+                append($command," UNIQUE");
+
+            if(different($nullable,true))
+                append($command,' NOT NULL');
+
+
+            
+
 
             $data->add($this->connexion->execute($command));
 
-
-            if ($unique)
-                $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name));
+            if($this->connexion->mysql())
+            {
+                $data->add($this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD CONSTRAINT  UNIQUE($name)"));
+            }
 
 
             return $data->not_exist(false);
         }
+
 
 
         /**
@@ -457,7 +458,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD CONSTRAINT  UNIQUE($column)");
+                    return $this->connexion->execute("");
                 }
             }
 
@@ -551,7 +552,7 @@ namespace Imperium\Tables {
          */
         private function startCreateCommand() : string
         {
-            return $this->connexion->mysql() ? "CREATE TABLE IF NOT EXISTS `{$this->get_current_table()}` ( " : "CREATE TABLE IF NOT EXISTS {$this->get_current_table()} ( ";
+            return $this->connexion->mysql() ? "CREATE TABLE IF NOT EXISTS `{$this->get_current_table()}` ( " : "CREATE TABLE IF NOT EXISTS {$this->get_current_table()} ( " ;
         }
 
         /**
@@ -946,7 +947,7 @@ namespace Imperium\Tables {
          * @throws Exception
          *
          */
-        public function remove_column(string $column): bool
+        public function remove_column(string ...$columns): bool
         {
 
             switch ($this->driver)

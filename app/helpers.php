@@ -3,6 +3,7 @@
 
 use Whoops\Run;
 use Carbon\Carbon;
+use DebugBar\DebugBar;
 use Imperium\Imperium;
 use Imperium\File\File;
 use Imperium\Json\Json;
@@ -29,6 +30,18 @@ use Spatie\DbDumper\Databases\Sqlite;
 use Whoops\Handler\PrettyPageHandler;
 use Imperium\Html\Pagination\Pagination;
 use Spatie\DbDumper\Databases\PostgreSql;
+
+
+
+if (not_exist('debug_bar'))
+{
+    function debug_bar()
+    {
+        $debugbar = new DebugBar();
+        $debugbarRenderer = $debugbar->getJavascriptRenderer();
+        return $debugbarRenderer->render();
+    }
+}
 
 if (not_exist('instance'))
 {
@@ -231,7 +244,7 @@ if (not_exist('is_true'))
 
         if ($run_exception && $x)
             throw new Exception($message);
-        
+
         return $x;
 
     }
@@ -534,7 +547,7 @@ if (not_exist('execute_query'))
                 return $code->collection();
             break;
             case Query::DELETE:
-            
+
                 $data = $model->where($column_name,$condition,$expected)->get();
                 $show_sql_variable = $model->query()->set_query_mode($mode)->where($column_name,$condition,$expected)->sql();
                 return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, $condition, $expected)->delete() ;
@@ -719,7 +732,7 @@ if(not_exist('collection'))
 {
 
     /**
-     * 
+     *
      * An instance to manage array
      *
      * @param array $data
@@ -734,15 +747,15 @@ if(not_exist('collection'))
 
 if(not_exist('def'))
 {
-    
+
     /**
-     * 
+     *
      * check if value are defined
      *
      * @param mixed ...$values
      *
      * @return bool
-     * 
+     *
      */
     function def(...$values): bool
     {
@@ -759,7 +772,7 @@ if(not_exist('def'))
 
 if(not_exist('not_def'))
 {
-    
+
     /**
      *
      * Check if value are not defined
@@ -767,7 +780,7 @@ if(not_exist('not_def'))
      * @param mixed ...$values
      *
      * @return bool
-     * 
+     *
      */
     function not_def(...$values): bool
     {
@@ -783,13 +796,13 @@ if(not_exist('not_def'))
 if (not_exist('zones'))
 {
     /**
-     * 
+     *
      * Get all time zones
      *
      * @param string $select_time_zone_text
      *
      * @return array
-     * 
+     *
      */
     function zones(string $select_time_zone_text) : array
     {
@@ -1211,7 +1224,7 @@ if (not_exist('bootswatch'))
     {
         if (equal($theme,"bootstrap"))
             return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/'.$version.'/css/bootstrap.min.css">';
-    
+
         return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/'.$version.'/'.$theme.'/bootstrap.min.css">';
 
     }

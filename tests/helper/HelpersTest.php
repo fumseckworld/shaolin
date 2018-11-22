@@ -3,9 +3,8 @@
 namespace  tests\helper;
 
 
- 
-use Exception;
 
+use Exception;
 use Faker\Generator;
 use Imperium\Bases\Base;
 use Imperium\Connexion\Connect;
@@ -25,6 +24,7 @@ class HelpersTest extends DatabaseTest
     {
         $this->table = 'helper';
     }
+
 
     public function test_is_pair()
     {
@@ -616,7 +616,7 @@ class HelpersTest extends DatabaseTest
         $this->assertNotContains($this->table,$select );
         $this->assertContains('location',$select);
         $this->assertNotEmpty($select);
-        
+
         $select = tables_select($this->sqlite()->tables(),'imperium');
 
         $this->assertNotContains($this->table,$select );

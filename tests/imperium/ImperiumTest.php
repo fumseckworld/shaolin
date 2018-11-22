@@ -65,6 +65,25 @@ class ImperiumTest extends DatabaseTest
 
     }
 
+    public function test_change_base()
+    {
+        $this->assertTrue($this->mysql()->change_base_charset('utf8'));
+        $this->assertTrue($this->postgresql()->change_base_charset('UTF8'));
+    }
+
+
+    public function test_append()
+    {
+
+
+        //$this->postgresql()->remove_column('linux');
+       // $this->assertTrue($this->mysql()->append_column('linux','varchar',255,true,false));
+      // $this->assertTrue($this->postgresql()->append_column('linux','text',255,true,false));
+       //$this->assertTrue($this->sqlite()->append_column('linux','text',255,true,false));
+      // $this->assertTrue($this->mysql()->remove_column('linux'));
+      //  $this->assertTrue($this->postgresql()->remove_column('linux'));
+      //  $this->assertTrue($this->sqlite()->remove_column('linux'));
+    }
     public function test_get_host()
     {
         $this->assertEquals('localhost',$this->mysql()->connect()->get_host());
@@ -209,7 +228,7 @@ class ImperiumTest extends DatabaseTest
 
         $this->mysql()->users()->hidden([]);
         $this->postgresql()->users()->hidden([]);
-        
+
         $this->assertTrue($this->mysql()->has_users());
         $this->assertTrue($this->postgresql()->has_users());
 

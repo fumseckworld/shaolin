@@ -4,7 +4,12 @@
 
 namespace Testing;
 
+require_once 'vendor/autoload.php';
 require_once 'config.php';
+
+use Imperium;
+
+use Imperium\Imperium;
 
 use PHPUnit\Framework\TestCase;
 
@@ -21,19 +26,20 @@ class DatabaseTest extends TestCase
     protected $table;
     protected $class = 'btn btn-primary';
 
-    public function mysql()
+
+    public function mysql(): Imperium
     {
         global $mysql;
         return $mysql;
 
     }
-    public function postgresql()
+    public function postgresql(): Imperium
     {
         global $pgsql;
         return $pgsql;
     }
 
-    public function sqlite()
+    public function sqlite(): Imperium
     {
         global $sqlite;
         return $sqlite;

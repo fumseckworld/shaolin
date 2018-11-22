@@ -72,7 +72,7 @@ class Imperium extends Zen implements Management
      */
     private $json;
 
-    
+
     /**
      * @var Form
      */
@@ -356,15 +356,16 @@ class Imperium extends Zen implements Management
      * @param string $type
      * @param int $size
      * @param bool $unique
+     * @param bool $nullable
      *
      * @return bool
      *
      * @throws Exception
      *
      */
-    public function append_column(string $column, string $type, int $size, bool $unique): bool
+    public function append_column(string $column, string $type, int $size, bool $unique,bool $nullable): bool
     {
-        return $this->table->append_column($column,$type,$size,$unique);
+        return $this->table->append_column($column,$type,$size,$unique,$nullable);
     }
 
     /**
@@ -728,7 +729,7 @@ class Imperium extends Zen implements Management
     }
 
     /**
-     * 
+     *
      * Imperium constructor.
      *
      * @param Connect $connect
@@ -988,9 +989,9 @@ class Imperium extends Zen implements Management
     }
 
     /**
-     * 
+     *
      * @param bool $validate
-     * 
+     *
      * @return Form
      */
     public function form(bool $validate = false): Form

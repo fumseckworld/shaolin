@@ -259,13 +259,14 @@ namespace Imperium {
          * @param string $type
          * @param int $size
          * @param bool $unique
+         * @param bool $nullable
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function append_column(string $column, string $type, int $size, bool $unique): bool;
+        public function append_column(string $column, string $type, int $size, bool $unique,bool $nullable): bool;
         /**
          *
          * Display all columns in a table
