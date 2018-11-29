@@ -20,16 +20,16 @@ if (equal($argv[1],"seed"))
 
     $run = now();
 
-    echo "* SEEDING : ".date('Y-m-d')."\n";
+    echo "* SEEDING DATABASES :\n\n";
 
     $hour = now();
 
     echo "\t* MYSQL\n";
 
     try {
-        $data = $mysql->seed_database(SEED_LIMIT, ['phinxlog']);
+        $data = $mysql->seed_database(SEED_LIMIT);
         if ($data)
-            echo "\t* SUCCESS (".ago('en',$hour).")\n";
+            echo "\t\t* SUCCESS : ".ago('en',$hour)."\n";
         else
             echo "\t* FAILURE ".ago('en',$hour)."\n";
 
@@ -44,9 +44,9 @@ if (equal($argv[1],"seed"))
 
     try
     {
-        $data = $pgsql->seed_database(SEED_LIMIT, ['phinxlog']);
+        $data = $pgsql->seed_database(SEED_LIMIT);
         if ($data)
-            echo "\t* SUCCESS (".ago('en',$hour).")\n";
+            echo "\t\t* SUCCESS : ".ago('en',$hour)."\n";
         else
             echo "\t* FAILURE ".ago('en',$hour)."\n";
 
@@ -60,19 +60,14 @@ if (equal($argv[1],"seed"))
 
     try
     {
-        $data = $pgsql->seed_database(SEED_LIMIT, ['phinxlog','sqlite_sequence']);
+        $data = $pgsql->seed_database(SEED_LIMIT);
         if ($data)
-            echo "\t* SUCCESS (".ago('en',$hour).")\n";
+            echo "\t\t* SUCCESS : ".ago('en',$hour)."\n";
         else
-            echo "\t* FAILURE ".ago('en',$hour)."\n";
+            echo "\t* FAILURE ".ago('en',$hour).";
 
     } catch (Exception $e) {
         d($e->getMessage());
     }
-    echo "* FINNISH : ".ago('en',$run)."\n";
+    echo "\n* FINNISH : ".ago('en',$run)."\n";
 }
-
-
-
-
-

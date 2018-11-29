@@ -31,51 +31,44 @@ use Whoops\Handler\PrettyPageHandler;
 use Imperium\Html\Pagination\Pagination;
 use Spatie\DbDumper\Databases\PostgreSql;
 
-
-
-if (not_exist('debug_bar'))
-{
-    function debug_bar()
-    {
-        $debugbar = new DebugBar();
-        $debugbarRenderer = $debugbar->getJavascriptRenderer();
-        return $debugbarRenderer->render();
-    }
-}
-
 if (not_exist('instance'))
 {
-    /***
-     * get all instance
+    /**
+     * [instance description]
      *
-     * @param string $driver
-     * @param string $user
-     * @param string $base
-     * @param string $password
-     * @param string $host
-     * @param int $fetch_mode
-     * @param string $dump_path
-     * @param string $current_table
-     * ²
-     * @return Imperium
+     * @method instance
      *
-     * @throws Exception
+     * @param  string   $driver        [description]
+     * @param  string   $user          [description]
+     * @param  string   $base          [description]
+     * @param  string   $password      [description]
+     * @param  string   $host          [description]
+     * @param  int      $fetch_mode    [description]
+     * @param  string   $dump_path     [description]
+     * @param  string   $current_table [description]
+     * @param  array    $hidden_tables [description]
+     * @param  array    $hidden_bases  [description]
+     *
+     * @return Imperium [description]
      */
-    function instance (string $driver,string $user,string $base,string $password,string $host,int $fetch_mode,string $dump_path,string $current_table): Imperium
+    function instance (string $driver,string $user,string $base,string $password,string $host,int $fetch_mode,string $dump_path,string $current_table,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$fetch_mode,$dump_path);
-        return imperium($connexion,$current_table);
+        return imperium($connexion,$current_table,$hidden_tables,$hidden_bases);
     }
 }
 
 if (not_exist('assign'))
 {
     /**
-     * assign value in a variable by a condition
      *
-     * @param bool $condition
-     * @param $variable
-     * @param $value
+     * Asign content to a variable by a condition
+     *
+     * @method assign
+     *
+     * @param  bool   $condition
+     * @param  mixed  $variable
+     * @param  mixed  $value
      *
      */
     function assign(bool $condition,&$variable,$value)
@@ -86,16 +79,21 @@ if (not_exist('assign'))
         }
     }
 }
+
 if (not_exist('query'))
 {
     /**
      *
-     * Get an instance of query
+     * Get an instance of the query builder
      *
-     * @param Table $table
-     * @param Connect $connect
+     *
+     * @method query
+     *
+     * @param  Table   $table
+     * @param  Connect $connect
      *
      * @return Query
+     *
      */
     function query(Table $table,Connect $connect): Query
     {
@@ -106,12 +104,14 @@ if (not_exist('query'))
 if (not_exist('is_pair'))
 {
     /**
+     * Check if number is pair
      *
-     * Check if number is divisible by 2
+     * @method is_pair
      *
-     * @param int $x
+     * @param  int     $x The number to check
      *
      * @return bool
+     *
      */
     function is_pair(int $x): bool
     {
@@ -123,12 +123,14 @@ if (not_exist('equal'))
 {
     /**
      *
-     * Check if two variables are equal
+     * Check if two values are equal
      *
-     * @param $parameter
-     * @param $expected
-     * @param bool $run_exception
-     * @param string $message
+     * @method equal
+     *
+     * @param  mixed $parameter     The paramater
+     * @param  mixed $expected      The expected value
+     * @param  bool  $run_exception To run Exception
+     * @param  string $message      The Exception message
      *
      * @return bool
      *
@@ -139,30 +141,28 @@ if (not_exist('equal'))
     {
         $x = strcmp($parameter,$expected) === 0;
 
-        if ($run_exception && $x)
-            throw new Exception($message);
-
+        is_true($x,$run_exception,$message);
 
         return $x;
     }
 }
 
+
 if (not_exist('is_not_false'))
 {
-    /**
-     *
-     * Check if  data is not equal to false
-     *
-     * @param $data
-     *
-     * @param bool $run_exception
-     * @param string $message
-     *
-     * @return bool
-     *
-     * @throws Exception
-     *
-     */
+     /**
+      *
+      * Check if the data is not equal to false
+      *
+      * @method is_not_false
+      *
+      * @param  mixed        $data          The data to check
+      * @param  bool         $run_exception To run Exception
+      * @param  string       $message       The Exception message
+      *
+      * @return bool
+      *
+      */
     function is_not_false($data,bool $run_exception = false,string $message =''): bool
     {
         $x = $data !== false;
@@ -177,11 +177,14 @@ if (not_exist('is_not_true'))
 {
     /**
      *
-     * Check if a data is not equal to false
+     * Check if data is not true
      *
-     * @param $data
-     * @param bool $run_exception
-     * @param string $message
+     *
+     * @method is_not_true
+     *
+     * @param  mixed       $data          The data to check
+     * @param  bool        $run_exception To run Exception
+     * @param  string      $message       The Exception message
      *
      * @return bool
      *
@@ -202,11 +205,13 @@ if (not_exist('is_false'))
 {
     /**
      *
-     * Check if a data is not equal to false
+     * Check if data is equal to false
      *
-     * @param $data
-     * @param bool $run_exception
-     * @param string $message
+     * @method is_false
+     *
+     * @param  mixed       $data          The data to check
+     * @param  bool        $run_exception To run Exception
+     * @param  string      $message       The Exception message
      *
      * @return bool
      *
@@ -227,11 +232,13 @@ if (not_exist('is_true'))
 {
     /**
      *
-     * Check if a data is not equal to false
+     * Check if the data is equal to true
      *
-     * @param $data
-     * @param bool $run_exception
-     * @param string $message
+     * @method is_true
+     *
+     * @param  mixed       $data          The data to check
+     * @param  bool        $run_exception To run Exception
+     * @param  string      $message       The Exception message
      *
      * @return bool
      *
@@ -240,6 +247,7 @@ if (not_exist('is_true'))
      */
     function is_true($data,bool $run_exception = false,string $message =''): bool
     {
+
         $x =  $data === true;
 
         if ($run_exception && $x)
@@ -252,20 +260,18 @@ if (not_exist('is_true'))
 
 if (not_exist('different'))
 {
-
     /**
      *
-     * Check if two variables are different
+     * Check if two data are different
      *
-     * @param $parameter
-     * @param $expected
-     * @param bool $run_exception
-     * @param string $message
+     * @method different
      *
-     * @return bool
+     * @param  mixed    $parameter     The paramater to check
+     * @param  mixed    $expected      The expected value
+     * @param  bool     $run_exception To run Exception
+     * @param  string   $message       The Exception message
      *
-     * @throws Exception
-     *
+     * @return bool      [description]
      */
     function different($parameter,$expected,$run_exception = false,string $message = ''): bool
     {
@@ -280,12 +286,12 @@ if (not_exist('debug'))
 {
     /**
      *
-     * Debug code filter by a condition
+     * Debug all values by a condition
      *
-     * @param bool  $condition
-     * @param mixed ...$values
+     * @method debug
      *
-     * @return      void
+     * @param  bool    $condition The condition
+     * @param  mixed[] $values    The values to debug
      *
      */
     function debug(bool $condition,...$values)
@@ -340,7 +346,7 @@ if (not_exist('register'))
      * @throws Exception
      *
      */
-    function register(string $action,string $valid_ip,string $current_ip,string $username_placeholder,string $username_success_text,string $username_error_text,string $email_placeholder,string $email_success_text,$email_error_text,string $password_placeholder,string $password_valid_text,string $password_invalid_text,string $confirm_password_placeholder,string $submit_text,string $submit_id,bool $multiple_languages = false,array $supported_languages =[],string $choose_language_text = '',string $choose_language_valid_text ='',string $choose_language_invalid_text = '',string $select_time_zone_text ='',string $valid_time_zone_text= '',string $time_zone_invalid_text = '',string $csrf_token_field = '',string $submit_button_class = 'btn btn-outline-primary',string $password_icon = '<i class="fas fa-key"></i>',string $username_icon = '<i class="fas fa-user"></i>',string $email_icon = '<i class="fas fa-envelope"></i>',string $submit_icon = '<i class="fas fa-user-plus"></i>',string $time_zone_icon = '<i class="fas fa-clock"></i>',string $lang_icon = '<i class="fas fa-globe"></i>')
+    function register(string $action,string $valid_ip,string $current_ip,string $username_placeholder,string $username_success_text,string $username_error_text,string $email_placeholder,string $email_success_text,$email_error_text,string $password_placeholder,string $password_valid_text,string $password_invalid_text,string $confirm_password_placeholder,string $submit_text,string $submit_id,bool $multiple_languages = false,array $supported_languages =[],string $choose_language_text = '', string $choose_language_valid_text ='',string $choose_language_invalid_text = '',string $select_time_zone_text ='',string $valid_time_zone_text= '',string $time_zone_invalid_text = '',string $csrf_token_field = '',string $submit_button_class = 'btn btn-outline-primary',string $password_icon = '<i class="fas fa-key"></i>',string $username_icon = '<i class="fas fa-user"></i>',string $email_icon = '<i class="fas fa-envelope"></i>',string $submit_icon = '<i class="fas fa-user-plus"></i>',string $time_zone_icon = '<i class="fas fa-clock"></i>',string $lang_icon = '<i class="fas fa-globe"></i>')
     {
 
         $languages = collection(array('' => $choose_language_text));
@@ -369,17 +375,21 @@ if (not_exist('bases_to_json'))
 {
     /**
      *
-     * generate a json with all databases
+     * Generate a json file with all bases not hidden
+     * with an optional key
      *
-     * @param Base $base
-     * @param $filename
-     * @param string $key
+     * @method bases_to_json
+     *
+     * @param  Base          $base     An instance of base
+     * @param  string        $filename  The filename
+     * @param  string        $key      The optional key
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function bases_to_json(Base $base,$filename,string $key =''): bool
+    function bases_to_json(Base $base,string $filename,string $key =''): bool
     {
         return json($filename)->add($base->show(),$key)->generate();
     }
@@ -389,15 +399,19 @@ if (not_exist('users_to_json'))
 {
     /**
      *
-     * generate a json with all users
+     * Generate a json file with all users not hidden
+     * with an optional key
      *
-     * @param Users $users
-     * @param $filename
-     * @param string $key
+     * @method users_to_json
+     *
+     * @param  Users         $users    An instance of user
+     * @param  string        $filename  The filename
+     * @param  string        $key      The optional key
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
     function users_to_json(Users $users,$filename,string $key = '') : bool
     {
@@ -409,17 +423,21 @@ if (not_exist('tables_to_json'))
 {
     /**
      *
-     * generate a json with all users
+     * Generate a json file with all tables not hidden
+     * with an optional key
      *
-     * @param Table $table
-     * @param $filename
+     * @method tables_to_json
      *
-     * @param string $key
+     * @param  Table          $table   An instance of table
+     * @param  string         $filename The filename
+     * @param  string         $key     The key
+     *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function tables_to_json(Table $table,$filename,string $key= '') : bool
+    function tables_to_json(Table $table,string $filename,string $key= '') : bool
     {
         return json($filename)->add($table->show(),$key)->generate();
     }
@@ -428,18 +446,22 @@ if (not_exist('tables_to_json'))
 if (not_exist('sql_to_json'))
 {
     /**
-     * sql_to_json
      *
-     * @param  mixed $connect
-     * @param  mixed $filename
-     * @param  mixed $key
-     * @param  mixed $query
+     * Execute sql queries and save the result in a json file
+     *
+     * @method sql_to_json
+     *
+     * @param  Connect     $connect  An instance of connect
+     * @param  string      $filename  The filename
+     * @param  string      $query    The sql queries
      *
      * @return bool
+     *
      */
     function sql_to_json(Connect $connect,string $filename,string ...$query) : bool
     {
         $x =  json($filename);
+
         foreach($query as $v)
             $x->add($connect->request($v));
 
@@ -451,24 +473,24 @@ if (not_exist('sql_to_json'))
 if (not_exist('query_result'))
 {
     /**
-     * @param Model $model
-     * @param $mode
-     * @param array $data
+     * Print the query result
      *
-     * @param array $columns
+     * @method query_result
      *
-     * @param $success_text
-     * @param $result_empty_text
+     * @param  Model        $model             Instance of the model
+     * @param  bool         $update            To update records
+     * @param  mixed        $data              The query results
+     * @param  string       $success_text      The success text
+     * @param  string       $result_empty_text Result empty text
+     * @param  string       $table_empty_text  Table is empty text
+     * @param  string       $sql               The sql query to print
      *
-     * @param $table_empty_text
-     * @param string $sql
      * @return string
      *
-     * @throws Exception
      */
-    function query_result(Model $model,$mode,$data,array $columns,$success_text,$result_empty_text,$table_empty_text,string $sql): string
+    function query_result(Model $model,bool $update,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
-        if (equal($mode,Query::UPDATE))
+        if ($update)
         {
             $code = '';
             foreach ($data as $datum)
@@ -482,56 +504,62 @@ if (not_exist('query_result'))
         elseif(empty($model->all()))
             return html('code',$sql,'text-center'). html('div',$table_empty_text,'alert alert-danger mt-5');
         else
-           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$columns);
+           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$model->columns());
 
     }
 }
 
 if (not_exist('length'))
 {
-    /**
-     *
-     * Return the length of the data
-     *
-     * @param $data
-     *
-     * @return int
-     *
-     * @throws Exception
-     *
-     */
+     /**
+      *
+      * Return the lenght of data
+      *
+      * @method length
+      *
+      * @param  mixed $data An array or a string
+      *
+      * @return int
+      *
+      * @throws Exception
+      *
+      */
     function length($data): int
     {
-
-        if (is_null($data) || is_resource($data) || is_object($data) || is_callable($data) || is_bool($data) || is_numeric($data))
+        if (is_array($data))
+            return count($data);
+        elseif(is_string($data))
+            return strlen($data);
+        else
             throw new Exception('The parameter must be a string or an array');
-
-        return is_array($data) ? count($data) : strlen($data);
     }
 }
 if (not_exist('execute_query'))
 {
     /**
-     * search a value
      *
-     * @param int $form_grid
-     * @param Model $model
-     * @param Table $table
-     * @param $mode
-     * @param string $column_name
-     * @param string $condition
-     * @param $expected
-     * @param string $current_table_name
-     * @param string $submit_class
-     * @param $submit_update_text
-     * @param string $form_update_action
-     * @param string $key
-     * @param string $order
-     * @return array|bool
+     * Execute a query
      *
-     * @throws Exception
+     * @method execute_query
+     *
+     * @param  int           $form_grid          Change form display grid
+     * @param  Model         $model              An instance of model
+     * @param  Table         $table              An instance of table
+     * @param  string        $mode               The query mode
+     * @param  string        $column_name        The where column name
+     * @param  string        $condition          The where condition
+     * @param  mixed         $expected           The where expected
+     * @param  string        $current_table_name The current table name
+     * @param  string        $submit_class       The submit button class
+     * @param  string        $submit_update_text The submit update text
+     * @param  string        $form_update_action The update action
+     * @param  string        $key                The order by key
+     * @param  string        $order              The order type
+     * @param                $show_sql_variable  The variable to store the sql query
+     *
+     * @return mixed
      */
-    function execute_query(int $form_grid,Model $model,Table $table,$mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action ,string $key,string $order,&$show_sql_variable)
+    function execute_query(int $form_grid,Model $model,Table $table,string $mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action ,string $key,string $order,&$show_sql_variable)
     {
 
         switch ($mode)
@@ -563,44 +591,49 @@ if (not_exist('execute_query'))
 if (not_exist('query_view'))
 {
     /**
-     * @param string $query_action
-     * @param Model $model
-     * @param Table $instance
-     * @param string $create_record_action
-     * @param string $update_record_action
-     * @param string $create_record_submit_text
-     * @param string $update_record_text
-     * @param string $current_table_name
-     * @param string $expected_placeholder
-     * @param string $superior_text
-     * @param string $superior_or_equal_text
-     * @param string $inferior_text
-     * @param string $inferior_or_equal_text
-     * @param string $different_text
-     * @param string $equal_text
-     * @param string $like_text
-     * @param string $select_mode_text
-     * @param string $remove_mode_text
-     * @param string $update_mode_text
-     * @param string $submit_query_text
-     * @param string $submit_class
-     * @param string $remove_success_text
-     * @param string $record_not_found_text
-     * @param string $table_empty_text
      *
-     * @param string $select_where_column_text
-     * @param string $select_condition_column_text
-     * @param string $select_operation_column_text
-     * @param string $select_order_column_text
-     * @param $reset_form_text
-     * @param string $reset_form_class
-     * @param string $icon
-     * @param string $csrf
+     * Display a query form builder
+     *
+     * @method query_view
+     *
+     * @param  string     $query_action                 The form action
+     * @param  Model      $model                        And instance of model
+     * @param  Table      $instance                     An instance of table
+     * @param  string     $confirm_message               The confirm message
+     * @param  string     $create_record_action         The create record action
+     * @param  string     $update_record_action         The update record action
+     * @param  string     $create_record_submit_text    The create submit text
+     * @param  string     $update_record_text           The update submit text
+     * @param  string     $current_table_name           The current table
+     * @param  string     $expected_placeholder         The expected option text
+     * @param  string     $superior_text                The superior option text
+     * @param  string     $superior_or_equal_text       The superior or equal option text
+     * @param  string     $inferior_text                The inferior option text
+     * @param  string     $inferior_or_equal_text       The inferior or equal option text
+     * @param  string     $different_text                The different option text
+     * @param  string     $equal_text                   The equal option text
+     * @param  string     $like_text                    The like option text
+     * @param  string     $select_mode_text             The select mode text
+     * @param  string     $remove_mode_text             The remove mode option text
+     * @param  string     $update_mode_text             The update mode option text
+     * @param  string     $submit_query_text            The submit button query text
+     * @param  string     $submit_class                 The submit button class
+     * @param  string     $remove_success_text          The remove success text
+     * @param  string     $record_not_found_text        The record not found text
+     * @param  string     $table_empty_text             The table is empty text
+     * @param  string     $select_where_column_text     The select where columns text
+     * @param  string     $select_condition_column_text The select condition text
+     * @param  string     $select_operation_column_text The select operation text
+     * @param  string     $select_order_column_text     The order column text
+     * @param  string     $reset_form_text              The reset form text
+     * @param  string     $reset_form_class             The reset form class
+     * @param  string     $icon                         The form icon
+     * @param  string     $csrf                         The csrf token
+     *
      * @return string
      *
-     * @throws Exception
      */
-    function query_view(string $query_action,Model $model,Table $instance,string $confirm_message,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,$reset_form_text,$reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
+    function query_view(string $query_action,Model $model,Table $instance,string $confirm_message,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,string $reset_form_text,string $reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
     {
 
         $table = $instance->select($current_table_name);
@@ -668,19 +701,19 @@ if (not_exist('connect'))
 {
     /**
      *
-     * Connect to the database
+     * Connect to the base
      *
-     * @param string $driver
-     * @param string $base
-     * @param string $user
-     * @param string $password
-     * @param string $host
-     * @param int $fetch_mode
+     * @method connect
      *
-     * @param string $dump_path
+     * @param  string  $driver     The base driver
+     * @param  string  $base       The base name
+     * @param  string  $user       The username
+     * @param  string  $password   The password
+     * @param  string  $host       The host
+     * @param  int     $fetch_mode The pdo fetch mode
+     * @param  string  $dump_path  The dump directory path
+     *
      * @return Connect
-     *
-     * @throws Exception
      *
      */
     function connect(string $driver,string $base,string $user,string $password,string $host,int $fetch_mode,string $dump_path): Connect
@@ -688,25 +721,28 @@ if (not_exist('connect'))
         return new Connect($driver,$base,$user,$password,$host,$fetch_mode,$dump_path);
     }
 }
+
 if (not_exist('login'))
 {
     /**
-     * build a form to login user
+     * Generate a form to login user
      *
-     * @param string $action
-     * @param string $id
-     * @param string $name_placeholder
-     * @param string $password_placeholder
-     * @param string $submit_text
-     * @param string $submit_class
-     * @param string $submit_id
-     * @param string $csrf
-     * @param string $submit_icon
+     * @method login
      *
-     * @param string $user_icon
-     * @param string $password_icon
+     * @param  string $action               The login action
+     * @param  string $id                   The form id
+     * @param  string $name_placeholder     The username placeholder
+     * @param  string $password_placeholder The password placeholder
+     * @param  string $submit_text          The submit button text
+     * @param  string $submit_class         The submit button class
+     * @param  string $submit_id            The submit button id
+     * @param  string $csrf                 The csrf token field
+     * @param  string $submit_icon          The submit icon
+     * @param  string $user_icon            The user icon
+     * @param  string $password_icon        The password icon
+     *
      * @return string
-     * @throws Exception
+     *
      */
     function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $csrf ='',string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
@@ -716,11 +752,15 @@ if (not_exist('login'))
 if (not_exist('json'))
 {
     /**
-     * Return an instance to manage json
      *
-     * @param string $filename
+     * Return an instance of json
+     *
+     * @method json
+     *
+     * @param  string $filename The json filename
      *
      * @return Json
+     *
      */
     function json(string $filename): Json
     {
@@ -730,14 +770,16 @@ if (not_exist('json'))
 
 if(not_exist('collection'))
 {
-
     /**
      *
-     * An instance to manage array
+     * Return an instance of collection
      *
-     * @param array $data
+     * @method collection
+     *
+     * @param  array      $data The started array
      *
      * @return Collection
+     *
      */
     function collection(array $data = []): Collection
     {
@@ -750,9 +792,11 @@ if(not_exist('def'))
 
     /**
      *
-     * check if value are defined
+     * Check if all values are define
      *
-     * @param mixed ...$values
+     * @method def
+     *
+     * @param  mixed $values The values to check
      *
      * @return bool
      *
@@ -775,9 +819,11 @@ if(not_exist('not_def'))
 
     /**
      *
-     * Check if value are not defined
+     * Check if all values are not define
      *
-     * @param mixed ...$values
+     * @method not_def
+     *
+     * @param mixed  $values The values to check
      *
      * @return bool
      *
@@ -797,9 +843,11 @@ if (not_exist('zones'))
 {
     /**
      *
-     * Get all time zones
+     * List all time zones
      *
-     * @param string $select_time_zone_text
+     * @method zones
+     *
+     * @param  string $select_time_zone_text The select zone text
      *
      * @return array
      *
@@ -818,52 +866,52 @@ if (not_exist('zones'))
 if (not_exist('tables_select'))
 {
     /**
-     * @param Table $instance
-     * @param string $url_prefix
-     * @param string $current_table_name
-     * @param string $choose_text
-     * @param bool $use_a_redirect_select
-     * @param string $csrf_token_field
-     * @param string $separator
-     * @param string $icon
+     *
+     * Generate a table select
+     *
+     * @method tables_select
+     *
+     * @param  Table         $instance  An instance of table
+     * @param  array         $hidden    The hidden tables
+     * @param  string        $url_prefix The url prefix
+     * @param  string        $csrf      The csrf field
+     * @param  string        $separator The url separtor
      *
      * @return string
      *
-     * @throws Exception
      */
-    function tables_select(Table $instance, string $url_prefix,string $separator = '/'): string
+    function tables_select(Table $instance,array $hidden, string $url_prefix,string $csrf,string $separator = '/'): string
     {
 
         $tables = collection();
-
-        foreach ($instance->show() as $x)
+        $current = $instance->get_current_table();
+        foreach ($instance->hidden($hidden)->show() as $x)
         {
-            if (different($x,$instance->get_current_table()))
+            if (different($x,$current))
                 $tables->merge(["$url_prefix$separator$x" => $x]);
         }
-        return  form('',uniqid())->row()->redirect('table',$tables->collection())->end_row()->get() ;
+        return  form('',id())->csrf($csrf)->row()->redirect('table',$tables->collection())->end_row()->get() ;
      }
 }
 
 if (not_exist('users_select'))
 {
     /**
-     * build a form to select an user
+     * Generate an user select
      *
-     * @param Users $instance
-     * @param array $hidden
-     * @param string $urlPrefix
-     * @param string $currentUser
-     * @param string $chooseText
-     * @param bool $use_a_redirect_select
-     * @param string $csrf
-     * @param string $separator
-     * @param string $icon
+     * @method users_select
      *
-     * @return string
+     * @param  Users        $instance              [description]
+     * @param  array        $hidden                [description]
+     * @param  string       $urlPrefix             [description]
+     * @param  string       $currentUser           [description]
+     * @param  string       $chooseText            [description]
+     * @param  bool         $use_a_redirect_select [description]
+     * @param  string       $csrf                  [description]
+     * @param  string       $separator             [description]
+     * @param  string       $icon                  [description]
      *
-     * @throws Exception
-     *
+     * @return string       [description]
      */
     function users_select(Users $instance,array $hidden,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-user"></i>'): string
     {
@@ -1034,7 +1082,7 @@ if (not_exist('get_records'))
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 
 
-        $sql = sql($current_table_name,query($instance,$connect))->set_query_mode(Query::SELECT);
+        $sql = sql(query($instance,$connect),$current_table_name)->set_query_mode(Query::SELECT);
         if ($framework)
         {
             $parts = explode('/',server('REQUEST_URI'));
@@ -1078,12 +1126,15 @@ if (not_exist('bootstrap_js'))
 if (not_exist('_html'))
 {
 
-    /***
-     * print html code
+    /**
      *
-     * @param bool $secure
+     * Print html code
      *
-     * @param mixed ...$data
+     * @method _html
+     *
+     * @param  bool   $secure Option to not execute code
+     * @param  mixed  $data   The code
+     *
      */
     function _html(bool $secure,...$data)
     {
@@ -1105,16 +1156,20 @@ if (not_exist('_html'))
 if (not_exist('html'))
 {
     /**
-     * generate an element between the content
      *
-     * @param string $element
-     * @param string $content
-     * @param string $class
-     * @param string $id
+     * Generate html element and put content inside
+     *
+     * @method html
+     *
+     * @param  string $element The html tag
+     * @param  string $content The content
+     * @param  string $class   The html tag class
+     * @param  string $id      The html tag id
      *
      * @return string
      *
      * @throws Exception
+     *
      */
     function html(string $element, string $content ,string $class = '',string $id= ''): string
     {
@@ -1183,11 +1238,16 @@ if (not_exist('html'))
 if (not_exist('id'))
 {
     /**
-     * generate an id
      *
-     * @param string $prefix
+     * Generate an uniqid
+     *
+     *
+     * @method id
+     *
+     * @param  string $prefix The prefix
      *
      * @return string
+     *
      */
     function id(string $prefix =''): string
     {
@@ -1197,15 +1257,20 @@ if (not_exist('id'))
 if (not_exist('submit'))
 {
     /**
-     * verify if a form is submit
      *
-     * @param string $key
-     * @param bool $post
+     * Check if form was sumited
+     *
+     * @method submit
+     *
+     * @param  string $key  The superglobal key
+     * @param  bool   $post To $_POST method
+     *
      * @return bool
+     *
      */
     function submit(string $key,bool $post = true): bool
     {
-        return $post ?  isset($_POST[$key])   : isset($_GET[$key])  ;
+        return $post ?  post($key) : get($key)  ;
     }
 }
 if (not_exist('bootswatch'))
@@ -1233,14 +1298,17 @@ if (not_exist('bootswatch'))
 if (not_exist('push'))
 {
     /**
-     * push one or more elements onto the end of array
      *
-     * @param array $array
-     * @param  $values
+     * Add to the end elements in an array
+     *
+     * @method push
+     *
+     * @param  array  $array  The array
+     * @param  mixed  $values The values to add
+     *
      */
     function push(array &$array,...$values)
     {
-
         foreach ($values as $value)
             array_push($array,$value);
     }
@@ -1249,14 +1317,17 @@ if (not_exist('push'))
 if (not_exist('stack'))
 {
     /**
-     * push one or more elements onto the end of array
      *
-     * @param array $array
-     * @param  $values
+     * Add to the begin elements in an array
+     *
+     * @method stack
+     *
+     * @param  array  $array  The array
+     * @param  mixed  $values The values to add
+     *
      */
     function stack(array &$array,...$values)
     {
-
         foreach ($values as $value)
            array_unshift($array,$value);
     }
@@ -1267,14 +1338,17 @@ if (not_exist('stack'))
 if (not_exist('has'))
 {
     /**
-     * checks if a value exists in an array
      *
-     * @param mixed $needle
-     * @param array $array
+     * Check if needle exist in the array
      *
-     * @param bool  $mode
+     * @method has
      *
-     * @return mixed
+     * @param  mixed  $needle The data to check
+     * @param  array  $array  The array
+     * @param  bool   $mode   To set strict mode
+     *
+     * @return bool
+     *
      */
     function has($needle,array $array,bool $mode = true)
     {
@@ -1285,11 +1359,15 @@ if (not_exist('has'))
 if (not_exist('values'))
 {
     /**
-     * Return all the values of an array
      *
-     * @param array $array
+     * Return all values in an array
+     *
+     * @method values
+     *
+     * @param  array  $array
      *
      * @return array
+     *
      */
     function values(array &$array): array
     {
@@ -1300,10 +1378,14 @@ if (not_exist('values'))
 if (not_exist('merge'))
 {
     /**
-     * merge two array
      *
-     * @param array $array
-     * @param array[] $to
+     * Merge multiples array
+     *
+     * @method merge
+     *
+     * @param  array $array The array source
+     * @param  array $to    The array to merge with source
+     *
      */
     function merge(array &$array,array ...$to)
     {
@@ -1315,105 +1397,111 @@ if (not_exist('merge'))
 if (not_exist('session'))
 {
     /**
-     * get a $_SESSION value
      *
-     * @param string $key
+     * Get a session value
+     *
+     * @method session
+     *
+     * @param  string  $key The session key
      *
      * @return string
+     *
      */
     function session(string $key): string
     {
-        if (isset($_SESSION[$key]) && !empty($_SESSION[$key]))
-            return  htmlspecialchars($_SESSION[$key], ENT_QUOTES, 'UTF-8', true);
-
-        return '';
+        return isset($_SESSION[$key]) && !empty($_SESSION[$key]) ?  htmlspecialchars($_SESSION[$key], ENT_QUOTES, 'UTF-8', true) : '';
     }
 }
 
 if (not_exist('cookie'))
 {
     /**
-     * get a $_COOKIE value
      *
-     * @param string $key
+     * Get a cookie value
+     *
+     * @method cookie
+     *
+     * @param  string $key The cookie key
      *
      * @return string
+     *
      */
     function cookie(string $key): string
     {
-        if (isset($_COOKIE[$key]) && !empty($_COOKIE[$key]))
-            return  htmlspecialchars($_COOKIE[$key], ENT_QUOTES, 'UTF-8', true);
-
-        return '';
+        return isset($_COOKIE[$key]) && !empty($_COOKIE[$key]) ? htmlspecialchars($_COOKIE[$key], ENT_QUOTES, 'UTF-8', true) : '';
     }
 }
 if (not_exist('get'))
 {
     /**
-     * get a $_GET value
+     * Get a get value
      *
-     * @param string $key
+     * @method get
+     *
+     * @param  string $key The get key
      *
      * @return string
+     *
      */
     function get(string $key): string
     {
-        if (isset($_GET[$key]) && !empty($_GET[$key]))
-            return  htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true);
-
-        return '';
+        return isset($_GET[$key]) && !empty($_GET[$key]) ? htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true) : '';
     }
 }
 
 if (not_exist('files'))
 {
     /**
-     * get a $_FILE value
      *
-     * @param string $key
+     * Get a file key
      *
-     * @return mixed
+     * @method files
+     *
+     * @param  string $key The file key
+     *
+     * @return string
+     *
      */
-    function files(string $key)
+    function files(string $key): string
     {
-        if (isset($_FILES[$key]) && !empty($_FILES[$key]))
-            return $_FILES[$key];
-
-        return '';
+        return isset($_FILES[$key]) && !empty($_FILES[$key]) ? $_FILES[$key] :  '';
     }
 }
 if (not_exist('server'))
 {
     /**
-     * get a $_SERVER value
      *
-     * @param string $key
+     * Get a server key
+     *
+     * @method server
+     *
+     * @param  string $key The server key
      *
      * @return string
+     *
      */
     function server(string $key): string
     {
-        if (isset($_SERVER[$key]) && !empty($_SERVER[$key]))
-            return  $_SERVER[$key];
-
-        return '';
+        return isset($_SERVER[$key]) && !empty($_SERVER[$key]) ?  $_SERVER[$key] : '';
     }
 }
 
 if (not_exist('post'))
 {
     /**
-     * get a $_POST value
      *
-     * @param string $key
+     * Get a post key
+     *
+     * @method post
+     *
+     * @param  string $key The post key
      *
      * @return string
+     *
      */
     function post(string $key): string
     {
-        if (isset($_POST[$key]) && !empty($_POST[$key]))
-            return htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8', true);
-        return '';
+        return isset($_POST[$key]) && !empty($_POST[$key]) ? htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8', true) : '';
     }
 }
 if (not_exist('generate'))
@@ -1446,18 +1534,24 @@ if (not_exist('generate'))
 if (not_exist('root'))
 {
     /**
-     * @param string $driver
-     * @param string $user
-     * @param string $password
      *
-     * @param string $dump_path
-     * @param int $pdo_mode
+     * Get connection without database
+     *
+     * @method root
+     *
+     * @param  string $driver    The driver
+     * @param  string $user      The username
+     * @param  string $password  The password
+     * @param  string $host      The hostname
+     * @param  string $dump_path The dump directory path
+     * @param  int    $pdo_mode  The pdo fetch mode
      *
      * @return Connect
      *
      * @throws Exception
+     *
      */
-    function root(string $driver,string $user,string $password ,string $host,string $dump_path = 'dump',$pdo_mode = PDO::FETCH_OBJ): Connect
+    function root(string $driver,string $user,string $password ,string $host,string $dump_path = 'dump',int $pdo_mode = PDO::FETCH_OBJ): Connect
     {
         return connect($driver,'',$user,$password,$host,$pdo_mode,$dump_path);
     }
@@ -1465,21 +1559,25 @@ if (not_exist('root'))
 if (not_exist('collation'))
 {
     /**
-     * get all collation
      *
-     * @param Connect $connexion
+     * Return all collations available
+     *
+     * @method collation
+     *
+     * @param  Connect   $connexion The connection to the base
      *
      * @return array
      *
      * @throws Exception
+     *
      */
     function collation(Connect $connexion): array
     {
         $collation = collection();
 
-        $driver = $connexion->get_driver();
+        $driver = $connexion->driver();
         $request = '';
-        equal($driver,Connect::MYSQL) ? assign(true,$request,"SHOW COLLATION") : assign(true,$request,"SELECT collname FROM pg_collation");
+        $connexion->mysql() ? assign(true,$request,"SHOW COLLATION") : assign(true,$request,"SELECT collname FROM pg_collation");
 
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));
@@ -1490,20 +1588,24 @@ if (not_exist('collation'))
 if (not_exist('charset'))
 {
     /**
-     * get all charset
      *
-     * @param Connect $connexion
+     * Return all charsets available
+     *
+     * @method charset
+     *
+     * @param  Connect  $connexion The connection to the base
      *
      * @return array
      *
      * @throws Exception
+     *
      */
     function charset(Connect $connexion): array
     {
 
         $collation = collection();
 
-        $driver = $connexion->get_driver();
+        $driver = $connexion->driver();
         $request = '';
         equal($driver,Connect::MYSQL) ? assign(true,$request,"SHOW CHARACTER SET") : assign(true,$request,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
 
@@ -1552,12 +1654,18 @@ if (not_exist('current_branch'))
 if (not_exist('base'))
 {
     /**
-     * manage database
      *
-     * @param Connect $connect
+     * Get an instance of base
      *
-     * @param Table $table
+     * @method base
+     *
+     * @param  Connect $connect
+     * @param  Table   $table
+     *
      * @return Base
+     *
+     * @throws Exception
+     *
      */
     function base(Connect $connect,Table $table): Base
     {
@@ -1568,11 +1676,17 @@ if (not_exist('base'))
 if (not_exist('user'))
 {
     /**
-     * manage users
      *
-     * @param Connect $connect
+     * Return an instance of user
+     *
+     * @method user
+     *
+     * @param  Connect $connect
      *
      * @return Users
+     *
+     * @throws Exception
+     *
      */
     function user(Connect $connect) : Users
     {
@@ -1583,14 +1697,17 @@ if (not_exist('user'))
 if (not_exist('pass'))
 {
     /**
-     * update user password
      *
-     * @param Connect $connect
-     * @param string $username
-     * @param string $new_password
+     * Update user password
+     *
+     * @method pass
+     *
+     * @param  Connect $connect
+     * @param  string  $username
+     * @param  string  $new_password
+     *
      * @return bool
      *
-     * @throws Exception
      */
     function pass(Connect $connect,string $username ,string $new_password) : bool
     {
@@ -1598,34 +1715,41 @@ if (not_exist('pass'))
     }
 }
 
-
 if (not_exist('os'))
 {
     /**
-     * see os
      *
-     * @param bool $name
+     * Return an instance of Os or os name
+     *
+     * @method os
+     *
+     * @param  bool $get_name To get name
      *
      * @return Os|string
+     *
      */
-    function os(bool $name = false)
+    function os(bool $get_name = false)
     {
-        return $name ?  (new Os())->getName() : new Os();
+        return $get_name ?  (new Os())->getName() : new Os();
     }
 }
 
 if (not_exist('device'))
 {
     /**
-     * see devices
      *
-     * @param bool $name
+     * Return an instance of device or device name
      *
-     * @return string|Device
+     * @method device
+     *
+     * @param  bool   $get_name To get name
+     *
+     * @return Device|string
+     *
      */
-    function device(bool $name = false)
+    function device(bool $get_name = false)
     {
-        return $name ?  (new Device())->getName() : new Device();
+        return $get_name ?  (new Device())->getName() : new Device();
     }
 }
 
@@ -1633,39 +1757,51 @@ if (not_exist('device'))
 if (not_exist('browser'))
 {
     /**
-     * see browser
      *
-     * @param bool $name
+     * Return an instance of browser or browser name
+     *
+     * @method browser
+     *
+     * @param  bool   $get_name To get browser name
      *
      * @return Browser|string
+     *
      */
-    function browser(bool $name = false)
+    function browser(bool $get_name = false)
     {
-        return $name ?  (new Browser())->getName(): new Browser();
+        return $get_name ?  (new Browser())->getName(): new Browser();
     }
 }
 
 if (not_exist('is_browser'))
 {
     /**
-     * check if is name is browser
      *
-     * @param string $name
+     * Check if browser is equal to expected
+     *
+     * @method is_browser
+     *
+     * @param  string     $expected The expected browser
      *
      * @return bool
+     *
      */
-    function is_browser(string $name): bool
+    function is_browser(string $expected): bool
     {
-        return (new Browser())->isBrowser($name);
+        return (new Browser())->isBrowser($expected);
     }
 }
 
 if (not_exist('is_mobile'))
 {
     /**
-     * check if device is mobile
+     *
+     * Check if device is mobile
+     *
+     * @method is_mobile
      *
      * @return bool
+     *
      */
     function is_mobile(): bool
     {
@@ -1673,28 +1809,15 @@ if (not_exist('is_mobile'))
     }
 }
 
-if (not_exist('create'))
-{
-    /**
-     * create a new database or user or table
-     *
-     * @param Imperium $imperium
-     *
-     * @return bool
-     */
-    function create(Imperium $imperium): bool
-    {
-
-    }
-}
 
 if (not_exist('superior'))
 {
-
     /**
      *
-     * check if the var is superior
+     * Check if the var is superior
      * of the expected value
+     *
+     * @method superior
      *
      * @param $parameter
      * @param int $expected
@@ -1704,6 +1827,7 @@ if (not_exist('superior'))
      * @return bool
      *
      * @throws Exception
+     *
      */
     function superior($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
@@ -1721,8 +1845,10 @@ if (not_exist('superior_or_equal'))
 
     /**
      *
-     * check if the var is superior or equal
+     * Check if the var is superior or equal
      * of the expected value
+     *
+     * @method superior_or_equal
      *
      * @param $parameter
      * @param int $expected
@@ -1732,6 +1858,7 @@ if (not_exist('superior_or_equal'))
      * @return bool
      *
      * @throws Exception
+     *
      */
     function superior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
@@ -1748,8 +1875,10 @@ if (not_exist('inferior'))
 
     /**
      *
-     * check if the var is inferior
+     * Check if the var is inferior
      * of the expected value
+     *
+     * @method inferior
      *
      * @param $parameter
      * @param int $expected
@@ -1759,6 +1888,7 @@ if (not_exist('inferior'))
      * @return bool
      *
      * @throws Exception
+     *
      */
     function inferior($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
@@ -1776,8 +1906,10 @@ if (not_exist('inferior_or_equal'))
 
     /**
      *
-     * check if the var is inferior or equal
+     * Check if the var is inferior or equal
      * of the expected value
+     *
+     * @method inferior_or_equal
      *
      * @param $parameter
      * @param int $expected
@@ -1787,6 +1919,7 @@ if (not_exist('inferior_or_equal'))
      * @return bool
      *
      * @throws Exception
+     *
      */
     function inferior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
@@ -1802,15 +1935,16 @@ if (not_exist('inferior_or_equal'))
 if(not_exist('show'))
 {
     /**
-     * show databases, users, tables
+     * Show all databases or all users or all tables
      *
-     * @param Imperium $imperium
-     * @param int $mode
+     * @method show
      *
-     * @param array $hidden
+     * @param  Imperium $imperium  The instance
+     * @param  int      $mode      The imperium mode
+     * @param  array    $hidden    The hidden values
+     *
      * @return array
      *
-     * @throws Exception
      */
     function show(Imperium $imperium,int $mode,array $hidden = []) : array
     {
@@ -1849,12 +1983,16 @@ if(not_exist('whoops'))
 if(not_exist('array_prev'))
 {
     /**
-     * get the prev value of array by the current key
      *
-     * @param array $array
-     * @param mixed $key
+     * Return the before value of a key
+     *
+     * @method array_prev
+     *
+     * @param  array      $array The array
+     * @param  mixed      $key   The after key
      *
      * @return mixed
+     *
      */
     function array_prev(array $array, $key)
     {
@@ -1865,13 +2003,16 @@ if(not_exist('array_prev'))
 if(not_exist('req'))
 {
     /**
-     * execute a query return an array with results
      *
-     * @param Connect $instance
-     * @param string $request
+     * Execute a request and return the result
+     *
+     * @method req
+     *
+     * @param  Connect $instance The connection
+     * @param  string  $request  The sql query
+     *
      * @return array
      *
-     * @throws Exception
      */
     function req(Connect $instance,string $request): array
     {
@@ -1882,14 +2023,16 @@ if(not_exist('req'))
 if(not_exist('execute'))
 {
     /**
-     * execute a query return a boolean
      *
-     * @param Connect $instance
-     * @param string $request
+     * Execute a query and return the status
+     *
+     * @method execute
+     *
+     * @param  Connect $instance The connection
+     * @param  string  $request  The request
      *
      * @return bool
      *
-     * @throws Exception
      */
     function execute(Connect $instance,string $request): bool
     {
@@ -1919,12 +2062,16 @@ if (not_exist('db'))
 if (not_exist('drop'))
 {
     /**
-     * @param $instance
-     * @param string ...$to
+     *
+     * Drop all to using by using the instance
+     *
+     * @method drop
+     *
+     * @param  mixed $instance  Table, User, or Base
+     * @param  string $to       The data to remove
      *
      * @return bool
      *
-     * @throws Exception
      */
     function drop($instance,string ...$to): bool
     {
@@ -1943,15 +2090,17 @@ if (not_exist('model'))
 {
 
     /**
-     * return an instance of the mode class
      *
-     * @param Connect $connect
-     * @param Table $table
-     * @param string $current_table_name
+     * Return an instance of model
+     *
+     * @method model
+     *
+     * @param  Connect $connect            The connection
+     * @param  Table   $table              The table instance
+     * @param  string  $current_table_name The current table
      *
      * @return Model
      *
-     * @throws Exception
      */
     function model(Connect $connect,Table $table, string $current_table_name): Model
     {
@@ -1960,14 +2109,16 @@ if (not_exist('model'))
 }
 if (not_exist('table'))
 {
-
     /**
      *
-     * @param Connect $connect
+     * Return an instance of table
+     *
+     * @method table
+     *
+     * @param  Connect $connect The connection
      *
      * @return Table
      *
-     * @throws Exception
      */
     function table(Connect $connect): Table
     {
@@ -1978,11 +2129,15 @@ if (not_exist('table'))
 if (not_exist('faker'))
 {
     /**
-     * get an instance of faker
      *
-     * @param string $locale
+     * Return an instance of faker
      *
-     * @return \Faker\Generator
+     * @method faker
+     *
+     * @param  string $locale The local to use
+     *
+     * @return FakerGenerator
+     *
      */
     function faker(string $locale = 'en_US' ): Faker\Generator
     {
@@ -1994,10 +2149,13 @@ if (not_exist('faker'))
 if (not_exist('remove_users'))
 {
     /**
-     * remove users
      *
-     * @param Users $user
-     * @param string[] $users
+     * Remove users
+     *
+     * @method remove_users
+     *
+     * @param  Users        $user  The instance of user
+     * @param  string[]     $users The users to remove
      *
      * @return bool
      *
@@ -2009,8 +2167,6 @@ if (not_exist('remove_users'))
         foreach ($users as $x)
             is_not_true($user->drop($x),true,"Failed to remove the user : $x");
 
-
-
         return true;
     }
 }
@@ -2021,8 +2177,10 @@ if (not_exist('remove_tables'))
      *
      * Remove tables
      *
-     * @param Table $table
-     * @param string[] $tables
+     * @method remove_tables
+     *
+     * @param  Table         $table  The instance of table
+     * @param  string[]      $tables The tables to remove
      *
      * @return bool
      *
@@ -2032,7 +2190,7 @@ if (not_exist('remove_tables'))
     function remove_tables(Table $table,string ...$tables): bool
     {
         foreach ($tables as $x)
-            is_not_true($table->drop($x),true,"Failed to remove the table : $x");
+            is_false($table->drop($x),true,"Failed to remove the table : $x");
 
 
         return true;
@@ -2043,10 +2201,12 @@ if (not_exist('remove_bases'))
 {
     /**
      *
-     * Remove databases
+     * Remove the bases
      *
-     * @param Base $base
-     * @param string[] $databases
+     * @method remove_bases
+     *
+     * @param  Base         $base      The instance of base
+     * @param  string       $databases The bases to remove
      *
      * @return bool
      *
@@ -2065,34 +2225,42 @@ if (not_exist('remove_bases'))
 if (not_exist('form'))
 {
     /**
-     * start a form
      *
-     * @param string $action
-     * @param string $id
-     * @param string $method
-     * @param string $class
-     * @param bool $enctype
-     * @param string $charset
+     * Return and instance of form
      *
-     * @return Form
+     * @method form
+     *
+     * @param  string $action  [description]
+     * @param  string $id      [description]
+     * @param  string $class   [description]
+     * @param  string $confirm [description]
+     * @param  [type] $method  [description]
+     * @param  bool   $enctype [description]
+     * @param  string $charset [description]
+     *
+     * @return [type] [description]
      */
     function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf8')
     {
-        return Form::create()->start($action,$id,$class,$confirm,$enctype,strtolower($method),$charset);
+        return def($confirm) ? (new Form())->validate()->start($action,$id,$confirm,$class,$enctype,strtolower($method),$charset) : (new Form())->start($action,$id,$confirm,$class,$enctype,strtolower($method),$charset);
     }
 }
 
 if(not_exist('slug'))
 {
     /**
-     * slug
      *
-     * @param  string $data
-     * @param  string $delimiter
+     * Generate a slug
+     *
+     * @method slug
+     *
+     * @param  string $data      The string to sluglify
+     * @param  string $delimiter The delimiter
      *
      * @return string
+     *
      */
-    function slug(string $data,string $delimiter): string
+    function slug(string $data,string $delimiter = " "): string
     {
         return collection(explode($delimiter,$data))->each('strtolower')->join('-');
     }
@@ -2101,9 +2269,13 @@ if(not_exist('slug'))
 if (not_exist('d'))
 {
     /**
-     * debug values
      *
-     * @param mixed ...$values
+     * Debug values and die
+     *
+     * @method d
+     *
+     * @param  mixed $values The values to debug
+     *
      */
     function d(...$values)
     {
@@ -2120,20 +2292,23 @@ if (not_exist('not_in'))
 {
     /**
      *
-     * Check if the value is not inside an array
+     * Check if value not exist in array
      *
-     * @param array $array
-     * @param $value
-     * @param bool $run_exception
-     * @param string $message
+     * @method not_in
+     *
+     * @param  array  $array         The array
+     * @param  mixed  $value         The value
+     * @param  bool   $run_exception To run exception
+     * @param  string $message       The exception message
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function not_in(array $array, $value, bool $run_exception = false, string $message = '')
+    function not_in(array $array, $value, bool $run_exception = false, string $message = ''): bool
     {
-        $x =  !in_array($value,$array,true);
+        $x =  ! in_array($value,$array,true);
 
         is_true($x,$run_exception,$message);
 
@@ -2147,25 +2322,25 @@ if (not_exist('dumper'))
 
     /**
      *
-     * dump a table or a database
+     * Dump the database content or table content
      *
-     * @param Connect $connect
-     * @param bool $base
-     * @param string $table
+     * @method dumper
+     *
+     * @param  Connect $connect The connection
+     * @param  bool    $base    To dump a base
+     * @param  string  $table   The table name
      *
      * @return bool
-     *
-     * @throws Exception
      *
      */
     function dumper(Connect $connect,bool $base = true,string $table =''): bool
     {
 
-        $database = $connect->get_database();
-        $driver = $connect->get_driver();
-        $password = $connect->get_password();
-        $username = $connect->get_username();
-        $dump_path = $connect->get_dump_path();
+        $database = $connect->base();
+        $driver = $connect->driver();
+        $password = $connect->password();
+        $username = $connect->user();
+        $dump_path = $connect->dump_path();
 
         Dir::clear($dump_path);
 
@@ -2206,14 +2381,18 @@ if (not_exist('dumper'))
 if (not_exist('sql'))
 {
     /**
-     * sql table builder
      *
-     * @param string $table
+     * Return an instance of sql query builder
      *
-     * @param Query $query
+     * @method sql
+     *
+     * @param  Query  $query The query instance
+     * @param  string $table The table name
+     *
      * @return Query
+     *
      */
-    function sql(string $table,Query $query): Query
+    function sql(Query $query, string $table): Query
     {
         return $query->from($table);
     }
@@ -2222,11 +2401,14 @@ if (not_exist('sql'))
 if (not_exist('lines'))
 {
     /**
-     * get all lines in filename
+     * Get all lines in a file
      *
-     * @param string $filename
+     * @method lines
+     *
+     * @param  string $filename The filename path
      *
      * @return array
+     *
      */
      function lines(string $filename): array
      {
@@ -2236,12 +2418,15 @@ if (not_exist('lines'))
 if (not_exist('file_keys'))
 {
     /**
-     * get all keys in filename
+     * Return all key in a file
      *
-     * @param string $filename
-     * @param string $delimiter
+     * @method file_keys
+     *
+     * @param  string    $filename   The filename path
+     * @param  string    $delimiter The delimiter
      *
      * @return array
+     *
      */
     function file_keys(string $filename,string $delimiter): array
     {
@@ -2253,12 +2438,16 @@ if (not_exist('file_keys'))
 if (not_exist('file_values'))
 {
     /**
-     * get all values in filename
      *
-     * @param string $filename
-     * @param string $delimiter
+     * Return all values in a file
+     *
+     * @method file_values
+     *
+     * @param  string      $filename  The file path
+     * @param  string      $delimiter The delimiter
      *
      * @return array
+     *
      */
     function file_values(string $filename,string $delimiter): array
     {
@@ -2293,15 +2482,15 @@ if (not_exist('add_user'))
 {
     /**
      *
-     * Add a new user
+     * Create a new user
      *
-     * @param Users $users
-     * @param string $user
-     * @param string $password
+     * @method add_user
+     *
+     * @param  Users    $users    The users instance
+     * @param  string   $user     The username
+     * @param  string   $password The user password
      *
      * @return bool
-     *
-     * @throws Exception
      *
      */
     function add_user(Users $users,string $user,string $password): bool
@@ -2314,19 +2503,19 @@ if (not_exist('add_base'))
 {
     /**
      *
-     * Add new bases
+     * Create a new base
      *
-     * @param Base $base
-     * @param string $collation
-     * @param string $charset
-     * @param string[] $bases
+     * @method add_bases
+     *
+     * @param  Base     $base      The base instance
+     * @param  string   $collation The base collation
+     * @param  string   $charset   The base charset
+     * @param  string[] $bases     The bases names
      *
      * @return bool
      *
-     * @throws Exception
-     *
      */
-    function add_base(Base $base,string $collation,string $charset,string ...$bases): bool
+    function add_bases(Base $base,string $collation,string $charset,string ...$bases): bool
     {
         foreach ($bases as $x)
              is_not_true($base->set_collation($collation)->set_charset($charset)->create($x),true,"Failed to create database");
@@ -2367,19 +2556,58 @@ if (not_exist('jasnyJs'))
 
 if (not_exist('imperium'))
 {
+   /**
+    * [imperium description]
+    *
+    * @method imperium
+    *
+    * @param  Connect  $connect       [description]
+    * @param  string   $current_table [description]
+    * @param  array    $hidden_tables [description]
+    * @param  array    $hidden_bases  [description]
+    *
+    * @return Imperium [description]
+    */
+    function imperium(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases): Imperium
+    {
+        return new Imperium($connect,$current_table,$hidden_tables,$hidden_bases );
+    }
+}
+
+if (not_exist('retry'))
+{
     /**
-     * all possibilities of management
+     * Retry an operation a given number of times.
      *
-     * @param Connect $connect
-     * @param string $current_table
-     *
-     * @return Imperium
+     * @param  int  $times
+     * @param  callable  $callback
+     * @param  int  $sleep
+     * @return mixed
      *
      * @throws Exception
+     *
      */
-    function imperium(Connect $connect,string $current_table): Imperium
+    function retry($times, callable $callback, $sleep = 0)
     {
-        return new  Imperium($connect,$current_table );
+        $times--;
+        beginning:
+
+        try {
+            return $callback();
+        } catch (Exception $e)
+        {
+            if (! $times)
+            {
+
+                throw $e;
+            }
+            $times--;
+            if ($sleep)
+            {
+                usleep($sleep * 1000);
+            }
+            goto beginning;
+        }
     }
 }
 if (not_exist('icon'))
@@ -2422,13 +2650,17 @@ if (not_exist('canvas'))
 if(not_exist('fa'))
 {
     /**
-     * generate a fa icon
      *
-     * @param string $prefix
-     * @param string $icon
-     * @param string $options
+     * Generate a fa icon
+     *
+     * @method fa
+     *
+     * @param  string $prefix    The fa prefix
+     * @param  string $icon     The fa icon name
+     * @param  string $options  The fa options
      *
      * @return string
+     *
      */
     function fa(string $prefix,string $icon, string $options = ''): string
     {
@@ -2439,11 +2671,15 @@ if(not_exist('fa'))
 if (not_exist('cssLoader'))
 {
     /**
-     * load a css files
      *
-     * @param string[] $urls
+     * Create all html link tag with urls
+     *
+     * @method css_loader
+     *
+     * @param  string     $urls The css file path
      *
      * @return string
+     *
      */
     function css_loader(string ...$urls): string
     {
@@ -2458,11 +2694,12 @@ if (not_exist('cssLoader'))
 if (not_exist('append'))
 {
     /**
+     * Append content to a variable
      *
-     * Append to variable contents
+     * @method append
      *
-     * @param $variable
-     * @param mixed ...$contents
+     * @param  mixed   $variable The variable
+     * @param  mixed[] $contents The contents
      *
      */
     function append(&$variable,...$contents)
@@ -2477,11 +2714,14 @@ if (not_exist('append'))
 if (not_exist('js_loader'))
 {
     /**
-     * load a js files
+     * Create all js link tag with urls
      *
-     * @param string[] $urls
+     * @method js_loader
+     *
+     * @param  string    $urls The js path
      *
      * @return string
+     *
      */
     function js_loader(string ...$urls): string
     {

@@ -627,7 +627,7 @@ namespace Imperium {
          * @param Connect $connect
          * @param string $current_table
          */
-        public function __construct(Connect $connect,string $current_table);
+        public function __construct(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases);
 
         // GETTER
 

@@ -41,48 +41,48 @@ class ModelTest extends DatabaseTest
 
     public function test_show()
     {
-        $record  = $this->mysql_model->show('imperium','?table=','/',1,5,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
-        
-        $this->assertContains('?table=', $record);    
-        $this->assertContains('remove', $record);    
-        $this->assertContains('/', $record);    
-        $this->assertContains('sure', $record);    
-        $this->assertContains('next', $record);    
-        $this->assertContains('previous', $record);    
-        $this->assertContains('remove', $record);    
-        $this->assertContains('class="btn btn-danger"', $record);    
-        $this->assertContains('class="btn btn-primary"', $record);    
-        $this->assertContains('fa fa-trash', $record);    
-        $this->assertContains('fa fa-edit', $record);    
-        
-        $record  = $this->pgsql_model->show('imperium','?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
-        
-        $this->assertContains('?table=', $record);    
-        $this->assertContains('remove', $record);    
-        $this->assertContains('/', $record);    
-        $this->assertContains('sure', $record);    
-        $this->assertContains('next', $record);    
-        $this->assertContains('previous', $record);    
-        $this->assertContains('remove', $record);    
-        $this->assertContains('class="btn btn-danger"', $record);    
-        $this->assertContains('class="btn btn-primary"', $record);    
-        $this->assertContains('fa fa-trash', $record);    
-        $this->assertContains('fa fa-edit', $record);    
- 
-        $record  = $this->sqlite_model->show('imperium','?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
- 
-        $this->assertContains('?table=', $record);    
-        $this->assertContains('remove', $record);    
-        $this->assertContains('/', $record);    
-        $this->assertContains('sure', $record);    
-        $this->assertContains('next', $record);    
-        $this->assertContains('previous', $record);    
-        $this->assertContains('remove', $record);    
-        $this->assertContains('class="btn btn-danger"', $record);    
-        $this->assertContains('class="btn btn-primary"', $record);    
- 
+        $record  = $this->mysql_model->show('imperium',[],'?table=','/',1,5,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
+
+        $this->assertContains('?table=', $record);
+        $this->assertContains('remove', $record);
+        $this->assertContains('/', $record);
+        $this->assertContains('sure', $record);
+        $this->assertContains('next', $record);
+        $this->assertContains('previous', $record);
+        $this->assertContains('remove', $record);
+        $this->assertContains('class="btn btn-danger"', $record);
+        $this->assertContains('class="btn btn-primary"', $record);
+        $this->assertContains('fa fa-trash', $record);
+        $this->assertContains('fa fa-edit', $record);
+
+        $record  = $this->pgsql_model->show('imperium',[],'?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
+
+        $this->assertContains('?table=', $record);
+        $this->assertContains('remove', $record);
+        $this->assertContains('/', $record);
+        $this->assertContains('sure', $record);
+        $this->assertContains('next', $record);
+        $this->assertContains('previous', $record);
+        $this->assertContains('remove', $record);
+        $this->assertContains('class="btn btn-danger"', $record);
+        $this->assertContains('class="btn btn-primary"', $record);
+        $this->assertContains('fa fa-trash', $record);
+        $this->assertContains('fa fa-edit', $record);
+
+        $record  = $this->sqlite_model->show('imperium',[],'?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
+
+        $this->assertContains('?table=', $record);
+        $this->assertContains('remove', $record);
+        $this->assertContains('/', $record);
+        $this->assertContains('sure', $record);
+        $this->assertContains('next', $record);
+        $this->assertContains('previous', $record);
+        $this->assertContains('remove', $record);
+        $this->assertContains('class="btn btn-danger"', $record);
+        $this->assertContains('class="btn btn-primary"', $record);
+
     }
-    
+
 
     /**
      * @throws Exception
@@ -93,26 +93,31 @@ class ModelTest extends DatabaseTest
         $success = 'records was found';
 
         $sql ='';
+
         $this->assertTrue($this->mysql()->model()->truncate());
-        $result = query_result($this->mysql()->model(),Imperium::SELECT,$this->mysql()->all(),$this->mysql()->show_columns(),$success,$empty,$empty,$sql);
+
+        $result = query_result($this->mysql()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
         $this->assertCount(0,$this->mysql()->model()->all());
         $this->assertContains($empty,$result);
         $this->assertTrue( $this->mysql()->model()->is_empty());
 
         $this->assertTrue($this->postgresql()->model()->truncate());
-        $result = query_result($this->postgresql()->model(),Imperium::SELECT,$this->postgresql()->all(),$this->postgresql()->show_columns(),$success,$empty,$empty,$sql);
+
+        $result = query_result($this->postgresql()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
+
         $this->assertCount(0,$this->postgresql()->model()->all());
         $this->assertContains($empty,$result);
         $this->assertTrue( $this->postgresql()->model()->is_empty());
 
         $this->assertTrue($this->sqlite()->model()->truncate());
-        $result = query_result($this->sqlite()->model(),Imperium::SELECT,$this->sqlite()->all(),$this->sqlite()->show_columns(),$success,$empty,$empty,$sql);
+
+        $result = query_result($this->sqlite()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
         $this->assertCount(0,$this->sqlite()->model()->all());
         $this->assertContains($empty,$result);
         $this->assertTrue( $this->sqlite()->model()->is_empty());
     }
- 
+
 
     /**
      * @throws Exception
@@ -150,7 +155,7 @@ class ModelTest extends DatabaseTest
         $this->assertEquals($number,$this->sqlite_model->count());
     }
 
-    
+
 
     /**
      * @throws \Exception
@@ -348,9 +353,9 @@ class ModelTest extends DatabaseTest
     public function test_found()
 
     {
-        $this->assertEquals(6,$this->mysql_model->found());
-        $this->assertEquals(6,$this->pgsql_model->found());
-        $this->assertEquals(8,$this->sqlite_model->found());
+        $this->assertEquals(7,$this->mysql_model->found());
+        $this->assertEquals(7,$this->pgsql_model->found());
+        $this->assertEquals(9,$this->sqlite_model->found());
     }
     /**
      * @throws Exception
@@ -458,35 +463,35 @@ class ModelTest extends DatabaseTest
     public function test_get_instance()
     {
         $expected = PDO::class;
-        $x = new Connect(Connect::MYSQL,'',self::MYSQL_USER,self::MYSQL_PASS);
+        $x = new Connect(Connect::MYSQL,'',self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
         $this->assertInstanceOf($expected,$x->instance());
 
-        $x = new Connect(Connect::POSTGRESQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
-        $this->assertInstanceOf($expected,$x->instance());
-
-
-        $x = new Connect(Connect::SQLITE,'','','');
-        $this->assertInstanceOf($expected,$x->instance());
-
-        $x = new Connect(Connect::MYSQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS);
-        $this->assertInstanceOf($expected,$x->instance());
-
-        $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $x = new Connect(Connect::POSTGRESQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
         $this->assertInstanceOf($expected,$x->instance());
 
 
-        $x = new Connect(Connect::SQLITE,$this->base,'','');
+        $x = new Connect(Connect::SQLITE,'','','',Connect::LOCALHOST,5,'dump');
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::MYSQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
+        $this->assertInstanceOf($expected,$x->instance());
+
+
+        $x = new Connect(Connect::SQLITE,$this->base,'','',Connect::LOCALHOST,5,'dump');
         $this->assertInstanceOf ($expected,$x->instance());
 
         $this->expectException(Exception::class);
 
-        $x = new Connect(Connect::POSTGRESQL,'',self::MYSQL_USER,self::MYSQL_PASS);
+        $x = new Connect(Connect::POSTGRESQL,'',self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
         $x->instance();
-        $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
         $x->instance();
-        $x =  new Connect(Connect::POSTGRESQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS);
+        $x =  new Connect(Connect::POSTGRESQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
         $x->instance();
-        $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS);
+        $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
         $x->instance();
     }
 }

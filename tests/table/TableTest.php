@@ -2,7 +2,7 @@
 
 
 namespace tests\table;
- 
+
 use Imperium\Imperium;
 use Imperium\Tables\Table;
 use Testing\DatabaseTest;
@@ -14,17 +14,17 @@ class TableTest extends DatabaseTest
      * @var Table
      */
     private $mysql_table;
-    
+
     /**
      * @var Table
      */
     private $pgsql_table;
-    
+
     /**
      * @var Table
      */
     private $sqlite_table;
-    
+
     public function setUp()
     {
         $this->table = 'tbl';
@@ -74,7 +74,7 @@ class TableTest extends DatabaseTest
      */
     public function test_select()
     {
- 
+
         $this->assertNotEmpty($this->mysql_table->select_by_id(6));
         $this->assertNotEmpty($this->pgsql_table->select_by_id(6));
         $this->assertNotEmpty($this->sqlite_table->select_by_id(6));
@@ -230,7 +230,7 @@ class TableTest extends DatabaseTest
      */
     public function test_has()
     {
-         
+
         $this->assertTrue($this->mysql_table->has());
         $this->assertTrue($this->pgsql_table->has());
         $this->assertTrue($this->sqlite_table->has());
@@ -287,36 +287,36 @@ class TableTest extends DatabaseTest
 
         $instance = $this->mysql_table;
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true));
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false));
+        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false));
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
 
         $instance = $this->pgsql_table;
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true));
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
 
-        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false));
+        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
-        
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false));
+
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
 
         $instance = $this->sqlite_table;
-        $this->assertTrue($instance->append_column($column,Imperium::TEXT,255,false));
+        $this->assertTrue($instance->append_column($column,Imperium::TEXT,255,false,true));
 
         $this->assertTrue($instance->has_column($column));
 
@@ -356,9 +356,9 @@ class TableTest extends DatabaseTest
     public function test_count()
     {
 
-        $this->assertEquals(299,$this->mysql_table->count());
-        $this->assertEquals(299,$this->pgsql_table->count());
-        $this->assertEquals(299,$this->sqlite_table->count());
+        $this->assertEquals(349,$this->mysql_table->count());
+        $this->assertEquals(349,$this->pgsql_table->count());
+        $this->assertEquals(349,$this->sqlite_table->count());
 
     }
 
@@ -368,11 +368,11 @@ class TableTest extends DatabaseTest
      */
     public function test_found()
     {
-        $table = 7;
+        $table = 8;
 
         $this->assertEquals($table,$this->mysql_table->found());
         $this->assertEquals($table,$this->pgsql_table->found());
-        $this->assertEquals(9,$this->sqlite_table->found());
+        $this->assertEquals(10,$this->sqlite_table->found());
 
     }
 

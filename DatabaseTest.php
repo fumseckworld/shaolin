@@ -7,7 +7,6 @@ namespace Testing;
 require_once 'vendor/autoload.php';
 require_once 'config.php';
 
-use Imperium;
 
 use Imperium\Imperium;
 

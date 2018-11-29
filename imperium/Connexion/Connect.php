@@ -172,7 +172,7 @@ namespace Imperium\Connexion {
          *
          * @return string   The defined host
          */
-        public function get_host(): string
+        public function host(): string
         {
             return $this->host;
         }
@@ -186,7 +186,7 @@ namespace Imperium\Connexion {
          * @return string The current driver
          *
          */
-        public function get_driver(): string
+        public function driver(): string
         {
             return $this->driver;
         }
@@ -200,7 +200,7 @@ namespace Imperium\Connexion {
         * @return string  the current base
         *
         */
-        public function get_database(): string
+        public function base(): string
         {
             return $this->database;
         }
@@ -214,7 +214,7 @@ namespace Imperium\Connexion {
          * @return string The current username
          *
          **/
-        public function get_username(): string
+        public function user(): string
         {
             return $this->username;
         }
@@ -228,7 +228,7 @@ namespace Imperium\Connexion {
          * @return string The current password
          *
          */
-        public function get_password(): string
+        public function password(): string
         {
             return $this->password;
         }
@@ -242,7 +242,7 @@ namespace Imperium\Connexion {
          * @return int The PDO fecth mode
          *
          */
-        public function get_fetch_mode(): int
+        public function fetch_mode(): int
         {
             return $this->mode;
         }
@@ -255,7 +255,7 @@ namespace Imperium\Connexion {
          *
          * @return string The dump path
          */
-        public function get_dump_path(): string
+        public function dump_path(): string
         {
             return $this->dump_path;
         }
@@ -270,7 +270,7 @@ namespace Imperium\Connexion {
          */
         public function mysql(): bool
         {
-            return equal($this->get_driver(),self::MYSQL);
+            return equal($this->driver(),self::MYSQL);
         }
 
         /**
@@ -284,7 +284,7 @@ namespace Imperium\Connexion {
          */
         public function postgresql(): bool
         {
-            return equal($this->get_driver(),self::POSTGRESQL);
+            return equal($this->driver(),self::POSTGRESQL);
         }
 
         /**
@@ -298,7 +298,7 @@ namespace Imperium\Connexion {
          */
         public function sqlite(): bool
         {
-            return equal($this->get_driver(),self::SQLITE);
+            return equal($this->driver(),self::SQLITE);
         }
 
        /**
@@ -320,6 +320,7 @@ namespace Imperium\Connexion {
                 throw new Exception($instance);
             else
                 return $instance;
+
         }
 
         /**
@@ -339,10 +340,9 @@ namespace Imperium\Connexion {
         {
             $query = $this->instance()->query($request);
 
-            if (is_bool($query))
-                throw new Exception("Invalid request : $request");
+            is_true(is_bool($query),true,$request);
 
-            $data = $query->fetchAll($this->get_fetch_mode());
+            $data = $query->fetchAll($this->fetch_mode());
 
             $query->closeCursor();
 
@@ -366,8 +366,7 @@ namespace Imperium\Connexion {
         {
             $response = $this->instance->prepare($request);
 
-            if (is_bool($response))
-                throw new Exception("Invalid request : $request");
+            is_true(is_bool($response),true,$request);
 
             $data = $response->execute();
 

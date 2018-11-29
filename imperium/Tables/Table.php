@@ -10,12 +10,17 @@ namespace Imperium\Tables {
 
     /**
      *
-     * Management of table
+     * Management of the tables
      *
-     * Class Table
+     * @author Willy Micieli <micieli@laposte.net>
      *
-     * @package Imperium\Databases\Eloquent\Tables
-     */
+     * @package imperium
+     *
+     * @version 4
+     *
+     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
+     *
+     **/
     class Table
     {
         /**
@@ -51,6 +56,7 @@ namespace Imperium\Tables {
          * @var array
          */
         private $hidden;
+
         /**
          * @var string
          */
@@ -67,7 +73,13 @@ namespace Imperium\Tables {
         private $charset;
 
 
-
+        /**
+         *
+         *  ALl date type
+         *
+         * @var array
+         *
+         */
         const TYPE_OF_DATE = [
             'date',
             'datetime',
@@ -82,6 +94,13 @@ namespace Imperium\Tables {
             'timestamp without time zone'
         ];
 
+        /**
+         *
+         * All number type
+         *
+         * @var array
+         *
+         */
         const TYPE_OF_INTEGER = [
             'int',
             'decimal',
@@ -106,6 +125,13 @@ namespace Imperium\Tables {
             'mediumint'
         ];
 
+        /**
+         *
+         * All text type
+         *
+         * @var array
+         *
+         */
         const TYPE_OF_TEXT = [
             'varchar',
             'char',
@@ -134,7 +160,7 @@ namespace Imperium\Tables {
          */
         public function type(string $column)
         {
-            return collection($this->get_columns())->search($column)->set_new_data($this->get_columns_types())->search_result();
+            return collection($this->get_columns())->search($column)->set_new_data($this->get_columns_types())->result();
         }
 
         /**
@@ -160,7 +186,7 @@ namespace Imperium\Tables {
         public function __construct(Connect $connect)
         {
              $this->connexion =  $connect;
-             $this->driver  =  $connect->get_driver();
+             $this->driver  =  $connect->driver();
              $this->added_columns = collection();
         }
 
@@ -209,7 +235,7 @@ namespace Imperium\Tables {
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} COLLATE {$this->collation};");
                 break;
                 case Connect::POSTGRESQL:
-                    return $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '{$this->connexion->get_database()}'");
+                    return $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '{$this->connexion->base()}'");
                 break;
                 default:
                     return false;
@@ -234,7 +260,7 @@ namespace Imperium\Tables {
                     return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHARACTER SET = {$this->charset};");
                 break;
                 case Connect::POSTGRESQL:
-                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '{$this->connexion->get_database()}'");
+                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '{$this->connexion->base()}'");
                 break;
                 default:
                     return false;
@@ -426,7 +452,7 @@ namespace Imperium\Tables {
                 append($command,' NOT NULL');
 
 
-            
+
 
 
             $data->add($this->connexion->execute($command));
@@ -552,7 +578,11 @@ namespace Imperium\Tables {
          */
         private function startCreateCommand() : string
         {
-            return $this->connexion->mysql() ? "CREATE TABLE IF NOT EXISTS `{$this->get_current_table()}` ( " : "CREATE TABLE IF NOT EXISTS {$this->get_current_table()} ( " ;
+            $x = $this->get_current_table();
+            $code = "CREATE TABLE IF NOT EXISTS $x ";
+            append($code,'(  ');
+
+            return $code;
         }
 
         /**
@@ -642,12 +672,22 @@ namespace Imperium\Tables {
 
             $x = collection();
 
+            $columns = $this->get_columns();
+
+            $types = collection();
+
+            foreach ($this->get_columns_types() as  $value)
+            {
+                $data = explode('(', trim($value,')'));
+                $types->push(strtolower(reset($data)));
+            }
+
+
             for($i=0;different($i,$records);$i++)
             {
-
-                foreach ($this->get_columns() as $column)
+                foreach ($columns as $k => $column)
                 {
-                    $type = strtolower($this->type($column));
+                    $type = $types->get($k);
 
                     if (equal($column,$primary))
                     {
@@ -685,15 +725,12 @@ namespace Imperium\Tables {
 
                 $x->clear();
             }
-
-
             $query = trim($query,',');
-
 
             return $this->connexion->execute($query);
 
-
         }
+
         /**
          * set hidden tables
          *
@@ -940,7 +977,7 @@ namespace Imperium\Tables {
 
         /**
          *
-         * @param string $column
+         * @param string[] $columns
          *
          * @return bool
          *
@@ -949,20 +986,26 @@ namespace Imperium\Tables {
          */
         public function remove_column(string ...$columns): bool
         {
+            $data = collection();
+            $key = $this->get_primary_key();
 
-            switch ($this->driver)
+            foreach($columns as $column)
             {
-                case Connect::MYSQL:
-                    return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP $column");
-                break;
-                case Connect::POSTGRESQL:
-                    return equal($column,$this->get_primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP COLUMN $column RESTRICT");
-                break;
-                default:
-                    return false;
-                break;
+                switch ($this->driver)
+                {
+                    case Connect::MYSQL:
+                        equal($column,$key) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP $column"));
+                    break;
+                    case Connect::POSTGRESQL:
+                        equal($column,$key) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP COLUMN $column RESTRICT"));
+                    break;
+                    default:
+                        return false;
+                    break;
 
+                }
             }
+            return $data->not_exist(false);
         }
 
 
@@ -1155,7 +1198,9 @@ namespace Imperium\Tables {
 
             $this->drop($table);
 
-            $query = "CREATE TABLE $table ( ";
+            $query = "CREATE TABLE $table ";
+
+            append($query,' ( ');
 
             foreach ($fields as $k => $field)
             {
@@ -1716,7 +1761,7 @@ namespace Imperium\Tables {
          */
         public function length(string $column)
         {
-            return collection($this->get_columns())->search($column)->set_new_data($this->get_columns_types())->search_result(true);
+            return collection($this->get_columns())->search($column)->set_new_data($this->get_columns_types())->result(true);
         }
 
         /**

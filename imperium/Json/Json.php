@@ -5,12 +5,14 @@ namespace Imperium\Json;
 
 use Imperium\Connexion\Connect;
 use Imperium\File\File;
+use Imperium\Collection\Collection;
+use Exception;
 
 class Json
 {
 
     /**
-     * @var array
+     * @var Collection
      */
     private $data;
 
@@ -49,7 +51,7 @@ class Json
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      *
      */
     public function create(array $data): bool
@@ -100,7 +102,7 @@ class Json
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      *
      */
     public function generate(): bool
@@ -111,7 +113,7 @@ class Json
     public function encode(int $option = 0,int $depth = 512)
     {
         not_in(self::VALID,$option,true,"The option used is not valid");
-        
+
         return json_encode($this->data->collection(),$option,$depth);
     }
 

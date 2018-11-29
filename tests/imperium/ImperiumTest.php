@@ -71,23 +71,10 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->change_base_charset('UTF8'));
     }
 
-
-    public function test_append()
-    {
-
-
-        //$this->postgresql()->remove_column('linux');
-       // $this->assertTrue($this->mysql()->append_column('linux','varchar',255,true,false));
-      // $this->assertTrue($this->postgresql()->append_column('linux','text',255,true,false));
-       //$this->assertTrue($this->sqlite()->append_column('linux','text',255,true,false));
-      // $this->assertTrue($this->mysql()->remove_column('linux'));
-      //  $this->assertTrue($this->postgresql()->remove_column('linux'));
-      //  $this->assertTrue($this->sqlite()->remove_column('linux'));
-    }
     public function test_get_host()
     {
-        $this->assertEquals('localhost',$this->mysql()->connect()->get_host());
-        $this->assertEquals('localhost',$this->postgresql()->connect()->get_host());
+        $this->assertEquals('localhost',$this->mysql()->connect()->host());
+        $this->assertEquals('localhost',$this->postgresql()->connect()->host());
     }
 
     /**
@@ -151,7 +138,7 @@ class ImperiumTest extends DatabaseTest
         $this->assertTrue($this->mysql()->add_database($name,'utf8','utf8_general_ci'));
         $this->assertTrue($this->mysql()->remove_database($name));
 
-        $this->assertTrue($this->postgresql()->add_database($name,'UTF-8','C'));
+        $this->assertTrue($this->postgresql()->add_database($name,'UTF8','C'));
         $this->assertTrue($this->postgresql()->remove_database($name));
 
         $this->assertTrue($this->mysql()->add_database($name));
@@ -249,10 +236,9 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_seed()
     {
-
-        $this->assertTrue($this->mysql()->seed_database(50,['phinxlog']));
-        $this->assertTrue($this->postgresql()->seed_database(50,['phinxlog']));
-        $this->assertTrue($this->sqlite()->seed_database(50,['phinxlog','sqlite_sequence']));
+        $this->assertTrue($this->mysql()->seed_database());
+        $this->assertTrue($this->postgresql()->seed_database());
+        $this->assertTrue($this->sqlite()->seed_database());
 
     }
 

@@ -1,807 +1,900 @@
 <?php
 
-namespace Imperium\Collection;
+namespace Imperium\Collection {
 
 
-use ArrayAccess;
-use Exception;
-use Iterator;
+    use ArrayAccess;
+    use Exception;
+    use Iterator;
 
-/**
- * Management of array
- *
- * Class Collection
- *
- * @package Imperium\Collection
- */
-class Collection implements ArrayAccess, Iterator
-{
-
-    /**
-     *
-     * The array to manage
-     *
-     * @var array
-     *
-     */
-    private $data = array();
-
-    /**
-     *
-     * the current position
-     *
-     * @var int
-     *
-     */
-    private $position;
-
-    /**
-     *
-     * the value before a key
-     *
-     * @var mixed
-     *
-     */
-    private $beforeValue;
-
-    /**
-     * search result
-     *
-     * @var mixed
-     */
-    private $search;
-
-
-    /**
-     *
-     * Collection constructor.
-     *
-     * Save or create an array to manage
-     *
-     * @param array $data
-     */
-    public function __construct(array $data = [])
+   /**
+    *
+    * Array management
+    *
+    * @author Willy Micieli <micieli@laposte.net>
+    *
+    * @package imperium
+    *
+    * @version 4
+    *
+    * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
+    *
+    **/
+    class Collection implements ArrayAccess, Iterator
     {
-        $this->data = $data;
 
-        $this->position = 0;
-    }
+        /**
+        *
+        * Contains of the array
+        *
+        * @var array $data
+        *
+        */
+        private $data = array();
 
-    public function convert_to_json(string $filename,string $key = ''): bool
-    {
-        return json($filename)->add($this->data,$key)->generate();
-    }
-    /**
-     *
-     * Define new data
-     *
-     * @param array $data
-     *
-     * @return Collection
-     *
-     */
-    public function set_new_data(array $data): Collection
-    {
-        $this->data = $data;
+        /**
+        *
+        * The current position in the array
+        *
+        * @var int
+        *
+        */
+        private $position;
 
-        return $this;
-    }
+        /**
+        *
+        * The value before a key
+        *
+        * @var mixed
+        *
+        */
+        private $beforeValue;
 
-    /**
-     *
-     * @param callable $callable
-     *
-     * @return Collection
-     */
-    public function each(callable $callable): Collection
-    {
-        $result = collection();
-        foreach ($this->data as $datum)
+        /**
+        *
+        * The search result
+        *
+        * @var mixed
+        *
+        */
+        private $search;
+
+        /**
+        *
+        * Collection constructor
+        *
+        * @method __construct
+        *
+        * @param array $data
+        *
+        */
+        public function __construct(array $data = [])
         {
-            $result->push($callable($datum));
+            $this->data = $data;
+
+            $this->position = 0;
         }
-        $this->data  = $result->collection();
-        return $this;
-    }
 
-
-    /**
-     *
-     * Search a value
-     *
-     * @param $value
-     *
-     * @return Collection
-     *
-     */
-    public function search($value): Collection
-    {
-        $this->search =  array_search($value,$this->data);
-
-        return $this;
-    }
-
-    /**
-     *
-     * Get the search result
-     *
-     * @return mixed
-     *
-     */
-    public function get_search()
-    {
-        return $this->search;
-    }
-
-    /**
-     *
-     * Return the result value
-     *
-     * @param bool $length
-     *
-     * @return mixed
-     */
-    public function search_result(bool $length = false)
-    {
-        if ($length)
+        /**
+        *
+        * Convert the data in the array to a json file
+        *
+        * @method convert_to_json
+        *
+        * @param  string          $filename  The json filename
+        *
+        * @return bool
+        *
+        */
+        public function convert_to_json(string $filename): bool
         {
+            return json($filename)->create($this->data);
+        }
+
+
+        /**
+        *
+        * Define the new data
+        *
+        * @param array $data
+        *
+        * @return Collection
+        *
+        */
+        public function set_new_data(array $data): Collection
+        {
+            $this->data = $data;
+
+            return $this;
+        }
+
+        /**
+        *
+        * Run callable function for each values in the array
+        *
+        * @param callable $callable
+        *
+        * @return Collection
+        *
+        */
+        public function each(callable $callable): Collection
+        {
+            $result = collection();
+
+            foreach ($this->data as $datum)
+                $result->push($callable($datum));
+
+            $this->set_new_data($result->collection());
+
+            return $this;
+        }
+
+        /**
+        *
+        * Search a value in the array
+        *
+        * @param $value
+        *
+        * @return Collection
+        *
+        */
+        public function search($value): Collection
+        {
+            $this->search =  array_search($value,$this->data);
+
+            return $this;
+        }
+
+        /**
+        *
+        * Get the search result
+        *
+        * @return mixed
+        *
+        */
+        public function get_search()
+        {
+            return $this->search;
+        }
+
+        /**
+        *
+        * Return the result value
+        *
+        * @param bool $length
+        *
+        * @return mixed
+        *
+        */
+        public function result(bool $length = false)
+        {
+            if ($length)
+            {
+                $x = collection(explode('(',trim($this->get($this->get_search()),')')));
+                return $x->has_key(1) ? $x->get(1) : 0;
+            }
+
             $x = collection(explode('(',trim($this->get($this->get_search()),')')));
-            return $x->has_key(1) ? $x->get(1) : 0;
+            return $x->has_key(0) ? $x->get(0) : '';
         }
 
-        $x = collection(explode('(',trim($this->get($this->get_search()),')')));
-        return $x->has_key(0) ? $x->get(0) : '';
-    }
-
-    /**
-     *
-     * check if array is empty
-     *
-     * @return bool
-     *
-     */
-    public function empty()
-    {
-        return empty($this->data);
-    }
-
-    /**
-     *
-     * Initialize the position to 0 and return the position
-     *
-     * @param int $i
-     *
-     * @return int
-     */
-    public function init(int $i = 0)
-    {
-        $this->position = $i;
-        return $this->position;
-    }
-
-    /**
-     *
-     * Generate personal, table, card code to see records information
-     *
-     * @param bool $printATable
-     * @param bool $printCards
-     * @param array $columns
-     * @param string $htmlHeadCode
-     * @param string $htmlEndHead
-     * @param string $bodyHtmlElement
-     * @param string $bodyElementClass
-     * @param string $bodyElementSeparator
-     * @param string $htmlCodeBeforeAll
-     * @param string $htmlCodeAfterAll
-     *
-     * @return string
-     *
-     */
-    public function print( bool $printATable = true ,array $columns =[],bool $printCards = false,string $htmlHeadCode= '',string $htmlEndHead ='',string $bodyHtmlElement= '',string $bodyElementClass= '',string $bodyElementSeparator= '',string $htmlCodeBeforeAll = '<div class="row">',string $htmlCodeAfterAll = '</div>'): string
-    {
-        $this->rewind();
-
-
-        if (!$printATable && $printCards)
+        /**
+        *
+        * Check if array is empty
+        *
+        * @return bool
+        *
+        */
+        public function empty()
         {
-            $code = '';
-
-            append($code,'<div class="row">');
-
-
-            while ($this->valid())
-            {
-                $values = $this->current();
-                append($code,'<div class="col-lg-4"><div class="card ml-4 mr-4 mt-4 mb-4"><div class="card-body">');
-
-
-                foreach ($values as $k => $v)
-                {
-                    append($code,"<p> {$values->$k} </p>");
-
-                }
-
-                append($code,'</div></div></div>');
-
-                $this->next();
-            }
-            append($code,'</div>');
-
-            return $code;
-        }elseif ($printATable && !$printCards)
-        {
-            $code = '';
-            append($code,'<table class="table table-bordered table-hover"><thead><tr>');
-
-            foreach ($columns as $column)
-            {
-                append($code, '<th>'.$column.'</th>');
-
-            }
-            append($code,'</tr></thead><tbody>');
-
-            while ($this->valid())
-            {
-
-                $values = $this->current();
-                append($code,'<tr>');
-
-                foreach ($values as $k => $v)
-                {
-                    append($code,"<td> {$values->$k} </td>");
-
-                }
-
-                append($code,'</tr> ');
-
-
-                $this->next();
-            }
-            append($code,'</tbody></table>');
-            return $code;
-        }else
-        {
-
-            $code = '';
-            append($code,$htmlCodeBeforeAll);
-            while ($this->valid())
-            {
-                $values = $this->current();
-
-                append($code,$htmlHeadCode,'<'.$bodyHtmlElement.' class="'.$bodyElementClass.'">');
-
-
-                foreach ($values as $k => $v)
-                {
-                    append($code,"<$bodyElementSeparator> {$values->$k} </$bodyElementSeparator>");
-
-                }
-
-                append($code,'</'.$bodyHtmlElement.'>',$htmlEndHead);
-
-
-                $this->next();
-            }
-            append($code,$htmlCodeAfterAll);
-            return $code;
+            return empty($this->data);
         }
 
-    }
+        /**
+        *
+        * Initialize the position to i and return the position
+        *
+        * @param int $i
+        *
+        * @return int
+        */
+        public function init(int $i = 0)
+        {
+            $this->position = $i;
 
-    /**
-     *
-     * get the array modified
-     *
-     * @return array
-     *
-     */
-    public function collection(): array
-    {
-        return $this->data;
-    }
+            return $this->position;
+        }
 
-    /**
-     *
-     *  Add to the end of the array
-     *
-     * @param mixed $values
-     *
-     * @return Collection
-     *
-     */
-    public function push(...$values): Collection
-    {
-        foreach ($values as $value)
-            array_push($this->data,$value);
-
-
-        return $this;
-    }
-
-    /**
-     *
-     * Add to the begin of the array
-     *
-     * @param mixed $values
-     *
-     * @return Collection
-     *
-     */
-    public function stack(...$values): Collection
-    {
-        foreach ($values as $value)
-            array_unshift($this->data,$value);
-
-        return $this;
-    }
-
-    /**
-     *
-     * Merge multiple array inside the array
-     *
-     * @param array ...$array
-     *
-     * @return Collection
-     */
-    public function merge(array ...$array): Collection
-    {
-        foreach($array as  $x)
-           $this->data = array_merge($this->data,$x);
-
-        return $this;
-    }
-
-    /**
-     *
-     * Return the last element inside the array
-     *
-     * @return mixed
-     *
-     */
-    public function last()
-    {
-        return end($this->data);
-    }
-
-    /**
-     *
-     * Return the first element inside the array
-     *
-     * @return mixed
-     *
-     */
-    public function begin()
-    {
-        return reset($this->data);
-    }
-
-    /**
-     *
-     * Return the number of elements inside the array
-     *
-     * @return int
-     *
-     */
-    public function length(): int
-    {
-        return count($this->data);
-    }
-
-    /**
-     *
-     * Add inside the array a value with and optional key
-     *
-     * @param string $key
-     * @param $value
-     *
-     * @return Collection
-     *
-     */
-
-    public function add($value,$key = ''): Collection
-    {
-        not_def($key) ?  $this->data[] = $value :  $this->data[$key] = $value;
-
-        return $this;
-    }
-
-    /**
-     *
-     * Return the reverse of the array
-     *
-     * @param bool $preserveKey
-     *
-     * @return array
-     *
-     */
-    public function reverse($preserveKey= false): array
-    {
-        return array_reverse($this->data,$preserveKey);
-    }
+        /**
+        *
+        * Conert the data in the array to html code
+        *
+        * @method print
+        *
+        * @param  bool   $html_table              To print a html table
+        * @param  array  $columns                 Print defined columns name
+        * @param  bool   $html_cards              To print cards
+        * @param  string $html_head_code          The customize html head code
+        * @param  string $html_end_head_code      The customize html end head code
+        * @param  string $html_body_element       The body code
+        * @param  string $body_class              The body class
+        * @param  string $body_elements_separator The html tag to separate the elements
+        * @param  string $html_before_all         The html code to add before all
+        * @param  string $html_after_all          The html code to add after_all
+        *
+        * @return string
+        *
+        */
+        public function print( bool $html_table = true ,array $columns =[],bool $html_cards = false,string $html_head_code= '',string $html_end_head_code ='',string $html_body_element = '',string $body_class= '',string $body_elements_separator= '',string $html_before_all = '<div class="row">',string $html_after_all = '</div>'): string
+        {
+            $this->rewind();
 
 
-    /**
-     *
-     * Return the value of the array before a key
-     *
-     * @param $key
-     *
-     * @return mixed
-     *
-     */
-    public function value_before_key($key)
-    {
-        $length = $this->length();
-        if ($this->has_key($key) && $length > 1)
+            if (!$html_table && $html_cards)
+            {
+                $code = '';
+
+                append($code,'<div class="row">');
+
+
+                while ($this->valid())
+                {
+                    $values = $this->current();
+
+                    append($code,'<div class="col-lg-4"><div class="card ml-4 mr-4 mt-4 mb-4"><div class="card-body">');
+
+
+                    foreach ($values as $k => $v)
+                    {
+                        append($code,"<p> {$values->$k} </p>");
+
+                    }
+
+                    append($code,'</div></div></div>');
+
+                    $this->next();
+                }
+                append($code,'</div>');
+
+                return $code;
+
+            }
+
+            if ($html_table && !$html_cards)
+            {
+                $code = '';
+
+                append($code,'<table class="table table-bordered table-hover"><thead><tr>');
+
+                foreach ($columns as $column)
+                {
+                    append($code, '<th>'.$column.'</th>');
+
+                }
+
+                append($code,'</tr></thead><tbody>');
+
+                while ($this->valid())
+                {
+
+                    $values = $this->current();
+                    append($code,'<tr>');
+
+                    foreach ($values as $k => $v)
+                    {
+                        append($code,"<td> {$values->$k} </td>");
+
+                    }
+
+                    append($code,'</tr> ');
+
+
+                    $this->next();
+                }
+                append($code,'</tbody></table>');
+                return $code;
+            }
+
+            if (!$html_table && !$html_cards)
+            {
+
+                $code = '';
+                append($code,$html_before_all);
+                while ($this->valid())
+                {
+                    $values = $this->current();
+
+                    append($code,$html_head_code,'<'.$html_body_element.' class="'.$body_class.'">');
+
+
+                    foreach ($values as $k => $v)
+                    {
+                        append($code,"<$body_elements_separator> {$values->$k} </$body_elements_separator>");
+
+                    }
+
+                    append($code,'</'.$html_body_element.'>',$html_end_head_code);
+
+
+                    $this->next();
+                }
+
+                append($code,$html_after_all);
+
+                return $code;
+            }
+
+        }
+
+        /**
+        *
+        * Return the array generated
+        *
+        * @method collection
+        *
+        * @return array
+        *
+        **/
+        public function collection(): array
+        {
+            return $this->data;
+        }
+
+        /**
+        *
+        * Add values to the end of the array
+        *
+        * @method push
+        *
+        * @param mixed[] $values The values to add
+        *
+        * @return Collection
+        *
+        */
+        public function push(...$values): Collection
+        {
+            foreach ($values as $value)
+                array_push($this->data,$value);
+
+            return $this;
+        }
+
+        /**
+        *
+        * Add the values to the beggin ot the array
+        *
+        * @method stack
+        *
+        * @param  mixed[] $values The values to add
+        *
+        * @return Collection
+        *
+        */
+        public function stack(...$values): Collection
         {
 
+            foreach ($values as $value)
+                array_unshift($this->data,$value);
+
+            return $this;
+        }
+
+        /**
+        *
+        * Merge multiples array
+        *
+        * @method merge
+        *
+        * @param array[]  The list of array to merge
+        *
+        * @return Collection
+        *
+        */
+        public function merge(array ...$array): Collection
+        {
+            foreach($array as  $x)
+                $this->data = array_merge($this->data,$x);
+
+            return $this;
+        }
+
+        /**
+        *
+        * Return the last element in the array
+        *
+        * @method last
+        *
+        * @return mixed
+        *
+        */
+        public function last()
+        {
+            return end($this->data);
+        }
+
+        /**
+        *
+        * Return the begin of the array
+        *
+        * @method begin
+        *
+        * @return mixed
+        *
+        */
+        public function begin()
+        {
+            return reset($this->data);
+        }
+
+        /**
+        *
+        * Return the number of elements in the array
+        *
+        * @method length
+        *
+        * @return int
+        *
+        */
+        public function length(): int
+        {
+            return count($this->data);
+        }
+
+        /**
+        *
+        * Append value to the array with optional key
+        *
+        * @method add
+        *
+        * @param  mixed $value  The value to add
+        * @param  string $key   The value's key
+        *
+        * @return Collection
+        *
+        */
+        public function add($value,$key = ''): Collection
+        {
+            not_def($key) ?  $this->data[] = $value :  $this->data[$key] = $value;
+
+            return $this;
+        }
+
+        /**
+        *
+        * Return the reverse of the array
+        *
+        * @method reverse
+        *
+        * @param  bool    $preserveKey
+        *
+        * @return array
+        *
+        */
+        public function reverse($preserveKey = false): array
+        {
+            return array_reverse($this->data,$preserveKey);
+        }
+
+        /**
+        *
+        * Return a value before a key
+        *
+        * @method value_before_key
+        *
+        * @param  mixed            $key The next value key
+        *
+        * @return mixed
+        *
+        */
+        public function value_before_key($key)
+        {
+            $length = $this->length();
+
+            if ($this->has_key($key) && superior($length,1))
+            {
+
+                foreach ($this->data as $k => $v)
+                    if(different($k,$key))
+                        $this->beforeValue = $v;
+                    else
+                        return $this->beforeValue;
+
+            }
+
+            if (superior($length,1))
+            {
+                foreach ($this->data as $v)
+                    if(different($v,$key))
+                        $this->beforeValue = $v;
+                    else
+                        return $this->beforeValue;
+            }
+
+            return $this->has_key($key) ? $this->data[$key] : $key;
+
+        }
+
+        /**
+        *
+        * Check if a key exist in the array
+        *
+        * @method has_key
+        *
+        * @param mixed $key The key to check
+        *
+        * @return bool
+        *
+        */
+        public function has_key($key): bool
+        {
+            return is_string($key) || is_numeric($key) ? key_exists($key,$this->data) : false;
+        }
+
+        /**
+        *
+        * Return all values
+        *
+        * @method values
+        *
+        * @return array
+        *
+        */
+        public function values(): array
+        {
+            return array_values($this->data);
+        }
+
+        /**
+        *
+        * Return all keys
+        *
+        * @method keys
+        *
+        * @return array
+        *
+        */
+        public function keys(): array
+        {
+            return array_keys($this->data);
+        }
+
+        /**
+        *
+        * Move pointer to the before position
+        * and return the current value
+        *
+        * @method before
+        *
+        * @return mixed
+        *
+        */
+        public function before()
+        {
+            $this->position--;
+
+            return $this->current();
+        }
+
+        /**
+        *
+        * Move pointer to the after position
+        * and return the current value
+        *
+        * @method after
+        *
+        * @return mixed
+        *
+        */
+        public function after()
+        {
+            $this->position++;
+
+            return $this->current();
+        }
+
+
+        /**
+        *
+        * Check if a value exist in the array
+        *
+        * @method exist
+        *
+        * @param mixed $value The value to check
+        *
+        * @return bool
+        *
+        **/
+        public function exist($value): bool
+        {
+            return in_array($value,$this->data);
+        }
+
+        /**
+        *
+        * Check if the value not exist in the array
+        *
+        * @method not_exist
+        *
+        * @param mixed $value The value to check
+        *
+        * @return bool
+        *
+        */
+        public function not_exist($value): bool
+        {
+            return is_false($this->exist($value));
+        }
+
+        /**
+        *
+        * Check if the value is numeric
+        *
+        * @method numeric
+        *
+        * @param  mixed  $value The value to check
+        *
+        * @return bool
+        *
+        */
+        public function numeric($value): bool
+        {
+            return is_numeric($value);
+        }
+
+        /**
+        *
+        * Check if the value is a string
+        *
+        * @method string
+        *
+        * @param mixed $value The value to check
+        *
+        * @return bool
+        *
+        */
+        public function string($value): bool
+        {
+            return is_string($value);
+        }
+
+        /**
+        * Get a value in the array by a key
+        *
+        * @method get
+        *
+        * @param mixed $key The value key
+        *
+        * @return mixed
+        *
+        **/
+        public function get($key)
+        {
+            return $this->has_key($key) ? $this->data[$key] : '';
+        }
+
+        /**
+        *
+        * Remove a data by a key
+        *
+        * @method remove
+        *
+        * @param mixed $key The data key
+        *
+        * @return Collection
+        *
+        */
+        public function remove($key): Collection
+        {
+            if ($this->has_key($key))
+                unset($this->data[$key]);
+
+            return $this;
+        }
+
+        /**
+        *
+        * Remove multiples values
+        *
+        *
+        * @method remove_values
+        *
+        * @param  string[]        $values The values to removes
+        *
+        * @return Collection
+        *
+        */
+        public function remove_values(string ...$values): Collection
+        {
+            foreach ($values as $value)
+            {
+                unset($this->data[array_search($value, $this->data)]);
+            }
+
+            return $this;
+        }
+
+
+        /**
+        *
+        * Assign a new value to an existing value by a key
+        *
+        * @method change_value
+        *
+        * @param mixed $old The old value
+        * @param mixed $new The new value
+        *
+        * @return Collection
+        *
+        */
+        public function change_value($old,$new): Collection
+        {
             foreach ($this->data as $k => $v)
-                if($k !== $key)
-                    $this->beforeValue = $v;
-                else
-                    return $this->beforeValue;
+            {
+                if (equal($v,$old) && $this->has_key($k))
+                    $this->data[$k] = $new;
+            }
 
+            return $this;
         }
 
-        if ($length > 1)
+
+        /**
+        *
+        * Join all values by a glue
+        *
+        * @method join
+        *
+        * @param  string $glue      The values separator
+        * @param  bool   $replace   Set to true to replace value
+        * @param  string $value     The value to replace
+        * @param  string $new_value The new value
+        *
+        * @return string
+        *
+        */
+        public function join(string $glue,bool $replace = false,string $value= '',string $new_value =''): string
         {
-            foreach ($this->data as $v)
-                if($v !== $key)
-                    $this->beforeValue = $v;
-                else
-                    return $this->beforeValue;
+            $code = implode($glue,$this->data);
+
+            if ($replace)
+                $code = str_replace($value,$new_value,$code);
+
+            return $code;
         }
-        return $this->has_key($key) ? $this->data[$key] : $key;
-
-    }
-
-    /**
-     *
-     * Check if the key exist inside the array
-     *
-     * @param $key
-     *
-     * @return bool
-     *
-     */
-    public function has_key($key): bool
-    {
-        return is_string($key) || is_numeric($key) ? key_exists($key,$this->data) : false;
-    }
-
-    /**
-     * get the values of array
-     *
-     * @return array
-     */
-    public function values(): array
-    {
-        return array_values($this->data);
-    }
-
-    /**
-     * get the keys of array
-     *
-     * @return array
-     */
-    public function keys(): array
-    {
-        return array_keys($this->data);
-    }
-
-    /**
-     *
-     * Move the current position before
-     * the current position
-     * and return the current value
-     *
-     * @return mixed
-     *
-     */
-    public function before()
-    {
-        $this->position--;
-        return $this->current();
-    }
-
-    /**
-     *
-     * Move the current position after
-     * the current position
-     * and return the current value
-     *
-     * @return mixed
-     *
-     */
-    public function after()
-    {
-        $this->position++;
-        return $this->current();
-    }
 
 
-    /**
-     *
-     * Check if the value exist inside the array
-     *
-     * @param $value
-     *
-     * @return bool
-     *
-     */
-    public function exist($value): bool
-    {
-        return in_array($value,$this->data);
-    }
-
-    /**
-     *
-     * Check if the value not exist inside the array
-     *
-     * @param $value
-     *
-     * @return bool
-     *
-     */
-    public function not_exist($value): bool
-    {
-        return ! $this->exist($value);
-    }
-
-    /**
-     *
-     * Check if the value is numeric
-     *
-     * @param $value
-     *
-     * @return bool
-     *
-     */
-    public function numeric($value): bool
-    {
-        return is_numeric($value);
-    }
-
-    /**
-     *
-     * Check if the value is a string
-     *
-     * @param $value
-     *
-     * @return bool
-     *
-     */
-    public function string($value): bool
-    {
-        return is_string($value);
-    }
-
-    /**
-     *
-     * Get a value inside the array by a key
-     *
-     * @param $key
-     *
-     * @return mixed
-     *
-     */
-    public function get($key)
-    {
-        return $this->has_key($key) ? $this->data[$key] : '';
-    }
-
-    /**
-     *
-     * Remove a value inside the array by a key
-     *
-     * @param $key
-     *
-     * @return Collection
-     *
-     */
-    public function remove($key): Collection
-    {
-        if ($this->has_key($key))
-            unset($this->data[$key]);
-
-        return $this;
-    }
-
-    /**
-     *
-     * Remove values
-     *
-     * @param string ...$values
-     *
-     * @return Collection
-     *
-     */
-    public function remove_values(string ...$values): Collection
-    {
-        foreach ($values as $value)
+        /**
+        *
+        * Empty the array
+        *
+        * @method clear
+        *
+        * @return Collection
+        *
+        */
+        public function clear(): Collection
         {
-            unset($this->data[array_search($value, $this->data)]);
+            $this->set_new_data([]);
+
+            return $this;
         }
 
-        return $this;
-    }
-
-
-    /**
-     *
-     * Change old value to new
-     *
-     * @param $old
-     * @param $new
-     *
-     * @return Collection
-     *
-     * @throws Exception
-     *
-     */
-    public function change_value($old,$new): Collection
-    {
-        foreach ($this->data as $k => $v)
+        /**
+        * Whether a offset exists
+        * @link https://php.net/manual/en/arrayaccess.offsetexists.php
+        * @param mixed $offset <p>
+        * An offset to check for.
+        * </p>
+        * @return boolean true on success or false on failure.
+        * </p>
+        * <p>
+        * The return value will be casted to boolean if non-boolean was returned.
+        * @since 5.0.0
+        */
+        public function offsetExists($offset)
         {
-            if (equal($v,$old) && $this->exist($old) && $this->has_key($k))
-                $this->data[$k] = $new;
+            return $this->has_key($offset);
         }
 
-        return $this;
-    }
+        /**
+        * Offset to retrieve
+        * @link https://php.net/manual/en/arrayaccess.offsetget.php
+        * @param mixed $offset <p>
+        * The offset to retrieve.
+        * </p>
+        * @return mixed Can return all value types.
+        * @since 5.0.0
+        */
+        public function offsetGet($offset)
+        {
+            return $this->get($offset);
+        }
 
+        /**
+        * Offset to set
+        * @link https://php.net/manual/en/arrayaccess.offsetset.php
+        * @param mixed $offset <p>
+        * The offset to assign the value to.
+        * </p>
+        * @param mixed $value <p>
+        * The value to set.
+        * </p>
+        * @return void
+        * @since 5.0.0
+        */
+        public function offsetSet($offset, $value)
+        {
+            $this->add($offset,$value);
+        }
 
-    /**
-     *
-     * Join all values inside the array by a string
-     *
-     * @param string $glue
-     * @param bool $replace
-     * @param string $search
-     * @param string $new_value
-     *
-     * @return string
-     *
-     */
-    public function join(string $glue,bool $replace = false,string $search= '',string $new_value =''): string
-    {
-        $code = implode($glue,$this->data);
-        if ($replace)
-            $code = str_replace($search,$new_value,$code);
+        /**
+        * Offset to unset
+        * @link https://php.net/manual/en/arrayaccess.offsetunset.php
+        * @param mixed $offset <p>
+        * The offset to unset.
+        * </p>
+        * @return void
+        * @since 5.0.0
+        */
+        public function offsetUnset($offset)
+        {
+            $this->remove($offset);
+        }
 
-        return $code;
-    }
+        /**
+        * Return the current element
+        * @link https://php.net/manual/en/iterator.current.php
+        * @return mixed Can return any type.
+        * @since 5.0.0
+        */
+        public function current()
+        {
+            return $this->data[$this->position];
+        }
 
+        /**
+        * Return the key of the current element
+        * @link https://php.net/manual/en/iterator.key.php
+        * @return mixed scalar on success, or null on failure.
+        * @since 5.0.0
+        */
+        public function key()
+        {
+            return $this->position;
+        }
 
-    /**
-     *
-     * Empty the array
-     *
-     * @return Collection
-     *
-     */
-    public function clear(): Collection
-    {
-        $this->data = array();
+        /**
+        * Checks if current position is valid
+        * @link https://php.net/manual/en/iterator.valid.php
+        * @return boolean The return value will be casted to boolean and then evaluated.
+        * Returns true on success or false on failure.
+        * @since 5.0.0
+        */
+        public function valid()
+        {
+            return isset($this->data[$this->position]);
+        }
 
-        return $this;
-    }
+        /**
+        * Rewind the Iterator to the first element
+        * @link https://php.net/manual/en/iterator.rewind.php
+        * @return void Any returned value is ignored.
+        * @since 5.0.0
+        */
+        public function rewind()
+        {
+            $this->position = 0;
+        }
 
-    /**
-     * Whether a offset exists
-     * @link https://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param mixed $offset <p>
-     * An offset to check for.
-     * </p>
-     * @return boolean true on success or false on failure.
-     * </p>
-     * <p>
-     * The return value will be casted to boolean if non-boolean was returned.
-     * @since 5.0.0
-     */
-    public function offsetExists($offset)
-    {
-       return $this->has_key($offset);
-    }
-
-    /**
-     * Offset to retrieve
-     * @link https://php.net/manual/en/arrayaccess.offsetget.php
-     * @param mixed $offset <p>
-     * The offset to retrieve.
-     * </p>
-     * @return mixed Can return all value types.
-     * @since 5.0.0
-     */
-    public function offsetGet($offset)
-    {
-        return $this->get($offset);
-    }
-
-    /**
-     * Offset to set
-     * @link https://php.net/manual/en/arrayaccess.offsetset.php
-     * @param mixed $offset <p>
-     * The offset to assign the value to.
-     * </p>
-     * @param mixed $value <p>
-     * The value to set.
-     * </p>
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetSet($offset, $value)
-    {
-        $this->add($offset,$value);
-    }
-
-    /**
-     * Offset to unset
-     * @link https://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param mixed $offset <p>
-     * The offset to unset.
-     * </p>
-     * @return void
-     * @since 5.0.0
-     */
-    public function offsetUnset($offset)
-    {
-        $this->remove($offset);
-    }
-
-    /**
-     * Return the current element
-     * @link https://php.net/manual/en/iterator.current.php
-     * @return mixed Can return any type.
-     * @since 5.0.0
-     */
-    public function current()
-    {
-        return $this->data[$this->position];
-    }
-
-    /**
-     * Return the key of the current element
-     * @link https://php.net/manual/en/iterator.key.php
-     * @return mixed scalar on success, or null on failure.
-     * @since 5.0.0
-     */
-    public function key()
-    {
-        return $this->position;
-    }
-
-    /**
-     * Checks if current position is valid
-     * @link https://php.net/manual/en/iterator.valid.php
-     * @return boolean The return value will be casted to boolean and then evaluated.
-     * Returns true on success or false on failure.
-     * @since 5.0.0
-     */
-    public function valid()
-    {
-        return isset($this->data[$this->position]);
-    }
-
-    /**
-     * Rewind the Iterator to the first element
-     * @link https://php.net/manual/en/iterator.rewind.php
-     * @return void Any returned value is ignored.
-     * @since 5.0.0
-     */
-    public function rewind()
-    {
-         $this->position = 0;
-    }
-
-    /**
-     * Move forward to next element
-     * @link https://php.net/manual/en/iterator.next.php
-     * @return void Any returned value is ignored.
-     * @since 5.0.0
-     */
-    public function next()
-    {
-        $this->position++;
+        /**
+        * Move forward to next element
+        * @link https://php.net/manual/en/iterator.next.php
+        * @return void Any returned value is ignored.
+        * @since 5.0.0
+        */
+        public function next()
+        {
+            $this->position++;
+        }
     }
 }

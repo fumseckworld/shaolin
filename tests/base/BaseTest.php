@@ -13,9 +13,6 @@ class BaseTest extends DatabaseTest
         $this->table = 'base';
     }
 
-    /***
-     * @throws \Exception*
-     */
     public function test_show()
     {
         $this->assertContains($this->base,$this->mysql()->show_databases());

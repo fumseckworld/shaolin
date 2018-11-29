@@ -15,11 +15,11 @@ namespace Imperium\Query {
         const DIFFERENT = '!=';
 
         const SUPERIOR = '>';
-        
+
         const INFERIOR = '<';
-        
+
         const SUPERIOR_OR_EQUAL = '>=';
-        
+
         const INFERIOR_OR_EQUAL = '<=';
 
         const LIKE = 'LIKE';
@@ -55,7 +55,7 @@ namespace Imperium\Query {
         ];
 
         const JOIN_MODE = [
-           self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN       
+           self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN
         ];
 
         /**
@@ -108,15 +108,15 @@ namespace Imperium\Query {
         private $order;
 
         private $limit;
-        
+
         /**
          * @var string
          */
         private $first_table;
-        
+
         /**
          * @var string
-         * 
+         *
          */
         private $second_table;
 
@@ -126,7 +126,7 @@ namespace Imperium\Query {
         private $where_param;
         private $where_condition;
         private $where_expected;
- 
+
         /**
         * Query constructor
         *
@@ -184,14 +184,14 @@ namespace Imperium\Query {
                 break;
                 case Query::UNION:
                 case Query::UNION_ALL:
-                    return "$union $order $limit";  
+                    return "$union $order $limit";
                 break;
                 case collection(self::JOIN_MODE)->exist($mode) :
 
                     if(def($this->where_expected,$this->where_param,$this->where_condition))
                     {
                         $where= "WHERE {$this->first_table}.{$this->where_param}  {$this->where_condition} {$this->second_table}.{$this->where_param} ";
-                    
+
                         return "$join $where $order $limit";
                     }
                     return "$join $order $limit";
@@ -221,7 +221,8 @@ namespace Imperium\Query {
 
             $this->where_param = $param;
             $this->where_condition = $condition;
-            $this->where_expected = $expected;    
+            $this->where_expected = $expected;
+
             if(not_in(self::VALID_OPERATORS,$condition))
                 throw new Exception("The operator is invalid");
 
@@ -383,7 +384,7 @@ namespace Imperium\Query {
             $mode = $this->mode;
             $condition = Query::EQUAL;
             $select = '';
-            
+
             if ($columnsDefine)
             {
                 $end = collection($columns)->last();
@@ -480,7 +481,7 @@ namespace Imperium\Query {
         public function like(Table $table,string $value): Query
         {
 
-            $driver = $this->connexion->get_driver();
+            $driver = $this->connexion->driver();
 
             if (has($driver,[Connect::POSTGRESQL,Connect::MYSQL]))
             {

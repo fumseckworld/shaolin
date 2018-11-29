@@ -1,23 +1,4 @@
 <?php
-/**
- * fumseck added Users.php to imperium
- * The 11/09/17 at 08:56
- *
- * imperium is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General public License as published by
- * the Free Software Foundation, either version 3 of the License, or any later version.
- *
- * imperium is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See the GNU General public License for more details.
- *
- * You should have received a copy of the GNU General public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @package : imperium
- * @author  : fumseck
- **/
 
 
 namespace Imperium\Users {
@@ -32,7 +13,7 @@ namespace Imperium\Users {
      * @package Imperium\Users
      *
      */
-    class Users 
+    class Users
     {
 
         /**
@@ -50,10 +31,10 @@ namespace Imperium\Users {
         private $username;
 
         /**
-         * @var Connect 
+         * @var Connect
          */
         private $connexion;
-        
+
         /**
          * @var array
          */
@@ -226,7 +207,7 @@ namespace Imperium\Users {
         public function __construct(Connect $connect)
         {
             $this->connexion = $connect;
-            $this->driver = $connect->get_driver();
+            $this->driver = $connect->driver();
         }
 
         /**

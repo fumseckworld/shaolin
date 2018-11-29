@@ -60,12 +60,21 @@ use Imperium\Tables\Table;
         private $driver;
 
         /**
+         * Tables
+         *
+         * @var array
+         *
+         */
+        private $tables;
+
+        /**
+         *
          * Table management
          *
          * @var Table
          *
-         */
-        private $tables;
+         **/
+        private $table;
 
         /**
          *
@@ -95,15 +104,15 @@ use Imperium\Tables\Table;
         *
         * @return bool
         *
+        * @throws Exception
+        *
         */
         public function seed(int $records = 100): bool
         {
-            $data = collection();
+            foreach ($this->tables as $x)
+                is_false($this->table->select($x)->seed($records),true,"Failed to seed the $x table");
 
-            foreach ($this->tables->show() as $table)
-                $data->add($this->tables->select($table)->seed($records));
-
-            return $data->not_exist(false);
+            return true;
         }
 
         /**
@@ -129,7 +138,7 @@ use Imperium\Tables\Table;
 
             $hidden =  collection($this->hidden_bases);
 
-            equal($driver,Connect::MYSQL) ?  assign(true,$request,'SHOW DATABASES') : assign(true,$request,'select datname from pg_database');
+            $this->connexion->mysql() ?  assign(true,$request,'SHOW DATABASES') : assign(true,$request,'select datname from pg_database');
 
             foreach ($this->connexion->request($request) as $db)
             {
@@ -237,11 +246,17 @@ use Imperium\Tables\Table;
         public function create(string $name): bool
         {
             if ($this->connexion->sqlite())
-                return File::exist($name) ? false : new PDO("sqlite:$name",null,null) ;
+            {
+
+                 if (File::exist($name))
+                    return false;
+
+                 new PDO("sqlite:$name",null,null) ;
+                 return File::exist($name);
+            }
 
 
-            if ($this->exist($name))
-                throw new Exception("The base $name already exist");
+            is_true($this->exist($name),true,"The base $name already exist");
 
             $not_define = not_def($this->collation,$this->charset);
 
@@ -318,8 +333,6 @@ use Imperium\Tables\Table;
         {
             if ($this->connexion->sqlite())
                 return File::exist($name) ? File::remove($name): false;
-
-            is_true($this->not_exist($name),true,"The base $name was not found");
 
             return $this->connexion->execute("DROP DATABASE $name");
         }
@@ -422,10 +435,12 @@ use Imperium\Tables\Table;
          */
         public function __construct(Connect $connect,Table $table,array $hidden_tables = [], $hidden_bases = [] )
         {
-            $this->tables       = $table->hidden($hidden_tables);
-            $this->all          = $this->hidden($hidden_bases)->show();
             $this->connexion    = $connect;
-            $this->driver       = $connect->get_driver();
+            $this->driver       = $connect->driver();
+            $this->tables       = $table->hidden($hidden_tables)->show();
+            $this->table        = $table;
+            if(different($this->driver,Connect::SQLITE))
+                $this->all   = $this->hidden($hidden_bases)->show();
         }
 
         /**
@@ -487,7 +502,7 @@ use Imperium\Tables\Table;
          */
         private function base(): string
         {
-            return $this->connexion->get_database();
+            return $this->connexion->base();
         }
 
         /**
