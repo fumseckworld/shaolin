@@ -1,7 +1,7 @@
 <?php
 
 
-use Imperium\Dumper\Dumper;
+use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
 use Whoops\Run;
 use Carbon\Carbon;
@@ -2332,6 +2332,7 @@ if (not_exist('not_in'))
 }
 
 
+
 if (not_exist('dumper'))
 {
     /**
@@ -2341,7 +2342,7 @@ if (not_exist('dumper'))
      *
      * @param  Connect $connect [description]
      * @param  bool    $base    [description]
-     * @param  string  $tables  [description]
+     * @param  string[]  $tables  [description]
      *
      * @return bool
      *
@@ -2351,6 +2352,7 @@ if (not_exist('dumper'))
         return (new Dump($connect,$base,$tables))->dump();
     }
 }
+
 
 if (not_exist('sql'))
 {

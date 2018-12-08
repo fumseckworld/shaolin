@@ -157,9 +157,7 @@ class BaseTest extends DatabaseTest
 
         $this->assertTrue($this->postgresql()->bases()->set_collation('C')->change_collation());
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
-
-
-
-
     }
+
+     
 }

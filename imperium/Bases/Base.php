@@ -6,6 +6,8 @@ use PDO;
 use Exception;
 use Imperium\Connexion\Connect;
 use Imperium\File\File;
+use Imperium\Import\Import;
+
 use Imperium\Tables\Table;
 
     /**
@@ -94,6 +96,15 @@ use Imperium\Tables\Table;
          */
         private $hidden_bases;
 
+        /**
+         *
+         * All hidden tables
+         *
+         * @var array
+         *
+         */
+        private $hidden_tables;
+
        /**
         *
         * Create enregistrements in all tables not hidden
@@ -115,6 +126,45 @@ use Imperium\Tables\Table;
             return true;
         }
 
+        /**
+         *
+         * Rename a base
+         *
+         * @method rename
+         *
+         * @param  string $new_name The new name
+         *
+         * @return bool
+         *
+         */
+        public function rename(string $new_name): bool
+        {
+            $current = $this->connexion->base();
+            $this->copy($new_name);
+            $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->fetch_mode(),$this->connexion->dump_path());
+            $table   = table($connect);
+            return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($current);
+        }
+        /**
+         *
+         * copy current database content in a new database
+         *
+         * @method copy
+         *
+         * @param  string $new_base [description]
+         *
+         * @return bool   [description]
+         */
+        public function copy(string $new_base): bool
+        {
+            dumper($this->connexion,true);
+
+            $this->create($new_base);
+
+            $sql = "{$this->connexion->dump_path()}/{$this->connexion->base()}.sql";
+
+            return (new Import($this->connexion,$sql,$new_base))->import();
+        }
         /**
         *
         *  Display all bases
@@ -249,14 +299,15 @@ use Imperium\Tables\Table;
             {
 
                  if (File::exist($name))
-                    return false;
+                    File::remove($name);
 
                  new PDO("sqlite:$name",null,null) ;
                  return File::exist($name);
             }
 
 
-            is_true($this->exist($name),true,"The base $name already exist");
+            if($this->exist($name))
+                $this->drop($name);
 
             $not_define = not_def($this->collation,$this->charset);
 
@@ -348,7 +399,7 @@ use Imperium\Tables\Table;
          */
         public function dump(): bool
         {
-            return dumper($this->connexion);
+            return dumper($this->connexion,true);
         }
 
         /**
@@ -364,7 +415,7 @@ use Imperium\Tables\Table;
          */
         public function exist(string $base): bool
         {
-            return collection($this->all)->exist($base);
+            return  $this->connexion->sqlite() ? File::exist($base) : collection($this->all)->exist($base);
         }
 
 
@@ -435,10 +486,12 @@ use Imperium\Tables\Table;
          */
         public function __construct(Connect $connect,Table $table,array $hidden_tables = [], $hidden_bases = [] )
         {
-            $this->connexion    = $connect;
-            $this->driver       = $connect->driver();
-            $this->tables       = $table->hidden($hidden_tables)->show();
-            $this->table        = $table;
+            $this->hidden_tables    = $hidden_tables;
+            $this->hidden_bases     = $hidden_bases;
+            $this->connexion        = $connect;
+            $this->driver           = $connect->driver();
+            $this->tables           = $table->hidden($hidden_tables)->show();
+            $this->table            = $table;
             if(different($this->driver,Connect::SQLITE))
                 $this->all   = $this->hidden($hidden_bases)->show();
         }
