@@ -122,27 +122,34 @@ class BaseTest extends DatabaseTest
         $this->assertTrue(dumper($this->mysql()->connect(),false,$this->table));
         $this->assertTrue(dumper($this->postgresql()->connect(),false,$this->table));
         $this->assertFalse(dumper($this->sqlite()->connect(),false,$this->table));
+        $this->assertTrue($this->mysql()->bases()->dump());
+        $this->assertTrue($this->postgresql()->bases()->dump());
+        $this->assertTrue($this->sqlite()->bases()->dump());
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function test_change()
-    {
-        $bidon = faker()->text(5);
+ 
 
+    public function test_exec()
+    {
         $this->expectException(Exception::class);
 
         $this->mysql()->bases()->change_collation();
         $this->mysql()->bases()->change_charset();
         $this->postgresql()->bases()->change_charset();
         $this->postgresql()->bases()->change_collation();
+        $bidon = faker()->text(5);
+
 
         $this->mysql()->bases()->set_collation($bidon)->change_collation();
         $this->mysql()->bases()->set_charset($bidon)->change_charset();
         $this->postgresql()->bases()->set_charset($bidon)->change_charset();
         $this->postgresql()->bases()->set_collation($bidon)->change_collation();
-
+    }
+    /**
+     * @throws \Exception
+     */
+    public function test_change()
+    {
         $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->change_charset());
         $this->assertTrue($this->mysql()->bases()->set_collation('utf8_general_ci')->change_collation());
 
@@ -159,5 +166,5 @@ class BaseTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
     }
 
-     
+
 }

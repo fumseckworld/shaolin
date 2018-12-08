@@ -64,10 +64,10 @@ if (equal($argv[1],"seed"))
         if ($data)
             echo "\t\t* SUCCESS : ".ago('en',$hour)."\n";
         else
-            echo "\t* FAILURE ".ago('en',$hour).";
+            echo "\t* FAILURE ".ago('en',$hour)."\n";
 
     } catch (Exception $e) {
         d($e->getMessage());
     }
-    echo "\n* FINNISH : ".ago('en',$run)."\n";
+    echo "\t* FINISH\t" .ago('en',$run) ."\n" ;
 }
