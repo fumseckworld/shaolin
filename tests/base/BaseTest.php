@@ -39,7 +39,6 @@ class BaseTest extends DatabaseTest
      */
     public function test_multiples()
     {
-
         $this->assertTrue($this->mysql()->bases()->create_multiples('a','b','c'));
         $this->assertTrue($this->postgresql()->bases()->create_multiples('a','b','c'));
         $this->assertTrue($this->sqlite()->bases()->create_multiples('a','b','c'));
@@ -116,14 +115,13 @@ class BaseTest extends DatabaseTest
      */
     public  function test_dump()
     {
-        $this->assertTrue(dumper($this->mysql()->connect()));
-        $this->assertTrue(dumper($this->postgresql()->connect()));
+        $this->assertTrue(dumper($this->mysql()->connect(),true,''));
+        $this->assertTrue(dumper($this->postgresql()->connect(),true,''));
+        $this->assertTrue(dumper($this->sqlite()->connect(),true,''));
 
         $this->assertTrue(dumper($this->mysql()->connect(),false,$this->table));
         $this->assertTrue(dumper($this->postgresql()->connect(),false,$this->table));
-
-        $this->assertTrue($this->mysql()->bases()->dump());
-        $this->assertTrue($this->postgresql()->bases()->dump());
+        $this->assertFalse(dumper($this->sqlite()->connect(),false,$this->table));
     }
 
     /**

@@ -6,6 +6,7 @@ namespace Imperium {
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
+    use Imperium\Dump\Dump;
     use Imperium\File\File;
     use Imperium\Html\Form\Form;
     use Imperium\Json\Json;
@@ -13,6 +14,7 @@ namespace Imperium {
     use Imperium\Query\Query;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+
 
    /**
     *
@@ -295,22 +297,6 @@ namespace Imperium {
 
         /**
          *
-         * Create a table
-         *
-         * @param string $table
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function create_table(string $table): bool
-        {
-            return $this->tables()->select($table)->create();
-        }
-
-        /**
-         *
          * Remove a table
          *
          * @param string $table
@@ -339,27 +325,6 @@ namespace Imperium {
         public function empty_table(string $table): bool
         {
             return $this->tables()->truncate($table);
-        }
-
-        /**
-         *
-         * Add new column in create table task
-         *
-         * @param string $type
-         * @param string $name
-         * @param bool $primary
-         * @param int $length
-         * @param bool $unique
-         * @param bool $null
-         *
-         * @return Imperium
-         *
-         */
-        public function append_field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = false, bool $null = false): Imperium
-        {
-            $this->tables()->field($type,$name,$primary,$length,$unique,$null);
-
-            return $this;
         }
 
         /**
@@ -614,9 +579,9 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function save(array $data, array $ignore): bool
+        public function save(array $data, array $ignore = []): bool
         {
-            return $this->table()->insert($data,$ignore);
+            return $this->tables()->insert($data,$ignore);
         }
 
         /**
@@ -686,6 +651,7 @@ namespace Imperium {
             return $this->tables()->remove_column($column);
         }
 
+
         /**
          *
          * Append multiples columns inb current table
@@ -711,45 +677,29 @@ namespace Imperium {
 
         /**
          *
-         * Dump a base or a table
+         * Dump a base or multiples tables
          *
-         * @param bool $base
-         * @param string $table
+         * @method dump
+         *
+         * @param  bool     $base   [description]
+         * @param  string[] $tables [description]
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function dump(bool $base = true, string $table = ''): bool
+        public function dump(bool $base,string ...$tables): bool
         {
-            return dumper($this->connect,$base,$table);
-        }
-
-
-        /**
-         * Management constructor.
-         *
-         * @param Connect $connect
-         * @param string $current_table
-         *
-         * @return Imperium
-         *
-         * @throws Exception
-         */
-        public static function get(Connect $connect,string $current_table): Imperium
-        {
-            return new static($connect,$current_table);
+            return (new Dump($this->connect,$base,$tables))->dump();
         }
 
         /**
          *
-         * Imperium constructor.
+         * @method __construct
          *
-         * @param Connect $connect
-         * @param string $current_table
-         *
-         * @throws Exception
+         * @param  Connect     $connect       The connection to the base
+         * @param  string      $current_table The current table
+         * @param  array       $hidden_tables All hidden tables in current base
+         * @param  array       $hidden_bases  All hidden bases for the drivers
          *
          */
         public function __construct(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases)
@@ -767,6 +717,7 @@ namespace Imperium {
             $this->json      = new Json();
             $this->form      = new Form();
         }
+
 
         /**
          *
@@ -863,7 +814,7 @@ namespace Imperium {
         }
 
         /**
-         * 
+         *
          * @param int $records
          *
          * @return bool

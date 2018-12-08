@@ -19,6 +19,57 @@ class ImperiumTest extends DatabaseTest
         $this->table = 'imperium';
     }
 
+    public function test_all()
+    {
+        $this->assertNotEmpty($this->mysql()->all());
+        $this->assertNotEmpty($this->postgresql()->all());
+        $this->assertNotEmpty($this->sqlite()->all());
+    }
+
+    public function test_show_columns_type()
+    {
+        $this->assertNotEmpty($this->mysql()->show_columns_types());
+        $this->assertNotEmpty($this->postgresql()->show_columns_types());
+        $this->assertNotEmpty($this->sqlite()->show_columns_types());
+    }
+
+    public function test_append_column()
+    {
+            $this->assertTrue($this->mysql()->append_column('salary',Imperium::INT,0,false,true));
+            $this->assertTrue($this->mysql()->remove_column('salary'));
+
+            $this->assertTrue($this->postgresql()->append_column('salary',Imperium::CHARACTER_VARYING,255,false,true));
+            $this->assertTrue($this->postgresql()->remove_column('salary'));
+    }
+
+    public function test_save()
+    {
+        $number = 5;
+        for ($i = 0; $i != $number; ++$i)
+        {
+            $data = [
+                'id' => null,
+                'name' => faker()->name,
+                'age' => faker()->numberBetween(1,100),
+                'phone' => faker()->randomNumber(8),
+                'sex' => faker()->firstNameMale,
+                'status' => faker()->text(20),
+                'days' => faker()->date(),
+                'date' => faker()->date()
+            ];
+
+            $this->assertTrue($this->mysql()->save($data));
+            $this->assertTrue($this->postgresql()->save($data));
+            $this->assertTrue($this->sqlite()->save($data));
+        }
+    }
+
+    public function test_remove_by_id()
+    {
+        $this->assertTrue($this->mysql()->remove_record(50));
+        $this->assertTrue($this->postgresql()->remove_record(50));
+        $this->assertTrue($this->sqlite()->remove_record(50));
+    }
     /**
      * @throws \Exception
      */
@@ -118,10 +169,10 @@ class ImperiumTest extends DatabaseTest
     {
         $current_table_name = 'luxoria';
 
-        $this->assertTrue($this->mysql()->tables()->select($current_table_name)->field(Imperium::INT,'id',true)->field(Imperium::VARCHAR,'name',false,255)->create());
-        $this->assertTrue($this->postgresql()->tables()->select($current_table_name)->field(Imperium::SERIAL,'id',true)->field(Imperium::CHARACTER_VARYING,'name',false,255)->create());
+        $this->assertTrue($this->mysql()->tables()->select($current_table_name)->field(Imperium::INT,'id',true,0,true,false,false,"","")->field(Imperium::VARCHAR,'name',false,255,true,false,true,"!=","a")->create());
+        $this->assertTrue($this->postgresql()->tables()->select($current_table_name)->field(Imperium::SERIAL,'id',true,0,false,false,false,'','')->field(Imperium::CHARACTER_VARYING,'name',false,255,true,false,true,"!=","B")->create());
 
-        $this->assertTrue($this->sqlite()->tables()->select($current_table_name)->field(Imperium::INTEGER,'id',true)->field(Imperium::TEXT,'name',false,255)->create());
+        $this->assertTrue($this->sqlite()->tables()->select($current_table_name)->field(Imperium::INTEGER,'id',true,0,true,false,false,"","")->field(Imperium::TEXT,'name',false,255,true,false,true,"!=","asB")->create());
 
         $this->assertTrue($this->mysql()->remove_table($current_table_name));
         $this->assertTrue($this->postgresql()->remove_table($current_table_name));
@@ -268,20 +319,6 @@ class ImperiumTest extends DatabaseTest
 
         $this->assertNotEmpty($this->sqlite()->find(50));
         $this->assertNotEmpty($this->sqlite()->find_or_fail(50));
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function test_dump()
-    {
-        $this->assertTrue($this->mysql()->dump());
-        $this->assertTrue($this->postgresql()->dump());
-        $this->assertTrue($this->sqlite()->dump());
-
-        $this->assertTrue($this->mysql()->dump(false,$this->table));
-        $this->assertTrue($this->postgresql()->dump(false,$this->table));
-        $this->assertTrue($this->sqlite()->dump(false,$this->table));
     }
 
     /**

@@ -278,6 +278,21 @@ class TableTest extends DatabaseTest
 
 
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function test_truncate()
+    {
+        $this->assertTrue($this->mysql_table->truncate());
+        $this->assertTrue($this->pgsql_table->truncate());
+        $this->assertTrue($this->sqlite_table->truncate());
+
+        $this->assertTrue($this->mysql()->empty_table($this->table));
+        $this->assertTrue($this->postgresql()->empty_table($this->table));
+        $this->assertTrue($this->sqlite()->empty_table($this->table));
+
+    }
     /**
      * @throws \Exception
      */
@@ -287,11 +302,8 @@ class TableTest extends DatabaseTest
 
         $instance = $this->mysql_table;
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true,true));
-        $this->assertTrue($instance->has_column($column));
-        $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false,true));
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
@@ -299,14 +311,18 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true,false));
+        $this->assertTrue($instance->has_column($column));
+        $this->assertTrue($instance->remove_column($column));
 
-        $instance = $this->pgsql_table;
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true,true));
+        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
 
-        $this->assertTrue($instance->append_column($column,Imperium::DATE,0,false,true));
+        $instance = $this->pgsql_table;
+
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
@@ -314,11 +330,13 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-
-        $instance = $this->sqlite_table;
-        $this->assertTrue($instance->append_column($column,Imperium::TEXT,255,false,true));
-
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true,false));
         $this->assertTrue($instance->has_column($column));
+        $this->assertTrue($instance->remove_column($column));
+
+        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true,true));
+        $this->assertTrue($instance->has_column($column));
+        $this->assertTrue($instance->remove_column($column));
 
     }
 
@@ -346,7 +364,7 @@ class TableTest extends DatabaseTest
 
         $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->mysql_table->columns_to_string());
         $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->pgsql_table->columns_to_string());
-        $this->assertEquals('id, name, age, phone, sex, status, days, date, moria',$this->sqlite_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->sqlite_table->columns_to_string());
     }
 
 
@@ -356,9 +374,9 @@ class TableTest extends DatabaseTest
     public function test_count()
     {
 
-        $this->assertEquals(349,$this->mysql_table->count());
-        $this->assertEquals(349,$this->pgsql_table->count());
-        $this->assertEquals(349,$this->sqlite_table->count());
+        $this->assertEquals(0,$this->mysql_table->count());
+        $this->assertEquals(0,$this->pgsql_table->count());
+        $this->assertEquals(0,$this->sqlite_table->count());
 
     }
 
@@ -409,12 +427,11 @@ class TableTest extends DatabaseTest
     {
 
         $this->assertTrue($this->mysql_table->dump());
-        $this->assertTrue($this->pgsql_table->dump());
-        $this->assertTrue($this->sqlite_table->dump());
+        $this->assertTrue($this->pgsql_table->dump()); 
 
         $this->assertTrue($this->mysql_table->dump($this->table));
         $this->assertTrue($this->pgsql_table->dump($this->table));
-        $this->assertTrue($this->sqlite_table->dump($this->table));
+        $this->assertFalse($this->sqlite_table->dump($this->table));
     }
 
 
@@ -427,23 +444,5 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->pgsql_table->modify_column('status',Imperium::CHARACTER_VARYING,200));
         $this->assertFalse($this->sqlite_table->modify_column('status',Imperium::TEXT,200));
     }
-    /**
-     * @throws \Exception
-     */
-    public function test_truncate()
-    {
 
-        $this->assertTrue($this->mysql_table->truncate());
-        $this->assertTrue($this->pgsql_table->truncate());
-        $this->assertTrue($this->sqlite_table->truncate());
-
-        $this->assertTrue($this->mysql_table->truncate($this->table));
-        $this->assertTrue($this->pgsql_table->truncate($this->table));
-        $this->assertTrue($this->sqlite_table->truncate($this->table));
-
-        $this->assertTrue($this->mysql()->empty_table($this->table));
-        $this->assertTrue($this->postgresql()->empty_table($this->table));
-        $this->assertTrue($this->sqlite()->empty_table($this->table));
-
-    }
 }

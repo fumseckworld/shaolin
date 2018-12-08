@@ -157,7 +157,7 @@ namespace Imperium\Connexion {
 
             $this->mode         = $pdo_fetch_mode;
 
-            $this->dump_path    = $dump_path;
+            $this->dump_path    = realpath($dump_path);
 
             $this->host         = $host;
 

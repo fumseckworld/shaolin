@@ -2,9 +2,7 @@
 
 namespace Imperium\Collection {
 
-
     use ArrayAccess;
-    use Exception;
     use Iterator;
 
    /**

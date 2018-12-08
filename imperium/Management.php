@@ -194,18 +194,6 @@ namespace Imperium {
          */
         public function user_exist(string $user) : bool;
 
-        /**
-         *
-         * Create a table
-         *
-         * @param string $table
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function create_table(string $table) : bool;
 
         /**
          *
@@ -232,24 +220,6 @@ namespace Imperium {
          *
          */
         public function empty_table(string $table) : bool;
-
-
-
-        /**
-         *
-         * Add new column in create table task
-         *
-         * @param string $type
-         * @param string $name
-         * @param bool $primary
-         * @param int $length
-         * @param bool $unique
-         * @param bool $null
-         *
-         * @return Imperium
-         *
-         */
-        public function append_field(string $type, string $name, bool $primary = false, int $length = 0, bool $unique = false, bool $null = false) : Imperium;
 
         /**
          *
@@ -460,7 +430,7 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function save(array $data,array $ignore) : bool;
+        public function save(array $data,array $ignore = []) : bool;
 
         /**
          *
@@ -609,23 +579,27 @@ namespace Imperium {
 
         /**
          *
-         * Dump a base or a table
+         * Dump a base or  tables
          *
          * @param bool $base
-         * @param string $table
+         * @param string[] $tables
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function dump(bool $base = true,string $table = '') : bool;
+        public function dump(bool $base,string ...$tables) : bool;
 
         /**
-         * Management constructor.
          *
-         * @param Connect $connect
-         * @param string $current_table
+         * @method __construct
+         *
+         * @param  Connect     $connect       The connection to the base
+         * @param  string      $current_table The current table
+         * @param  array       $hidden_tables All hidden tables in current base
+         * @param  array       $hidden_bases  All hidden bases for the drivers
+         *
          */
         public function __construct(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases);
 

@@ -6,8 +6,6 @@ namespace tests\form;
 use Exception;
 use Testing\DatabaseTest;
 use Imperium\Html\Form\Form;
-use Symfony\Component\DependencyInjection\Tests\Compiler\E;
-
 class FormTest extends DatabaseTest
 {
 

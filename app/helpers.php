@@ -1,9 +1,10 @@
 <?php
 
 
+use Imperium\Dumper\Dumper;
+use Imperium\Dump\Dump;
 use Whoops\Run;
 use Carbon\Carbon;
-use DebugBar\DebugBar;
 use Imperium\Imperium;
 use Imperium\File\File;
 use Imperium\Json\Json;
@@ -12,7 +13,6 @@ use Cz\Git\GitRepository;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Users\Users;
-use Imperium\Debug\Dumper;
 use Imperium\Tables\Table;
 use Imperium\Directory\Dir;
 use Imperium\Html\Bar\Icon;
@@ -20,17 +20,32 @@ use Imperium\Html\Form\Form;
 use Imperium\Connexion\Connect;
 use Sinergi\BrowserDetector\Os;
 use Imperium\Html\Canvas\Canvas;
-use Imperium\Html\Records\Records;
 use Imperium\Collection\Collection;
 use Sinergi\BrowserDetector\Device;
 use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
-use Spatie\DbDumper\Databases\MySql;
-use Spatie\DbDumper\Databases\Sqlite;
 use Whoops\Handler\PrettyPageHandler;
 use Imperium\Html\Pagination\Pagination;
-use Spatie\DbDumper\Databases\PostgreSql;
 
+
+if (not_exist('quote'))
+{
+    /**
+     * Secure a string
+     *
+     * @method quote
+     *
+     * @param  Connect $connect [description]
+     * @param  string  $value   [description]
+     *
+     * @return string
+     *
+     */
+    function quote(Connect $connect,string $value): string
+    {
+        return $connect->instance()->quote($value);
+    }
+}
 if (not_exist('instance'))
 {
     /**
@@ -2319,62 +2334,21 @@ if (not_exist('not_in'))
 
 if (not_exist('dumper'))
 {
-
     /**
-     *
-     * Dump the database content or table content
+     *  [dumper description]
      *
      * @method dumper
      *
-     * @param  Connect $connect The connection
-     * @param  bool    $base    To dump a base
-     * @param  string  $table   The table name
+     * @param  Connect $connect [description]
+     * @param  bool    $base    [description]
+     * @param  string  $tables  [description]
      *
      * @return bool
      *
      */
-    function dumper(Connect $connect,bool $base = true,string $table =''): bool
+    function dumper(Connect $connect,bool $base, string ...$tables): bool
     {
-
-        $database = $connect->base();
-        $driver = $connect->driver();
-        $password = $connect->password();
-        $username = $connect->user();
-        $dump_path = $connect->dump_path();
-
-        Dir::clear($dump_path);
-
-        $filename = $base  ? "$dump_path/$database.sql" : "$dump_path/$table.sql";
-
-
-        switch ($driver)
-        {
-            case Connect::MYSQL:
-                if ($base)
-                    MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
-                else
-                    MySql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
-            break;
-            case Connect::POSTGRESQL:
-                if ($base)
-                    PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->dumpToFile($filename);
-                else
-                    PostgreSql::create()->setDbName($database)->setPassword($password)->setUserName($username)->includeTables($table)->dumpToFile($filename);
-            break;
-            case Connect::SQLITE:
-                if ($base)
-                    Sqlite::create()->setDbName($database)->dumpToFile($filename);
-                else
-                    Sqlite::create()->setDbName($database)->includeTables($table)->dumpToFile($filename);
-            break;
-            default:
-                return false;
-            break;
-
-        }
-
-        return File::exist($filename);
-
+        return (new Dump($connect,$base,$tables))->dump();
     }
 }
 

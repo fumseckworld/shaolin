@@ -3,8 +3,6 @@
 namespace Imperium\Directory {
 
     use Imperium\File\File;
-    use Exception;
-
     /**
     *
     * Directory management
@@ -39,17 +37,15 @@ namespace Imperium\Directory {
          */
         public static function clear(string $directory): bool
         {
-            if (is_false(self::create($directory)))
+            self::create($directory);
+
+            $files = array_diff(scandir($directory), array('.','..'));
+
+            foreach ($files as $file)
             {
-                $files = array_diff(scandir($directory), array('.','..'));
-
-                foreach ($files as $file)
+                if(not_in(self::IGNORE,$file))
                 {
-                    if(not_in(self::IGNORE,$file))
-                    {
-                        (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::remove("$directory/$file");
-                    }
-
+                    (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::remove("$directory/$file");
                 }
             }
             return true;
@@ -96,7 +92,7 @@ namespace Imperium\Directory {
          * @param  string $directory The directory to check
          *
          * @return bool
-         * 
+         *
          */
         public static function is(string $directory): bool
         {

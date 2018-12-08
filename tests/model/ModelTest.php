@@ -39,6 +39,12 @@ class ModelTest extends DatabaseTest
         $this->sqlite_model = $this->sqlite()->model()->change_table($this->table);
     }
 
+    public function test_all()
+    {
+        $this->assertNotEmpty($this->mysql_model->all());
+        $this->assertNotEmpty($this->pgsql_model->all());
+        $this->assertNotEmpty($this->sqlite_model->all());
+    }
     public function test_show()
     {
         $record  = $this->mysql_model->show('imperium',[],'?table=','/',1,5,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');

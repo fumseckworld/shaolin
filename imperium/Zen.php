@@ -6,6 +6,12 @@ namespace Imperium {
     class Zen
     {
 
+        const CHECK_EXPECTED = "CHECK EXPECTED";
+
+        const CHECK_CONDITION = "CHECK  CONDITION";
+
+        const CHECK = "CHECK";
+
         const MODE_ALL_TABLES = 10;
 
         const MODE_ONE_TABLE = 11;
@@ -69,11 +75,7 @@ namespace Imperium {
         const FIELD_NULLABLE = 'nullable';
 
         const DROP_CONSTRAINT = 'drop_constraint';
-        /**
-        |-------------------------------|
-        |          DATA TYPES           |
-        |-------------------------------|
-         */
+
         const TINYINT = 'TINYINT';
         const SMALLINT = 'SMALLINT';
         const MEDIUMINT = 'MEDIUMINT';
