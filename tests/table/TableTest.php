@@ -33,6 +33,14 @@ class TableTest extends DatabaseTest
         $this->sqlite_table = $this->sqlite()->tables()->select($this->table);
     }
 
+    public function test_columns_info()
+    {
+        $this->assertNotEmpty($this->mysql_table->get_columns_info());
+        $this->assertNotEmpty($this->pgsql_table->get_columns_info());
+        $this->assertNotEmpty($this->sqlite_table->get_columns_info());
+    }
+
+    
     /**
      * @throws \Exception
      */
@@ -427,7 +435,7 @@ class TableTest extends DatabaseTest
     {
 
         $this->assertTrue($this->mysql_table->dump());
-        $this->assertTrue($this->pgsql_table->dump()); 
+        $this->assertTrue($this->pgsql_table->dump());
 
         $this->assertTrue($this->mysql_table->dump($this->table));
         $this->assertTrue($this->pgsql_table->dump($this->table));

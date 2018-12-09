@@ -6,8 +6,7 @@ namespace Imperium\Tables {
     use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
-    use Imperium\File\File;
-
+    use Imperium\Import\Import;
     use Imperium\Zen;
     use Imperium\Imperium;
 
@@ -76,15 +75,8 @@ namespace Imperium\Tables {
         private $charset;
 
         /**
-         *  [private description]
          *
-         *  @var [type]
-         */
-        private $check;
-
-        /**
-         *
-         *  ALl date type
+         * ALl date type
          *
          * @var array
          *
@@ -158,6 +150,14 @@ namespace Imperium\Tables {
 
         /**
          *
+         * All columns types
+         *
+         * @var array
+         */
+        private $all_types;
+
+        /**
+         *
          * Return the type of a column
          *
          * @param string $column
@@ -174,11 +174,13 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Return the check clause
+         *
          * @method check
          *
-         * @param  string $column    [description]
-         * @param  string $condition [description]
-         * @param  mixed  $expected  [description]
+         * @param  string $column
+         * @param  string $condition
+         * @param  mixed  $expected
          *
          * @return string
          *
@@ -189,10 +191,11 @@ namespace Imperium\Tables {
         }
 
         /**
+         * Select a table
          *
-         * Define name of the current  table
+         * @method select
          *
-         * @param string $table
+         * @param  string $table The table to manage
          *
          * @return Table
          *
@@ -203,16 +206,21 @@ namespace Imperium\Tables {
 
             return $this;
         }
+
         /**
-         * Table constructor.
          *
-         * @param Connect $connect
+         *
+         * @method __construct
+         *
+         * @param  Connect     $connect
+         *
          */
         public function __construct(Connect $connect)
         {
              $this->connexion =  $connect;
              $this->driver  =  $connect->driver();
              $this->added_columns = collection();
+             $this->all_types = collection()->merge(self::TYPE_OF_DATE,self::TYPE_OF_INTEGER,self::TYPE_OF_TEXT)->collection();
         }
 
 
@@ -231,6 +239,7 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Get columns information
          *
          * @method get_columns_info
          *
@@ -453,21 +462,24 @@ namespace Imperium\Tables {
         }
 
         /**
-         *
-         * Append a field in create task
+         * Append a field in the create table
          *
          * @method field
          *
-         * @param  string $type     [description]
-         * @param  string $name     [description]
-         * @param  bool   $primary  [description]
-         * @param  int    $length   [description]
-         * @param  bool   $unique   [description]
-         * @param  bool   $nullable [description]
+         * @param  string $type            The field type
+         * @param  string $name            The field name
+         * @param  bool   $primary         To create a primary key
+         * @param  int    $length          The length of the field
+         * @param  bool   $unique          To create an unique field
+         * @param  bool   $nullable        To create a nullable or not field
+         * @param  bool   $check           To add check validation
+         * @param  string $check_condition The check condition
+         * @param  mixed  $check_expected  The check expected value
+         *
          *
          * @return Table
          *
-         */
+         **/
         public function field(string $type, string $name, bool $primary, int $length, bool $unique, bool $nullable,bool $check,string $check_condition,$check_expected): Table
         {
 
@@ -644,26 +656,19 @@ namespace Imperium\Tables {
          **/
         public function import(string $sql_file): bool
         {
-            $sql = $this->connexion->dump_path() . '/'. $sql_file;
-            switch ($this->driver)
-            {
-                case Connect::POSTGRESQL:
-                break;
-                case Connect::SQLITE:
-                    return system("sqlite3 {$this->connexion->base()} < $sql") && def($this->all());
-                break;
-                default:
-                    return $this->connexion->execute(File::content($sql));
-                break;
-            }
-            return $this->connexion->execute(File::content($sql));
+            $sql = $this->connexion->dump_path() . '/'. $sql_file ;
+
+            return (new Import($this->connexion,$sql))->import();
         }
+
         /**
-         * start creation of a table
+         *
+         *
+         * @method startCreateCommand
+         *
+         * @param  string             $table
          *
          * @return string
-         *
-         * @throws Exception
          *
          */
         private function startCreateCommand(string $table = '') : string
@@ -677,17 +682,17 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Verify is the current field is the last
+         * Check if the fields is equal to the last field
          *
-         * @param       $field
+         * @method is_the_last_field
          *
-         * @param array $columns
+         * @param  string            $field    The field name
+         * @param  array             $columns All columns
          *
          * @return bool
          *
-         * @throws Exception
          */
-        public function is_the_last_field($field,array $columns): bool
+        public function is_the_last_field(string $field,array $columns): bool
         {
             return equal($field,collection($columns)->last());
         }
@@ -798,17 +803,16 @@ namespace Imperium\Tables {
                     }
                     else
                     {
-
                         if (has($type,self::TYPE_OF_DATE))
                             $x->add($this->connexion->instance()->quote(faker()->date()),$column);
 
                         if (has($type,self::TYPE_OF_INTEGER))
                             $x->add(faker()->numberBetween(1,100),$column);
 
-                        if (has($type,self::TYPE_OF_TEXT))
+                        if (has($type,self::TYPE_OF_TEXT) || not_in($this->all_types,$type))
                             $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
+                        }
 
-                    }
 
                 }
 
@@ -1396,11 +1400,12 @@ namespace Imperium\Tables {
          * @param int $id
          * @param array $values
          * @param array $ignore
-         * @param string|null $table
+         * @param string $table
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function update(int $id,array $values,array $ignore= [],string $table = ''): bool
         {
