@@ -127,7 +127,7 @@ class BaseTest extends DatabaseTest
         $this->assertTrue($this->sqlite()->bases()->dump());
     }
 
- 
+
 
     public function test_exec()
     {
@@ -156,11 +156,11 @@ class BaseTest extends DatabaseTest
         $this->assertTrue($this->postgresql()->bases()->set_collation('C')->change_collation());
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
 
-        $this->assertTrue($this->mysql()->change_base_charset($this->base,'utf8'));
-        $this->assertTrue($this->mysql()->change_base_collation($this->base,'utf8_general_ci'));
+        $this->assertTrue($this->mysql()->change_base_charset('utf8'));
+        $this->assertTrue($this->mysql()->change_base_collation('utf8_general_ci'));
 
-        $this->assertTrue($this->postgresql()->change_base_charset($this->base,'UTF8'));
-        $this->assertTrue($this->postgresql()->change_base_collation($this->base,'C'));
+        $this->assertTrue($this->postgresql()->change_base_charset('UTF8'));
+        $this->assertTrue($this->postgresql()->change_base_collation('C'));
 
         $this->assertTrue($this->postgresql()->bases()->set_collation('C')->change_collation());
         $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->change_charset());
