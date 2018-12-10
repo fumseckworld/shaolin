@@ -40,7 +40,7 @@ class TableTest extends DatabaseTest
         $this->assertNotEmpty($this->sqlite_table->get_columns_info());
     }
 
-    
+
     /**
      * @throws \Exception
      */

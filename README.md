@@ -2,7 +2,7 @@
 <p align="center">
 <img src="https://poser.pugx.org/imperium/imperium/v/stable" alt="Latest Stable Version">
 <img src="https://poser.pugx.org/imperium/imperium/downloads" alt="Download">
-<img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence"> 
+<img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence">
 </p>
 
 * [**Imperium**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Imperium.php)
@@ -29,7 +29,7 @@ It is a free php library written to be useful for everybody and to be included i
 # Objectives
 
 Imperium was born to you offer a system to manage your databases more simply without use obligatory a framework.
- 
+
 To allow you to use it in your own projects, and group my projects in one to update them more simply.
 
 Its objectives are to supports all [types of databases](http://php.net/manual/en/pdo.drivers.php) possibles, and be useful for all developers to build a admin area more simply.
@@ -47,7 +47,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
     * Oracle                
     * SQL Server             
     * Firebird          
-    * MongoDB 
+    * MongoDB
 
 
 # Bugs reports
@@ -56,7 +56,7 @@ Please send me an email at **bugzilla@laposte.fr**
 
 # Contribute
 
-Your help are welcome. 
+Your help are welcome.
 
 Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more simply.
 
@@ -81,7 +81,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | change_collation      |   void    | A boolean                        | Change the base collation                                          |
 | change_charset        |   void    | A boolean                        | Change the base charset                                            |
 | check                 |   void    | An instance of Base              | Check if driver is not sqlite                                      |
-| set_name              |   string  | Return an instance of base       | Save the name                                                      | 
+| set_name              |   string  | Return an instance of base       | Save the name                                                      |
 
 
 
@@ -102,7 +102,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 
 
 # [Table](https://git.fumseck.eu/cgit/imperium/tree/imperium/Tables/Table.php) [Coverage](https://imperium.fumseck.eu/imperium/Tables/Table.php.html)
- 
+
 | Method                            | arguments | return                     | do                                                                                       |    
 |-----------------------------------|-----------|----------------------------|------------------------------------------------------------------------------------------|    
 | __construct                       |   Connect | An instance of Table       | Save connexion and driver                                                                |
@@ -145,8 +145,8 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | count                             |   string  | An int                     | Count number of records inside a table                                                   |
 | all                               |   string  | An array                   | Return all records inside a table                                                        |
 | found                             |   void    | An integer                 | Return number of tables found inside the database                                        |
-| update                            |   mixed   | A boolean                  | Update a record                                                                          | 
-| modify_column                     |   mixed   | A boolean                  | Modify a column                                                                          | 
+| update                            |   mixed   | A boolean                  | Update a record                                                                          |
+| modify_column                     |   mixed   | A boolean                  | Modify a column                                                                          |
 | set_engine                        |   string  | An instance of Table       | Define mysql engine                                                                      |
 | drop_all_tables                   |   void    | An boolean                 | Drop all tables                                                                          |
 | append_columns                    |   mixed   | An boolean                 | Append multiple columns                                                                  |
@@ -156,10 +156,10 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | set_charset                       |   string  | An instance of Table       | Define the charset                                                                       |
 | get_current_tmp_table             |   void    | An string                  | Return the sha1 of the current table name                                                |
 | insert_multiples                  |   array   | A boolean                  | Insert multiples values                                                                  |
- 
- 
+
+
 # [Model](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php) [Coverage](https://imperium.fumseck.eu/imperium/Model/Model.php.html)
- 
+
 | Method                | arguments | return                                    |   do                                                               |    
 |-----------------------|-----------|-------------------------------------------|--------------------------------------------------------------------|    
 | __construct           |   mixed   | An instance of Model                      | Save the data                                                      |
@@ -192,7 +192,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | last                  |   mixed   | An array                                  | Return the lasts records with a limit and order by                 |   
 
 # [Collection](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php) [Coverage](https://imperium.fumseck.eu/imperium/Collection/Collection.php.html)
- 
+
 | Method                | arguments | return                     | do                                                                                       |    
 |-----------------------|-----------|----------------------------|------------------------------------------------------------------------------------------|    
 | __construct           |   array   | An instance of Collection  | Save or create an array to manage                                                        |
@@ -236,7 +236,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | valid                 |   void    | mixed                      | Checks if current position is valid                                                      |                
 | rewind                |   void    | void                       | Rewind the Iterator to the first element                                                 |                
 | next                  |   void    | void                       | Move forward to next element                                                             |                
-            
+
 
 # [Directory](https://git.fumseck.eu/cgit/imperium/tree/imperium/Directory/Dir.php) [Coverage](https://imperium.fumseck.eu/imperium/Directory/Dir.php.html)
 
@@ -245,7 +245,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | ::clear               |   string  | A boolean                        | Remove the directory files                                         |
 | ::create              |   string  | A boolean                        | Create the directory if not exist                                  |
 | ::remove              |   string  | A boolean                        | Remove the directory if not exist                                  |
-| ::is                  |   string  | A boolean                        | Check if arg is a directory                                        | 
+| ::is                  |   string  | A boolean                        | Check if arg is a directory                                        |
 
 
 # [Connexion](https://git.fumseck.eu/cgit/imperium/tree/imperium/Connexion/Connect.php) [Coverage](https://imperium.fumseck.eu/imperium/Connexion/Connect.php.html)
@@ -285,12 +285,12 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | select                |   mixed   | An instance of the form builder  | Create a select input                                              |
 | checkbox              |   mixed   | An instance of the form builder  | Create a checkbox input                                            |
 | radio                 |   mixed   | An instance of the form builder  | Create a radio input                                               |
-| large                 |   bool    | An instance of the form builder  | Set the form size to large                                         | 
-| small                 |   bool    | An instance of the form builder  | Set the form size to small                                         | 
-| row                   |   void    | An instance of the form builder  | Start a new row                                                    | 
-| end_row               |   void    | An instance of the form builder  | Close the row                                                      | 
-| end_row_and_new       |   void    | An instance of the form builder  | Close the row and start a new row                                  | 
-| validate              |   void    | An instance of the form builder  | Enable the validation                                              | 
+| large                 |   bool    | An instance of the form builder  | Set the form size to large                                         |
+| small                 |   bool    | An instance of the form builder  | Set the form size to small                                         |
+| row                   |   void    | An instance of the form builder  | Start a new row                                                    |
+| end_row               |   void    | An instance of the form builder  | Close the row                                                      |
+| end_row_and_new       |   void    | An instance of the form builder  | Close the row and start a new row                                  |
+| validate              |   void    | An instance of the form builder  | Enable the validation                                              |
 | redirect              |   mixed   | An instance of the form builder  | Create a redirect select                                           |
 | generate              |   mixed   | A form                           | Create a form to create or update data inside a table              |
 | margin                |   int     | An instance of the form builder  | Add margin                                                         |
@@ -298,7 +298,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | padding               |   int     | An instance of the form builder  | Add padding                                                        |
 | get_padding           |   void    | A string                         | Return the defined padding                                         |
 | end                   |   void    | The form                         | Close the form and return it                                       |
- 
+
 
 
 # [Json](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php) [Coverage](https://imperium.fumseck.eu/imperium/Json/Json.php.html)
@@ -318,12 +318,91 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
-| __construct           |   mixed   | An instance of the query builder | Save the connexion                                                 |
+| __construct           |   mixed   | An instance of the query builder | Save the connection                                                 |
 | set_current_table_name|   string  | An instance of the query builder | Save the table name                                                |
 | sql                   |   void    | A string                         | Return the generated sql query                                     |
 | where                 |   mixed   | An instance of the query builder | Generate a where clause                                            |
 | between               |   mixed   | An instance of the query builder | Generate a where clause with between                               |
 | order_by              |   string  | An instance of the query builder | Generate a order by clause                                         |
 | set_columns           |   array   | An instance of the query builder | Define the columns to select                                       |
-| connect               |   Connect | An instance of the query builder | Define the connexion                                               |
- 
+| connect               |   Connect | An instance of the query builder | Define the connection                                               |
+
+
+# [Helpers](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php) [Coverage](https://imperium.fumseck.eu/app/helpers.php.html)
+
+| Method                | arguments | return                           |   do                                                                  |    
+|-----------------------|-----------|----------------------------------|-----------------------------------------------------------------------|    
+| quote                 |   mixed   | A string                         | Quote a string to use in a query                                      |
+| apps                  |   mixed   | A instance of Imperium           | Group all possible class instances in a class                         |
+| assign                |   mixed   | void                             | Assign to a variable a content by a condition                         |
+| query                 |   mixed   | An instance of Query builder     | Create the instance                                                   |
+| is_pair               |   int     | A Boolean                        | Check if a number is pair                                             |
+| equal                 |   mixed   | A Boolean                        | Check if two variable are equals                                      |
+| is_not_false          |   mixed   | A Boolean                        | Check if data is not equal to false                                   |
+| is_false              |   mixed   | A Boolean                        | Check if data is equal to false                                       |
+| is_not_true           |   mixed   | A Boolean                        | Check if data is not equal to true                                    |
+| is_true               |   mixed   | A Boolean                        | Check if data is equal to true                                        |
+| different              |   mixed   | A Boolean                        | Check if two variables are different                                   |
+| secure_register_form  |   mixed   | A string                         | Generate a register form based on ip address                          |
+| login                 |   string  | A string                         | Generate a login form                                                 |
+| bases_to_json         |   mixed   | A Boolean                        | Generate a json file with all bases not hidden with an optional key    |
+| users_to_json         |   mixed   | A Boolean                        | Generate a json file with all users not hidden with an optional key    |
+| tables_to_json        |   mixed   | A Boolean                        | Generate a json file with all tables not hidden with an optional key   |
+| sql_to_json           |   mixed   | A Boolean                        | Generate a json file with the result of all queries                    |
+| json                  |   string  | An instance of Json              | Return an instance of Json                                            |   
+| query_result          |   mixed   | A string                         | Print the query query result                                          |
+| execute_query         |   mixed   | mixed                            | Execute a query                                                       |
+| query_view            |   mixed   | A string                         | Display a query form builder                                          |
+| length                |   mixed   | A integer                        | Calcul the length of an array or a string                             |
+| connect               |   mixed   | A instance of Connect            | Connect to the base                                                   |
+| collection            |   array   | A instance of Collection         | Management of the array                                               |
+| def                   |   mixed   | A Boolean                        | Check if a value is define and it's not empty                          |
+| not_def               |   mixed   | A Boolean                        | Check if a value is not define                                         |
+| zones                 |   string  | An array                         | Display all time zones                                                |
+| tables_select         |   mixed   | A string                         | Display all table in a select                                         |
+| bases_select          |   mixed   | A string                         | Display all bases in a select                                         |
+| users_select          |   mixed   | A string                         | Display all users in a select                                         |
+| simply_view           |   mixed   | A string                         | Display all records with pagination in a table                        |
+| get_records           |   mixed   | An array                         | Display a limited records for simply view                             |
+| _html                 |   mixed   | Void                             | Decode or not decode data in html code                                |
+| html                  |   mixed   | A string                         | Create a html tag and put content inside                              |
+| id                    |   string  | A string                         | Generate an unique id                                                 |
+| submit                |   mixed   | A Boolean                        | Check if a form was submited                                          |
+| push                  |   mixed   | Void                             | Add elements to the end of the array                                  |
+| stack                 |   mixed   | Void                             | Add elements to the beginning of the array                            |
+| has                   |   mixed   | A Boolean                        | Check if a value exist in an array                                    |
+| values                |   array   | An array                         | Return all values inside the array                                    |
+| keys                  |   array   | An array                         | Return all keys inside the array                                      |
+| merge                 |   array   | Void                             | Merge multiples array                                                 |
+| session               |   string  | A string                         | Return a $_SESSION key if is define                                    |
+| post                  |   string  | A string                         | Return a $_POST key if is define                                       |
+| get                   |   string  | A string                         | Return a $_GET key if is define                                        |
+| cookie                |   string  | A string                         | Return a $_COOKIE key if is define                                     |
+| files                  |   string  | A string                         | Return a $_FILES key if is define                                      |
+| server                |   string  | A string                         | Return a $_SERVER key if is define                                     |
+| generate              |   mixed   | A string                         | Generate a form to edit or update a record                            |
+| collation             |   Connect | An array                         | Display all available collations                                      |
+| charset               |   Connect | An array                         | Display all available charsets                                        |
+| base                  |   mixed   | An Instance of Base              | Return an instance of Base                                            |
+| user                  |   Connect | An Instance of User              | Return an instance of User                                            |
+| pass                  |   mixed   | A Boolean                        | Update the user password                                              |
+| os                    |   Boolean | Mixed                            | Display os name or return an instance of Os                           |
+| device                |   Boolean | Mixed                            | Display device name or return an instance of Device                   |
+| browser               |   Boolean | Mixed                            | Display browser name or return an instance of Browser                 |
+| is_browser            |   string  | A Boolean                        | Check the current browser                                             |
+| is_mobile             |   void    | A Boolean                        | Check if the device is a mobile                                       |
+| superior              |   Mixed   | A Boolean                        | Check if the parameter is superior of the expected value              |
+| superior_or_equals    |   Mixed   | A Boolean                        | Check if the parameter is superior or equal of the expected value     |
+| inferior              |   Mixed   | A Boolean                        | Check if the parameter is inferior of the expected value              |
+| inferior_or_equals    |   Mixed   | A Boolean                        | Check if the parameter is inferior or equal of the expected value     |
+| whoops                |   Void    | A instance of Run                | Initialize whoops and return the instance                             |
+| before_key            |   Mixed   | Mixed                            | Return the value before a key inside an array                         |
+| req                   |   Mixed   | An array                         | Execute all queries and return the data in an array                   |
+| execute               |   Mixed   | A Boolean                        | Execute all queries and check if it's was expected successfully       |
+| faker                 |   string  | An instance of faker             | Return an instance of faker                                           |
+| remove_users          |   mixed   | A Boolean                        | Remove the users                                                      |
+| remove_tables         |   mixed   | A Boolean                        | Remove the tables                                                     |
+| remove_bases          |   mixed   | A Boolean                        | Remove the base                                                       |
+| faker                 |   string  | An instance of faker             | Return an instance of faker                                           |
+| faker                 |   string  | An instance of faker             | Return an instance of faker                                           |
+| faker                 |   string  | An instance of faker             | Return an instance of faker                                           |

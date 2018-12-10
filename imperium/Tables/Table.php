@@ -480,7 +480,7 @@ namespace Imperium\Tables {
          * @return Table
          *
          **/
-        public function field(string $type, string $name, bool $primary, int $length, bool $unique, bool $nullable,bool $check,string $check_condition,$check_expected): Table
+        public function field(string $type, string $name, bool $primary, int $length, bool $unique, bool $nullable,$default,bool $check,string $check_condition,$check_expected): Table
         {
 
             $x = collection()
@@ -490,6 +490,7 @@ namespace Imperium\Tables {
                 ->add($length, self::FIELD_LENGTH )
                 ->add($unique,self::FIELD_UNIQUE)
                 ->add($nullable,self::FIELD_NULLABLE)
+                ->add($default,self::DEFAULT)
                 ->add($check,self::CHECK)
                 ->add($check_condition,self::CHECK_CONDITION)
                 ->add($check_expected,self::CHECK_EXPECTED)
@@ -547,14 +548,15 @@ namespace Imperium\Tables {
          *
          * @throws Exception
          */
-        public function alter_table(string $constraint,string $column): bool
+        public function alter_table(string $constraint,string $column,$table = ''): bool
         {
+            $table = def($table) ? $table : $this->get_current_table();
 
             if (equal($this->driver,Connect::MYSQL))
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD  UNIQUE ($column)");
+                    return $this->connexion->execute("ALTER TABLE $table ADD  UNIQUE ($column)");
                 }
             }
 
@@ -562,7 +564,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ADD UNIQUE ($column);");
+                    return $this->connexion->execute("ALTER TABLE $table ADD UNIQUE ($column);");
                 }
             }
 
@@ -570,7 +572,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("CREATE  UNIQUE INDEX IF NOT EXISTS uniq_$column ON {$this->get_current_table()}($column);");
+                    return $this->connexion->execute("CREATE  UNIQUE INDEX IF NOT EXISTS uniq_$column ON $table($column);");
                 }
             }
             return false;
@@ -609,25 +611,30 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Create the new table
+         * Create the table
+         *
+         * @method create
+         *
+         * @param  string $table The table name
          *
          * @return bool
          *
          * @throws Exception
          *
-         */
-        public function create(): bool
+         **/
+        public function create(string $table): bool
         {
+            $data = collection();
+            is_true($this->exist($table),true,"The table $table already exist");
 
-            $command = $this->startCreateCommand();
+            $command = $this->startCreateCommand($table);
 
             $columns = $this->added_columns;
-
-
-
+            $uniq = collection();
             foreach ($columns->collection() as $column)
             {
                 $end =  has($column[Imperium::FIELD_NAME],$columns->last());
+                if($column[Table::FIELD_UNIQUE]){ $uniq->add($column[Table::FIELD_NAME]);}
                 append($command,$this->updateCreateCommand($column,$end));
 
             }
@@ -637,9 +644,20 @@ namespace Imperium\Tables {
 
             $this->added_columns = collection();
 
+            $data->add($this->connexion->execute($command));
+            switch ($this->driver)
+            {
+                case Connect::MYSQL:
 
-            return  $this->connexion->execute($command);
+                        $data->add($this->connexion->execute("ALTER TABLE $table ADD CONSTRAINT uniq_$table UNIQUE($x)"));
+                break;
+
+                default:
+                    # code...
+                    break;
+            }
         }
+
 
         /**
          *
@@ -671,10 +689,9 @@ namespace Imperium\Tables {
          * @return string
          *
          */
-        private function startCreateCommand(string $table = '') : string
+        private function startCreateCommand(string $table ) : string
         {
-            $x = def($table) ? $table : $this->get_current_table();
-            $code = "CREATE TABLE IF NOT EXISTS $x ";
+            $code = "CREATE TABLE IF NOT EXISTS $table ";
             append($code,'(  ');
 
             return $code;
@@ -740,9 +757,11 @@ namespace Imperium\Tables {
                 }
 
                 if (!$end)
-                    if ($x->get(Imperium::FIELD_UNIQUE)){ append($command,' UNIQUE'); }
+                {
+                    if(is_false($x->get(Table::FIELD_NULLABLE))) { append($command,' NOT NULL') ;}
 
-                    if ($x->get(Imperium::FIELD_NULLABLE)){ append($command,'  NOT NULL'); }
+                }
+
 
                 append($command," $check");
 

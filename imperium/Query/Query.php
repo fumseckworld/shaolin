@@ -2,137 +2,169 @@
 
 namespace Imperium\Query {
 
-
     use Exception;
     use Imperium\Connexion\Connect;
     use Imperium\Tables\Table;
+    use Imperium\Zen;
 
-    class Query
+    /**
+    *
+    * Management of the queries
+    *
+    * @author Willy Micieli <micieli@laposte.net>
+    *
+    * @package imperium
+    *
+    * @version 4
+    *
+    * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
+    *
+    **/
+    class Query extends Zen
     {
 
-        const EQUAL = '=';
-
-        const DIFFERENT = '!=';
-
-        const SUPERIOR = '>';
-
-        const INFERIOR = '<';
-
-        const SUPERIOR_OR_EQUAL = '>=';
-
-        const INFERIOR_OR_EQUAL = '<=';
-
-        const LIKE = 'LIKE';
-
-        const DELETE = 'DELETE';
-
-        const SELECT = 'SELECT';
-
-        const INNER_JOIN = 'INNER_JOIN';
-
-        const CROSS_JOIN = 'CROSS_JOIN';
-
-        const LEFT_JOIN = 'LEFT_JOIN';
-
-        const RIGHT_JOIN = 'RIGHT_JOIN';
-
-        const FULL_JOIN = 'FULL_JOIN';
-
-
-        const UPDATE = 'UPDATE';
-
-        const UNION = 'UNION';
-
-        const UNION_ALL = 'UNION_ALL';
-
-
-        const VALID_OPERATORS =  [
-            self::EQUAL,self::DIFFERENT,self::INFERIOR,self::INFERIOR_OR_EQUAL,self::SUPERIOR,self::SUPERIOR_OR_EQUAL,self::LIKE
-        ];
-
-        const MODE = [
-            self::UPDATE,self::SELECT,self::DELETE,self::UNION,self::UNION_ALL,self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN
-        ];
-
-        const JOIN_MODE = [
-           self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,self::RIGHT_JOIN,self::FULL_JOIN
-        ];
-
         /**
-         * sql mode
          *
-         * @var string
+         * The query mode
+         *
+         * @var int
+         *
          */
         private $mode;
 
         /**
+         *
+         * The join clause
+         *
          * @var string
+         *
          */
         private $join;
 
         /**
+         *
+         * The union clause
+         *
          * @var string
+         *
          */
         private $union;
 
-
         /**
-         * selected columns
+         *
+         * All selected columns
          *
          * @var string
+         *
          */
-        private  $columns;
+        private $columns;
 
         /**
-         * where clause
+         *
+         * The where clause
          *
          * @var string
+         *
          */
         private $where;
+
         /**
          *
+         * The connection to the base
+         *
          * @var Connect
+         *
          */
         private $connexion;
 
         /**
+         *
+         * The instance of Table
+         *
          * @var Table
          */
         private $tables;
 
         /**
+         * The from clause
+         *
          * @var string
+         *
          */
-        private $table;
+        private $from;
 
+        /**
+         *
+         * The order by clause
+         *
+         * @var string
+         *
+         */
         private $order;
 
+        /**
+         *
+         * The limit clause
+         *
+         * @var string
+         *
+         */
         private $limit;
 
         /**
+         *
+         * The first table name
+         *
          * @var string
+         *
          */
         private $first_table;
 
         /**
+         *
+         * The second table name
+         *
          * @var string
          *
          */
         private $second_table;
 
         /**
+         *
+         * The where column name
+         *
          * @var string
          */
         private $where_param;
+
+        /**
+         *
+         * The where condition
+         *
+         * @var string
+         *
+         */
         private $where_condition;
+
+        /**
+         *
+         * The where expected value
+         *
+         * @var mixed
+         *
+         */
         private $where_expected;
 
         /**
-        * Query constructor
-        *
-        * @param Table $table
-        * @param Connect $connect
-        */
+         *
+         * The constructor
+         *
+         * @method __construct
+         *
+         * @param  Table       $table
+         * @param  Connect     $connect
+         *
+         */
         public function __construct(Table $table, Connect $connect)
         {
             $this->connexion = $connect;
@@ -141,46 +173,50 @@ namespace Imperium\Query {
 
         /**
          *
-         * Define name of table
+         * Generate a from clause
          *
-         * @param string $table
+         * @method from
+         *
+         * @param  string $table The table to manage
          *
          * @return Query
          *
          */
         public function from(string $table): Query
         {
-            $this->table = "FROM $table";
+            $this->from = "FROM $table";
 
             return $this;
         }
 
         /**
          *
-         * @return string
+         * Return the query generated
          *
-         * @throws Exception
+         * @method sql
+         *
+         * @return string
          *
          */
         public function sql(): string
         {
-            $where      = def($this->where) ? $this->where : '';
-            $order      = def($this->order) ? $this->order : '';
-            $table      = def($this->table) ? $this->table : '';
-            $limit      = def($this->limit) ? $this->limit : '';
-            $join       = def($this->join)  ? $this->join  : '';
-            $union      = def($this->union) ? $this->union : '';
-            $mode       = def($this->mode)  ? $this->mode  : '';
-            $columns    = def($this->columns) ? $this->columns : "*";
+            $where      = def($this->where)     ? $this->where : '';
+            $order      = def($this->order)     ? $this->order : '';
+            $table      = def($this->from)      ? $this->from  : '';
+            $limit      = def($this->limit)     ? $this->limit : '';
+            $join       = def($this->join)      ? $this->join  : '';
+            $union      = def($this->union)     ? $this->union : '';
+            $mode       = def($this->mode)      ? $this->mode  : '';
+            $columns    = def($this->columns)   ? $this->columns : "*";
 
 
             switch($mode)
             {
                 case Query::SELECT:
-                    return "$mode $columns $table $where $order $limit";
+                    return "SELECT $columns $table $where $order $limit";
                 break;
                 case Query::DELETE :
-                    return "$mode $table $where";
+                    return "DELETE $table $where";
                 break;
                 case Query::UNION:
                 case Query::UNION_ALL:
@@ -204,33 +240,32 @@ namespace Imperium\Query {
 
 
         /**
-         * where clause
          *
-         * @param string $param
-         * @param string $condition
-         * @param mixed $expected
+         * Generate a where clause
+         *
+         * @method where
+         *
+         * @param  string $column    The column name
+         * @param  string $condition The condition
+         * @param  mixed  $expected  The expected value
          *
          * @return Query
          *
          * @throws Exception
          *
-         */
-        public function where(string $param, string $condition, $expected): Query
+         **/
+        public function where(string $column, string $condition, $expected): Query
         {
             $condition =  html_entity_decode($condition);
 
-            $this->where_param = $param;
+            $this->where_param = $column;
             $this->where_condition = $condition;
             $this->where_expected = $expected;
 
             if(not_in(self::VALID_OPERATORS,$condition))
                 throw new Exception("The operator is invalid");
 
-            if (is_string($expected))
-                $this->where = "WHERE $param $condition '$expected'";
-            else
-                $this->where = "WHERE $param $condition $expected";
-
+            $this->where = is_string($expected) ? "WHERE $column $condition '$expected'" : "WHERE $column $condition $expected";
 
             return $this;
 
@@ -238,49 +273,60 @@ namespace Imperium\Query {
 
         /**
          *
-         * Build a between clause
+         * Generate a between clause
          *
-         * @param string $column
-         * @param $begin
-         * @param $end
+         * @method between
+         *
+         * @param  string  $column The column name
+         * @param  mixed   $begin  The begin value
+         * @param  mixed   $last   The last value
          *
          * @return Query
          *
          */
-        public function between(string $column,$begin,$end): Query
+        public function between(string $column,$begin,$last): Query
         {
-            if (is_string($begin) && is_string($end))
-                $this->where = "WHERE $column BETWEEN '$begin' AND '$end'";
+            if (is_string($begin) && is_string($last))
+                $this->where = "WHERE $column BETWEEN '$begin' AND '$last'";
             else
-                $this->where = "WHERE $column BETWEEN $begin AND $end";
+                $this->where = "WHERE $column BETWEEN $begin AND $last";
 
             return $this;
         }
 
 
         /**
-         * define the order by
          *
-         * @param string $key
-         * @param string $order
+         * Gerate an order by clause
+         *
+         * @method order_by
+         *
+         * @param  string   $column   The column name
+         * @param  string   $order    The order by option
          *
          * @return Query
+         *
          */
-        public function order_by(string $key, string $order = 'DESC'): Query
+        public function order_by(string $column, string $order = 'DESC'): Query
         {
-            $this->order = "ORDER BY $key $order";
+            $this->order = "ORDER BY $column $order";
+
             return $this;
         }
 
 
         /**
-         * select columns
          *
-         * @param array $columns
+         * Select columns
+         *
+         * @method columns
+         *
+         * @param  string[]  $columns The columns to use
          *
          * @return Query
+         *
          */
-        public function set_columns(array $columns = []): Query
+        public function columns(string ...$columns): Query
         {
             $this->columns = collection($columns)->join(', ');
 
@@ -288,24 +334,13 @@ namespace Imperium\Query {
         }
 
         /**
-         * count all record in a table
          *
-         * @return int
+         * Return the result of the generated query in an array
          *
-         * @throws \Exception
-         */
-        public function count(): int
-        {
-            return  count($this->connexion->request("SELECT * {$this->table}"));
-        }
-
-
-        /**
-         * get all records in a table
+         * @method get
          *
          * @return array
-
-         * @throws \Exception
+         *
          */
         public function get(): array
         {
@@ -313,11 +348,13 @@ namespace Imperium\Query {
         }
 
         /**
-         * define a limit
          *
-         * @param int $limit
+         * Generate a limit clause
          *
-         * @param int $offset
+         * @method limit
+         *
+         * @param  int   $limit  The limit value
+         * @param  int   $offset  The limit offset
          *
          * @return Query
          *
@@ -331,61 +368,68 @@ namespace Imperium\Query {
 
 
         /**
-         * set mode
          *
-         * @param string $mode
+         * Define the query mode
+         *
+         * @method mode
+         *
+         * @param int $mode The mode to use
          *
          * @return Query
          *
-         * @throws Exception
          */
-        public function set_query_mode(string $mode): Query
+        public function mode(int $mode): Query
         {
             if (!has($mode,Query::MODE,true))
                 throw new Exception("The current mode is not valid");
-            else
-                $this->mode = $mode;
+
+            $this->mode = $mode;
 
             return $this;
         }
 
+
         /**
-         * run a delete query
+         *
+         * Run a delete query by a where clause
+         *
+         * @method delete
          *
          * @return bool
          *
-         * @throws Exception
          */
         public function delete(): bool
         {
-            return def($this->table,$this->where,$this->mode) ? $this->connexion->execute($this->sql()) : false;
+            is_false(def($this->from,$this->where,$this->mode),true,"We have not found a where clause");
+
+            return $this->connexion->execute($this->sql());
         }
 
         /**
-         * join clause
          *
-         * @param string $firstTable
-         * @param string $secondTable
-         * @param string $firstParam
-         * @param string $secondParam
-         * @param string $condition
-         * @param array $columns
+         * Generate a join clause
+         *
+         * @method join
+         *
+         * @param  string    $first_table   The first table name
+         * @param  string    $second_table The second table name
+         * @param  string    $first_param   The first parameter
+         * @param  string    $second_param The second parameter
+         * @param  string[]  $columns      The columns
          *
          * @return Query
          *
-         * @throws Exception
-         *
          */
-        public function join( string $firstTable,string $secondTable,string $firstParam ,string $secondParam,array $columns = []) : Query
+        public function join(string $first_table,string $second_table,string $first_param ,string $second_param,string ...$columns) : Query
         {
-            $this->first_table = $firstTable;
-            $this->second_table = $secondTable;
-            $columnsDefine = def($columns);
+            $this->first_table = $first_table;
+            $this->second_table = $second_table;
+            $columns_define = def($columns);
             $mode = $this->mode;
             $condition = Query::EQUAL;
             $select = '';
 
-            if ($columnsDefine)
+            if ($columns_define)
             {
                 $end = collection($columns)->last();
                 foreach($columns as $column)
@@ -398,69 +442,70 @@ namespace Imperium\Query {
             switch ($mode)
             {
                 case Query::INNER_JOIN:
-                    if ($columnsDefine)
+                    if ($columns_define)
                         $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "SELECT * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::CROSS_JOIN:
-                   if ($columnsDefine)
+                   if ($columns_define)
                         $this->join = "SELECT $select FROM $firstTable CROSS JOIN $secondTable";
                     else
                         $this->join = "SELECT * FROM $firstTable CROSS JOIN $secondTable";
                 break;
                 case Query::LEFT_JOIN:
-                    if ($columnsDefine)
+                    if ($columns_define)
                         $this->join = "SELECT $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "SELECT * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::RIGHT_JOIN:
-                    if ($columnsDefine)
+                    if ($columns_define)
                             $this->join = "SELECT $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "SELECT * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
                 case Query::FULL_JOIN:
-                    if ($columnsDefine)
+                    if ($columns_define)
                         $this->join = "SELECT $select FROM $firstTable FULL  JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                     else
                         $this->join = "SELECT * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
                 break;
             }
+
             return $this;
         }
 
         /**
-         * union clause
          *
-         * @param string $firstTable
-         * @param string $secondTable
-         * @param array $firstColumns
-         * @param array $secondColumns
+         * Generate an union clause
+         *
+         * @method union
+         *
+         * @param  string $first_table      The first table name
+         * @param  string $second_table    The second table name
+         * @param  array  $first_columns    The first columns
+         * @param  array  $second_columns  The seconds columns
          *
          * @return Query
          *
-         * @throws Exception
-         *
          */
-        public function union(string $firstTable,string $secondTable,array $firstColumns,array $secondColumns): Query
+        public function union(string $first_table,string $second_table,array $first_columns,array $second_columns): Query
         {
-
-            $first = join(', ',$firstColumns);
-            $second = join(', ',$secondColumns);
+            $first   = collection($first_columns)->join(', ');
+            $second = collection($second_columns)->join(', ');
 
             switch ($this->mode)
             {
                 case Query::UNION:
-                    if (empty($firstColumns) && empty($secondColumns))
+                    if (not_def($first_columns,$second_columns))
                         $this->union = "SELECT * FROM $firstTable UNION SELECT * FROM $secondTable";
                     else
                         $this->union = "SELECT $first FROM $firstTable UNION SELECT $second FROM $secondTable";
                 break;
 
                 case Query::UNION_ALL:
-                    if (empty($firstColumns) && empty($secondColumns))
+                    if (not_def($first_columns,$second_columns))
                         $this->union = "SELECT * FROM $firstTable UNION ALL SELECT * FROM $secondTable";
                     else
                         $this->union = "SELECT $first FROM $firstTable UNION ALL SELECT $second FROM $secondTable";
@@ -473,30 +518,33 @@ namespace Imperium\Query {
 
 
         /**
-         * @param Table $table
-         * @param string $value
-         * @return Query
-         * @throws Exception
+         *
+         * Generate a like clause
+         *
+         * @method like
+         *
+         * @param  string $value [description]
+         *
+         * @return Query  [description]
          */
-        public function like(Table $table,string $value): Query
+        public function like(string $value): Query
         {
-
             $driver = $this->connexion->driver();
 
             if (has($driver,[Connect::POSTGRESQL,Connect::MYSQL]))
             {
-                $columns = join(', ', $table->get_columns());
+                $columns = collection($this->tables->get_columns())->join(', ');
 
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             }
 
             if (has($driver,[Connect::SQLITE]))
             {
-                $fields = $this->tables->get_columns();
-                $end = end($fields);
+                $fields = collection($this->tables->get_columns());
+                $end =  $fields->last();
                 $columns = '';
 
-                foreach ($fields as $column)
+                foreach ($fields->collection() as $column)
                 {
                     if (different($column , $end))
                         append($columns,"$column LIKE '%$value%' OR ");
@@ -504,7 +552,7 @@ namespace Imperium\Query {
                         append($columns ,"$column LIKE '%$value%'");
                 }
 
-                $this->where = "WHERE  $columns";
+                $this->where = "WHERE $columns";
             }
             return $this;
         }
