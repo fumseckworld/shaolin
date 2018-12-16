@@ -100,7 +100,7 @@ namespace Imperium {
 
         /**
          *
-         * The key to save and get the default filed value
+         * The key to save and get if the field as a default value
          *
          * @var int
          *
@@ -109,12 +109,20 @@ namespace Imperium {
 
         /**
          *
+         * The key to save and get the default field value
+         *
+         * @var int
+         */
+        const DEFAULT_VALUE = 11;
+
+        /**
+         *
          * The query mode to execute an union
          *
          * @var int
          *
          */
-        const UNION = 11;
+        const UNION = 12;
 
         /**
          *
@@ -123,7 +131,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const UNION_ALL = 12;
+        const UNION_ALL = 13;
 
         /**
          *
@@ -132,7 +140,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const INNER_JOIN = 13;
+        const INNER_JOIN = 14;
 
         /**
          *
@@ -141,7 +149,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const CROSS_JOIN = 14;
+        const CROSS_JOIN = 15;
 
         /**
          *
@@ -150,7 +158,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const LEFT_JOIN = 15;
+        const LEFT_JOIN = 16;
 
         /**
          *
@@ -159,7 +167,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const RIGHT_JOIN = 16;
+        const RIGHT_JOIN = 17;
 
         /**
          *
@@ -168,7 +176,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const FULL_JOIN = 17;
+        const FULL_JOIN = 18;
 
         /**
          *
@@ -177,7 +185,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const SELF_JOIN = 18;
+        const SELF_JOIN = 19;
 
         /**
          *
@@ -186,7 +194,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const NATURAL_JOIN = 19;
+        const NATURAL_JOIN = 20;
 
         /**
          *
@@ -195,7 +203,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const SELECT = 20;
+        const SELECT = 21;
 
         /**
          *
@@ -204,7 +212,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const DELETE = 21;
+        const DELETE = 22;
 
         /**
          *
@@ -213,7 +221,7 @@ namespace Imperium {
          * @var int
          *
          */
-        const UPDATE =  22;
+        const UPDATE =  23;
 
         /**
          *
@@ -222,7 +230,16 @@ namespace Imperium {
          * @var int
          *
          */
-        const INSERT = 23;
+        const INSERT = 24;
+
+        /**
+         *
+         * The field primary key name
+         *
+         * @var string
+         *
+         */
+        const PRIMARY_KEY = 'id';
 
         /**
          *
@@ -832,6 +849,208 @@ namespace Imperium {
          * @var string
          */
         const VARCHAR2 = 'VARCHAR2';
+
+        /**
+         *
+         * To create a field with the year type
+         *
+         * @var string
+         */
+        const YEAR = 'YEAR';
+
+        /**
+         *
+         * To create a field with the time type
+         *
+         * @var string
+         *
+         */
+        const TIMESTAMP_WITH_TIME_ZONE = 'timestamp with time zone';
+
+        /**
+         *
+         * To create a field with the time type
+         *
+         * @var string
+         *
+         */
+        const TIMESTAMP_WITHOUT_TIME_ZONE ='timestamp without time zone';
+
+        /**
+         *
+         * To create a field with the time type
+         *
+         * @var string
+         *
+         */
+        const TIME_WITH_TIME_ZONE = 'time with time zone';
+
+        /**
+         *
+         * To create a field with the time type
+         *
+         * @var string
+         *
+         */
+        const TIME_WITHOUT_TIME_ZONE =  'time without time zone';
+
+        /**
+         *
+         * To create a field with the double presition type
+         *
+         * @var string
+         *
+         */
+        const DOUBLE_PRECISION = 'double precision';
+
+        /**
+         *
+         * To create a field with the double  type
+         *
+         * @var string
+         *
+         */
+        const DOUBLE = 'double';
+
+        /**
+         *
+         * To create a field with the smallserial type
+         *
+         * @var string
+         *
+         */
+        const SMALL_SERIAL = 'smallserial';
+
+        /**
+         *
+         * To create a field with the int2 type
+         *
+         * @var string
+         *
+         */
+        const INT2 = 'int2';
+
+        /**
+         *
+         * To create a field with the int4 type
+         *
+         * @var string
+         *
+         */
+        const INT4 = 'int4';
+
+        /**
+         *
+         * To create a field with the int8 type
+         *
+         * @var string
+         */
+        const INT8 = 'int8';
+
+        /**
+         *
+         * To create a field with the float type
+         *
+         * @var string
+         *
+         */
+        const FLOAT = 'float';
+
+        /**
+         *
+         * To create a field with the binary type
+         *
+         * @var string
+         *
+         */
+        const BINARY = 'binary';
+
+        /**
+         *
+         * To create a field with the tinytext type
+         *
+         * @var string
+         *
+         */
+        const TINYTEXT = 'tinytext';
+
+
+        /**
+         *
+         * ALl date type
+         *
+         * @var array
+         *
+         */
+        const TYPE_OF_DATE = [
+            self::DATE,
+            self::DATETIME,
+            self::INTERVAL,
+            self::TIME,
+            self::TIMESTAMP,
+            self::YEAR,
+            self::INTERVAL,
+            self::TIMESTAMP_WITH_TIME_ZONE,
+            self::TIMESTAMP_WITHOUT_TIME_ZONE,
+            self::TIME_WITH_TIME_ZONE,
+            self::TIME_WITHOUT_TIME_ZONE
+
+
+        ];
+
+        /**
+         *
+         * All number type
+         *
+         * @var array
+         *
+         */
+        const TYPE_OF_INTEGER = [
+            self::INT,
+            self::DECIMAL,
+            self::DOUBLE_PRECISION,
+            self::BIGINT,
+            self::REAL,
+            self::DOUBLE,
+            self::NUMERIC,
+            self::BIG_SERIAL,
+            self::BIT,
+            self::SERIAL,
+            self::SMALL_SERIAL,
+            self::BIG_SERIAL,
+            self::INT2,
+            self::INT4,
+            self::INT8,
+            self::FLOAT,
+            self::TINYINT,
+            self::SMALLINT,
+            self::MEDIUMINT
+        ];
+
+        /**
+         *
+         * All text type
+         *
+         * @var array
+         *
+         */
+        const TYPE_OF_TEXT = [
+            self::VARCHAR,
+            self::CHAR,
+            self::BINARY,
+            self::VARBINARY,
+            self::CHARACTER_VARYING,
+            self::CHARACTER,
+            self::BLOB,
+            self::MEDIUMBLOB,
+            self::ENUM,
+            self::TEXT,
+            self::MEDIUMTEXT,
+            self::TINYTEXT,
+            self::TEXT,
+            self::MEDIUMTEXT,
+            self::LONGTEXT
+        ];
 
     }
 }

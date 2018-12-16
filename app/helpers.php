@@ -11,7 +11,6 @@ use Imperium\Imperium;
 use Imperium\File\File;
 use Imperium\Json\Json;
 use Imperium\Bases\Base;
-use Cz\Git\GitRepository;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Users\Users;
@@ -1598,7 +1597,6 @@ if (not_exist('collation'))
     {
         $collation = collection();
 
-        $driver = $connexion->driver();
         $request = '';
         $connexion->mysql() ? assign(true,$request,"SHOW COLLATION") : assign(true,$request,"SELECT collname FROM pg_collation");
 
@@ -1627,10 +1625,8 @@ if (not_exist('charset'))
     {
 
         $collation = collection();
-
-        $driver = $connexion->driver();
         $request = '';
-        equal($driver,Connect::MYSQL) ? assign(true,$request,"SHOW CHARACTER SET") : assign(true,$request,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
+        $connexion->mysql() ? assign(true,$request,"SHOW CHARACTER SET") : assign(true,$request,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
 
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));

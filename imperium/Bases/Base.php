@@ -132,14 +132,14 @@ use Imperium\Tables\Table;
          *
          * @method rename
          *
-         * @param  string $new_name The new name
+         * @param  string $base     [description]
+         * @param  string $new_name [description]
          *
-         * @return bool
-         *
+         * @return bool   [description]
          */
-        public function rename(string $new_name): bool
+        public function rename(string $base,string $new_name): bool
         {
-            $current = $this->connexion->base();
+            $current = $base;
             $this->copy($new_name);
             $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->fetch_mode(),$this->connexion->dump_path());
             $table   = table($connect);
@@ -430,19 +430,9 @@ use Imperium\Tables\Table;
          */
         public function charsets(): array
         {
-            $driver = $this->driver;
-            $this->check($driver);
-
-            $request = '';
-
-            equal(Connect::MYSQL,$driver) ? assign(true,$request,'SHOW CHARACTER SET') :  assign(true,$request,'SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1');
-
-            $charset = collection();
-
-            foreach ($this->connexion->request($request) as $char)
-                $charset->push(current($char));
-
-            return $charset->collection();
+            $this->check($this->driver);
+            
+            return charset($this->connexion);
         }
 
         /**
@@ -456,20 +446,9 @@ use Imperium\Tables\Table;
          */
         public function collations(): array
         {
-            $driver = $this->driver;
+            $this->check($this->driver);
 
-            $this->check($driver);
-
-            $request = '';
-
-            equal($driver,Connect::MYSQL) ? assign(true,$request,'SHOW COLLATION') :  assign(true,$request,'SELECT collname FROM pg_collation');
-
-            $collations = collection();
-
-            foreach ($this->connexion->request($request) as $char)
-                $collations->push(current($char));
-
-            return $collations->collection();
+            return collation($this->connexion);
 
         }
 

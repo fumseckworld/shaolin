@@ -535,15 +535,15 @@ namespace Imperium {
 
         /**
          *
-         * Find a record by a where clause
+         * Call the model and return the result of the where clause
          *
-         * @param string $column
-         * @param string $condition
-         * @param $expected
+         * @method where
+         *
+         * @param  string $column    The column name
+         * @param  string $condition The condition
+         * @param  mixed  $expected  The expected value
          *
          * @return array
-         *
-         * @throws Exception
          *
          */
         public function where(string $column, string $condition, $expected): array
@@ -706,7 +706,7 @@ namespace Imperium {
         {
             $this->connect   = $connect;
             $this->driver    = $connect->driver();
-            $x               = new Table($connect);
+            $x               = new Table($connect,$current_table);
             $this->table     = $current_table;
             $this->tables    = $x->hidden($hidden_tables);
 

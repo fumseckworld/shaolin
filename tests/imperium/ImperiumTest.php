@@ -7,6 +7,8 @@ use Exception;
 use Imperium\Collection\Collection;
 use Imperium\Html\Form\Form;
 use Imperium\Imperium;
+use Imperium\Tables\Table;
+
 use Imperium\Users\Users;
 use Testing\DatabaseTest;
 
@@ -167,16 +169,15 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_drop()
     {
-        $current_table_name = 'luxoria';
+        $table = 'luxoria';
 
-        $this->assertTrue($this->mysql()->tables()->select($current_table_name)->field(Imperium::INT,'id',true,0,true,false,false,"","")->field(Imperium::VARCHAR,'name',false,255,true,false,true,"!=","a")->create());
-        $this->assertTrue($this->postgresql()->tables()->select($current_table_name)->field(Imperium::SERIAL,'id',true,0,false,false,false,'','')->field(Imperium::CHARACTER_VARYING,'name',false,255,true,false,true,"!=","B")->create());
+        $this->assertTrue($this->mysql()->tables()->field(Table::INT,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->field(Table::VARCHAR,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
+        $this->assertTrue($this->postgresql()->tables()->field(Table::SERIAL,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->field(Table::CHARACTER_VARYING,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
+        $this->assertTrue($this->sqlite()->tables()->field(Table::INTEGER,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->field(Table::TEXT,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
 
-        $this->assertTrue($this->sqlite()->tables()->select($current_table_name)->field(Imperium::INTEGER,'id',true,0,true,false,false,"","")->field(Imperium::TEXT,'name',false,255,true,false,true,"!=","asB")->create());
-
-        $this->assertTrue($this->mysql()->remove_table($current_table_name));
-        $this->assertTrue($this->postgresql()->remove_table($current_table_name));
-        $this->assertTrue($this->sqlite()->remove_table($current_table_name));
+        $this->assertTrue($this->mysql()->remove_table($table));
+        $this->assertTrue($this->postgresql()->remove_table($table));
+        $this->assertTrue($this->sqlite()->remove_table($table));
 
     }
 

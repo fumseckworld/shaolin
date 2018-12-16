@@ -3,29 +3,18 @@ namespace tests\base;
 
 use PDO;
 use Exception;
-
 use Imperium\Bases\Base;
-
 use Imperium\Collection\Collection;
-
 use Imperium\Connexion\Connect;
-
 use Imperium\Imperium;
-
 use Imperium\Json\Json;
-
 use Imperium\Query\Query;
-
 use Imperium\Tables\Table;
-
 use Imperium\Users\Users;
-
 use Sinergi\BrowserDetector\Os;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Browser;
-
 use Testing\DatabaseTest;
-
 use Whoops\Run;
 
 /**
@@ -228,9 +217,9 @@ class AppTest extends DatabaseTest
 
     public function test_sql_to_jssn()
     {
-        $this->assertTrue(sql_to_json($this->mysql()->connect(),'app.json',["show databases","show tables","select host, User from mysql.user",$this->mysql()->query()->set_query_mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],['bases','tables',"user","base_records"]));
-        $this->assertTrue(sql_to_json($this->postgresql()->connect(),'app.json',[$this->postgresql()->query()->set_query_mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
-        $this->assertTrue(sql_to_json($this->sqlite()->connect(),'app.json',[$this->sqlite()->query()->set_query_mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+        $this->assertTrue(sql_to_json($this->mysql()->connect(),'app.json',["show databases","show tables","select host, User from mysql.user",$this->mysql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],['bases','tables',"user","base_records"]));
+        $this->assertTrue(sql_to_json($this->postgresql()->connect(),'app.json',[$this->postgresql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+        $this->assertTrue(sql_to_json($this->sqlite()->connect(),'app.json',[$this->sqlite()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
     }
 
     public function test_length()
@@ -543,22 +532,5 @@ class AppTest extends DatabaseTest
         $this->assertEquals('a',before_key($a,2));
         $this->assertEquals('c',before_key($a,508));
         $this->assertEquals('d',before_key($a,4));
-    }
-
-    public function test_remove()
-    {
-        $table =  d($this->mysql()
-                                ->tables()
-                                    ->field(Table::INT,'id',true,0,true,false,false,'','')
-                                    ->field(Table::VARCHAR,'name',false,255,true,false,false,'','')
-                                    ->field(Table::VARCHAR,'email',false,255,true,false,false,'','')
-                                    ->field(Table::INTEGER,'age',false,0,false,false,false,'','')
-                                ->create('marion'));
-
-        $this->assertTrue($table);
-    }
-    public function test()
-    {
-        d();
     }
 }

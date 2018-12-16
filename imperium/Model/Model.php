@@ -7,6 +7,7 @@ namespace Imperium\Model {
     use Imperium\Connexion\Connect;
     use Imperium\Query\Query;
     use Imperium\Tables\Table;
+    use Imperium\Collection\Collection;
     use PDO;
 
     /**
@@ -25,88 +26,171 @@ namespace Imperium\Model {
     class Model
     {
         /**
+         *
+         * The connection to the base
+         *
          * @var Connect
+         *
          */
-         private $connexion;
+        private $connexion;
 
         /**
+         *
+         * The table management
+         *
          * @var Table
+         *
          */
         private $table;
 
         /**
-         * current table
+         *
+         * The current table
          *
          * @var string
+         *
          */
         private $current;
 
         /**
-         * the primary key
+         *
+         * The primary key
          *
          * @var string
+         *
          */
         private $primary;
 
         /**
-         * @var \Imperium\Query\Query
+         *
+         * The queries management instance
+         *
+         * @var Query
+         *
          */
         private $sql;
 
-        private $param;
 
+        /**
+         *
+         * The column used
+         *
+         * @var string
+         *
+         */
+        private $column;
+
+        /**
+         *
+         * The where condition
+         *
+         * @var string
+         *
+         */
         private $condition;
 
+        /**
+         *
+         * The expected value
+         *
+         * @var mixed
+         *
+         */
         private $expected;
 
         /**
-         * @var \Imperium\Collection\Collection
+         *
+         * The selected columns
+         *
+         * @var string
+         *
+         */
+        private $only;
+
+        /**
+         *
+         * All columns found in the current table
+         *
+         * @var array
+         *
+         */
+        private $all_columns;
+
+        /**
+         *
+         * @var Collection
+         *
          */
         private $data;
 
         /**
-         * @var
+         *
+         * All columns with her type
+         *
+         * @var array
+         *
          */
-        private $only;
-
+        private $check;
 
         /**
-         * Model constructor.
          *
-         * @param Connect $connect
-         * @param Table $table
-         * @param string $current_table_name
+         *
+         * @method __construct
+         *
+         * @param  Connect     $connect            The connection to the base
+         * @param  Table       $table              The instance of table
+         * @param  string      $current_table_name The table to manage
+         *
          * @throws Exception
+         *
          */
         public function __construct(Connect $connect,Table $table, string $current_table_name)
         {
             $this->connexion = $connect;
-
-            $this->table = $table->select($current_table_name);
-            $this->primary = $this->table->get_primary_key();
+            $this->table = $table->from($current_table_name);
+            $this->all_columns = $this->table->columns();
+            $this->primary = $this->table->primary_key();
             $this->data = collection()->add('null',$this->primary);
             $this->sql = query($table,$connect)->from($current_table_name);
             $this->current  = $current_table_name;
+            $this->check = $this->table->get_columns_with_types();
         }
 
         /**
          *
-         * Display all tables in current database
+         * Search in the current table a value
          *
-         * @param array $hidden
+         * @method search
+         *
+         * @param  mixed $value The value to search
          *
          * @return array
          *
-         * @throws Exception
+         */
+        public function search($value): array
+        {
+            return $this->sql->like($value)->get();
+        }
+
+        /**
+         *
+         * Display all tables not hidden
+         *
+         * @method show_tables
+         *
+         * @param  string[]      $hidden The hidden table
+         *
+         * @return array
          *
          */
-        public function show_tables(array $hidden = []): array
+        public function show_tables(string ...$hidden): array
         {
             return $this->table->hidden($hidden)->show();
         }
 
         /**
          *
+         * Display records in a table
          *
          * @method show
          *
@@ -134,8 +218,7 @@ namespace Imperium\Model {
          * @param  string $key                    [description]
          * @param  string $order_by               [description]
          *
-         * @return string
-         *
+         * @return string [description]
          */
         public function show(   string $pagination_prefix_url,array $hidden_table,string $table_url_prefix,
                                 string $url_separator,int $current_page,int $limit_records_per_page,
@@ -164,13 +247,13 @@ namespace Imperium\Model {
 
         /**
          *
-         * Change of table
+         * Change the current table
          *
-         * @param string $table
+         * @method change_table
+         *
+         * @param  string       $table The table name
          *
          * @return Model
-         *
-         * @throws Exception
          *
          */
         public function change_table(string $table): Model
@@ -195,13 +278,13 @@ namespace Imperium\Model {
 
         /**
          *
-         * Seed current table
+         * Seed the current table
          *
-         * @param int $records
+         * @method seed
+         *
+         * @param  int  $records The number of records
          *
          * @return bool
-         *
-         * @throws Exception
          *
          */
         public function seed(int $records): bool
@@ -211,13 +294,14 @@ namespace Imperium\Model {
 
         /**
          *
-         * Return only columns results
+         * Select only the columns
          *
-         * @param string ...$columns
+         * @method only
+         *
+         * @param  string[] $columns The columns name
          *
          * @return Model
          *
-         * @throws Exception
          */
         public function only(string ...$columns): Model
         {
@@ -227,37 +311,40 @@ namespace Imperium\Model {
         }
 
         /**
+         *
+         * Return the query result
+         *
+         * @method get
+         *
          * @return array
          *
-         * @throws Exception
          */
         public function get(): array
         {
-            if (not_def($this->param,$this->expected,$this->condition))
+            if (not_def($this->column,$this->expected,$this->condition))
                 throw new Exception("The where clause was not found");
 
-            return def($this->only) ? $this->sql->set_query_mode(Query::SELECT)->set_columns($this->only)->where($this->param,$this->condition,$this->expected)->get() : $this->sql->set_query_mode(Query::SELECT)->where($this->param,$this->condition,$this->expected)->get();
+            return def($this->only) ? $this->sql->mode(Query::SELECT)->set_columns($this->only)->where($this->column,$this->condition,$this->expected)->get() : $this->sql->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
 
 
         /**
+         * [set description]
          *
-         * Define value of a column
+         * @method set
          *
-         * @param string $column_name
-         * @param $value
+         * @param  string $column_name [description]
+         * @param  [type] $value       [description]
          *
-         * @return Model
-         *
-         * @throws Exception
-         *
+         * @return Model  [description]
          */
         public function set(string $column_name,$value): Model
         {
-            not_in($this->columns(),$column_name,true,"The column $column_name was not found in the {$this->current} table");
+            not_in($this->all_columns,$column_name,true,"The column $column_name was not found in the {$this->current} table");
 
             equal($column_name,$this->primary,true,"The primary key is already defined");
 
+            if(is_string($value))
             $this->data->add($value,$column_name);
 
             return $this;
@@ -391,10 +478,11 @@ namespace Imperium\Model {
 
         /**
          *
-         * Select a record by this id
-         * or throw exception if record was not found
+         * Find a record or fail if not found
          *
-         * @param int $id
+         * @method find_or_fail
+         *
+         * @param  int          $id The record id
          *
          * @return array
          *
@@ -407,26 +495,28 @@ namespace Imperium\Model {
 
             inferior($data,1,true,'Record not found');
 
+            superior($data,1,true,"The primary key is not unique");
+
             return $data;
         }
 
+
         /**
          *
-         * Select only one or multiples
-         * records with a clause where
+         * Select record by a where clause
          *
-         * @param $param
-         * @param $condition
-         * @param $expected
+         * @method where
+         *
+         * @param  string $column    The column name
+         * @param  string $condition The condition
+         * @param  mixed  $expected  The expected value
          *
          * @return Model
          *
-         * @throws Exception
-         *
          */
-        public function where($param,$condition,$expected): Model
+        public function where(string $column,string $condition,$expected): Model
         {
-            $this->param = $param;
+            $this->param = $column;
             $this->condition = $condition;
             $this->expected = $expected;
 
