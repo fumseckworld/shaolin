@@ -179,7 +179,7 @@ namespace Imperium {
          *
          * @throws Exception
          */
-        public function all(string $order = 'desc') : array
+        public function all(string $order = Table::DESC) : array
         {
             return $this->model()->all($order);
         }
@@ -246,7 +246,7 @@ namespace Imperium {
          */
         public function change_table_collation(string $table, string $new_collation): bool
         {
-           return $this->tables()->select($table)->set_collation($new_collation)->change_collation();
+           return $this->tables()->from($table)->set_collation($new_collation)->change_collation();
         }
 
         /**
@@ -278,7 +278,7 @@ namespace Imperium {
          */
         public function change_table_charset(string $table, string $new_charset): bool
         {
-            return $this->tables()->select($table)->set_charset($new_charset)->change_charset();
+            return $this->tables()->from($table)->set_charset($new_charset)->change_charset();
         }
 
         /**
@@ -358,7 +358,7 @@ namespace Imperium {
          */
         public function show_columns(): array
         {
-            return $this->tables()->get_columns();
+            return $this->tables()->columns();
         }
 
         /**
@@ -372,7 +372,7 @@ namespace Imperium {
          */
         public function show_columns_types(): array
         {
-             return $this->tables()->get_columns_types();
+             return $this->tables()->columns_types();
         }
 
         /**
@@ -581,7 +581,7 @@ namespace Imperium {
          */
         public function save(array $data, array $ignore = []): bool
         {
-            return $this->tables()->insert($data,$ignore);
+            return $this->tables()->save($data,$this->tables()->get_current_table(),$ignore);
         }
 
         /**
@@ -597,7 +597,7 @@ namespace Imperium {
          */
         public function remove_record(int $id): bool
         {
-            return $this->tables()->remove_by_id($id);
+            return $this->tables()->remove($id);
         }
 
         /**

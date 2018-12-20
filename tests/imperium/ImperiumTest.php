@@ -15,7 +15,6 @@ use Testing\DatabaseTest;
 class ImperiumTest extends DatabaseTest
 {
 
-
     public function setUp()
     {
         $this->table = 'imperium';
@@ -135,13 +134,17 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_remove_column()
     {
-        $this->assertFalse($this->mysql()->tables()->select($this->table)->remove_column('id'));
-        $this->assertFalse($this->postgresql()->remove_column('id'));
-        $this->assertFalse($this->sqlite()->remove_column('id'));
+        $this->assertFalse($this->mysql()->tables()->from($this->table)->remove_column('id'));
+        $this->assertFalse($this->postgresql()->tables()->from($this->table)->remove_column('id'));
+        $this->assertFalse($this->sqlite()->tables()->from($this->table)->remove_column('id'));
 
-        $this->assertTrue($this->mysql()->remove_column('date'));
-        $this->assertTrue($this->postgresql()->remove_column('date'));
-        $this->assertFalse($this->sqlite()->remove_column('date'));
+        $this->assertTrue($this->mysql()->tables()->from($this->table)->remove_column('date'));
+        $this->assertTrue($this->postgresql()->tables()->from($this->table)->remove_column('date'));
+        $this->assertFalse($this->sqlite()->tables()->from($this->table)->remove_column('date'));
+
+        $this->assertFalse($this->mysql()->tables()->from($this->table)->has_column('date'));
+        $this->assertFalse($this->postgresql()->tables()->from($this->table)->has_column('date'));
+        $this->assertTrue($this->sqlite()->tables()->from($this->table)->has_column('date'));
     }
 
 
@@ -243,9 +246,9 @@ class ImperiumTest extends DatabaseTest
      */
     public function test_show_columns()
     {
-        $this->assertNotEmpty($this->mysql()->tables()->select($this->table)->get_columns_types());
-        $this->assertNotEmpty($this->postgresql()->tables()->select($this->table)->get_columns_types());
-        $this->assertNotEmpty($this->sqlite()->tables()->select($this->table)->get_columns_types());
+        $this->assertNotEmpty($this->mysql()->tables()->from($this->table)->columns_types());
+        $this->assertNotEmpty($this->postgresql()->tables()->from($this->table)->columns_types());
+        $this->assertNotEmpty($this->sqlite()->tables()->from($this->table)->columns_types());
 
         $this->assertNotEmpty($this->mysql()->show_columns());
         $this->assertNotEmpty($this->postgresql()->show_columns());

@@ -1598,7 +1598,18 @@ if (not_exist('collation'))
         $collation = collection();
 
         $request = '';
-        $connexion->mysql() ? assign(true,$request,"SHOW COLLATION") : assign(true,$request,"SELECT collname FROM pg_collation");
+        switch ($connexion->driver())
+        {
+            case Connect::MYSQL:
+                assign(true,$request,"SHOW COLLATION");
+            break;
+            case Connect::POSTGRESQL:
+                assign(true,$request,"SELECT collname FROM pg_collation");
+            break;
+            default:
+                return $collation->collection();
+            break;
+        }
 
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));
@@ -1624,14 +1635,28 @@ if (not_exist('charset'))
     function charset(Connect $connexion): array
     {
 
-        $collation = collection();
-        $request = '';
-        $connexion->mysql() ? assign(true,$request,"SHOW CHARACTER SET") : assign(true,$request,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
 
-        foreach ($connexion->request($request) as $char)
-            $collation->push(current($char));
+            $collation = collection();
 
-        return $collation->collection();
+            $request = '';
+            switch ($connexion->driver())
+            {
+                case Connect::MYSQL:
+                    assign(true,$request,"SHOW CHARACTER SET");
+                break;
+                case Connect::POSTGRESQL:
+                    assign(true,$request,"SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1");
+                break;
+                default:
+                    return $collation->collection();
+                break;
+            }
+
+            foreach ($connexion->request($request) as $char)
+                $collation->push(current($char));
+
+            return $collation->collection();
+
 
     }
 }

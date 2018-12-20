@@ -107,7 +107,7 @@ namespace Imperium\Dump {
             $username   = $this->connexion->user();
             $dump_path  = $this->connexion->dump_path();
             $host       = $this->connexion->host();
-
+         
             Dir::clear($dump_path);
 
             $filename =  "$dump_path/$database.sql";

@@ -1191,10 +1191,10 @@ namespace Imperium\Html\Form {
          */
         public function generate(int $form_grid,string $table, Table $instance, string $submit_text, string $submit_class, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
-            $instance = $instance->select($table);
-            $types = $instance->get_columns_types();
-            $columns = $instance->get_columns();
-            $primary = $instance->get_primary_key();
+            $instance = $instance->from($table);
+            $types = $instance->columns_types();
+            $columns = $instance->columns();
+            $primary = $instance->primary_key();
 
             equal($form_grid,0,true,"Zero is not a valid number");
             not_in([Form::EDIT,Form::CREATE],$mode,true,"The mode used is not a valid mode");
@@ -1206,7 +1206,7 @@ namespace Imperium\Html\Form {
             if (equal($mode,Form::EDIT))
             {
 
-                foreach ($instance->select_by_id_or_fail($id) as $record)
+                foreach ($instance->select_or_fail($id) as $record)
                 {
                     foreach ($columns as $k => $column)
                     {
@@ -1273,7 +1273,7 @@ namespace Imperium\Html\Form {
                     $i--;
                 }
                 $this->end_row_and_new()->submit($submit_text, $submit_class, $submit_id, $submit_icon);
-            
+
                 return $this->end_row()->get();
             }
         }

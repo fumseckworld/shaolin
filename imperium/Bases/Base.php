@@ -121,7 +121,7 @@ use Imperium\Tables\Table;
         public function seed(int $records = 100): bool
         {
             foreach ($this->tables as $x)
-                is_false($this->table->select($x)->seed($records),true,"Failed to seed the $x table");
+                is_false($this->table->from($x)->seed($records),true,"Failed to seed the $x table");
 
             return true;
         }
@@ -431,7 +431,7 @@ use Imperium\Tables\Table;
         public function charsets(): array
         {
             $this->check($this->driver);
-            
+
             return charset($this->connexion);
         }
 

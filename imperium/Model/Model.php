@@ -629,7 +629,7 @@ namespace Imperium\Model {
          */
         public function columns(): array
         {
-            return $this->table->get_columns();
+            return $this->all_columns;
         }
 
         /**

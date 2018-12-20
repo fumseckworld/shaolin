@@ -6,6 +6,8 @@ namespace Imperium\Connexion {
     use PDO;
     use PDOException;
 
+use Imperium\Directory\Dir;
+
     /**
     *
     * Management of the connections to bases
@@ -147,6 +149,8 @@ namespace Imperium\Connexion {
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,int $pdo_fetch_mode,string $dump_path)
         {
+            Dir::create($dump_path);
+
             $this->driver       = $driver;
 
             $this->database     = $base;

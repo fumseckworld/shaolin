@@ -360,7 +360,7 @@ namespace Imperium\Tables {
          */
         public function has_column(string $column): bool
         {
-            return collection($this->columns)->exist($column);
+            return collection($this->columns())->exist($column);
         }
 
 
@@ -532,8 +532,6 @@ namespace Imperium\Tables {
             $command = "ALTER TABLE {$this->get_current_table()} ADD COLUMN ";
 
             different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
-
-
 
             if(is_false($nullable))
                 append($command,' NOT NULL');
@@ -787,18 +785,19 @@ namespace Imperium\Tables {
          */
         public function seed(int $records): bool
         {
+            $table = $this->get_current_table();
+            $columns = $this->from($table)->columns();
+            $columns_str = collection($columns)->join(', ');
 
-            $query = "INSERT INTO {$this->get_current_table()} ({$this->columns_to_string()}) VALUES ";
+            $query = "INSERT INTO $table ($columns_str) VALUES ";
 
-            $primary = $this->primary_key();
+            $primary = $this->from($table)->primary_key();
 
             $x = collection();
 
-            $columns = $this->get_columns();
-
             $types = collection();
 
-            foreach ($this->columns_types() as  $value)
+            foreach ($this->from($table)->columns_types() as  $value)
             {
                 $data = explode('(', trim($value,')'));
                 $types->push(strtolower(reset($data)));
@@ -847,7 +846,7 @@ namespace Imperium\Tables {
                 $x->clear();
             }
             $query = trim($query,',');
-
+         
             return $this->connexion->execute($query);
 
         }
@@ -1181,6 +1180,7 @@ namespace Imperium\Tables {
             $data = collection();
             $primary = $this->primary_key();
             $table = $this->get_current_table();
+
             foreach($columns as $k => $column)
             {
                 switch ($this->driver)
