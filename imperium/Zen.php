@@ -384,7 +384,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const TINYINT = 'TINYINT';
+        const TINYINT = 'tinyint';
 
         /**
          *
@@ -393,7 +393,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const SMALLINT = 'SMALLINT';
+        const SMALLINT = 'smallint';
 
         /**
          *
@@ -402,7 +402,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const MEDIUMINT = 'MEDIUMINT';
+        const MEDIUMINT = 'mediumint';
 
         /**
          *
@@ -411,7 +411,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const INT = 'INT';
+        const INT = 'int';
 
         /**
          *
@@ -420,14 +420,14 @@ namespace Imperium {
          * @var string
          *
          */
-        const REAL = 'REAL';
+        const REAL = 'real';
 
         /**
          * To create a field with the serial type
          *
          * @var string
          */
-        const SERIAL = 'SERIAL';
+        const SERIAL = 'serial';
 
         /**
          *
@@ -436,7 +436,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BIG_SERIAL = 'BIG SERIAL';
+        const BIG_SERIAL = 'big serial';
 
         /**
          *
@@ -445,7 +445,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BIT_VARYING = 'BIT VARYING';
+        const BIT_VARYING = 'bit varying';
 
         /**
          *
@@ -454,7 +454,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BOOLEAN = 'BOOLEAN';
+        const BOOLEAN = 'boolean';
 
         /**
          *
@@ -463,7 +463,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BOX = 'BOX';
+        const BOX = 'box';
 
         /**
          *
@@ -472,7 +472,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BITEA = 'BITEA';
+        const BITEA = 'bitea';
 
         /**
          *
@@ -481,7 +481,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const CHARACTER_VARYING = 'CHARACTER VARYING';
+        const CHARACTER_VARYING = 'character varying';
 
         /**
          *
@@ -490,7 +490,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const CHARACTER  = 'CHARACTER';
+        const CHARACTER  = 'character';
 
         /**
          *
@@ -499,7 +499,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const CIDR  = 'CIDR';
+        const CIDR  = 'cidr';
 
         /**
          *
@@ -508,7 +508,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const CIRCLE  = 'CIRCLE';
+        const CIRCLE  = 'circle';
 
         /**
          *
@@ -517,7 +517,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const FLOAT8  = 'FLOAT8';
+        const FLOAT8  = 'float8';
 
         /**
          *
@@ -526,7 +526,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const INET  = 'INET';
+        const INET  = 'inet';
 
         /**
          *
@@ -535,7 +535,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const INTERVAL  = 'INTERVAL';
+        const INTERVAL  = 'interval';
 
         /**
          *
@@ -544,7 +544,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const LINE  = 'LINE';
+        const LINE  = 'line';
 
         /**
          *
@@ -553,7 +553,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const LSEG  = 'LSEG';
+        const LSEG  = 'lseg';
 
         /**
          *
@@ -562,7 +562,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const MACADDR  = 'MACADDR';
+        const MACADDR  = 'macaddr';
 
         /**
          *
@@ -571,7 +571,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const MONEY  = 'MONEY';
+        const MONEY  = 'money';
 
         /**
          *
@@ -580,7 +580,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const PATH  = 'PATH';
+        const PATH  = 'path';
 
         /**
          *
@@ -589,7 +589,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const POINT  = 'POINT';
+        const POINT  = 'point';
 
         /**
          *
@@ -598,7 +598,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const POLYGON  = 'POLYGON';
+        const POLYGON  = 'polygon';
 
         /**
          *
@@ -607,7 +607,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const TIME  = 'TIME';
+        const TIME  = 'time';
 
         /**
          *
@@ -616,7 +616,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const TSQUERY  = 'TSQUERY';
+        const TSQUERY  = 'tsquery';
 
         /**
          *
@@ -625,7 +625,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const TSVECTOR  = 'TSVECTOR';
+        const TSVECTOR  = 'tsvector';
 
         /**
          *
@@ -634,7 +634,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const UUID  = 'UUID';
+        const UUID  = 'uuid';
 
         /**
          *
@@ -643,7 +643,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const XML  = 'XML';
+        const XML  = 'xml';
 
         /**
          *
@@ -652,16 +652,16 @@ namespace Imperium {
          * @var string
          *
          */
-        const INTEGER = 'INTEGER';
+        const INTEGER = 'integer';
 
         /**
          *
-         * To create a field with the big int type
+         * To create a field with the bigint type
          *
          * @var string
          *
          */
-        const BIGINT = 'BIGINT';
+        const BIGINT = 'bigint';
 
         /**
          *
@@ -670,7 +670,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const NUMERIC = 'NUMERIC';
+        const NUMERIC = 'numeric';
 
         /**
          *
@@ -679,7 +679,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const DECIMAL = 'DECIMAL';
+        const DECIMAL = 'decimal';
 
         /**
          *
@@ -688,7 +688,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BIT = 'BIT';
+        const BIT = 'bit';
 
         /**
          *
@@ -697,7 +697,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const DATE = 'DATE';
+        const DATE = 'date';
 
         /**
          *
@@ -705,7 +705,7 @@ namespace Imperium {
          *
          * @var string
          */
-        const DATETIME = 'DATETIME';
+        const DATETIME = 'datetime';
 
         /**
          *
@@ -714,7 +714,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const TIMESTAMP = 'TIMESTAMP';
+        const TIMESTAMP = 'timestamp';
 
        /**
         *
@@ -723,7 +723,7 @@ namespace Imperium {
         * @var string
         *
         */
-        const CHAR = 'CHAR';
+        const CHAR = 'char';
 
         /**
          *
@@ -732,7 +732,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const VARCHAR = 'VARCHAR';
+        const VARCHAR = 'varchar';
 
         /**
          *
@@ -741,7 +741,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const ENUM = 'ENUM';
+        const ENUM = 'enum';
 
         /**
          *
@@ -750,7 +750,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const TEXT = 'TEXT';
+        const TEXT = 'text';
 
         /**
          *
@@ -759,7 +759,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const LONGTEXT = 'LONGTEXT';
+        const LONGTEXT = 'longtext';
 
         /**
          *
@@ -768,7 +768,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const BLOB = 'BLOB';
+        const BLOB = 'blob';
 
         /**
          *
@@ -777,7 +777,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const VARBINARY = 'VARBINARY';
+        const VARBINARY = 'varbinary';
 
         /**
          *
@@ -786,7 +786,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const MEDIUMBLOB = 'MEDIUMBLOB';
+        const MEDIUMBLOB = 'mediumblob';
 
         /**
          *
@@ -795,7 +795,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const MEDIUMTEXT = 'MEDIUMTEXT';
+        const MEDIUMTEXT = 'mediumtext';
 
         /**
          *
@@ -804,7 +804,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const LONGBLOB = 'LONGBLOB';
+        const LONGBLOB = 'longblob';
 
         /**
          *
@@ -831,7 +831,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const NONE = 'NONE';
+        const NONE = 'none';
 
         /**
          *
@@ -840,7 +840,7 @@ namespace Imperium {
          * @var string
          *
          */
-        const NUMBER = 'NUMBER';
+        const NUMBER = 'number';
 
         /**
          *
@@ -848,7 +848,7 @@ namespace Imperium {
          *
          * @var string
          */
-        const VARCHAR2 = 'VARCHAR2';
+        const VARCHAR2 = 'varchar2';
 
         /**
          *
@@ -856,7 +856,7 @@ namespace Imperium {
          *
          * @var string
          */
-        const YEAR = 'YEAR';
+        const YEAR = 'year';
 
         /**
          *
@@ -994,8 +994,6 @@ namespace Imperium {
             self::TIMESTAMP_WITHOUT_TIME_ZONE,
             self::TIME_WITH_TIME_ZONE,
             self::TIME_WITHOUT_TIME_ZONE
-
-
         ];
 
         /**
@@ -1007,6 +1005,7 @@ namespace Imperium {
          */
         const TYPE_OF_INTEGER = [
             self::INT,
+            self::INTEGER,
             self::DECIMAL,
             self::DOUBLE_PRECISION,
             self::BIGINT,

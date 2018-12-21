@@ -473,7 +473,7 @@ namespace Imperium\Model {
          */
         public function find(int $id): array
         {
-           return $this->sql->set_query_mode(Query::SELECT)->where($this->primary,Query::EQUAL,$id)->get();
+           return $this->sql->mode(Query::SELECT)->where($this->primary,Query::EQUAL,$id)->get();
         }
 
         /**

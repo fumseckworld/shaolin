@@ -706,10 +706,8 @@ namespace Imperium {
         {
             $this->connect   = $connect;
             $this->driver    = $connect->driver();
-            $x               = new Table($connect,$current_table);
+            $this->tables    = new Table($connect,$current_table,$hidden_tables);
             $this->table     = $current_table;
-            $this->tables    = $x->hidden($hidden_tables);
-
             $this->query     = new Query($this->tables,$connect);
             $this->base      = new Base($connect,$this->tables,$hidden_tables,$hidden_bases);
             $this->users     = new Users($connect);

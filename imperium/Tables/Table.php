@@ -218,11 +218,11 @@ namespace Imperium\Tables {
          * @param  Connect     $connect       The connection to the base
          * @param  string      $current_table The current table name
          */
-        public function __construct(Connect $connect,string $current_table)
+        public function __construct(Connect $connect,string $current_table,array $hidden = [])
         {
             $this->connexion        =  $connect;
             $this->driver           =  $connect->driver();
-            $this->all              =  $this->show();
+            $this->all              =  $this->hidden($hidden)->show();
             $this->added_columns    = collection();
             $this->all_types        = collection()->merge(self::TYPE_OF_DATE,self::TYPE_OF_INTEGER,self::TYPE_OF_TEXT)->collection();
             $this->columns          = $this->from($current_table)->columns();
@@ -787,7 +787,7 @@ namespace Imperium\Tables {
         {
             $table = $this->get_current_table();
             $columns = $this->from($table)->columns();
-            $columns_str = collection($columns)->join(', ');
+            $columns_str = collection($columns)->join(',');
 
             $query = "INSERT INTO $table ($columns_str) VALUES ";
 
@@ -795,20 +795,15 @@ namespace Imperium\Tables {
 
             $x = collection();
 
-            $types = collection();
+            $sqlite = $this->connexion->sqlite();
 
-            foreach ($this->from($table)->columns_types() as  $value)
-            {
-                $data = explode('(', trim($value,')'));
-                $types->push(strtolower(reset($data)));
-            }
-
+            $types = collection($this->from($table)->columns_types());
 
             for($i=0;different($i,$records);$i++)
             {
                 foreach ($columns as $k => $column)
                 {
-                    $type = $types->get($k);
+                    $type = $sqlite ? strtolower($types->get($k)) : $types->get($k);
 
                     if (equal($column,$primary))
                     {
@@ -831,9 +826,9 @@ namespace Imperium\Tables {
                         if (has($type,self::TYPE_OF_INTEGER))
                             $x->add(faker()->numberBetween(1,100),$column);
 
-                        if (has($type,self::TYPE_OF_TEXT) || not_in($this->all_types,$type))
+                        if (has($type,self::TYPE_OF_TEXT))
                             $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
-                        }
+                    }
 
 
                 }
@@ -846,7 +841,7 @@ namespace Imperium\Tables {
                 $x->clear();
             }
             $query = trim($query,',');
-         
+
             return $this->connexion->execute($query);
 
         }
@@ -1976,9 +1971,17 @@ namespace Imperium\Tables {
          */
         public function set_collation(string $new_collation): Table
         {
-            is_true(collection($this->collation)->not_exist($new_collation),true,"The collation $new_collation is not valid");
 
-            $this->collation = $new_collation;
+            if (!$this->connexion->sqlite())
+            {
+                $data = collation($this->connexion);
+
+                is_true(collection($data)->not_exist($new_collation),true,"The collation $new_collation  is not valid");
+
+                $this->collation = $new_collation;
+            }
+
+
 
             return $this;
         }
@@ -1996,9 +1999,23 @@ namespace Imperium\Tables {
          */
         public function set_charset(string $new_charset): Table
         {
-            is_true(collection($this->charset)->not_exist($new_charset),true,"The charset $new_charset is not valid");
+            if ($this->connexion->mysql())
+            {
+                $data = charset($this->connexion);
 
-            $this->charset = $new_charset;
+                is_true(collection($data)->not_exist($new_charset),true,"The charset $new_charset is not valid");
+
+                $this->charset = $new_charset;
+            }
+
+            if ($this->connexion->postgresql())
+            {
+                $data = charset($this->connexion);
+
+                is_true(collection($data)->not_exist(strtoupper($new_charset)),true,"The charset $new_charset is not valid");
+
+                $this->charset = $new_charset;
+            }
 
             return $this;
         }
