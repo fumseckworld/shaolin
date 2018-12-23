@@ -882,7 +882,7 @@ namespace Imperium {
          */
         public function rename_table(string $table, string $new_name): bool
         {
-            return $this->tables()->select($table)->rename($new_name);
+            return $this->tables()->from($table)->rename($new_name);
         }
 
 

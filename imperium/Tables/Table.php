@@ -149,7 +149,7 @@ namespace Imperium\Tables {
          */
         public function type(string $column)
         {
-            return collection($this->columns)->search($column)->set_new_data($this->types)->result();
+            return collection($this->columns())->search($column)->set_new_data($this->columns_types())->result();
         }
 
         /**
@@ -202,8 +202,6 @@ namespace Imperium\Tables {
          */
         public function from(string $table): Table
         {
-            is_true($this->not_exist($table),true,"The table $table was not found");
-
             $this->table = $table;
 
             return $this;
@@ -1488,7 +1486,7 @@ namespace Imperium\Tables {
                         if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                         else
-                            $columns->push("$k = ' ".addslashes($value)."'");
+                            $columns->push("$k =" .quote($this->connexion,$value));
 
                     }else
                     {
@@ -1498,7 +1496,7 @@ namespace Imperium\Tables {
                             if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                             else
-                                $columns->push("$k = ' ".addslashes($value)."'");
+                                $columns->push("$k = ".quote($this->connexion,$value));
                         }
                     }
                 }
@@ -2029,7 +2027,7 @@ namespace Imperium\Tables {
          */
         public function length(string $column)
         {
-            return collection($this->columns)->search($column)->set_new_data($this->columns_length())->result();
+            return collection($this->columns())->search($column)->set_new_data($this->columns_length())->result();
         }
 
         /**

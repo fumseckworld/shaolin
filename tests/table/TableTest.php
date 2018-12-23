@@ -222,13 +222,13 @@ class TableTest extends DatabaseTest
      */
     public function test_type()
     {
-        foreach ($this->mysql_table->get_columns() as $column)
+        foreach ($this->mysql_table->columns() as $column)
             $this->assertNotEmpty($this->mysql_table->type($column));
 
-        foreach ($this->pgsql_table->get_columns() as $column)
+        foreach ($this->pgsql_table->columns() as $column)
             $this->assertNotEmpty($this->pgsql_table->type($column));
 
-        foreach ($this->sqlite_table->get_columns() as $column)
+        foreach ($this->sqlite_table->columns() as $column)
             $this->assertNotEmpty($this->sqlite_table->type($column));
     }
 
@@ -258,9 +258,9 @@ class TableTest extends DatabaseTest
 
     public function test_remove_by_id()
     {
-        $this->assertTrue($this->mysql_table->remove_by_id(20));
-        $this->assertTrue($this->pgsql_table->remove_by_id(20));
-        $this->assertTrue($this->sqlite_table->remove_by_id(20));
+        $this->assertTrue($this->mysql_table->remove(20));
+        $this->assertTrue($this->pgsql_table->remove(20));
+        $this->assertTrue($this->sqlite_table->remove(20));
     }
     /**
      * @throws \Exception
@@ -268,20 +268,20 @@ class TableTest extends DatabaseTest
     public function test_the_last_field()
     {
 
-        $columns = $this->mysql_table->get_columns();
+        $columns = $this->mysql_table->columns();
         $end = end($columns);
-        $this->assertFalse($this->mysql_table->is_the_last_field('id',$this->mysql_table->get_columns()));
-        $this->assertFalse($this->mysql_table->is_the_last_field('name',$this->mysql_table->get_columns()));
+        $this->assertFalse($this->mysql_table->is_the_last_field('id',$this->mysql_table->columns()));
+        $this->assertFalse($this->mysql_table->is_the_last_field('name',$this->mysql_table->columns()));
 
-        $this->assertFalse($this->pgsql_table->is_the_last_field('id',$this->mysql_table->get_columns()));
-        $this->assertFalse($this->pgsql_table->is_the_last_field('name',$this->mysql_table->get_columns()));
+        $this->assertFalse($this->pgsql_table->is_the_last_field('id',$this->mysql_table->columns()));
+        $this->assertFalse($this->pgsql_table->is_the_last_field('name',$this->mysql_table->columns()));
 
-        $this->assertFalse($this->sqlite_table->is_the_last_field('id',$this->mysql_table->get_columns()));
-        $this->assertFalse($this->sqlite_table->is_the_last_field('name',$this->mysql_table->get_columns()));
+        $this->assertFalse($this->sqlite_table->is_the_last_field('id',$this->mysql_table->columns()));
+        $this->assertFalse($this->sqlite_table->is_the_last_field('name',$this->mysql_table->columns()));
 
-        $this->assertTrue($this->mysql_table->is_the_last_field($end,$this->mysql_table->get_columns()));
-        $this->assertTrue($this->pgsql_table->is_the_last_field($end,$this->mysql_table->get_columns()));
-        $this->assertTrue($this->sqlite_table->is_the_last_field($end,$this->mysql_table->get_columns()));
+        $this->assertTrue($this->mysql_table->is_the_last_field($end,$this->mysql_table->columns()));
+        $this->assertTrue($this->pgsql_table->is_the_last_field($end,$this->mysql_table->columns()));
+        $this->assertTrue($this->sqlite_table->is_the_last_field($end,$this->mysql_table->columns()));
 
 
     }
@@ -291,9 +291,9 @@ class TableTest extends DatabaseTest
      */
     public function test_truncate()
     {
-        $this->assertTrue($this->mysql_table->truncate());
-        $this->assertTrue($this->pgsql_table->truncate());
-        $this->assertTrue($this->sqlite_table->truncate());
+        $this->assertTrue($this->mysql_table->truncate($this->table));
+        $this->assertTrue($this->pgsql_table->truncate($this->table));
+        $this->assertTrue($this->sqlite_table->truncate($this->table));
 
         $this->assertTrue($this->mysql()->empty_table($this->table));
         $this->assertTrue($this->postgresql()->empty_table($this->table));
@@ -381,9 +381,9 @@ class TableTest extends DatabaseTest
     public function test_count()
     {
 
-        $this->assertEquals(0,$this->mysql_table->count());
-        $this->assertEquals(0,$this->pgsql_table->count());
-        $this->assertEquals(0,$this->sqlite_table->count());
+        $this->assertEquals(0,$this->mysql_table->count($this->table));
+        $this->assertEquals(0,$this->pgsql_table->count($this->table));
+        $this->assertEquals(0,$this->sqlite_table->count($this->table));
 
     }
 
@@ -393,11 +393,11 @@ class TableTest extends DatabaseTest
      */
     public function test_found()
     {
-        $table = 8;
+        $table = 7;
 
         $this->assertEquals($table,$this->mysql_table->found());
         $this->assertEquals($table,$this->pgsql_table->found());
-        $this->assertEquals(10,$this->sqlite_table->found());
+        $this->assertEquals($table,$this->sqlite_table->found());
 
     }
 
