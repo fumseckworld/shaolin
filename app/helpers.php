@@ -1029,10 +1029,10 @@ if (not_exist('simply_view'))
      */
     function simply_view(string $current_table_name, Table $instance , array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right = true): string
     {
-        $instance = $instance->select($current_table_name);
+        $instance = $instance->from($current_table_name);
 
-        $columns  = $instance->get_columns();
-        $primary  = $instance->get_primary_key();
+        $columns  = $instance->columns();
+        $primary  = $instance->primary_key();
 
         $code = '';
 
@@ -1046,7 +1046,7 @@ if (not_exist('simply_view'))
             append($code,'<th  class="');
             if ($align_column_center) {  append($code,' text-center'); }
 
-            if ($column_to_upper)   {  append($cpode,' text-uppercase') ; }
+            if ($column_to_upper)    {  append($cpode,' text-uppercase') ; }
 
             append($code, '">'.$x.'</th>');
 
@@ -1116,13 +1116,13 @@ if (not_exist('get_records'))
     function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,bool $framework,string $key = '',string $order_by = 'DESC'): array
     {
 
-        $instance = $instance->select($current_table_name);
+        $instance = $instance->from($current_table_name);
 
         $key = def($key) ? $key : $instance->get_primary_key();
 
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 
-        $sql = sql(query($instance,$connect),$current_table_name)->set_query_mode(Query::SELECT);
+        $sql = sql(query($instance,$connect),$current_table_name)->mode(Query::SELECT);
 
         if ($framework)
         {
@@ -1130,12 +1130,12 @@ if (not_exist('get_records'))
 
             $like = $parts->has_key('search') ? $parts->last() : '';
 
-            $records = def($like) ? $sql->like($instance, $like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+            $records = def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
 
         }else
         {
             $like = get('search');
-            $records = def($like) ? $sql->like($instance, $like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+            $records = def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
         }
 
         return $records;

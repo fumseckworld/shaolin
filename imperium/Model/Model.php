@@ -178,12 +178,12 @@ namespace Imperium\Model {
          *
          * @method show_tables
          *
-         * @param  string[]      $hidden The hidden table
+         * @param  array      $hidden The hidden table
          *
          * @return array
          *
          */
-        public function show_tables(string ...$hidden): array
+        public function show_tables(array $hidden = []): array
         {
             return $this->table->hidden($hidden)->show();
         }
@@ -324,7 +324,7 @@ namespace Imperium\Model {
             if (not_def($this->column,$this->expected,$this->condition))
                 throw new Exception("The where clause was not found");
 
-            return def($this->only) ? $this->sql->mode(Query::SELECT)->set_columns($this->only)->where($this->column,$this->condition,$this->expected)->get() : $this->sql->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
+            return def($this->only) ? $this->sql->mode(Query::SELECT)->columns($this->only)->where($this->param,$this->condition,$this->expected)->get() : $this->sql->mode(Query::SELECT)->where($this->param,$this->condition,$this->expected)->get();
         }
 
 
@@ -424,7 +424,7 @@ namespace Imperium\Model {
          */
         public function news(string $order_column,int $limit,int $offset = 0): array
         {
-            return $this->sql->set_query_mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column)->get();
+            return $this->sql->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column)->get();
         }
 
         /**
@@ -441,7 +441,7 @@ namespace Imperium\Model {
          */
         public function last(string $order_column,int $limit,int $offset = 0): array
         {
-            return $this->sql->set_query_mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column,"asc")->get();
+            return $this->sql->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column,Table::ASC)->get();
         }
 
         /**
@@ -537,7 +537,7 @@ namespace Imperium\Model {
          */
         public function remove(int $id): bool
         {
-            return $this->sql->set_query_mode(Query::DELETE)->where($this->primary,Query::EQUAL,$id)->delete();
+            return $this->sql->mode(Query::DELETE)->where($this->primary,Query::EQUAL,$id)->delete();
         }
 
         /**
@@ -555,7 +555,7 @@ namespace Imperium\Model {
          */
         public function insert(array $data,string $table ,array $ignore = []): bool
         {
-            return $this->table->insert($data,$ignore,$table);
+            return $this->table->save($data,$table,$ignore);
         }
 
         /**
@@ -569,7 +569,7 @@ namespace Imperium\Model {
          */
         public function count(): int
         {
-            return $this->table->count();
+            return $this->table->count($this->current);
         }
 
         /**
@@ -597,7 +597,7 @@ namespace Imperium\Model {
          */
         public function truncate(): bool
         {
-            return $this->table->truncate();
+            return $this->table->truncate($this->current);
         }
 
 
@@ -614,9 +614,9 @@ namespace Imperium\Model {
          * @throws Exception
          *
          */
-        public function update(int $id,array $data,array $ignore =[]): bool
+        public function update(int $id,array $data,string $table,array $ignore =[]): bool
         {
-            return $this->table->update($id,$data,$ignore);
+            return $this->table->update($id,$data,$table,$ignore);
         }
 
         /**

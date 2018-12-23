@@ -321,12 +321,12 @@ namespace Imperium\Query {
          *
          * @method columns
          *
-         * @param  string[]  $columns The columns to use
+         * @param  array  $columns The columns to use
          *
          * @return Query
          *
          */
-        public function columns(string ...$columns): Query
+        public function columns(array $columns): Query
         {
             $this->columns = collection($columns)->join(', ');
 
@@ -434,44 +434,32 @@ namespace Imperium\Query {
                 $end = collection($columns)->last();
                 foreach($columns as $column)
                     if(different($column,$end))
-                        append($select,"$firstTable.$column, $secondTable.$column, ");
+                        append($select,"$first_table.$column, $second_table.$column, ");
                     else
-                        append($select,"$firstTable.$column, $secondTable.$column");
+                        append($select,"$first_table.$column, $second_table.$column");
             }
+
+            $select = $columns_define ? $select : '*';
 
             switch ($mode)
             {
                 case Query::INNER_JOIN:
-                    if ($columns_define)
-                        $this->join = "SELECT $select FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    else
-                        $this->join = "SELECT * FROM $firstTable INNER JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                    $this->join = "SELECT $select FROM $first_table INNER JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
                 case Query::CROSS_JOIN:
-                   if ($columns_define)
-                        $this->join = "SELECT $select FROM $firstTable CROSS JOIN $secondTable";
-                    else
-                        $this->join = "SELECT * FROM $firstTable CROSS JOIN $secondTable";
+                    $this->join = "SELECT $select FROM $first_table CROSS JOIN $second_table";
                 break;
                 case Query::LEFT_JOIN:
-                    if ($columns_define)
-                        $this->join = "SELECT $select FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    else
-                        $this->join = "SELECT * FROM $firstTable LEFT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $first_table LEFT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
                 case Query::RIGHT_JOIN:
-                    if ($columns_define)
-                            $this->join = "SELECT $select FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    else
-                        $this->join = "SELECT * FROM $firstTable RIGHT JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $first_table RIGHT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
                 case Query::FULL_JOIN:
-                    if ($columns_define)
-                        $this->join = "SELECT $select FROM $firstTable FULL  JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
-                    else
-                        $this->join = "SELECT * FROM $firstTable FULL JOIN $secondTable ON $firstTable.$firstParam $condition $secondTable.$secondParam";
+                        $this->join = "SELECT $select FROM $first_table FULL  JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";                break;
                 break;
             }
+
 
             return $this;
         }
@@ -499,16 +487,16 @@ namespace Imperium\Query {
             {
                 case Query::UNION:
                     if (not_def($first_columns,$second_columns))
-                        $this->union = "SELECT * FROM $firstTable UNION SELECT * FROM $secondTable";
+                        $this->union = "SELECT * FROM $first_table UNION SELECT * FROM $second_table";
                     else
-                        $this->union = "SELECT $first FROM $firstTable UNION SELECT $second FROM $secondTable";
+                        $this->union = "SELECT $first FROM $first_table UNION SELECT $second FROM $second_table";
                 break;
 
                 case Query::UNION_ALL:
                     if (not_def($first_columns,$second_columns))
-                        $this->union = "SELECT * FROM $firstTable UNION ALL SELECT * FROM $secondTable";
+                        $this->union = "SELECT * FROM $first_table UNION ALL SELECT * FROM $second_table";
                     else
-                        $this->union = "SELECT $first FROM $firstTable UNION ALL SELECT $second FROM $secondTable";
+                        $this->union = "SELECT $first FROM $first_table UNION ALL SELECT $second FROM $second_table";
                 break;
 
             }
@@ -533,14 +521,14 @@ namespace Imperium\Query {
 
             if (has($driver,[Connect::POSTGRESQL,Connect::MYSQL]))
             {
-                $columns = collection($this->tables->get_columns())->join(', ');
+                $columns = collection($this->tables->columns())->join(', ');
 
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             }
 
             if (has($driver,[Connect::SQLITE]))
             {
-                $fields = collection($this->tables->get_columns());
+                $fields = collection($this->tables->columns());
                 $end =  $fields->last();
                 $columns = '';
 

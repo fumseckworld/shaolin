@@ -28,9 +28,9 @@ class TableTest extends DatabaseTest
     public function setUp()
     {
         $this->table = 'tbl';
-        $this->mysql_table = $this->mysql()->tables()->select($this->table);
-        $this->pgsql_table = $this->postgresql()->tables()->select($this->table);
-        $this->sqlite_table = $this->sqlite()->tables()->select($this->table);
+        $this->mysql_table = $this->mysql()->tables()->from($this->table);
+        $this->pgsql_table = $this->postgresql()->tables()->from($this->table);
+        $this->sqlite_table = $this->sqlite()->tables()->from($this->table);
     }
 
     public function test_columns_info()
@@ -83,9 +83,9 @@ class TableTest extends DatabaseTest
     public function test_select()
     {
 
-        $this->assertNotEmpty($this->mysql_table->select_by_id(6));
-        $this->assertNotEmpty($this->pgsql_table->select_by_id(6));
-        $this->assertNotEmpty($this->sqlite_table->select_by_id(6));
+        $this->assertNotEmpty($this->mysql_table->select(6));
+        $this->assertNotEmpty($this->pgsql_table->select(6));
+        $this->assertNotEmpty($this->sqlite_table->select(6));
 
     }
 
@@ -106,8 +106,7 @@ class TableTest extends DatabaseTest
 
 
         $this->assertTrue($this->mysql_table->convert('utf8','utf8_general_ci'));
-        $this->assertTrue($this->pgsql_table->convert('utf8','en_US.utf8'));
-        $this->assertFalse($this->sqlite_table->convert('utf8','utf8_general_ci'));
+        $this->assertTrue($this->pgsql_table->convert('UTF8','en_US.utf8'));
     }
 
     /**
@@ -116,9 +115,9 @@ class TableTest extends DatabaseTest
     public function test_primary_key()
     {
         $expected = 'id';
-        $this->assertEquals($expected,$this->mysql_table->get_primary_key());
-        $this->assertEquals($expected,$this->pgsql_table->get_primary_key());
-        $this->assertEquals($expected,$this->sqlite_table->get_primary_key());
+        $this->assertEquals($expected,$this->mysql_table->primary_key());
+        $this->assertEquals($expected,$this->pgsql_table->primary_key());
+        $this->assertEquals($expected,$this->sqlite_table->primary_key());
     }
 
     /**
@@ -146,13 +145,13 @@ class TableTest extends DatabaseTest
     public function test_has_columns_type()
     {
 
-        $this->assertTrue($this->mysql_table->has_column_type('datetime'));
-        $this->assertTrue($this->pgsql_table->has_column_type('character varying'));
-        $this->assertTrue($this->sqlite_table->has_column_type('DATETIME','INTEGER'));
+        $this->assertTrue($this->mysql_table->has_types('datetime'));
+        $this->assertTrue($this->pgsql_table->has_types('character varying'));
+        $this->assertTrue($this->sqlite_table->has_types('DATETIME','INTEGER'));
 
-        $this->assertFalse($this->mysql_table->has_column_type('integer'));
-        $this->assertFalse($this->pgsql_table->has_column_type('text'));
-        $this->assertFalse($this->sqlite_table->has_column_type('character varying'));
+        $this->assertFalse($this->mysql_table->has_types('integer'));
+        $this->assertFalse($this->pgsql_table->has_types('text'));
+        $this->assertFalse($this->sqlite_table->has_types('character varying'));
     }
     /**
      * @throws \Exception

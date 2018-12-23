@@ -1064,9 +1064,9 @@ namespace Imperium\Tables {
 
                     $length = $this->length($old);
 
-                    $length = $length ?  "($length)" : '';
+                    $x =  $length  ?  "($length)" : '';
 
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHANGE COLUMN  $old $new $type$length ;");
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHANGE COLUMN  $old $new $type$x ;");
                 break;
                 case Connect::POSTGRESQL:
                 case Connect::SQLITE:
@@ -1247,9 +1247,7 @@ namespace Imperium\Tables {
          */
         public function save(array $values,string $table,array $ignore = []): bool
         {
-            if (def($table))
-                $this->table = $table;
-
+            $this->table = $table;
 
             $primary = $this->primary_key();
 
@@ -1892,15 +1890,13 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL :
                     $data =  $this->connexion->execute("RENAME TABLE {$this->table} TO $new_name");
-                    if ($data)
-                        $this->table = $new_name;
+                    assign($data,$this->table,$new_name);
                     return $data;
                 break;
                 case Connect::POSTGRESQL:
                 case Connect::SQLITE:
                     $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
-                    if ($data)
-                        $this->table = $new_name;
+                    assign($data,$this->table,$new_name);
                     return $data;
                 break;
                 default:
@@ -2033,7 +2029,7 @@ namespace Imperium\Tables {
          */
         public function length(string $column)
         {
-            return collection($this->columns)->search($column)->set_new_data($this->lenght)->result();
+            return collection($this->columns)->search($column)->set_new_data($this->columns_length())->result();
         }
 
         /**

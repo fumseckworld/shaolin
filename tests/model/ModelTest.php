@@ -100,28 +100,28 @@ class ModelTest extends DatabaseTest
 
         $sql ='';
 
-        $this->assertTrue($this->mysql()->model()->truncate());
+        $this->assertTrue($this->mysql_model->truncate());
 
         $result = query_result($this->mysql()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
-        $this->assertCount(0,$this->mysql()->model()->all());
+        $this->assertCount(0,$this->mysql_model->all());
         $this->assertContains($empty,$result);
-        $this->assertTrue( $this->mysql()->model()->is_empty());
+        $this->assertTrue( $this->mysql_model->is_empty());
 
-        $this->assertTrue($this->postgresql()->model()->truncate());
+        $this->assertTrue($this->pgsql_model->truncate());
 
         $result = query_result($this->postgresql()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
-        $this->assertCount(0,$this->postgresql()->model()->all());
+        $this->assertCount(0,$this->pgsql_model->all());
         $this->assertContains($empty,$result);
-        $this->assertTrue( $this->postgresql()->model()->is_empty());
+        $this->assertTrue( $this->pgsql_model->is_empty());
 
-        $this->assertTrue($this->sqlite()->model()->truncate());
+        $this->assertTrue($this->sqlite_model->truncate());
 
         $result = query_result($this->sqlite()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
-        $this->assertCount(0,$this->sqlite()->model()->all());
+        $this->assertCount(0,$this->sqlite_model->all());
         $this->assertContains($empty,$result);
-        $this->assertTrue( $this->sqlite()->model()->is_empty());
+        $this->assertTrue( $this->sqlite_model->is_empty());
     }
 
 
@@ -310,9 +310,9 @@ class ModelTest extends DatabaseTest
             'days' => faker()->date(),
             'date' => faker()->date(),
         ];
-        $this->assertTrue($this->mysql_model->update(4,$data,[]));
-        $this->assertTrue($this->pgsql_model->update(4,$data,[]));
-        $this->assertTrue($this->sqlite_model->update(4,$data,[]));
+        $this->assertTrue($this->mysql_model->update(4,$data,$this->table,[]));
+        $this->assertTrue($this->pgsql_model->update(4,$data,$this->table,[]));
+        $this->assertTrue($this->sqlite_model->update(4,$data,$this->table,[]));
     }
 
 
@@ -361,7 +361,7 @@ class ModelTest extends DatabaseTest
     {
         $this->assertEquals(7,$this->mysql_model->found());
         $this->assertEquals(7,$this->pgsql_model->found());
-        $this->assertEquals(9,$this->sqlite_model->found());
+        $this->assertEquals(7,$this->sqlite_model->found());
     }
     /**
      * @throws Exception
@@ -393,37 +393,7 @@ class ModelTest extends DatabaseTest
 
 
     }
-
-    /**
-     * @throws Exception
-     */
-    public function test_cool()
-    {
-
-        $dateString = now()->toDateTimeString();
-
-        $record = $this->mysql_model->set('name','will')->set('sex','M')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-        $this->assertTrue($record);
-
-        $record = $this->pgsql_model->set('name','will')->set('sex','M')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-        $this->assertTrue($record);
-
-        $record = $this->sqlite_model->set('name','will')->set('sex','M')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-        $this->assertTrue($record);
-
-        $this->expectException(Exception::class);
-
-        $this->mysql()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-        $this->mysql()->model()->set('id','null')->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-
-        $this->postgresql()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-        $this->postgresql()->model()->set('id','null')->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-
-        $this->sqlite()->model()->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-        $this->sqlite()->model()->set('id','null')->set('name','will')->set('phone',55)->set('age',25)->set('status','dead')->set('date', $dateString)->set('days', $dateString)->save();
-
-    }
-
+    
     /**
      * @throws Exception
      */

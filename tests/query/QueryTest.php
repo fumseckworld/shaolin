@@ -38,28 +38,12 @@ class QueryTest extends DatabaseTest
 
     }
 
-    /**
-     * @throws Exception
-     */
-    public function test_set()
-    {
-        $this->expectException(Exception::class);
-
-        $mode = faker()->text(5);
-        $this->mysql_query->set_query_mode($mode)->get();
-        $this->pgsql_query->set_query_mode($mode)->get();
-        $this->sqlite_query->set_query_mode($mode)->get();
-        $this->mysql_query->get();
-        $this->pgsql_query->get();
-        $this->sqlite_query->get();
-    }
 
     /**
      * @throws \Exception
      */
     public function test_where()
     {
-
 
         $this->assertNotEmpty($this->mysql()->model()->change_table($this->table)->where('id','=',5)->only('date')->get());
         $this->assertNotEmpty($this->mysql()->model()->change_table($this->table)->where('id','=',50)->only('date')->get());
@@ -74,38 +58,38 @@ class QueryTest extends DatabaseTest
         $b = '1988-07-15 00:00:00';
         $e = '2010-07-30 00:00:00';
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::SELECT)->where('id','!=',1)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::SELECT)->where('id','!=',1)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::SELECT)->where('id','!=',1)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::SELECT)->where('id','!=',1)->get());
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->where('name','!=','will')->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->where('name','!=','will')->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::SELECT)->where('name','!=','will')->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::SELECT)->where('name','!=','will')->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::SELECT)->where('name','!=','will')->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::SELECT)->where('name','!=','will')->get());
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->like($this->mysql()->tables(),'a')->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->like($this->postgresql()->tables(),'a')->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::SELECT)->like($this->sqlite()->tables(),'a')->get());
-
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->between('id',1,16)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->between('id',1,16)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::SELECT)->between('id',1,16)->get());
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->set_columns(['id'])->between('id',1,16)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->set_columns(['id'])->between('id',1,16)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::SELECT)->set_columns(['id'])->between('id',1,16)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::SELECT)->like('a')->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::SELECT)->like('a')->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::SELECT)->like('a')->get());
 
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::SELECT)->set_columns(['id'])->between('date',$b,$e)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::SELECT)->set_columns(['id'])->between('date',$b,$e)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::SELECT)->set_columns(['id'])->between('date',$b,$e)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::SELECT)->between('id',1,16)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::SELECT)->between('id',1,16)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::SELECT)->between('id',1,16)->get());
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::SELECT)->columns(['id'])->between('id',1,16)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::SELECT)->columns(['id'])->between('id',1,16)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::SELECT)->columns(['id'])->between('id',1,16)->get());
+
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::SELECT)->columns(['id'])->between('date',$b,$e)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::SELECT)->columns(['id'])->between('date',$b,$e)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::SELECT)->columns(['id'])->between('date',$b,$e)->get());
 
 
 
 
-        $this->assertNotContains("ORDER BY ",$this->mysql_query->set_query_mode(Query::DELETE)->where('id','=',16)->sql());
-        $this->assertNotContains("ORDER BY ",$this->pgsql_query->set_query_mode(Query::DELETE)->where('id','=',16)->sql());
-        $this->assertNotContains("ORDER BY ",$this->sqlite_query->set_query_mode(Query::DELETE)->where('id','=',16)->sql());
+        $this->assertNotContains("ORDER BY ",$this->mysql_query->mode(Query::DELETE)->where('id','=',16)->sql());
+        $this->assertNotContains("ORDER BY ",$this->pgsql_query->mode(Query::DELETE)->where('id','=',16)->sql());
+        $this->assertNotContains("ORDER BY ",$this->sqlite_query->mode(Query::DELETE)->where('id','=',16)->sql());
 
         $this->expectException(\Exception::class);
 
@@ -130,49 +114,49 @@ class QueryTest extends DatabaseTest
 
          $columns = ['id','name'];
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
-
-
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION_ALL)->union( $this->table,$this->second_table,$columns,$columns)->limit($limit,0)->get());
 
 
-        $this->assertCount($limit,$this->mysql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
-        $this->assertCount($limit,$this->pgsql_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
-        $this->assertCount($limit,$this->sqlite_query->set_query_mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION)->union($this->table,$this->second_table,[],[])->get());
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->get());
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::UNION_ALL)->union( $this->table,$this->second_table,[],[])->limit($limit,0)->get());
 
 
-        $this->assertCount($limit,$this->mysql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
-        $this->assertCount($limit,$this->pgsql_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
-        $this->assertCount($limit,$this->sqlite_query->set_query_mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->mysql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->pgsql_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->sqlite_query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+
+
+        $this->assertCount($limit,$this->mysql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->pgsql_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+        $this->assertCount($limit,$this->sqlite_query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
 
 
     }
@@ -183,100 +167,90 @@ class QueryTest extends DatabaseTest
 
         $this->expectException(Exception::class);
 
-        $this->sqlite_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->get();
-        $this->sqlite_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id','=',['id','name'])->get();
-        $this->mysql_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get();
-        $this->mysql_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get();
-        $this->sqlite_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get();
-        $this->sqlite_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id','=',['id','name'])->get();
+        $this->sqlite_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->get();
+        $this->sqlite_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id','=',['id','name'])->get();
+        $this->mysql_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get();
+        $this->mysql_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get();
+        $this->sqlite_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get();
+        $this->sqlite_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id','=',['id','name'])->get();
 
     }
 
     public function test_join()
     {
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id',['id'])->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id','id')->get());
 
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
 
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->get());
-
-
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-           $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-           $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
-
-           $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->get());
 
 
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+           $this->assertNotEmpty($this->mysql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
 
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+           $this->assertNotEmpty($this->pgsql_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
 
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id', ['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
-
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->sqlite_query->set_query_mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
-
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->mysql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id', ['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-        $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id' ,['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
+           $this->assertNotEmpty($this->sqlite_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::INNER_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
 
 
-       $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
-       $this->assertNotEmpty($this->pgsql_query->set_query_mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id',['id','name'])->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
 
-    }
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::CROSS_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
 
-    /**
-     * @throws \Exception
-     */
-    public function test_count()
-    {
-        $this->assertEquals(200,$this->mysql_query->count());
-        $this->assertEquals(200,$this->pgsql_query->count());
-        $this->assertEquals(200,$this->sqlite_query->count());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id', 'id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->sqlite_query->mode(Query::LEFT_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+
+        $this->assertNotEmpty($this->mysql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->mysql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id', 'id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+        $this->assertNotEmpty($this->pgsql_query->mode(Query::RIGHT_JOIN)->join($this->table,$this->second_table,'id','id' ,'id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+
+
+       $this->assertNotEmpty($this->pgsql_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+       $this->assertNotEmpty($this->pgsql_query->mode(Query::FULL_JOIN)->join($this->table,$this->second_table,'id','id','id','name')->where('id',Query::EQUAL,4)->limit(10,0)->get());
+
     }
 
 
