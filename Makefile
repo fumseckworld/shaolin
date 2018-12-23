@@ -20,6 +20,10 @@ endif
 
 all: test
 
+disable:
+	sudo install -D xdebug_d.ini /etc/php/conf.d/xdebug.ini
+enable:
+	sudo install -D xdebug.ini /etc/php/conf.d/xdebug.ini
 help: ## Display the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
@@ -27,7 +31,7 @@ test: vendor seed ## Run tests
 	@vendor/bin/phpunit --coverage-html ~/coverage/imperium
 
 vendor: ## Configure the app
-	@composer install
+	@composer install 
 
 seed: dbs migrate ## Seed all databases
 
