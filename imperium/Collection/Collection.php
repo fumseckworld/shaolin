@@ -445,7 +445,7 @@ namespace Imperium\Collection {
         * @method add
         *
         * @param  mixed $value  The value to add
-        * @param  string $key   The value's key
+        * @param  mixed $key   The value's key
         *
         * @return Collection
         *

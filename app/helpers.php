@@ -1979,8 +1979,8 @@ if(not_exist('req'))
     {
         $data = collection();
 
-        foreach($queries as $query)
-            $data->add($instance->request($request));
+        foreach($queries as $k => $query)
+            $data->add($instance->request($query,$k));
 
 
         return $data->collection();
@@ -2006,8 +2006,8 @@ if(not_exist('execute'))
     {
         $data = collection();
 
-        foreach($queries as $query)
-            $data->add($instance->execute($request));
+        foreach($queries as $k => $query)
+            $data->add($instance->execute($query),$k);
 
         return $data->not_exist(false);
     }
@@ -2047,9 +2047,9 @@ if (not_exist('table'))
      * @return Table
      *
      */
-    function table(Connect $connect): Table
+    function table(Connect $connect,string $current_table,array $hidden = []): Table
     {
-        return new Table($connect);
+        return new Table($connect,$current_table,$hidden);
     }
 }
 

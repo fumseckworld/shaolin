@@ -11,6 +11,7 @@ use Imperium\Json\Json;
 use Imperium\Query\Query;
 use Imperium\Tables\Table;
 use Imperium\Users\Users;
+use Imperium\Model\Model;
 use Sinergi\BrowserDetector\Os;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Browser;
@@ -38,7 +39,19 @@ class AppTest extends DatabaseTest
         $this->assertInstanceOf(Imperium::class,$this->sqlite());
 
     }
+    public function test_execute()
+    {
+        $this->assertTrue(execute($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+        $this->assertTrue(execute($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+        $this->assertTrue(execute($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
 
+    }
+    public function test_req()
+    {
+        $this->assertNotEmpty(req($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+        $this->assertNotEmpty(req($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+        $this->assertNotEmpty(req($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+    }
     public function test_assign()
     {
         $var = 'i am a';
@@ -57,6 +70,29 @@ class AppTest extends DatabaseTest
         $this->assertInstanceOf(Query::class,\query($this->mysql()->tables(),$this->mysql()->connect()));
         $this->assertInstanceOf(Query::class,\query($this->postgresql()->tables(),$this->postgresql()->connect()));
         $this->assertInstanceOf(Query::class,\query($this->sqlite()->tables(),$this->sqlite()->connect()));
+        $this->assertInstanceOf(Query::class,\query($this->sqlite()->tables(),$this->sqlite()->connect()));
+
+        $this->assertInstanceOf(Model::class,\model($this->mysql()->connect(),$this->mysql()->tables(),'model'));
+        $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->tables(),'model'));
+        $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->tables(),'model'));
+
+
+        $this->assertInstanceOf(Table::class,table($this->mysql()->connect(),'model'));
+        $this->assertInstanceOf(Table::class,table($this->postgresql()->connect(),'model'));
+        $this->assertInstanceOf(Table::class,table($this->sqlite()->connect(),'model'));
+
+
+
+    }
+
+    public function test_lines()
+    {
+        $this->assertNotEmpty(lines('README.md'));
+    }
+    public function test_slug()
+    {
+        $this->assertEquals('linux-is-better',\slug('LINUX IS BETTER'));
+        $this->assertEquals('the-planet-is-dead',\slug('The planet IS DEAD'));
     }
 
     public function test_pair()
