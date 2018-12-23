@@ -169,7 +169,7 @@ namespace Imperium\Model {
          */
         public function search($value): array
         {
-            return $this->sql->like($value)->get();
+            return $this->sql->mode(Query::SELECT)->like($value)->get();
         }
 
         /**
@@ -329,14 +329,16 @@ namespace Imperium\Model {
 
 
         /**
-         * [set description]
+         *
+         * Set a column value
          *
          * @method set
          *
-         * @param  string $column_name [description]
-         * @param  [type] $value       [description]
+         * @param  string $column_name The column name
+         * @param  mixed  $value       The value
          *
-         * @return Model  [description]
+         * @return Model 
+         *
          */
         public function set(string $column_name,$value): Model
         {
@@ -344,7 +346,7 @@ namespace Imperium\Model {
 
             equal($column_name,$this->primary,true,"The primary key is already defined");
 
-            if(is_string($value))
+
             $this->data->add($value,$column_name);
 
             return $this;

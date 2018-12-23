@@ -8,6 +8,7 @@ use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Model\Model;
 use PDO;
+use Imperium\Query\Query;
 use Testing\DatabaseTest;
 
 class ModelTest extends DatabaseTest
@@ -37,6 +38,126 @@ class ModelTest extends DatabaseTest
         $this->mysql_model = $this->mysql()->model()->change_table($this->table);
         $this->pgsql_model = $this->postgresql()->model()->change_table($this->table);
         $this->sqlite_model = $this->sqlite()->model()->change_table($this->table);
+    }
+
+    public function test_search()
+    {
+        $this->assertNotEmpty($this->mysql_model->search('a'));
+        $this->assertNotEmpty($this->mysql_model->search(4));
+        $this->assertNotEmpty($this->pgsql_model->search('a'));
+        $this->assertNotEmpty($this->pgsql_model->search(4));
+        $this->assertNotEmpty($this->sqlite_model->search('a'));
+        $this->assertNotEmpty($this->sqlite_model->search(4));
+    }
+
+    public function test_cool()
+    {
+
+
+        $bool = $this->mysql_model
+                    ->set('phone',faker()->randomNumber(8))
+                    ->set('name', faker()->name)
+                    ->set('date', faker()->date())
+                    ->set('sex', 'F')
+                    ->set('days', faker()->date())
+                    ->set('age',  faker()->numberBetween(1,100))
+                    ->set('status','dead')
+                ->save();
+        $this->assertTrue($bool);
+
+        $bool = $this->pgsql_model
+                    ->set('phone',faker()->randomNumber(8))
+                    ->set('name', faker()->name)
+                    ->set('date', faker()->date())
+                    ->set('sex', 'F')
+                    ->set('days', faker()->date())
+                    ->set('age',  faker()->numberBetween(1,100))
+                    ->set('status','dead')
+                ->save();
+        $this->assertTrue($bool);
+
+        $bool = $this->sqlite_model
+                    ->set('phone',faker()->randomNumber(8))
+                    ->set('name', faker()->name)
+                    ->set('date', faker()->date())
+                    ->set('sex', 'F')
+                    ->set('days', faker()->date())
+                    ->set('age',  faker()->numberBetween(1,100))
+                    ->set('status','dead')
+                ->save();
+        $this->assertTrue($bool);
+    }
+
+    public function test_get_query()
+    {
+        $this->assertInstanceOf(Query::class,$this->mysql_model->query());
+        $this->assertInstanceOf(Query::class,$this->pgsql_model->query());
+        $this->assertInstanceOf(Query::class,$this->sqlite_model->query());
+    }
+    public function test_cool_not_correct()
+    {
+
+        $this->expectException(Exception::class);
+
+        $this->mysql_model
+            ->set('phone','lorem')
+            ->set('name',50)
+            ->set('date', 'dimanche')
+            ->set('sex', 5369)
+            ->set('days', 'a')
+            ->set('age',  '50')
+            ->set('status',300)
+        ->save();
+
+        $this->pgsql_model
+            ->set('phone','lorem')
+            ->set('name',50)
+            ->set('date', 'dimanche')
+            ->set('sex', 5369)
+            ->set('days', 'a')
+            ->set('age',  '50')
+            ->set('status',300)
+        ->save();
+
+        $this->sqlite_model
+            ->set('phone','lorem')
+            ->set('name',50)
+            ->set('date', 'dimanche')
+            ->set('sex', 5369)
+            ->set('days', 'a')
+            ->set('age',  '50')
+            ->set('status',300)
+        ->save();
+    }
+
+    public function test_cool_exep()
+    {
+        $this->expectException(Exception::class);
+
+        $this->mysql_model
+            ->set('phone',faker()->randomNumber(8))
+            ->set('name', faker()->name)
+            ->set('date', faker()->date())
+            ->set('days', faker()->date())
+            ->set('age',  faker()->numberBetween(1,100))
+            ->set('status','dead')
+        ->save();
+
+        $this->pgsql_model
+            ->set('phone',faker()->randomNumber(8))
+            ->set('name', faker()->name)
+            ->set('date', faker()->date())
+            ->set('age',  faker()->numberBetween(1,100))
+            ->set('status','dead')
+        ->save();
+
+        $this->sqlite_model
+            ->set('phone',faker()->randomNumber(8))
+            ->set('name', faker()->name)
+            ->set('sex', 'F')
+            ->set('age',  faker()->numberBetween(1,100))
+            ->set('status','dead')
+        ->save();
     }
 
     public function test_all()
@@ -393,7 +514,7 @@ class ModelTest extends DatabaseTest
 
 
     }
-    
+
     /**
      * @throws Exception
      */
