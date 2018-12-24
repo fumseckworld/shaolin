@@ -20,3 +20,4 @@ base.json
 sql.json
 app.json
 *.sqlite3
+COVERAGE

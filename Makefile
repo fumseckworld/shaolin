@@ -28,7 +28,7 @@ help: ## Display the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 test: vendor seed ## Run tests
-	@vendor/bin/phpunit --coverage-html ~/coverage/imperium
+	@vendor/bin/phpunit --coverage-html COVERAGE
 
 vendor: ## Configure the app
 	@composer install 
@@ -43,7 +43,7 @@ serve: ## Start the development server
 
 coverage: ## Start a server to display the coverage
 	@clear
-	@php -S localhost:3000 -t ~/coverage/imperium
+	@php -S localhost:3000 -t COVERAGE
 
 phinx: phinx.yml ## Create migration and seed
 	 @vendor/bin/phinx create $(PHINX)table

@@ -34,9 +34,14 @@ class AppTest extends DatabaseTest
 
     public function test_apps()
     {
-        $this->assertInstanceOf(Imperium::class,$this->mysql());
-        $this->assertInstanceOf(Imperium::class,$this->postgresql());
-        $this->assertInstanceOf(Imperium::class,$this->sqlite());
+
+        $mysql = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,5,'dump','base',[],[]);
+        $pgsql = apps(Connect::POSTGRESQL,'postgres','zen','postgres',Connect::LOCALHOST,5,'dump','base',[],[]);
+        $sqlite = apps(Connect::SQLITE,'','zen.sqlite3','',Connect::LOCALHOST,5,'dump','base',[],[]);
+
+        $this->assertInstanceOf(Imperium::class,$mysql);
+        $this->assertInstanceOf(Imperium::class,$pgsql);
+        $this->assertInstanceOf(Imperium::class,$sqlite);
 
     }
     public function test_execute()
