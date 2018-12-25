@@ -8,6 +8,7 @@ namespace Imperium\Model {
     use Imperium\Query\Query;
     use Imperium\Tables\Table;
     use Imperium\Collection\Collection;
+    use Imperium\Html\Form\Form;
     use PDO;
 
     /**
@@ -156,6 +157,58 @@ namespace Imperium\Model {
             $this->check = $this->table->get_columns_with_types();
         }
 
+        /**
+         *
+         * Return the primary key
+         *
+         * @method primary
+         *
+         * @return string
+         *
+         */
+        public function primary(): string
+        {
+            return $this->primary;
+        }
+
+        /**
+         *
+         * Generate a form to update a record
+         *
+         * @method edit
+         *
+         * @param  int    $id           The record id
+         * @param  string $action       The form action
+         * @param  string $form_id      The form id
+         * @param  string $submit_text  The submit text
+         * @param  string $submit_class The submit button class
+         *
+         * @return string
+         *
+         */
+        public function edit(int $id,string $action,string $form_id,string $submit_text,string $submit_class): string
+        {
+            return form($action,$form_id)->generate(2,$this->table->get_current_table(),$this->table,$submit_text,$submit_class,'','',Form::EDIT,$id);
+        }
+
+        /**
+         *
+         * Generate a form to create a record
+         *
+         * @method create
+         *
+         * @param  string $action       The form action
+         * @param  string $form_id      The form id
+         * @param  string $submit_text  The submit text
+         * @param  string $submit_class The submit class
+         *
+         * @return string
+         * 
+         */
+        public function create(string $action,string $form_id,string $submit_text,string $submit_class): string
+        {
+            return form($action,$form_id)->generate(2,$this->table->get_current_table(),$this->table,$submit_text,$submit_class,'','');
+        }
         /**
          *
          * Search in the current table a value
@@ -337,7 +390,7 @@ namespace Imperium\Model {
          * @param  string $column_name The column name
          * @param  mixed  $value       The value
          *
-         * @return Model 
+         * @return Model
          *
          */
         public function set(string $column_name,$value): Model
@@ -457,7 +510,7 @@ namespace Imperium\Model {
          * @throws Exception
          *
          */
-        public function all(string $order = 'desc'): array
+        public function all(string $order = Table::DESC): array
         {
             return $this->table->all($order);
         }

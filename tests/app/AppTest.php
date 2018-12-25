@@ -32,12 +32,41 @@ class AppTest extends DatabaseTest
         $this->assertNotEquals($word,quote($this->sqlite()->connect(),$word));
     }
 
+
+    public function test_register()
+    {
+        $form = secure_register_form('/', '127.0.0.1', '127.0.0.1', 'username', 'username will be use','username can be empty', 'email', 'email will be use', 'email can be empty', 'password', 'password will be use', 'password not be empty', 'confirm the password','create account', 'register', true,['fr' => 'French','en' => 'English' ],
+                                        'select', 'lang will be use','select a lang', 'select a time zone', 'time zone will be use','time zone','az','btn-primary', fa('fas','fa-key'), fa('fas','fa-user'), fa('fas','fas-envelope'),fa('fas','fa-user-plus'), fa('fas', 'fa-globe'), '');
+
+        $this->assertContains('/',$form);
+        $this->assertContains('username will be use',$form);
+        $this->assertContains('time zone will be use',$form);
+        $this->assertContains('az',$form);
+        $this->assertContains('placeholder="username"',$form);
+        $this->assertContains('placeholder="email"',$form);
+        $this->assertContains('placeholder="email"',$form);
+        $this->assertContains('placeholder="password"',$form);
+        $this->assertContains('placeholder="confirm the password"',$form);
+        $this->assertContains('<option value="fr">French</option>',$form);
+        $this->assertContains('<option value="en">English</option>',$form);
+        $this->assertContains('<option value="">select</option>',$form);
+        $this->assertContains('<option value="">select a time zone</option>',$form);
+        $this->assertContains('<button type="submit" class="btn btn-primary" id="register" name="register">',$form);
+
+
+        $form = secure_register_form('/', '127.0.0.a1', '127.0.0.1', 'username', 'username will be use','username can be empty', 'email', 'email will be use', 'email can be empty', 'password', 'password will be use', 'password not be empty', 'confirm the password','create account', 'register', true,['fr' => 'french','en' => 'English' ],
+'select', 'lang will be use','select a lang', 'select a time zone', 'time zone will be use','time zone','az','btn btn-primary', fa('fas','fa-key'), fa('fas','fa-user'), fa('fas','fas-envelope'),fa('fas','fa-user-plus'), fa('fas', 'fa-globe'), '');
+
+
+        $this->assertEquals('',$form);
+    }
+
     public function test_apps()
     {
 
-        $mysql = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,5,'dump','base',[],[]);
-        $pgsql = apps(Connect::POSTGRESQL,'postgres','zen','postgres',Connect::LOCALHOST,5,'dump','base',[],[]);
-        $sqlite = apps(Connect::SQLITE,'','zen.sqlite3','',Connect::LOCALHOST,5,'dump','base',[],[]);
+        $mysql = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,'dump','base',[],[]);
+        $pgsql = apps(Connect::POSTGRESQL,'postgres','zen','postgres',Connect::LOCALHOST,'dump','base',[],[]);
+        $sqlite = apps(Connect::SQLITE,'','zen.sqlite3','',Connect::LOCALHOST,'dump','base',[],[]);
 
         $this->assertInstanceOf(Imperium::class,$mysql);
         $this->assertInstanceOf(Imperium::class,$pgsql);
@@ -94,10 +123,13 @@ class AppTest extends DatabaseTest
     {
         $this->assertNotEmpty(lines('README.md'));
     }
+
     public function test_slug()
     {
         $this->assertEquals('linux-is-better',\slug('LINUX IS BETTER'));
         $this->assertEquals('the-planet-is-dead',\slug('The planet IS DEAD'));
+        $this->assertEquals('the-planet-is-dead',\slug('The*planet*IS*DEAD','*'));
+        $this->assertEquals('the-planet-is-dead',\slug('The--planet--IS--DEAD','--'));
     }
 
     public function test_pair()
@@ -167,6 +199,14 @@ class AppTest extends DatabaseTest
         $this->assertFalse(is_not_true(true));
     }
 
+    public function test_query_result()
+    {
+        $sql = '';
+        $result = query_result($this->mysql()->model(), execute_query(2, $this->mysql()->model(), $this->mysql()->tables(), Query::SELECT, 'id', Query::SUPERIOR,4 , 'imperium', 'btn btn-primary', 'update', 'update.php', 'id', 'desc',
+        $sql),"Success", 'Result empty', 'Table empty', $sql);
+
+        $this->assertNotEmpty($sql);
+    }
     public function test_is_not_true_exe()
     {
         $msg = "matrix";

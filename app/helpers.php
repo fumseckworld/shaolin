@@ -59,7 +59,6 @@ if (not_exist('apps'))
      * @param  string $base          The base name
      * @param  string $password      The password
      * @param  string $host          The host
-     * @param  int    $fetch_mode    The pdo fetch mode
      * @param  string $dump_path     The dump directory path
      * @param  string $current_table The current table
      * @param  array  $hidden_tables All hidden tables
@@ -70,9 +69,9 @@ if (not_exist('apps'))
      * @throws Exception
      *
      */
-    function apps(string $driver,string $user,string $base,string $password,string $host,int $fetch_mode,string $dump_path,string $current_table,array $hidden_tables,array $hidden_bases): Imperium
+    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,array $hidden_tables,array $hidden_bases): Imperium
     {
-        $connexion = connect($driver,$base,$user,$password,$host,$fetch_mode,$dump_path);
+        $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
         return imperium($connexion,$current_table,$hidden_tables,$hidden_bases);
     }
 }
@@ -522,17 +521,9 @@ if (not_exist('query_result'))
      * @return string
      *
      */
-    function query_result(Model $model,bool $update,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
+    function query_result(Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
-        if ($update)
-        {
-            $code = '';
-            foreach ($data as $datum)
-                append($code,$datum);
-
-            return $code;
-        }
-
+    
         if (is_bool($data) && $data)
            return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
         elseif(empty($model->all()))
@@ -600,7 +591,7 @@ if (not_exist('execute_query'))
         {
             case Query::UPDATE:
                 $code = collection();
-                foreach ( $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
+                foreach ( $model->query()->mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
                 {
                     $id = $table->select($current_table_name)->get_primary_key();
 
@@ -611,12 +602,12 @@ if (not_exist('execute_query'))
             case Query::DELETE:
 
                 $data = $model->where($column_name,$condition,$expected)->get();
-                $show_sql_variable = $model->query()->set_query_mode($mode)->where($column_name,$condition,$expected)->sql();
-                return empty($data) ? $data :  $model->query()->set_query_mode($mode)->where($column_name, $condition, $expected)->delete() ;
+                $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->sql();
+                return empty($data) ? $data :  $model->query()->mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
             default:
-                $show_sql_variable = $model->query()->set_query_mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
-               return $model->query()->set_query_mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
+                $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
+               return $model->query()->mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
             break;
         }
     }
@@ -744,15 +735,14 @@ if (not_exist('connect'))
      * @param  string  $user       The username
      * @param  string  $password   The password
      * @param  string  $host       The host
-     * @param  int     $fetch_mode The pdo fetch mode
      * @param  string  $dump_path  The dump directory path
      *
      * @return Connect
      *
      */
-    function connect(string $driver,string $base,string $user,string $password,string $host,int $fetch_mode,string $dump_path): Connect
+    function connect(string $driver,string $base,string $user,string $password,string $host,string $dump_path): Connect
     {
-        return new Connect($driver,$base,$user,$password,$host,$fetch_mode,$dump_path);
+        return new Connect($driver,$base,$user,$password,$host,$dump_path);
     }
 }
 

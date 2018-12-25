@@ -7,6 +7,7 @@ namespace Imperium\Connexion {
     use PDOException;
 
 use Imperium\Directory\Dir;
+use Imperium\Connexion\Connect;
 
     /**
     *
@@ -143,11 +144,10 @@ use Imperium\Directory\Dir;
          * @param  string      $username       The base's username
          * @param  string      $password       The base's password
          * @param  string      $host           The base's host
-         * @param  int         $pdo_fetch_mode The PDO fetch mode
          * @param  string      $dump_path      The path to dump directory
          *
          */
-        public function __construct(string $driver,string $base,string $username,string $password,string $host,int $pdo_fetch_mode,string $dump_path)
+        public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
             Dir::create($dump_path);
 
@@ -159,7 +159,7 @@ use Imperium\Directory\Dir;
 
             $this->password     = $password;
 
-            $this->mode         = $pdo_fetch_mode;
+            $this->mode = PDO::FETCH_OBJ;
 
             $this->dump_path    = realpath($dump_path);
 
@@ -168,6 +168,7 @@ use Imperium\Directory\Dir;
             $this->instance     = $this->getInstance();
         }
 
+         
         /**
          *
          * Return the current host used

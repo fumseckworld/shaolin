@@ -210,6 +210,29 @@ class ModelTest extends DatabaseTest
 
     }
 
+    public function test_edit()
+    {
+
+        $form = $this->mysql_model->edit(5,'/','edit','update','btn-primary');
+        $this->assertNotEmpty($form);
+
+        $form = $this->pgsql_model->edit(5,'/','edit','update','btn-primary');
+        $this->assertNotEmpty($form);
+        $form = $this->sqlite_model->edit(5,'/','edit','update','btn-primary');
+        $this->assertNotEmpty($form);
+    }
+
+    public function test_create()
+    {
+
+        $form = $this->mysql_model->create('/','edit','update','btn-primary');
+        $this->assertNotEmpty($form);
+
+        $form = $this->pgsql_model->create('/','edit','update','btn-primary');
+        $this->assertNotEmpty($form);
+        $form = $this->sqlite_model->create('/','edit','update','btn-primary');
+        $this->assertNotEmpty($form);
+    }
 
     /**
      * @throws Exception
@@ -223,7 +246,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertTrue($this->mysql_model->truncate());
 
-        $result = query_result($this->mysql()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
+        $result = query_result($this->mysql()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
         $this->assertCount(0,$this->mysql_model->all());
         $this->assertContains($empty,$result);
@@ -231,7 +254,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertTrue($this->pgsql_model->truncate());
 
-        $result = query_result($this->postgresql()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
+        $result = query_result($this->postgresql()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
         $this->assertCount(0,$this->pgsql_model->all());
         $this->assertContains($empty,$result);
@@ -239,12 +262,11 @@ class ModelTest extends DatabaseTest
 
         $this->assertTrue($this->sqlite_model->truncate());
 
-        $result = query_result($this->sqlite()->model(),false,$this->mysql_model->all(),$success,$empty,$empty,$sql);
+        $result = query_result($this->sqlite()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
         $this->assertCount(0,$this->sqlite_model->all());
         $this->assertContains($empty,$result);
         $this->assertTrue( $this->sqlite_model->is_empty());
     }
-
 
     /**
      * @throws Exception
