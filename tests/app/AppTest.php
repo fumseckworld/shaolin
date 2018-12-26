@@ -23,6 +23,7 @@ use Whoops\Run;
  */
 class AppTest extends DatabaseTest
 {
+
     public function test_quote()
     {
         $word = "l'agent à été l'as du voyage d'affaire`";

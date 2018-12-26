@@ -28,6 +28,23 @@ use Whoops\Handler\PrettyPageHandler;
 use Imperium\Html\Pagination\Pagination;
 
 
+
+if (not_exist('true_or_false'))
+{
+    /**
+     *
+     * Generate a boolean
+     *
+     * @method true_or_false
+     *
+     * @return bool
+     *
+     */
+    function true_or_false(): bool
+    {
+        return rand( 0,1) === 1;
+    }
+}
 if (not_exist('quote'))
 {
     /**
@@ -523,7 +540,7 @@ if (not_exist('query_result'))
      */
     function query_result(Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
-    
+
         if (is_bool($data) && $data)
            return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
         elseif(empty($model->all()))

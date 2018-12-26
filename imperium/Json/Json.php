@@ -57,7 +57,7 @@ class Json
     public function create(array $data): bool
     {
         File::remove_if_exist($this->filename);
-        return is_not_false(file_put_contents($this->filename,json_encode($data)));
+        return is_not_false(file_put_contents($this->filename,json_encode($data,JSON_FORCE_OBJECT)));
     }
 
     /**

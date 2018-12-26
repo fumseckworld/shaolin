@@ -203,12 +203,13 @@ namespace Imperium\Model {
          * @param  string $submit_class The submit class
          *
          * @return string
-         * 
+         *
          */
         public function create(string $action,string $form_id,string $submit_text,string $submit_class): string
         {
             return form($action,$form_id)->generate(2,$this->table->get_current_table(),$this->table,$submit_text,$submit_class,'','');
         }
+
         /**
          *
          * Search in the current table a value

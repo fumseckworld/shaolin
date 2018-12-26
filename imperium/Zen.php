@@ -974,6 +974,38 @@ namespace Imperium {
          */
         const TINYTEXT = 'tinytext';
 
+        /**
+         *
+         * To create a field with the set type
+         *
+         * @var string
+         *
+         */
+        const SET = 'set';
+
+        const JSON = 'json';
+
+        /**
+         *
+         * All boolean type
+         *
+         * @var array
+         *
+         */
+        const BOOL = [
+            self::BOOLEAN
+        ];
+
+        /**
+         *
+         * All json types
+         *
+         * @var array
+         *
+         */
+        const JSONS = [
+            self::JSON
+        ];
 
         /**
          *
@@ -1043,6 +1075,7 @@ namespace Imperium {
             self::BLOB,
             self::MEDIUMBLOB,
             self::ENUM,
+            self::SET,
             self::TEXT,
             self::MEDIUMTEXT,
             self::TINYTEXT,
@@ -1051,5 +1084,55 @@ namespace Imperium {
             self::LONGTEXT
         ];
 
+        const ALL_TYPES = [
+            self::DATE,
+            self::DATETIME,
+            self::INTERVAL,
+            self::TIME,
+            self::TIMESTAMP,
+            self::YEAR,
+            self::INTERVAL,
+            self::TIMESTAMP_WITH_TIME_ZONE,
+            self::TIMESTAMP_WITHOUT_TIME_ZONE,
+            self::TIME_WITH_TIME_ZONE,
+            self::TIME_WITHOUT_TIME_ZONE,
+            self::INT,
+            self::INTEGER,
+            self::DECIMAL,
+            self::DOUBLE_PRECISION,
+            self::BIGINT,
+            self::REAL,
+            self::DOUBLE,
+            self::NUMERIC,
+            self::BIG_SERIAL,
+            self::BIT,
+            self::SET,
+            self::SERIAL,
+            self::SMALL_SERIAL,
+            self::BIG_SERIAL,
+            self::INT2,
+            self::INT4,
+            self::INT8,
+            self::FLOAT,
+            self::TINYINT,
+            self::SMALLINT,
+            self::MEDIUMINT,
+            self::VARCHAR,
+            self::CHAR,
+            self::BINARY,
+            self::VARBINARY,
+            self::CHARACTER_VARYING,
+            self::CHARACTER,
+            self::BLOB,
+            self::MEDIUMBLOB,
+            self::ENUM,
+            self::TEXT,
+            self::MEDIUMTEXT,
+            self::TINYTEXT,
+            self::TEXT,
+            self::MEDIUMTEXT,
+            self::JSON,
+            self::LONGTEXT
+        ];
     }
 }

@@ -524,6 +524,7 @@ namespace Imperium\Html\Form {
         {
             return self::FORM_SEPARATOR .' ' . $this->get_margin() .' '. $this->get_padding();
         }
+        
         /**
          *
          * Open the form

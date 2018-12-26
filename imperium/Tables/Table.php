@@ -818,16 +818,35 @@ namespace Imperium\Tables {
                     }
                     else
                     {
+
+                        if (has($type, self::BOOL))
+                            $x->add(true_or_false(),$column);
+
+
+                        if (has($type, self::JSONS))
+                        {
+                            $data = collection();
+                            $number = rand(1,10);
+
+                            for ($i=0; $i < $number ; $i++)
+                            {
+                                if(is_pair($i))
+                                    $data->add(faker()->text(50),$i);
+                                else
+                                    $data->add(faker()->numberBetween(1,50),$i);
+                            }
+                            $x->add($data->json(),$column);
+
+                        }
                         if (has($type,self::TYPE_OF_DATE))
                             $x->add($this->connexion->instance()->quote(faker()->date()),$column);
 
                         if (has($type,self::TYPE_OF_INTEGER))
                             $x->add(faker()->numberBetween(1,100),$column);
 
-                        if (has($type,self::TYPE_OF_TEXT))
+                        if (has($type,self::TYPE_OF_TEXT) || not_in(self::ALL_TYPES, $type))
                             $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
                     }
-
 
                 }
 

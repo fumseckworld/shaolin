@@ -107,6 +107,18 @@ namespace Imperium\Collection {
         }
 
         /**
+         *
+         * Convert the array in a json string
+         *
+         * @method json
+         *
+         * @return string [description]
+         */
+        public function json(): string
+        {
+            return json_encode($this->collection(),JSON_FORCE_OBJECT);
+        }
+        /**
         *
         * Run callable function for each values in the array
         *

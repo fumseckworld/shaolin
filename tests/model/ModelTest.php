@@ -222,6 +222,13 @@ class ModelTest extends DatabaseTest
         $this->assertNotEmpty($form);
     }
 
+    public function test_primary()
+    {
+        $this->assertEquals('id',$this->mysql_model->primary());
+        $this->assertEquals('id',$this->pgsql_model->primary());
+        $this->assertEquals('id',$this->sqlite_model->primary());
+    }
+
     public function test_create()
     {
 
