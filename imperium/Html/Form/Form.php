@@ -524,7 +524,7 @@ namespace Imperium\Html\Form {
         {
             return self::FORM_SEPARATOR .' ' . $this->get_margin() .' '. $this->get_padding();
         }
-        
+
         /**
          *
          * Open the form
@@ -1202,7 +1202,7 @@ namespace Imperium\Html\Form {
 
             $i = count($columns);
 
-            $date = Table::TYPE_OF_DATE;
+            $date = Table::DATE_TYPES;
 
             if (equal($mode,Form::EDIT))
             {

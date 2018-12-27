@@ -566,6 +566,15 @@ namespace Imperium {
 
         /**
          *
+         * To create a field with the macaddr8 type
+         *
+         * @var string
+         *
+         */
+        const MACADDR8  = 'macaddr8';
+
+        /**
+         *
          * To create a field with the money type
          *
          * @var string
@@ -941,6 +950,62 @@ namespace Imperium {
 
         /**
          *
+         * To create a fied with the int4range type
+         *
+         * @var string
+         *
+         */
+        const INT4_RANGE = 'int4range';
+
+
+        /**
+         *
+         * To create a fied with the int8range type
+         *
+         * @var string
+         *
+         */
+        const INT8_RANGE = 'int8range';
+
+        /**
+         *
+         * To create a fied with the numrange type
+         *
+         * @var string
+         *
+         */
+        const NUMRANGE = 'numrange';
+
+        /**
+         *
+         * To create a fied with the tsrange type
+         *
+         * @var string
+         *
+         */
+        const TSRANGE = 'tsrange';
+
+        /**
+         *
+         * To create a fied with the tstzrange type
+         *
+         * @var string
+         *
+         */
+        const TSTZRANGE = 'tstzrange';
+
+        /**
+         *
+         * To create a fied with the int4range type
+         *
+         * @var string
+         *
+         */
+
+        const DATE_RANGE = 'daterange';
+
+        /**
+         *
          * To create a field with the int8 type
          *
          * @var string
@@ -983,7 +1048,81 @@ namespace Imperium {
          */
         const SET = 'set';
 
+        /**
+         *
+         * To create a field with the json type
+         *
+         * @var string
+         *
+         */
         const JSON = 'json';
+
+        /**
+         *
+         * To create a field with the jsonb type
+         *
+         * @var string
+         *
+         */
+        const JSONB = 'jsonb';
+
+        /**
+         *
+         * To create a field with the geometry type
+         *
+         * @var string
+         *
+         */
+        const GEOMETRY = 'geometry';
+
+
+        /**
+         *
+         * To create a fiel with the linestring type
+         *
+         * @var string
+         *
+         */
+        const LINESTRING = 'linestring';
+
+
+
+        /**
+         *
+         * To create a field with the multipoint type
+         *
+         * @var string
+         *
+         */
+        const MULTIPOINT = 'multipoint';
+
+        /**
+         *
+         * To create a field with the multilinestring type
+         *
+         * @var string
+         *
+         */
+        const MULTILINESTRING = 'multilinestring';
+
+        /**
+         *
+         * To create a field with the multipolygon type
+         *
+         * @var string
+         *
+         */
+        const MULTIPOLYGON= 'multipolygon';
+
+        /**
+         *
+         * To create a field with the geometrycollection type
+         *
+         * @var string
+         *
+         */
+        const GEOMETRYCOLLECTION = 'geometrycollection';
+
 
         /**
          *
@@ -992,7 +1131,8 @@ namespace Imperium {
          * @var array
          *
          */
-        const BOOL = [
+        const BOOL =
+        [
             self::BOOLEAN
         ];
 
@@ -1003,18 +1143,20 @@ namespace Imperium {
          * @var array
          *
          */
-        const JSONS = [
+        const JSONS =
+        [
             self::JSON
         ];
 
         /**
          *
-         * ALl date type
+         * ALl date types
          *
          * @var array
          *
          */
-        const TYPE_OF_DATE = [
+        const DATE_TYPES =
+        [
             self::DATE,
             self::DATETIME,
             self::INTERVAL,
@@ -1030,12 +1172,32 @@ namespace Imperium {
 
         /**
          *
-         * All number type
+         * All spacial types
          *
          * @var array
          *
          */
-        const TYPE_OF_INTEGER = [
+        const SPACIAL_TYPES =
+        [
+            self::GEOMETRY,
+            self::POINT,
+            self::LINESTRING,
+            self::POLYGON,
+            self::MULTIPOINT,
+            self::MULTILINESTRING,
+            self::MULTIPOLYGON,
+            self::GEOMETRYCOLLECTION
+        ];
+
+        /**
+         *
+         * All number types
+         *
+         * @var array
+         *
+         */
+        const NUMERIC_TYPES =
+        [
             self::INT,
             self::INTEGER,
             self::DECIMAL,
@@ -1060,12 +1222,13 @@ namespace Imperium {
 
         /**
          *
-         * All text type
+         * All text types
          *
          * @var array
          *
          */
-        const TYPE_OF_TEXT = [
+        const TEXT_TYPES =
+        [
             self::VARCHAR,
             self::CHAR,
             self::BINARY,
@@ -1084,7 +1247,8 @@ namespace Imperium {
             self::LONGTEXT
         ];
 
-        const ALL_TYPES = [
+        const ALL_TYPES =
+        [
             self::DATE,
             self::DATETIME,
             self::INTERVAL,
@@ -1096,6 +1260,16 @@ namespace Imperium {
             self::TIMESTAMP_WITHOUT_TIME_ZONE,
             self::TIME_WITH_TIME_ZONE,
             self::TIME_WITHOUT_TIME_ZONE,
+
+            self::GEOMETRY,
+            self::POINT,
+            self::LINESTRING,
+            self::POLYGON,
+            self::MULTIPOINT,
+            self::MULTILINESTRING,
+            self::MULTIPOLYGON,
+            self::GEOMETRYCOLLECTION,
+
             self::INT,
             self::INTEGER,
             self::DECIMAL,
@@ -1106,7 +1280,6 @@ namespace Imperium {
             self::NUMERIC,
             self::BIG_SERIAL,
             self::BIT,
-            self::SET,
             self::SERIAL,
             self::SMALL_SERIAL,
             self::BIG_SERIAL,
@@ -1117,6 +1290,7 @@ namespace Imperium {
             self::TINYINT,
             self::SMALLINT,
             self::MEDIUMINT,
+
             self::VARCHAR,
             self::CHAR,
             self::BINARY,
@@ -1126,13 +1300,209 @@ namespace Imperium {
             self::BLOB,
             self::MEDIUMBLOB,
             self::ENUM,
+            self::SET,
             self::TEXT,
             self::MEDIUMTEXT,
             self::TINYTEXT,
             self::TEXT,
             self::MEDIUMTEXT,
-            self::JSON,
             self::LONGTEXT
         ];
+
+        /**
+         *
+         * All floting point types
+         *
+         * @var array
+         *
+         */
+        const FLOTING_POINT_TYPES =
+        [
+            self::FLOAT,
+            self::DOUBLE
+        ];
+
+        const MYSQL_TYPES =
+        [
+
+            // CHARACTER
+
+            self::CHAR,
+            self::VARCHAR,
+            self::BINARY,
+            self::VARBINARY,
+            self::BLOB,
+            self::TINYTEXT,
+            self::MEDIUMTEXT,
+            self::TEXT,
+            self::LONGTEXT,
+            self::ENUM,
+            self::SET,
+
+            // INTEGER TYPES
+
+            self::INTEGER,
+            self::INT,
+            self::SMALLINT,
+            self::TINYINT,
+            self::MEDIUMINT,
+            self::BIGINT,
+            self::REAL,
+            self::DOUBLE,
+            self::DOUBLE_PRECISION,
+
+            // FIXED POINT TYPE
+
+            self::DECIMAL,
+            self::NUMERIC,
+
+            // FLOTING POINT TYPES
+
+            self::FLOAT,
+            self::DOUBLE,
+
+            // DATE AND TIME TYPES
+
+            self::DATE,
+            self::TIME,
+            self::DATETIME,
+            self::TIMESTAMP,
+            self::YEAR,
+
+            // JSON TYPES
+
+            self::JSON,
+
+            // BIT TYPE
+
+            self::BIT,
+
+            // BOLLEAN TYPES
+
+            self::BOOLEAN,
+
+            // SPACIAL DATA TYPES
+
+            self::POINT,
+            self::MULTIPOINT,
+            self::LINESTRING,
+            self::MULTILINESTRING,
+            self::GEOMETRY,
+            self::POLYGON,
+            self::MULTIPOLYGON,
+            self::GEOMETRYCOLLECTION
+        ];
+
+        /**
+         *
+         * All postgresql types
+         *
+         * @var array
+         *
+         */
+        const POSTGRESQL_TYPES =
+        [
+
+            // CHARACTER
+
+            self::CHAR,
+            self::VARCHAR,
+            self::CHARACTER_VARYING,
+            self::TEXT,
+            self::CHARACTER,
+
+            // INTEGER TYPES
+
+            self::SMALLINT,
+            self::INTEGER,
+            self::BIGINT,
+            self::DECIMAL,
+            self::NUMERIC,
+            self::REAL,
+            self::DOUBLE_PRECISION,
+            self::SMALL_SERIAL,
+            self::SERIAL,
+            self::BIG_SERIAL,
+
+            // FIXED POINT TYPE
+
+            self::DECIMAL,
+            self::NUMERIC,
+
+            // FLOTING POINT TYPES
+
+            self::FLOAT,
+            self::DOUBLE,
+
+            self::XML,
+            self::MONEY,
+
+            // RANGE TYPES
+
+            self::INT4_RANGE,
+            self::INT8_RANGE,
+            self::NUMRANGE,
+            self::TSRANGE,
+            self::TSTZRANGE,
+            self::DATE_RANGE,
+
+            // DATE AND TIME TYPES
+
+            self::TIMESTAMP,
+            self::TIMESTAMP_WITHOUT_TIME_ZONE,
+            self::TIMESTAMP_WITH_TIME_ZONE,
+            self::DATE,
+            self::TIME,
+            self::TIME_WITHOUT_TIME_ZONE,
+            self::TIME_WITH_TIME_ZONE,
+            self::INTERVAL,
+
+            // JSON TYPES
+
+            self::JSON,
+            self::JSONB,
+            self::TSQUERY,
+            self::TSVECTOR,
+
+            // BIT TYPE
+
+            self::BITEA,
+
+            // BOLLEAN TYPES
+
+            self::BOOLEAN,
+
+            // NETWORKS TYPES
+
+            self::CIDR,
+            self::INET,
+            self::MACADDR,
+            self::MACADDR8,
+            self::UUID,
+
+            // SPACIAL DATA TYPES
+
+            self::POINT,
+            self::LINE,
+            self::LSEG,
+            self::BOX,
+            self::PATH,
+            self::POLYGON,
+            self::CIRCLE,
+
+        ];
+
+
+        const SQLITE_TYPES =
+        [
+            self::NULL,
+            self::INTEGER,
+            self::REAL,
+            self::TEXT,
+            self::BLOB,
+            self::NUMERIC,
+            self::NONE
+        ];
+
     }
 }

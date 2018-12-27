@@ -222,7 +222,7 @@ namespace Imperium\Tables {
             $this->driver           =  $connect->driver();
             $this->all              =  $this->hidden($hidden)->show();
             $this->added_columns    = collection();
-            $this->all_types        = collection()->merge(self::TYPE_OF_DATE,self::TYPE_OF_INTEGER,self::TYPE_OF_TEXT)->collection();
+            $this->all_types        = collection()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->collection();
             $this->columns          = $this->from($current_table)->columns();
             $this->types            = $this->from($current_table)->columns_types();
             $this->length           = $this->from($current_table)->columns_length();
@@ -838,13 +838,13 @@ namespace Imperium\Tables {
                             $x->add($data->json(),$column);
 
                         }
-                        if (has($type,self::TYPE_OF_DATE))
+                        if (has($type,self::DATE_TYPES))
                             $x->add($this->connexion->instance()->quote(faker()->date()),$column);
 
-                        if (has($type,self::TYPE_OF_INTEGER))
+                        if (has($type,self::NUMERIC_TYPES))
                             $x->add(faker()->numberBetween(1,100),$column);
 
-                        if (has($type,self::TYPE_OF_TEXT) || not_in(self::ALL_TYPES, $type))
+                        if (has($type,self::TEXT_TYPES) || not_in(self::ALL_TYPES, $type))
                             $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
                     }
 
