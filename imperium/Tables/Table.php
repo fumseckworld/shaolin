@@ -455,7 +455,7 @@ namespace Imperium\Tables {
                     return $this->connexion->execute("TRUNCATE TABLE $table  RESTART IDENTITY");
                 break;
                 case Connect::SQLITE :
-                    return $this->truncateSqliteTable($table);
+                    return $this->connexion->execute("DELETE  FROM $table") && $this->connexion->execute('VACUUM');
                 break;
                 default:
                     return false;
@@ -870,7 +870,7 @@ namespace Imperium\Tables {
          * @method types
          *
          * @return array
-         * 
+         *
          */
         public function types() : array
         {
@@ -1427,50 +1427,6 @@ namespace Imperium\Tables {
 
             return 0;
 
-        }
-
-
-
-        /**
-         * truncate a sqlite table
-         *
-         * @param string $table
-         *
-         * @return bool
-         *
-         * @throws Exception
-         */
-        private function truncateSqliteTable(string $table) : bool
-        {
-            $fields = collection($this->columns);
-
-            $types = collection($this->types);
-
-            $primary = $this->primary_key();
-
-            $end = $fields->last();
-
-            $this->drop($table);
-
-            $query = "CREATE TABLE $table ";
-
-            append($query,' ( ');
-
-            foreach ($fields as $k => $field)
-            {
-                switch ($field)
-                {
-                    case $primary:
-                        equal($field,$end) ? append($query ," $primary {$types->get($k)} PRIMARY KEY AUTOINCREMENT") :  append($query ," $primary {$types->get($k)} PRIMARY KEY AUTOINCREMENT ,");
-                    break;
-                    default:
-                        equal($field,$end) ? append( $query," '$field' {$types->get($k)}") : append($query ," '$field' {$types->get($k)} ,");
-                    break;
-                }
-
-            }
-            append($query,')');
-            return $this->connexion->execute($query);
         }
 
         /**

@@ -412,7 +412,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertCount(1,$this->mysql_model->find(2));
         $this->assertCount(1,$this->pgsql_model->find(2));
-        $this->assertCount(1,$this->sqlite_model->find(2));
+        $this->assertCount(1,$this->sqlite_model->find(202));
     }
 
     /**
@@ -423,7 +423,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertCount(1,$this->mysql_model->find_or_fail(2));
         $this->assertCount(1,$this->pgsql_model->find_or_fail(2));
-        $this->assertCount(1,$this->sqlite_model->find_or_fail(2));
+        $this->assertCount(1,$this->sqlite_model->find_or_fail(205));
 
         $this->expectException(Exception::class);
         $this->mysql_model->find_or_fail(800);
@@ -492,15 +492,15 @@ class ModelTest extends DatabaseTest
 
         }
 
-        $number = 109;
-        $this->assertCount($number,$this->mysql_model->all());
-        $this->assertEquals($number,$this->mysql_model->count());
 
-        $this->assertCount($number,$this->pgsql_model->all());
-        $this->assertEquals($number,$this->pgsql_model->count());
+        $this->assertCount(109,$this->mysql_model->all());
+        $this->assertEquals(109,$this->mysql_model->count());
 
-        $this->assertCount($number,$this->sqlite_model->all());
-        $this->assertEquals($number,$this->sqlite_model->count());
+        $this->assertCount(109,$this->pgsql_model->all());
+        $this->assertEquals(109,$this->pgsql_model->count());
+
+        $this->assertCount(110,$this->sqlite_model->all());
+        $this->assertEquals(110,$this->sqlite_model->count());
     }
 
     /**
