@@ -62,6 +62,15 @@ use Imperium\Connexion\Connect;
 
         /**
          *
+         * The pdo mode
+         *
+         * @var int
+         *
+         */
+        const PDO_MODE = PDO::FETCH_OBJ;
+
+        /**
+         *
          * The base's name
          *
          * @var string
@@ -159,7 +168,7 @@ use Imperium\Connexion\Connect;
 
             $this->password     = $password;
 
-            $this->mode = PDO::FETCH_OBJ;
+            $this->mode         = self::PDO_MODE;     
 
             $this->dump_path    = realpath($dump_path);
 
@@ -168,7 +177,7 @@ use Imperium\Connexion\Connect;
             $this->instance     = $this->getInstance();
         }
 
-         
+
         /**
          *
          * Return the current host used

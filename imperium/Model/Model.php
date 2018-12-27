@@ -10,6 +10,7 @@ namespace Imperium\Model {
     use Imperium\Collection\Collection;
     use Imperium\Html\Form\Form;
     use PDO;
+use Imperium\Import\Import;
 
     /**
     *
@@ -157,6 +158,38 @@ namespace Imperium\Model {
             $this->check = $this->table->get_columns_with_types();
         }
 
+        /**
+         *
+         * Dump a table or the base
+         *
+         * @method dump
+         *
+         * @param  string $table The table name
+         *
+         * @return bool
+         *
+         */
+        public function dump(string $table = ''): bool
+        {
+            return def($table) ? dumper($this->connexion, false,$table) : dumper($this->connexion,true,'');
+        }
+
+        /**
+         *
+         * Import the sql file content in the base
+         *
+         * @method import
+         *
+         * @param  string $sql_file The sql file name
+         * @param  string $base     The base name
+         *
+         * @return bool
+         *
+         */
+        public function import(string $sql_file_path, string $base = ''): bool
+        {
+            return (new Import($this->connexion, $sql_file_path,$base))->import();
+        }
         /**
          *
          * Return the primary key
@@ -529,7 +562,6 @@ namespace Imperium\Model {
          */
         public function find(int $id): array
         {
-         
            return $this->sql->mode(Query::SELECT)->where($this->primary,Query::EQUAL,$id)->get();
         }
 

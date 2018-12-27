@@ -218,15 +218,14 @@ namespace Imperium\Tables {
          */
         public function __construct(Connect $connect,string $current_table,array $hidden = [])
         {
-            $this->connexion        =  $connect;
-            $this->driver           =  $connect->driver();
-            $this->all              =  $this->hidden($hidden)->show();
+            $this->connexion        = $connect;
+            $this->driver           = $connect->driver();
+            $this->all              = $this->hidden($hidden)->show();
             $this->added_columns    = collection();
             $this->all_types        = collection()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->collection();
             $this->columns          = $this->from($current_table)->columns();
             $this->types            = $this->from($current_table)->columns_types();
             $this->length           = $this->from($current_table)->columns_length();
-
             $this->all_collation    = collation($connect);
             $this->all_charset      = charset($connect);
         }

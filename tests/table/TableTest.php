@@ -458,4 +458,5 @@ class TableTest extends DatabaseTest
         $this->assertFalse($this->sqlite_table->modify_column('status',Imperium::TEXT,200));
     }
 
+    
 }

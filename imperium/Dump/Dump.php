@@ -107,7 +107,8 @@ namespace Imperium\Dump {
             $username   = $this->connexion->user();
             $dump_path  = $this->connexion->dump_path();
             $host       = $this->connexion->host();
-         
+
+
             Dir::clear($dump_path);
 
             $filename =  "$dump_path/$database.sql";
@@ -137,7 +138,8 @@ namespace Imperium\Dump {
                         system($this->command);
                         return File::exist($filename);
 
-                    }else{
+                    }else
+                    {
                         append($this->command," -t");
 
                         append($this->command,$this->tables->join(' -t '));
@@ -152,8 +154,8 @@ namespace Imperium\Dump {
                     {
                         append($this->command," $database .dump > $filename");
                         system($this->command);
-                    }else {
-
+                    }else
+                    {
                         return false;
                     }
                 break;
@@ -161,6 +163,7 @@ namespace Imperium\Dump {
                     return false;
                 break;
             }
+
             return File::exist($filename);
         }
 

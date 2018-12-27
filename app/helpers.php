@@ -29,6 +29,23 @@ use Imperium\Html\Pagination\Pagination;
 
 
 
+if (not_exist('sql_file_path'))
+{
+    /**
+     * [sql_file_path description]
+     *
+     * @method sql_file_path
+     *
+     * @param  Connect       $connect [description]
+     * @param  string        $table   [description]
+     *
+     * @return string        [description]
+     */
+    function sql_file_path(Connect $connect,string $table = ''): string
+    {
+        return def($table) ? "{$connect->dump_path()}/$table.sql" : "{$connect->dump_path()}/{$connect->base()}.sql";
+    }
+}
 if (not_exist('true_or_false'))
 {
     /**

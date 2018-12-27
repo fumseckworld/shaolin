@@ -312,9 +312,9 @@ class AppTest extends DatabaseTest
 
     public function test_connect_instance()
     {
-        $this->assertInstanceOf(Connect::class,\connect(Connect::MYSQL,'zen','root','root',Connect::LOCALHOST,PDO::FETCH_OBJ,'dump'));
-        $this->assertInstanceOf(Connect::class,\connect(Connect::POSTGRESQL,'zen','postgres','postgres',Connect::LOCALHOST,PDO::FETCH_OBJ,'dump'));
-        $this->assertInstanceOf(Connect::class,\connect(Connect::SQLITE,'zen','','',Connect::LOCALHOST,PDO::FETCH_OBJ,'dump'));
+        $this->assertInstanceOf(Connect::class,\connect(Connect::MYSQL,'zen','root','root',Connect::LOCALHOST,'dump'));
+        $this->assertInstanceOf(Connect::class,\connect(Connect::POSTGRESQL,'zen','postgres','postgres',Connect::LOCALHOST,'dump'));
+        $this->assertInstanceOf(Connect::class,\connect(Connect::SQLITE,'zen','','',Connect::LOCALHOST,'dump'));
     }
     public function test_json_instance()
     {

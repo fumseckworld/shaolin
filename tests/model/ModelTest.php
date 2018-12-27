@@ -1,7 +1,6 @@
 <?php
 
-
-namespace tests;
+namespace tests\model;
 
 use Exception;
 use Imperium\Connexion\Connect;
@@ -589,35 +588,51 @@ class ModelTest extends DatabaseTest
     public function test_get_instance()
     {
         $expected = PDO::class;
-        $x = new Connect(Connect::MYSQL,'',self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
+        $x = new Connect(Connect::MYSQL,'',self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,'dump');
         $this->assertInstanceOf($expected,$x->instance());
 
-        $x = new Connect(Connect::POSTGRESQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
-        $this->assertInstanceOf($expected,$x->instance());
-
-
-        $x = new Connect(Connect::SQLITE,'','','',Connect::LOCALHOST,5,'dump');
-        $this->assertInstanceOf($expected,$x->instance());
-
-        $x = new Connect(Connect::MYSQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
-        $this->assertInstanceOf($expected,$x->instance());
-
-        $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
+        $x = new Connect(Connect::POSTGRESQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
         $this->assertInstanceOf($expected,$x->instance());
 
 
-        $x = new Connect(Connect::SQLITE,$this->base,'','',Connect::LOCALHOST,5,'dump');
+        $x = new Connect(Connect::SQLITE,'','','',Connect::LOCALHOST,'dump');
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::MYSQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,'dump');
+        $this->assertInstanceOf($expected,$x->instance());
+
+        $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
+        $this->assertInstanceOf($expected,$x->instance());
+
+
+        $x = new Connect(Connect::SQLITE,$this->base,'','',Connect::LOCALHOST,'dump');
         $this->assertInstanceOf ($expected,$x->instance());
 
         $this->expectException(Exception::class);
 
-        $x = new Connect(Connect::POSTGRESQL,'',self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
+        $x = new Connect(Connect::POSTGRESQL,'',self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,'dump');
         $x->instance();
-        $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
+        $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
         $x->instance();
-        $x =  new Connect(Connect::POSTGRESQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,5,'dump');
+        $x =  new Connect(Connect::POSTGRESQL,$this->base,self::MYSQL_USER,self::MYSQL_PASS,Connect::LOCALHOST,'dump');
         $x->instance();
-        $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,5,'dump');
+        $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
         $x->instance();
+    }
+
+    public function test_dump()
+    {
+        $this->assertTrue($this->mysql()->model()->dump($this->table));
+        $this->assertTrue($this->postgresql()->model()->dump($this->table));
+        $this->assertFalse($this->sqlite()->model()->dump($this->table));
+    }
+    public function test_import()
+    {
+        $this->assertTrue($this->mysql()->model()->dump());
+        $this->assertTrue($this->mysql_model->import(sql_file_path($this->mysql()->connect())));
+        $this->assertTrue($this->postgresql()->model()->dump());
+        $this->assertTrue($this->pgsql_model->import(sql_file_path($this->postgresql()->connect())));
+        $this->assertTrue($this->sqlite()->model()->dump());
+        $this->assertTrue($this->sqlite_model->import(sql_file_path($this->sqlite()->connect())));
     }
 }
