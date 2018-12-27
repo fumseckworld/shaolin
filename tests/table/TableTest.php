@@ -41,6 +41,12 @@ class TableTest extends DatabaseTest
     }
 
 
+    public function test_types()
+    {
+        $this->assertNotEmpty($this->mysql_table->types());
+        $this->assertNotEmpty($this->pgsql_table->types());
+        $this->assertNotEmpty($this->sqlite_table->types());
+    }
     /**
      * @throws \Exception
      */

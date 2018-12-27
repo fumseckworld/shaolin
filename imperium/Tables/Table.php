@@ -865,6 +865,33 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Get all available types for current driver
+         *
+         * @method types
+         *
+         * @return array
+         * 
+         */
+        public function types() : array
+        {
+            switch ($this->driver)
+            {
+                case Connect::MYSQL:
+                    return self::MYSQL_TYPES;
+                break;
+                case Connect::POSTGRESQL:
+                    return self::POSTGRESQL_TYPES;
+                break;
+                case Connect::SQLITE:
+                    return self::SQLITE_TYPES;
+                break;
+                default:
+                    return [];
+                break;
+            }
+        }
+        /**
+         *
          * Set hidden tables
          *
          * @method hidden
