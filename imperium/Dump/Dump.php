@@ -2,6 +2,7 @@
 
 namespace Imperium\Dump {
 
+    use Exception;
     use Imperium\Connexion\Connect;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
@@ -98,7 +99,9 @@ namespace Imperium\Dump {
          *
          * @return bool
          *
-         **/
+         * @throws Exception
+         *
+         */
         public function dump(): bool
         {
             $database   = $this->connexion->base();

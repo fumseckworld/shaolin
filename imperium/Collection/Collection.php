@@ -3,6 +3,7 @@
 namespace Imperium\Collection {
 
     use ArrayAccess;
+    use Exception;
     use Iterator;
 
    /**
@@ -74,16 +75,17 @@ namespace Imperium\Collection {
         }
 
         /**
-        *
-        * Convert the data in the array to a json file
-        *
-        * @method convert_to_json
-        *
-        * @param  string          $filename  The json filename
-        *
-        * @return bool
-        *
-        */
+         *
+         * Convert the data in the array to a json file
+         *
+         * @method convert_to_json
+         *
+         * @param  string $filename The json filename
+         *
+         * @return bool
+         *
+         * @throws Exception
+         */
         public function convert_to_json(string $filename): bool
         {
             return json($filename)->create($this->data);
@@ -333,7 +335,7 @@ namespace Imperium\Collection {
 
                 return $code;
             }
-
+            return '';
         }
 
         /**
@@ -371,7 +373,7 @@ namespace Imperium\Collection {
 
         /**
         *
-        * Add the values to the beggin ot the array
+        * Add the values to the begin ot the array
         *
         * @method stack
         *
@@ -382,7 +384,6 @@ namespace Imperium\Collection {
         */
         public function stack(...$values): Collection
         {
-
             foreach ($values as $value)
                 array_unshift($this->data,$value);
 
@@ -486,16 +487,18 @@ namespace Imperium\Collection {
         }
 
         /**
-        *
-        * Return a value before a key
-        *
-        * @method value_before_key
-        *
-        * @param  mixed            $key The next value key
-        *
-        * @return mixed
-        *
-        */
+         *
+         * Return a value before a key
+         *
+         * @method value_before_key
+         *
+         * @param  mixed $key The next value key
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
         public function value_before_key($key)
         {
             $length = $this->length();
@@ -620,16 +623,17 @@ namespace Imperium\Collection {
         }
 
         /**
-        *
-        * Check if the value not exist in the array
-        *
-        * @method not_exist
-        *
-        * @param mixed $value The value to check
-        *
-        * @return bool
-        *
-        */
+         *
+         * Check if the value not exist in the array
+         *
+         * @method not_exist
+         *
+         * @param mixed $value The value to check
+         *
+         * @return bool
+         *
+         * @throws Exception
+         */
         public function not_exist($value): bool
         {
             return is_false($this->exist($value));
@@ -725,17 +729,19 @@ namespace Imperium\Collection {
 
 
         /**
-        *
-        * Assign a new value to an existing value by a key
-        *
-        * @method change_value
-        *
-        * @param mixed $old The old value
-        * @param mixed $new The new value
-        *
-        * @return Collection
-        *
-        */
+         *
+         * Assign a new value to an existing value by a key
+         *
+         * @method change_value
+         *
+         * @param mixed $old The old value
+         * @param mixed $new The new value
+         *
+         * @return Collection
+         *
+         * @throws Exception
+         *
+         */
         public function change_value($old,$new): Collection
         {
             foreach ($this->data as $k => $v)

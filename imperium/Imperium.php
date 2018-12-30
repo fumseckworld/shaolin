@@ -42,11 +42,6 @@ namespace Imperium {
         private $connect;
 
         /**
-         * @var string
-         */
-        private $current_table;
-
-        /**
          *
          * Current table
          *
@@ -92,6 +87,11 @@ namespace Imperium {
          * @var Form
          */
         private $form;
+
+        /**
+         * @var Table
+         */
+        private $tables;
 
 
         /**
@@ -539,12 +539,14 @@ namespace Imperium {
          *
          * @method where
          *
-         * @param  string $column    The column name
+         * @param  string $column The column name
          * @param  string $condition The condition
-         * @param  mixed  $expected  The expected value
+         * @param  mixed $expected The expected value
          *
          * @return array
          *
+         * @throws Exception
+         * 
          */
         public function where(string $column, string $condition, $expected): array
         {
@@ -581,7 +583,7 @@ namespace Imperium {
          */
         public function save(array $data, array $ignore = []): bool
         {
-            return $this->tables()->save($data,$this->tables()->get_current_table(),$ignore);
+            return $this->tables()->save($data,$this->tables()->current(),$ignore);
         }
 
         /**
@@ -607,12 +609,12 @@ namespace Imperium {
          * @param int $id
          *
          * @param array $data
+         * @param string $table
          * @param array $ignore
          *
          * @return bool
          *
          * @throws Exception
-         *
          */
         public function update_record(int $id, array $data, string $table,array $ignore = []): bool
         {
@@ -681,10 +683,12 @@ namespace Imperium {
          *
          * @method dump
          *
-         * @param  bool     $base   [description]
-         * @param  string[] $tables [description]
+         * @param  bool $base
+         * @param  string[] $tables
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function dump(bool $base,string ...$tables): bool
@@ -696,10 +700,12 @@ namespace Imperium {
          *
          * @method __construct
          *
-         * @param  Connect     $connect       The connection to the base
-         * @param  string      $current_table The current table
-         * @param  array       $hidden_tables All hidden tables in current base
-         * @param  array       $hidden_bases  All hidden bases for the drivers
+         * @param  Connect $connect The connection to the base
+         * @param  string $current_table The current table
+         * @param  array $hidden_tables All hidden tables in current base
+         * @param  array $hidden_bases All hidden bases for the drivers
+         *
+         * @throws Exception
          *
          */
         public function __construct(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases)

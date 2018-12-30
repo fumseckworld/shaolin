@@ -197,6 +197,8 @@ namespace Imperium\Query {
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         public function sql(): string
         {
@@ -341,6 +343,8 @@ namespace Imperium\Query {
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function get(): array
         {
@@ -377,6 +381,8 @@ namespace Imperium\Query {
          *
          * @return Query
          *
+         * @throws Exception
+         *
          */
         public function mode(int $mode): Query
         {
@@ -397,6 +403,8 @@ namespace Imperium\Query {
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
         public function delete(): bool
         {
@@ -411,13 +419,15 @@ namespace Imperium\Query {
          *
          * @method join
          *
-         * @param  string    $first_table   The first table name
-         * @param  string    $second_table The second table name
-         * @param  string    $first_param   The first parameter
-         * @param  string    $second_param The second parameter
-         * @param  string[]  $columns      The columns
+         * @param  string $first_table The first table name
+         * @param  string $second_table The second table name
+         * @param  string $first_param The first parameter
+         * @param  string $second_param The second parameter
+         * @param  string[] $columns The columns
          *
          * @return Query
+         *
+         * @throws Exception
          *
          */
         public function join(string $first_table,string $second_table,string $first_param ,string $second_param,string ...$columns) : Query
@@ -513,9 +523,12 @@ namespace Imperium\Query {
          *
          * @param  string $value [description]
          *
-         * @return Query  [description]
+         * @return Query
+         *
+         * @throws Exception
+         *
          */
-        public function like(string $value): Query
+        public function like(string  $value): Query
         {
             $driver = $this->connexion->driver();
 

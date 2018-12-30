@@ -656,6 +656,8 @@ namespace Imperium\Html\Form {
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         private function get_input_complete_class(): string
         {
@@ -1021,15 +1023,17 @@ namespace Imperium\Html\Form {
          *
          * @method select
          *
-         * @param  string $name         The select name
-         * @param  array  $options      The select options
+         * @param  string $name The select name
+         * @param  array $options The select options
          * @param  string $success_text The validation success text
-         * @param  string $error_text   The validation error text
-         * @param  string $icon         The select icon
-         * @param  bool   $multiple     The option to create a multiple select
-         * @param  bool   $required     The option to add require
+         * @param  string $error_text The validation error text
+         * @param  string $icon The select icon
+         * @param  bool $multiple The option to create a multiple select
+         * @param  bool $required The option to add require
          *
          * @return Form
+         *
+         * @throws Exception
          *
          */
         public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $multiple = false,bool $required = true): Form

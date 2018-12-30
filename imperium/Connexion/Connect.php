@@ -5,9 +5,7 @@ namespace Imperium\Connexion {
     use Exception;
     use PDO;
     use PDOException;
-
-use Imperium\Directory\Dir;
-use Imperium\Connexion\Connect;
+    use Imperium\Directory\Dir;
 
     /**
     *
@@ -148,12 +146,14 @@ use Imperium\Connexion\Connect;
          *
          * @method __construct
          *
-         * @param  string      $driver
-         * @param  string      $base           The base's name
-         * @param  string      $username       The base's username
-         * @param  string      $password       The base's password
-         * @param  string      $host           The base's host
-         * @param  string      $dump_path      The path to dump directory
+         * @param  string $driver
+         * @param  string $base The base's name
+         * @param  string $username The base's username
+         * @param  string $password The base's password
+         * @param  string $host The base's host
+         * @param  string $dump_path The path to dump directory
+         *
+         * @throws Exception
          *
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
@@ -273,6 +273,7 @@ use Imperium\Connexion\Connect;
         {
             return $this->dump_path;
         }
+
         /**
          *
          * Check if current driver is mysql
@@ -280,6 +281,8 @@ use Imperium\Connexion\Connect;
          * @method mysql
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function mysql(): bool
@@ -295,6 +298,8 @@ use Imperium\Connexion\Connect;
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
         public function postgresql(): bool
         {
@@ -308,6 +313,8 @@ use Imperium\Connexion\Connect;
          * @method sqlite
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function sqlite(): bool

@@ -964,7 +964,7 @@ if (not_exist('tables_select'))
     {
 
         $tables = collection();
-        $current = $instance->get_current_table();
+        $current = $instance->current();
         foreach ($instance->hidden($hidden)->show() as $x)
         {
             if (different($x,$current))
@@ -2097,6 +2097,8 @@ if (not_exist('table'))
      * @param array $hidden
      *
      * @return Table
+     *
+     * @throws Exception
      *
      */
     function table(Connect $connect,string $current_table,array $hidden = []): Table

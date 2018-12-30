@@ -2,7 +2,8 @@
 
 namespace Imperium\Import {
 
-use Imperium\Connexion\Connect;
+    use Exception;
+    use Imperium\Connexion\Connect;
 
     /**
     *
@@ -78,6 +79,8 @@ use Imperium\Connexion\Connect;
          * @method import
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function import(): bool

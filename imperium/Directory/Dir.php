@@ -2,6 +2,7 @@
 
 namespace Imperium\Directory {
 
+    use Exception;
     use Imperium\File\File;
     /**
     *
@@ -34,6 +35,8 @@ namespace Imperium\Directory {
          *
          * @return bool
          *
+         * @throws \Exception
+         *
          */
         public static function clear(string $directory): bool
         {
@@ -60,6 +63,8 @@ namespace Imperium\Directory {
          * @param  string $directory The name of directory
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public static function create(string $directory): bool

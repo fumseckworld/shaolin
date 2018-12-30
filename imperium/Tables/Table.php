@@ -120,7 +120,7 @@ namespace Imperium\Tables {
 
         /**
          *
-         * All availables charsets
+         * All available charsets
          *
          * @var array
          *
@@ -160,6 +160,8 @@ namespace Imperium\Tables {
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function get_columns_with_types():array
         {
@@ -170,6 +172,7 @@ namespace Imperium\Tables {
             }
             return $data->collection();
         }
+
         /**
          *
          * Return the check clause
@@ -209,12 +212,14 @@ namespace Imperium\Tables {
 
         /**
          *
-         *
-         *
          * @method __construct
          *
-         * @param  Connect     $connect       The connection to the base
-         * @param  string      $current_table The current table name
+         * @param  Connect $connect The connection to the base
+         * @param  string $current_table The current table name
+         * @param array $hidden The hidden tables
+         *
+         * @throws Exception
+         *
          */
         public function __construct(Connect $connect,string $current_table,array $hidden = [])
         {
@@ -237,9 +242,8 @@ namespace Imperium\Tables {
          *
          * @return string
          *
-         * @throws Exception
          */
-        public function get_current_table(): string
+        public function current(): string
         {
             return  $this->table;
         }
@@ -252,6 +256,8 @@ namespace Imperium\Tables {
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function get_columns_info(): array
         {
@@ -261,24 +267,25 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL :
 
-                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->get_current_table()}") as $column)
+                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $column)
                         $fields->push($column);
                 break;
 
                 case Connect::POSTGRESQL :
 
-                    foreach ($this->connexion->request("SELECT * FROM information_schema.columns WHERE table_name ='{$this->get_current_table()}'") as $column)
+                    foreach ($this->connexion->request("SELECT * FROM information_schema.columns WHERE table_name ='{$this->current()}'") as $column)
                         $fields->push($column);
 
                 break;
 
                 case Connect::SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->get_current_table()})") as $column)
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $column)
                         $fields->push($column);
                 break;
             }
             return $fields->collection();
         }
+
         /**
          *
          * Check if current database has table
@@ -304,10 +311,12 @@ namespace Imperium\Tables {
          */
         public function change_collation(): bool
         {
+            is_false(def($this->collation),true,"The collation was not define");
+
             switch ($this->driver)
             {
                 case Connect::MYSQL;
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} COLLATE {$this->collation};");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} COLLATE {$this->collation};");
                 break;
                 case Connect::POSTGRESQL:
                     return $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '{$this->connexion->base()}'");
@@ -329,10 +338,12 @@ namespace Imperium\Tables {
          */
         public function change_charset(): bool
         {
+            is_false(def($this->charset),true,"The charset was not define");
+
             switch ($this->driver)
             {
                 case Connect::MYSQL;
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHARACTER SET = {$this->charset};");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} CHARACTER SET = {$this->charset};");
                 break;
                 case Connect::POSTGRESQL:
                     return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '{$this->connexion->base()}'");
@@ -350,9 +361,11 @@ namespace Imperium\Tables {
          *
          * @method has_column
          *
-         * @param  string     $column The column name
+         * @param  string $column The column name
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function has_column(string $column): bool
@@ -367,10 +380,11 @@ namespace Imperium\Tables {
          *
          * @method column_not_exist
          *
-         * @param  string           $column  The column name
+         * @param  string $column The column name
          *
          * @return bool
          *
+         * @throws Exception
          */
         public function column_not_exist(string $column): bool
         {
@@ -385,6 +399,8 @@ namespace Imperium\Tables {
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function columns(): array
         {
@@ -394,20 +410,20 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL :
 
-                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->get_current_table()}") as $column)
+                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $column)
                         $fields->push($column->Field);
 
                 break;
 
                 case Connect::POSTGRESQL :
 
-                    foreach ($this->connexion->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->get_current_table()}'") as $column)
+                    foreach ($this->connexion->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->current()}'") as $column)
                          $fields->push($column->column_name);
 
                 break;
 
                 case Connect::SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->get_current_table()})") as $column)
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $column)
                         $fields->push($column->name);
                 break;
             }
@@ -425,6 +441,8 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
         public function drop(string $table): bool
         {
@@ -437,9 +455,11 @@ namespace Imperium\Tables {
          *
          * @method truncate
          *
-         * @param  string  $table The table name
+         * @param  string $table The table name
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function truncate(string $table): bool
@@ -466,9 +486,9 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Append a fiel in the create table
+         * Append a column in the create table
          *
-         * @method field
+         * @method column
          *
          * @param  string $type            The field type
          * @param  string $name            The field name
@@ -485,7 +505,7 @@ namespace Imperium\Tables {
          * @return Table
          *
          **/
-        public function field(string $type, string $name, bool $primary, int $length, bool $unique, bool $nullable,bool $default,$default_value,bool $check,string $check_condition,$check_expected): Table
+        public function column(string $type, string $name, bool $primary, int $length, bool $unique, bool $nullable,bool $default,$default_value,bool $check,string $check_condition,$check_expected): Table
         {
 
             $x = collection()
@@ -509,24 +529,26 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Append a coumn in a existing table
+         * Append a column in a existing table
          *
          * @method append_column
          *
-         * @param  string        $name     The column name
-         * @param  string        $type     The column type
-         * @param  int           $size     The column size
-         * @param  bool          $unique   The column unique constraint
-         * @param  bool          $nullable The column not null constraint
+         * @param  string $name The column name
+         * @param  string $type The column type
+         * @param  int $size The column size
+         * @param  bool $unique The column unique constraint
+         * @param  bool $nullable The column not null constraint
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function append_column(string $name, string $type, int $size, bool $unique,bool $nullable): bool
         {
 
             $data = collection();
-            $command = "ALTER TABLE {$this->get_current_table()} ADD COLUMN ";
+            $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
 
             different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
 
@@ -540,20 +562,22 @@ namespace Imperium\Tables {
 
             return $data->not_exist(false);
         }
+
         /**
          *
          *
          * @method alter_table
          *
-         * @param  string      $constraint [description]
-         * @param  string      $column     [description]
-         * @param  string      $table      [description]
+         * @param  string $constraint
+         * @param  string $column
+         * @param  string $table
          *
-         * @return bool        [description]
+         * @return bool       
+         * @throws Exception
          */
         public function alter_table(string $constraint,string $column,$table = ''): bool
         {
-            $table = def($table) ? $table : $this->get_current_table();
+            $table = def($table) ? $table : $this->current();
 
             if (equal($this->driver,Connect::MYSQL))
             {
@@ -600,10 +624,10 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case Connect::MYSQL;
-                    return  $this->connexion->execute("ALTER TABLE {$this->get_current_table()} DROP CONSTRAINT $constraint;");
+                    return  $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT $constraint;");
                 break;
                 case Connect::SQLITE:
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} ALTER COLUMN $column DROP $constraint;");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN $column DROP $constraint;");
                 break;
                 default:
                     return false;
@@ -657,7 +681,7 @@ namespace Imperium\Tables {
          *
          * @method import
          *
-         * @param  string $sql_file [description]
+         * @param  string $sql_file
          *
          * @return bool
          *
@@ -666,9 +690,7 @@ namespace Imperium\Tables {
          **/
         public function import(string $sql_file): bool
         {
-            $sql = $this->connexion->dump_path() . '/'. $sql_file ;
-
-            return (new Import($this->connexion,$sql))->import();
+            return (new Import($this->connexion,$sql_file))->import();
         }
 
         /**
@@ -683,10 +705,7 @@ namespace Imperium\Tables {
          */
         private function startCreateCommand(string $table ) : string
         {
-            $code = "CREATE TABLE IF NOT EXISTS $table ";
-            append($code,'(  ');
-
-            return $code;
+            return "CREATE TABLE IF NOT EXISTS $table ( ";
         }
 
         /**
@@ -695,9 +714,11 @@ namespace Imperium\Tables {
          *
          * @method is_the_last_field
          *
-         * @param  string            $field    The field name
+         * @param  string $field The field name
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function is_the_last_field(string $field): bool
@@ -706,14 +727,17 @@ namespace Imperium\Tables {
         }
 
         /**
+         *
          * append field in command to create table
          *
          *
          * @param array $field
          *
-         * @param bool  $end
+         * @param bool $end
          *
          * @return string
+         *
+         * @throws Exception
          *
          */
         private function updateCreateCommand(array $field,bool $end) : string
@@ -782,7 +806,7 @@ namespace Imperium\Tables {
          */
         public function seed(int $records): bool
         {
-            $table = $this->get_current_table();
+            $table = $this->current();
             $columns = $this->from($table)->columns();
             $columns_str = collection($columns)->join(',');
 
@@ -889,6 +913,7 @@ namespace Imperium\Tables {
                 break;
             }
         }
+
         /**
          *
          * Set hidden tables
@@ -917,10 +942,12 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
         public function dump(string $table = ''): bool
         {
-            return def($table) ? dumper($this->connexion,false,$table) : dumper($this->connexion,false,$this->get_current_table());
+            return def($table) ? dumper($this->connexion,false,$table) : dumper($this->connexion,false,$this->current());
         }
 
 
@@ -935,20 +962,20 @@ namespace Imperium\Tables {
             {
                 case Connect::MYSQL:
 
-                    foreach ($this->connexion->request("show columns from {$this->get_current_table()} where `Key` = 'PRI';") as $key)
+                    foreach ($this->connexion->request("show columns from {$this->current()} where `Key` = 'PRI';") as $key)
                         return $key->Field;
 
                 break;
 
                 case Connect::POSTGRESQL:
 
-                    foreach($this->connexion->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->get_current_table()}';") as $key)
+                    foreach($this->connexion->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->current()}';") as $key)
                         return $key->column_name;
                 break;
 
                 case Connect::SQLITE:
 
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->get_current_table()})") as $field)
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $field)
                     {
                         if (def($field->pk))
                             return $field->name;
@@ -967,13 +994,14 @@ namespace Imperium\Tables {
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         public function primary_key(): string
         {
             $primary = $this->detectPrimaryKey();
 
-            if (not_def($primary))
-                throw new Exception('We have not found a primary key');
+            is_true(not_def($primary),true,'We have not found a primary key');
 
             return $primary;
 
@@ -982,12 +1010,14 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Check if the current table
-         * has not records
+         * Check if the current table  has not records
          *
          * @method is_empty
          *
-         * @return bool     [description]
+         * @return bool
+         *
+         * @throws Exception
+         *
          */
         public function is_empty(): bool
         {
@@ -1000,14 +1030,16 @@ namespace Imperium\Tables {
          *
          * @method select_by_id
          *
-         * @param  int          $id the record id
+         * @param  int $id the record id
          *
          * @return array
          *
-         **/
+         * @throws Exception
+         *
+         */
         public function select(int $id): array
         {
-            return $this->connexion->request("SELECT * FROM {$this->get_current_table()} WHERE {$this->primary_key()} = $id" );
+            return $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->primary_key()} = $id" );
         }
 
 
@@ -1026,7 +1058,7 @@ namespace Imperium\Tables {
          */
         public function select_or_fail(int $id): array
         {
-            $data = $this->connexion->request("SELECT * FROM {$this->get_current_table()} WHERE {$this->primary_key()} = $id" );
+            $data = $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->primary_key()} = $id" );
 
             superior($data,1,true,"The primary key is not unique");
 
@@ -1041,14 +1073,15 @@ namespace Imperium\Tables {
          *
          * @method remove
          *
-         * @param  int          $id The record id
+         * @param  int $id The record id
          *
          * @return bool
          *
+         * @throws Exception
          */
         public function remove(int $id): bool
         {
-            return $this->connexion->execute("DELETE FROM {$this->get_current_table()} WHERE {$this->primary_key()} = $id");
+            return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->primary_key()} = $id");
         }
 
         /**
@@ -1090,11 +1123,12 @@ namespace Imperium\Tables {
          *
          * @method rename_column
          *
-         * @param  string        $old The old column name
-         * @param  string        $new The new column name
+         * @param  string $old The old column name
+         * @param  string $new The new column name
          *
          * @return bool
          *
+         * @throws Exception
          */
         public function rename_column(string $old, string $new): bool
         {
@@ -1109,11 +1143,11 @@ namespace Imperium\Tables {
 
                     $x =  $length  ?  "($length)" : '';
 
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CHANGE COLUMN  $old $new $type$x ;");
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->current()} CHANGE COLUMN  $old $new $type$x ;");
                 break;
                 case Connect::POSTGRESQL:
                 case Connect::SQLITE:
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->get_current_table()} RENAME COLUMN $old TO $new;");
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->current()} RENAME COLUMN $old TO $new;");
                 break;
                 default:
                     return false;
@@ -1138,12 +1172,13 @@ namespace Imperium\Tables {
         public function convert(string $charset,string $collate): bool
         {
             is_true(collection($this->all_charset)->not_exist($charset),true,"The charset $charset is not valid");
+
             is_true(collection($this->all_collation)->not_exist($collate),true,"The collation $collate is not valid");
 
             switch ($this->driver)
             {
                 case Connect::MYSQL:
-                    return $this->connexion->execute("ALTER TABLE {$this->get_current_table()} CONVERT TO CHARACTER SET $charset COLLATE $collate");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} CONVERT TO CHARACTER SET $charset COLLATE $collate");
                 break;
                 case Connect::POSTGRESQL:
                     return $this->set_charset($charset)->change_charset() && $this->set_collation($collate)->change_collation();
@@ -1161,6 +1196,8 @@ namespace Imperium\Tables {
          * @method get_columns_length
          *
          * @return array
+         *
+         * @throws Exception
          *
          */
         public function columns_length(): array
@@ -1217,7 +1254,7 @@ namespace Imperium\Tables {
         {
             $data = collection();
             $primary = $this->primary_key();
-            $table = $this->get_current_table();
+            $table = $this->current();
 
             foreach($columns as $k => $column)
             {
@@ -1241,17 +1278,17 @@ namespace Imperium\Tables {
         }
 
 
-
         /**
          *
          * Check if a table not exist
          *
          * @method not_exist
          *
-         * @param  string    $table The table name
+         * @param  string $table The table name
          *
          * @return bool
          *
+         * @throws Exception
          */
         public function not_exist(string $table = ""): bool
         {
@@ -1281,11 +1318,13 @@ namespace Imperium\Tables {
          *
          * @method save
          *
-         * @param  array  $values    The values
-         * @param  string $table     The table name
-         * @param  array  $ignore    The value to ignore
+         * @param  array $values The values
+         * @param  string $table The table name
+         * @param  array $ignore The value to ignore
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function save(array $values,string $table,array $ignore = []): bool
@@ -1340,7 +1379,6 @@ namespace Imperium\Tables {
         }
 
 
-
         /**
          *
          * Display all tables
@@ -1348,6 +1386,8 @@ namespace Imperium\Tables {
          * @method show
          *
          * @return array
+         *
+         * @throws Exception
          *
          */
         public function show(): array
@@ -1438,6 +1478,8 @@ namespace Imperium\Tables {
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function all(string $order = Table::DESC): array
         {
@@ -1464,13 +1506,15 @@ namespace Imperium\Tables {
          *
          * @method update
          *
-         * @param  int    $id     The record id
-         * @param  array  $values The new values
-         * @param  string $table  The table name
-         * @param  array  $ignore The values to ignore
+         * @param  int $id The record id
+         * @param  array $values The new values
+         * @param  string $table The table name
+         * @param  array $ignore The values to ignore
          *
          * @return bool
          *
+         * @throws Exception
+         * 
          */
         public function update(int $id,array $values,string $table,array $ignore= []): bool
         {
@@ -1518,12 +1562,14 @@ namespace Imperium\Tables {
          *
          * @method modify_column
          *
-         * @param  string        $column The column name
-         * @param  string        $type   The column type
-         * @param  int           $size   The column size
+         * @param  string $column The column name
+         * @param  string $type The column type
+         * @param  int $size The column size
          *
          * @return bool
          *
+         * @throws Exception
+         * 
          */
         public function modify_column(string $column,string $type,int $size = 0): bool
         {
@@ -1567,6 +1613,8 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
+         * @throws Exception
+         * 
          */
         public function drop_all_tables(): bool
         {
@@ -1593,29 +1641,29 @@ namespace Imperium\Tables {
         }
 
 
-
         /**
          *
          * Append multiples columns before or after column
          *
          * @method append_columns
          *
-         * @param  string         $table                     [description]
-         * @param  Table          $instance                  [description]
-         * @param  array          $new_columns_names         [description]
-         * @param  array          $new_columns_types         [description]
-         * @param  array          $new_column_order          [description]
-         * @param  array          $existing_columns_selected [description]
-         * @param  array          $unique                    [description]
-         * @param  array          $null                      [description]
+         * @param  string $table
+         * @param  Table $instance
+         * @param  array $new_columns_names
+         * @param  array $new_columns_types
+         * @param  array $new_column_order
+         * @param  array $existing_columns_selected
+         * @param  array $unique
+         * @param  array $null
          *
-         * @return bool           [description]
+         * @return bool          
+         * @throws Exception
          */
         public function append_columns(string $table, Table $instance, array  $new_columns_names, array $new_columns_types, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
         {
-            $table_columns = $instance->select($table)->get_columns();
+            $table_columns = $instance->from($table)->columns();
 
-            $the_end_of_new_columns =  end($new_columns_names);
+            $the_end_of_new_columns =  collection($new_columns_names)->last();
 
             switch ($this->driver)
             {
@@ -1853,9 +1901,11 @@ namespace Imperium\Tables {
          *
          * @method has_types
          *
-         * @param  string[]          $types All types expected
+         * @param  string[] $types All types expected
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function has_types(string ...$types): bool
@@ -1879,6 +1929,8 @@ namespace Imperium\Tables {
          * @param  string $new_name The new name
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function rename(string $new_name = ''): bool
@@ -1911,6 +1963,8 @@ namespace Imperium\Tables {
          * @method columns_types
          *
          * @return array
+         *
+         * @throws Exception
          *
          */
         public function columns_types(): array
@@ -2021,9 +2075,11 @@ namespace Imperium\Tables {
          *
          * @method length
          *
-         * @param  string $column The clumns name
+         * @param  string $column The column name
          *
          * @return mixed
+         *
+         * @throws Exception
          *
          */
         public function length(string $column)
@@ -2042,7 +2098,7 @@ namespace Imperium\Tables {
          */
         public function get_current_tmp_table(): string
         {
-            return '_'.sha1($this->get_current_table());
+            return '_'.sha1($this->current());
         }
 
         /**
@@ -2051,16 +2107,18 @@ namespace Imperium\Tables {
          *
          * @method insert_multiples
          *
-         * @param  array            $collection The data to insert
-         * @param  array            $ignore     The data to ignore
+         * @param  array $collection The data to insert
+         * @param  array $ignore The data to ignore
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function insert_multiples(array $collection,array $ignore = []): bool
         {
 
-            $query = "INSERT INTO {$this->get_current_table()} ({$this->columns_to_string()}) VALUES ";
+            $query = "INSERT INTO {$this->current()} ({$this->columns_to_string()}) VALUES ";
 
             $primary = $this->primary_key();
 

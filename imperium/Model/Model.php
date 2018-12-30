@@ -104,7 +104,7 @@ use Imperium\Import\Import;
          *
          * The selected columns
          *
-         * @var string
+         * @var array
          *
          */
         private $only;
@@ -180,11 +180,12 @@ use Imperium\Import\Import;
          *
          * @method import
          *
-         * @param  string $sql_file The sql file name
-         * @param  string $base     The base name
+         * @param string $sql_file_path The sql file
+         * @param  string $base The base name
          *
          * @return bool
          *
+         * @throws Exception
          */
         public function import(string $sql_file_path, string $base = ''): bool
         {
@@ -210,18 +211,20 @@ use Imperium\Import\Import;
          *
          * @method edit
          *
-         * @param  int    $id           The record id
-         * @param  string $action       The form action
-         * @param  string $form_id      The form id
-         * @param  string $submit_text  The submit text
+         * @param  int $id The record id
+         * @param  string $action The form action
+         * @param  string $form_id The form id
+         * @param  string $submit_text The submit text
          * @param  string $submit_class The submit button class
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         public function edit(int $id,string $action,string $form_id,string $submit_text,string $submit_class): string
         {
-            return form($action,$form_id)->generate(2,$this->table->get_current_table(),$this->table,$submit_text,$submit_class,'','',Form::EDIT,$id);
+            return form($action,$form_id)->generate(2,$this->table->current(),$this->table,$submit_text,$submit_class,'','',Form::EDIT,$id);
         }
 
         /**
@@ -230,17 +233,19 @@ use Imperium\Import\Import;
          *
          * @method create
          *
-         * @param  string $action       The form action
-         * @param  string $form_id      The form id
-         * @param  string $submit_text  The submit text
+         * @param  string $action The form action
+         * @param  string $form_id The form id
+         * @param  string $submit_text The submit text
          * @param  string $submit_class The submit class
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         public function create(string $action,string $form_id,string $submit_text,string $submit_class): string
         {
-            return form($action,$form_id)->generate(2,$this->table->get_current_table(),$this->table,$submit_text,$submit_class,'','');
+            return form($action,$form_id)->generate(2,$this->table->current(),$this->table,$submit_text,$submit_class,'','');
         }
 
         /**
@@ -249,14 +254,18 @@ use Imperium\Import\Import;
          *
          * @method search
          *
-         * @param  mixed $value The value to search
+         * @param  string $value The value to search
+         * @param bool $json_output To save data in a json file
+         * @param string $filename The json filename
          *
-         * @return array
+         * @return array|bool
+         *
+         * @throws Exception
          *
          */
-        public function search($value): array
+        public function search(string $value,bool $json_output = false,string $filename = 'search.json')
         {
-            return $this->sql->mode(Query::SELECT)->like($value)->get();
+            return $json_output ? collection($this->sql->mode(Query::SELECT)->like($value)->get())->convert_to_json($filename) : $this->sql->mode(Query::SELECT)->like($value)->get();
         }
 
         /**
@@ -265,9 +274,11 @@ use Imperium\Import\Import;
          *
          * @method show_tables
          *
-         * @param  array      $hidden The hidden table
+         * @param  array $hidden The hidden table
          *
          * @return array
+         *
+         * @throws Exception
          *
          */
         public function show_tables(array $hidden = []): array
@@ -281,31 +292,34 @@ use Imperium\Import\Import;
          *
          * @method show
          *
-         * @param  string $pagination_prefix_url  [description]
-         * @param  array  $hidden_table           [description]
-         * @param  string $table_url_prefix       [description]
-         * @param  string $url_separator          [description]
-         * @param  int    $current_page           [description]
-         * @param  int    $limit_records_per_page [description]
-         * @param  string $table_class            [description]
-         * @param  string $action_remove_text     [description]
-         * @param  string $confirm_text           [description]
-         * @param  string $remove_btn_class       [description]
-         * @param  string $remove_url_prefix      [description]
-         * @param  string $remove_icon            [description]
-         * @param  string $action_edit_text       [description]
-         * @param  string $edit_url_prefix        [description]
-         * @param  string $edit_icon              [description]
-         * @param  string $edit_btn_class         [description]
-         * @param  bool   $align_column           [description]
-         * @param  bool   $column_to_upper        [description]
-         * @param  bool   $framework              [description]
-         * @param  string $start_pagination_text  [description]
-         * @param  string $end_pagination_text    [description]
-         * @param  string $key                    [description]
-         * @param  string $order_by               [description]
+         * @param  string $pagination_prefix_url [description]
+         * @param  array $hidden_table [description]
+         * @param  string $table_url_prefix [description]
+         * @param  string $url_separator [description]
+         * @param  int $current_page [description]
+         * @param  int $limit_records_per_page [description]
+         * @param  string $table_class [description]
+         * @param  string $action_remove_text [description]
+         * @param  string $confirm_text [description]
+         * @param  string $remove_btn_class [description]
+         * @param  string $remove_url_prefix [description]
+         * @param  string $remove_icon [description]
+         * @param  string $action_edit_text [description]
+         * @param  string $edit_url_prefix [description]
+         * @param  string $edit_icon [description]
+         * @param  string $edit_btn_class [description]
+         * @param  bool $align_column [description]
+         * @param  bool $column_to_upper [description]
+         * @param  bool $framework [description]
+         * @param  string $start_pagination_text [description]
+         * @param  string $end_pagination_text [description]
+         * @param  string $key [description]
+         * @param  string $order_by [description]
          *
-         * @return string [description]
+         * @return string
+         *
+         * @throws Exception
+         *
          */
         public function show(   string $pagination_prefix_url,array $hidden_table,string $table_url_prefix,
                                 string $url_separator,int $current_page,int $limit_records_per_page,
@@ -318,7 +332,7 @@ use Imperium\Import\Import;
         {
             $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
 
-            $records = get_records($this->table,$this->table->get_current_table(),$current_page,$limit_records_per_page,$this->connexion,$framework,$key,$order_by);
+            $records = get_records($this->table,$this->table->current(),$current_page,$limit_records_per_page,$this->connexion,$framework,$key,$order_by);
 
             $table_select = tables_select($this->table,$hidden_table,$table_url_prefix,$url_separator);
 
@@ -326,7 +340,7 @@ use Imperium\Import\Import;
 
             append($html,html('div',$table_select,'mt-2 mb-2'));
 
-            append($html,simply_view($this->table->get_current_table(),$this->table,$this->all(),$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$align_column,$column_to_upper));
+            append($html,simply_view($this->table->current(),$this->table,$this->all(),$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$align_column,$column_to_upper));
 
 
             return $html;
@@ -338,9 +352,11 @@ use Imperium\Import\Import;
          *
          * @method change_table
          *
-         * @param  string       $table The table name
+         * @param  string $table The table name
          *
          * @return Model
+         *
+         * @throws Exception
          *
          */
         public function change_table(string $table): Model
@@ -369,9 +385,11 @@ use Imperium\Import\Import;
          *
          * @method seed
          *
-         * @param  int  $records The number of records
+         * @param  int $records The number of records
          *
          * @return bool
+         *
+         * @throws Exception
          *
          */
         public function seed(int $records): bool
@@ -405,13 +423,15 @@ use Imperium\Import\Import;
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function get(): array
         {
             if (not_def($this->column,$this->expected,$this->condition))
                 throw new Exception("The where clause was not found");
 
-            return def($this->only) ? $this->sql->mode(Query::SELECT)->columns($this->only)->where($this->param,$this->condition,$this->expected)->get() : $this->sql->mode(Query::SELECT)->where($this->param,$this->condition,$this->expected)->get();
+            return def($this->only) ? $this->sql->mode(Query::SELECT)->columns($this->only)->where($this->column,$this->condition,$this->expected)->get() : $this->sql->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
 
 
@@ -422,9 +442,11 @@ use Imperium\Import\Import;
          * @method set
          *
          * @param  string $column_name The column name
-         * @param  mixed  $value       The value
+         * @param  mixed $value The value
          *
          * @return Model
+         *
+         * @throws Exception
          *
          */
         public function set(string $column_name,$value): Model
@@ -433,6 +455,9 @@ use Imperium\Import\Import;
 
             equal($column_name,$this->primary,true,"The primary key is already defined");
 
+            is_true(has(collection($this->check)->get($column_name),Table::TEXT_TYPES,false) && ! is_string($value),true,"The value must be a string for the column $column_name");
+
+            is_true(has(collection($this->check)->get($column_name),Table::NUMERIC_TYPES,false) && ! is_numeric($value),true,"The Value must be numeric for the column $column_name");
 
             $this->data->add($value,$column_name);
 
@@ -605,7 +630,7 @@ use Imperium\Import\Import;
          */
         public function where(string $column,string $condition,$expected): Model
         {
-            $this->param = $column;
+            $this->column = $column;
             $this->condition = $condition;
             $this->expected = $expected;
 
@@ -696,6 +721,7 @@ use Imperium\Import\Import;
          *
          * @param int $id
          * @param array $data
+         * @param string $table
          * @param array $ignore
          *
          * @return bool

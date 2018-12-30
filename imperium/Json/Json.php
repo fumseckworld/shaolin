@@ -110,6 +110,17 @@ class Json
         return $this->create($this->data->collection());
     }
 
+    /**
+     *
+     * Encode
+     *
+     * @param int $option
+     * @param int $depth
+     *
+     * @return false|string
+     *
+     * @throws Exception
+     */
     public function encode(int $option = 0,int $depth = 512)
     {
         not_in(self::VALID,$option,true,"The option used is not valid");

@@ -107,7 +107,7 @@ use Imperium\Tables\Table;
 
        /**
         *
-        * Create enregistrements in all tables not hidden
+        * Create records in all tables not hidden
         *
         * @method seed
         *
@@ -132,28 +132,35 @@ use Imperium\Tables\Table;
          *
          * @method rename
          *
-         * @param  string $base     [description]
-         * @param  string $new_name [description]
+         * @param  string $base
+         * @param  string $new_name
          *
-         * @return bool   [description]
+         * @return bool
+         *
+         * @throws Exception
+         *
          */
         public function rename(string $base,string $new_name): bool
         {
             $current = $base;
             $this->copy($new_name);
             $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->dump_path());
-            $table   = table($connect);
+            $table   = table($connect,'');
             return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($current);
         }
+
         /**
          *
          * copy current database content in a new database
          *
          * @method copy
          *
-         * @param  string $new_base [description]
+         * @param  string $new_base
          *
-         * @return bool   [description]
+         * @return bool
+         *
+         * @throws Exception
+         *
          */
         public function copy(string $new_base): bool
         {
@@ -458,10 +465,13 @@ use Imperium\Tables\Table;
          *
          * @method __construct
          *
-         * @param  Connect     $connect
-         * @param  Table       $table
-         * @param  array       $hidden_tables
-         * @param  array       $hidden_bases
+         * @param  Connect $connect
+         * @param  Table $table
+         * @param  array $hidden_tables
+         * @param  array $hidden_bases
+         *
+         * @throws Exception
+         *
          */
         public function __construct(Connect $connect,Table $table,array $hidden_tables = [], $hidden_bases = [] )
         {
