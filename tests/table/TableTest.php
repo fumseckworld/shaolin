@@ -107,10 +107,6 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->pgsql_table->set_charset('utf8')->change_charset());
         $this->assertTrue($this->pgsql_table->set_collation('en_US.utf8')->change_collation());
 
-        $this->assertFalse($this->sqlite_table->set_charset('utf8')->change_charset());
-        $this->assertFalse($this->sqlite_table->set_collation('utf8_general_ci')->change_collation());
-
-
         $this->assertTrue($this->mysql_table->convert('utf8','utf8_general_ci'));
         $this->assertTrue($this->pgsql_table->convert('UTF8','en_US.utf8'));
     }
@@ -414,9 +410,9 @@ class TableTest extends DatabaseTest
     public function test_current()
     {
 
-        $this->assertEquals($this->table,$this->mysql_table->get_current_table());
-        $this->assertEquals($this->table,$this->pgsql_table->get_current_table());
-        $this->assertEquals($this->table,$this->sqlite_table->get_current_table());
+        $this->assertEquals($this->table,$this->mysql_table->current());
+        $this->assertEquals($this->table,$this->pgsql_table->current());
+        $this->assertEquals($this->table,$this->sqlite_table->current());
     }
 
 

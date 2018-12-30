@@ -178,9 +178,9 @@ class ImperiumTest extends DatabaseTest
     {
         $table = 'luxoria';
 
-        $this->assertTrue($this->mysql()->tables()->field(Table::INT,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->field(Table::VARCHAR,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
-        $this->assertTrue($this->postgresql()->tables()->field(Table::SERIAL,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->field(Table::CHARACTER_VARYING,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
-        $this->assertTrue($this->sqlite()->tables()->field(Table::INTEGER,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->field(Table::TEXT,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
+        $this->assertTrue($this->mysql()->tables()->column(Table::INT,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->column(Table::VARCHAR,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
+        $this->assertTrue($this->postgresql()->tables()->column(Table::SERIAL,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->column(Table::CHARACTER_VARYING,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
+        $this->assertTrue($this->sqlite()->tables()->column(Table::INTEGER,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->column(Table::TEXT,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
 
         $this->assertTrue($this->mysql()->remove_table($table));
         $this->assertTrue($this->postgresql()->remove_table($table));
