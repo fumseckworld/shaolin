@@ -84,40 +84,37 @@ class FormTest extends DatabaseTest
      */
     public function test_textarea()
     {
-        $form = form('a','a')->textarea('name','value',10,10,'','',false,'')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',false)->get();
 
         $this->assertNotContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
 
-        $form = form('a','a')->textarea('name','value',10,10,'','',false,'maximus')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',false)->get();
 
         $this->assertNotContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
-        $this->assertContains('maximus',$form);
 
-        $form = form('a','a')->textarea('name','value',10,10,'','',true,'')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',true)->get();
+
+        $this->assertContains('autofocus',$form);
+        $this->assertContains('name="name"',$form);
+        $this->assertContains('10',$form);
+
+        $form = form('a','a')->textarea('name','value',10,10,'','',true)->get();
 
         $this->assertContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
 
-        $form = form('a','a')->textarea('name','value',10,10,'','',true,'maximus')->get();
 
-        $this->assertContains('autofocus',$form);
-        $this->assertContains('name="name"',$form);
-        $this->assertContains('10',$form);
-        $this->assertContains('maximus',$form);
-
-
-        $form = form('a','a')->textarea('name','value',10,10,'','',false,'maximus')->get();
+        $form = form('a','a')->textarea('name','value',10,10,'','',false)->get();
 
         $this->assertContains('placeholder="value"',$form);
         $this->assertNotContains('autofocus',$form);
         $this->assertContains('name="name"',$form);
         $this->assertContains('10',$form);
-        $this->assertContains('maximus',$form);
     }
 
     /**

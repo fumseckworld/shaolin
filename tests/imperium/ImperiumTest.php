@@ -59,6 +59,10 @@ class ImperiumTest extends DatabaseTest
                 'date' => faker()->date()
             ];
 
+            $this->assertTrue($this->mysql()->update_record(5,$data,$this->table));
+            $this->assertTrue($this->postgresql()->update_record(5,$data,$this->table));
+            $this->assertTrue($this->sqlite()->update_record(5,$data,$this->table));
+
             $this->assertTrue($this->mysql()->save($data));
             $this->assertTrue($this->postgresql()->save($data));
             $this->assertTrue($this->sqlite()->save($data));

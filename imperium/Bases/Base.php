@@ -141,7 +141,7 @@ use Imperium\Tables\Table;
         {
             $current = $base;
             $this->copy($new_name);
-            $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->fetch_mode(),$this->connexion->dump_path());
+            $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->dump_path());
             $table   = table($connect);
             return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($current);
         }
@@ -157,11 +157,11 @@ use Imperium\Tables\Table;
          */
         public function copy(string $new_base): bool
         {
-            dumper($this->connexion,true);
+            dumper($this->connexion,true,'');
 
             $this->create($new_base);
 
-            $sql = "{$this->connexion->dump_path()}/{$this->connexion->base()}.sql";
+            $sql = sql_file_path($this->connexion);
 
             return (new Import($this->connexion,$sql,$new_base))->import();
         }

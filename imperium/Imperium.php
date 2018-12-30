@@ -614,9 +614,9 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function update_record(int $id, array $data, array $ignore): bool
+        public function update_record(int $id, array $data, string $table,array $ignore = []): bool
         {
-           return $this->tables()->update($id,$data,$ignore);
+           return $this->tables()->update($id,$data,$table,$ignore);
         }
 
         /**
@@ -840,7 +840,7 @@ namespace Imperium {
             switch ($this->driver)
             {
                 case Connect::MYSQL:
-                    return false;
+                    return $this->bases()->rename($base,$new_name);
                 break;
                 case Connect::POSTGRESQL:
                     return $this->connect->execute("ALTER DATABASE $base RENAME TO $new_name");
@@ -852,20 +852,6 @@ namespace Imperium {
                     return false;
                 break;
             }
-        }
-
-        /**
-         * Set current table
-         *
-         * @param string $table
-         *
-         * @return Imperium
-         */
-        public function set_current_table(string $table): Imperium
-        {
-            $this->current_table = $table;
-
-            return $this;
         }
 
         /**

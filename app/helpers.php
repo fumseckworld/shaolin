@@ -2,7 +2,6 @@
 
 
 use Faker\Generator;
-
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
 use Whoops\Run;

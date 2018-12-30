@@ -452,6 +452,7 @@ namespace Imperium {
          * @param int $id
          *
          * @param array $data
+         * @param string $table
          * @param array $ignore
          *
          * @return bool
@@ -459,7 +460,7 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function update_record(int $id,array $data,array $ignore) : bool;
+        public function update_record(int $id,array $data,string $table,array $ignore) : bool;
 
 
         /**

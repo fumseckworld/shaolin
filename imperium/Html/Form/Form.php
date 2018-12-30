@@ -410,6 +410,15 @@ namespace Imperium\Html\Form {
         private $validate = false;
 
         /**
+         *
+         * Option to save data after submit
+         *
+         * @var bool
+         *
+         */
+        private $save = false;
+
+        /**
          * [private description]
          *
          * @var [type]
@@ -438,6 +447,15 @@ namespace Imperium\Html\Form {
          *
          */
         private $padding = '';
+
+        /**
+         *
+         * The form method
+         *
+         * @var string
+         *
+         */
+        private $method;
 
         /**
          *
@@ -546,6 +564,8 @@ namespace Imperium\Html\Form {
          */
         public function start(string $action, string $id,string $confirm ='', string $class = '',  bool $enctype = false, string $method = Form::POST,string $charset = 'utf8'): Form
         {
+
+            $this->method = $method;
 
             if($this->validate)
             {
@@ -710,27 +730,33 @@ namespace Imperium\Html\Form {
                 throw new Exception('missing validation text');
                 else
                 $validation =  $this->valid($success_text,$error_text);
-
-
             }
-            else{
+            else
+            {
                 $validation = '';
             }
+
+            if($this->save)
+            {
+                $val = equal($this->method, self::POST) ? post($name) : get($name);
+                $value = def($val) ? $val : $value;
+            }
+
+
             if ($required) // WITH REQUIRED
             {
-
                 if ($autofocus)
                 {
                     if ($autoComplete)
                     {
-                        return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="on" > ' . $validation . $end .'';
+                        return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required"   placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="on" > ' . $validation . $end .'';
                     }
-                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="off" > '  . $validation . $end .'';
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required"   placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autofocus="autofocus" autocomplete="off" > '  . $validation . $end .'';
                 }
                 if ($autoComplete)
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="on" > ' .    $end . $validation . '';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required"  placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="on" > ' .    $end . $validation . '';
                 else
-                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="off" > ' . $validation . $end .'';
+                return '' . $start . ' <input type="' . $input . '" class="' . $class . '" required="required"  placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" autocomplete="off" > ' . $validation . $end .'';
 
             } else {
 
@@ -739,15 +765,15 @@ namespace Imperium\Html\Form {
                 {
                     if ($autoComplete) // AUTO FOCUS , AND AUTO COMPLETE
                     {
-                        return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
+                        return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus"  autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
                     }
                     return '' . $start . ' <input type="' . $input . '" class="' . $class . '"  autofocus="autofocus" placeholder="' . $placeholder . '"  autocomplete="off" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
                 } else {   // WITHOUT AUTO FOCUS
                     if ($autoComplete) //   AUTO FOCUS , AND AUTO COMPLETE
                     {
-                        return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="on" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
+                        return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="on"  placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
                     }   // AUTO FOCUS , WITHOUT AUTO COMPLETE
-                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="off" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
+                    return '' . $start . ' <input type="' . $input . '" class="' . $class . '" autocomplete="off"  placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '" > '  . $validation . $end .'';
                 }
             }
         }
@@ -880,34 +906,52 @@ namespace Imperium\Html\Form {
          * @param  string   $validation_success_text The success validation text
          * @param  string   $validation_error_text   The error validation text
          * @param  bool     $autofocus               Option to add autofocus
-         * @param  string   $value                   The default value
          *
          * @return Form
          *
          */
-        public function textarea(string $name, string $placeholder, int $cols, int $row,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false, string $value = ''): Form
+        public function textarea(string $name, string $placeholder, int $cols, int $row,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false): Form
         {
+            if ($this->save)
+                $value = equal($this->method, self::POST) ? post($name) : get($name);
+            else
+                $value = '';
             if ($this->validate)
             {
                 if (not_def($validation_success_text,$validation_error_text))
                     throw new Exception('missing validation text');
                 else
                     $validation =  $this->valid($validation_success_text,$validation_error_text);
-            }else{
+            }else
+            {
                 $validation = '';
             }
 
             $class = $this->get_input_complete_class();
 
             if ($autofocus)
-                append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >' . $value . '</textarea>'.$validation.'</div></div>');
+                append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >'.$value. '</textarea>'.$validation.'</div></div>');
             else
-                append($this->form,'<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >' . $value . '</textarea> '.$validation.'</div></div>');
+                append($this->form,'<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >'.$value .'</textarea> '.$validation.'</div></div>');
 
             return $this;
         }
 
+        /**
+         *
+         * Enable save data after submit
+         *
+         * @method save
+         *
+         * @return Form
+         *
+         */
+        public function save(): Form
+        {
+            $this->save = true;
 
+            return $this;
+        }
         /**
          *
          * Static constructor
@@ -938,7 +982,6 @@ namespace Imperium\Html\Form {
          */
         public function submit(string $text, string $class, string $id, string $icon = ''): Form
         {
-
             append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
 
             return $this;
@@ -1110,7 +1153,8 @@ namespace Imperium\Html\Form {
                 <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input" checked="checked">
                 <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
                 </div></div></div>');
-            } else {
+            } else
+            {
                 append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="custom-control custom-radio">
                 <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input">
                 <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
@@ -1192,10 +1236,10 @@ namespace Imperium\Html\Form {
          */
         public function generate(int $form_grid,string $table, Table $instance, string $submit_text, string $submit_class, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
-            $instance = $instance->from($table);
-            $types = $instance->columns_types();
-            $columns = $instance->columns();
-            $primary = $instance->primary_key();
+            $instance   = $instance->from($table);
+            $types      = $instance->columns_types();
+            $columns    = $instance->columns();
+            $primary    = $instance->primary_key();
 
             equal($form_grid,0,true,"Zero is not a valid number");
             not_in([Form::EDIT,Form::CREATE],$mode,true,"The mode used is not a valid mode");
@@ -1251,7 +1295,7 @@ namespace Imperium\Html\Form {
 
                         $type = $type[0];
 
-                        if ($i % $form_grid === 0)
+                        if (equal($i % $form_grid, 0))
                         {
                             if (has($type,$date))
                                 $this->textarea($column, $column, 10, 10,'','',false,$current);
