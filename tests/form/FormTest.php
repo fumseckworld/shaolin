@@ -14,6 +14,10 @@ class FormTest extends DatabaseTest
         $this->table = 'base';
     }
 
+    public function test_save()
+    {
+        $this->assertNotEmpty(form('a','a')->save()->input('text','username','username')->get());
+    }
     public function test_start()
     {
         $class = 'form-horizontal';

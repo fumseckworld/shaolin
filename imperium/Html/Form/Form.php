@@ -789,13 +789,15 @@ namespace Imperium\Html\Form {
          * @param  string $placeholder  The placeholder
          * @param  string $icon         The input icon
          * @param  string $success_text The success validation text
-         * @param  string $error_text   The errot validation text
+         * @param  string $error_text   The error validation text
          * @param  string $value        The default value
          * @param  bool   $required     To generate a required input
          * @param  bool   $autofocus    To add autofocus for the input
          * @param  bool   $autoComplete To configure autocomplete
          *
          * @return Form
+         *
+         * @throws Exception
          *
          */
         public function input(string $type, string $name, string $placeholder,string $icon= '',string $success_text = '',string $error_text ='', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
@@ -906,16 +908,18 @@ namespace Imperium\Html\Form {
          * @param  string   $validation_success_text The success validation text
          * @param  string   $validation_error_text   The error validation text
          * @param  bool     $autofocus               Option to add autofocus
+         * @param  string   $value                   The value
          *
          * @return Form
          *
+         * @throws Exception
+         *
          */
-        public function textarea(string $name, string $placeholder, int $cols, int $row,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false): Form
+        public function textarea(string $name, string $placeholder, int $cols, int $row,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false,string $value = ''): Form
         {
             if ($this->save)
-                $value = equal($this->method, self::POST) ? post($name) : get($name);
-            else
-                $value = '';
+                $value = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
+
             if ($this->validate)
             {
                 if (not_def($validation_success_text,$validation_error_text))
@@ -952,23 +956,10 @@ namespace Imperium\Html\Form {
 
             return $this;
         }
-        /**
-         *
-         * Static constructor
-         *
-         * @method create
-         *
-         * @return Form
-         *
-         */
-        public static function create(): Form
-        {
-            return new static();
-        }
 
         /**
          *
-         * Gnerate a submit button
+         * Generate a submit button
          *
          * @method submit
          *
@@ -1030,15 +1021,16 @@ namespace Imperium\Html\Form {
          *
          * @method select
          *
-         * @param  string $name         The selet name
+         * @param  string $name         The select name
          * @param  array  $options      The select options
-         * @param  string $success_text The validation succes text
+         * @param  string $success_text The validation success text
          * @param  string $error_text   The validation error text
          * @param  string $icon         The select icon
          * @param  bool   $multiple     The option to create a multiple select
          * @param  bool   $required     The option to add require
          *
-         * @return Form   [description]
+         * @return Form
+         *
          */
         public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $multiple = false,bool $required = true): Form
         {
