@@ -7,7 +7,6 @@ use Exception;
 use Imperium\Connexion\Connect;
 use Imperium\File\File;
 use Imperium\Import\Import;
-
 use Imperium\Tables\Table;
 
     /**
@@ -142,11 +141,10 @@ use Imperium\Tables\Table;
          */
         public function rename(string $base,string $new_name): bool
         {
-            $current = $base;
             $this->copy($new_name);
             $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->dump_path());
             $table   = table($connect,'');
-            return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($current);
+            return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($base);
         }
 
         /**
@@ -185,9 +183,8 @@ use Imperium\Tables\Table;
         */
         public function show(): array
         {
-            $driver = $this->driver;
 
-            $this->check($driver);
+           $this->check();
 
             $databases = collection();
 
@@ -306,12 +303,11 @@ use Imperium\Tables\Table;
         {
             if ($this->connexion->sqlite())
             {
+                File::remove_if_exist($name);
 
-                 if (File::exist($name))
-                    File::remove($name);
+                new PDO("sqlite:$name",null,null);
 
-                 new PDO("sqlite:$name",null,null) ;
-                 return File::exist($name);
+                return File::exist($name);
             }
 
 
@@ -349,6 +345,8 @@ use Imperium\Tables\Table;
          */
         public function set_charset(string $charset): Base
         {
+            $this->check();
+
             not_in($this->charsets(),$charset,true,"The charset is not valid");
 
             $this->charset = $charset;
@@ -371,6 +369,8 @@ use Imperium\Tables\Table;
          */
         public function set_collation(string $collation): Base
         {
+            $this->check();
+
             not_in($this->collations(),$collation,true,"The collation is not valid");
 
             $this->collation = $collation;
@@ -391,6 +391,7 @@ use Imperium\Tables\Table;
          */
         public function drop(string $name): bool
         {
+
             if ($this->connexion->sqlite())
                 return File::exist($name) ? File::remove($name): false;
 
@@ -439,7 +440,7 @@ use Imperium\Tables\Table;
          */
         public function charsets(): array
         {
-            $this->check($this->driver);
+            $this->check();
 
             return charset($this->connexion);
         }
@@ -455,7 +456,7 @@ use Imperium\Tables\Table;
          */
         public function collations(): array
         {
-            $this->check($this->driver);
+            $this->check();
 
             return collation($this->connexion);
 
@@ -483,6 +484,7 @@ use Imperium\Tables\Table;
             $this->driver           = $connect->driver();
             $this->tables           = $table->hidden($hidden_tables)->show();
             $this->table            = $table;
+
             if(different($this->driver,Connect::SQLITE))
                 $this->all   = $this->hidden($hidden_bases)->show();
         }
@@ -528,25 +530,47 @@ use Imperium\Tables\Table;
          */
         public function change_collation(): bool
         {
-            $base = $this->base();
+            $base = $this->current();
 
-            $driver = $this->driver;
-
-            $this->check($driver);
+            $this->check();
 
             if (not_def($this->collation))
                 throw new Exception("We have not found required collation");
 
-            return equal(Connect::MYSQL,$driver) ? $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'") : $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
+            return equal(Connect::MYSQL,$this->driver) ? $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'") : $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
 
         }
 
         /**
          * @return string
          */
-        private function base(): string
+        public function current(): string
         {
             return $this->connexion->base();
+        }
+
+        /**
+         *
+         * Return all hidden bases
+         *
+         * @return array
+         *
+         */
+        public function hidden_bases(): array
+        {
+            return $this->hidden_bases;
+        }
+
+        /**
+         *
+         * Return all hidden table
+         *
+         * @return array
+         *
+         */
+        public function hidden_tables(): array
+        {
+            return $this->hidden_tables;
         }
 
         /**
@@ -560,32 +584,28 @@ use Imperium\Tables\Table;
          */
         public function change_charset(): bool
         {
-            $base = $this->base();
+            $base = $this->current();
 
-            $driver = $this->driver;
-
-            $this->check($driver);
+            $this->check();
 
             if (not_def($this->charset))
                 throw new Exception("We have not found required charset");
 
-            return equal(Connect::MYSQL,$driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
+            return equal(Connect::MYSQL,$this->driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
         }
 
         /**
          *
          * Check if current driver is not sqlite
          *
-         * @param string $driver
-         *
          * @return Base
          *
          * @throws Exception
          *
          */
-        public function check(string $driver): Base
+        public function check(): Base
         {
-            not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The current driver is not supported");
+            not_in([Connect::MYSQL, Connect::POSTGRESQL], $this->driver, true, "The current driver is not supported");
 
             return $this;
         }

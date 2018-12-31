@@ -139,7 +139,7 @@ class Pagination implements PaginationManagement
         // init
         $html = '';
 
-        $textAndOrLink = '<a href="' . $path . self::$instance . '/' . $counter . '" class="page-link">' . $counter . '</a>';
+        $textAndOrLink = '<a href="' . $path . self::$instance .'' .$counter . '" class="page-link">' . $counter . '</a>';
 
         if (self::$withLinkInCurrentLi === false)
             $currentTextAndOrLink = $counter;
@@ -162,7 +162,7 @@ class Pagination implements PaginationManagement
      */
     private static function createLiCurrentOrNotRaw($path, $counter)
     {
-        $textAndOrLink = $path . self::$instance . '/' . $counter;
+        $textAndOrLink = $path . self::$instance .'' .$counter;
 
         if (self::$withLinkInCurrentLi === false)
             $currentTextAndOrLink = $counter;
@@ -219,13 +219,13 @@ class Pagination implements PaginationManagement
             if (self::$current > 1)
             {
 
-                $prevLink = '<li class="'.self::$liCssClass.'"> <a  href="' . $path . self::$instance . '/' . $prev . '" class="page-link"></li>';
+                $prevLink = '<li class="'.self::$liCssClass.'"> <a  href="' . $path . self::$instance .'' .$prev . '" class="page-link"></li>';
 
             }
 
             if (self::$current < $last)
             {
-                $prevLink = '<li class="'.self::$liCssClass.'"> <a  href="' . $path . self::$instance . '/' . $next . '" class="page-link"></li>';
+                $prevLink = '<li class="'.self::$liCssClass.'"> <a  href="' . $path . self::$instance .'' .$next . '" class="page-link"></li>';
             }
 
 
@@ -286,7 +286,7 @@ class Pagination implements PaginationManagement
         {
             $pagination .= '<ul class="' . self::$ulClass . '" data-pagination-current="' . self::$current . '" data-pagination-prev="' . $prevDataAttribute . '" data-pagination-next="' . $nextDataAttribute . '" data-pagination-length="' . $last . '">';
             if (self::$current > 1)
-                $pagination .= '<li class="' . self::$liCssClass . '"><a href="' . $path . self::$instance . '/' . $prev . '" class="page-link"> ' . self::$startText . '</a></li>';
+                $pagination .= '<li class="' . self::$liCssClass . '"><a href="' . $path . self::$instance .'' .$prev . '" class="page-link"> ' . self::$startText . '</a></li>';
             else
                 $pagination .= '<li class="disabled ' . self::$liCssClass . '"> <a class="page-link"> ' . self::$startText . '</a> </li>';
 
@@ -307,8 +307,8 @@ class Pagination implements PaginationManagement
                     }
                 }
 
-                $pagination .= '<li class="'.self::$liCssClass.'"><a href="' . $path . self::$instance . '/' . $tmpSave . '" class="page-link">   ' . $tmpSave . '</a></li>';
-                $pagination .= '<li><a href="' . $path . self::$instance . '/' . $last . '" class="page-link">   ' . $last . ' </a></li>';
+                $pagination .= '<li class="'.self::$liCssClass.'"><a href="' . $path . self::$instance .'' .$tmpSave . '" class="page-link">   ' . $tmpSave . '</a></li>';
+                $pagination .= '<li><a href="' . $path . self::$instance .'' .$last . '" class="page-link">   ' . $last . ' </a></li>';
             } elseif ($last - (self::$adjacent * 2) > self::$current && self::$current > (self::$adjacent * 2))
             {
                 $pagination .= $this->createLiFirstAndSecond($path);
@@ -317,8 +317,8 @@ class Pagination implements PaginationManagement
                     $pagination .= $this->createLiCurrentOrNot($path, $counter);
                 }
 
-                $pagination .= '<li><a href="' . $path . self::$instance . '/' . $tmpSave . '" class="page-link">   ' . $tmpSave . '  </a></li>';
-                $pagination .= '<li><a href="' . $path .self::$instance . '/' . $last . '" class="page-link"> ' . $last . ' </a></li>';
+                $pagination .= '<li><a href="' . $path . self::$instance .'' .$tmpSave . '" class="page-link">   ' . $tmpSave . '  </a></li>';
+                $pagination .= '<li><a href="' . $path .self::$instance .'' .$last . '" class="page-link"> ' . $last . ' </a></li>';
             } else {
                 $pagination .= $this->createLiFirstAndSecond($path);
 
@@ -328,7 +328,7 @@ class Pagination implements PaginationManagement
                 }
             }
             if (self::$current < $counter - 1) {
-                $pagination .= '<li class="' . self::$endCssClass. '"><a href="' . $path .self::$instance . '/' . $next . '" class="page-link"> ' . self::$endText. ' </a></li>';
+                $pagination .= '<li class="' . self::$endCssClass. '"><a href="' . $path .self::$instance .'' .$next . '" class="page-link"> ' . self::$endText. ' </a></li>';
             } else {
                 $pagination .= '<li class="disabled '  . self::$endCssClass . '" >   <a class="page-link">' . self::$endText. '</a> </li>';
             }
@@ -357,7 +357,7 @@ class Pagination implements PaginationManagement
         {
             if (self::$current > 1)
             {
-                $pagination[] = array($path . self::$instance. '/' . $prev => false);
+                $pagination[] = array($path . self::$instance.'' .$prev => false);
             }
             if ($last < 7 + (self::$adjacent * 2))
             {
@@ -375,8 +375,8 @@ class Pagination implements PaginationManagement
                     }
                 }
                 $pagination[] = array('' => false);
-                $pagination[] = array($path . self::$instance . '/' . $tmpSave => false);
-                $pagination[] = array($path . self::$instance . '/' . $last => false);
+                $pagination[] = array($path . self::$instance .'' .$tmpSave => false);
+                $pagination[] = array($path . self::$instance .'' .$last => false);
             } elseif ($last - (self::$adjacent * 2) > self::$current && self::$current > (self::$adjacent * 2))
             {
                 $this->createLiFirstAndSecondRaw($path, $pagination);
@@ -389,8 +389,8 @@ class Pagination implements PaginationManagement
                     $pagination[] = $this->createLiCurrentOrNotRaw($path, $counter);
                 }
                 $pagination[] = array('' => false);
-                $pagination[] = array($path . self::$instance . '/' . $tmpSave => false);
-                $pagination[] = array($path . self::$instance . '/' . $last => false);
+                $pagination[] = array($path . self::$instance .'' .$tmpSave => false);
+                $pagination[] = array($path . self::$instance .'' .$last => false);
             } else {
                 $this->createLiFirstAndSecondRaw($path, $pagination);
                 $pagination[] = array('' => false);
@@ -401,7 +401,7 @@ class Pagination implements PaginationManagement
             }
             if (self::$current < $counter - 1)
             {
-                $pagination[] = array($path . self::$instance . '/' . $next => false);
+                $pagination[] = array($path . self::$instance .'' .$next => false);
             }
         }
         return $pagination;

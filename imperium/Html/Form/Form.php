@@ -2,7 +2,6 @@
 
 namespace Imperium\Html\Form {
 
-
     use Exception;
     use Imperium\Tables\Table;
 
@@ -68,7 +67,7 @@ namespace Imperium\Html\Form {
 
         /**
          *
-         * The basic form seperator class
+         * The basic form separator class
          *
          * @var string
          *
@@ -248,7 +247,7 @@ namespace Imperium\Html\Form {
 
         /**
          *
-         * To creare a search intput
+         * To create a search input
          *
          * @var string
          *
@@ -419,15 +418,21 @@ namespace Imperium\Html\Form {
         private $save = false;
 
         /**
-         * [private description]
          *
-         * @var [type]
+         * The button size class 
+         *
+         * @var string
+         * 
          */
         private $btn_size;
 
         /**
-        * @var string
-        */
+         * 
+         * The input size class
+         * 
+         * @var string
+         * 
+         */
         private $input_size;
 
         /**
@@ -463,18 +468,17 @@ namespace Imperium\Html\Form {
          *
          * @method padding
          *
-         * @param  int     $lenght The padding number
-         *
+         * @param int $length The padding number
+         * 
          * @return Form
          *
          * @throws Exception
-         *
          */
-        public function padding(int $lenght): Form
+        public function padding(int $length): Form
         {
-            not_in([1,2,3,4,5],$lenght,true,"The padding number must be an integer between 1 and 5");
+            not_in([1,2,3,4,5],$length,true,"The padding number must be an integer between 1 and 5");
 
-            $this->padding = "pt-$lenght pb-$lenght pl-$lenght pr-$lenght";
+            $this->padding = "pt-$length pb-$length pl-$length pr-$length";
 
             return $this;
         }
@@ -485,18 +489,18 @@ namespace Imperium\Html\Form {
          *
          * @method margin
          *
-         * @param  int    $lenght The margin number
+         * @param  int    $length The margin number
          *
          * @return Form
          *
          * @throws Exception
          *
          */
-        public function margin(int $lenght): Form
+        public function margin(int $length): Form
         {
-            not_in([1,2,3,4,5],$lenght,true,"The margin number must be an integer between 1 and 5");
+            not_in([1,2,3,4,5],$length,true,"The margin number must be an integer between 1 and 5");
 
-            $this->margin = "mt-$lenght mb-$lenght ml-$lenght mr-$lenght";
+            $this->margin = "mt-$length mb-$length ml-$length mr-$length";
 
             return $this;
         }
@@ -570,33 +574,34 @@ namespace Imperium\Html\Form {
             if($this->validate)
             {
                 equal($confirm,'',true,"The confirm message must not be empty");
+
                 if ($enctype)
                 {
                     if (not_def($class))
-                    append($this->form ,'<form action="' . $action . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')" >');
+                        append($this->form ,'<form action="' . $action . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')" >');
                     else
-                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')">');
-                } else
+                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')">');
+                }else
                 {
                     if (not_def($class))
-                    append($this->form,'<form action="' . $action . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')">');
+                        append($this->form,'<form action="' . $action . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')">');
                     else
-                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')" >');
+                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')" >');
                 }
             }else
             {
                 if ($enctype)
                 {
                     if (not_def($class))
-                    append($this->form ,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">');
+                        append($this->form ,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">');
                     else
-                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">');
+                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">');
                 } else
                 {
                     if (not_def($class))
-                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">');
+                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">');
                     else
-                    append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">');
+                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">');
                 }
 
             }
@@ -729,9 +734,9 @@ namespace Imperium\Html\Form {
             if ($this->validate)
             {
                 if (not_def($error_text,$success_text))
-                throw new Exception('missing validation text');
+                    throw new Exception('missing validation text');
                 else
-                $validation =  $this->valid($success_text,$error_text);
+                    $validation =  $this->valid($success_text,$error_text);
             }
             else
             {
@@ -741,6 +746,7 @@ namespace Imperium\Html\Form {
             if($this->save)
             {
                 $val = equal($this->method, self::POST) ? post($name) : get($name);
+
                 $value = def($val) ? $val : $value;
             }
 
@@ -806,7 +812,6 @@ namespace Imperium\Html\Form {
         {
             if (not_def($icon))
             {
-
                 $start = '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'">';
 
                 $end = "</div></div>";
@@ -1073,7 +1078,8 @@ namespace Imperium\Html\Form {
                     append($this->form,'</select>'.$validation.'</div></div></div>');
                 }
 
-            }else{
+            }else
+            {
                 if (not_def($icon))
                 {
                     if ($multiple)
@@ -1087,7 +1093,8 @@ namespace Imperium\Html\Form {
                     }
                     $this->form .= '</select>'.$validation.'</div></div>';
 
-                } else {
+                } else
+                {
 
                     if ($multiple)
                         append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>');

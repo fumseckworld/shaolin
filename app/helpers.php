@@ -949,6 +949,7 @@ if (not_exist('tables_select'))
      *
      * @method tables_select
      *
+     * @param string $current
      * @param  Table $instance An instance of table
      * @param  array $hidden The hidden tables
      * @param  string $url_prefix The url prefix
@@ -958,17 +959,15 @@ if (not_exist('tables_select'))
      * @return string
      *
      * @throws Exception
-     *
      */
-    function tables_select(Table $instance,array $hidden, string $url_prefix,string $csrf,string $separator = '/'): string
+    function tables_select(string $current,Table $instance,array $hidden, string $url_prefix,string $csrf,string $separator): string
     {
+        $tables = collection(["$url_prefix$separator$current" => $current]);
 
-        $tables = collection();
-        $current = $instance->current();
         foreach ($instance->hidden($hidden)->show() as $x)
         {
             if (different($x,$current))
-                $tables->merge(["$url_prefix$separator$x" => $x]);
+                $tables->add($x,"$url_prefix$separator$x");
         }
         return  form('',id())->csrf($csrf)->row()->redirect('table',$tables->collection())->end_row()->get() ;
      }
@@ -1094,7 +1093,7 @@ if (not_exist('simply_view'))
             append($code,'<th  class="');
             if ($align_column_center) {  append($code,' text-center'); }
 
-            if ($column_to_upper)    {  append($cpode,' text-uppercase') ; }
+            if ($column_to_upper)    {  append($code,' text-uppercase') ; }
 
             append($code, '">'.$x.'</th>');
 
@@ -1103,7 +1102,7 @@ if (not_exist('simply_view'))
 
         if ($align_column_center) {  append($code,' text-center'); }
 
-        if ($column_to_upper)   {  append($cpode,' text-uppercase') ; }
+        if ($column_to_upper)   {  append($code,' text-uppercase') ; }
 
         append($code, '">'.$action_edit_text.'</th>');
 
@@ -1163,7 +1162,7 @@ if (not_exist('get_records'))
      * @throws Exception
      *
      */
-    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,bool $framework,string $key = '',string $order_by = Table::DESC): array
+    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,string $key = '',string $order_by = Table::DESC): array
     {
         $instance = $instance->from($current_table_name);
 
@@ -1173,19 +1172,8 @@ if (not_exist('get_records'))
 
         $sql = sql(query($instance,$connect),$current_table_name)->mode(Query::SELECT);
 
-        if ($framework)
-        {
-            $parts = collection(explode('/',server('REQUEST_URI')));
-
-            $like = $parts->has_key('search') ? $parts->last() : '';
-
-            $records = def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
-
-        }else
-        {
-            $like = get('search');
-            $records = def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
-        }
+        $like = get('q');
+        $records = def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
 
         return $records;
     }

@@ -167,7 +167,9 @@ class ModelTest extends DatabaseTest
     }
     public function test_show()
     {
-        $record  = $this->mysql_model->show('imperium',[],'?table=','/',1,5,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
+        $record  = $this->mysql_model->show(
+            '/?table',1,20,'table','remove','sure','btn btn-danger','remove','','edit
+            ','edit','','btn btn-primary',true,true,'previous','next','id','desc','search');
 
         $this->assertContains('?table=', $record);
         $this->assertContains('remove', $record);
@@ -178,35 +180,6 @@ class ModelTest extends DatabaseTest
         $this->assertContains('remove', $record);
         $this->assertContains('class="btn btn-danger"', $record);
         $this->assertContains('class="btn btn-primary"', $record);
-        $this->assertContains('fa fa-trash', $record);
-        $this->assertContains('fa fa-edit', $record);
-
-        $record  = $this->pgsql_model->show('imperium',[],'?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
-
-        $this->assertContains('?table=', $record);
-        $this->assertContains('remove', $record);
-        $this->assertContains('/', $record);
-        $this->assertContains('sure', $record);
-        $this->assertContains('next', $record);
-        $this->assertContains('previous', $record);
-        $this->assertContains('remove', $record);
-        $this->assertContains('class="btn btn-danger"', $record);
-        $this->assertContains('class="btn btn-primary"', $record);
-        $this->assertContains('fa fa-trash', $record);
-        $this->assertContains('fa fa-edit', $record);
-
-        $record  = $this->sqlite_model->show('imperium',[],'?table=','/',1,10,'table','remove','sure','btn btn-danger','remove','fa fa-trash','edit','edit','fa fa-edit','btn btn-primary',true,true,true,'previous','next','id','desc');
-
-        $this->assertContains('?table=', $record);
-        $this->assertContains('remove', $record);
-        $this->assertContains('/', $record);
-        $this->assertContains('sure', $record);
-        $this->assertContains('next', $record);
-        $this->assertContains('previous', $record);
-        $this->assertContains('remove', $record);
-        $this->assertContains('class="btn btn-danger"', $record);
-        $this->assertContains('class="btn btn-primary"', $record);
-
     }
 
     public function test_edit()

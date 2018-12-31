@@ -4,7 +4,8 @@ namespace Imperium\Directory {
 
     use Exception;
     use Imperium\File\File;
-    /**
+
+   /**
     *
     * Directory management
     *
@@ -31,7 +32,7 @@ namespace Imperium\Directory {
          *
          * @method clear
          *
-         * @param  string $directory The direrctory path to clear
+         * @param  string $directory The directory path to clear
          *
          * @return bool
          *

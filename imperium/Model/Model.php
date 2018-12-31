@@ -309,55 +309,68 @@ use Imperium\Import\Import;
          *
          * @method show
          *
-         * @param  string $pagination_prefix_url [description]
-         * @param  array $hidden_table [description]
-         * @param  string $table_url_prefix [description]
-         * @param  string $url_separator [description]
-         * @param  int $current_page [description]
-         * @param  int $limit_records_per_page [description]
-         * @param  string $table_class [description]
-         * @param  string $action_remove_text [description]
-         * @param  string $confirm_text [description]
-         * @param  string $remove_btn_class [description]
-         * @param  string $remove_url_prefix [description]
-         * @param  string $remove_icon [description]
-         * @param  string $action_edit_text [description]
-         * @param  string $edit_url_prefix [description]
-         * @param  string $edit_icon [description]
-         * @param  string $edit_btn_class [description]
-         * @param  bool $align_column [description]
-         * @param  bool $column_to_upper [description]
-         * @param  bool $framework [description]
-         * @param  string $start_pagination_text [description]
-         * @param  string $end_pagination_text [description]
-         * @param  string $key [description]
-         * @param  string $order_by [description]
+         * @param string $current
+         * @param  string $pagination_prefix_url
+         * @param  array $hidden_table
+         * @param string $url_prefix
+         * @param  int $current_page
+         * @param  int $limit_records_per_page
+         * @param  string $table_class
+         * @param  string $action_remove_text
+         * @param  string $confirm_text
+         * @param  string $remove_btn_class
+         * @param  string $remove_url_prefix
+         * @param  string $remove_icon
+         * @param  string $action_edit_text
+         * @param  string $edit_url_prefix
+         * @param  string $edit_icon
+         * @param  string $edit_btn_class
+         * @param  bool $align_column
+         * @param  bool $column_to_upper
+         * @param  string $start_pagination_text
+         * @param  string $end_pagination_text
+         * @param  string $key
+         * @param  string $order_by
+         * @param string $search_placeholder
+         * @param int $pagination_step
+         * @param string $csrf
          *
+         * @param bool $pagination_to_right
          * @return string
          *
          * @throws Exception
-         *
          */
-        public function show(   string $pagination_prefix_url,array $hidden_table,string $table_url_prefix,
-                                string $url_separator,int $current_page,int $limit_records_per_page,
+        public function show(string $url_prefix,int $current_page,int $limit_records_per_page,
                                 string $table_class,string $action_remove_text,string $confirm_text,
                                 string $remove_btn_class,string $remove_url_prefix,string $remove_icon,
                                 string $action_edit_text,string $edit_url_prefix,string $edit_icon,
-                                string $edit_btn_class,bool $align_column,bool $column_to_upper,bool $framework,
-                                string $start_pagination_text,string $end_pagination_text,string $key,string $order_by
+                                string $edit_btn_class,bool $align_column,bool $column_to_upper,
+                                string $start_pagination_text,string $end_pagination_text,string $key,string $order_by,string $search_placeholder, int $pagination_step= 10,$csrf = '',bool $pagination_to_right = true
                             ): string
         {
+            inferior($limit_records_per_page,0,true,'The limit records must be superior to 0');
+
+            $table = def(get('table')) ? get('table') : $this->current;
+
+            $url_separator = '=';
+
             $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
 
-            $records = get_records($this->table,$this->table->current(),$current_page,$limit_records_per_page,$this->connexion,$framework,$key,$order_by);
+            $current_page = def(get('current')) ? get('current') : $current_page;
 
-            $table_select = tables_select($this->table,$hidden_table,$table_url_prefix,$url_separator);
+            $records = get_records($this->table,$table,$current_page,$limit_records_per_page,$this->connexion,$key,$order_by);
 
-            $pagination = pagination( $limit_records_per_page,$pagination_prefix_url,$current_page,$this->count(),$start_pagination_text,$end_pagination_text);
+            $table_select = tables_select($table,$this->table,$this->table->hidden_tables(),$url_prefix,$csrf,$url_separator);
 
-            append($html,html('div',$table_select,'mt-2 mb-2'));
+            $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count(),$start_pagination_text,$end_pagination_text);
 
-            append($html,simply_view($this->table->current(),$this->table,$this->all(),$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$align_column,$column_to_upper));
+            append($html,'<div class="row">');
+            append($html,html('div',$table_select,'col mr-5  mt-5'));
+            append($html,html('div','<input class="form-control" type="number" value="'.$limit_records_per_page.'"  data-url="/"  min="'.$limit_records_per_page.'" step="'.$pagination_step.'" onchange="location = this.attributes[3].value + this.value"','col  ml-5 mt-5'));
+            append($html,'</div></div>');
+            append($html,'<input placeholder="'.$search_placeholder.'"  class="form-control" onchange="location = this.attributes[3].value + this.value"  data-url="'.$url_prefix.$url_separator.$table.'&q='.'" value="" autofocus="autofocus" type="text">');
+
+            append($html,simply_view($table,$this->table,$records,$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$align_column,$column_to_upper,$pagination_to_right));
 
 
             return $html;

@@ -29,7 +29,7 @@ namespace Imperium\Collection {
         * @var array $data
         *
         */
-        private $data = array();
+        private $data = [];
 
         /**
         *
@@ -120,6 +120,7 @@ namespace Imperium\Collection {
         {
             return json_encode($this->collection(),JSON_FORCE_OBJECT);
         }
+
         /**
         *
         * Run callable function for each values in the array
@@ -152,7 +153,7 @@ namespace Imperium\Collection {
         */
         public function search($value): Collection
         {
-            $this->search =  array_search($value,$this->data);
+            $this->search = array_search($value,$this->data);
 
             return $this;
         }
@@ -219,7 +220,7 @@ namespace Imperium\Collection {
 
         /**
         *
-        * Conert the data in the array to html code
+        * Convert the data in the array to html code
         *
         * @method print
         *

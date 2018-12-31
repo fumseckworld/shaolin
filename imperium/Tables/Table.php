@@ -2178,6 +2178,11 @@ namespace Imperium\Tables {
 
         }
 
+        public function hidden_tables()
+        {
+            return $this->hidden;
+        }
+
     }
 
 }

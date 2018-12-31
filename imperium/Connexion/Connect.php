@@ -7,9 +7,9 @@ namespace Imperium\Connexion {
     use PDOException;
     use Imperium\Directory\Dir;
 
-    /**
+   /**
     *
-    * Management of the connections to bases
+    * Management of the connections to the bases
     *
     * @author Willy Micieli <micieli@laposte.net>
     *
@@ -337,10 +337,10 @@ namespace Imperium\Connexion {
         {
             $instance = $this->instance;
 
-            if (is_string($instance))
+            if(is_string($instance))
                 throw new Exception($instance);
-            else
-                return $instance;
+
+            return $instance;
 
         }
 
@@ -365,7 +365,7 @@ namespace Imperium\Connexion {
 
             $data = $query->fetchAll($this->fetch_mode());
 
-            $query->closeCursor();
+            is_false($query->closeCursor(),true,"Fail to close the connection");
 
             return $data;
         }
@@ -391,7 +391,7 @@ namespace Imperium\Connexion {
 
             $data = $response->execute();
 
-            $response->closeCursor();
+            is_false($response->closeCursor(),true,"Fail to close the connection");
 
             return $data;
 
@@ -458,11 +458,10 @@ namespace Imperium\Connexion {
          */
         public function rollback(): Connect
         {
-           is_false($this->instance()->rollBack(),true,"ROLLBACK fail");
+           is_false($this->instance()->rollBack(),true,"ROLLBACK as fail");
 
             return $this;
         }
-
 
         /**
          *
