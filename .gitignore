@@ -21,3 +21,5 @@ sql.json
 app.json
 *.sqlite3
 COVERAGE
+marion
+index.php
