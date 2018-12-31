@@ -2727,7 +2727,7 @@ if (not_exist('insert_into'))
 {
     /**
      *
-     * @param Table $instance
+     * @param Model $instance
      * @param string $table
      * @param mixed ...$values
      *
@@ -2735,13 +2735,30 @@ if (not_exist('insert_into'))
      *
      * @throws Exception
      */
-    function insert_into(Table $instance,string $table,...$values): string
+    function insert_into(Model $instance,string $table,...$values): string
     {
-        $x = $instance->columns_to_string();
+
+        $x = collection($instance->columns())->join(',');
 
         $data = "INSERT INTO $table ($x) VALUES (";
+        $primary = $instance->from($table)->primary();
+
         foreach ($values as $value)
-            is_string($value) ? append($data,"'$value', ") : append($data,$value.', ');
+        {
+            if(different($value,$primary))
+            {
+                is_string($value) ? append($data,$instance->quote($value) .', ') : append($data,$value.', ');
+            }
+            else
+            {
+                if ($instance->is_mysql() | $instance->is_sqlite())
+                    append($data,'NULL, ');
+                else
+                    append($data,"DEFAULT, ");
+
+            }
+        }
+
 
         $data = trim($data,', ');
         append($data, ')');

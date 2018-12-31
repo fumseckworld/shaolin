@@ -408,16 +408,7 @@ namespace Imperium\Connexion {
          */
         public function transaction(): Connect
         {
-            switch ($this->driver)
-            {
-                case self::MYSQL:
-                case self::POSTGRESQL:
-                    $this->execute("START TRANSACTION;");
-                break;
-                case self::SQLITE:
-                    $this->execute("BEGIN TRANSACTION;");
-                break;
-            }
+            is_false($this->instance()->beginTransaction(),true,"Transaction start fail");
 
             return $this;
         }
@@ -433,7 +424,7 @@ namespace Imperium\Connexion {
          */
         public function commit(): bool
         {
-            return $this->execute("COMMIT;");
+            return $this->instance()->commit();
         }
 
         /**
@@ -450,7 +441,7 @@ namespace Imperium\Connexion {
         public function queries(string ...$queries): Connect
         {
             foreach ($queries as $query)
-               $this->execute($query);
+                is_false($this->execute($query),true,$query);
 
             return $this;
 
@@ -467,7 +458,7 @@ namespace Imperium\Connexion {
          */
         public function rollback(): Connect
         {
-            $this->execute("ROLLBACK;");
+           is_false($this->instance()->rollBack(),true,"ROLLBACK fail");
 
             return $this;
         }

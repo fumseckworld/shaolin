@@ -705,6 +705,22 @@ use Imperium\Import\Import;
 
         /**
          *
+         * Escape a string value
+         *
+         * @param string $value
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function quote(string $value): string
+        {
+            return $this->connexion->instance()->quote($value);
+        }
+
+        /**
+         *
          * Return the number of all tables found
          *
          * @return int
