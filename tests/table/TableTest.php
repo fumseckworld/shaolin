@@ -63,7 +63,6 @@ class TableTest extends DatabaseTest
     public function test_insert_multiples()
     {
         $data= [];
-
         $number = 100;
         for ($i = 0; $i != $number ; $i++)
         {
@@ -73,10 +72,12 @@ class TableTest extends DatabaseTest
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
+                'alive' => true_or_false(),
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date(),
             ];
+
         }
 
         $this->assertTrue($this->mysql_table->insert_multiples($data));
@@ -264,6 +265,17 @@ class TableTest extends DatabaseTest
         $this->assertTrue($this->pgsql_table->remove(20));
         $this->assertTrue($this->sqlite_table->remove(20));
     }
+
+    public function test_not_exist()
+    {
+        $this->assertTrue($this->mysql_table->not_exist('alexandra'));
+    }
+
+    public function test_import()
+    {
+        $this->assertTrue($this->mysql()->model()->dump($this->table));
+        $this->assertTrue($this->mysql()->tables()->import(sql_file_path($this->mysql()->connect(),$this->table)));
+    }
     /**
      * @throws \Exception
      */
@@ -372,9 +384,9 @@ class TableTest extends DatabaseTest
     public function test_columns_to_string()
     {
 
-        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->mysql_table->columns_to_string());
-        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->pgsql_table->columns_to_string());
-        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->sqlite_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, alive, status, days, date',$this->mysql_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, alive, status, days, date',$this->pgsql_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, alive, status, days, date',$this->sqlite_table->columns_to_string());
     }
 
 

@@ -51,8 +51,6 @@ class ModelTest extends DatabaseTest
 
     public function test_cool()
     {
-
-
         $bool = $this->mysql_model
                     ->set('phone',faker()->randomNumber(8))
                     ->set('name', faker()->name)
@@ -61,6 +59,7 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
+                    ->set('alive',1)
                 ->save();
         $this->assertTrue($bool);
 
@@ -72,6 +71,7 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
+                    ->set('alive','true')
                 ->save();
         $this->assertTrue($bool);
 
@@ -83,6 +83,7 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
+                    ->set('alive',1)
                 ->save();
         $this->assertTrue($bool);
     }
@@ -140,6 +141,7 @@ class ModelTest extends DatabaseTest
             ->set('days', faker()->date())
             ->set('age',  faker()->numberBetween(1,100))
             ->set('status','dead')
+            ->set('alive',true_or_false())
         ->save();
 
         $this->pgsql_model
@@ -148,6 +150,7 @@ class ModelTest extends DatabaseTest
             ->set('date', faker()->date())
             ->set('age',  faker()->numberBetween(1,100))
             ->set('status','dead')
+            ->set('alive',true_or_false())
         ->save();
 
         $this->sqlite_model
@@ -156,6 +159,7 @@ class ModelTest extends DatabaseTest
             ->set('sex', 'F')
             ->set('age',  faker()->numberBetween(1,100))
             ->set('status','dead')
+            ->set('alive',true_or_false())
         ->save();
     }
 
@@ -259,11 +263,12 @@ class ModelTest extends DatabaseTest
         {
             $data = [
                 'id' => null,
-                'name' => "'". faker()->name,
+                'name' =>  faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
-                'status' =>  "'".faker()->text(20),
+                'alive' => true_or_false(true),
+                'status' =>  faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date(),
             ];
@@ -428,6 +433,7 @@ class ModelTest extends DatabaseTest
             'age' => faker()->numberBetween(1,100),
             'phone' => faker()->randomNumber(8),
             'sex' => faker()->firstNameMale,
+            'alive' => true_or_false(true),
             'status' => faker()->text(20),
             'days' => faker()->date(),
             'date' => faker()->date(),
@@ -453,6 +459,7 @@ class ModelTest extends DatabaseTest
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
+                'alive' => true_or_false(),
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date(),

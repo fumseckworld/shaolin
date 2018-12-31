@@ -36,14 +36,13 @@ if (not_exist('sql_file_path'))
      * @method sql_file_path
      *
      * @param  Connect       $connect The connexion to the base
-     * @param  string        $table   The table name
      *
      * @return string
      *
      */
-    function sql_file_path(Connect $connect,string $table = ''): string
+    function sql_file_path(Connect $connect): string
     {
-        return def($table) ? "{$connect->dump_path()}/$table.sql" : "{$connect->dump_path()}/{$connect->base()}.sql";
+        return "{$connect->dump_path()}/{$connect->base()}.sql";
     }
 }
 
@@ -56,12 +55,13 @@ if (not_exist('true_or_false'))
      *
      * @method true_or_false
      *
-     * @return bool
+     * @return string
      *
      */
-    function true_or_false(): bool
+    function true_or_false():string
     {
-        return rand( 0,1) === 1;
+        $data = rand(0,1) == 1;
+        return $data ? 'true' : 'false';
     }
 }
 
@@ -2293,15 +2293,18 @@ if (not_exist('not_in'))
 if (not_exist('dumper'))
 {
     /**
-     *  [dumper description]
+     *
+     * Dump a base or table
      *
      * @method dumper
      *
-     * @param  Connect $connect [description]
-     * @param  bool    $base    [description]
-     * @param  string[]  $tables  [description]
+     * @param  Connect $connect The connexion
+     * @param  bool $base To dump a base
+     * @param  string[] $tables The tables to dump
      *
      * @return bool
+     *
+     * @throws Exception
      *
      */
     function dumper(Connect $connect,bool $base, string ...$tables): bool

@@ -168,6 +168,8 @@ use Imperium\Import\Import;
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
         public function dump(string $table = ''): bool
         {
@@ -309,9 +311,6 @@ use Imperium\Import\Import;
          *
          * @method show
          *
-         * @param string $current
-         * @param  string $pagination_prefix_url
-         * @param  array $hidden_table
          * @param string $url_prefix
          * @param  int $current_page
          * @param  int $limit_records_per_page

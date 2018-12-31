@@ -54,6 +54,7 @@ class ImperiumTest extends DatabaseTest
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
+                'alive' => true_or_false('true'),
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date()

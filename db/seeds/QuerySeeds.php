@@ -25,6 +25,7 @@ class QuerySeeds extends AbstractSeed
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
+               'alive' => rand(0,1) === 1 ? 'true' : 'false',
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date(),

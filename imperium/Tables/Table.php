@@ -846,7 +846,7 @@ namespace Imperium\Tables {
                     {
 
                         if (has($type, self::BOOL))
-                            $x->add(true_or_false(),$column);
+                            $x->add(true_or_false(true),$column);
 
 
                         if (has($type, self::JSONS))
@@ -870,7 +870,7 @@ namespace Imperium\Tables {
                         if (has($type,self::NUMERIC_TYPES))
                             $x->add(faker()->numberBetween(1,100),$column);
 
-                        if (has($type,self::TEXT_TYPES) || not_in(self::ALL_TYPES, $type))
+                        if (has($type,self::TEXT_TYPES))
                             $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
                     }
 
@@ -1293,9 +1293,9 @@ namespace Imperium\Tables {
          *
          * @throws Exception
          */
-        public function not_exist(string $table = ""): bool
+        public function not_exist(string $table): bool
         {
-            return def($table) ? collection($this->all)->not_exist($table) :  collection($this->all)->not_exist($this->table);
+            return  collection($this->all)->not_exist($table);
         }
 
 
@@ -2139,7 +2139,6 @@ namespace Imperium\Tables {
                         {
                             if ($values->not_exist($value))
                             {
-
                                 if ($values->numeric($value))
                                     $values->push($value);
                                 else

@@ -19,9 +19,9 @@ class ConnectTest extends DatabaseTest
 
         $table = 'base';
 
-        $m_queries->add(insert_into($this->mysql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
-        $p_queries->add(insert_into($this->postgresql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
-        $s_queries->add(insert_into($this->sqlite()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+        $m_queries->add(insert_into($this->mysql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,true_or_false(),faker()->text(10),faker()->date(),faker()->date()));
+        $p_queries->add(insert_into($this->postgresql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,true_or_false(),faker()->text(10),faker()->date(),faker()->date()));
+        $s_queries->add(insert_into($this->sqlite()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,true_or_false(),    faker()->text(10),faker()->date(),faker()->date()));
 
 
         $all_mysql  = $this->mysql()->model()->from($table )->count();
@@ -57,9 +57,9 @@ class ConnectTest extends DatabaseTest
 
         $table = 'base';
 
-        $m_queries->add(insert_into($this->mysql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
-        $p_queries->add(insert_into($this->postgresql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
-        $s_queries->add(insert_into($this->sqlite()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+        $m_queries->add(insert_into($this->mysql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,true_or_false(),faker()->text(10),faker()->date(),faker()->date()));
+        $p_queries->add(insert_into($this->postgresql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,true_or_false(),faker()->text(10),faker()->date(),faker()->date()));
+        $s_queries->add(insert_into($this->sqlite()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,true_or_false(),faker()->text(10),faker()->date(),faker()->date()));
 
 
         $all_mysql  = $this->mysql()->model()->from($table )->count();

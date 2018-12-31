@@ -86,7 +86,6 @@ namespace Imperium\Dump {
             $this->connexion = $connect;
             $this->base = $base;
             $this->tables = collection($tables);
-
             $this->command = '';
             $this->quote  = $this->determine_quote();
         }
