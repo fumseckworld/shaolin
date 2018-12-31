@@ -347,6 +347,7 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
+
     }
 
 

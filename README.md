@@ -1,4 +1,4 @@
-<p align="center"><a href="https://discord.gg/qn6yptm" title="discord"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></a></p>
+<p align="center"><a href="https://discord.gg/fUPyd9K" title="discord"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></a></p>
 <p align="center">
 <img src="https://poser.pugx.org/imperium/imperium/v/stable" alt="Latest Stable Version">
 <img src="https://poser.pugx.org/imperium/imperium/downloads" alt="Download">
@@ -19,7 +19,7 @@
     * [**Query**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php)
     * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
 * [**Coverage**](https://imperium.fumseck.eu)
-* [**Discord**](https://discord.gg/qn6yptm)
+* [**Discord**](https://discord.gg/fUPyd9K)
 * [**Trello**](https://trello.com/b/28tMSSDG/imperium)
 
 # What it's ?
@@ -265,6 +265,10 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | instance              |   void    | An instance of pdo               | Get the pdo instance                                               |
 | request               |   string  | An array                         | Return the result of a request inside an array                     |
 | execute               |   string  | A boolean                        | Return the result of a request                                     |
+| transaction           |   void    | A instance of Connect            | Start a transaction block                                          |
+| rollback              |   void    | A instance of Connect            | Abort the current transaction                                      |
+| queries               |   string  | A instance of Connect            | Execute the queries                                                |
+| commit                |   void    | A boolean                        | Commit the current transaction                                     |
 
 # [Form](https://git.fumseck.eu/cgit/imperium/tree/imperium/Html/Form/Form.php) [Coverage](https://imperium.fumseck.eu/imperium/Html/Form/Form.php.html)
 
@@ -318,14 +322,14 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
-| __construct           |   mixed   | An instance of the query builder | Save the connection                                                 |
+| __construct           |   mixed   | An instance of the query builder | Save the connection                                                |
 | set_current_table_name|   string  | An instance of the query builder | Save the table name                                                |
 | sql                   |   void    | A string                         | Return the generated sql query                                     |
 | where                 |   mixed   | An instance of the query builder | Generate a where clause                                            |
 | between               |   mixed   | An instance of the query builder | Generate a where clause with between                               |
 | order_by              |   string  | An instance of the query builder | Generate a order by clause                                         |
 | set_columns           |   array   | An instance of the query builder | Define the columns to select                                       |
-| connect               |   Connect | An instance of the query builder | Define the connection                                               |
+| connect               |   Connect | An instance of the query builder | Define the connection                                              |
 
 
 # [Helpers](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php) [Coverage](https://imperium.fumseck.eu/app/helpers.php.html)
@@ -333,7 +337,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | Method                | arguments | return                           |   do                                                                  |    
 |-----------------------|-----------|----------------------------------|-----------------------------------------------------------------------|    
 | quote                 |   mixed   | A string                         | Quote a string to use in a query                                      |
-| apps                  |   mixed   | A instance of Imperium           | Group all possible class instances in a class                         |
+| apps                  |   mixed   | An instance of Imperium          | Group all possible class instances in a class                         |
 | assign                |   mixed   | void                             | Assign to a variable a content by a condition                         |
 | query                 |   mixed   | An instance of Query builder     | Create the instance                                                   |
 | is_pair               |   int     | A Boolean                        | Check if a number is pair                                             |
@@ -342,13 +346,13 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | is_false              |   mixed   | A Boolean                        | Check if data is equal to false                                       |
 | is_not_true           |   mixed   | A Boolean                        | Check if data is not equal to true                                    |
 | is_true               |   mixed   | A Boolean                        | Check if data is equal to true                                        |
-| different              |   mixed   | A Boolean                        | Check if two variables are different                                   |
+| different             |   mixed   | A Boolean                        | Check if two variables are different                                  |
 | secure_register_form  |   mixed   | A string                         | Generate a register form based on ip address                          |
 | login                 |   string  | A string                         | Generate a login form                                                 |
-| bases_to_json         |   mixed   | A Boolean                        | Generate a json file with all bases not hidden with an optional key    |
-| users_to_json         |   mixed   | A Boolean                        | Generate a json file with all users not hidden with an optional key    |
-| tables_to_json        |   mixed   | A Boolean                        | Generate a json file with all tables not hidden with an optional key   |
-| sql_to_json           |   mixed   | A Boolean                        | Generate a json file with the result of all queries                    |
+| bases_to_json         |   mixed   | A Boolean                        | Generate a json file with all bases not hidden with an optional key   |
+| users_to_json         |   mixed   | A Boolean                        | Generate a json file with all users not hidden with an optional key   |
+| tables_to_json        |   mixed   | A Boolean                        | Generate a json file with all tables not hidden with an optional key  |
+| sql_to_json           |   mixed   | A Boolean                        | Generate a json file with the result of all queries                   |
 | json                  |   string  | An instance of Json              | Return an instance of Json                                            |   
 | query_result          |   mixed   | A string                         | Print the query query result                                          |
 | execute_query         |   mixed   | mixed                            | Execute a query                                                       |
@@ -356,8 +360,8 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | length                |   mixed   | A integer                        | Calcul the length of an array or a string                             |
 | connect               |   mixed   | A instance of Connect            | Connect to the base                                                   |
 | collection            |   array   | A instance of Collection         | Management of the array                                               |
-| def                   |   mixed   | A Boolean                        | Check if a value is define and it's not empty                          |
-| not_def               |   mixed   | A Boolean                        | Check if a value is not define                                         |
+| def                   |   mixed   | A Boolean                        | Check if a value is define and it's not empty                         |
+| not_def               |   mixed   | A Boolean                        | Check if a value is not define                                        |
 | zones                 |   string  | An array                         | Display all time zones                                                |
 | tables_select         |   mixed   | A string                         | Display all table in a select                                         |
 | bases_select          |   mixed   | A string                         | Display all bases in a select                                         |
@@ -374,12 +378,12 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | values                |   array   | An array                         | Return all values inside the array                                    |
 | keys                  |   array   | An array                         | Return all keys inside the array                                      |
 | merge                 |   array   | Void                             | Merge multiples array                                                 |
-| session               |   string  | A string                         | Return a $_SESSION key if is define                                    |
-| post                  |   string  | A string                         | Return a $_POST key if is define                                       |
-| get                   |   string  | A string                         | Return a $_GET key if is define                                        |
-| cookie                |   string  | A string                         | Return a $_COOKIE key if is define                                     |
-| files                  |   string  | A string                         | Return a $_FILES key if is define                                      |
-| server                |   string  | A string                         | Return a $_SERVER key if is define                                     |
+| session               |   string  | A string                         | Return a $_SESSION key if is define                                   |
+| post                  |   string  | A string                         | Return a $_POST key if is define                                      |
+| get                   |   string  | A string                         | Return a $_GET key if is define                                       |
+| cookie                |   string  | A string                         | Return a $_COOKIE key if is define                                    |
+| files                 |   string  | A string                         | Return a $_FILES key if is define                                     |
+| server                |   string  | A string                         | Return a $_SERVER key if is define                                    |
 | generate              |   mixed   | A string                         | Generate a form to edit or update a record                            |
 | collation             |   Connect | An array                         | Display all available collations                                      |
 | charset               |   Connect | An array                         | Display all available charsets                                        |
@@ -403,6 +407,4 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 | remove_users          |   mixed   | A Boolean                        | Remove the users                                                      |
 | remove_tables         |   mixed   | A Boolean                        | Remove the tables                                                     |
 | remove_bases          |   mixed   | A Boolean                        | Remove the base                                                       |
-| faker                 |   string  | An instance of faker             | Return an instance of faker                                           |
-| faker                 |   string  | An instance of faker             | Return an instance of faker                                           |
 | faker                 |   string  | An instance of faker             | Return an instance of faker                                           |

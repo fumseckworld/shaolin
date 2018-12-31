@@ -281,6 +281,8 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
         public function not_exist(string $name): bool
         {

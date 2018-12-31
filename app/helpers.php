@@ -2722,6 +2722,33 @@ if (not_exist('iconic'))
     }
 }
 
+
+if (not_exist('insert_into'))
+{
+    /**
+     *
+     * @param Table $instance
+     * @param string $table
+     * @param mixed ...$values
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function insert_into(Table $instance,string $table,...$values): string
+    {
+        $x = $instance->columns_to_string();
+
+        $data = "INSERT INTO $table ($x) VALUES (";
+        foreach ($values as $value)
+            is_string($value) ? append($data,"'$value', ") : append($data,$value.', ');
+
+        $data = trim($data,', ');
+        append($data, ')');
+        return $data;
+
+    }
+}
 if (not_exist('glyph'))
 {
     /**

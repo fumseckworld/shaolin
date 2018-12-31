@@ -174,6 +174,23 @@ use Imperium\Import\Import;
             return def($table) ? dumper($this->connexion, false,$table) : dumper($this->connexion,true,'');
         }
 
+
+        /**
+         *
+         * Select a table
+         *
+         * @param string $table
+         *
+         * @return Model
+         *
+         */
+        public function from(string $table): Model
+        {
+            $this->current = $table;
+
+            return $this;
+        }
+
         /**
          *
          * Import the sql file content in the base

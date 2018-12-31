@@ -546,21 +546,24 @@ namespace Imperium\Tables {
          */
         public function append_column(string $name, string $type, int $size, bool $unique,bool $nullable): bool
         {
+            if ($this->column_not_exist($name))
+            {
+                $data = collection();
+                $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
 
-            $data = collection();
-            $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
+                different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
 
-            different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
+                if(is_false($nullable))
+                    append($command,' NOT NULL');
 
-            if(is_false($nullable))
-                append($command,' NOT NULL');
+                $data->add($this->connexion->execute($command));
 
-            $data->add($this->connexion->execute($command));
+                if($unique)
+                    $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name));
 
-            if($unique)
-                $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name));
-
-            return $data->not_exist(false);
+                return $data->not_exist(false);
+            }
+            return false;
         }
 
         /**
@@ -599,7 +602,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("CREATE  UNIQUE INDEX IF NOT EXISTS uniq_$column ON $table($column);");
+                    return $this->connexion->execute("ALTER TABLE $table  ADD CONSTRAINT _uniq_$column UNIQUE($column);");
                 }
             }
             return false;

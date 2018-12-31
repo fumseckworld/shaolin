@@ -249,11 +249,11 @@ namespace Imperium\Connexion {
 
         /**
          *
-         * Return the current fecth mode
+         * Return the current fetch mode
          *
          * @method get_fetch_mode
          *
-         * @return int The PDO fecth mode
+         * @return int The PDO  fetch mode
          *
          */
         public function fetch_mode(): int
@@ -372,7 +372,7 @@ namespace Imperium\Connexion {
 
        /**
         *
-        * Execute a query and return true on success or false on faillure
+        * Execute a query and return true on success or false on failure
         *
         * @method execute
         *
@@ -396,6 +396,82 @@ namespace Imperium\Connexion {
             return $data;
 
         }
+
+        /**
+         *
+         * Start a transaction block
+         *
+         * @return Connect
+         *
+         * @throws Exception
+         *
+         */
+        public function transaction(): Connect
+        {
+            switch ($this->driver)
+            {
+                case self::MYSQL:
+                case self::POSTGRESQL:
+                    $this->execute("START TRANSACTION;");
+                break;
+                case self::SQLITE:
+                    $this->execute("BEGIN TRANSACTION;");
+                break;
+            }
+
+            return $this;
+        }
+
+        /**
+         *
+         * Commit the current transaction
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function commit(): bool
+        {
+            return $this->execute("COMMIT;");
+        }
+
+        /**
+         *
+         * Execute the queries
+         *
+         * @param string ...$queries
+         *
+         * @return Connect
+         *
+         * @throws Exception
+         *
+         */
+        public function queries(string ...$queries): Connect
+        {
+            foreach ($queries as $query)
+               $this->execute($query);
+
+            return $this;
+
+        }
+
+        /**
+         *
+         * Abort the current transaction
+         *
+         * @return Connect
+         *
+         * @throws Exception
+         *
+         */
+        public function rollback(): Connect
+        {
+            $this->execute("ROLLBACK;");
+
+            return $this;
+        }
+
 
         /**
          *
