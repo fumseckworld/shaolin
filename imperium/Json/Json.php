@@ -58,7 +58,7 @@ namespace Imperium\Json {
         {
             File::remove_if_exist($this->filename);
 
-            return is_true(file_put_contents($this->filename,json_encode($data,JSON_FORCE_OBJECT)));
+            return is_not_false(file_put_contents($this->filename,json_encode($data,JSON_FORCE_OBJECT)));
 
         }
 

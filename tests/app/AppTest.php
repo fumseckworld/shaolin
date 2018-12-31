@@ -342,19 +342,19 @@ class AppTest extends DatabaseTest
 
     public function test_table_select()
     {
-        $select = tables_select($this->mysql()->tables(),[],'?=','csrf');
+        $select = tables_select('base',$this->mysql()->tables(),[],'?=','csrf','');
         $this->assertContains('base',$select);
         $this->assertContains('?=',$select);
         $this->assertContains('/',$select);
         $this->assertContains('csrf',$select);
 
-        $select = tables_select($this->postgresql()->tables(),[],'?=','csrf');
+        $select = tables_select('base',$this->postgresql()->tables(),[],'?=','csrf','');
         $this->assertContains('base',$select);
         $this->assertContains('?=',$select);
         $this->assertContains('/',$select);
         $this->assertContains('csrf',$select);
 
-        $select = tables_select($this->sqlite()->tables(),[],'?=','csrf');
+        $select = tables_select('base',$this->sqlite()->tables(),[],'?=','csrf','');
         $this->assertContains('base',$select);
         $this->assertContains('?=',$select);
         $this->assertContains('/',$select);
