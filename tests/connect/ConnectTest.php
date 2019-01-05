@@ -3,6 +3,7 @@
 namespace Testing\connect;
 
 
+use Imperium\Connexion\Connect;
 use Testing\DatabaseTest;
 
 class ConnectTest extends DatabaseTest
@@ -46,6 +47,20 @@ class ConnectTest extends DatabaseTest
         $this->assertTrue(different($this->sqlite()->model()->from($table)->count(),$all_sqlite));
     }
 
+    public function test_not()
+    {
+        $this->assertTrue($this->mysql()->connect()->not(Connect::SQLITE));
+        $this->assertTrue($this->mysql()->connect()->not(Connect::POSTGRESQL));
+        $this->assertFalse($this->mysql()->connect()->not(Connect::MYSQL));
+
+        $this->assertTrue($this->postgresql()->connect()->not(Connect::MYSQL));
+        $this->assertTrue($this->postgresql()->connect()->not(Connect::SQLITE));
+        $this->assertFalse($this->postgresql()->connect()->not(Connect::POSTGRESQL));
+
+        $this->assertTrue($this->sqlite()->connect()->not(Connect::MYSQL));
+        $this->assertTrue($this->sqlite()->connect()->not(Connect::POSTGRESQL));
+        $this->assertFalse($this->sqlite()->connect()->not(Connect::SQLITE));
+    }
     /**
      * @throws \Exception
      */

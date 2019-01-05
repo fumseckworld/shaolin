@@ -346,6 +346,23 @@ namespace Imperium\Connexion {
 
         /**
          *
+         * Check if the driver is not the current
+         *
+         * @method not
+         *
+         * @param string $driver
+         *
+         * @return bool
+         *
+         * @throws Exception
+         */
+        public function not(string  $driver): bool
+        {
+            return different($driver,$this->driver());
+        }
+
+        /**
+         *
          * Execute a request and return result in an array
          *
          * @method request
