@@ -352,6 +352,39 @@ class TableTest extends DatabaseTest
     }
 
 
+    public function test_create()
+    {
+        $table = 'users';
+        $bool =     $this->mysql()->tables()
+                                ->column(Table::INT,'id',true,0,true,true,false,'',true,Table::SUPERIOR_OR_EQUAL,1)
+                                ->column(Table::INT,'age',false,100,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
+                                ->column(Table::VARCHAR,'name',false,100,true,false,false,'',true,Table::DIFFERENT,'willy')
+                                ->column(Table::VARCHAR,'username',false,100,true,true,true,'champion',true,Table::DIFFERENT,'fumseck')
+                                ->create($table);
+
+        $this->assertTrue($bool);
+        $this->assertTrue($this->mysql()->tables()->drop($table));
+
+        $bool =     $this->postgresql()->tables()
+            ->column(Table::SERIAL,'id',true,0,true,true,false,'',true,Table::SUPERIOR_OR_EQUAL,1)
+            ->column(Table::NUMERIC,'age',false,100,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
+            ->column(Table::CHARACTER_VARYING,'name',false,100,true,false,false,'',true,Table::DIFFERENT,'willy')
+            ->column(Table::CHARACTER_VARYING,'username',false,100,true,true,true,'champion',true,Table::DIFFERENT,'fumseck')
+            ->create($table);
+
+        $this->assertTrue($bool);
+        $this->assertTrue($this->postgresql()->tables()->drop($table));
+
+        $bool =     $this->sqlite()->tables()
+            ->column(Table::INTEGER,'id',true,0,true,true,false,'',true,Table::SUPERIOR_OR_EQUAL,1)
+            ->column(Table::INTEGER,'age',false,100,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
+            ->column(Table::TEXT,'name',false,100,true,false,false,'',true,Table::DIFFERENT,'willy')
+            ->column(Table::TEXT,'username',false,100,true,true,true,'champion',true,Table::DIFFERENT,'fumseck')
+            ->create($table);
+
+        $this->assertTrue($bool);
+        $this->assertTrue($this->sqlite()->tables()->drop($table));
+    }
     /**
      * @throws \Exception
      */

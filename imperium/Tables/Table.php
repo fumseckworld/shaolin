@@ -666,7 +666,11 @@ namespace Imperium\Tables {
 
             $this->added_columns = collection();
 
-            return $this->connexion->execute($command);
+            $data = $this->connexion->execute($command);
+
+            is_false($data,true,$command);
+
+           return $data;
         }
 
 
