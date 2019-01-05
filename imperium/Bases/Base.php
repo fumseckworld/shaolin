@@ -170,6 +170,7 @@ use Imperium\Tables\Table;
 
             return (new Import($this->connexion,$sql,$new_base))->import();
         }
+
         /**
         *
         *  Display all bases

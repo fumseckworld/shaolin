@@ -558,7 +558,7 @@ namespace Imperium\Tables {
 
                 $data->add($this->connexion->execute($command));
 
-                if($unique)
+                if($unique && ! $this->connexion->sqlite())
                     $data->add($this->alter_table(Imperium::FIELD_UNIQUE,$name));
 
                 return $data->not_exist(false);
@@ -595,14 +595,6 @@ namespace Imperium\Tables {
                 if (equal($constraint,Imperium::FIELD_UNIQUE))
                 {
                     return $this->connexion->execute("ALTER TABLE $table ADD UNIQUE ($column);");
-                }
-            }
-
-            if (equal($this->driver,Connect::SQLITE))
-            {
-                if (equal($constraint,Imperium::FIELD_UNIQUE))
-                {
-                    return $this->connexion->execute("ALTER TABLE $table  ADD CONSTRAINT _uniq_$column UNIQUE($column);");
                 }
             }
             return false;
@@ -846,7 +838,7 @@ namespace Imperium\Tables {
                     {
 
                         if (has($type, self::BOOL))
-                            $x->add(true_or_false(true),$column);
+                            $x->add(true_or_false(),$column);
 
 
                         if (has($type, self::JSONS))

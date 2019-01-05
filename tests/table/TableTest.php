@@ -323,7 +323,6 @@ class TableTest extends DatabaseTest
 
         $instance = $this->mysql_table;
 
-
         $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
@@ -350,16 +349,6 @@ class TableTest extends DatabaseTest
         $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
-
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true,false));
-        $this->assertTrue($instance->has_column($column));
-        $this->assertTrue($instance->remove_column($column));
-
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,true,true));
-        $this->assertTrue($instance->has_column($column));
-        $this->assertTrue($instance->remove_column($column));
-
-
     }
 
 

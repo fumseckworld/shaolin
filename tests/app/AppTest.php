@@ -361,6 +361,11 @@ class AppTest extends DatabaseTest
         $this->assertContains('csrf',$select);
 
     }
+
+    public function test_true_or_false()
+    {
+        $this->assertNotEmpty(true_or_false());
+    }
     public function test_users_select()
     {
         $select = users_select($this->mysql()->users(),[],'?=','','choose',false);

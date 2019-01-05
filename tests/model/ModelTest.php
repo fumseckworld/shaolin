@@ -71,7 +71,7 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
-                    ->set('alive','true')
+                    ->set('alive',true_or_false())
                 ->save();
         $this->assertTrue($bool);
 
@@ -83,7 +83,7 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
-                    ->set('alive',1)
+                    ->set('alive',true_or_false())
                 ->save();
         $this->assertTrue($bool);
     }
