@@ -203,9 +203,8 @@ class AppTest extends DatabaseTest
     public function test_query_result()
     {
         $sql = '';
-        $result = query_result($this->mysql()->model(), execute_query(2, $this->mysql()->model(), $this->mysql()->tables(), Query::SELECT, 'id', Query::SUPERIOR,4 , 'imperium', 'btn btn-primary', 'update', 'update.php', 'id', 'desc',
-        $sql),"Success", 'Result empty', 'Table empty', $sql);
-
+        $result = query_result($this->mysql()->model(), execute_query($this->mysql(), Query::SELECT, 'id', Query::SUPERIOR, 4, 'imperium', 'btn btn-primary', 'update', 'id', 'desc', $sql),"Success", 'Result empty', 'Table empty', $sql);
+        $this->assertNotEmpty($result);
         $this->assertNotEmpty($sql);
     }
     public function test_is_not_true_exe()
@@ -388,6 +387,30 @@ class AppTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
+    public function test_execute_query()
+    {
+        $sql = '';
+        $this->assertTrue(execute_query($this->mysql(),Query::DELETE,'id',Query::EQUAL,5,'','','','','',$sql));
+        $this->assertEquals("DELETE FROM imperium WHERE id = 5",$sql);
+        $this->assertCount(0,execute_query($this->mysql(),Query::UPDATE,'id',Query::EQUAL,5,'','','','id','asc',$sql));
+        $this->assertCount(1,execute_query($this->mysql(),Query::UPDATE,'id',Query::EQUAL,1,'','','','id','asc',$sql));
+        $this->assertCount(2,execute_query($this->mysql(),Query::UPDATE,'id',Query::INFERIOR_OR_EQUAL,2,'','','','id','asc',$sql));
+
+        $this->assertTrue(execute_query($this->postgresql(),Query::DELETE,'id',Query::EQUAL,5,'','','','','',$sql));
+        $this->assertEquals("DELETE FROM imperium WHERE id = 5",$sql);
+        $this->assertCount(0,execute_query($this->postgresql(),Query::UPDATE,'id',Query::EQUAL,5,'','','','id','asc',$sql));
+        $this->assertCount(1,execute_query($this->postgresql(),Query::UPDATE,'id',Query::EQUAL,1,'','','','id','asc',$sql));
+        $this->assertCount(2,execute_query($this->postgresql(),Query::UPDATE,'id',Query::INFERIOR_OR_EQUAL,2,'','','','id','asc',$sql));
+
+        $this->assertTrue(execute_query($this->sqlite(),Query::DELETE,'id',Query::EQUAL,5,'','','','','',$sql));
+        $this->assertEquals("DELETE FROM imperium WHERE id = 5",$sql);
+        $this->assertCount(0,execute_query($this->sqlite(),Query::UPDATE,'id',Query::EQUAL,5,'','','','id','asc',$sql));
+        $this->assertCount(1,execute_query($this->sqlite(),Query::UPDATE,'id',Query::EQUAL,1,'','','','id','asc',$sql));
+        $this->assertCount(2,execute_query($this->sqlite(),Query::UPDATE,'id',Query::INFERIOR_OR_EQUAL,2,'','','','id','asc',$sql));
+    }
     public function test_base_select()
     {
         $select = bases_select($this->mysql()->bases(),[],'?=','','choose',false);

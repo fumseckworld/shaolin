@@ -614,27 +614,29 @@ if (not_exist('execute_query'))
      *
      * @method execute_query
      *
-     * @param  int $form_grid Change form display grid
-     * @param  Model $model An instance of model
-     * @param  Table $table An instance of table
-     * @param  string $mode The query mode
+     * @param Imperium $imperium
+     * @param  int  $mode The query mode
      * @param  string $column_name The where column name
      * @param  string $condition The where condition
      * @param  mixed $expected The where expected
-     * @param  string $current_table_name The current table name
      * @param  string $submit_class The submit button class
      * @param  string $submit_update_text The submit update text
      * @param  string $form_update_action The update action
      * @param  string $key The order by key
      * @param  string $order The order type
-     * @param  mixed $show_sql_variable  The variable to store the sql query
+     * @param  mixed &$show_sql_variable The variable to store the sql query
      *
      * @return mixed
      *
      * @throws Exception
      */
-    function execute_query(int $form_grid,Model $model,Table $table,string $mode,string $column_name,string $condition,$expected,string $current_table_name,string $submit_class,$submit_update_text,string $form_update_action ,string $key,string $order,&$show_sql_variable)
+    function execute_query(Imperium $imperium,int $mode, string $column_name, string $condition, $expected, string $submit_class, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
     {
+
+        $model = $imperium->model();
+        $table = $imperium->tables();
+        $current_table_name = $table->current();
+        $form_grid = 2;
 
         switch ($mode)
         {
@@ -752,7 +754,7 @@ if (not_exist('query_view'))
                     ->submit($submit_query_text,$submit_class,uniqid())
                 ->end_row()->get()
                  .
-                query_result($model,execute_query($form_grid,$model,$table,post('mode'),post('column'),post('condition'),post('expected'),$current_table_name,$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
+                query_result($model,execute_query($model, $table, post('mode'), post('column'), post('condition'), post('expected'), $current_table_name, $submit_class, $update_record_text, $update_record_action, post('key'), post('order'), $sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
                 (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
