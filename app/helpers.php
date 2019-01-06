@@ -13,11 +13,9 @@ use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Users\Users;
 use Imperium\Tables\Table;
-use Imperium\Html\Bar\Icon;
 use Imperium\Html\Form\Form;
 use Imperium\Connexion\Connect;
 use Sinergi\BrowserDetector\Os;
-use Imperium\Html\Canvas\Canvas;
 use Imperium\Collection\Collection;
 use Sinergi\BrowserDetector\Device;
 use Intervention\Image\ImageManager;
@@ -93,25 +91,26 @@ if (not_exist('apps'))
      *
      * @method apps
      *
-     * @param  string $driver        The pdo driver
-     * @param  string $user          The username
-     * @param  string $base          The base name
-     * @param  string $password      The password
-     * @param  string $host          The host
-     * @param  string $dump_path     The dump directory path
+     * @param  string $driver The pdo driver
+     * @param  string $user The username
+     * @param  string $base The base name
+     * @param  string $password The password
+     * @param  string $host The host
+     * @param  string $dump_path The dump directory path
      * @param  string $current_table The current table
-     * @param  array  $hidden_tables All hidden tables
-     * @param  array  $hidden_bases  All hidden bases
+     * @param string $views_dir
+     * @param  array $hidden_tables All hidden tables
+     * @param  array $hidden_bases All hidden bases
      *
      * @return Imperium
      *
      * @throws Exception
      *
      */
-    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,array $hidden_tables,array $hidden_bases): Imperium
+    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $views_dir,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
-        return imperium($connexion,$current_table,$hidden_tables,$hidden_bases);
+        return imperium($connexion,$current_table,$views_dir,$hidden_tables,$hidden_bases);
     }
 }
 
@@ -606,6 +605,14 @@ if (not_exist('length'))
             throw new Exception('The parameter must be a string or an array');
     }
 }
+
+if (not_exist('execute_query'))
+{
+    function twig(string $views_path,string $cache_dir)
+    {
+
+    }
+}
 if (not_exist('execute_query'))
 {
     /**
@@ -783,15 +790,16 @@ if (not_exist('connect'))
      *
      * @method connect
      *
-     * @param  string  $driver     The base driver
-     * @param  string  $base       The base name
-     * @param  string  $user       The username
-     * @param  string  $password   The password
-     * @param  string  $host       The host
-     * @param  string  $dump_path  The dump directory path
+     * @param  string $driver The base driver
+     * @param  string $base The base name
+     * @param  string $user The username
+     * @param  string $password The password
+     * @param  string $host The host
+     * @param  string $dump_path The dump directory path
      *
      * @return Connect
      *
+     * @throws Exception
      */
     function connect(string $driver,string $base,string $user,string $password,string $host,string $dump_path): Connect
     {
@@ -2498,21 +2506,23 @@ if (not_exist('jasnyJs'))
 
 if (not_exist('imperium'))
 {
-   /**
-    *
-    *
-    * @method imperium
-    *
-    * @param  Connect  $connect       [description]
-    * @param  string   $current_table [description]
-    * @param  array    $hidden_tables [description]
-    * @param  array    $hidden_bases  [description]
-    *
-    * @return Imperium [description]
-    */
-    function imperium(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases): Imperium
+    /**
+     *
+     *
+     * @method imperium
+     *
+     * @param  Connect $connect [description]
+     * @param  string $current_table [description]
+     * @param string $views_dir
+     * @param  array $hidden_tables [description]
+     * @param  array $hidden_bases [description]
+     *
+     * @return Imperium [description]
+     * @throws Exception
+     */
+    function imperium(Connect $connect,string $current_table,string $views_dir,array $hidden_tables, array $hidden_bases): Imperium
     {
-        return new Imperium($connect,$current_table,$hidden_tables,$hidden_bases );
+        return new Imperium($connect,$current_table,$views_dir,$hidden_tables,$hidden_bases );
     }
 }
 

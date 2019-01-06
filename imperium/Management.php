@@ -13,6 +13,7 @@ namespace Imperium {
     use Imperium\Query\Query;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+    use Imperium\View\View;
 
     interface Management
     {
@@ -579,6 +580,11 @@ namespace Imperium {
         public function connect(): Connect;
 
         /**
+         * @return View
+         */
+        public function view(): View;
+
+        /**
          *
          * Dump a base or  tables
          *
@@ -596,13 +602,13 @@ namespace Imperium {
          *
          * @method __construct
          *
-         * @param  Connect     $connect       The connection to the base
-         * @param  string      $current_table The current table
-         * @param  array       $hidden_tables All hidden tables in current base
-         * @param  array       $hidden_bases  All hidden bases for the drivers
-         *
+         * @param  Connect $connect The connection to the base
+         * @param  string $current_table The current table
+         * @param string $views_dir The views dir path
+         * @param  array $hidden_tables All hidden tables in current base
+         * @param  array $hidden_bases All hidden bases for the drivers
          */
-        public function __construct(Connect $connect,string $current_table,array $hidden_tables, array $hidden_bases);
+        public function __construct(Connect $connect,string $current_table,string $views_dir,array $hidden_tables, array $hidden_bases);
 
         // GETTER
 

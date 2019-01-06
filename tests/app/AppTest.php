@@ -1,7 +1,6 @@
 <?php
 namespace tests\base;
 
-use PDO;
 use Exception;
 use Imperium\Bases\Base;
 use Imperium\Collection\Collection;
@@ -65,9 +64,9 @@ class AppTest extends DatabaseTest
     public function test_apps()
     {
 
-        $mysql = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,'dump','base',[],[]);
-        $pgsql = apps(Connect::POSTGRESQL,'postgres','zen','postgres',Connect::LOCALHOST,'dump','base',[],[]);
-        $sqlite = apps(Connect::SQLITE,'','zen.sqlite3','',Connect::LOCALHOST,'dump','base',[],[]);
+        $mysql = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,'dump','base','views',[],[]);
+        $pgsql = apps(Connect::POSTGRESQL,'postgres','zen','postgres',Connect::LOCALHOST,'dump','base','views',[],[]);
+        $sqlite = apps(Connect::SQLITE,'','zen.sqlite3','',Connect::LOCALHOST,'dump','base','views',[],[]);
 
         $this->assertInstanceOf(Imperium::class,$mysql);
         $this->assertInstanceOf(Imperium::class,$pgsql);
