@@ -1,7 +1,7 @@
 {
     "name": "imperium/imperium",
     "type": "library",
-    "description": "A library to manage database more simply",
+    "description": "A library to manage databases and to build websites more simply",
     "license": "GPL-3.0-or-later",
     "support": {
        "source": "https://git.fumseck.eu/cgit/imperium/"
@@ -9,7 +9,7 @@
     "authors": [
         {
             "name": "Willy Micieli",
-            "email": "will.micieli@gmail.com"
+            "email": "micieli@glaposte.net"
         }
     ],
     "require": {
