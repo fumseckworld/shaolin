@@ -10,6 +10,7 @@ use Imperium\Imperium;
 use Imperium\Tables\Table;
 
 use Imperium\Users\Users;
+use Imperium\View\View;
 use Testing\DatabaseTest;
 
 class ImperiumTest extends DatabaseTest
@@ -302,7 +303,11 @@ class ImperiumTest extends DatabaseTest
 
     }
 
-
+    public function test_view()
+    {
+        $this->assertNotEmpty($this->mysql()->view()->load('welcome.twig'));
+        $this->assertInstanceOf(View::class,$this->mysql()->view());
+    }
     /**
      * @throws Exception
      */
