@@ -12,6 +12,7 @@ namespace Imperium {
     use Imperium\Json\Json;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
+    use Imperium\Router\Router;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Imperium\View\View;
@@ -947,7 +948,13 @@ namespace Imperium {
         {
             return $this->view;
         }
-
+        /**
+         * @return Router
+         */
+        public function router(): Router
+        {
+            return new Router();
+        }
         /**
          *
          * Management iof the array

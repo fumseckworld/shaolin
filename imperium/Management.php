@@ -11,6 +11,7 @@ namespace Imperium {
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
+    use Imperium\Router\Router;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Imperium\View\View;
@@ -583,6 +584,11 @@ namespace Imperium {
          * @return View
          */
         public function view(): View;
+
+        /**
+         * @return Router
+         */
+        public function router(): Router;
 
         /**
          *

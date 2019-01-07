@@ -22,5 +22,4 @@ app.json
 *.sqlite3
 COVERAGE
 marion
-index.php
 tmp

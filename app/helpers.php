@@ -3,6 +3,7 @@
 use Faker\Generator;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
+use Imperium\Route\Route;
 use Whoops\Run;
 use Carbon\Carbon;
 use Imperium\Imperium;
@@ -1540,6 +1541,43 @@ if (not_exist('get'))
     }
 }
 
+if (not_exist('callback'))
+{
+    /**
+     *
+     * Return the route callable
+     *
+     * @param string $name
+     *
+     * @return callable
+     *
+     * @throws Exception
+     *
+     */
+    function callback(string $name): callable
+    {
+        return Route::callback($name);
+    }
+}
+
+if (not_exist('url'))
+{
+    /**
+     *
+     * Return a route url by use it's name
+     *
+     * @param string $name The route name
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function url(string $name): string
+    {
+        return Route::url($name);
+    }
+}
 if (not_exist('files'))
 {
     /**
