@@ -710,13 +710,13 @@ namespace Imperium {
          * @param  Connect $connect The connection to the base
          * @param  string $current_table The current table
          * @param string $views_dir
+         * @param array $twig_config
          * @param  array $hidden_tables All hidden tables in current base
          * @param  array $hidden_bases All hidden bases for the drivers
          *
          * @throws Exception
-         *
          */
-        public function __construct(Connect $connect,string $current_table,string $views_dir,array $hidden_tables, array $hidden_bases)
+        public function __construct(Connect $connect,string $current_table,string $views_dir,array $twig_config,array $hidden_tables, array $hidden_bases)
         {
             $this->connect   = $connect;
             $this->driver    = $connect->driver();
@@ -728,7 +728,7 @@ namespace Imperium {
             $this->model     = new Model($connect,$this->tables,$current_table);
             $this->json      = new Json();
             $this->form      = new Form();
-            $this->view      = new View($views_dir);
+            $this->view      = new View($views_dir,$twig_config);
         }
 
 

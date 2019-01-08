@@ -29,11 +29,6 @@ namespace Imperium\View {
         private $view_dir;
 
         /**
-         * @var string
-         */
-        private $cache_dir;
-
-        /**
          * @var Twig_Loader_Filesystem
          */
         private $loader;
@@ -47,15 +42,14 @@ namespace Imperium\View {
          * View constructor.
          *
          * @param string $view_dir
-         * @param string $cache_dir
          *
+         * @param array $config
          */
-        public function __construct(string $view_dir, string $cache_dir = '')
+        public function __construct(string $view_dir,array $config = [])
         {
             $this->view_dir = $view_dir;
-            $this->cache_dir = $cache_dir;
             $this->loader = new Twig_Loader_Filesystem($this->view_dir);
-            $this->twig = def($cache_dir) ? new Twig_Environment($this->loader,['cache' => $this->cache_dir]) : new Twig_Environment($this->loader);
+            $this->twig = new Twig_Environment($this->loader,$config);
         }
 
 
@@ -79,22 +73,7 @@ namespace Imperium\View {
             return $this->twig()->render($name,$args);
         }
 
-        /**
-         *
-         * Enable or disable the cache
-         *
-         * @method cache
-         *
-         * @param bool $enable The option to enable the cache
-         * @param string $cache_dir The cache directory
-         *
-         * @return View
-         *
-         */
-        public function cache(bool $enable,string $cache_dir = ''): View
-        {
-            return  $enable ? new static($this->view_dir,$cache_dir) : new static($this->view_dir);
-        }
+
 
         /**
          *

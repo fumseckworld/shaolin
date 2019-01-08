@@ -8,6 +8,7 @@ use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Json\Json;
 use Imperium\Query\Query;
+use Imperium\Router\Router;
 use Imperium\Tables\Table;
 use Imperium\Users\Users;
 use Imperium\Model\Model;
@@ -23,6 +24,29 @@ use Whoops\Run;
 class AppTest extends DatabaseTest
 {
 
+
+    public function test_url_methods()
+    {
+
+        $route = new Router('','','');
+
+        $route->add('/',function (){},'home','GET');
+        $route->add('/bedrooms',function (){},'bedrooms','GET');
+        $route->add('/salon',function (){},'salon','GET');
+
+        $this->assertEquals('/salon',url('salon'));
+        $this->assertEquals('/',url('home'));
+        $this->assertEquals('/bedrooms',url('bedrooms'));
+
+        $this->assertIsCallable(method('salon'));
+        $this->assertIsCallable(method('home'));
+        $this->assertIsCallable(method('bedrooms'));
+        $this->expectException(Exception::class);
+        url('a');
+        url('b');
+        method('a');
+        method('b');
+    }
     public function test_quote()
     {
         $word = "l'agent à été l'as du voyage d'affaire`";
@@ -57,22 +81,9 @@ class AppTest extends DatabaseTest
         $form = secure_register_form('/', '127.0.0.a1', '127.0.0.1', 'username', 'username will be use','username can be empty', 'email', 'email will be use', 'email can be empty', 'password', 'password will be use', 'password not be empty', 'confirm the password','create account', 'register', true,['fr' => 'french','en' => 'English' ],
 'select', 'lang will be use','select a lang', 'select a time zone', 'time zone will be use','time zone','az','btn btn-primary', fa('fas','fa-key'), fa('fas','fa-user'), fa('fas','fas-envelope'),fa('fas','fa-user-plus'), fa('fas', 'fa-globe'), '');
 
-
         $this->assertEquals('',$form);
     }
 
-    public function test_apps()
-    {
-
-        $mysql = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,'dump','base','views',[],[]);
-        $pgsql = apps(Connect::POSTGRESQL,'postgres','zen','postgres',Connect::LOCALHOST,'dump','base','views',[],[]);
-        $sqlite = apps(Connect::SQLITE,'','zen.sqlite3','',Connect::LOCALHOST,'dump','base','views',[],[]);
-
-        $this->assertInstanceOf(Imperium::class,$mysql);
-        $this->assertInstanceOf(Imperium::class,$pgsql);
-        $this->assertInstanceOf(Imperium::class,$sqlite);
-
-    }
     public function test_execute()
     {
         $this->assertTrue(execute($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));

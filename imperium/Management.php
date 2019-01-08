@@ -615,10 +615,11 @@ namespace Imperium {
          * @param  Connect $connect The connection to the base
          * @param  string $current_table The current table
          * @param string $views_dir The views dir path
+         * @param array $twig_config
          * @param  array $hidden_tables All hidden tables in current base
          * @param  array $hidden_bases All hidden bases for the drivers
          */
-        public function __construct(Connect $connect,string $current_table,string $views_dir,array $hidden_tables, array $hidden_bases);
+        public function __construct(Connect $connect,string $current_table,string $views_dir,array $twig_config, array $hidden_tables, array $hidden_bases);
 
         // GETTER
 

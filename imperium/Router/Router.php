@@ -130,6 +130,12 @@ namespace Imperium\Router {
         const MVC_SEPARATOR = '@';
 
         /**
+         * @var Collection
+         */
+        private static $roots;
+
+
+        /**
          *
          * The url
          *
@@ -209,8 +215,12 @@ namespace Imperium\Router {
 
             $this->url           = $url;
 
+            self::$roots        = collection();
+
             $this->namespace = $namespace;
         }
+
+
 
         /**
          *
@@ -366,6 +376,9 @@ namespace Imperium\Router {
             equal($method,self::METHOD_GET) ? $this->get_named->add($name) : $this->post_named->add($name);
 
             $this->routes->double($method,[self::URL_INDEX => $url,self::CALLABLE_INDEX => $callable,self::NAME_INDEX => $name]);
+
+            self::$roots->double($method,[self::URL_INDEX => $url,self::CALLABLE_INDEX => $callable,self::NAME_INDEX => $name]);
+
             if ($with)
             {
                 different(length($args),length($regex),true,"They are missing values");
@@ -374,6 +387,58 @@ namespace Imperium\Router {
                     $this->with($v,$regex[$k]);
             }
             return $this;
+        }
+
+        /**
+         *
+         * Get the url route by its name
+         *
+         * @param string $name The route name
+         * @param string $method The route method
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public static function url(string $name ,$method = self::METHOD_GET): string
+        {
+            foreach (self::$roots->get($method) as $route)
+            {
+                $x      = collection($route);
+                $url    = $x->get(self::URL_INDEX);
+                $i      = $x->get(self::NAME_INDEX);
+
+                if (equal($name,$i))
+                    return $url;
+            }
+            throw new Exception('The url was not found');
+        }
+
+        /**
+         *
+         * Get the route callable by the route name
+         *
+         * @param string $name The route name
+         * @param string $method The route method
+         *
+         * @return callable
+         *
+         * @throws Exception
+         *
+         */
+        public static function callback(string $name,string $method = self::METHOD_GET): callable
+        {
+            foreach (self::$roots->get($method) as $route)
+            {
+                $x          = collection($route);
+                $callback   = $x->get(self::CALLABLE_INDEX);
+                $i          = $x->get(self::NAME_INDEX);
+
+                if (equal($name,$i))
+                    return $callback;
+            }
+            throw new Exception('The callback was not found');
         }
 
         /**

@@ -60,26 +60,6 @@ class ViewTest extends TestCase
     }
 
     /**
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    public function test_enable_cache()
-    {
-       $this->assertNotEmpty($this->view->cache(true,$this->cache)->load($this->name));
-    }
-
-    /**
-     * @throws \Twig_Error_Loader
-     * @throws \Twig_Error_Runtime
-     * @throws \Twig_Error_Syntax
-     */
-    public function test_disable_cache()
-    {
-        $this->assertNotEmpty($this->view->cache(false)->load($this->name));
-    }
-
-    /**
      *
      */
     public  function test_instance()

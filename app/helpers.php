@@ -3,7 +3,7 @@
 use Faker\Generator;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
-use Imperium\Route\Route;
+use Imperium\Router\Router;
 use Whoops\Run;
 use Carbon\Carbon;
 use Imperium\Imperium;
@@ -100,18 +100,18 @@ if (not_exist('apps'))
      * @param  string $dump_path The dump directory path
      * @param  string $current_table The current table
      * @param string $views_dir
+     * @param array $twig_config
      * @param  array $hidden_tables All hidden tables
      * @param  array $hidden_bases All hidden bases
      *
      * @return Imperium
      *
      * @throws Exception
-     *
      */
-    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $views_dir,array $hidden_tables,array $hidden_bases): Imperium
+    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
-        return imperium($connexion,$current_table,$views_dir,$hidden_tables,$hidden_bases);
+        return imperium($connexion,$current_table,$views_dir,$twig_config,$hidden_tables,$hidden_bases);
     }
 }
 
@@ -965,7 +965,7 @@ if (not_exist('tables_select'))
      * @param  array $hidden The hidden tables
      * @param  string $url_prefix The url prefix
      * @param  string $csrf The csrf field
-     * @param  string $separator The url separtor
+     * @param  string $separator The url separator
      *
      * @return string
      *
@@ -1164,7 +1164,6 @@ if (not_exist('get_records'))
      * @param  int $current_page The current page
      * @param  int $limit_per_page The limit
      * @param  Connect $connect The connexion to the base
-     * @param  bool $framework To change url search generation
      * @param  string $key The key
      * @param  string $order_by The order by
      *
@@ -1541,22 +1540,23 @@ if (not_exist('get'))
     }
 }
 
-if (not_exist('callback'))
+if (not_exist('method'))
 {
     /**
      *
      * Return the route callable
      *
      * @param string $name
+     * @param string $method
      *
      * @return callable
      *
      * @throws Exception
      *
      */
-    function callback(string $name): callable
+    function method(string $name,string $method = Router::METHOD_GET): callable
     {
-        return Route::callback($name);
+        return Router::callback($name,$method);
     }
 }
 
@@ -1567,22 +1567,18 @@ if (not_exist('url'))
      * Return a route url by use it's name
      *
      * @param string $name The route name
+     * @param string $method The route method
      *
      * @return string
      *
      * @throws Exception
-     *
      */
-    function url(string $name): string
+    function url(string $name,string $method = Router::METHOD_GET): string
     {
-        return Route::url($name);
+        return Router::url($name,$method);
     }
 }
 
-if (not_exist(''))
-{
-
-}
 if (not_exist('files'))
 {
     /**
@@ -2557,15 +2553,16 @@ if (not_exist('imperium'))
      * @param  Connect $connect [description]
      * @param  string $current_table [description]
      * @param string $views_dir
+     * @param array $twig_config
      * @param  array $hidden_tables [description]
      * @param  array $hidden_bases [description]
      *
      * @return Imperium [description]
      * @throws Exception
      */
-    function imperium(Connect $connect,string $current_table,string $views_dir,array $hidden_tables, array $hidden_bases): Imperium
+    function imperium(Connect $connect,string $current_table,string $views_dir, array $twig_config,array $hidden_tables, array $hidden_bases): Imperium
     {
-        return new Imperium($connect,$current_table,$views_dir,$hidden_tables,$hidden_bases );
+        return new Imperium($connect,$current_table,$views_dir,$twig_config,$hidden_tables,$hidden_bases );
     }
 }
 
