@@ -210,6 +210,7 @@ use Imperium\Import\Import;
         {
             return (new Import($this->connexion, $sql_file_path,$base))->import();
         }
+
         /**
          *
          * Return the primary key
@@ -243,7 +244,7 @@ use Imperium\Import\Import;
          */
         public function edit(int $id,string $action,string $form_id,string $submit_text,string $submit_class): string
         {
-            return form($action,$form_id)->generate(2,$this->table->current(),$this->table,$submit_text,$submit_class,'','',Form::EDIT,$id);
+            return form($action,$form_id)->generate(2,$this->current,$this->table,$submit_text,$submit_class,'','',Form::EDIT,$id);
         }
 
         /**
@@ -264,7 +265,7 @@ use Imperium\Import\Import;
          */
         public function create(string $action,string $form_id,string $submit_text,string $submit_class): string
         {
-            return form($action,$form_id)->generate(2,$this->table->current(),$this->table,$submit_text,$submit_class,'','');
+            return form($action,$form_id)->generate(2,$this->current,$this->table,$submit_text,$submit_class,'','');
         }
 
         /**
@@ -457,8 +458,7 @@ use Imperium\Import\Import;
          */
         public function get(): array
         {
-            if (not_def($this->column,$this->expected,$this->condition))
-                throw new Exception("The where clause was not found");
+            is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
 
             return def($this->only) ? $this->sql->mode(Query::SELECT)->columns($this->only)->where($this->column,$this->condition,$this->expected)->get() : $this->sql->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
@@ -510,7 +510,7 @@ use Imperium\Import\Import;
             foreach ($this->columns() as  $column)
                 $data->add($this->data->get($column),$column);
 
-            return $this->insert($data->collection(),$this->current);
+            return $this->insert($data->collection());
         }
         /**
          *
@@ -660,7 +660,9 @@ use Imperium\Import\Import;
         public function where(string $column,string $condition,$expected): Model
         {
             $this->column = $column;
+
             $this->condition = $condition;
+
             $this->expected = $expected;
 
             return $this;
@@ -688,7 +690,6 @@ use Imperium\Import\Import;
          * Insert data in the table
          *
          * @param array $data
-         * @param string $table
          * @param array $ignore
          *
          * @return bool
@@ -696,9 +697,9 @@ use Imperium\Import\Import;
          * @throws Exception
          *
          */
-        public function insert(array $data,string $table ,array $ignore = []): bool
+        public function insert(array $data,array $ignore = []): bool
         {
-            return $this->table->save($data,$table,$ignore);
+            return $this->table->save($data,$this->current,$ignore);
         }
 
         /**
@@ -766,7 +767,6 @@ use Imperium\Import\Import;
          *
          * @param int $id
          * @param array $data
-         * @param string $table
          * @param array $ignore
          *
          * @return bool
@@ -774,9 +774,9 @@ use Imperium\Import\Import;
          * @throws Exception
          *
          */
-        public function update(int $id,array $data,string $table,array $ignore =[]): bool
+        public function update(int $id,array $data,array $ignore =[]): bool
         {
-            return $this->table->update($id,$data,$table,$ignore);
+            return $this->table->update($id,$data,$this->current,$ignore);
         }
 
         /**
