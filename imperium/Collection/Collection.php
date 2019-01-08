@@ -91,7 +91,13 @@ namespace Imperium\Collection {
             return json($filename)->create($this->data);
         }
 
+        public function double(string $prefix,$value,string $key = '')
+        {
+            def($key) ?  $this->data[$prefix][$key] = $value : $this->data[$prefix][] = $value;
 
+           return $this;
+
+        }
         /**
         *
         * Define the new data

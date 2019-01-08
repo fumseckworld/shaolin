@@ -42,7 +42,7 @@ class ViewTest extends TestCase
     {
         $content = $this->view->load($this->name);
         $this->assertNotEmpty($content);
-        $this->assertEquals('welcome',$content);
+        $this->assertEquals('show ',$content);
 
     }
 

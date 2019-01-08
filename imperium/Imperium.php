@@ -948,13 +948,19 @@ namespace Imperium {
         {
             return $this->view;
         }
+
         /**
+         *
+         * @param string $url
+         * @param string $namespace
+         *
          * @return Router
          */
-        public function router(): Router
+        public function router(string $url,string $namespace): Router
         {
-            return new Router();
+            return new Router($url, $namespace);
         }
+
         /**
          *
          * Management iof the array
@@ -979,5 +985,6 @@ namespace Imperium {
         {
             return $validate ? $this->form->validate() : $this->form;
         }
+
     }
 }

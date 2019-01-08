@@ -586,9 +586,13 @@ namespace Imperium {
         public function view(): View;
 
         /**
+         *
+         * @param string $url
+         * @param string $namespace
+         *
          * @return Router
          */
-        public function router(): Router;
+        public function router(string $url,string $namespace): Router;
 
         /**
          *

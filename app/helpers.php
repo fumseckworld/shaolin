@@ -1578,6 +1578,11 @@ if (not_exist('url'))
         return Route::url($name);
     }
 }
+
+if (not_exist(''))
+{
+
+}
 if (not_exist('files'))
 {
     /**
