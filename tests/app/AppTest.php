@@ -7,11 +7,12 @@ use Imperium\Collection\Collection;
 use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Json\Json;
+use Imperium\Model\Model;
 use Imperium\Query\Query;
 use Imperium\Router\Router;
 use Imperium\Tables\Table;
 use Imperium\Users\Users;
-use Imperium\Model\Model;
+use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Os;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Browser;
@@ -54,7 +55,29 @@ class AppTest extends DatabaseTest
         $this->assertInstanceOf(Imperium::class,$a);
     }
 
+    public function test_not_exist()
+    {
+        $this->assertTrue(not_exist(faker()->name));
+        $this->assertFalse(not_exist('def'));
+    }
+    public function test_ago()
+    {
+        $this->assertNotEmpty(ago('fr',now()));
+        $this->assertNotEmpty(ago('en',now()));
+        $this->assertNotEmpty(ago('de',now()));
+    }
 
+    public function test_image()
+    {
+        $this->assertInstanceOf(ImageManager::class,image());
+        $this->assertInstanceOf(ImageManager::class,image("imagick"));
+    }
+    public function test_loaded()
+    {
+        $this->assertTrue(mysql_loaded());
+        $this->assertTrue(pgsql_loaded());
+        $this->assertTrue(sqlite_loaded());
+    }
     public function test_quote()
     {
         $word = "l'agent à été l'as du voyage d'affaire`";
@@ -136,6 +159,29 @@ class AppTest extends DatabaseTest
 
 
 
+    }
+
+
+
+    public function test_today_and_future()
+    {
+        $this->assertNotEmpty(today());
+        $this->assertNotEmpty(future('second',1));
+        $this->assertNotEmpty(future('seconds',1));
+        $this->assertNotEmpty(future('minute',1));
+        $this->assertNotEmpty(future('minutes',1));
+        $this->assertNotEmpty(future('hour',1));
+        $this->assertNotEmpty(future('hours',1));
+        $this->assertNotEmpty(future('day',1));
+        $this->assertNotEmpty(future('days',1));
+        $this->assertNotEmpty(future('week',1));
+        $this->assertNotEmpty(future('weeks',1));
+        $this->assertNotEmpty(future('mouth',1));
+        $this->assertNotEmpty(future('year',1));
+        $this->assertNotEmpty(future('years',1));
+        $this->assertNotEmpty(future('centuries',1));
+        $this->assertNotEmpty(future('century',1));
+        $this->assertNotEmpty(future('a',1));
     }
 
     public function test_lines()

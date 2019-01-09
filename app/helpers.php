@@ -2553,43 +2553,6 @@ if (not_exist('retry'))
     }
 }
 
-if (not_exist('icon'))
-{
-    /**
-     * build and icon bar
-     *
-     * @param string $ulClass
-     * @param string $linkClass
-     * @param string $iconClass
-     * @return Icon
-     */
-    function icon(string $ulClass = 'list-inline',string $linkClass = 'link',string $iconClass = 'icon'): Icon
-    {
-        return Icon::start()->setIconClass($iconClass)->setLinkClass($linkClass)->startUl($ulClass);
-    }
-}
-
-if (not_exist('canvas'))
-{
-    /**
-     * start canvas
-     *
-     * @param string $id
-     * @param string $gridClass
-     * @param string $rowClass
-     * @param string $position
-     * @param string $ulClass
-     * @param string $linkClass
-     *
-     * @return Canvas
-     */
-    function canvas(string $id,string $gridClass = 'col',string $rowClass = 'row',string $position = 'navmenu-fixed-right',string $ulClass = 'list-inline offCanvasLinkBackground',string $linkClass = 'offCanvasLink'): Canvas
-    {
-        return Canvas::start()->setGridClass($gridClass)->setRowClass($rowClass)->setPosition($position)->setId($id)->setLinkClass($linkClass)->startUl($ulClass);
-    }
-}
-
-
 if(not_exist('fa'))
 {
     /**
@@ -2788,7 +2751,7 @@ if (not_exist('image'))
      *
      * @return ImageManager
      */
-    function image(string $driver): ImageManager
+    function image(string $driver = 'gd'): ImageManager
     {
         $config = array('driver' => $driver);
         return new ImageManager($config);
