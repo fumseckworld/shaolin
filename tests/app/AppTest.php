@@ -176,7 +176,8 @@ class AppTest extends DatabaseTest
         $this->assertNotEmpty(future('days',1));
         $this->assertNotEmpty(future('week',1));
         $this->assertNotEmpty(future('weeks',1));
-        $this->assertNotEmpty(future('mouth',1));
+        $this->assertNotEmpty(future('month',1));
+        $this->assertNotEmpty(future('months',1));
         $this->assertNotEmpty(future('year',1));
         $this->assertNotEmpty(future('years',1));
         $this->assertNotEmpty(future('centuries',1));
