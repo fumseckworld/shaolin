@@ -267,15 +267,15 @@ class ModelTest extends DatabaseTest
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
-                'alive' => true_or_false(true),
+                'alive' => true_or_false(),
                 'status' =>  faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date(),
             ];
 
-            $this->assertTrue($this->mysql_model->insert($data,$this->table));
-            $this->assertTrue($this->pgsql_model->insert($data,$this->table));
-            $this->assertTrue($this->sqlite_model->insert($data,$this->table));
+            $this->assertTrue($this->mysql_model->insert($data));
+            $this->assertTrue($this->pgsql_model->insert($data));
+            $this->assertTrue($this->sqlite_model->insert($data));
         }
 
         $this->assertCount($number,$this->mysql_model->all());
@@ -433,14 +433,14 @@ class ModelTest extends DatabaseTest
             'age' => faker()->numberBetween(1,100),
             'phone' => faker()->randomNumber(8),
             'sex' => faker()->firstNameMale,
-            'alive' => true_or_false(true),
+            'alive' => true_or_false(),
             'status' => faker()->text(20),
             'days' => faker()->date(),
             'date' => faker()->date(),
         ];
-        $this->assertTrue($this->mysql_model->update(4,$data,$this->table,[]));
-        $this->assertTrue($this->pgsql_model->update(4,$data,$this->table,[]));
-        $this->assertTrue($this->sqlite_model->update(4,$data,$this->table,[]));
+        $this->assertTrue($this->mysql_model->update(4,$data));
+        $this->assertTrue($this->pgsql_model->update(4,$data));
+        $this->assertTrue($this->sqlite_model->update(4,$data));
     }
 
 
@@ -465,9 +465,9 @@ class ModelTest extends DatabaseTest
                 'date' => faker()->date(),
             ];
 
-            $this->assertTrue($this->mysql_model->insert($data,$this->table,[]));
-            $this->assertTrue($this->pgsql_model->insert($data,$this->table,[]));
-            $this->assertTrue($this->sqlite_model->insert($data,$this->table,[]));
+            $this->assertTrue($this->mysql_model->insert($data));
+            $this->assertTrue($this->pgsql_model->insert($data));
+            $this->assertTrue($this->sqlite_model->insert($data));
 
         }
 
