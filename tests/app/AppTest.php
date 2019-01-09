@@ -47,6 +47,14 @@ class AppTest extends DatabaseTest
         method('a');
         method('b');
     }
+
+    public function test_apps()
+    {
+        $a = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,'dump','imperium','views',[],[],[]);
+        $this->assertInstanceOf(Imperium::class,$a);
+    }
+
+
     public function test_quote()
     {
         $word = "l'agent à été l'as du voyage d'affaire`";

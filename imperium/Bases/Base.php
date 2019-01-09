@@ -127,6 +127,27 @@ use Imperium\Tables\Table;
 
         /**
          *
+         * Remove bases if exist
+         *
+         * @param string[]  $bases
+         *
+         * @return bool
+         *
+         * @throws Exception
+         */
+        public function remove(string ...$bases): bool
+        {
+            $data = collection();
+
+            foreach ($bases as $base)
+            {
+                if ($this->exist($base))
+                    $data->add($this->drop($base));
+            }
+            return $data->not_exist(false);
+        }
+        /**
+         *
          * Rename a base
          *
          * @method rename
@@ -142,8 +163,11 @@ use Imperium\Tables\Table;
         public function rename(string $base,string $new_name): bool
         {
             $this->copy($new_name);
+
             $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->dump_path());
+
             $table   = table($connect,'');
+
             return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($base);
         }
 
@@ -261,8 +285,7 @@ use Imperium\Tables\Table;
                 {
                     if ($this->not_exist($x))
                         is_false($this->create($x),true,"Failed to create the database : $x");
-                    else
-                        throw new Exception("Cannot create the base $x, the base already exist");
+
                 }
             }
 
@@ -293,42 +316,46 @@ use Imperium\Tables\Table;
          *
          * @method create
          *
-         * @param  string $name The base name
-         *
+         * @param string[] $names
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function create(string $name): bool
+        public function create(string ...$names): bool
         {
             if ($this->connexion->sqlite())
             {
-                File::remove_if_exist($name);
+                $data = collection();
+                foreach ($names as $name)
+                {
+                    File::remove_if_exist($name);
 
-                new PDO("sqlite:$name",null,null);
+                    new PDO("sqlite:$name",null,null);
+                    $data->add(File::exist($name));
+                }
 
-                return File::exist($name);
+                return $data->not_exist(false);
             }
 
-
-            if($this->exist($name))
-                $this->drop($name);
 
             $not_define = not_def($this->collation,$this->charset);
 
-            switch ($this->driver)
+            $data =  collection();
+
+            foreach ($names as $name)
             {
-                case Connect::MYSQL:
-                    return $not_define ? $this->connexion->execute("CREATE DATABASE $name") :  $this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';");
-                break;
-                case Connect::POSTGRESQL:
-                    return $not_define ? $this->connexion->execute("CREATE DATABASE $name  TEMPLATE template0") :  $this->connexion->execute("CREATE DATABASE  $name ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;");
-                break;
-                default:
-                    return false;
-                break;
+                switch ($this->driver)
+                {
+                    case Connect::MYSQL:
+                         $not_define ? $data->add($this->connexion->execute("CREATE DATABASE $name;")) :  $data->add($this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';"));
+                    break;
+                    case Connect::POSTGRESQL:
+                        $not_define ? $data->add($this->connexion->execute("CREATE DATABASE $name  TEMPLATE template0;")):  $data->add($this->connexion->execute("CREATE DATABASE  $name ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;"));
+                    break;
+                }
             }
+
+            return $data->not_exist(false);
         }
 
         /**
@@ -392,11 +419,10 @@ use Imperium\Tables\Table;
          */
         public function drop(string $name): bool
         {
-
             if ($this->connexion->sqlite())
                 return File::exist($name) ? File::remove($name): false;
 
-            return $this->connexion->execute("DROP DATABASE $name");
+            return $this->exist($name) ? $this->connexion->execute("DROP DATABASE $name") : false;
         }
 
         /**
@@ -426,7 +452,7 @@ use Imperium\Tables\Table;
          */
         public function exist(string $base): bool
         {
-            return  $this->connexion->sqlite() ? File::exist($base) : collection($this->all)->exist($base);
+            return  $this->connexion->sqlite() ? File::exist($base) : collection($this->show())->exist($base);
         }
 
 

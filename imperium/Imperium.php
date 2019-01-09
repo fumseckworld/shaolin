@@ -951,14 +951,18 @@ namespace Imperium {
 
         /**
          *
+         * Get the router
+         *
          * @param string $url
          * @param string $namespace
+         * @param string $method
          *
          * @return Router
+         *
          */
-        public function router(string $url,string $namespace): Router
+        public function router(string $url,string $namespace,string $method = ''): Router
         {
-            return new Router($url, $namespace);
+            return new Router($url, $namespace,$method);
         }
 
         /**

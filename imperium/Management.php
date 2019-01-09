@@ -15,6 +15,7 @@ namespace Imperium {
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Imperium\View\View;
+    use Sinergi\BrowserDetector\Device;
 
     interface Management
     {
@@ -589,10 +590,12 @@ namespace Imperium {
          *
          * @param string $url
          * @param string $namespace
+         * @param string $method
          *
          * @return Router
+         *
          */
-        public function router(string $url,string $namespace): Router;
+        public function router(string $url,string $namespace,string $method = ''): Router;
 
         /**
          *

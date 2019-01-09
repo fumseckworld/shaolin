@@ -111,7 +111,7 @@ if (not_exist('apps'))
     function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
-        return imperium($connexion,$current_table,$views_dir,$twig_config,$hidden_tables,$hidden_bases);
+        return new Imperium($connexion,$current_table,$views_dir,$twig_config,$hidden_tables,$hidden_bases );
     }
 }
 
@@ -2223,20 +2223,17 @@ if (not_exist('remove_bases'))
      *
      * @method remove_bases
      *
-     * @param  Base         $base      The instance of base
-     * @param  string[]       $databases The bases to remove
+     * @param  Base $base The instance of base
+     * @param string[] $bases
      *
      * @return bool
      *
      * @throws Exception
      *
      */
-    function remove_bases(Base $base,string ...$databases): bool
+    function remove_bases(Base $base,string ...$bases): bool
     {
-        foreach ($databases as $x)
-            is_not_true($base->drop($x),true,"Failed to remove the database : $x");
-
-        return true;
+        return $base->remove($bases);
     }
 }
 
@@ -2486,32 +2483,7 @@ if (not_exist('add_user'))
     }
 }
 
-if (not_exist('add_base'))
-{
-    /**
-     *
-     * Create a new base
-     *
-     * @method add_bases
-     *
-     * @param  Base $base The base instance
-     * @param  string $collation The base collation
-     * @param  string $charset The base charset
-     * @param  string[] $bases The bases names
-     *
-     * @return bool
-     *
-     * @throws Exception
-     *
-     */
-    function add_bases(Base $base,string $collation,string $charset,string ...$bases): bool
-    {
-        foreach ($bases as $x)
-             is_false($base->set_collation($collation)->set_charset($charset)->create($x),true,"Failed to create database");
 
-        return true;
-    }
-}
 if (not_exist('jasnyCss'))
 {
     function jasnyCss(string $version = '3.1.3')
@@ -2543,28 +2515,6 @@ if (not_exist('jasnyJs'))
     }
 }
 
-if (not_exist('imperium'))
-{
-    /**
-     *
-     *
-     * @method imperium
-     *
-     * @param  Connect $connect [description]
-     * @param  string $current_table [description]
-     * @param string $views_dir
-     * @param array $twig_config
-     * @param  array $hidden_tables [description]
-     * @param  array $hidden_bases [description]
-     *
-     * @return Imperium [description]
-     * @throws Exception
-     */
-    function imperium(Connect $connect,string $current_table,string $views_dir, array $twig_config,array $hidden_tables, array $hidden_bases): Imperium
-    {
-        return new Imperium($connect,$current_table,$views_dir,$twig_config,$hidden_tables,$hidden_bases );
-    }
-}
 
 if (not_exist('retry'))
 {

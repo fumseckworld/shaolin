@@ -67,33 +67,35 @@ class BaseTest extends DatabaseTest
     {
         $base = 'shaolin';
 
+        $this->assertTrue($this->mysql()->bases()->remove('alex','marion','sandra'));
+        $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->set_collation('utf8_general_ci')->create('alex','marion','sandra'));
+        $this->assertTrue($this->mysql()->bases()->remove('alex','marion','sandra'));
+
+        $this->assertTrue($this->postgresql()->bases()->remove('alex','marion','sandra'));
+        $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->set_collation('C')->create('alex','marion','sandra'));
+        $this->assertTrue($this->postgresql()->bases()->remove('alex','marion','sandra'));
+
         $this->assertTrue($this->mysql()->bases()->create($base));
         $this->assertTrue($this->mysql()->bases()->drop($base));
 
-        $this->assertTrue($this->mysql()->bases()->create($base));
-        $this->assertTrue(remove_bases($this->mysql()->bases(),$base));
 
         $this->assertTrue($this->sqlite()->bases()->create($base));
         $this->assertTrue($this->sqlite()->bases()->drop($base));
 
         $this->assertTrue($this->postgresql()->bases()->create($base));
-        $this->assertTrue(remove_bases($this->postgresql()->bases(),$base));
-
-        $this->assertTrue($this->postgresql()->bases()->create($base));
         $this->assertTrue($this->postgresql()->bases()->drop($base));
-
-        $this->assertTrue($this->sqlite()->bases()->create($base));
-        $this->assertTrue(remove_bases($this->sqlite()->bases(),$base));
-
-        $this->assertTrue($this->postgresql()->bases()->set_charset('UTF8')->set_collation('C')->create($base));
-        $this->assertTrue($this->postgresql()->bases()->drop($base));
-
-        $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->set_collation('utf8_general_ci')->create($base));
-        $this->assertTrue($this->mysql()->bases()->drop($base));
-
 
     }
 
+    public function test_hidden()
+    {
+        $this->assertEquals(['zen'],$this->mysql()->bases()->hidden_bases());
+        $this->assertEquals(['zen'],$this->postgresql()->bases()->hidden_bases());
+
+        $this->assertNotEmpty($this->mysql()->bases()->hidden_tables());
+        $this->assertNotEmpty($this->postgresql()->bases()->hidden_tables());
+        $this->assertNotEmpty($this->sqlite()->bases()->hidden_tables());
+    }
     /**
      * @throws \Exception
      */
