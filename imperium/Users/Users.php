@@ -3,62 +3,92 @@
 
 namespace Imperium\Users {
 
-
     use Exception;
     use Imperium\Connexion\Connect;
 
     /**
-     * Management of users
      *
-     * @package Imperium\Users
+     * Management of the users
      *
-     */
+     * @author Willy Micieli <micieli@laposte.net>
+     *
+     * @package imperium
+     *
+     * @version 4
+     *
+     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
+     *
+     **/
     class Users
     {
 
         /**
-         * user password
+         *
+         * The user password
          *
          * @var string
+         *
          */
         private $password;
 
         /**
-         * username
+         *
+         * The username
          *
          * @var string
+         *
          */
         private $username;
 
         /**
+         *
+         * The connexion
+         *
          * @var Connect
+         *
          */
         private $connexion;
 
         /**
+         *
+         * All  hidden users
+         *
          * @var array
+         *
          */
         private $hidden;
 
         /**
+         *
+         * The current driver
+         *
          * @var string
+         *
          */
         private $driver;
 
         /**
-         * @param string $user
          *
+         * Remove an user
+         *
+         * @param string[] $users
          * @return bool
          *
          * @throws Exception
          */
-        public function drop(string $user): bool
+        public function drop(string ...$users): bool
         {
             $driver = $this->driver;
 
             $this->check($driver);
 
-            return equal($driver,Connect::MYSQL) ?  $this->connexion->execute("DROP USER '$user'@'localhost'") :  $this->connexion->execute("DROP ROLE $user");
+            $data = collection();
+
+            foreach ($users as $user)
+                  $this->connexion->mysql() ?  $data->add($this->connexion->execute("DROP USER '$user'@'localhost'")) :  $data->add($this->connexion->execute("DROP ROLE $user"));
+
+
+            return $data->not_exist(false);
         }
 
 
@@ -77,11 +107,13 @@ namespace Imperium\Users {
         }
 
         /**
-         * Set hidden users
+         *
+         * Define all hidden users
          *
          * @param array $hidden
          *
          * @return Users
+         *
          */
         public function hidden(array $hidden): Users
         {
@@ -128,11 +160,13 @@ namespace Imperium\Users {
         }
 
         /**
-         * define username
          *
-         * @param string $name
+         * Set the username
+         *
+         * @param string $name The name
          *
          * @return Users
+         *
          */
         public function set_name(string $name): Users
         {
@@ -142,11 +176,13 @@ namespace Imperium\Users {
         }
 
         /**
-         * define user password
+         *
+         * Set the user password
          *
          * @param string $password
          *
          * @return Users
+         *
          */
         public function set_password(string $password): Users
         {
@@ -156,26 +192,37 @@ namespace Imperium\Users {
         }
 
         /**
+         *
+         * Create the user
+         *
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function create(): bool
         {
+            is_true(not_def($this->username,$this->password),true,"Missing values");
+
             $driver = $this->driver;
+
             $this->check($driver);
 
-            return equal($driver,Connect::MYSQL) ? $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password'") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password'");
+            return $this->connexion->mysql() ? $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password'") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password'");
         }
 
         /**
+         *
+         * Check if the user exist
+         *
          * @param string $user
          *
          * @return bool
          *
          * @throws Exception
+         *
          */
-        public function exist(string  $user): bool
+        public function exist(string $user): bool
         {
             return collection($this->show())->exist($user);
         }
@@ -193,6 +240,7 @@ namespace Imperium\Users {
         public function update_password(string $user, string $password): bool
         {
             $driver = $this->driver;
+
             $this->check($driver);
 
             return equal($driver,Connect::MYSQL) ? $this->connexion->execute("SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES") : $this->connexion->execute( "ALTER ROLE $user WITH PASSWORD '$password'");
@@ -200,23 +248,34 @@ namespace Imperium\Users {
 
 
         /**
+         *
          * User constructor.
          *
          * @param Connect $connect
+         *
          */
         public function __construct(Connect $connect)
         {
             $this->connexion = $connect;
+
             $this->driver = $connect->driver();
         }
 
         /**
-         * @param $driver
+         *
+         * Check if the driver can be have users
+         *
+         * @param string $driver
+         *
+         * @return Users
+         *
          * @throws Exception
          */
-        public function check($driver)
+        public function check(string $driver): Users
         {
-            not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The current driver is not supported");
+            not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The $driver driver has not users");
+
+            return $this;
         }
     }
 }
