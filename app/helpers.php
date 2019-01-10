@@ -607,11 +607,20 @@ if (not_exist('length'))
     }
 }
 
-if (not_exist('execute_query'))
+if (not_exist('twig'))
 {
-    function twig(string $views_path,string $cache_dir)
+    /**
+     *
+     * @param string $views_path
+     * @param array $options
+     *
+     * @return Twig_Environment
+     *
+     */
+    function twig(string $views_path,array $options): Twig_Environment
     {
-
+        $loader = new Twig_Loader_Filesystem($views_path);
+        return new Twig_Environment($loader,$options);
     }
 }
 if (not_exist('execute_query'))
@@ -1939,7 +1948,7 @@ if (not_exist('superior_or_equal'))
      * @return bool
      *
      * @throws Exception
-     *
+
      */
     function superior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
     {
@@ -2030,10 +2039,12 @@ if(not_exist('before_key'))
      *
      * @method array_prev
      *
-     * @param  array      $array The array
-     * @param  mixed      $key   The after key
+     * @param  array $array The array
+     * @param  mixed $key The after key
      *
      * @return mixed
+     *
+     * @throws Exception
      *
      */
     function before_key(array $array, $key)
@@ -2484,13 +2495,7 @@ if (not_exist('add_user'))
 }
 
 
-if (not_exist('jasnyCss'))
-{
-    function jasnyCss(string $version = '3.1.3')
-    {
-        return '<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/'.$version.'/css/jasny-bootstrap.min.css">';
-    }
-}
+
 
 if (not_exist('foundation'))
 {
@@ -2499,21 +2504,14 @@ if (not_exist('foundation'))
         return '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/foundation/'.$version.'/css/foundation.min.css"/>';
     }
 }
-if (not_exist('loadFontAwesome'))
+if (not_exist('awesome'))
 {
-    function fontAwesome(string $version = 'v5.0.8')
+    function awesome(string $version = 'v5.0.8')
     {
         return '<link rel="stylesheet" href="https://use.fontawesome.com/releases/'.$version.'/css/fontawesome.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/'.$version.'/css/solid.css">';
     }
 }
 
-if (not_exist('jasnyJs'))
-{
-    function jasnyJs(string $version ='3.1.3')
-    {
-        return '<script src="//cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/'.$version.'/js/jasny-bootstrap.min.js"></script>';
-    }
-}
 
 
 if (not_exist('retry'))
@@ -2529,7 +2527,7 @@ if (not_exist('retry'))
      * @throws Exception
      *
      */
-    function retry($times, callable $callback, $sleep = 0)
+    function retry(int $times, callable $callback, int $sleep = 0)
     {
         $times--;
         beginning:

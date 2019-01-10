@@ -17,6 +17,7 @@ use Sinergi\BrowserDetector\Os;
 use Sinergi\BrowserDetector\Device;
 use Sinergi\BrowserDetector\Browser;
 use Testing\DatabaseTest;
+use Twig_Environment;
 use Whoops\Run;
 
 /**
@@ -161,8 +162,18 @@ class AppTest extends DatabaseTest
 
     }
 
+    public function test_twig()
+    {
+        $this->assertInstanceOf(Twig_Environment::class,twig('views',[]));
+    }
 
-
+    public function test_awesome()
+    {
+        $this->assertNotEmpty(awesome());
+        $this->assertNotEmpty(foundation());
+        $this->assertNotEmpty(bootswatch('lumen'));
+        $this->assertNotEmpty(bootswatch('bootstrap'));
+    }
     public function test_today_and_future()
     {
         $this->assertNotEmpty(today());
