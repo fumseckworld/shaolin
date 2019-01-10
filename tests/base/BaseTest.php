@@ -65,7 +65,7 @@ class BaseTest extends DatabaseTest
      */
     public function test_create()
     {
-        $base = 'shaolin';
+        $base = 'application';
 
         $this->assertTrue($this->mysql()->bases()->remove('alex','marion','sandra'));
         $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->set_collation('utf8_general_ci')->create('alex','marion','sandra'));

@@ -18,6 +18,8 @@
     * [**Json**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php)
     * [**Query**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php)
     * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
+    * [**Views**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php)
+    * [**Router**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php)
 * [**Coverage**](https://imperium.fumseck.eu)
 * [**Discord**](https://discord.gg/fUPyd9K)
 * [**Trello**](https://trello.com/b/28tMSSDG/imperium)
@@ -60,6 +62,38 @@ Your help are welcome.
 
 Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more simply.
 
+# [View](https://git.fumseck.eu/cgit/imperium/tree/imperium/View/View.php) [Coverage](https://imperium.fumseck.eu/imperium/View/View.php.html)
+
+| Method                | arguments | return                           |   do                                                               |    
+|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
+|  __construct          |  string   | An instance of the view          | Save the data                                                      |
+|  load                 |  mixed    | Mixed                            | Return the view content                                            |
+|  add_global           |  mixed    | An instance of the view          | Add a global value                                                 |
+|  add_path             |  mixed    | An instance of the view          | Add a view path                                                    |
+|  globals              |  void     | An array                         | Return the global values                                           |
+|  paths                |  void     | An array                         | Return the views paths                                             |
+|  twig                 |  void     | An instance of twig              | Return the twig instance                                           |
+|  loader               |  void     | An instance of the loader        | Return the loader instance                                         |
+     
+# [Router](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php) [Coverage](https://imperium.fumseck.eu/imperium/Router/Router.php.html)
+
+The controller and method separator it's **@**
+
+The url **params** must be  prefixed by **:**   
+
+The namespace it's the namespace of your application class
+ 
+| Method                | arguments | return                           |   do                                                               |    
+|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
+|  __construct          |  string   | An instance of the router        | Save the data                                                      |
+|  run                  |  void     | Mixed                            | Call the callable                                                  |
+|  with                 |  string   | An instance of the router        | Add a regex for a parameter                                        |
+|  add                  |  mixed    | An instance of the router        | Add a route                                                        |
+|  ::url                |  string   | A string                         | Return the route url                                               |
+|  ::callback           |  string   | A string                         | Return the route callback                                          |
+|  routes               |  string   | An array                         | Return the route saved                                             |
+        
+        
 # [Base](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php) [Coverage](https://imperium.fumseck.eu/imperium/Bases/Base.php.html)
 
 | Method                | arguments | return                           |   do                                                               |    

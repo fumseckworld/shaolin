@@ -2,6 +2,7 @@
 
 namespace Imperium {
 
+    use Dotenv\Dotenv;
     use Exception;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
@@ -99,6 +100,31 @@ namespace Imperium {
          * @var View
          */
         private $view;
+        /**
+         * @var string
+         */
+        private $views_dir;
+        /**
+         * @var array
+         */
+        private $twig_config;
+        /**
+         * @var string
+         */
+        private $env_path;
+        /**
+         * @var array
+         */
+        private $hidden_tables;
+        /**
+         * @var array
+         */
+        private $hidden_bases;
+
+        /**
+         * @var Dotenv
+         */
+        private $env;
 
 
         /**
@@ -711,12 +737,13 @@ namespace Imperium {
          * @param  string $current_table The current table
          * @param string $views_dir
          * @param array $twig_config
+         * @param string $env_path
          * @param  array $hidden_tables All hidden tables in current base
          * @param  array $hidden_bases All hidden bases for the drivers
          *
          * @throws Exception
          */
-        public function __construct(Connect $connect,string $current_table,string $views_dir,array $twig_config,array $hidden_tables, array $hidden_bases)
+        public function __construct(Connect $connect,string $current_table,string $views_dir,array $twig_config,string $env_path,array $hidden_tables, array $hidden_bases)
         {
             $this->connect   = $connect;
             $this->driver    = $connect->driver();
@@ -729,9 +756,43 @@ namespace Imperium {
             $this->json      = new Json();
             $this->form      = new Form();
             $this->view      = new View($views_dir,$twig_config);
+            $this->views_dir = $views_dir;
+            $this->twig_config = $twig_config;
+            $this->env_path = $env_path;
+            $this->hidden_tables = $hidden_tables;
+            $this->hidden_bases = $hidden_bases;
+
+            $this->env  = Dotenv::create($this->env_path);
+            $this->env->load();
+
         }
 
 
+        /**
+         *
+         * Run the application
+         *
+         * @param Router $router
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function run(Router $router)
+        {
+            return $router->run();
+        }
+
+        /**
+         *
+         * @return Dotenv
+         *
+         */
+        public function env()
+        {
+            return $this->env;
+        }
         /**
          *
          * Management of json

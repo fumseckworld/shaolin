@@ -2,12 +2,10 @@
 
 namespace Testing\router;
 
-
-use GuzzleHttp\Psr7\Request;
 use Imperium\Router\Router;
-use PHPUnit\Framework\TestCase;
+use Testing\DatabaseTest;
 
-class RouterTest extends TestCase
+class RouterTest extends DatabaseTest
 {
 
 
@@ -16,9 +14,8 @@ class RouterTest extends TestCase
      */
     public function test_run()
     {
-        $request = new Request('GET','/');
 
-        $router = new Router($request->getUri()->getPath(),'Testing','GET');
+        $router = new Router('/','Testing','GET');
 
         $router->add('/',function (){return "salut";},"home",Router::METHOD_GET);
 
@@ -36,7 +33,7 @@ class RouterTest extends TestCase
 
         $this->assertCount(2,$router->routes(Router::METHOD_POST));
 
-        $this->assertEquals('salut',$router->run());
+        $this->assertEquals('salut',$this->mysql()->run($router));
 
         $router = new Router('show/50-mon-article','Testing','GET');
 

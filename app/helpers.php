@@ -100,6 +100,7 @@ if (not_exist('apps'))
      * @param  string $dump_path The dump directory path
      * @param  string $current_table The current table
      * @param string $views_dir
+     * @param string $env_path
      * @param array $twig_config
      * @param  array $hidden_tables All hidden tables
      * @param  array $hidden_bases All hidden bases
@@ -108,14 +109,31 @@ if (not_exist('apps'))
      *
      * @throws Exception
      */
-    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
+    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $env_path,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
-        return new Imperium($connexion,$current_table,$views_dir,$twig_config,$hidden_tables,$hidden_bases );
+        return new Imperium($connexion,$current_table,$views_dir,$twig_config,$env_path,$hidden_tables,$hidden_bases );
     }
 }
 
-if (not_exist('assign'))
+
+
+if (not_exist('env'))
+{
+    /**
+     *
+     * @param $variable
+     *
+     * @return array|false|string
+     *
+     */
+    function env($variable)
+    {
+        return getenv($variable);
+    }
+
+}
+    if (not_exist('assign'))
 {
     /**
      *
