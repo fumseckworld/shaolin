@@ -954,6 +954,7 @@ namespace Imperium\Tables {
          * @return string
          *
          * @throws Exception
+         *
          */
         private function detectPrimaryKey(): string
         {
@@ -982,7 +983,8 @@ namespace Imperium\Tables {
 
                 break;
             }
-            return '';
+
+            throw  new Exception('We have not found a primary key');
         }
 
         /**
@@ -998,12 +1000,7 @@ namespace Imperium\Tables {
          */
         public function primary_key(): string
         {
-            $primary = $this->detectPrimaryKey();
-
-            is_true(not_def($primary),true,'We have not found a primary key');
-
-            return $primary;
-
+            return $this->detectPrimaryKey();
         }
 
 

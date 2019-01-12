@@ -229,7 +229,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertTrue($this->mysql_model->truncate());
 
-        $result = query_result($this->mysql()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
+        $result = query_result(SELECT,$this->mysql()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
         $this->assertCount(0,$this->mysql_model->all());
         $this->assertContains($empty,$result);
@@ -237,7 +237,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertTrue($this->pgsql_model->truncate());
 
-        $result = query_result($this->postgresql()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
+        $result = query_result(SELECT,$this->postgresql()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
 
         $this->assertCount(0,$this->pgsql_model->all());
         $this->assertContains($empty,$result);
@@ -245,7 +245,7 @@ class ModelTest extends DatabaseTest
 
         $this->assertTrue($this->sqlite_model->truncate());
 
-        $result = query_result($this->sqlite()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
+        $result = query_result(SELECT,$this->sqlite()->model(),$this->mysql_model->all(),$success,$empty,$empty,$sql);
         $this->assertCount(0,$this->sqlite_model->all());
         $this->assertContains($empty,$result);
         $this->assertTrue( $this->sqlite_model->is_empty());

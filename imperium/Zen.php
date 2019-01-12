@@ -311,10 +311,27 @@ namespace Imperium {
          * @var array
          *
          */
-        const VALID_OPERATORS =  [
-                self::EQUAL,self::DIFFERENT,self::INFERIOR,
-                self::INFERIOR_OR_EQUAL,self::SUPERIOR,
-                self::SUPERIOR_OR_EQUAL,self::LIKE
+        const VALID_OPERATORS =
+        [
+            EQUAL,
+            DIFFERENT,
+            INFERIOR,
+            INFERIOR_OR_EQUAL,
+            SUPERIOR,
+            SUPERIOR_OR_EQUAL,
+            LIKE
+        ];
+
+
+        const CONDITION =
+        [
+            EQUAL => 'EQUAL',
+            DIFFERENT => 'DIFFERENT',
+            INFERIOR => 'INFERIOR',
+            INFERIOR_OR_EQUAL => 'INFERIOR OR EQUAL',
+            SUPERIOR => 'SUPERIOR',
+            SUPERIOR_OR_EQUAL => 'SUPERIOR OR EQUAL',
+            LIKE => 'LIKE'
         ];
 
         /**
@@ -324,11 +341,20 @@ namespace Imperium {
          * @var array
          *
          */
-        const MODE = [
-                self::UPDATE,self::SELECT,self::DELETE,self::INSERT,
-                self::UNION,self::UNION_ALL,self::INNER_JOIN,
-                self::CROSS_JOIN,self::LEFT_JOIN,
-                self::RIGHT_JOIN,self::FULL_JOIN
+        const MODE =
+        [
+                UPDATE        => 'UPDATE', // 23
+                SELECT        => 'SELECT', // 21
+                DELETE        => 'DELETE', // 22
+                INSERT        => 'INSERT', //24
+                UNION         => 'UNION', //12
+                UNION_ALL     => 'UNION_ALL' , //13
+                INNER_JOIN    => 'INNER JOIN', // 14
+                CROSS_JOIN    => 'CROSS JOIN', //15
+                LEFT_JOIN     => 'LEFT JOIN', //16
+                RIGHT_JOIN    => 'RIGHT JOIN', //17
+                FULL_JOIN     => 'FULL JOIN',  // 18
+                NATURAL_JOIN  =>'NATURAL JOIN'
         ];
 
         /**
@@ -338,9 +364,14 @@ namespace Imperium {
          * @var array
          *
          */
-        const JOIN_MODE = [
-            self::INNER_JOIN,self::CROSS_JOIN,self::LEFT_JOIN,
-            self::RIGHT_JOIN,self::FULL_JOIN,self::NATURAL_JOIN
+        const JOIN_MODE =
+        [
+            INNER_JOIN,
+            CROSS_JOIN,
+            LEFT_JOIN,
+            RIGHT_JOIN,
+            FULL_JOIN,
+            NATURAL_JOIN
         ];
 
         /**

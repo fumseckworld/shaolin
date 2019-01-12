@@ -1028,6 +1028,7 @@ namespace Imperium\Html\Form {
          *
          * @method select
          *
+         * @param bool $use_index
          * @param  string $name The select name
          * @param  array $options The select options
          * @param  string $success_text The validation success text
@@ -1039,9 +1040,8 @@ namespace Imperium\Html\Form {
          * @return Form
          *
          * @throws Exception
-         *
          */
-        public function select(string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $multiple = false,bool $required = true): Form
+        public function select(bool $use_index,string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $multiple = false,bool $required = true): Form
         {
             $class = $this->get_input_complete_class();
 
@@ -1059,9 +1059,8 @@ namespace Imperium\Html\Form {
                     else
                         append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" required="required">');
                     foreach ($options as $k => $v)
-                    {
-                        is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
-                    }
+                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
+
                     append($this->form,'</select>'.$validation.'</div></div>');
                 } else {
 
@@ -1071,9 +1070,7 @@ namespace Imperium\Html\Form {
                         append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" required="required">');
 
                     foreach ($options as $k => $v)
-                    {
-                        is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
-                    }
+                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
 
                     append($this->form,'</select>'.$validation.'</div></div></div>');
                 }
@@ -1087,10 +1084,8 @@ namespace Imperium\Html\Form {
                     else
                         append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '">');
                     foreach ($options as $k=> $v)
-                    {
-                        is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
+                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
 
-                    }
                     $this->form .= '</select>'.$validation.'</div></div>';
 
                 } else
@@ -1102,9 +1097,8 @@ namespace Imperium\Html\Form {
                         append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">');
 
                     foreach ($options as $k => $v)
-                    {
-                        is_string($k) ? append($this->form,'<option value="'.$k.'">'.$v.'</option>') : append($this->form, '<option value="'.$v.'">'.$v.'</option>');
-                    }
+                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
+
                     append($this->form,'</select>'.$validation.'</div></div></div>');
                 }
             }

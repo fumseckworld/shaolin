@@ -761,7 +761,6 @@ namespace Imperium {
             $this->env_path = $env_path;
             $this->hidden_tables = $hidden_tables;
             $this->hidden_bases = $hidden_bases;
-
             $this->env  = Dotenv::create($this->env_path);
             $this->env->load();
 

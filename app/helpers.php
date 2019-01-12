@@ -25,6 +25,49 @@ use Whoops\Handler\PrettyPageHandler;
 use Imperium\Html\Pagination\Pagination;
 
 
+define('GET','GET');
+define('POST','POST');
+
+define('ASC','ASC');
+define('DESC','DESC');
+
+define('NUMERIC','([0-9]+)');
+define('NOT_NUMERIC','([^0-9]+)');
+
+define('STRING','([a-zA-Z]+)');
+define('NOT_STRING','([^A-Za-z]+)');
+
+define('ALPHANUMERIC','([0-9A-Za-z\-]+)');
+
+define('BETWEEN','BETWEEN');
+define('EQUAL','=');
+define('DIFFERENT','!=');
+define('INFERIOR','<');
+define('INFERIOR_OR_EQUAL','<=');
+define('SUPERIOR','>');
+define('SUPERIOR_OR_EQUAL','>=');
+define('LIKE','LIKE');
+
+define('MYSQL','mysql');
+define('POSTGRESQL','pgsql');
+define('SQLITE','sqlite');
+
+define('UNION',12);
+define('UNION_ALL',13);
+define('INNER_JOIN',14);
+define('CROSS_JOIN',15);
+define('LEFT_JOIN',16);
+define('RIGHT_JOIN',17);
+define('FULL_JOIN',18);
+define('SELF_JOIN',19);
+define('NATURAL_JOIN',20);
+define('SELECT',21);
+define('DELETE',22);
+define('UPDATE',23);
+define('INSERT',24);
+
+
+
 
 if (not_exist('sql_file_path'))
 {
@@ -57,7 +100,7 @@ if (not_exist('true_or_false'))
      * @return string
      *
      */
-    function true_or_false():string
+    function true_or_false(): string
     {
         $data = rand(0,1) == 1;
         return $data ? 'true' : 'false';
@@ -112,6 +155,7 @@ if (not_exist('apps'))
     function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $env_path,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
+
         return new Imperium($connexion,$current_table,$views_dir,$twig_config,$env_path,$hidden_tables,$hidden_bases );
     }
 }
@@ -450,7 +494,7 @@ if (not_exist('secure_register_form'))
         {
             $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate() ;
             if ($multiple_languages)
-                $form->row()->select('locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select('zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
+                $form->row()->select(true,'locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select(true,'zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
 
            return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_icon,$username_success_text,$username_error_text,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_icon,$email_success_text,$email_error_text,post('email'),true)->end_row_and_new()
                 ->input(Form::PASSWORD,'password',$password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password_confirmation'),true)->end_row_and_new()
@@ -574,6 +618,7 @@ if (not_exist('query_result'))
      *
      * @method query_result
      *
+     * @param int $mode
      * @param  Model $model Instance of the model
      * @param  mixed $data The query results
      * @param  string $success_text The success text
@@ -584,11 +629,19 @@ if (not_exist('query_result'))
      * @return string
      *
      * @throws Exception
-     *
      */
-    function query_result(Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
+    function query_result(int $mode,Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
 
+        if (equal($mode,Query::UPDATE))
+        {
+            $x ='';
+
+            foreach ($data as $datum)
+                append($x,$datum);
+
+            return $x;
+        }
         if (is_bool($data) && $data)
            return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
         elseif(empty($model->all()))
@@ -650,10 +703,14 @@ if (not_exist('execute_query'))
      * @method execute_query
      *
      * @param Imperium $imperium
-     * @param  int  $mode The query mode
+     * @param  int $mode The query mode
      * @param  string $column_name The where column name
      * @param  string $condition The where condition
      * @param  mixed $expected The where expected
+     * @param string $first_table
+     * @param string $first_param
+     * @param string $second_table
+     * @param string $second_param
      * @param  string $submit_class The submit button class
      * @param  string $submit_update_text The submit update text
      * @param  string $form_update_action The update action
@@ -665,8 +722,9 @@ if (not_exist('execute_query'))
      *
      * @throws Exception
      */
-    function execute_query(Imperium $imperium,int $mode, string $column_name, string $condition, $expected, string $submit_class, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
+    function execute_query(Imperium $imperium,int $mode, string $column_name, string $condition, $expected,string $first_table,string $first_param,string $second_table,string $second_param,string $submit_class, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
     {
+
 
         $model = $imperium->model();
         $table = $imperium->tables();
@@ -675,7 +733,7 @@ if (not_exist('execute_query'))
 
         switch ($mode)
         {
-            case Query::UPDATE:
+            case UPDATE:
                 $code = collection();
                 foreach ( $model->query()->mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
                 {
@@ -685,15 +743,22 @@ if (not_exist('execute_query'))
                 }
                 return $code->collection();
             break;
-            case Query::DELETE:
+            case DELETE:
+
+                $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->sql();
 
                 $data = $model->where($column_name,$condition,$expected)->get();
-                $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->sql();
+
                 return empty($data) ? $data :  $model->query()->mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
+            case has($mode,Query::JOIN_MODE):
+                $show_sql_variable = $model->query()->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->sql();
+                return $model->query()->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->get();
+            break;
+
             default:
                 $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
-               return $model->query()->mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
+               return $model->query()->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
             break;
         }
     }
@@ -701,71 +766,45 @@ if (not_exist('execute_query'))
 
 if (not_exist('query_view'))
 {
+
+
     /**
-     *
-     * Display a query form builder
-     *
-     * @method query_view
-     *
-     * @param  string $query_action The form action
-     * @param  Model $model And instance of model
-     * @param  Table $instance An instance of table
-     * @param  string $confirm_message The confirm message
-     * @param  string $create_record_action The create record action
-     * @param  string $update_record_action The update record action
-     * @param  string $create_record_submit_text The create submit text
-     * @param  string $update_record_text The update submit text
-     * @param  string $current_table_name The current table
-     * @param  string $expected_placeholder The expected option text
-     * @param  string $superior_text The superior option text
-     * @param  string $superior_or_equal_text The superior or equal option text
-     * @param  string $inferior_text The inferior option text
-     * @param  string $inferior_or_equal_text The inferior or equal option text
-     * @param  string $different_text The different option text
-     * @param  string $equal_text The equal option text
-     * @param  string $like_text The like option text
-     * @param  string $select_mode_text The select mode text
-     * @param  string $remove_mode_text The remove mode option text
-     * @param  string $update_mode_text The update mode option text
-     * @param  string $submit_query_text The submit button query text
-     * @param  string $submit_class The submit button class
-     * @param  string $remove_success_text The remove success text
-     * @param  string $record_not_found_text The record not found text
-     * @param  string $table_empty_text The table is empty text
-     * @param  string $select_where_column_text The select where columns text
-     * @param  string $select_condition_column_text The select condition text
-     * @param  string $select_operation_column_text The select operation text
-     * @param  string $select_order_column_text The order column text
-     * @param  string $reset_form_text The reset form text
-     * @param  string $reset_form_class The reset form class
-     * @param  string $icon The form icon
-     * @param  string $csrf The csrf token
-     *
+     * @param string $confirm_message
+     * @param string $query_action
+     * @param Imperium $imperium
+     * @param string $create_record_action
+     * @param string $update_record_action
+     * @param string $create_record_submit_text
+     * @param string $update_record_text
+     * @param string $current_table_name
+     * @param string $expected_placeholder
+     * @param string $submit_query_text
+     * @param string $submit_class
+     * @param string $remove_success_text
+     * @param string $record_not_found_text
+     * @param string $table_empty_text
+     * @param string $reset_form_text
+     * @param string $validation_success_text
+     * @param string $validation_error_text
+     * @param string $icon
+     * @param string $csrf
      * @return string
-     *
      * @throws Exception
-     *
      */
-    function query_view(string $query_action,Model $model,Table $instance,string $confirm_message,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $superior_text,string $superior_or_equal_text,string $inferior_text,string $inferior_or_equal_text,string $different_text,string $equal_text,string $like_text,string $select_mode_text,string $remove_mode_text,string $update_mode_text,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $select_where_column_text,string $select_condition_column_text,string $select_operation_column_text,string $select_order_column_text,string $reset_form_text,string $reset_form_class ='btn btn-outline-danger',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
+    function query_view(string $confirm_message,string $query_action,Imperium $imperium,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $reset_form_text,string $validation_success_text = 'success' ,$validation_error_text= 'must not be empty',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
     {
 
-        $table = $instance->from($current_table_name);
+        $table = $imperium->tables()->from($current_table_name);
+        
         $columns = $table->columns();
 
+        $tables = $imperium->tables()->show();
 
         $x = count($columns);
 
-        $condition = array(Query::EQUAL => $equal_text,Query::DIFFERENT => $different_text,Query::INFERIOR => $inferior_text,Query::SUPERIOR => $superior_text,Query::INFERIOR_OR_EQUAL => $inferior_or_equal_text,Query::SUPERIOR_OR_EQUAL =>$superior_or_equal_text,Query::LIKE => $like_text);
+        $condition = Query::CONDITION;
 
-        $columns_order = collection(['' => $select_order_column_text])->merge($columns)->collection();
-
-        $columns = collection(['' => $select_where_column_text])->merge($columns)->collection();
-
-
-
-        $condition = collection(['' => $select_condition_column_text])->merge($condition)->collection();
-
-        $operations = collection(['' => $select_operation_column_text])->merge([Query::SELECT=> $select_mode_text,Query::DELETE=> $remove_mode_text,Query::UPDATE => $update_mode_text])->collection();
+        $operations = Query::MODE;
 
         is_pair($x) ?  $form_grid =  2 :  $form_grid =  3;
 
@@ -776,37 +815,49 @@ if (not_exist('query_view'))
             ?
                (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
                 ->row()
-                    ->reset($reset_form_text,$reset_form_class)
+                        ->reset($reset_form_text,$submit_class)
                 ->end_row_and_new()
-                    ->select('column',$columns,'success','error',$icon)
-                    ->select('condition',$condition,'success','error',$icon)
-                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,'success','error')
+                    ->select(false,'column',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(true,'condition',$condition,$validation_success_text,$validation_error_text,$icon)
+                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select('mode',$operations ,'success','error',$icon)
-                    ->select('key',$columns_order,'success','error',$icon)
-                    ->select('order',['asc','desc'],'success','faillure',$icon)
+                    ->select(true,'mode',$operations ,$validation_success_text,$validation_error_text,$icon)
+                ->end_row_and_new()
+                    ->select(false,'first_table',$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'first_param',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'second_table',$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'second_param',$columns,$validation_success_text,$validation_error_text,$icon)
+                ->end_row_and_new()
+                    ->select(false,'key',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'order',[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
                     ->submit($submit_query_text,$submit_class,uniqid())
-                ->end_row()->get()
+               ->end_row()->get()
                  .
-                query_result($model,execute_query($model, $table, post('mode'), post('column'), post('condition'), post('expected'), $current_table_name, $submit_class, $update_record_text, $update_record_action, post('key'), post('order'), $sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
+                query_result(post('mode'),$imperium->model(),execute_query($imperium,post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
                 (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
                 ->row()
-                    ->reset($reset_form_text,$reset_form_class)
+                    ->reset($reset_form_text,$submit_class)
                 ->end_row_and_new()
-                    ->select('column',$columns,'success','error',$icon)
-                    ->select('condition',$condition,'success','error',$icon)
-                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,'success','error')
+                    ->select(false,'column',$columns,$validation_success_text,'error',$icon)
+                    ->select(true,'condition',$condition,$validation_success_text,'error',$icon)
+                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select('mode',$operations ,'success','failure',$icon)
-                    ->select('key',$columns_order,'success','failure',$icon)
-                    ->select('order',['asc','desc'],'success','failure',$icon)
+                    ->select(true,'mode',$operations ,$validation_success_text,$validation_error_text,$icon)
+                ->end_row_and_new()
+                    ->select(false,'first_table',$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'first_param',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'second_table',$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'second_param',$columns,$validation_success_text,$validation_error_text,$icon)
+                ->end_row_and_new()
+                    ->select(false,'key',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,'order',[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
                     ->submit($submit_query_text,$submit_class,uniqid())
-
-                ->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid()) ;
+                ->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid())
+            ;
     }
 }
 
@@ -1043,7 +1094,7 @@ if (not_exist('users_select'))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->row()->redirect('users',$users->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select('users',$users->collection(),$icon)->end_row()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->row()->redirect('users',$users->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select(true,'users',$users->collection(),$icon)->end_row()->get();
      }
 }
 
@@ -1078,7 +1129,7 @@ if (not_exist('bases_select'))
 
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->row()->csrf($csrf)->redirect('bases',$bases->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select('bases',$bases->collection(),$icon)->end_row()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->row()->csrf($csrf)->redirect('bases',$bases->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select(true,'bases',$bases->collection(),$icon)->end_row()->get();
      }
 }
 
@@ -1520,14 +1571,15 @@ if (not_exist('session'))
      *
      * @method session
      *
-     * @param  string  $key The session key
+     * @param  string $key The session key
+     * @param string $value
      *
      * @return string
      *
      */
-    function session(string $key): string
+    function session(string $key,$value = ''): string
     {
-        return isset($_SESSION[$key]) && !empty($_SESSION[$key]) ?  htmlspecialchars($_SESSION[$key], ENT_QUOTES, 'UTF-8', true) : '';
+        return isset($_SESSION[$key]) && !empty($_SESSION[$key]) ?  htmlspecialchars($_SESSION[$key], ENT_QUOTES, 'UTF-8', true) : $value;
     }
 }
 
@@ -1540,13 +1592,14 @@ if (not_exist('cookie'))
      * @method cookie
      *
      * @param  string $key The cookie key
+     * @param string $value
      *
      * @return string
      *
      */
-    function cookie(string $key): string
+    function cookie(string $key,string $value = ''): string
     {
-        return isset($_COOKIE[$key]) && !empty($_COOKIE[$key]) ? htmlspecialchars($_COOKIE[$key], ENT_QUOTES, 'UTF-8', true) : '';
+        return isset($_COOKIE[$key]) && !empty($_COOKIE[$key]) ? htmlspecialchars($_COOKIE[$key], ENT_QUOTES, 'UTF-8', true) : $value;
     }
 }
 if (not_exist('get'))
@@ -1558,12 +1611,12 @@ if (not_exist('get'))
      *
      * @param  string $key The get key
      *
+     * @param string $value
      * @return string
-     *
      */
-    function get(string $key): string
+    function get(string $key,string $value = ''): string
     {
-        return isset($_GET[$key]) && !empty($_GET[$key]) ? htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true) : '';
+        return isset($_GET[$key]) && !empty($_GET[$key]) ? htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true) : $value;
     }
 }
 
@@ -1653,12 +1706,12 @@ if (not_exist('post'))
      *
      * @param  string $key The post key
      *
+     * @param string $value
      * @return string
-     *
      */
-    function post(string $key): string
+    function post(string $key,string $value = ''): string
     {
-        return isset($_POST[$key]) && !empty($_POST[$key]) ? htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8', true) : '';
+        return isset($_POST[$key]) && !empty($_POST[$key]) ? htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8', true) : $value;
     }
 }
 if (not_exist('generate'))

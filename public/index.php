@@ -1,17 +1,16 @@
 <?php
 
-use Imperium\Router\Router;
 
 require_once '../vendor/autoload.php';
-
+require_once '../config.php';
 whoops();
 
 
-(new Router(get('url'),'Testing'))
-    ->add('/', function (){echo "homepage";},'homepage',Router::METHOD_GET)
-    ->add('lorem',function (){echo 'lorem';},'lorem',Router::METHOD_GET)
-    ->add('show/:id','Post@show','laorem',Router::METHOD_GET)
-    ->run();
+
+echo css_loader('https://bootswatch.com/4/lumen/bootstrap.min.css','https://use.fontawesome.com/releases/v5.6.3/css/all.css');
+
+echo html('div',query_view('are you sure ?' ,'/',$mysql,'/','/','create record','update record','imperium','expected','commit','btn btn-primary','remove success',
+'record not found','table empty','reset'),'container mt-5 mb-5');
 
 
 

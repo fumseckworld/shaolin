@@ -169,6 +169,7 @@ namespace Imperium\Query {
         {
             $this->connexion = $connect;
             $this->tables = $table;
+
         }
 
         /**
@@ -225,14 +226,7 @@ namespace Imperium\Query {
                     return "$union $order $limit";
                 break;
                 case collection(self::JOIN_MODE)->exist($mode) :
-
-                    if(def($this->where_expected,$this->where_param,$this->where_condition))
-                    {
-                        $where= "WHERE {$this->first_table}.{$this->where_param}  {$this->where_condition} {$this->second_table}.{$this->where_param} ";
-
-                        return "$join $where $order $limit";
-                    }
-                    return "$join $order $limit";
+                    return "$join $order";
                 break;
                 default:
                       throw new Exception('The query mode is not define');
@@ -299,7 +293,7 @@ namespace Imperium\Query {
 
         /**
          *
-         * Gerate an order by clause
+         * Generate an order by clause
          *
          * @method order_by
          *
@@ -386,10 +380,11 @@ namespace Imperium\Query {
          */
         public function mode(int $mode): Query
         {
-            if (!has($mode,Query::MODE,true))
-                throw new Exception("The current mode is not valid");
 
-            $this->mode = $mode;
+            if (collection(Table::MODE)->has_key($mode))
+                $this->mode = $mode;
+            else
+               throw new Exception("The current mode is not valid");
 
             return $this;
         }
@@ -419,6 +414,7 @@ namespace Imperium\Query {
          *
          * @method join
          *
+         * @param string $condition
          * @param  string $first_table The first table name
          * @param  string $second_table The second table name
          * @param  string $first_param The first parameter
@@ -428,45 +424,42 @@ namespace Imperium\Query {
          * @return Query
          *
          * @throws Exception
-         *
          */
-        public function join(string $first_table,string $second_table,string $first_param ,string $second_param,string ...$columns) : Query
+        public function join(string $condition,string $first_table,string $second_table,string $first_param ,string $second_param,string ...$columns) : Query
         {
             $this->first_table = $first_table;
             $this->second_table = $second_table;
             $columns_define = def($columns);
             $mode = $this->mode;
-            $condition = Query::EQUAL;
+
             $select = '';
 
             if ($columns_define)
             {
                 $end = collection($columns)->last();
                 foreach($columns as $column)
-                    if(different($column,$end))
-                        append($select,"$first_table.$column, $second_table.$column, ");
-                    else
-                        append($select,"$first_table.$column, $second_table.$column");
+                    different($column,$end) ?  append($select,"$first_table.$column, $second_table.$column, ") : append($select,"$first_table.$column, $second_table.$column");
             }
 
+            $mod =  'SELECT';
             $select = $columns_define ? $select : '*';
 
             switch ($mode)
             {
-                case Query::INNER_JOIN:
-                    $this->join = "SELECT $select FROM $first_table INNER JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
+                case INNER_JOIN:
+                    $this->join = "$mod $select FROM $first_table INNER JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
-                case Query::CROSS_JOIN:
-                    $this->join = "SELECT $select FROM $first_table CROSS JOIN $second_table";
+                case CROSS_JOIN:
+                    $this->join = "$mod $select FROM $first_table CROSS JOIN $second_table";
                 break;
-                case Query::LEFT_JOIN:
-                        $this->join = "SELECT $select FROM $first_table LEFT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
+                case LEFT_JOIN:
+                    $this->join = "$mod $select FROM $first_table LEFT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
-                case Query::RIGHT_JOIN:
-                        $this->join = "SELECT $select FROM $first_table RIGHT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
+                case RIGHT_JOIN:
+                    $this->join = "$mod $select FROM $first_table RIGHT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
-                case Query::FULL_JOIN:
-                        $this->join = "SELECT $select FROM $first_table FULL  JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";                break;
+                case FULL_JOIN:
+                    $this->join = "$mod $select FROM $first_table FULL  JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
                 break;
             }
 

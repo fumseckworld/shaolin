@@ -138,7 +138,7 @@ class FormTest extends DatabaseTest
         $this->assertContains($fail,$x);
 
         $form = new Form();
-        $x = $form->validate()->start('a','a','confirm','',true)->select('select',['a','a'],$success,$fail)->get();
+        $x = $form->validate()->start('a','a','confirm','',true)->select(false,'select',['a','a'],$success,$fail)->get();
 
         $this->assertContains('confirm',$x);
         $this->assertContains($success,$x);
@@ -374,11 +374,11 @@ class FormTest extends DatabaseTest
         $this->assertContains($small,$form);
         $this->assertContains($small,$form);
 
-        $form =  form('a','a')->large()->select('table',[1,2,3])->get();
+        $form =  form('a','a')->large()->select(true,'table',[1,2,3])->get();
         $this->assertContains(Form::LARGE_CLASS,$form);
         $this->assertNotContains(Form::SMALL_CLASS,$form);
 
-        $form =  form('a','a')->small()->select('table',[1,2,3])->get();
+        $form =  form('a','a')->small()->select(false,'table',[1,2,3])->get();
         $this->assertContains(Form::SMALL_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
 
@@ -408,12 +408,12 @@ class FormTest extends DatabaseTest
         $this->assertContains(Form::BASIC_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
         $this->assertNotContains(Form::SMALL_CLASS,$form);
-        $form =  form('a','a')->large(false)->select('table',[1,2,3])->get();
+        $form =  form('a','a')->large(false)->select(true,'table',[1,2,3])->get();
         $this->assertContains(Form::BASIC_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
         $this->assertNotContains(Form::SMALL_CLASS,$form);
 
-        $form =  form('a','a')->small(false)->select('table',[1,2,3])->get();
+        $form =  form('a','a')->small(false)->select(false,'table',[1,2,3])->get();
         $this->assertContains(Form::BASIC_CLASS,$form);
         $this->assertNotContains(Form::LARGE_CLASS,$form);
         $this->assertNotContains(Form::SMALL_CLASS,$form);
@@ -480,17 +480,17 @@ class FormTest extends DatabaseTest
     {
         $icon = fa('fas','fa-trash');
 
-        $form =  form('a','a')->select('age',[15,18,19],'','','',false,false)->get();
+        $form =  form('a','a')->select(true,'age',[15,18,19],'','','',false,false)->get();
 
         $this->assertNotContains('required',$form);
         $this->assertNotContains($icon,$form);
         $this->assertNotContains('multiple',$form);
         $this->assertContains('name="age"',$form);
-        $this->assertContains('<option value="15">15</option>',$form);
-        $this->assertContains('<option value="18">18</option>',$form);
-        $this->assertContains('<option value="19">19</option>',$form);
+        $this->assertContains('<option value="0">15</option>',$form);
+        $this->assertContains('<option value="1">18</option>',$form);
+        $this->assertContains('<option value="2">19</option>',$form);
 
-        $form =  form('a','a')->select('age',[15,18,19],'','',$icon,false,false)->get();
+        $form =  form('a','a')->select(false,'age',[15,18,19],'','',$icon,false,false)->get();
 
         $this->assertNotContains('required',$form);
         $this->assertContains($icon,$form);
@@ -500,17 +500,17 @@ class FormTest extends DatabaseTest
         $this->assertContains('<option value="18">18</option>',$form);
 
 
-        $form =  form('a','a')->select('age',  [15,18,19], '' , '' , '' ,  false, false)->get();
+        $form =  form('a','a')->select(true,'age',  [15,18,19], '' , '' , '' ,  false, false)->get();
 
         $this->assertNotContains('required',$form);
         $this->assertNotContains($icon,$form);
         $this->assertNotContains('multiple',$form);
         $this->assertContains('name="age"',$form);
-        $this->assertContains('<option value="15">15</option>',$form);
-        $this->assertContains('<option value="18">18</option>',$form);
-        $this->assertContains('<option value="19">19</option>',$form);
+        $this->assertContains('<option value="0">15</option>',$form);
+        $this->assertContains('<option value="1">18</option>',$form);
+        $this->assertContains('<option value="2">19</option>',$form);
 
-        $form =  form('a','a')->select('age',  [15,18,19], '' , '' , $icon ,  false, false)->get();
+        $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , $icon ,  false, false)->get();
 
         $this->assertNotContains('required',$form);
         $this->assertContains($icon,$form);
@@ -519,7 +519,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('<option value="15">15</option>',$form);
         $this->assertContains('<option value="18">18</option>',$form);
 
-        $form =  form('a','a')->select('age',  [15,18,19], '' , '' , '' ,  true, false)->get();
+        $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , '' ,  true, false)->get();
 
         $this->assertNotContains('required',$form);
         $this->assertNotContains($icon,$form);
@@ -529,7 +529,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('<option value="18">18</option>',$form);
         $this->assertContains('<option value="19">19</option>',$form);
 
-        $form =  form('a','a')->select('age',  [15,18,19], '' , '' , $icon ,  true, false)->get();
+        $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , $icon ,  true, false)->get();
 
         $this->assertNotContains('required',$form);
         $this->assertContains($icon,$form);
@@ -538,7 +538,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('<option value="15">15</option>',$form);
         $this->assertContains('<option value="18">18</option>',$form);
 
-        $form =  form('a','a')->select('age',  [15,18,19], '' , '' , '' ,  true, true)->get();
+        $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , '' ,  true, true)->get();
 
         $this->assertContains('required',$form);
         $this->assertNotContains($icon,$form);
@@ -548,7 +548,7 @@ class FormTest extends DatabaseTest
         $this->assertContains('<option value="18">18</option>',$form);
         $this->assertContains('<option value="19">19</option>',$form);
 
-        $form =  form('a','a')->select('age',  [15,18,19], '' , '' , $icon ,  true, true)->get();
+        $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , $icon ,  true, true)->get();
 
         $this->assertContains('required',$form);
         $this->assertContains($icon,$form);
