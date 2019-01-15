@@ -13,5 +13,11 @@ namespace Testing {
         {
            return $this->view->load('welcome.twig',compact('id'));
         }
+
+        public function trans()
+        {
+            phpinfo();
+             $this->view->load('trans.twig');
+        }
     }
 }

@@ -68,7 +68,6 @@ define('INSERT',24);
 
 
 
-
 if (not_exist('sql_file_path'))
 {
     /**

@@ -4,6 +4,17 @@ BASE=zen
 POSTGRESQL_PASSWORD=postgres
 MYSQL_PASSWORD=root
 
+CURRENT=7.3.1
+NEXT=7.2.14
+MIDDLE=7.1.26
+OLD=7.0.33
+
+
+UNIT="vendor/bin/phpunit"
+SLEEP="sleep 2 && clear"
+VERSION=$(shell php --version)
+SEED="seed"
+
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
   PHINX := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
@@ -18,7 +29,33 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: test
+all: $(SEED)
+
+	 $(UNIT)
+
+
+old:
+	$(shell old)
+$(OLD): $(SEED) old
+	$(VERSION)
+	$(SLEEP)
+	$(UNIT)
+$(MIDDLE): $(SEED)
+	@bash php.sh $@
+	$(VERSION)
+	$(SLEEP)
+	$(UNIT)
+$(LATEST): $(SEED)
+	@bash php.sh $@
+	$(VERSION)
+	$(SLEEP)
+	$(UNIT)
+$(NEXT): $(SEED)
+	@bash php.sh $@
+	$(VERSION)
+	$(SLEEP)
+	$(UNIT)
+$(SEED): dbs migrate
 
 disable:
 	sudo install -D xdebug_d.ini /etc/php/conf.d/xdebug.ini
@@ -27,13 +64,8 @@ enable:
 help: ## Display the help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-test: vendor seed ## Run tests
-	@vendor/bin/phpunit --coverage-html COVERAGE
-
 vendor: ## Configure the app
-	@composer install 
-
-seed: dbs migrate ## Seed all databases
+	@composer install
 
 migrate: pgsql mysql sqlite ## Run all migrations
 
