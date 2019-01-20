@@ -29,9 +29,9 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: $(SEED)
 
-	 $(UNIT)
+all: vendor dbs migrate
+	@$(UNIT) --coverage-html COVERAGE
 
 
 old:

@@ -1,6 +1,7 @@
 <?php
 
 use Faker\Generator;
+use GuzzleHttp\Psr7\Response;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
 use Imperium\Router\Router;
@@ -67,6 +68,52 @@ define('UPDATE',23);
 define('INSERT',24);
 
 
+if (not_exist('redirect'))
+{
+    /**
+     *
+     * @param string $route_name
+     *
+     * @return Response
+     *
+     * @throws Exception
+     *
+     */
+    function redirect(string $route_name): Response
+    {
+        return (new Response())->withStatus(301)->withHeader('Location',url($route_name));
+    }
+}
+
+if (not_exist('session_loaded'))
+{
+    /**
+     *
+     * Check if the session is active
+     *
+     * @return bool
+     *
+     */
+    function session_loaded(): bool
+    {
+        return session_status() === PHP_SESSION_ACTIVE;
+    }
+}
+if (not_exist('csrf'))
+{
+    /**
+     *
+     * Generate a token
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function csrf(): string
+    {
+        return '<input type="hidden" value="'.bin2hex(random_bytes(16)) .'"/>';
+    }
+}
 
 if (not_exist('sql_file_path'))
 {
@@ -96,13 +143,26 @@ if (not_exist('true_or_false'))
      *
      * @method true_or_false
      *
-     * @return string
+     * @param string $driver
      *
+     * @return string
      */
-    function true_or_false(): string
+    function true_or_false(string $driver)
     {
-        $data = rand(0,1) == 1;
-        return $data ? 'true' : 'false';
+        switch ($driver)
+        {
+            case Connect::MYSQL:
+                return rand(0,1);
+            break;
+            case Connect::POSTGRESQL:
+            case Connect::SQLITE:
+                return rand(0,1) === 1 ? 'TRUE' : 'FALSE';
+            break;
+            default:
+                return '';
+            break;
+        }
+
     }
 }
 

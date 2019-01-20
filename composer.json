@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=7.0",
+        "php": ">=7.1",
         "pragmarx/google2fa": "^2.0",
         "czproject/git-php": "^3.10",
         "sinergi/browser-detector": "^6.1",

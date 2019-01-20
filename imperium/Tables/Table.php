@@ -842,7 +842,7 @@ namespace Imperium\Tables {
                     {
 
                         if (has($type, self::BOOL))
-                            $x->add(true_or_false(),$column);
+                            $x->add(true_or_false($this->driver),$column);
 
 
                         if (has($type, self::JSONS))

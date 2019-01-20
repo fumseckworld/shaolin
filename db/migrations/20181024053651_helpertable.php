@@ -33,7 +33,6 @@ class Helpertable extends AbstractMigration
             ->addColumn('age', 'integer')
             ->addColumn('phone', 'integer')
             ->addColumn('sex', 'string')
-            ->addColumn('alive', 'boolean')
             ->addColumn('status','string')
             ->addColumn('days','datetime')
             ->addColumn('date','datetime')

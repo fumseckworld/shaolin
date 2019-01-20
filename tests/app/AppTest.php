@@ -488,7 +488,8 @@ class AppTest extends DatabaseTest
 
     public function test_true_or_false()
     {
-        $this->assertNotEmpty(true_or_false());
+        $this->assertNotEmpty(true_or_false(Connect::POSTGRESQL));
+
     }
     public function test_users_select()
     {

@@ -605,7 +605,8 @@ namespace Imperium\Html\Form {
                 }
 
             }
-            return $this;
+
+            return $this->csrf(csrf());
         }
 
         /**

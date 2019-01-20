@@ -59,7 +59,6 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
-                    ->set('alive',1)
                 ->save();
         $this->assertTrue($bool);
 
@@ -71,7 +70,6 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
-                    ->set('alive',true_or_false())
                 ->save();
         $this->assertTrue($bool);
 
@@ -83,7 +81,6 @@ class ModelTest extends DatabaseTest
                     ->set('days', faker()->date())
                     ->set('age',  faker()->numberBetween(1,100))
                     ->set('status','dead')
-                    ->set('alive',true_or_false())
                 ->save();
         $this->assertTrue($bool);
     }
@@ -141,7 +138,7 @@ class ModelTest extends DatabaseTest
             ->set('days', faker()->date())
             ->set('age',  faker()->numberBetween(1,100))
             ->set('status','dead')
-            ->set('alive',true_or_false())
+            ->set('alive',true_or_false(Connect::MYSQL))
         ->save();
 
         $this->pgsql_model
@@ -150,7 +147,7 @@ class ModelTest extends DatabaseTest
             ->set('date', faker()->date())
             ->set('age',  faker()->numberBetween(1,100))
             ->set('status','dead')
-            ->set('alive',true_or_false())
+            ->set('alive',true_or_false(Connect::POSTGRESQL))
         ->save();
 
         $this->sqlite_model
@@ -159,7 +156,7 @@ class ModelTest extends DatabaseTest
             ->set('sex', 'F')
             ->set('age',  faker()->numberBetween(1,100))
             ->set('status','dead')
-            ->set('alive',true_or_false())
+            ->set('alive',true_or_false(Connect::SQLITE))
         ->save();
     }
 
@@ -263,15 +260,15 @@ class ModelTest extends DatabaseTest
         {
             $data = [
                 'id' => null,
-                'name' =>  faker()->name,
+                'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
-                'alive' => true_or_false(),
-                'status' =>  faker()->text(20),
+                'status' => faker()->text(20),
                 'days' => faker()->date(),
-                'date' => faker()->date(),
+                'date' => faker()->date()
             ];
+
 
             $this->assertTrue($this->mysql_model->insert($data));
             $this->assertTrue($this->pgsql_model->insert($data));
@@ -427,17 +424,18 @@ class ModelTest extends DatabaseTest
 
     public function test_update()
     {
+
         $data = [
             'id' => null,
             'name' => faker()->name,
             'age' => faker()->numberBetween(1,100),
             'phone' => faker()->randomNumber(8),
             'sex' => faker()->firstNameMale,
-            'alive' => true_or_false(),
             'status' => faker()->text(20),
             'days' => faker()->date(),
-            'date' => faker()->date(),
+            'date' => faker()->date()
         ];
+
         $this->assertTrue($this->mysql_model->update(4,$data));
         $this->assertTrue($this->pgsql_model->update(4,$data));
         $this->assertTrue($this->sqlite_model->update(4,$data));
@@ -453,18 +451,17 @@ class ModelTest extends DatabaseTest
         $number = 5;
         for ($i = 0; $i != $number; ++$i)
         {
+
             $data = [
                 'id' => null,
                 'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
-                'alive' => true_or_false(),
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
-                'date' => faker()->date(),
+                'date' => faker()->date()
             ];
-
             $this->assertTrue($this->mysql_model->insert($data));
             $this->assertTrue($this->pgsql_model->insert($data));
             $this->assertTrue($this->sqlite_model->insert($data));

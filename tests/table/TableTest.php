@@ -3,6 +3,7 @@
 
 namespace tests\table;
 
+use Imperium\Connexion\Connect;
 use Imperium\Imperium;
 use Imperium\Tables\Table;
 use Testing\DatabaseTest;
@@ -62,27 +63,29 @@ class TableTest extends DatabaseTest
      */
     public function test_insert_multiples()
     {
-        $data= [];
         $number = 100;
+        $data = collection();
         for ($i = 0; $i != $number ; $i++)
         {
-            $data[] = [
-                'id' => null ,
+
+            $data->add(
+            [
+                'id' => null,
                 'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
-                'alive' => true_or_false(),
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
-                'date' => faker()->date(),
-            ];
+                'date' => faker()->date()
+            ]);
 
         }
 
-        $this->assertTrue($this->mysql_table->insert_multiples($data));
-        $this->assertTrue($this->pgsql_table->insert_multiples($data));
-        $this->assertTrue($this->sqlite_table->insert_multiples($data));
+
+        $this->assertTrue($this->mysql_table->insert_multiples($data->collection()));
+        $this->assertTrue($this->pgsql_table->insert_multiples($data->collection()));
+        $this->assertTrue($this->sqlite_table->insert_multiples($data->collection()));
     }
     /**
      * @throws \Exception
@@ -356,8 +359,8 @@ class TableTest extends DatabaseTest
     {
         $table = 'users';
         $bool =     $this->mysql()->tables()
-                                ->column(Table::INT,'id',true,0,true,true,false,'',true,Table::SUPERIOR_OR_EQUAL,1)
-                                ->column(Table::INT,'age',false,100,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
+                                ->column(Table::INT,'id',true,0,true,true,false,'',false,Table::SUPERIOR_OR_EQUAL,1)
+                                ->column(Table::INT,'age',false,0,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
                                 ->column(Table::VARCHAR,'name',false,100,true,false,false,'',true,Table::DIFFERENT,'willy')
                                 ->column(Table::VARCHAR,'username',false,100,true,true,true,'champion',true,Table::DIFFERENT,'fumseck')
                                 ->create($table);
@@ -406,9 +409,9 @@ class TableTest extends DatabaseTest
     public function test_columns_to_string()
     {
 
-        $this->assertEquals('id, name, age, phone, sex, alive, status, days, date',$this->mysql_table->columns_to_string());
-        $this->assertEquals('id, name, age, phone, sex, alive, status, days, date',$this->pgsql_table->columns_to_string());
-        $this->assertEquals('id, name, age, phone, sex, alive, status, days, date',$this->sqlite_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->mysql_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->pgsql_table->columns_to_string());
+        $this->assertEquals('id, name, age, phone, sex, status, days, date',$this->sqlite_table->columns_to_string());
     }
 
 

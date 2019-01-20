@@ -91,13 +91,38 @@ namespace Imperium\Collection {
             return json($filename)->create($this->data);
         }
 
-        public function double(string $prefix,$value,string $key = '')
+        /**
+         *
+         * Initialise a array multidimensional
+         *
+         * @param $prefix
+         *
+         * @return Collection
+         *
+         */
+        public function init_double($prefix): Collection
+        {
+            return $this->set_new_data([$prefix => []]);
+        }
+
+        /**
+         *
+         * Assign a value
+         *
+         * @param $prefix
+         * @param $value
+         * @param string $key
+         *
+         * @return Collection
+         *
+         */
+        public function double($prefix,$value,string $key = ''): Collection
         {
             def($key) ?  $this->data[$prefix][$key] = $value : $this->data[$prefix][] = $value;
 
            return $this;
-
         }
+
         /**
         *
         * Define the new data

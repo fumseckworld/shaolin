@@ -5,6 +5,7 @@ namespace tests\imperium;
 
 use Exception;
 use Imperium\Collection\Collection;
+use Imperium\Connexion\Connect;
 use Imperium\Html\Form\Form;
 use Imperium\Imperium;
 use Imperium\Tables\Table;
@@ -49,18 +50,17 @@ class ImperiumTest extends DatabaseTest
         $number = 5;
         for ($i = 0; $i != $number; ++$i)
         {
-            $data = [
+
+            $data= [
                 'id' => null,
                 'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
-                'alive' => true_or_false('true'),
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
                 'date' => faker()->date()
             ];
-
             $this->assertTrue($this->mysql()->update_record(5,$data,$this->table));
             $this->assertTrue($this->postgresql()->update_record(5,$data,$this->table));
             $this->assertTrue($this->sqlite()->update_record(5,$data,$this->table));
