@@ -52,16 +52,15 @@ class AppTest extends DatabaseTest
 
     public function test_apps()
     {
-        $a = apps(Connect::MYSQL,'root','zen','root',Connect::LOCALHOST,'dump','imperium','.','views',[],[],[]);
+        $a = apps(Connect::MYSQL,env('MYSQL_USER'),env('BASE'),env('MYSQL_PASSWORD'),Connect::LOCALHOST,'dump','imperium','.','views',[],[],[]);
         $this->assertInstanceOf(Imperium::class,$a);
     }
 
     public function test_env()
     {
         $this->mysql()->env()->load();
-        $this->assertEquals('zen',env('DB_NAME'));
-        $this->assertEquals('root',env('DB_PASSWORD'));
-        $this->assertEquals('root',env('DB_USERNAME'));
+        $this->assertEquals('root',env('MYSQL_USER'));
+
     }
     public function test_not_exist()
     {
