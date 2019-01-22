@@ -3,6 +3,7 @@
 namespace Imperium\Router {
 
     use Exception;
+    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Collection\Collection;
 
     /**
@@ -197,13 +198,12 @@ namespace Imperium\Router {
 
         /**
          * Router constructor.
-         * @param string $url
+         * @param ServerRequest $request
          * @param string $namespace
-         * @param string $method
          */
-        public function __construct(string $url,string $namespace,string $method = '')
+        public function __construct(ServerRequest $request,string $namespace)
         {
-            $this->method        = def($method) ? $method : server('REQUEST_METHOD');
+            $this->method        = $request->getMethod();
 
             $this->post_named    = collection();
 
@@ -213,12 +213,14 @@ namespace Imperium\Router {
 
             $this->params        = collection();
 
-            $this->url           = $url;
+            $this->url           = $request->getUri()->getPath();
 
             self::$roots        = collection();
 
             $this->namespace = $namespace;
+
         }
+
 
 
 

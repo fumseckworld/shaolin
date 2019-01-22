@@ -6,6 +6,19 @@ namespace Imperium\Flash {
     use Exception;
     use Imperium\Session\Session;
 
+    /**
+     *
+     * Management of the flash message
+     *
+     * @author Willy Micieli <micieli@laposte.net>
+     *
+     * @package imperium
+     *
+     * @version 4
+     *
+     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
+     *
+     **/
     class Flash
     {
         /**

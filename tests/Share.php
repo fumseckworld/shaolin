@@ -15,7 +15,7 @@ trait Share
 
     public function __construct()
     {
-        $this->view = new View('views');
+        $this->view = new View('../views');
     }
 
 }

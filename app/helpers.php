@@ -1,6 +1,5 @@
 <?php
 
-use Faker\Generator;
 use GuzzleHttp\Psr7\Response;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
@@ -81,7 +80,11 @@ if (not_exist('redirect'))
      */
     function redirect(string $route_name): Response
     {
-        return (new Response())->withStatus(301)->withHeader('Location',url($route_name));
+        $r = new Response();
+        $r->withStatus(301);
+        $r->withHeader('Location',url($route_name));
+
+        return $r;
     }
 }
 
@@ -186,7 +189,7 @@ if (not_exist('quote'))
         return $connect->instance()->quote($value);
     }
 }
-if (not_exist('apps'))
+if (not_exist('app'))
 {
     /**
      *
@@ -211,7 +214,7 @@ if (not_exist('apps'))
      *
      * @throws Exception
      */
-    function apps(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $env_path,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
+    function app(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $env_path,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
     {
         $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
 

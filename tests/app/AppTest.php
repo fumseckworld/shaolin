@@ -25,8 +25,6 @@ use Whoops\Run;
  */
 class AppTest extends DatabaseTest
 {
-
-
     public function test_url_methods()
     {
 
@@ -52,7 +50,7 @@ class AppTest extends DatabaseTest
 
     public function test_apps()
     {
-        $a = apps(Connect::MYSQL,env('MYSQL_USER'),env('BASE'),env('MYSQL_PASSWORD'),Connect::LOCALHOST,'dump','imperium','.','views',[],[],[]);
+        $a = app(Connect::MYSQL,env('MYSQL_USER'),env('BASE'),env('MYSQL_PASSWORD'),Connect::LOCALHOST,'dump','imperium','.','views',[],[],[]);
         $this->assertInstanceOf(Imperium::class,$a);
     }
 
