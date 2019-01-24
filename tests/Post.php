@@ -4,7 +4,7 @@
 namespace Testing {
 
 
-    use Imperium\Html\Table\Table;
+    use Imperium\Html\Icon\Icon;
 
     class Post
     {
@@ -18,9 +18,7 @@ namespace Testing {
 
         public function home()
         {
-            $app = app('mysql','root','zen','root','localhost','../dump','imperium','..','..',[],[],[]);
-
-            $table = Table::table($app->tables()->from('imperium')->columns(),$app->tables()->from('imperium')->all())->generate('table table-bordered table-danger table-hover ' );
+            $table = (new Icon('list-unstyled list-inline','list-inline-item','btn btn-primary'))->add(fa('fas','fa-linux'),'/','a')->add('a','a','b')->generate();
             return $this->view->load('welcome.twig',compact('table'));
 
         }

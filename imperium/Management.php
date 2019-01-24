@@ -15,7 +15,6 @@ namespace Imperium {
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Imperium\View\View;
-    use Sinergi\BrowserDetector\Device;
 
     interface Management
     {
