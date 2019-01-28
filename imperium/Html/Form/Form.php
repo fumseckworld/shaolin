@@ -1240,6 +1240,7 @@ namespace Imperium\Html\Form {
             $primary    = $instance->primary_key();
 
             equal($form_grid,0,true,"Zero is not a valid number");
+
             not_in([Form::EDIT,Form::CREATE],$mode,true,"The mode used is not a valid mode");
 
             $i = count($columns);

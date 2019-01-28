@@ -35,7 +35,7 @@ namespace Testing {
          */
         public function show()
         {
-            $table = table();
+            $table = current_table();
 
             $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure','btn btn-danger',fa('fas','fa-trash'),"remove/$table",'edit','edit',
                 fa('fas','fa-edit'), 'btn btn-primary','start','previous','id','desc','search'),'container');
@@ -44,5 +44,9 @@ namespace Testing {
 
         }
 
+        public function display(int $id,string $slug)
+        {
+            return "$id $slug";
+        }
     }
 }

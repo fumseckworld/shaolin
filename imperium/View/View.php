@@ -2,6 +2,7 @@
 
 namespace Imperium\View {
 
+    use Imperium\Directory\Dir;
     use Twig_Environment;
     use Twig_Error_Loader;
     use Twig_Error_Runtime;
@@ -48,7 +49,7 @@ namespace Imperium\View {
          */
         public function __construct(string $view_dir,array $config = [],array $extensions = [])
         {
-            $this->view_dir = $view_dir;
+            $this->view_dir = realpath($view_dir);
             $this->loader = new Twig_Loader_Filesystem($this->view_dir);
             $this->twig = new Twig_Environment($this->loader,$config);
 
@@ -56,7 +57,16 @@ namespace Imperium\View {
                 $this->twig->addExtension($extension);
         }
 
-        public function init(string $view_dir,array $config,array $extensions)
+        /**
+         *
+         * @param string $view_dir
+         * @param array $config
+         * @param array $extensions
+         *
+         * @return View
+         *
+         */
+        public static function init(string $view_dir,array $config= [],array $extensions = []): View
         {
             return new static($view_dir,$config,$extensions);
         }
@@ -145,7 +155,7 @@ namespace Imperium\View {
          * @throws Twig_Error_Loader
          *
          */
-        public function add_path(string $dir, string $namespace = Twig_Loader_Filesystem::MAIN_NAMESPACE): View
+        public function add_path(string $dir, string $namespace): View
         {
             $dir = $this->view_dir .DIRECTORY_SEPARATOR .$dir;
 

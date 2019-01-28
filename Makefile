@@ -1,19 +1,10 @@
-.PHONY:serve all serve add mysql pgsql sqlite dbs drop
+.PHONY:mysql pgsql sqlite router form views cover clean dbs seed migrate disable enable send dir
 
 BASE=zen
-POSTGRESQL_PASSWORD=postgres
+
+UNIT="./vendor/bin/phpunit"
+
 MYSQL_PASSWORD=root
-
-CURRENT=7.3.1
-NEXT=7.2.14
-MIDDLE=7.1.26
-OLD=7.0.33
-
-
-UNIT="vendor/bin/phpunit"
-SLEEP="sleep 2 && clear"
-VERSION=$(shell php --version)
-
 
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -29,20 +20,36 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: mysql pgsql sqlite
+all: vendor mysql pgsql sqlite router form views dir
 
 mysql: seed
-	install -D $@.yaml config/db.yaml
-	./vendor/bin/phpunit tests/$@
+	@install -D $@.yaml config/db.yaml
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
 pgsql: seed
-	install -D $@.yaml config/db.yaml
-	./vendor/bin/phpunit tests/$@
+	@install -D $@.yaml config/db.yaml
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
 sqlite: seed
-	install -D $@.yaml config/db.yaml
-	./vendor/bin/phpunit tests/$@
+	@install -D $@.yaml config/db.yaml
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+router:
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+flash:
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+form:
+	@install -D mysql.yaml config/db.yaml
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+views:
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+dir:
+	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
 
 seed: dbs migrate
 
+send: all
+	git add .
+	git commit -m "$(COMMIT)" -n
+	git push origin --all
+	git push origin --tags
 disable:
 	sudo install -D xdebug_d.ini /etc/php/conf.d/xdebug.ini
 enable:
@@ -59,7 +66,7 @@ serve: ## Start the development server
 	@clear
 	@php -S localhost:8000 -d display_errors=1 -t public
 
-coverage: ## Start a server to display the coverage
+cover: ## Start a server to display the coverage
 	@clear
 	@php -S localhost:3000 -t COVERAGE
 

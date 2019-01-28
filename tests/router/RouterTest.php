@@ -2,12 +2,29 @@
 
 namespace Testing\router;
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Imperium\Router\Router;
 use Testing\DatabaseTest;
 
 class RouterTest extends DatabaseTest
 {
 
+    /**
+     * @var ServerRequest
+     */
+    private $request;
+    
+    /**
+     * @var Router
+     */
+    private $router;
+
+    public function setUp()
+    {
+        $this->request = new ServerRequest(GET,'/');
+        $this->router = new Router($this->request,'Testing');
+      
+    }
 
     /**
      * @throws \Exception
@@ -15,45 +32,57 @@ class RouterTest extends DatabaseTest
     public function test_run()
     {
 
-        $router = new Router('/','Testing','GET');
+        $this->router->add('/',function (){return "salut";},"home",GET);
 
-        $router->add('/',function (){return "salut";},"home",Router::METHOD_GET);
+        $this->assertCount(1,$this->router->routes(GET));
 
-        $this->assertCount(1,$router->routes(Router::METHOD_GET));
+        $this->router->add('lorem',function (){},'lorem',GET);
 
-        $router->add('lorem',function (){},'lorem',Router::METHOD_GET);
+        $this->assertCount(2,$this->router->routes(GET));
 
-        $this->assertCount(2,$router->routes(Router::METHOD_GET));
+        $this->router->add('linkin',function (){},'linkin',POST);
 
-        $router->add('linkin',function (){},'linkin',Router::METHOD_POST);
+        $this->assertCount(1,$this->router->routes(POST));
 
-        $this->assertCount(1,$router->routes(Router::METHOD_POST));
+        $this->router->add('linkin-park',function (){},'linkina',POST);
 
-        $router->add('linkin-park',function (){},'linkina',Router::METHOD_POST);
+        $this->assertCount(2,$this->router->routes(POST));
 
-        $this->assertCount(2,$router->routes(Router::METHOD_POST));
+        $this->assertEquals('salut',$this->router->run());
 
-        $this->assertEquals('salut',$this->mysql()->run($router));
+        $request = new ServerRequest(GET,'show/50-mon-article');
+        $this->router = new Router($request,'Testing');
 
-        $router = new Router('show/50-mon-article','Testing','GET');
+        $this->router->add('show/:id-:slug','Controller@display','show','GET',true,['id','slug'],NUMERIC,Router::SLUG);
 
-        $router->add('show/:id-:slug','Controller@show','show','GET',true,['id','slug'],Router::NUMERIC,Router::SLUG);
-
-        $this->assertEquals('show 50',$router->run());
+        $this->assertEquals('50 mon-article',$this->router->run());
 
 
     }
 
-    public function test_exption()
+    public function tests_method_not_exist()
     {
-        $router = new Router('shows/50','Testing','GET');
+        $this->expectException(\Exception::class);
 
-        $router->add('a',function (){},'a','GET');
-
+        $this->router->add('/','a@a','a',GET);
+        $this->router->run();
+    }
+    
+    public function test_url()
+    {
+        $this->router->add('eva',function (){},'eva',GET);
+        $this->assertEquals('eva',url('eva'));
+    }
+    
+    public function test_exception_two_name()
+    {
 
         $this->expectException(\Exception::class);
-        $router->run();
-        $router->add('aes',function (){},'a','GET');
+
+        $this->router->add('a',function (){},'a','GET');
+        $this->router->add('a',function (){},'a','GET');
+
+        $this->router->run();
 
 
     }

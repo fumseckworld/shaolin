@@ -65,7 +65,6 @@ namespace Imperium\Directory {
          *
          * @return bool
          *
-         * @throws Exception
          *
          */
         public static function create(string $directory): bool

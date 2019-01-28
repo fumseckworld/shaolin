@@ -1,6 +1,6 @@
 <?php
 
-namespace Testing\view;
+namespace Testing\views;
 
 
 use Imperium\View\View;
@@ -30,7 +30,7 @@ class ViewTest extends TestCase
     {
         $this->cache = 'tmp';
         $this->view = new View('views');
-        $this->name  = 'welcome.twig';
+        $this->name  = 'a.twig';
     }
 
     /**
@@ -42,7 +42,7 @@ class ViewTest extends TestCase
     {
         $content = $this->view->load($this->name);
         $this->assertNotEmpty($content);
-        $this->assertEquals('show ',$content);
+        $this->assertContains('show',$content);
 
     }
 
@@ -54,11 +54,10 @@ class ViewTest extends TestCase
     public function test_view_params()
     {
         $data = ['name' => 'Willy', 'username' => 'fumseck'];
-        $content = $this->view->load('a.twig',$data);
-        $this->assertEquals('Willy or fumseck',$content);
+        $content = $this->view->load('trans.twig',$data);
+        $this->assertContains('Willy or fumseck',$content);
 
     }
-
     /**
      *
      */
@@ -78,11 +77,4 @@ class ViewTest extends TestCase
         $this->assertNotEmpty($array);
     }
 
-    /**
-     * @throws \Twig_Error_Loader
-     */
-    public function test_path()
-    {
-        $this->assertContains('views/a',$this->view->add_path('a')->paths());
-    }
 }

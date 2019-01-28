@@ -6,6 +6,7 @@ use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
 use Imperium\Router\Router;
+use Imperium\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Whoops\Run;
 use Carbon\Carbon;
@@ -143,11 +144,7 @@ if (not_exist('view'))
 
         $view_dir   = realpath(config($file,'dir'));
 
-        $loader     = new Twig_Loader_Filesystem($view_dir);
-
-        $twig       = new Twig_Environment($loader,config($file,'config'));
-
-        return $twig->render($name,$args);
+        return View::init($view_dir,\config($file,'config'))->load($name,$args);
     }
 }
 

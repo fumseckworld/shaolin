@@ -749,14 +749,14 @@ namespace Imperium {
          *
          * @param Router $router
          *
-         * @return void
+         * @return string
          *
          * @throws Exception
          *
          */
-        public function run(Router $router): void
+        public function run(Router $router):string
         {
-            echo $router->run();
+            return $router->run();
         }
 
         /**
