@@ -44,14 +44,22 @@ namespace Imperium\View {
          * @param string $view_dir
          *
          * @param array $config
+         * @param array $extensions
          */
-        public function __construct(string $view_dir,array $config = [])
+        public function __construct(string $view_dir,array $config = [],array $extensions = [])
         {
             $this->view_dir = $view_dir;
             $this->loader = new Twig_Loader_Filesystem($this->view_dir);
             $this->twig = new Twig_Environment($this->loader,$config);
+
+            foreach ($extensions as $extension)
+                $this->twig->addExtension($extension);
         }
 
+        public function init(string $view_dir,array $config,array $extensions)
+        {
+            return new static($view_dir,$config,$extensions);
+        }
 
         /**
          *

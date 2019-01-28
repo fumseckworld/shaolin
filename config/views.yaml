@@ -1,0 +1,4 @@
+dir: '../views'
+config:
+  cache : '../cache'
+  charset: 'utf-8'

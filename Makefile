@@ -13,7 +13,7 @@ OLD=7.0.33
 UNIT="vendor/bin/phpunit"
 SLEEP="sleep 2 && clear"
 VERSION=$(shell php --version)
-SEED="seed"
+
 
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -29,33 +29,19 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
+all: mysql pgsql sqlite
 
-all: vendor dbs migrate
-	@$(UNIT) --coverage-html COVERAGE
+mysql: seed
+	install -D $@.yaml config/db.yaml
+	./vendor/bin/phpunit tests/$@
+pgsql: seed
+	install -D $@.yaml config/db.yaml
+	./vendor/bin/phpunit tests/$@
+sqlite: seed
+	install -D $@.yaml config/db.yaml
+	./vendor/bin/phpunit tests/$@
 
-
-old:
-	$(shell old)
-$(OLD): $(SEED) old
-	$(VERSION)
-	$(SLEEP)
-	$(UNIT)
-$(MIDDLE): $(SEED)
-	@bash php.sh $@
-	$(VERSION)
-	$(SLEEP)
-	$(UNIT)
-$(LATEST): $(SEED)
-	@bash php.sh $@
-	$(VERSION)
-	$(SLEEP)
-	$(UNIT)
-$(NEXT): $(SEED)
-	@bash php.sh $@
-	$(VERSION)
-	$(SLEEP)
-	$(UNIT)
-$(SEED): dbs migrate
+seed: dbs migrate
 
 disable:
 	sudo install -D xdebug_d.ini /etc/php/conf.d/xdebug.ini
@@ -67,7 +53,7 @@ help: ## Display the help
 vendor: ## Configure the app
 	@composer install
 
-migrate: pgsql mysql sqlite ## Run all migrations
+migrate: migrate_mysql migrate_pgsql migrate_sqlite ## Run all migrations
 
 serve: ## Start the development server
 	@clear
@@ -81,17 +67,17 @@ phinx: phinx.yml ## Create migration and seed
 	 @vendor/bin/phinx create $(PHINX)table
 	 @vendor/bin/phinx seed:create $(PHINX)Seeds
 
-pgsql: ## Seed postgresql database
-	@vendor/bin/phinx migrate -e $@
-	@vendor/bin/phinx seed:run -e $@
+migrate_pgsql: ## Seed postgresql database
+	@vendor/bin/phinx migrate -e pgsql
+	@vendor/bin/phinx seed:run -e pgsql
 
-mysql: ## Seed mysql database
-	@vendor/bin/phinx migrate -e $@
-	@vendor/bin/phinx seed:run -e $@
+migrate_mysql: ## Seed mysql database
+	@vendor/bin/phinx migrate -e mysql
+	@vendor/bin/phinx seed:run -e mysql
 
-sqlite: ## Seed sqlite database
-	@vendor/bin/phinx migrate -e $@
-	@vendor/bin/phinx seed:run -e $@
+migrate_sqlite: ## Seed sqlite database
+	@vendor/bin/phinx migrate -e sqlite
+	@vendor/bin/phinx seed:run -e sqlite
 
 dbs: clean ## Create all databases
 	@psql -c "create database $(BASE);" -U postgres

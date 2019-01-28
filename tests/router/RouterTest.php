@@ -37,7 +37,7 @@ class RouterTest extends DatabaseTest
 
         $router = new Router('show/50-mon-article','Testing','GET');
 
-        $router->add('show/:id-:slug','Post@show','show','GET',true,['id','slug'],Router::NUMERIC,Router::SLUG);
+        $router->add('show/:id-:slug','Controller@show','show','GET',true,['id','slug'],Router::NUMERIC,Router::SLUG);
 
         $this->assertEquals('show 50',$router->run());
 

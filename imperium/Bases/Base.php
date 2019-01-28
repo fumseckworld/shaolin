@@ -104,19 +104,19 @@ use Imperium\Tables\Table;
          */
         private $hidden_tables;
 
-       /**
-        *
-        * Create records in all tables not hidden
-        *
-        * @method seed
-        *
-        * @param  int   $records Number of records
-        *
-        * @return bool
-        *
-        * @throws Exception
-        *
-        */
+        /**
+         *
+         * Create records in all tables not hidden
+         *
+         * @method seed
+         *
+         * @param int $records Number of records
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
         public function seed(int $records = 100): bool
         {
             foreach ($this->tables as $x)
@@ -166,7 +166,7 @@ use Imperium\Tables\Table;
 
             $connect = connect($this->connexion->driver(),$new_name,$this->connexion->user(),$this->connexion->password(),$this->connexion->host(),$this->connexion->dump_path());
 
-            $table   = table($connect,'');
+            $table   = table($connect);
 
             return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($base);
         }
@@ -540,9 +540,12 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
+         * @throws Exception
          */
         public function has(): bool
         {
+            $this->check();
+
             return def($this->all);
         }
 

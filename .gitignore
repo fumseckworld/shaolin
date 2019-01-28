@@ -23,4 +23,7 @@ app.json
 COVERAGE
 marion
 tmp
+config/db.yaml
+cache
 .env
+zen.sqlite3

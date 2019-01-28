@@ -7,7 +7,7 @@ use Exception;
 use Imperium\Collection\Collection;
 use Imperium\Connexion\Connect;
 use Imperium\Html\Form\Form;
-use Imperium\Imperium;
+use Imperium\App;
 use Imperium\Tables\Table;
 
 use Imperium\Users\Users;
@@ -38,10 +38,10 @@ class ImperiumTest extends DatabaseTest
 
     public function test_append_column()
     {
-            $this->assertTrue($this->mysql()->append_column('salary',Imperium::INT,0,false,true));
+            $this->assertTrue($this->mysql()->append_column('salary',App::INT,0,false,true));
             $this->assertTrue($this->mysql()->remove_column('salary'));
 
-            $this->assertTrue($this->postgresql()->append_column('salary',Imperium::CHARACTER_VARYING,255,false,true));
+            $this->assertTrue($this->postgresql()->append_column('salary',App::CHARACTER_VARYING,255,false,true));
             $this->assertTrue($this->postgresql()->remove_column('salary'));
     }
 

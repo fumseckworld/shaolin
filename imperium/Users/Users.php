@@ -115,7 +115,7 @@ namespace Imperium\Users {
          * @return Users
          *
          */
-        public function hidden(array $hidden): Users
+        public function hidden(array $hidden =[]): Users
         {
             $this->hidden = $hidden;
 

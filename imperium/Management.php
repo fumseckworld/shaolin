@@ -5,16 +5,18 @@ namespace Imperium {
     use Exception;
 
 
+    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
+    use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Router\Router;
+    use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
-    use Imperium\View\View;
 
     interface Management
     {
@@ -85,14 +87,13 @@ namespace Imperium {
          *
          * Display all records inside a table
          *
+         * @param string $table
+         * @param string $column
          * @param string $order
          *
          * @return array
-         *
-         * @throws Exception
-         *
          */
-        public function all(string $order = 'desc') : array;
+        public function all(string $table,string $column,string $order = DESC) : array;
 
         /**
          *
@@ -227,6 +228,7 @@ namespace Imperium {
          *
          * Append a new column in an existing table
          *
+         * @param string $table
          * @param string $column
          * @param string $type
          * @param int $size
@@ -235,45 +237,41 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function append_column(string $column, string $type, int $size, bool $unique,bool $nullable): bool;
+        public function append_column(string $table,string $column, string $type, int $size, bool $unique,bool $nullable): bool;
+
         /**
          *
          * Display all columns in a table
          *
+         * @param string $table
          * @return array
          *
-         * @throws Exception
-         *
          */
-        public function show_columns() : array;
+        public function show_columns(string $table) : array;
 
         /**
          *
          * Display all column types
          *
+         * @param string $table
          * @return array
          *
-         * @throws Exception
-         *
          */
-        public function show_columns_types() : array;
+        public function show_columns_types(string $table) : array;
 
 
         /**
          *
          * Check if a column exist in a table
          *
+         * @param string $table
          * @param string $column
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function has_column(string $column) : bool;
+        public function has_column(string $table,string $column) : bool;
 
         /**
          *
@@ -381,71 +379,51 @@ namespace Imperium {
          *
          * Find a record by id
          *
+         * @param string $table
          * @param int $id
          *
          * @return array
          *
-         * @throws Exception
-         *
          */
-        public function find(int $id) : array;
-
-        /**
-         *
-         * Find a record by a where clause
-         *
-         * @param string $column
-         * @param string $condition
-         * @param $expected
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function where(string $column,string $condition,$expected) : array;
-
+        public function find(string $table,int $id) : array;
 
         /**
          *
          * Find a record or fail if not found
          *
+         * @param string $table
          * @param int $id
          *
          * @return array
          *
-         * @throws Exception
-         *
          */
-        public function find_or_fail(int $id) : array;
+        public function find_or_fail(string $table,int $id) : array;
 
 
         /**
          *
          * Save the data in a table
          *
+         * @param string $table
          * @param array $data
          * @param array $ignore
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function save(array $data,array $ignore = []) : bool;
+        public function save(string $table,array $data,array $ignore = []) : bool;
 
         /**
          *
          * Save the data in a table
          *
+         * @param string $table
          * @param int $id
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function remove_record(int $id) : bool;
+        public function remove_record(string $table,int $id) : bool;
 
         /**
          *
@@ -469,15 +447,14 @@ namespace Imperium {
          *
          * Rename a column in current table
          *
+         * @param string $table
          * @param string $column
          * @param string $new_name
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function rename_column(string $column,string $new_name) : bool;
+        public function rename_column(string $table,string $column,string $new_name) : bool;
 
         /**
          *
@@ -512,14 +489,13 @@ namespace Imperium {
          *
          * Remove a column in current table
          *
+         * @param string $table
          * @param string $column
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
-        public function remove_column(string $column) : bool;
+        public function remove_column(string $table,string $column) : bool;
 
         /**
          *
@@ -572,7 +548,7 @@ namespace Imperium {
         /**
          * @return Table
          */
-        public function tables(): Table;
+        public function table(): Table;
 
         /**
          *
@@ -581,20 +557,22 @@ namespace Imperium {
         public function connect(): Connect;
 
         /**
-         * @return View
+         * @return Flash
          */
-        public function view(): View;
+        public function flash(): Flash;
+
+        /**
+         * @return Session
+         */
+        public function session(): Session;
 
         /**
          *
-         * @param string $url
+         * @param ServerRequest $serverRequest
          * @param string $namespace
-         * @param string $method
-         *
          * @return Router
-         *
          */
-        public function router(string $url,string $namespace,string $method = ''): Router;
+        public function router(ServerRequest $serverRequest,string $namespace): Router;
 
         /**
          *
@@ -613,16 +591,8 @@ namespace Imperium {
         /**
          *
          * @method __construct
-         *
-         * @param  Connect $connect The connection to the base
-         * @param  string $current_table The current table
-         * @param string $views_dir The views dir path
-         * @param array $twig_config
-         * @param string $env_path
-         * @param  array $hidden_tables All hidden tables in current base
-         * @param  array $hidden_bases All hidden bases for the drivers
          */
-        public function __construct(Connect $connect,string $current_table,string $views_dir,array $twig_config, string $env_path,array $hidden_tables, array $hidden_bases);
+        public function __construct();
 
         // GETTER
 

@@ -4,19 +4,22 @@ namespace Imperium {
 
     use Dotenv\Dotenv;
     use Exception;
+    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
     use Imperium\Dump\Dump;
     use Imperium\File\File;
+    use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
     use Imperium\Json\Json;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Router\Router;
+    use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
-    use Imperium\View\View;
+
 
 
     /**
@@ -32,7 +35,7 @@ namespace Imperium {
     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
     *
     **/
-    class Imperium extends Zen implements Management
+    class App extends Zen implements Management
     {
 
         /**
@@ -43,14 +46,6 @@ namespace Imperium {
          *
          */
         private $connect;
-
-        /**
-         *
-         * Current table
-         *
-         * @var Table
-         */
-        private $table;
 
         /**
          *
@@ -91,27 +86,7 @@ namespace Imperium {
          */
         private $form;
 
-        /**
-         * @var Table
-         */
-        private $tables;
 
-        /**
-         * @var View
-         */
-        private $view;
-        /**
-         * @var string
-         */
-        private $views_dir;
-        /**
-         * @var array
-         */
-        private $twig_config;
-        /**
-         * @var string
-         */
-        private $env_path;
         /**
          * @var array
          */
@@ -121,6 +96,11 @@ namespace Imperium {
          */
         private $hidden_bases;
 
+
+        /**
+         * @var Table
+         */
+        private $table;
         /**
          * @var Dotenv
          */
@@ -139,7 +119,7 @@ namespace Imperium {
          */
         public function show_tables(array $hidden = []): array
         {
-            return $this->tables()->hidden($hidden)->show();
+            return $this->table()->hidden($hidden)->show();
         }
 
         /**
@@ -207,14 +187,16 @@ namespace Imperium {
          *
          * Display all records inside a table
          *
+         * @param string $table
+         * @param string $column
          * @param string $order
          * @return array
          *
          * @throws Exception
          */
-        public function all(string $order = Table::DESC) : array
+        public function all(string $table,string $column,string $order = DESC) : array
         {
-            return $this->model()->all($order);
+            return $this->model()->from($table)->all($column,$order);
         }
 
         /**
@@ -230,7 +212,7 @@ namespace Imperium {
          */
         public function table_exist(string $table): bool
         {
-             return $this->tables()->exist($table);
+             return $this->table()->exist($table);
         }
 
         /**
@@ -279,7 +261,7 @@ namespace Imperium {
          */
         public function change_table_collation(string $table, string $new_collation): bool
         {
-           return $this->tables()->from($table)->set_collation($new_collation)->change_collation();
+           return $this->table()->from($table)->set_collation($new_collation)->change_collation();
         }
 
         /**
@@ -311,7 +293,7 @@ namespace Imperium {
          */
         public function change_table_charset(string $table, string $new_charset): bool
         {
-            return $this->tables()->from($table)->set_charset($new_charset)->change_charset();
+            return $this->table()->from($table)->set_charset($new_charset)->change_charset();
         }
 
         /**
@@ -341,7 +323,7 @@ namespace Imperium {
          */
         public function remove_table(string $table): bool
         {
-            return $this->tables()->drop($table);
+            return $this->table()->drop($table);
         }
 
         /**
@@ -357,13 +339,14 @@ namespace Imperium {
          */
         public function empty_table(string $table): bool
         {
-            return $this->tables()->truncate($table);
+            return $this->table()->truncate($table);
         }
 
         /**
          *
          * Append a new column in an existing table
          *
+         * @param string $table
          * @param string $column
          * @param string $type
          * @param int $size
@@ -373,45 +356,47 @@ namespace Imperium {
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function append_column(string $column, string $type, int $size, bool $unique,bool $nullable): bool
+        public function append_column(string $table,string $column, string $type, int $size, bool $unique,bool $nullable): bool
         {
-            return $this->tables()->append_column($column,$type,$size,$unique,$nullable);
+            return $this->table()->from($table)->append_column($column,$type,$size,$unique,$nullable);
         }
 
         /**
          *
          * Display all columns in a table
          *
+         * @param string $table
          * @return array
          *
          * @throws Exception
-         *
          */
-        public function show_columns(): array
+        public function show_columns(string $table): array
         {
-            return $this->tables()->columns();
+            return $this->table()->from($table)->columns();
         }
 
         /**
          *
          * Display all column types
          *
+         * @param string $table
+         *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function show_columns_types(): array
+        public function show_columns_types(string $table): array
         {
-             return $this->tables()->columns_types();
+             return $this->table()->from($table)->columns_types();
         }
 
         /**
          *
          * Check if a column exist in a table
          *
+         * @param string $table
          * @param string $column
          *
          * @return bool
@@ -419,9 +404,9 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function has_column(string $column): bool
+        public function has_column(string $table,string $column): bool
         {
-            return $this->tables()->has_column($column);
+            return $this->table()->from($table)->has_column($column);
         }
 
         /**
@@ -435,7 +420,7 @@ namespace Imperium {
          */
         public function has_tables(): bool
         {
-           return $this->tables()->has();
+           return $this->table()->has();
         }
 
         /**
@@ -554,42 +539,23 @@ namespace Imperium {
          *
          * Find a record by id
          *
+         * @param string $table
          * @param int $id
          *
          * @return array
          *
          * @throws Exception
-         *
          */
-        public function find(int $id): array
+        public function find(string $table,int $id): array
         {
-           return $this->model()->find($id);
-        }
-
-        /**
-         *
-         * Call the model and return the result of the where clause
-         *
-         * @method where
-         *
-         * @param  string $column The column name
-         * @param  string $condition The condition
-         * @param  mixed $expected The expected value
-         *
-         * @return array
-         *
-         * @throws Exception
-         * 
-         */
-        public function where(string $column, string $condition, $expected): array
-        {
-            return $this->model()->where($column,$condition,$expected)->get();
+           return $this->model()->from($table)->find($id);
         }
 
         /**
          *
          * Find a record or fail if not found
          *
+         * @param string $table
          * @param int $id
          *
          * @return array
@@ -597,32 +563,33 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function find_or_fail(int $id): array
+        public function find_or_fail(string $table,int $id): array
         {
-           return $this->model()->find_or_fail($id);
+           return $this->model()->from($table)->find_or_fail($id);
         }
 
         /**
          *
          * Save the data in a table
          *
+         * @param string $table
          * @param array $data
          * @param array $ignore
          *
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function save(array $data, array $ignore = []): bool
+        public function save(string $table,array $data, array $ignore = []): bool
         {
-            return $this->tables()->save($data,$this->tables()->current(),$ignore);
+            return $this->table()->from($table)->save($data,$ignore);
         }
 
         /**
          *
          * Save the data in a table
          *
+         * @param string $table
          * @param int $id
          *
          * @return bool
@@ -630,9 +597,9 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function remove_record(int $id): bool
+        public function remove_record(string $table,int $id): bool
         {
-            return $this->tables()->remove($id);
+            return $this->table()->from($table)->remove($id);
         }
 
         /**
@@ -651,13 +618,14 @@ namespace Imperium {
          */
         public function update_record(int $id, array $data, string $table,array $ignore = []): bool
         {
-           return $this->tables()->update($id,$data,$table,$ignore);
+           return $this->table()->from($table)->update($id,$data,$ignore);
         }
 
         /**
          *
          * Rename a column in current table
          *
+         * @param string $table
          * @param string $column
          * @param string $new_name
          *
@@ -665,15 +633,16 @@ namespace Imperium {
          *
          * @throws Exception
          */
-        public function rename_column(string $column, string $new_name): bool
+        public function rename_column(string $table,string $column, string $new_name): bool
         {
-            return $this->tables()->rename_column($column,$new_name);
+            return $this->table()->from($table)->rename_column($column,$new_name);
         }
 
         /**
          *
          * Remove a column in current table
          *
+         * @param string $table
          * @param string $column
          *
          * @return bool
@@ -681,9 +650,9 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function remove_column(string $column): bool
+        public function remove_column(string $table,string $column): bool
         {
-            return $this->tables()->remove_column($column);
+            return $this->table()->from($table)->remove_column($column);
         }
 
 
@@ -707,7 +676,7 @@ namespace Imperium {
          */
         public function append_columns(string $table, array $new_columns_names, array $new_columns_types, array $new_columns_length, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
         {
-           return $this->tables()->append_columns($table,$this->table,$new_columns_names,$new_columns_types,$new_column_order,$existing_columns_selected,$unique,$null);
+           return $this->table()->from($table)->append_columns($$new_columns_names,$new_columns_types,$new_column_order,$existing_columns_selected,$unique,$null);
         }
 
         /**
@@ -733,39 +702,46 @@ namespace Imperium {
          *
          * @method __construct
          *
-         * @param  Connect $connect The connection to the base
-         * @param  string $current_table The current table
-         * @param string $views_dir
-         * @param array $twig_config
-         * @param string $env_path
-         * @param  array $hidden_tables All hidden tables in current base
-         * @param  array $hidden_bases All hidden bases for the drivers
+         * @throws Exception
+         */
+        public function __construct()
+        {
+
+            $file = 'db';
+            $this->hidden_tables    = config($file,'hidden_tables');
+            $this->hidden_bases     = config($file,'hidden_bases');
+
+            $this->connect          = connect(config($file,'driver'),config($file,'base'),config($file,'username'),config($file,'password'),config($file,'host'),config($file,'dump'));
+            $this->driver           = $this->connect->driver();
+
+            $this->table            = new Table($this->connect);
+            $this->query            = new Query($this->table,$this->connect);
+            $this->base             = new Base($this->connect,$this->table,$this->hidden_tables,$this->hidden_bases);
+            $this->users            = new Users($this->connect);
+            $this->model            = new Model($this->connect,$this->table);
+            $this->json             = new Json('app.json');
+            $this->form             = new Form();
+
+            if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
+               $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
+            else
+                $path = dirname(request()->server->get('DOCUMENT_ROOT'));
+
+            $this->env              = Dotenv::create($path);
+            $this->env->load();
+        }
+
+
+        /**
+         *
+         * @return App
          *
          * @throws Exception
          */
-        public function __construct(Connect $connect,string $current_table,string $views_dir,array $twig_config,string $env_path,array $hidden_tables, array $hidden_bases)
+        public static function init(): App
         {
-            $this->connect   = $connect;
-            $this->driver    = $connect->driver();
-            $this->tables    = new Table($connect,$current_table,$hidden_tables);
-            $this->table     = $current_table;
-            $this->query     = new Query($this->tables,$connect);
-            $this->base      = new Base($connect,$this->tables,$hidden_tables,$hidden_bases);
-            $this->users     = new Users($connect);
-            $this->model     = new Model($connect,$this->tables,$current_table);
-            $this->json      = new Json();
-            $this->form      = new Form();
-            $this->view      = new View($views_dir,$twig_config);
-            $this->views_dir = $views_dir;
-            $this->twig_config = $twig_config;
-            $this->env_path = $env_path;
-            $this->hidden_tables = $hidden_tables;
-            $this->hidden_bases = $hidden_bases;
-            $this->env  = Dotenv::create($this->env_path);
-            $this->env->load();
-
+            return new static();
         }
-
 
         /**
          *
@@ -773,14 +749,14 @@ namespace Imperium {
          *
          * @param Router $router
          *
-         * @return mixed
+         * @return void
          *
          * @throws Exception
          *
          */
-        public function run(Router $router)
+        public function run(Router $router): void
         {
-            return $router->run();
+            echo $router->run();
         }
 
         /**
@@ -792,6 +768,7 @@ namespace Imperium {
         {
             return $this->env;
         }
+
         /**
          *
          * Management of json
@@ -898,6 +875,7 @@ namespace Imperium {
         {
             return $this->bases()->seed($records);
         }
+
         /**
          *
          * Rename a base
@@ -914,16 +892,16 @@ namespace Imperium {
         {
             switch ($this->driver)
             {
-                case Connect::MYSQL:
+                case MYSQL :
                     return $this->bases()->rename($base,$new_name);
                 break;
-                case Connect::POSTGRESQL:
+                case POSTGRESQL :
                     return $this->connect->execute("ALTER DATABASE $base RENAME TO $new_name");
                 break;
-                case Connect::SQLITE:
+                case SQLITE :
                     return File::rename($base,$new_name);
                 break;
-                default:
+                default :
                     return false;
                 break;
             }
@@ -943,7 +921,7 @@ namespace Imperium {
          */
         public function rename_table(string $table, string $new_name): bool
         {
-            return $this->tables()->from($table)->rename($new_name);
+            return $this->table()->from($table)->rename($new_name);
         }
 
 
@@ -985,9 +963,9 @@ namespace Imperium {
         /**
          * @return Table
          */
-        public function tables(): Table
+        public function table(): Table
         {
-            return $this->tables;
+            return $this->table;
         }
 
         /**
@@ -1001,28 +979,15 @@ namespace Imperium {
 
         /**
          *
-         * @return View
-         *
-         */
-        public function view(): View
-        {
-            return $this->view;
-        }
-
-        /**
-         *
          * Get the router
          *
-         * @param string $url
+         * @param ServerRequest $serverRequest
          * @param string $namespace
-         * @param string $method
-         *
          * @return Router
-         *
          */
-        public function router(string $url,string $namespace,string $method = ''): Router
+        public function router(ServerRequest $serverRequest,string $namespace): Router
         {
-            return new Router($url, $namespace,$method);
+            return new Router($serverRequest, $namespace);
         }
 
         /**
@@ -1036,7 +1001,7 @@ namespace Imperium {
          */
         public function collection(array $data = []): Collection
         {
-            return new Collection($data);
+            return collection($data);
         }
 
         /**
@@ -1050,5 +1015,20 @@ namespace Imperium {
             return $validate ? $this->form->validate() : $this->form;
         }
 
+        /**
+         * @return Flash
+         */
+        public function flash(): Flash
+        {
+            return new Flash();
+        }
+
+        /**
+         * @return Session
+         */
+        public function session(): Session
+        {
+            return new Session();
+        }
     }
 }

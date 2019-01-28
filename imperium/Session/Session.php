@@ -2,8 +2,7 @@
 
 namespace Imperium\Session {
 
-    use Exception;
-    use Imperium\Collection\Collection;
+
 
     /**
      *
@@ -20,23 +19,13 @@ namespace Imperium\Session {
      **/
     class Session
     {
-        /**
-         *
-         * All data
-         *
-         * @var Collection
-         *
-         */
-        private $data;
 
-        /**
-         * Session constructor
-         *
-         */
         public function __construct()
         {
-            $this->data = collection();
-
+            if (!session_loaded())
+            {
+                session_start();
+            }
         }
 
         /**
@@ -50,7 +39,7 @@ namespace Imperium\Session {
          */
         public function get($key)
         {
-            return $this->data->get($key);
+            return array_key_exists($key,$_SESSION) ? $_SESSION[$key]: '';
         }
 
         /**
@@ -63,9 +52,9 @@ namespace Imperium\Session {
          * @return Session
          *
          */
-        public function set($value,$key = ''): Session
+        public function set($value,$key): Session
         {
-            $this->data->add($value,$key);
+            $_SESSION[$key] = $value;
 
             return $this;
         }
@@ -78,12 +67,15 @@ namespace Imperium\Session {
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
         public function remove($key): bool
         {
-           return $this->data->remove($key)->not_exist($key);
+            if (array_key_exists($key,$_SESSION)) {
+
+                unset($_SESSION[$key]);
+                return true;
+            }
+            return false;
         }
 
         /**
@@ -95,7 +87,7 @@ namespace Imperium\Session {
          */
         public function all(): array
         {
-            return $this->data->collection();
+            return $_SESSION;
         }
 
     }

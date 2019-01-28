@@ -81,7 +81,7 @@ namespace Imperium\Html\Form {
          * @var string
          *
          */
-        const CUSTOM_SELECT_CLASS = 'custom-select';
+        const CUSTOM_SELECT_CLASS = 'form-control';
 
         /**
          *

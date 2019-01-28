@@ -1,0 +1,8 @@
+driver: pgsql
+base: zen
+username: postgres
+password: postgres
+dump: '../dump'
+host: 'localhost'
+hidden_tables: ['phinxlog']
+hidden_bases : []

@@ -2,10 +2,11 @@
 namespace tests\base;
 
 use Exception;
+use GuzzleHttp\Psr7\ServerRequest;
 use Imperium\Bases\Base;
 use Imperium\Collection\Collection;
 use Imperium\Connexion\Connect;
-use Imperium\Imperium;
+use Imperium\App;
 use Imperium\Json\Json;
 use Imperium\Model\Model;
 use Imperium\Query\Query;
@@ -25,10 +26,15 @@ use Whoops\Run;
  */
 class AppTest extends DatabaseTest
 {
+
+    /**
+     * @throws Exception
+     */
     public function test_url_methods()
     {
 
-        $route = new Router('','','');
+        $request = new ServerRequest(GET,'/');
+        $route = new Router($request,'');
 
         $route->add('/',function (){},'home','GET');
         $route->add('/bedrooms',function (){},'bedrooms','GET');
@@ -48,23 +54,37 @@ class AppTest extends DatabaseTest
         method('b');
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_apps()
     {
-        $a = app(Connect::MYSQL,env('MYSQL_USER'),env('BASE'),env('MYSQL_PASSWORD'),Connect::LOCALHOST,'dump','imperium','.','views',[],[],[]);
-        $this->assertInstanceOf(Imperium::class,$a);
+        $a = app(Connect::MYSQL,env('MYSQL_USER'),env('BASE'),env('MYSQL_PASSWORD'),Connect::LOCALHOST,'dump','.','views',[],[],[]);
+        $this->assertInstanceOf(App::class,$a);
     }
 
+    /**
+     *
+     */
     public function test_env()
     {
         $this->mysql()->env()->load();
         $this->assertEquals('root',env('MYSQL_USER'));
 
     }
+
+    /**
+     *
+     */
     public function test_not_exist()
     {
         $this->assertTrue(not_exist(faker()->name));
         $this->assertFalse(not_exist('def'));
     }
+
+    /**
+     *
+     */
     public function test_ago()
     {
         $this->assertNotEmpty(ago('fr',now()));
@@ -72,17 +92,28 @@ class AppTest extends DatabaseTest
         $this->assertNotEmpty(ago('de',now()));
     }
 
+    /**
+     *
+     */
     public function test_image()
     {
         $this->assertInstanceOf(ImageManager::class,image());
         $this->assertInstanceOf(ImageManager::class,image("imagick"));
     }
+
+    /**
+     *
+     */
     public function test_loaded()
     {
         $this->assertTrue(mysql_loaded());
         $this->assertTrue(pgsql_loaded());
         $this->assertTrue(sqlite_loaded());
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_quote()
     {
         $word = "l'agent à été l'as du voyage d'affaire`";
@@ -93,6 +124,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_register()
     {
         $form = secure_register_form('/', '127.0.0.1', '127.0.0.1', 'username', 'username will be use','username can be empty', 'email', 'email will be use', 'email can be empty', 'password', 'password will be use', 'password not be empty', 'confirm the password','create account', 'register', true,['fr' => 'French','en' => 'English' ],
@@ -120,6 +154,9 @@ class AppTest extends DatabaseTest
         $this->assertEquals('',$form);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_execute()
     {
         $this->assertTrue(execute($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
@@ -127,12 +164,20 @@ class AppTest extends DatabaseTest
         $this->assertTrue(execute($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
 
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_req()
     {
         $this->assertNotEmpty(req($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
         $this->assertNotEmpty(req($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
         $this->assertNotEmpty(req($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
     }
+
+    /**
+     *
+     */
     public function test_assign()
     {
         $var = 'i am a';
@@ -146,31 +191,40 @@ class AppTest extends DatabaseTest
         $this->assertEquals(" man",$var);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_query()
     {
-        $this->assertInstanceOf(Query::class,\query($this->mysql()->tables(),$this->mysql()->connect()));
-        $this->assertInstanceOf(Query::class,\query($this->postgresql()->tables(),$this->postgresql()->connect()));
-        $this->assertInstanceOf(Query::class,\query($this->sqlite()->tables(),$this->sqlite()->connect()));
-        $this->assertInstanceOf(Query::class,\query($this->sqlite()->tables(),$this->sqlite()->connect()));
+        $this->assertInstanceOf(Query::class,\query($this->mysql()->table(),$this->mysql()->connect()));
+        $this->assertInstanceOf(Query::class,\query($this->postgresql()->table(),$this->postgresql()->connect()));
+        $this->assertInstanceOf(Query::class,\query($this->sqlite()->table(),$this->sqlite()->connect()));
+        $this->assertInstanceOf(Query::class,\query($this->sqlite()->table(),$this->sqlite()->connect()));
 
-        $this->assertInstanceOf(Model::class,\model($this->mysql()->connect(),$this->mysql()->tables(),'model'));
-        $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->tables(),'model'));
-        $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->tables(),'model'));
+        $this->assertInstanceOf(Model::class,\model($this->mysql()->connect(),$this->mysql()->table()));
+        $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->table()));
+        $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->table()));
 
 
-        $this->assertInstanceOf(Table::class,table($this->mysql()->connect(),'model'));
-        $this->assertInstanceOf(Table::class,table($this->postgresql()->connect(),'model'));
-        $this->assertInstanceOf(Table::class,table($this->sqlite()->connect(),'model'));
+        $this->assertInstanceOf(Table::class,table($this->mysql()->connect()));
+        $this->assertInstanceOf(Table::class,table($this->postgresql()->connect()));
+        $this->assertInstanceOf(Table::class,table($this->sqlite()->connect()));
 
 
 
     }
 
+    /**
+     *
+     */
     public function test_twig()
     {
         $this->assertInstanceOf(Twig_Environment::class,twig('views',[]));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_awesome()
     {
         $this->assertNotEmpty(awesome());
@@ -178,6 +232,10 @@ class AppTest extends DatabaseTest
         $this->assertNotEmpty(bootswatch('lumen'));
         $this->assertNotEmpty(bootswatch('bootstrap'));
     }
+
+    /**
+     *
+     */
     public function test_today_and_future()
     {
         $this->assertNotEmpty(today());
@@ -200,11 +258,17 @@ class AppTest extends DatabaseTest
         $this->assertNotEmpty(future('a',1));
     }
 
+    /**
+     *
+     */
     public function test_lines()
     {
         $this->assertNotEmpty(lines('README.md'));
     }
 
+    /**
+     *
+     */
     public function test_slug()
     {
         $this->assertEquals('linux-is-better',\slug('LINUX IS BETTER'));
@@ -213,6 +277,9 @@ class AppTest extends DatabaseTest
         $this->assertEquals('the-planet-is-dead',\slug('The--planet--IS--DEAD','--'));
     }
 
+    /**
+     *
+     */
     public function test_pair()
     {
         $this->assertTrue(is_pair(0));
@@ -228,6 +295,9 @@ class AppTest extends DatabaseTest
         $this->assertTrue(is_pair(10));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_equal()
     {
         $this->assertTrue(equal('a','a'));
@@ -236,6 +306,9 @@ class AppTest extends DatabaseTest
         $this->assertFalse(equal('om','psg'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_equal_exe()
     {
         $msg = "matrix";
@@ -250,6 +323,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_is_not_false()
     {
         $this->assertTrue(is_not_false(true));
@@ -258,6 +334,9 @@ class AppTest extends DatabaseTest
         $this->assertFalse(is_not_false(false));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_is_not_false_exe()
     {
         $msg = "matrix";
@@ -272,6 +351,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_is_not_true()
     {
         $this->assertTrue(is_not_true(false));
@@ -280,48 +362,25 @@ class AppTest extends DatabaseTest
         $this->assertFalse(is_not_true(true));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_query_result()
     {
         $sql = '';
-        $result = query_result(SELECT,$this->mysql()->model(),execute_query($this->mysql(),SELECT,'id',EQUAL,4,'','',''
+        $result = query_result(current_table(),SELECT,$this->mysql()->model(),execute_query($this->mysql(),SELECT,'id',EQUAL,4,'','',''
             ,'','btn','commit','/','id',ASC,$sql),'success','not found','empty',$sql);
         $this->assertNotEmpty($result);
         $this->assertNotEmpty($sql);
 
        $sql = '';
-        $result = query_result(INNER_JOIN,$this->mysql()->model(),execute_query($this->mysql(),INNER_JOIN,'id',EQUAL,4,'imperium','id','base'
+        $result = query_result(current_table(),INNER_JOIN,$this->mysql()->model(),execute_query($this->mysql(),INNER_JOIN,'id',EQUAL,4,'imperium','id','base'
             ,'id','btn','commit','/','imperium.id',ASC,$sql),'success','not found','empty',$sql);
         $this->assertNotEmpty($result);
         $this->assertNotEmpty($sql);
 
         $sql = '';
-       $result = query_result(LEFT_JOIN,$this->mysql()->model(),execute_query($this->mysql(),LEFT_JOIN,'id',EQUAL,4,'imperium','id','base'
-            ,'id','btn','commit','/','imperium.id',ASC,$sql),'success','not found','empty',$sql);
-        $this->assertNotEmpty($result);
-        $this->assertNotEmpty($sql);
-
-
-        $sql = '';
-        $result = query_result(INNER_JOIN,$this->postgresql()->model(),execute_query($this->postgresql(),INNER_JOIN,'id',EQUAL,4,'imperium','id','base'
-            ,'id','btn','commit','/','imperium.id',ASC,$sql),'success','not found','empty',$sql);
-        $this->assertNotEmpty($result);
-        $this->assertNotEmpty($sql);
-
-        $sql = '';
-        $result = query_result(LEFT_JOIN,$this->postgresql()->model(),execute_query($this->postgresql(),LEFT_JOIN,'id',EQUAL,4,'imperium','id','base'
-            ,'id','btn','commit','/','imperium.id',ASC,$sql),'success','not found','empty',$sql);
-        $this->assertNotEmpty($result);
-        $this->assertNotEmpty($sql);
-
-
-        $sql = '';
-        $result = query_result(INNER_JOIN,$this->sqlite()->model(),execute_query($this->sqlite(),INNER_JOIN,'id',EQUAL,4,'imperium','id','base'
-            ,'id','btn','commit','/','imperium.id',ASC,$sql),'success','not found','empty',$sql);
-        $this->assertNotEmpty($result);
-        $this->assertNotEmpty($sql);
-
-        $sql = '';
-        $result = query_result(LEFT_JOIN,$this->sqlite()->model(),execute_query($this->sqlite(),LEFT_JOIN,'id',EQUAL,4,'imperium','id','base'
+       $result = query_result(current_table(),LEFT_JOIN,$this->mysql()->model(),execute_query($this->mysql(),LEFT_JOIN,'id',EQUAL,4,'imperium','id','base'
             ,'id','btn','commit','/','imperium.id',ASC,$sql),'success','not found','empty',$sql);
         $this->assertNotEmpty($result);
         $this->assertNotEmpty($sql);
@@ -329,6 +388,10 @@ class AppTest extends DatabaseTest
 
 
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_is_not_true_exe()
     {
         $msg = "matrix";
@@ -342,13 +405,18 @@ class AppTest extends DatabaseTest
     }
 
 
-
+    /**
+     * @throws Exception
+     */
     public function test_is_false()
     {
         $this->assertTrue(is_false(false));
         $this->assertFalse(is_false(true));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_is_false_exe()
     {
         $msg = "matrix";
@@ -361,12 +429,18 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_is_true()
     {
         $this->assertTrue(is_true(true));
         $this->assertFalse(is_true(false));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_is_true_exe()
     {
         $msg = "matrix";
@@ -378,6 +452,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_different()
     {
         $this->assertTrue(different(true,false));
@@ -386,6 +463,9 @@ class AppTest extends DatabaseTest
         $this->assertFalse(different(false,false));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_different_exe()
     {
         $msg = "matrix";
@@ -399,53 +479,82 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_base_to_json()
     {
         $this->assertTrue(bases_to_json($this->mysql()->bases(),'app.json','bases'));
         $this->assertTrue(bases_to_json($this->postgresql()->bases(),'app.json','bases'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_user_to_json()
     {
         $this->assertTrue(users_to_json($this->mysql()->users(),'app.json','bases'));
         $this->assertTrue(users_to_json($this->postgresql()->users(),'app.json','bases'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_table_to_json()
     {
-        $this->assertTrue(tables_to_json($this->mysql()->tables(),'app.json','bases'));
-        $this->assertTrue(tables_to_json($this->postgresql()->tables(),'app.json','bases'));
-        $this->assertTrue(tables_to_json($this->sqlite()->tables(),'app.json','bases'));
+        $this->assertTrue(tables_to_json($this->mysql()->table(),'app.json','bases'));
+        $this->assertTrue(tables_to_json($this->postgresql()->table(),'app.json','bases'));
+        $this->assertTrue(tables_to_json($this->sqlite()->table(),'app.json','bases'));
     }
 
-    public function test_sql_to_jssn()
+    /**
+     * @throws Exception
+     */
+    public function test_sql_to_json()
     {
         $this->assertTrue(sql_to_json($this->mysql()->connect(),'app.json',["show databases","show tables","select host, User from mysql.user",$this->mysql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],['bases','tables',"user","base_records"]));
         $this->assertTrue(sql_to_json($this->postgresql()->connect(),'app.json',[$this->postgresql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
         $this->assertTrue(sql_to_json($this->sqlite()->connect(),'app.json',[$this->sqlite()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_length()
     {
         $this->assertEquals(5,length('trois'));
         $this->assertEquals(4,length([1,2,3,4]));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_connect_instance()
     {
         $this->assertInstanceOf(Connect::class,\connect(Connect::MYSQL,'zen','root','root',Connect::LOCALHOST,'dump'));
         $this->assertInstanceOf(Connect::class,\connect(Connect::POSTGRESQL,'zen','postgres','postgres',Connect::LOCALHOST,'dump'));
         $this->assertInstanceOf(Connect::class,\connect(Connect::SQLITE,'zen','','',Connect::LOCALHOST,'dump'));
     }
+
+    /**
+     *
+     */
     public function test_json_instance()
     {
         $this->assertInstanceOf(Json::class,json('app.json'));
     }
+
+    /**
+     *
+     */
     public function test_collection_instance()
     {
         $this->assertInstanceOf(Collection::class,collection());
     }
 
+    /**
+     *
+     */
     public function test_def()
     {
         $a ='';
@@ -455,27 +564,34 @@ class AppTest extends DatabaseTest
         $this->assertTrue(def($a));
         $this->assertFalse(not_def($a));
     }
+
+    /**
+     *
+     */
     public function test_zones()
     {
         $this->assertContains('Europe/Paris',zones(''));
         $this->assertContains('a',zones('a'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_table_select()
     {
-        $select = tables_select('base',$this->mysql()->tables(),[],'?=','csrf','');
+        $select = tables_select('base',$this->mysql()->table(),[],'?=','csrf','');
         $this->assertContains('base',$select);
         $this->assertContains('?=',$select);
         $this->assertContains('/',$select);
         $this->assertContains('csrf',$select);
 
-        $select = tables_select('base',$this->postgresql()->tables(),[],'?=','csrf','');
+        $select = tables_select('base',$this->postgresql()->table(),[],'?=','csrf','');
         $this->assertContains('base',$select);
         $this->assertContains('?=',$select);
         $this->assertContains('/',$select);
         $this->assertContains('csrf',$select);
 
-        $select = tables_select('base',$this->sqlite()->tables(),[],'?=','csrf','');
+        $select = tables_select('base',$this->sqlite()->table(),[],'?=','csrf','');
         $this->assertContains('base',$select);
         $this->assertContains('?=',$select);
         $this->assertContains('/',$select);
@@ -483,11 +599,18 @@ class AppTest extends DatabaseTest
 
     }
 
+    /**
+     *
+     */
     public function test_true_or_false()
     {
         $this->assertNotEmpty(true_or_false(Connect::POSTGRESQL));
 
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_users_select()
     {
         $select = users_select($this->mysql()->users(),[],'?=','','choose',false);
@@ -510,6 +633,9 @@ class AppTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_base_select()
     {
         $select = bases_select($this->mysql()->bases(),[],'?=','','choose',false);
@@ -532,6 +658,9 @@ class AppTest extends DatabaseTest
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_html()
     {
         $html = ['title','article','aside','footer','header','h1','h2','h3','h4','h5','h6','nav','section','div','p','li','ol','ul','pre'];
@@ -550,6 +679,10 @@ class AppTest extends DatabaseTest
         $this->assertEquals('<img src="a" class="a">',html('img','a','a'));
 
     }
+
+    /**
+     *
+     */
     public function test_id()
     {
         $this->assertNotEmpty(id());
@@ -557,19 +690,24 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     *
+     */
     public function test_submit()
     {
-        $a = post('a');
+
         $this->assertFalse(submit('a'));
         $_POST['a'] = 'legend';
         $this->assertTrue(submit('a'));
 
-        $a = get('a');
         $this->assertFalse(submit('a',false));
         $_GET['a'] = 'legend';
         $this->assertTrue(submit('a',false));
     }
 
+    /**
+     *
+     */
     public function test_push()
     {
         $a = [];
@@ -577,12 +715,19 @@ class AppTest extends DatabaseTest
         $this->assertEquals([1,2,3],$a);
     }
 
+    /**
+     *
+     */
     public function test_stack()
     {
         $a = [];
         stack($a,1,2,3);
         $this->assertEquals([3,2,1],$a);
     }
+
+    /**
+     *
+     */
     public function test_has()
     {
         $this->assertTrue(has(1,[2,1,3]));
@@ -590,14 +735,26 @@ class AppTest extends DatabaseTest
         $this->assertFalse(has(4,[2,1,3]));
         $this->assertFalse(has(5,[2,1,3,50]));
     }
+
+    /**
+     *
+     */
     public function test_values()
     {
         $this->assertEquals(['i','am','a','god'],values([0=> 'i',1 => 'am',3 => 'a' , 4=> 'god']));
     }
+
+    /**
+     *
+     */
     public function test_keys()
     {
         $this->assertEquals([0,1,3,4],keys([0=> 'i',1 => 'am',3 => 'a' , 4=> 'god']));
     }
+
+    /**
+     *
+     */
     public function test_merge()
     {
         $a = [1,2,3];
@@ -605,68 +762,107 @@ class AppTest extends DatabaseTest
         $this->assertEquals([1,2,3,4,5,6,7,8,9,10],$a);
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_collation()
     {
         $this->assertNotEmpty(collation($this->mysql()->connect()));
         $this->assertNotEmpty(collation($this->postgresql()->connect()));
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_charset()
     {
         $this->assertNotEmpty(charset($this->mysql()->connect()));
         $this->assertNotEmpty(charset($this->postgresql()->connect()));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_base()
     {
-        $this->assertInstanceOf(Base::class,base($this->mysql()->connect(),$this->mysql()->tables()));
-        $this->assertInstanceOf(Base::class,base($this->postgresql()->connect(),$this->postgresql()->tables()));
+        $this->assertInstanceOf(Base::class,base($this->mysql()->connect(),$this->mysql()->table()));
+        $this->assertInstanceOf(Base::class,base($this->postgresql()->connect(),$this->postgresql()->table()));
 
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_user()
     {
         $this->assertInstanceOf(Users::class,user($this->mysql()->connect()));
         $this->assertInstanceOf(Users::class,user($this->postgresql()->connect()));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_pass()
     {
         $this->assertTrue(pass($this->mysql()->connect(),'root','root'));
         $this->assertTrue(pass($this->postgresql()->connect(),'postgres','postgres'));
     }
 
+    /**
+     *
+     */
     public function test_os()
     {
         $this->assertInstanceOf(Os::class,os());
         $this->assertEquals(Os::UNKNOWN,os(true));
     }
+
+    /**
+     *
+     */
     public function test_device()
     {
         $this->assertInstanceOf(Device::class,\device());
         $this->assertEquals(Device::UNKNOWN,device(true));
     }
 
+    /**
+     *
+     */
     public function test_browser()
     {
         $this->assertInstanceOf(Browser::class,browser());
         $this->assertEquals(Browser::UNKNOWN,browser(true));
     }
 
+    /**
+     *
+     */
     public function test_is_browser()
     {
         $this->assertFalse(is_browser('Firefox'));
     }
 
+    /**
+     *
+     */
     public function test_is_mobile()
     {
         $this->assertFalse(is_mobile());
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_superior()
     {
         $this->assertTrue(\superior(1,0));
         $this->assertFalse(\superior(0,5));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_superior_exe()
     {
         $msg = 'matrix';
@@ -677,6 +873,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_superior_or_equal()
     {
         $this->assertTrue(superior_or_equal(1,0));
@@ -685,6 +884,9 @@ class AppTest extends DatabaseTest
         $this->assertFalse(superior_or_equal(4,5));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_superior_or_equal_exe()
     {
         $msg = 'matrix';
@@ -696,6 +898,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_inferior()
     {
         $this->assertTrue(inferior(0,4));
@@ -704,6 +909,9 @@ class AppTest extends DatabaseTest
         $this->assertFalse(inferior(50,5));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_inferior_exe()
     {
         $msg = 'matrix';
@@ -714,6 +922,9 @@ class AppTest extends DatabaseTest
     }
 
 
+    /**
+     * @throws Exception
+     */
     public function test_inferior_or_equal()
     {
         $this->assertTrue(inferior_or_equal(1,1));
@@ -722,6 +933,9 @@ class AppTest extends DatabaseTest
         $this->assertFalse(inferior_or_equal(10,5));
     }
 
+    /**
+     * @throws Exception
+     */
     public function test_inferior_or_equal_exe()
     {
         $msg = 'matrix';
@@ -731,10 +945,17 @@ class AppTest extends DatabaseTest
         inferior_or_equal(5,50,true,$msg);
     }
 
+    /**
+     *
+     */
     public function test_whoops()
     {
         $this->assertInstanceOf(Run::class,whoops());
     }
+
+    /**
+     * @throws Exception
+     */
     public function test_value_before_a_key()
     {
         $a = [0 => "a",2 => 'b',3 => 'c',508 =>'d',4 => 'e' ];

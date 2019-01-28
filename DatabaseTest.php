@@ -8,7 +8,7 @@ require_once 'vendor/autoload.php';
 require_once 'config.php';
 
 
-use Imperium\Imperium;
+use Imperium\App;
 
 use PHPUnit\Framework\TestCase;
 
@@ -22,23 +22,22 @@ class DatabaseTest extends TestCase
     const POSTGRESQL_PASS = 'postgres';
 
     protected $base = 'zen';
-    protected $table;
     protected $class = 'btn btn-primary';
 
 
-    public function mysql(): Imperium
+    public function mysql(): App
     {
         global $mysql;
         return $mysql;
 
     }
-    public function postgresql(): Imperium
+    public function postgresql(): App
     {
         global $pgsql;
         return $pgsql;
     }
 
-    public function sqlite(): Imperium
+    public function sqlite(): App
     {
         global $sqlite;
         return $sqlite;

@@ -4,7 +4,7 @@ namespace tests\model;
 
 use Exception;
 use Imperium\Connexion\Connect;
-use Imperium\Imperium;
+use Imperium\App;
 use Imperium\Model\Model;
 use PDO;
 use Imperium\Query\Query;

@@ -1,12 +1,15 @@
 <?php
 
-use GuzzleHttp\Psr7\Response;
+use Faker\Factory;
+use Faker\Generator;
+use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
 use Imperium\Router\Router;
+use Symfony\Component\HttpFoundation\Request;
 use Whoops\Run;
 use Carbon\Carbon;
-use Imperium\Imperium;
+use Imperium\App;
 use Imperium\File\File;
 use Imperium\Json\Json;
 use Imperium\Bases\Base;
@@ -27,7 +30,7 @@ use Imperium\Html\Pagination\Pagination;
 
 define('GET','GET');
 define('POST','POST');
-
+define('LOCALHOST','localhost');
 define('ASC','ASC');
 define('DESC','DESC');
 
@@ -71,23 +74,99 @@ if (not_exist('redirect'))
 {
     /**
      *
-     * @param string $route_name
+     * Redirect to a route
      *
-     * @return Response
+     * @param string $route_name
+     * @param int $status
+     * @param array $header
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws Exception
      *
      */
-    function redirect(string $route_name): Response
+    function redirect(string $route_name,int $status = 302,array $header = [])
     {
-        $r = new Response();
-        $r->withStatus(301);
-        $r->withHeader('Location',url($route_name));
-
-        return $r;
+        return (new \Symfony\Component\HttpFoundation\RedirectResponse(url($route_name),$status,$header))->send();
     }
 }
 
+if (not_exist('config'))
+{
+    /**
+     *
+     * Get a config value
+     *
+     * @param string $file
+     * @param $key
+     *
+     * @return mixed
+     *
+     * @throws Exception
+     *
+     */
+    function config(string $file,$key)
+    {
+       return Config::get($file,$key);
+    }
+}
+
+if (not_exist('request'))
+{
+    /**
+     * @return Request
+     */
+    function request(): Request
+    {
+        return Request::createFromGlobals();
+    }
+}
+if (not_exist('view'))
+{
+
+    /**
+     * Load a view
+     *
+     * @param string $name
+     * @param array $args
+     *
+     * @return string
+     *
+     * @throws Twig_Error_Loader
+     * @throws Twig_Error_Runtime
+     * @throws Twig_Error_Syntax
+     * @throws Exception
+     */
+    function view(string $name,array $args =[]) : string
+    {
+        $file = 'views';
+
+        $view_dir   = realpath(config($file,'dir'));
+
+        $loader     = new Twig_Loader_Filesystem($view_dir);
+
+        $twig       = new Twig_Environment($loader,config($file,'config'));
+
+        return $twig->render($name,$args);
+    }
+}
+
+if (not_exist('get_table'))
+{
+    /**
+     *
+     * Return the current table or the first found
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function current_table():string
+    {
+        return  def(get('table')) ? get('table') : collection(app()->table()->show())->begin();
+    }
+}
 if (not_exist('session_loaded'))
 {
     /**
@@ -189,36 +268,22 @@ if (not_exist('quote'))
         return $connect->instance()->quote($value);
     }
 }
+
 if (not_exist('app'))
 {
     /**
      *
      * Get all applications
      *
-     * @method apps
+     * @method app
      *
-     * @param  string $driver The pdo driver
-     * @param  string $user The username
-     * @param  string $base The base name
-     * @param  string $password The password
-     * @param  string $host The host
-     * @param  string $dump_path The dump directory path
-     * @param  string $current_table The current table
-     * @param string $views_dir
-     * @param string $env_path
-     * @param array $twig_config
-     * @param  array $hidden_tables All hidden tables
-     * @param  array $hidden_bases All hidden bases
-     *
-     * @return Imperium
+     * @return App
      *
      * @throws Exception
      */
-    function app(string $driver,string $user,string $base,string $password,string $host,string $dump_path,string $current_table,string $env_path,string $views_dir,array $twig_config,array $hidden_tables,array $hidden_bases): Imperium
+    function app(): App
     {
-        $connexion = connect($driver,$base,$user,$password,$host,$dump_path);
-
-        return new Imperium($connexion,$current_table,$views_dir,$twig_config,$env_path,$hidden_tables,$hidden_bases );
+        return new App();
     }
 }
 
@@ -239,7 +304,8 @@ if (not_exist('env'))
     }
 
 }
-    if (not_exist('assign'))
+
+if (not_exist('assign'))
 {
     /**
      *
@@ -680,6 +746,7 @@ if (not_exist('query_result'))
      *
      * @method query_result
      *
+     * @param string $table
      * @param int $mode
      * @param  Model $model Instance of the model
      * @param  mixed $data The query results
@@ -692,7 +759,7 @@ if (not_exist('query_result'))
      *
      * @throws Exception
      */
-    function query_result(int $mode,Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
+    function query_result(string $table,int $mode,Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
 
         if (equal($mode,Query::UPDATE))
@@ -706,10 +773,10 @@ if (not_exist('query_result'))
         }
         if (is_bool($data) && $data)
            return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
-        elseif(empty($model->all()))
+        elseif(empty($model->from($table)->all()))
             return html('code',$sql,'text-center'). html('div',$table_empty_text,'alert alert-danger mt-5');
         else
-           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$model->columns());
+           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$model->columns($table));
 
     }
 }
@@ -764,7 +831,8 @@ if (not_exist('execute_query'))
      *
      * @method execute_query
      *
-     * @param Imperium $imperium
+     * @param string $table
+     * @param App $imperium
      * @param  int $mode The query mode
      * @param  string $column_name The where column name
      * @param  string $condition The where condition
@@ -784,13 +852,14 @@ if (not_exist('execute_query'))
      *
      * @throws Exception
      */
-    function execute_query(Imperium $imperium,int $mode, string $column_name, string $condition, $expected,string $first_table,string $first_param,string $second_table,string $second_param,string $submit_class, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
+    function execute_query(string $table, App $imperium, int $mode, string $column_name, string $condition, $expected, string $first_table, string $first_param, string $second_table, string $second_param, string $submit_class, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
     {
 
 
+
         $model = $imperium->model();
-        $table = $imperium->tables();
-        $current_table_name = $table->current();
+        $x = $imperium->table()->from($table);
+
         $form_grid = 2;
 
         switch ($mode)
@@ -799,28 +868,28 @@ if (not_exist('execute_query'))
                 $code = collection();
                 foreach ( $model->query()->mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
                 {
-                    $id = $table->from($current_table_name)->primary_key();
+                    $id = $x->primary_key();
 
-                    $code->push(form($form_update_action,id())->generate($form_grid,$current_table_name,$table,$submit_update_text,$submit_class,uniqid($current_table_name),'',Form::EDIT,$record->$id));
+                    $code->push(form($form_update_action,id())->generate($form_grid,$table,$x,$submit_update_text,$submit_class,uniqid($table),'',Form::EDIT,$record->$id));
                 }
                 return $code->collection();
             break;
             case DELETE:
 
-                $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->sql();
+                $show_sql_variable = $model->query()->from($table)->mode($mode)->where($column_name,$condition,$expected)->sql();
 
-                $data = $model->where($column_name,$condition,$expected)->get();
+                $data = $model->from($table)->where($column_name,$condition,$expected)->get();
 
-                return empty($data) ? $data :  $model->query()->mode($mode)->where($column_name, $condition, $expected)->delete() ;
+                return empty($data) ? $data :  $model->query()->from($table)->mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
             case has($mode,Query::JOIN_MODE):
-                $show_sql_variable = $model->query()->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->sql();
-                return $model->query()->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->get();
+                $show_sql_variable = $model->query()->from($table)->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->sql();
+                return $model->query()->from($table)->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->get();
             break;
 
             default:
-                $show_sql_variable = $model->query()->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
-               return $model->query()->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
+                $show_sql_variable = $model->query()->from($table)->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
+               return $model->query()->from($table)->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
             break;
         }
     }
@@ -833,7 +902,7 @@ if (not_exist('query_view'))
     /**
      * @param string $confirm_message
      * @param string $query_action
-     * @param Imperium $imperium
+     * @param App $imperium
      * @param string $create_record_action
      * @param string $update_record_action
      * @param string $create_record_submit_text
@@ -853,14 +922,14 @@ if (not_exist('query_view'))
      * @return string
      * @throws Exception
      */
-    function query_view(string $confirm_message,string $query_action,Imperium $imperium,string $create_record_action,string $update_record_action,string $create_record_submit_text,string $update_record_text,string $current_table_name,string $expected_placeholder,string $submit_query_text,string $submit_class,string $remove_success_text,string $record_not_found_text,string $table_empty_text,string $reset_form_text,string $validation_success_text = 'success' ,$validation_error_text= 'must not be empty',string $icon  = '<i class="fas fa-heart"></i>',string $csrf = ''): string
+    function query_view(string $confirm_message, string $query_action, App $imperium, string $create_record_action, string $update_record_action, string $create_record_submit_text, string $update_record_text, string $current_table_name, string $expected_placeholder, string $submit_query_text, string $submit_class, string $remove_success_text, string $record_not_found_text, string $table_empty_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>', string $csrf = ''): string
     {
 
-        $table = $imperium->tables()->from($current_table_name);
+        $table = $imperium->table()->from($current_table_name);
         
         $columns = $table->columns();
 
-        $tables = $imperium->tables()->show();
+        $tables = $imperium->table()->show();
 
         $x = count($columns);
 
@@ -896,7 +965,7 @@ if (not_exist('query_view'))
                     ->submit($submit_query_text,$submit_class,uniqid())
                ->end_row()->get()
                  .
-                query_result(post('mode'),$imperium->model(),execute_query($imperium,post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
+                query_result($current_table_name,post('mode'),$imperium->model(),execute_query($imperium,post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
                 (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
@@ -963,7 +1032,6 @@ if (not_exist('login'))
      * @param  string $submit_text The submit button text
      * @param  string $submit_class The submit button class
      * @param  string $submit_id The submit button id
-     * @param  string $csrf The csrf token field
      * @param  string $submit_icon The submit icon
      * @param  string $user_icon The user icon
      * @param  string $password_icon The password icon
@@ -973,9 +1041,9 @@ if (not_exist('login'))
      * @throws Exception
      *
      */
-    function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $csrf ='',string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
+    function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
-        return form($action,$id)->csrf($csrf)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->end_row()->get();
+        return form($action,$id)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->end_row()->get();
     }
 }
 if (not_exist('json'))
@@ -1104,14 +1172,13 @@ if (not_exist('tables_select'))
      * @param  Table $instance An instance of table
      * @param  array $hidden The hidden tables
      * @param  string $url_prefix The url prefix
-     * @param  string $csrf The csrf field
      * @param  string $separator The url separator
      *
      * @return string
      *
      * @throws Exception
      */
-    function tables_select(string $current,Table $instance,array $hidden, string $url_prefix,string $csrf,string $separator): string
+    function tables_select(string $current,Table $instance,array $hidden, string $url_prefix,string $separator): string
     {
         $tables = collection(["$url_prefix$separator$current" => $current]);
 
@@ -1120,7 +1187,7 @@ if (not_exist('tables_select'))
             if (different($x,$current))
                 $tables->add($x,"$url_prefix$separator$x");
         }
-        return  form('',id())->csrf($csrf)->row()->redirect('table',$tables->collection())->end_row()->get() ;
+        return  form('',id())->large(true)->row()->redirect('table',$tables->collection())->end_row()->get() ;
      }
 }
 
@@ -1137,7 +1204,6 @@ if (not_exist('users_select'))
      * @param  string $currentUser The current username
      * @param  string $chooseText The select text
      * @param  bool $use_a_redirect_select To use a redirect select
-     * @param  string $csrf The csrf token
      * @param  string $separator The url separator
      * @param  string $icon The select user icon
      *
@@ -1146,7 +1212,7 @@ if (not_exist('users_select'))
      * @throws Exception
      *
      */
-    function users_select(Users $instance,array $hidden,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = ''): string
+    function users_select(Users $instance,array $hidden,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = ''): string
     {
         $users = collection(array('' => $chooseText));
 
@@ -1156,7 +1222,7 @@ if (not_exist('users_select'))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->csrf($csrf)->row()->redirect('users',$users->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select(true,'users',$users->collection(),$icon)->end_row()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->large(true)->row()->redirect('users',$users->collection(),$icon)->end_row()->get() : form('',uniqid())->large(true)->row()->select(true,'users',$users->collection(),$icon)->end_row()->get();
      }
 }
 
@@ -1172,7 +1238,6 @@ if (not_exist('bases_select'))
      * @param string $currentBase
      * @param string $chooseText
      * @param bool $use_a_redirect_select
-     * @param string $csrf
      * @param string $separator
      * @param string $icon
      *
@@ -1180,7 +1245,7 @@ if (not_exist('bases_select'))
      *
      * @throws Exception
      */
-    function bases_select(Base $instance,array $hidden,string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $csrf = '',string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
+    function bases_select(Base $instance,array $hidden,string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
     {
         $bases = collection(array('' => $chooseText));
 
@@ -1191,106 +1256,54 @@ if (not_exist('bases_select'))
 
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->row()->csrf($csrf)->redirect('bases',$bases->collection(),$icon)->end_row()->get() : form('',uniqid())->csrf($csrf)->row()->select(true,'bases',$bases->collection(),$icon)->end_row()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->large(true)->row()->redirect('bases',$bases->collection(),$icon)->end_row()->get() : form('',uniqid())->large(true)->row()->select(true,'bases',$bases->collection(),$icon)->end_row()->get();
      }
 }
 
 if (not_exist('simply_view'))
 {
+
     /**
-     *
-     * To see records
-     *
-     * @method simply_view
-     *
-     * @param  string $current_table_name The current table
-     * @param  Table $instance The table instance
-     * @param  array $records All records
-     * @param  string $html_table_class The html table class
-     * @param  string $action_remove_text The action remove text
-     * @param  string $before_remove_text The confirm text
-     * @param  string $remove_button_class The remove button class
-     * @param  string $remove_url_prefix The remove user prefix
-     * @param  string $remove_icon The remove icon
-     * @param  string $action_edit_text The action edit text
-     * @param  string $action_edit_url_prefix The edit url prefix
-     * @param  string $edit_button_class The edit button class
-     * @param  string $edit_icon The edit icon
-     * @param  string $pagination The pagination
-     * @param  bool $align_column_center To align column to the center
-     * @param  bool $column_to_upper To display column in uppercase
-     * @param  bool $pagination_to_right To display the pagination to right
-     *
+     * @param string $before_all_class
+     * @param string $thead_class
+     * @param string $current_table_name
+     * @param Table $instance
+     * @param array $records
+     * @param string $html_table_class
+     * @param string $action_remove_text
+     * @param string $before_remove_text
+     * @param string $remove_button_class
+     * @param string $remove_url_prefix
+     * @param string $remove_icon
+     * @param string $action_edit_text
+     * @param string $action_edit_url_prefix
+     * @param string $edit_button_class
+     * @param string $edit_icon
+     * @param string $pagination
+     * @param bool $pagination_to_right
      * @return string
-     *
      * @throws Exception
      */
-    function simply_view(string $current_table_name, Table $instance , array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $align_column_center,bool $column_to_upper,bool $pagination_to_right = true): string
+    function simply_view(string $before_all_class,string $thead_class,string $current_table_name, Table $instance , array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $pagination_to_right = true): string
     {
         $instance = $instance->from($current_table_name);
 
         $columns  = $instance->columns();
         $primary  = $instance->primary_key();
 
-        $code = '';
-
-
-        append($code,'<div class="table-responsive mt-4"><table class="'.$html_table_class.'"><thead><tr>');
-        append($code,'<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>');
-
-        foreach ($columns as  $x)
-        {
-
-            append($code,'<th  class="');
-            if ($align_column_center) {  append($code,' text-center'); }
-
-            if ($column_to_upper)    {  append($code,' text-uppercase') ; }
-
-            append($code, '">'.$x.'</th>');
-
-        }
-        append($code, '<th  class="');
-
-        if ($align_column_center) {  append($code,' text-center'); }
-
-        if ($column_to_upper)   {  append($code,' text-uppercase') ; }
-
-        append($code, '">'.$action_edit_text.'</th>');
-
-        append( $code,'<th  class="');
-
-        if ($align_column_center) {  append($code,' text-center'); }
-
-        if ($column_to_upper)   {  append($cpode,' text-uppercase') ; }
-
-        append($code,'">'.$action_remove_text.'</th></tr></thead><tbody>');
-
-        foreach ($records as $record)
-        {
-            append($code, '<tr>');
-
-            foreach ($columns as $k => $column)
-            {
-                if (is_null($record->$column))
-                    $record->$column = '';
-
-                append($code, '<td> '.$record->$column.'</td>');
-
-            }
-            append($code ,'<td> <a href="'.$action_edit_url_prefix.'/'.$record->$primary.'" class="'.$edit_button_class.'">'.$edit_icon.'</a></td><td> <a href="'.$remove_url_prefix.'/'.$record->$primary.'" class="'.$remove_button_class.'" data-confirm="'.$before_remove_text.'" onclick="sure(event,this.attributes[2].value)">'.$remove_icon.' </a></td></tr>');
-        }
-
-        append($code, '</tbody></table></div>');
+        $before_content = '<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
+        $after_content = '';
 
         if ($pagination_to_right)
-            append($code ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div>');
+            append($after_content ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div>');
         else
-            append($code ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
+            append($after_content ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
 
-        return $code;
+        return \Imperium\Html\Table\Table::table($columns,$records,$before_all_class,$thead_class,$before_content,$after_content)->set_action($action_edit_text,$action_remove_text,$before_remove_text,$action_edit_url_prefix,$edit_button_class,$edit_icon,$remove_url_prefix,$remove_button_class,$remove_icon,$primary)->generate($html_table_class);
 
     }
 }
+
 if (not_exist('get_records'))
 {
     /**
@@ -2251,16 +2264,15 @@ if (not_exist('model'))
      *
      * @param  Connect $connect The connection
      * @param  Table $table The table instance
-     * @param  string $current_table_name The current table
      *
      * @return Model
      *
      * @throws Exception
      *
      */
-    function model(Connect $connect,Table $table, string $current_table_name): Model
+    function model(Connect $connect,Table $table): Model
     {
-        return new Model($connect,$table,$current_table_name);
+        return new Model($connect,$table);
     }
 }
 
@@ -2274,7 +2286,6 @@ if (not_exist('table'))
      *
      * @param  Connect $connect The connection
      *
-     * @param string $current_table
      * @param array $hidden
      *
      * @return Table
@@ -2282,28 +2293,22 @@ if (not_exist('table'))
      * @throws Exception
      *
      */
-    function table(Connect $connect,string $current_table,array $hidden = []): Table
+    function table(Connect $connect,array $hidden = []): Table
     {
-        return new Table($connect,$current_table,$hidden);
+        return new Table($connect,$hidden);
     }
 }
 
 if (not_exist('faker'))
 {
     /**
-     *
-     * Return an instance of faker
-     *
-     * @method faker
-     *
-     * @param  string $locale The local to use
+     * @param string $locale
      *
      * @return Generator
-     *
      */
     function faker(string $locale = 'en_US' ): Generator
     {
-        return Faker\Factory::create($locale);
+        return Factory::create($locale);
     }
 }
 
@@ -2825,10 +2830,10 @@ if (not_exist('insert_into'))
     function insert_into(Model $instance,string $table,...$values): string
     {
 
-        $x = collection($instance->columns())->join(',');
+        $x = collection($instance->columns($table))->join(',');
 
         $data = "INSERT INTO $table ($x) VALUES (";
-        $primary = $instance->from($table)->primary();
+        $primary = $instance->primary($table);
 
         foreach ($values as $value)
         {

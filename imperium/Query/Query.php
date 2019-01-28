@@ -155,6 +155,8 @@ namespace Imperium\Query {
          */
         private $where_expected;
 
+
+
         /**
          *
          * The constructor
@@ -210,7 +212,7 @@ namespace Imperium\Query {
             $join       = def($this->join)      ? $this->join  : '';
             $union      = def($this->union)     ? $this->union : '';
             $mode       = def($this->mode)      ? $this->mode  : '';
-            $columns    = def($this->columns)   ? $this->columns : "*";
+            $columns    = def($this->columns)   ? $this->columns :  "*";
 
 
             switch($mode)
@@ -267,6 +269,21 @@ namespace Imperium\Query {
 
         }
 
+        /***
+         *
+         * Select only column
+         *
+         * @param array columns
+         *
+         * @return Query
+         *
+         */
+        public function only(array $columns): Query
+        {
+            $this->columns  = collection($columns)->join(', ');
+
+            return $this;
+        }
         /**
          *
          * Generate a between clause

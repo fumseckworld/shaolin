@@ -4,7 +4,7 @@
 namespace tests\table;
 
 use Imperium\Connexion\Connect;
-use Imperium\Imperium;
+use Imperium\App;
 use Imperium\Tables\Table;
 use Testing\DatabaseTest;
 
@@ -326,30 +326,30 @@ class TableTest extends DatabaseTest
 
         $instance = $this->mysql_table;
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false,false));
+        $this->assertTrue($instance->append_column($column,App::VARCHAR,255,false,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,false,true));
+        $this->assertTrue($instance->append_column($column,App::VARCHAR,255,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true,false));
+        $this->assertTrue($instance->append_column($column,App::VARCHAR,255,true,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::VARCHAR,255,true,true));
+        $this->assertTrue($instance->append_column($column,App::VARCHAR,255,true,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
 
         $instance = $this->pgsql_table;
 
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false,false));
+        $this->assertTrue($instance->append_column($column,App::CHARACTER_VARYING,255,false,false));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
 
-        $this->assertTrue($instance->append_column($column,Imperium::CHARACTER_VARYING,255,false,true));
+        $this->assertTrue($instance->append_column($column,App::CHARACTER_VARYING,255,false,true));
         $this->assertTrue($instance->has_column($column));
         $this->assertTrue($instance->remove_column($column));
     }
@@ -487,9 +487,9 @@ class TableTest extends DatabaseTest
      */
     public function test_modify_column()
     {
-        $this->assertTrue($this->mysql_table->modify_column('status',Imperium::VARCHAR,200));
-        $this->assertTrue($this->pgsql_table->modify_column('status',Imperium::CHARACTER_VARYING,200));
-        $this->assertFalse($this->sqlite_table->modify_column('status',Imperium::TEXT,200));
+        $this->assertTrue($this->mysql_table->modify_column('status',App::VARCHAR,200));
+        $this->assertTrue($this->pgsql_table->modify_column('status',App::CHARACTER_VARYING,200));
+        $this->assertFalse($this->sqlite_table->modify_column('status',App::TEXT,200));
     }
 
     
