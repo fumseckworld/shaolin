@@ -52,8 +52,8 @@ namespace Testing\sqlite\imperium {
          */
         public function test_append_column()
         {
-            $this->assertTrue($this->sqlite()->append_column($this->table,'salary',App::INT,0,false,true));
-            $this->assertFalse($this->sqlite()->remove_column($this->table,'salary'));
+            $this->assertTrue($this->sqlite()->append_column($this->table,'salary',App::INTEGER,0,false,true));
+
         }
 
         public function test_save()
@@ -71,7 +71,7 @@ namespace Testing\sqlite\imperium {
                     'status' => faker()->text(20),
                     'days' => faker()->date(),
                     'date' => faker()->date(),
-                    'salary' => faker()->numberBetween(0,20)
+                    'salary' => faker()->numberBetween(4,10)
                 ];
                 $this->assertTrue($this->sqlite()->update_record(5,$data,$this->table));
                 $this->assertTrue($this->sqlite()->save($this->table,$data));

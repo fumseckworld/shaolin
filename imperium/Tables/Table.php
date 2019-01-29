@@ -1314,7 +1314,7 @@ namespace Imperium\Tables {
                 {
                     switch ($this->driver)
                     {
-                        case Connect::POSTGRESQL:
+                        case POSTGRESQL:
                             $val->push(" DEFAULT");
                         break;
                         default:
@@ -1328,6 +1328,7 @@ namespace Imperium\Tables {
             $value = '(' .$val->join(', ') . ')';
 
             $command = "INSERT INTO {$this->current()}  $columns VALUES $value";
+
 
             return $this->connexion->execute($command);
         }
