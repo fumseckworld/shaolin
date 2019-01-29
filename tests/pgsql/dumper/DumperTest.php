@@ -1,14 +1,15 @@
 <?php
 
-namespace tests\dumper;
+namespace Testing\pgsql\dumper {
 
-use Testing\DatabaseTest;
+    use Testing\DatabaseTest;
 
-class DumperTest extends DatabaseTest
-{
-    public function test_dump()
+    class DumperTest extends DatabaseTest
     {
-        $this->assertTrue($this->postgresql()->dump(true,'',''));
-        $this->assertTrue($this->postgresql()->dump(false,'base','helper'));
+        public function test_dump()
+        {
+            $this->assertTrue($this->postgresql()->dump(true,'',''));
+            $this->assertTrue($this->postgresql()->dump(false,'base','helper'));
+        }
     }
 }

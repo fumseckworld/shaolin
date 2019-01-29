@@ -1,14 +1,15 @@
 <?php
 
-namespace tests\dumper;
+namespace Testing\sqlite\dumper {
 
-use Testing\DatabaseTest;
+    use Testing\DatabaseTest;
 
-class DumperTest extends DatabaseTest
-{
-    public function test_dump()
+    class DumperTest extends DatabaseTest
     {
-        $this->assertTrue($this->sqlite()->dump(true,'',''));
-        $this->assertFalse($this->sqlite()->dump(false,'base','helper'));
+        public function test_dump()
+        {
+            $this->assertTrue($this->sqlite()->dump(true,'',''));
+            $this->assertFalse($this->sqlite()->dump(false,'base','helper'));
+        }
     }
 }

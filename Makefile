@@ -1,10 +1,10 @@
-.PHONY:mysql pgsql sqlite router form views cover clean dbs seed migrate disable enable send dir
+.PHONY:mysql pgsql sqlite router form views cover clean dbs seed migrate disable enable send dir config
 
 BASE=zen
 
 UNIT="./vendor/bin/phpunit"
-
 MYSQL_PASSWORD=root
+
 
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
@@ -20,29 +20,30 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: vendor mysql pgsql sqlite router form views dir
+all: vendor mysql pgsql sqlite router form views dir config
 
 mysql: seed
 	@install -D $@.yaml config/db.yaml
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 pgsql: seed
 	@install -D $@.yaml config/db.yaml
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 sqlite: seed
 	@install -D $@.yaml config/db.yaml
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 router:
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 flash:
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 form:
 	@install -D mysql.yaml config/db.yaml
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 views:
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
+	@$(UNIT) tests/$@
 dir:
-	@$(UNIT) tests/$@ --coverage-html COVERAGE/$@
-
+	@$(UNIT) tests/$@
+config:
+	@$(UNIT) tests/$@
 seed: dbs migrate
 
 send: all
