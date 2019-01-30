@@ -10,7 +10,7 @@ whoops();
 
 
 
-App::init()->run($router);
+echo App::init()->run($router);
 
 
 

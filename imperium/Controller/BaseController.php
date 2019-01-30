@@ -1,12 +1,13 @@
 <?php
 
 
-namespace Imperium\Controller;
+namespace Imperium\Controller {
 
 
-use Imperium\App;
+    use Imperium\App;
 
-class BaseController extends App
-{
+    class BaseController extends App
+    {
 
+    }
 }

@@ -26,7 +26,7 @@ namespace Imperium\Session {
          */
         private function start_session()
         {
-            if (equal(session_status(),PHP_SESSION_NONE))
+            if (session_status() === PHP_SESSION_DISABLED)
                 session_start();
         }
 
@@ -58,6 +58,7 @@ namespace Imperium\Session {
         public function set($value,$key): Session
         {
             $this->start_session();
+
             $_SESSION[$key] = $value;
 
             return $this;
