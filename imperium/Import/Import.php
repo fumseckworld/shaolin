@@ -57,12 +57,11 @@ namespace Imperium\Import {
         private $base;
 
         /**
+         * Import constructor.
          *
-         * @method __construct
-         *
-         * @param  Connect     $connect  [description]
-         * @param  string      $sql_file [description]
-         * @param  string      $base     [description]
+         * @param Connect $connect
+         * @param string $sql_file
+         * @param string $base
          */
         public function __construct(Connect $connect,string $sql_file,string $base = '')
         {

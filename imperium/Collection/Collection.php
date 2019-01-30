@@ -787,19 +787,18 @@ namespace Imperium\Collection {
 
 
         /**
-        *
-        * Join all values by a glue
-        *
-        * @method join
-        *
-        * @param  string $glue      The values separator
-        * @param  bool   $replace   Set to true to replace value
-        * @param  string $value     The value to replace
-        * @param  string $new_value The new value
-        *
-        * @return string
-        *
-        */
+         *
+         * Join all values by a glue
+         *
+         * @method join
+         *
+         * @param string $glue The values separator
+         * @param bool $replace Set to true to replace value
+         * @param string $value The value to replace
+         * @param string $new_value The new value
+         *
+         * @return string
+         */
         public function join(string $glue,bool $replace = false,string $value= '',string $new_value =''): string
         {
             $code = implode($glue,$this->data);

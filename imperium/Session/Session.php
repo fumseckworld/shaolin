@@ -19,11 +19,7 @@ namespace Imperium\Session {
      **/
     class Session
     {
-
-
-        /**
-
-         */
+       
         private function start_session()
         {
             if (session_status() === PHP_SESSION_DISABLED)
@@ -42,7 +38,8 @@ namespace Imperium\Session {
         public function get($key)
         {
             $this->start_session();
-            return array_key_exists($key,$_SESSION) ? $_SESSION[$key]: '';
+
+            return array_key_exists($key,$_SESSION) ? $_SESSION[$key] : '';
         }
 
         /**
@@ -76,9 +73,9 @@ namespace Imperium\Session {
         public function remove($key): bool
         {
             $this->start_session();
+
             if (array_key_exists($key,$_SESSION))
             {
-
                 unset($_SESSION[$key]);
                 return true;
             }
