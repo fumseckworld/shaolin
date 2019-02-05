@@ -5,7 +5,6 @@ namespace Testing {
 
 
     use Imperium\Controller\BaseController;
-    use Symfony\Component\HttpFoundation\Request;
 
     class Controller extends BaseController
     {
@@ -36,9 +35,8 @@ namespace Testing {
         public function show()
         {
             $table = current_table();
-
             $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure','btn btn-danger',fa('fas','fa-trash'),"remove/$table",'edit','edit',
-                fa('fas','fa-edit'), 'btn btn-primary','start','previous','id','desc','search'),'container');
+                fa('fas','fa-edit'), 'btn btn-primary','start','previous','id','desc',trans('search')),'container');
 
             return view('welcome.twig',compact('code'));
 

@@ -8,6 +8,7 @@ namespace Imperium {
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
+    use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
@@ -17,6 +18,7 @@ namespace Imperium {
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+    use Symfony\Component\HttpFoundation\Request;
 
     interface Management
     {
@@ -565,6 +567,13 @@ namespace Imperium {
          * @return Session
          */
         public function session(): Session;
+
+        public function request(): Request;
+
+        /**
+         * @return Config
+         */
+        public function config(): Config;
 
         /**
          *

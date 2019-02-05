@@ -1,4 +1,4 @@
-.PHONY:mysql pgsql sqlite router form views cover clean dbs seed migrate disable enable send dir config session flash
+.PHONY:mysql pgsql sqlite router form views cover clean dbs seed migrate disable enable send dir config session flash app trans
 
 BASE=zen
 
@@ -20,7 +20,7 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: vendor mysql pgsql sqlite router form views dir config session flash
+all: vendor mysql pgsql sqlite router form views dir config session flash app trans
 
 mysql: seed
 	@install -D $@.yaml config/db.yaml
@@ -44,8 +44,12 @@ dir:
 	@$(UNIT) tests/$@
 config:
 	@$(UNIT) tests/$@
+app:
+	@$(UNIT) tests/$@
 seed: dbs migrate
 session:
+	@$(UNIT) tests/$@
+trans:
 	@$(UNIT) tests/$@
 send: all
 	git add .

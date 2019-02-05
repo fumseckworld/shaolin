@@ -7,6 +7,7 @@ namespace Imperium {
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
+    use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Dump\Dump;
     use Imperium\File\File;
@@ -19,7 +20,7 @@ namespace Imperium {
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
-
+    use Symfony\Component\HttpFoundation\Request;
 
 
     /**
@@ -732,31 +733,20 @@ namespace Imperium {
         }
 
 
-        /**
-         *
-         * @return App
-         *
-         * @throws Exception
-         */
-        public static function init(): App
-        {
-            return new static();
-        }
 
         /**
          *
          * Run the application
          *
-         * @param Router $router
          *
          * @return string
          *
          * @throws Exception
          *
          */
-        public function run(Router $router):string
+        public static function run(): string
         {
-            return $router->run();
+            return (new Router(ServerRequest::fromGlobals()))->run();
         }
 
         /**
@@ -1029,6 +1019,22 @@ namespace Imperium {
         public function session(): Session
         {
             return new Session();
+        }
+
+        public function request(): Request
+        {
+            return Request::createFromGlobals();
+        }
+
+        /**
+         * @return Config
+         *
+         * @throws Exception
+         *
+         */
+        public function config():Config
+        {
+            return Config::init();
         }
     }
 }

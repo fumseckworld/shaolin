@@ -77,6 +77,7 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
      
 # [Router](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php) [Coverage](https://imperium.fumseck.eu/imperium/Router/Router.php.html)
 
+
 The controller and method separator it's **@**
 
 The url **params** must be  prefixed by **:**   

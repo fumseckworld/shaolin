@@ -6,6 +6,7 @@ use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
 use Imperium\Router\Router;
+use Imperium\Trans\Trans;
 use Imperium\View\View;
 use Symfony\Component\HttpFoundation\Request;
 use Whoops\Run;
@@ -31,6 +32,8 @@ use Imperium\Html\Pagination\Pagination;
 
 define('GET','GET');
 define('POST','POST');
+
+
 define('LOCALHOST','localhost');
 define('ASC','ASC');
 define('DESC','DESC');
@@ -42,6 +45,7 @@ define('STRING','([a-zA-Z]+)');
 define('NOT_STRING','([^A-Za-z]+)');
 
 define('ALPHANUMERIC','([0-9A-Za-z\-]+)');
+define('SLUG','([0-9A-Za-z\-]+)');
 
 define('BETWEEN','BETWEEN');
 define('EQUAL','=');
@@ -70,6 +74,16 @@ define('DELETE',22);
 define('UPDATE',23);
 define('INSERT',24);
 
+define('QUERY_COLUMN','column');
+define('QUERY_CONDITION','condition');
+define('QUERY_EXPECTED','expected');
+define('QUERY_MODE','mode');
+define('QUERY_FIRST_TABLE','first_table');
+define('QUERY_FIRST_PARAM','first_param');
+define('QUERY_SECOND_TABLE','second_table');
+define('QUERY_SECOND_PARAM','second_param');
+define('QUERY_ORDER_KEY','key');
+define('QUERY_ORDER','order');
 
 if (not_exist('redirect'))
 {
@@ -84,11 +98,26 @@ if (not_exist('redirect'))
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws Exception
-     *
      */
     function redirect(string $route_name,int $status = 302,array $header = [])
     {
         return (new \Symfony\Component\HttpFoundation\RedirectResponse(url($route_name),$status,$header))->send();
+    }
+}
+
+if (not_exist('route'))
+{
+    /**
+     *
+     * @param string $method
+     *
+     * @return array
+     *
+     * @throws Exception
+     */
+    function route(string $method): array
+    {
+        return config('routes',strtoupper($method));
     }
 }
 
@@ -108,7 +137,75 @@ if (not_exist('config'))
      */
     function config(string $file,$key)
     {
-       return Config::get($file,$key);
+       return Config::init()->get($file,$key);
+    }
+}
+
+if (not_exist('locales'))
+{
+    /**
+     *
+     * @return array
+     *
+     * @throws Exception
+     *
+     */
+    function locales(): array
+    {
+        return Config::init()->get('app','locales');
+    }
+}
+
+if (not_exist('trans'))
+{
+
+    /**
+     * @param $message
+     * @param mixed ...$args
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+   function trans($message,...$args): string
+    {
+
+        $keys    = array_keys($args);
+        $keysmap = array_flip($keys);
+
+        $values  = array_values($args);
+
+        $message = Trans::init()->get(\config('app','locale'),$message);
+
+        while (preg_match('/%\(([a-zA-Z0-9_ -]+)\)/', $message, $m))
+        {
+            if (not_def($keysmap[$m[1]]))
+                    return '';
+
+
+            $message = str_replace($m[0], '%' . ($keysmap[$m[1]] + 1) . '$', $message);
+        }
+
+        array_unshift($values, $message);
+        return call_user_func_array('sprintf', $values);
+
+    }
+}
+
+if (not_exist('config_path'))
+{
+    /**
+     *
+     * Return the config path
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function config_path(): string
+    {
+        return Config::init()->path();
     }
 }
 
@@ -863,7 +960,8 @@ if (not_exist('execute_query'))
         {
             case UPDATE:
                 $code = collection();
-                foreach ( $model->query()->mode(Query::SELECT)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
+                $show_sql_variable = $model->query()->mode(SELECT)->from($first_table)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
+                foreach ( $model->query()->mode(SELECT)->from($first_table)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
                 {
                     $id = $x->primary_key();
 
@@ -945,19 +1043,19 @@ if (not_exist('query_view'))
                 ->row()
                         ->reset($reset_form_text,$submit_class)
                 ->end_row_and_new()
-                    ->select(false,'column',$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(true,'condition',$condition,$validation_success_text,$validation_error_text,$icon)
-                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
+                    ->select(false,QUERY_COLUMN,$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(true,QUERY_CONDITION,$condition,$validation_success_text,$validation_error_text,$icon)
+                    ->input(Form::TEXT,QUERY_EXPECTED,$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select(true,'mode',$operations ,$validation_success_text,$validation_error_text,$icon)
+                    ->select(true,QUERY_MODE,$operations ,$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
-                    ->select(false,'first_table',$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'first_param',$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'second_table',$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'second_param',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_FIRST_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_FIRST_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_SECOND_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_SECOND_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
-                    ->select(false,'key',$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'order',[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_ORDER_KEY,$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_ORDER,[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
                     ->submit($submit_query_text,$submit_class,uniqid())
                ->end_row()->get()
@@ -969,19 +1067,19 @@ if (not_exist('query_view'))
                 ->row()
                     ->reset($reset_form_text,$submit_class)
                 ->end_row_and_new()
-                    ->select(false,'column',$columns,$validation_success_text,'error',$icon)
-                    ->select(true,'condition',$condition,$validation_success_text,'error',$icon)
-                    ->input(Form::TEXT,'expected',$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
+                    ->select(false,QUERY_COLUMN,$columns,$validation_success_text,'error',$icon)
+                    ->select(true,QUERY_CONDITION,$condition,$validation_success_text,'error',$icon)
+                    ->input(Form::TEXT,QUERY_EXPECTED,$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select(true,'mode',$operations ,$validation_success_text,$validation_error_text,$icon)
+                    ->select(true,QUERY_MODE,$operations ,$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
-                    ->select(false,'first_table',$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'first_param',$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'second_table',$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'second_param',$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_FIRST_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_FIRST_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_SECOND_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_SECOND_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
-                    ->select(false,'key',$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,'order',[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_ORDER_KEY,$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_ORDER,[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
                 ->end_row_and_new()
                     ->submit($submit_query_text,$submit_class,uniqid())
                 ->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid())

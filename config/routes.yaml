@@ -1,0 +1,11 @@
+namespace: 'Testing'
+GET:
+  home:
+     url: '/'
+     call: 'Controller@show'
+
+  remove:
+    url: '/remove/:table/:id'
+    call: 'Controller@remove'
+POST:
+

@@ -4,7 +4,6 @@ namespace Imperium\Router {
 
     use Exception;
     use GuzzleHttp\Psr7\ServerRequest;
-    use Imperium\Collection\Collection;
 
     /**
      *
@@ -102,7 +101,7 @@ namespace Imperium\Router {
          * @var int
          *
          */
-        const URL_INDEX = 1;
+        const URL_INDEX = 'url';
 
         /**
          *
@@ -111,15 +110,8 @@ namespace Imperium\Router {
          * @var int
          *
          */
-        const CALLABLE_INDEX = 2;
+        const CALLABLE_INDEX = 'call';
 
-        /**
-         * The route name index
-         *
-         * @var int
-         *
-         */
-        const NAME_INDEX = 3;
 
         /**
          *
@@ -131,12 +123,6 @@ namespace Imperium\Router {
         const MVC_SEPARATOR = '@';
 
         /**
-         * @var Collection
-         */
-        private static $roots;
-
-
-        /**
          *
          * The url
          *
@@ -145,42 +131,11 @@ namespace Imperium\Router {
          */
         private  $url;
 
-        /**
-         *
-         * The url params
-         *
-         * @var Collection
-         *
-         */
-        private $params;
-
-        /**
-         *
-         * All routes
-         *
-         * @var Collection
-         *
-         */
-        private $routes;
-
         /***
          *
          * @var array
          */
         private $matches = [];
-
-        /**
-         *
-         * @var Collection
-         *
-         */
-        private $get_named;
-
-        /**
-         *
-         * @var Collection
-         */
-        private $post_named;
 
         /**
          * @var string
@@ -196,52 +151,23 @@ namespace Imperium\Router {
          */
         private $method;
 
+
         /**
          * Router constructor.
-         * @param ServerRequest $request
-         * @param string $namespace
-         */
-        public function __construct(ServerRequest $request,string $namespace)
-        {
-            $this->method        = $request->getMethod();
-
-            $this->post_named    = collection();
-
-            $this->get_named     = collection();
-
-            $this->routes        = collection();
-
-            $this->params        = collection();
-
-            $this->url           = $request->getUri()->getPath();
-
-            self::$roots        = collection();
-
-            $this->namespace = $namespace;
-
-        }
-
-
-
-
-        /**
          *
-         * @param string $name
-         * @param string $method
+         * @param ServerRequest $request
          *
          * @throws Exception
          */
-        private function check(string $name, string $method)
+        public function __construct(ServerRequest $request)
         {
-            switch ($method)
-            {
-                case self::METHOD_GET:
-                  is_true($this->get_named->exist($name),true,"The route name $name are already use by an another route");
-                break;
-                case self::METHOD_POST:
-                    is_true($this->post_named->exist($name),true,"The route name $name are already use by an another route");
-                break;
-            }
+
+            $this->method        = $request->getMethod();
+
+            $this->url           = $request->getUri()->getPath();
+
+            $this->namespace =  config('app','namespace');
+
         }
 
         /**
@@ -254,12 +180,13 @@ namespace Imperium\Router {
          */
         public function run()
         {
-            foreach($this->routes($this->method) as $route)
+
+            foreach(route($this->method) as $name => $route)
             {
                 $x = collection($route);
 
-                $url = $x->get(self::URL_INDEX);
-                $callable = $x->get(self::CALLABLE_INDEX);
+                $url       = $x->get(self::URL_INDEX);
+                $callable  = $x->get(self::CALLABLE_INDEX);
 
                 if ($this->match($url))
                     return $this->call($callable);
@@ -267,23 +194,6 @@ namespace Imperium\Router {
             throw new Exception('No routes match');
         }
 
-
-        /**
-         *
-         * Add a constraint for a param
-         *
-         * @param string $param
-         * @param string $regex
-         *
-         * @return Router
-         *
-         */
-        public function with(string $param,string $regex): Router
-        {
-            $this->params->add($regex,$param);
-
-            return $this;
-        }
 
         /**
          *
@@ -296,7 +206,7 @@ namespace Imperium\Router {
          */
         private function match(string $url): bool
         {
-            $path = preg_replace_callback("#:([\w]+)#",[$this,'matches'],$url);
+            $path =  preg_replace('#:([\w]+)#', '([^/]+)',$url);
 
             $regex = "#^$path$#";
 
@@ -345,52 +255,6 @@ namespace Imperium\Router {
             return call_user_func_array($callable, $this->matches);
         }
 
-
-        /**
-         * @param $x
-         * @return string
-         */
-        private function matches($x): string
-        {
-            return def($this->params[$x[1]]) ? $this->params[$x[1]] :  '([^/]+)';
-        }
-
-        /**
-         *
-         * Register a route
-         *
-         * @param string $url
-         * @param $callable
-         * @param string $name
-         * @param string $method
-         *
-         * @param bool $with
-         * @param array $args
-         * @param string[] $regex
-         * @return Router
-         *
-         * @throws Exception
-         */
-        public function add(string $url,$callable,string $name,string $method,bool $with = false,array $args = [],string ...$regex): Router
-        {
-            $this->check($name,$method);
-
-            equal($method,self::METHOD_GET) ? $this->get_named->add($name) : $this->post_named->add($name);
-
-            $this->routes->double($method,[self::URL_INDEX => $url,self::CALLABLE_INDEX => $callable,self::NAME_INDEX => $name]);
-
-            self::$roots->double($method,[self::URL_INDEX => $url,self::CALLABLE_INDEX => $callable,self::NAME_INDEX => $name]);
-
-            if ($with)
-            {
-                different(length($args),length($regex),true,"They are missing values");
-
-                foreach ($args as $k => $v)
-                    $this->with($v,$regex[$k]);
-            }
-            return $this;
-        }
-
         /**
          *
          * Get the url route by its name
@@ -405,16 +269,16 @@ namespace Imperium\Router {
          */
         public static function url(string $name ,$method = self::METHOD_GET): string
         {
-            foreach (self::$roots->get($method) as $route)
+
+            foreach (route($method) as  $names => $route)
             {
                 $x      = collection($route);
                 $url    = $x->get(self::URL_INDEX);
-                $i      = $x->get(self::NAME_INDEX);
 
-                if (equal($name,$i))
+                if (equal($name,$names))
                     return $url;
             }
-            throw new Exception('The url was not found');
+            throw new Exception("We have not found an url with the $name name");
         }
 
         /**
@@ -431,13 +295,12 @@ namespace Imperium\Router {
          */
         public static function callback(string $name,string $method = self::METHOD_GET): callable
         {
-            foreach (self::$roots->get($method) as $route)
+            foreach (route($method) as  $names =>  $route)
             {
                 $x          = collection($route);
                 $callback   = $x->get(self::CALLABLE_INDEX);
-                $i          = $x->get(self::NAME_INDEX);
 
-                if (equal($name,$i))
+                if (equal($name,$names))
                     return $callback;
             }
             throw new Exception('The callback was not found');
@@ -456,9 +319,7 @@ namespace Imperium\Router {
          */
         public function routes(string $method): array
         {
-            not_in(self::METHOD_SUPPORTED,$method,true,"The method is not supported");
-
-            return key_exists($method,$this->routes->collection()) ? $this->routes->get($method) : $this->routes->collection();
+            return route($method);
         }
 
     }

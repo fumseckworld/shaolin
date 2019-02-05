@@ -1407,14 +1407,15 @@ namespace Imperium\Tables {
          * Count number of records inside a table
          *
          *
+         * @param string $table
          * @return int
          *
          * @throws Exception
-         *
          */
-        public function count(): int
+        public function count(string $table =  ''): int
         {
-            foreach ($this->connexion->request("SELECT COUNT(*) FROM {$this->current()}") as $number)
+            $table = def($table) ? $table : $this->current();
+            foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
                 return current($number);
 
 

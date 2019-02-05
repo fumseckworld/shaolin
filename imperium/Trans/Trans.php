@@ -1,13 +1,13 @@
 <?php
 
-namespace Imperium\Config {
+namespace Imperium\Trans {
 
     use Exception;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Symfony\Component\Yaml\Yaml;
 
-    class Config extends Yaml
+    class  Trans extends Yaml
     {
 
         /**
@@ -15,7 +15,7 @@ namespace Imperium\Config {
          * @var string
          *
          */
-        const CONFIG_DIR = 'config';
+        const CONFIG_DIR = 'trans';
 
         /**
          * @var string

@@ -155,6 +155,23 @@ namespace Imperium\Query {
          */
         private $where_expected;
 
+        /**
+         * @var string
+         */
+        private $order_cond;
+        /**
+         * @var string
+         */
+        private $second_param;
+        /**
+         * @var string
+         */
+        private $first_param;
+
+        /**
+         * @var string
+         */
+        private $order_key;
 
 
         /**
@@ -230,6 +247,7 @@ namespace Imperium\Query {
                 case collection(self::JOIN_MODE)->exist($mode) :
                     return "$join $order";
                 break;
+
                 default:
                       throw new Exception('The query mode is not define');
                 break;
@@ -322,6 +340,8 @@ namespace Imperium\Query {
          */
         public function order_by(string $column, string $order = 'DESC'): Query
         {
+            $this->order_cond = $order;
+            $this->order_key = $column;
             $this->order = "ORDER BY $column $order";
 
             return $this;
@@ -446,6 +466,8 @@ namespace Imperium\Query {
         {
             $this->first_table = $first_table;
             $this->second_table = $second_table;
+            $this->first_param = $first_param;
+            $this->second_param = $second_param;
             $columns_define = def($columns);
             $mode = $this->mode;
 

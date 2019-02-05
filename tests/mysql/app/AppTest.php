@@ -3,7 +3,6 @@
 namespace Testing\mysql\app {
 
     use Exception;
-    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
@@ -11,7 +10,6 @@ namespace Testing\mysql\app {
     use Imperium\Json\Json;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
-    use Imperium\Router\Router;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Intervention\Image\ImageManager;
@@ -28,32 +26,6 @@ namespace Testing\mysql\app {
     class AppTest extends DatabaseTest
     {
 
-        /**
-         * @throws Exception
-         */
-        public function test_url_methods()
-        {
-
-            $request = new ServerRequest(GET,'/');
-            $route = new Router($request,'');
-
-            $route->add('/',function (){},'home','GET');
-            $route->add('/bedrooms',function (){},'bedrooms','GET');
-            $route->add('/salon',function (){},'salon','GET');
-
-            $this->assertEquals('/salon',url('salon'));
-            $this->assertEquals('/',url('home'));
-            $this->assertEquals('/bedrooms',url('bedrooms'));
-
-            $this->assertIsCallable(method('salon'));
-            $this->assertIsCallable(method('home'));
-            $this->assertIsCallable(method('bedrooms'));
-            $this->expectException(Exception::class);
-            url('a');
-            url('b');
-            method('a');
-            method('b');
-        }
 
         /**
          * @throws Exception

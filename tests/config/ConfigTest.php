@@ -24,6 +24,7 @@ namespace Testing\config {
         {
             $this->expectException(\Exception::class);
             config('a','a');
+            config('views','a');
         }
     }
 }

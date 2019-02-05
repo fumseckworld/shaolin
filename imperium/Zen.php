@@ -1,7 +1,6 @@
 <?php
 
 namespace Imperium {
-
     /**
     *
     * All const
