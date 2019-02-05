@@ -739,14 +739,15 @@ namespace Imperium {
          * Run the application
          *
          *
-         * @return string
+         * @return void
          *
          * @throws Exception
          *
          */
-        public static function run(): string
+        public static function run(): void
         {
-            return (new Router(ServerRequest::fromGlobals()))->run();
+            whoops();
+            echo (new Router(ServerRequest::fromGlobals()))->run();
         }
 
         /**
