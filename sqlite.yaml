@@ -1,8 +1,19 @@
-driver: sqlite
-base: zen.sqlite3
-username: ''
-password: ''
-dump: '../dump'
-host: 'localhost'
-hidden_tables: ['phinxlog','sqlite_sequence']
-hidden_bases : []
+use: 'development'
+development:
+  driver:  sqlite
+  base: zen.sqlite3
+  username: ''
+  password: ''
+  dump: '../dump'
+  host: 'localhost'
+  hidden_tables: ['phinxlog','sqlite_sequence']
+  hidden_bases : []
+production:
+  driver: sqlite
+  base: zen.sqlite3
+  username: ''
+  password: ''
+  dump: '../dump'
+  host: 'localhost'
+  hidden_tables: ['phinxlog','sqlite_sequence']
+  hidden_bases: []
