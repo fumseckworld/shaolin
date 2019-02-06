@@ -746,7 +746,10 @@ namespace Imperium {
          */
         public static function run(): void
         {
-            whoops();
+            if (config('app','debug'))
+            {
+                whoops();
+            }
             echo (new Router(ServerRequest::fromGlobals()))->run();
         }
 

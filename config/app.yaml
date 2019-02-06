@@ -2,3 +2,4 @@ locales: ['en','es','it','fr']
 locale: 'fr'
 namespace: 'Testing'
 charset: 'utf8'
+debug: true
