@@ -14,6 +14,7 @@ namespace Imperium {
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
     use Imperium\Json\Json;
+    use Imperium\Middleware\Middleware;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Router\Router;
@@ -38,6 +39,10 @@ namespace Imperium {
     **/
     class App extends Zen implements Management
     {
+        /**
+         * @var Collection
+         */
+        private static $middleware;
 
         /**
          *
@@ -722,7 +727,7 @@ namespace Imperium {
             $this->model            = new Model($this->connect,$this->table);
             $this->json             = new Json('app.json');
             $this->form             = new Form();
-
+            self::$middleware        = collection();
             if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
                $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
             else
@@ -976,12 +981,15 @@ namespace Imperium {
          * Get the router
          *
          * @param ServerRequest $serverRequest
-         * @param string $namespace
+         *
          * @return Router
+         *
+         * @throws Exception
+         *
          */
-        public function router(ServerRequest $serverRequest,string $namespace): Router
+        public function router(ServerRequest $serverRequest): Router
         {
-            return new Router($serverRequest, $namespace);
+            return new Router($serverRequest);
         }
 
         /**
@@ -1039,6 +1047,25 @@ namespace Imperium {
         public function config():Config
         {
             return Config::init();
+        }
+
+        /**
+         *
+         * @param Middleware $middleware
+         *
+         * @return App
+         */
+        /**
+         *
+         * @param string $middleware
+         *
+         * @return App
+         */
+        public function middleware(string $middleware): App
+        {
+            self::$middleware->add(new $middleware());
+
+            return $this;
         }
     }
 }

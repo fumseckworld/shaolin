@@ -15,7 +15,6 @@ class TableSeeds extends AbstractSeed
      */
     public function run()
     {
-        $driver  = $this->getAdapter()->getAdapterType();
 
         $country = [];
 

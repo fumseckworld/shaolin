@@ -245,6 +245,48 @@ if (not_exist('view'))
     }
 }
 
+if (not_exist('send_mail'))
+{
+    /**
+     *
+     * Send and email
+     *
+     * @param string $subject
+     * @param string $to
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function send_mail(string $subject,string $to,string $message): bool
+    {
+        $file = 'mail';
+
+        $transport = (new Swift_SmtpTransport(config($file,'smtp') ,config($file,'port')))
+            ->setUsername(config($file,'username'))
+            ->setPassword(config($file,'password'))
+        ;
+
+        $mailer = new Swift_Mailer($transport);
+
+        if (config($file,'html'))
+        {
+            $message = (new Swift_Message($subject))
+                ->setFrom(config($file,'from'))
+                ->setTo($to)
+                ->setBody(message($message),'text/html');
+        }else{
+            $message = (new Swift_Message($subject))
+                ->setFrom(config($file,'from'))
+                ->setTo($to)
+                ->setBody($message);
+        }
+
+        return different($mailer->send($message),0);
+
+    }
+}
 if (not_exist('get_table'))
 {
     /**
@@ -287,10 +329,27 @@ if (not_exist('csrf'))
      */
     function csrf(): string
     {
-        return '<input type="hidden" value="'.bin2hex(random_bytes(16)) .'"/>';
+        return \Imperium\Middleware\CsrfMiddleware::init()->generate();
     }
 }
 
+if (not_exist('message'))
+{
+    /**
+     *
+     * Load a html email content
+     *
+     * @param string $filename
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function message(string $filename): string
+    {
+        return File::content(realpath(config('mail','dir')) . DIRECTORY_SEPARATOR . $filename);
+    }
+}
 if (not_exist('sql_file_path'))
 {
     /**
@@ -680,8 +739,6 @@ if (not_exist('secure_register_form'))
      * @param  string $select_time_zone_text
      * @param  string $valid_time_zone_text
      * @param  string $time_zone_invalid_text
-     * @param  string $csrf_token_field
-     * @param  string $submit_button_class
      * @param  string $password_icon
      * @param  string $username_icon
      * @param  string $email_icon
@@ -701,26 +758,26 @@ if (not_exist('secure_register_form'))
                                     string $submit_text,string $submit_id,bool $multiple_languages = false,
                                     array $supported_languages =[],string $choose_language_text = '', string $choose_language_valid_text ='',
                                     string $choose_language_invalid_text = '',string $select_time_zone_text ='',string $valid_time_zone_text= '',
-                                    string $time_zone_invalid_text = '',string $csrf_token_field = '',string $submit_button_class = 'btn btn-outline-primary',
+                                    string $time_zone_invalid_text = '',
                                     string $password_icon = '<i class="fas fa-key"></i>',string $username_icon = '<i class="fas fa-user"></i>',
                                     string $email_icon = '<i class="fas fa-envelope"></i>',string $submit_icon = '<i class="fas fa-user-plus"></i>',
                                     string $time_zone_icon = '<i class="fas fa-clock"></i>',string $lang_icon = '<i class="fas fa-globe"></i>'
                                 ): string
     {
 
-        $languages = collection(array('' => $choose_language_text));
+        $languages = collection(['' => $choose_language_text]);
         foreach ($supported_languages as $k => $v)
             $languages->merge([$k => $v]);
 
         if (equal($valid_ip,$current_ip))
         {
-            $form = form($action,'register-form','was-validated ')->csrf($csrf_token_field)->validate() ;
+            $form = form($action,'register-form','was-validated ')->validate() ;
             if ($multiple_languages)
                 $form->row()->select(true,'locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select(true,'zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
 
            return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_icon,$username_success_text,$username_error_text,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_icon,$email_success_text,$email_error_text,post('email'),true)->end_row_and_new()
                 ->input(Form::PASSWORD,'password',$password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password_confirmation'),true)->end_row_and_new()
-                ->submit($submit_text,$submit_button_class,$submit_id,$submit_icon)->end_row()->get();
+                ->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
 
         }
         return '';
@@ -729,6 +786,51 @@ if (not_exist('secure_register_form'))
 
 
 
+if (not_exist('edit'))
+{
+
+    /**
+     *
+     * Generate a form to edit  a record
+     *
+     * @param string $table
+     * @param int $id
+     * @param string $action
+     * @param string $form_id
+     * @param string $submit_text
+     * @param string $icon
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function edit(string $table, int $id, string $action, string $form_id,string $submit_text, string $icon): string
+    {
+        return app()->model()->edit_form($table,$id,$action,$form_id,$submit_text,$icon);
+    }
+}
+
+if(not_exist('create'))
+{
+    /**
+     *
+     * Generate a form to create a record
+     *
+     * @param $table
+     * @param $action
+     * @param $form_id
+     * @param $submit_text
+     * @param $icon
+     *
+     * @return string
+     *
+     * @throws Exception
+     */
+    function create($table, $action, $form_id, $submit_text, $icon)
+    {
+        return app()->model()->create_form($table,$action,$form_id,$submit_text,$icon);
+    }
+}
 if (not_exist('bases_to_json'))
 {
     /**
@@ -870,7 +972,7 @@ if (not_exist('query_result'))
         elseif(empty($model->from($table)->all()))
             return html('code',$sql,'text-center'). html('div',$table_empty_text,'alert alert-danger mt-5');
         else
-           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$model->columns($table));
+           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$model->columns());
 
     }
 }
@@ -935,7 +1037,6 @@ if (not_exist('execute_query'))
      * @param string $first_param
      * @param string $second_table
      * @param string $second_param
-     * @param  string $submit_class The submit button class
      * @param  string $submit_update_text The submit update text
      * @param  string $form_update_action The update action
      * @param  string $key The order by key
@@ -946,7 +1047,7 @@ if (not_exist('execute_query'))
      *
      * @throws Exception
      */
-    function execute_query(string $table, App $imperium, int $mode, string $column_name, string $condition, $expected, string $first_table, string $first_param, string $second_table, string $second_param, string $submit_class, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
+    function execute_query(string $table, App $imperium, int $mode, string $column_name, string $condition, $expected, string $first_table, string $first_param, string $second_table, string $second_param, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
     {
 
 
@@ -965,7 +1066,7 @@ if (not_exist('execute_query'))
                 {
                     $id = $x->primary_key();
 
-                    $code->push(form($form_update_action,id())->generate($form_grid,$table,$x,$submit_update_text,$submit_class,uniqid($table),'',Form::EDIT,$record->$id));
+                    $code->push(form($form_update_action,id())->generate($form_grid,$table,$x,$submit_update_text,uniqid($table),'',Form::EDIT,$record->$id));
                 }
                 return $code->collection();
             break;
@@ -1013,11 +1114,10 @@ if (not_exist('query_view'))
      * @param string $validation_success_text
      * @param string $validation_error_text
      * @param string $icon
-     * @param string $csrf
      * @return string
      * @throws Exception
      */
-    function query_view(string $confirm_message, string $query_action, App $imperium, string $create_record_action, string $update_record_action, string $create_record_submit_text, string $update_record_text, string $current_table_name, string $expected_placeholder, string $submit_query_text, string $submit_class, string $remove_success_text, string $record_not_found_text, string $table_empty_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>', string $csrf = ''): string
+    function query_view(string $confirm_message, string $query_action, App $imperium, string $create_record_action, string $update_record_action, string $create_record_submit_text, string $update_record_text, string $current_table_name, string $expected_placeholder, string $submit_query_text, string $submit_class, string $remove_success_text, string $record_not_found_text, string $table_empty_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
     {
 
         $table = $imperium->table()->from($current_table_name);
@@ -1039,7 +1139,7 @@ if (not_exist('query_view'))
         return post('mode')
 
             ?
-               (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
+               (new Form())->validate()->start($query_action,id(),$confirm_message)
                 ->row()
                         ->reset($reset_form_text,$submit_class)
                 ->end_row_and_new()
@@ -1063,7 +1163,7 @@ if (not_exist('query_view'))
                 query_result($current_table_name,post('mode'),$imperium->model(),execute_query($imperium,post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
-                (new Form())->validate()->start($query_action,id(),$confirm_message)->csrf($csrf)
+                (new Form())->validate()->start($query_action,id(),$confirm_message)
                 ->row()
                     ->reset($reset_form_text,$submit_class)
                 ->end_row_and_new()
@@ -1125,7 +1225,6 @@ if (not_exist('login'))
      * @param  string $name_placeholder The username placeholder
      * @param  string $password_placeholder The password placeholder
      * @param  string $submit_text The submit button text
-     * @param  string $submit_class The submit button class
      * @param  string $submit_id The submit button id
      * @param  string $submit_icon The submit icon
      * @param  string $user_icon The user icon
@@ -1136,9 +1235,9 @@ if (not_exist('login'))
      * @throws Exception
      *
      */
-    function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_class,string $submit_id,string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
+    function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_id,string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
-        return form($action,$id)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_class,$submit_id,$submit_icon)->end_row()->get();
+        return form($action,$id)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
     }
 }
 if (not_exist('json'))
@@ -1420,7 +1519,7 @@ if (not_exist('get_records'))
      * @throws Exception
      *
      */
-    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,string $key = '',string $order_by = Table::DESC): array
+    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,string $key = '',string $order_by = DESC): array
     {
         $instance = $instance->from($current_table_name);
 
@@ -1898,10 +1997,8 @@ if (not_exist('generate'))
      * @param  string $table
      * @param  Table $instance
      * @param  string $submitText
-     * @param  string $submitClass
      * @param  string $submitIcon
      * @param  string $submitId
-     * @param  string $csrfToken
      * @param  int $mode
      * @param  int $id
      *
@@ -1910,9 +2007,9 @@ if (not_exist('generate'))
      * @throws Exception
      *
      */
-    function generate(string $formId,string $class,string $action,string $table,Table $instance,string $submitText,string $submitClass,string $submitIcon,string $submitId,string $csrfToken = '',int $mode = Form::CREATE,int $id = 0): string
+    function generate(string $formId,string $class,string $action,string $table,Table $instance,string $submitText,string $submitIcon,string $submitId,int $mode = Form::CREATE,int $id = 0): string
     {
-        return form($action,$formId,$class)->csrf($csrfToken)->generate(2,$table,$instance,$submitText,$submitClass,$submitId,$submitIcon,$mode,$id);
+        return form($action,$formId,$class)->generate(2,$table,$instance,$submitText,$submitId,$submitIcon,$mode,$id);
     }
 }
 
@@ -1940,8 +2037,9 @@ if (not_exist('collation'))
 
         $request = '';
 
-        assign(equal($connexion->driver(),Connect::MYSQL),$request,'SHOW COLLATION');
-        assign(equal($connexion->driver(),Connect::POSTGRESQL),$request,'SELECT collname FROM pg_collation');
+        assign($connexion->mysql(),$request,'SHOW COLLATION');
+
+        assign($connexion->postgresql(),$request,'SELECT collname FROM pg_collation');
 
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));
@@ -1974,6 +2072,7 @@ if (not_exist('charset'))
         $request = '';
 
         assign(equal($connexion->driver(),Connect::MYSQL),$request,'SHOW CHARACTER SET');
+
         assign(equal($connexion->driver(),Connect::POSTGRESQL),$request,'SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1');
 
         foreach ($connexion->request($request) as $char)
@@ -2381,16 +2480,15 @@ if (not_exist('table'))
      *
      * @param  Connect $connect The connection
      *
-     * @param array $hidden
      *
      * @return Table
      *
      * @throws Exception
      *
      */
-    function table(Connect $connect,array $hidden = []): Table
+    function table(Connect $connect): Table
     {
-        return new Table($connect,$hidden);
+        return new Table($connect);
     }
 }
 
@@ -2508,6 +2606,46 @@ if (not_exist('form'))
     }
 }
 
+if (not_exist('change'))
+{
+
+    /**
+     * @param string $filename
+     * @param string $delimiter
+     * @param string $key
+     * @param string $value
+     *
+     * @return bool
+     */
+    function change(string $filename,string $delimiter,string $key,string $value): bool
+    {
+
+        $lines = File::lines($filename);
+
+        $keys = File::keys($filename,$delimiter);
+
+        $file = File::open($filename,File::EMPTY_AND_WRITE);
+
+        if ($file)
+        {
+            foreach ($keys as $k => $v)
+            {
+                switch ($v)
+                {
+                    case $key:
+                        $x = "$key=$value";
+                        fputs($file,"$x\n");
+                    break;
+                    default:
+                        fputs($file,$lines[$k]);
+                    break;
+            }
+        }
+        return File::close($file);
+    }
+    return false;
+    }
+}
 if(not_exist('slug'))
 {
     /**
@@ -2924,11 +3062,13 @@ if (not_exist('insert_into'))
      */
     function insert_into(Model $instance,string $table,...$values): string
     {
+        $instance = $instance->from($table);
 
-        $x = collection($instance->columns($table))->join(',');
+        $x = collection($instance->columns())->join(',');
 
         $data = "INSERT INTO $table ($x) VALUES (";
-        $primary = $instance->primary($table);
+
+        $primary = $instance->primary();
 
         foreach ($values as $value)
         {

@@ -464,18 +464,28 @@ namespace Imperium\Html\Form {
 
         /**
          *
+         * Form config
+         *
+         * @var string
+         */
+        private $file = 'form';
+
+        /**
+         *
          * Define the padding between elements
          *
          * @method padding
          *
-         * @param int $length The padding number
-         * 
+         *
          * @return Form
          *
          * @throws Exception
          */
-        public function padding(int $length): Form
+        public function padding(): Form
         {
+
+            $length = config($this->file,'padding');
+
             not_in([1,2,3,4,5],$length,true,"The padding number must be an integer between 1 and 5");
 
             $this->padding = "pt-$length pb-$length pl-$length pr-$length";
@@ -489,15 +499,15 @@ namespace Imperium\Html\Form {
          *
          * @method margin
          *
-         * @param  int    $length The margin number
-         *
          * @return Form
          *
          * @throws Exception
          *
          */
-        public function margin(int $length): Form
+        public function margin(): Form
         {
+            $length = config($this->file,'margin');
+
             not_in([1,2,3,4,5],$length,true,"The margin number must be an integer between 1 and 5");
 
             $this->margin = "mt-$length mb-$length ml-$length mr-$length";
@@ -566,7 +576,7 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function start(string $action, string $id,string $confirm ='', string $class = '',  bool $enctype = false, string $method = Form::POST,string $charset = 'utf8'): Form
+        public function start(string $action, string $id,string $confirm ='', string $class = '',  bool $enctype = false, string $method = POST,string $charset = 'utf8'): Form
         {
 
             $this->method = $method;
@@ -606,7 +616,16 @@ namespace Imperium\Html\Form {
 
             }
 
-            return $this->csrf(csrf());
+            if (config($this->file,'large'))
+                $this->large();
+
+            if (config($this->file,'small'))
+                $this->small();
+
+            if (config($this->file,'save'))
+                $this->save();
+
+            return $this->margin()->padding()->csrf(csrf());
         }
 
         /**
@@ -837,26 +856,30 @@ namespace Imperium\Html\Form {
          *
          * @method button
          *
-         * @param  string $type  The button type
-         * @param  string $text  The button text
-         * @param  string $class The button class
-         * @param  string $icon  The button icon
+         * @param  string $type The button type
+         * @param  string $text The button text
+         * @param  string $icon The button icon
          *
          * @return Form
          *
+         * @throws Exception
+         *
          */
-        public function button(string $type,string $text, string $class, string $icon = ''): Form
+        public function button(string $type,string $text,string $icon = ''): Form
         {
+
+            $class = collection(config($this->file,'class'))->get($type);
+
             switch ($type)
             {
                 case Form::BUTTON:
-                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $class .' '. $this->get_btn_class().' " type="button">  ' . $icon . ' ' . $text . '</button></div></div>');
+                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' .$class .' ' . $this->get_btn_class().' " type="button">  ' . $icon . ' ' . $text . '</button></div></div>');
                 break;
                 case Form::RESET:
                     append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button  class="' . $class .' '. $this->get_btn_class().' "  type="reset">  ' . $icon . ' ' . $text . '</button></div></div>');
                 break;
                 case Form::SUBMIT:
-                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $class . ' '. $this->get_btn_class().'" type="submit">  ' . $icon . ' ' . $text . '</button></div></div>');
+                    append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $class.' '. $this->get_btn_class().'" type="submit">  ' . $icon . ' ' . $text . '</button></div></div>');
                 break;
 
             }
@@ -876,7 +899,7 @@ namespace Imperium\Html\Form {
          * @return Form
          *
          */
-        public function csrf(string $csrf): Form
+        private function csrf(string $csrf): Form
         {
             append($this->form,$csrf);
 
@@ -889,15 +912,18 @@ namespace Imperium\Html\Form {
          *
          * @method reset
          *
-         * @param  string $text  The reset button text
-         * @param  string $class The reset button class
-         * @param  string $icon  The reset button icon
+         * @param  string $text The reset button text
+         * @param  string $icon The reset button icon
          *
          * @return Form
          *
+         * @throws Exception
+         *
          */
-        public function reset(string $text, string $class, string $icon = ''): Form
+        public function reset(string $text, string $icon = ''): Form
         {
+            $class = collection(config($this->file,'class'))->get('reset');
+
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $this->get_btn_class(). ' ' .$class.'" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>');
 
             return $this;
@@ -911,8 +937,6 @@ namespace Imperium\Html\Form {
          *
          * @param  string   $name                    The input name
          * @param  string   $placeholder             The placeholder
-         * @param  int      $cols
-         * @param  int      $row
          * @param  string   $validation_success_text The success validation text
          * @param  string   $validation_error_text   The error validation text
          * @param  bool     $autofocus               Option to add autofocus
@@ -923,8 +947,12 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function textarea(string $name, string $placeholder, int $cols, int $row,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false,string $value = ''): Form
+        public function textarea(string $name, string $placeholder,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false,string $value = ''): Form
         {
+            $row  = collection(config($this->file,'textarea'))->get('row');
+
+            $col  = collection(config($this->file,'textarea'))->get('col');
+
             if ($this->save)
                 $value = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
 
@@ -942,9 +970,9 @@ namespace Imperium\Html\Form {
             $class = $this->get_input_complete_class();
 
             if ($autofocus)
-                append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >'.$value. '</textarea>'.$validation.'</div></div>');
+                append($this->form, ' <div class="'.self::AUTO_COL.'">   <div class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $col . '" placeholder="' . $placeholder . '" autofocus="autofocus" class="'.$class.'" required="required" name="' . $name . '" >'.$value. '</textarea>'.$validation.'</div></div>');
             else
-                append($this->form,'<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $cols . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >'.$value .'</textarea> '.$validation.'</div></div>');
+                append($this->form,'<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><textarea rows="' . $row . '"  cols="' . $col . '" placeholder="' . $placeholder . '" class="'.$class.'" required="required" name="' . $name . '"  >'.$value .'</textarea> '.$validation.'</div></div>');
 
             return $this;
         }
@@ -971,17 +999,47 @@ namespace Imperium\Html\Form {
          *
          * @method submit
          *
-         * @param  string $text  The submit button text
-         * @param  string $class The submit button class
-         * @param  string $id    The submit button id
-         * @param  string $icon  The submit button id
+         * @param  string $text The submit button text
+         * @param  string $id The submit button id
+         * @param  string $icon The submit button id
          *
          * @return Form
          *
+         * @throws Exception
+         *
          */
-        public function submit(string $text, string $class, string $id, string $icon = ''): Form
+        public function submit(string $text, string $id, string $icon = ''): Form
         {
+            $class  = collection(config($this->file,'class'))->get('submit');
+
             append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
+
+            return $this;
+        }
+
+        /**
+         *
+         * Generate a group
+         *
+         * @param array $text
+         * @param string ...$href
+         *
+         * @return Form
+         *
+         * @throws Exception
+         *
+         */
+        public function group(array $text,string ...$href): Form
+        {
+
+            $class  = collection(config($this->file,'class'))->get('group');
+
+            append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"> <div class="btn-group " role="group">');
+
+            foreach ($href as $k => $value)
+                append($this->form,'<a href="'.$value.'" class="'.$class.  ' ' .$this->get_btn_class().'"> '.collection($text)->get($k).'</a> ');
+
+            append($this->form,'<div></div></div>');
 
             return $this;
         }
@@ -992,16 +1050,19 @@ namespace Imperium\Html\Form {
          *
          * @method link
          *
-         * @param  string $url   The url link
-         * @param  string $class The button class
-         * @param  string $text  The button text
-         * @param  string $icon  The button icon
+         * @param  string $url The url link
+         * @param  string $text The button text
+         * @param  string $icon The button icon
          *
          * @return Form
          *
+         * @throws Exception
+         *
          */
-        public function link(string $url, string $class, string $text, string $icon = ''): Form
+        public function link(string $url, string $text, string $icon = ''): Form
         {
+            $class  = collection(config($this->file,'class'))->get('link');
+
             append($this->form ,'<div class="'.self::AUTO_COL.'"> <div class="'. $this->separator().'"><a href="' . $url . '" class="' . $this->get_btn_class() . ' '.$class.'">  ' . $icon . ' ' . $text . '</a></div></div>');
 
             return $this;
@@ -1042,7 +1103,7 @@ namespace Imperium\Html\Form {
          *
          * @throws Exception
          */
-        public function select(bool $use_index,string $name, array $options,string $success_text = '',string $error_text= '',string $icon = '',bool $multiple = false,bool $required = true): Form
+        public function select(bool $use_index,string $name, array $options,string $icon = '',string $success_text = '',string $error_text= '',bool $multiple = false,bool $required = true): Form
         {
             $class = $this->get_input_complete_class();
 
@@ -1066,9 +1127,9 @@ namespace Imperium\Html\Form {
                 } else {
 
                     if ($multiple)
-                        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple required="required">');
+                        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'" multiple required="required">');
                     else
-                        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" required="required">');
+                        append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'" required="required">');
 
                     foreach ($options as $k => $v)
                         $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
@@ -1093,9 +1154,9 @@ namespace Imperium\Html\Form {
                 {
 
                     if ($multiple)
-                        append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'" multiple>');
+                        append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'" multiple>');
                     else
-                        append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.self::CUSTOM_SELECT_CLASS.'">');
+                        append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'">');
 
                     foreach ($options as $k => $v)
                         $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
@@ -1112,16 +1173,20 @@ namespace Imperium\Html\Form {
          *
          * @method checkbox
          *
-         * @param  string   $name    The checkbox name
-         * @param  string   $text    The checkbox text
-         * @param  string   $class   The checkbox class
-         * @param  bool     $checked To add checked by default
+         * @param  string $name The checkbox name
+         * @param  string $text The checkbox text
+         * @param  bool $checked To add checked by default
          *
          * @return Form
          *
+         *
+         * @throws Exception
          */
-        public function checkbox(string $name, string $text,string $class = '',bool $checked = false): Form
+        public function checkbox(string $name, string $text,bool $checked = false): Form
         {
+
+            $class  = collection(config($this->file,'class'))->get('checkbox');
+
             if ($checked)
                 append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ');
             else
@@ -1136,25 +1201,26 @@ namespace Imperium\Html\Form {
          *
          * @method radio
          *
-         * @param  string $name    The radio name
-         * @param  string $text    The radio text
-         * @param  bool   $checked To defined checked by default
+         * @param  string $name The radio name
+         * @param  string $text The radio text
+         * @param string $id
+         * @param  bool $checked To defined checked by default
          *
          * @return Form
-         *
          */
-        public function radio(string $name, string $text,bool $checked = false): Form
+        public function radio(string $name, string $text,string $id,bool $checked = false): Form
         {
+
             if ($checked)
             {
                 append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'""> <div class="custom-control custom-radio">
-                <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input" checked="checked">
+                <input type="radio" id="'.$id.'" name="'.$name.'" class="custom-control-input" checked="checked">
                 <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
                 </div></div></div>');
             } else
             {
                 append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="custom-control custom-radio">
-                <input type="radio" id="'.$name.'" name="'.$name.'" class="custom-control-input">
+                <input type="radio" id="'.$id.'" name="'.$name.'" class="custom-control-input">
                 <label class="custom-control-label" for="'.$name.'">'.$text.'</label>
                 </div></div></div>');
             }
@@ -1221,7 +1287,6 @@ namespace Imperium\Html\Form {
          * @param  string   $table        The current table
          * @param  Table    $instance     The table instance
          * @param  string   $submit_text  The submit button text
-         * @param  string   $submit_class The submit button class
          * @param  string   $submit_id    The submit button id
          * @param  string   $submit_icon  The submit icon
          * @param  int      $mode         Define the mode edit or create
@@ -1232,7 +1297,7 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function generate(int $form_grid,string $table, Table $instance, string $submit_text, string $submit_class, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
+        public function generate(int $form_grid,string $table, Table $instance, string $submit_text, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
             $instance   = $instance->from($table);
             $types      = $instance->columns_types();
@@ -1263,10 +1328,10 @@ namespace Imperium\Html\Form {
 
                             if (equal($i % $form_grid,0))
                             {
-                                $this->textarea($column, $column, 10, 10, '','',false, $record->$column);
+                                $this->textarea($column, $column, '','',false, $record->$column);
                                 $this->end_row_and_new();
                             }else{
-                                $this->textarea($column, $column, 10, 10, '', '',false,$record->$column);
+                                $this->textarea($column, $column, '', '',false,$record->$column);
                             }
 
                         } else {
@@ -1277,7 +1342,7 @@ namespace Imperium\Html\Form {
                     }
 
                 }
-                $this->end_row_and_new()->submit($submit_text, $submit_class, $submit_id, $submit_icon);
+                $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon);
                 return $this->end_row()->get();
             }else
             {
@@ -1297,17 +1362,17 @@ namespace Imperium\Html\Form {
                         if (equal($i % $form_grid, 0))
                         {
                             if (has($type,$date))
-                                $this->textarea($column, $column, 10, 10,'','',false,$current);
+                                $this->textarea($column, $column, '','',false,$current);
                             else
-                                $this->textarea($column, $column, 10, 10);
+                                $this->textarea($column, $column );
 
                             $this->end_row_and_new();
                         }else
                         {
                             if (has($type,$date))
-                                $this->textarea($column, $column, 10, 10,'','',false,$current);
+                                $this->textarea($column, $column, '','',false,$current);
                             else
-                                $this->textarea($column, $column, 10, 10);
+                                $this->textarea($column, $column) ;
                         }
 
                     } else {
@@ -1316,7 +1381,7 @@ namespace Imperium\Html\Form {
                     }
                     $i--;
                 }
-                $this->end_row_and_new()->submit($submit_text, $submit_class, $submit_id, $submit_icon);
+                $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon);
 
                 return $this->end_row()->get();
             }
@@ -1366,7 +1431,7 @@ namespace Imperium\Html\Form {
             {
                 $this->input_size = self::SMALL_CLASS;
                 $this->btn_size = self::BTN_SMALL_CLASS;
-            }else{
+            }else {
                 $this->input_size = self::BASIC_CLASS;
                 $this->btn_size = self::BTN_BASIC_CLASS;
             }

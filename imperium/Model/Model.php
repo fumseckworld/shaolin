@@ -232,15 +232,14 @@ namespace Imperium\Model {
          * @param  string $action The form action
          * @param  string $form_id The form id
          * @param  string $submit_text The submit text
-         * @param  string $submit_class The submit button class
-         *
+         * @param string $submit_icon
          * @return string
          *
          * @throws Exception
          */
-        public function edit_form(string $table,int $id,string $action,string $form_id,string $submit_text,string $submit_class): string
+        public function edit_form(string $table,int $id,string $action,string $form_id,string $submit_text,string $submit_icon): string
         {
-            return form($action,$form_id)->generate(2,$table,$this->table,$submit_text,$submit_class,'','',Form::EDIT,$id);
+            return form($action,'')->generate(2,$table,$this->table,$submit_text,$form_id,$submit_icon,Form::EDIT,$id);
         }
 
         /**
@@ -253,15 +252,14 @@ namespace Imperium\Model {
          * @param  string $action The form action
          * @param  string $form_id The form id
          * @param  string $submit_text The submit text
-         * @param  string $submit_class The submit class
-         *
+         * @param string $submit_icon
          * @return string
          *
          * @throws Exception
          */
-        public function create_form(string $table,string $action,string $form_id,string $submit_text,string $submit_class): string
+        public function create_form(string $table,string $action,string $form_id,string $submit_text,string $submit_icon): string
         {
-            return form($action,$form_id)->generate(2,$table,$this->table,$submit_text,$submit_class,'','');
+            return form($action,'')->generate(2,$table,$this->table,$submit_text,$form_id,$submit_icon);
         }
 
         /**

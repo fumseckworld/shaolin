@@ -97,35 +97,6 @@ namespace Testing\mysql\app {
         }
 
 
-        /**
-         * @throws Exception
-         */
-        public function test_register()
-        {
-            $form = secure_register_form('/', '127.0.0.1', '127.0.0.1', 'username', 'username will be use','username can be empty', 'email', 'email will be use', 'email can be empty', 'password', 'password will be use', 'password not be empty', 'confirm the password','create account', 'register', true,['fr' => 'French','en' => 'English' ],
-                'select', 'lang will be use','select a lang', 'select a time zone', 'time zone will be use','time zone','az','btn-primary', fa('fas','fa-key'), fa('fas','fa-user'), fa('fas','fas-envelope'),fa('fas','fa-user-plus'), fa('fas', 'fa-globe'), '');
-
-            $this->assertContains('/',$form);
-            $this->assertContains('username will be use',$form);
-            $this->assertContains('time zone will be use',$form);
-            $this->assertContains('az',$form);
-            $this->assertContains('placeholder="username"',$form);
-            $this->assertContains('placeholder="email"',$form);
-            $this->assertContains('placeholder="email"',$form);
-            $this->assertContains('placeholder="password"',$form);
-            $this->assertContains('placeholder="confirm the password"',$form);
-            $this->assertContains('<option value="fr">French</option>',$form);
-            $this->assertContains('<option value="en">English</option>',$form);
-            $this->assertContains('<option value="">select</option>',$form);
-            $this->assertContains('<option value="">select a time zone</option>',$form);
-            $this->assertContains('<button type="submit" class="btn btn-primary" id="register" name="register">',$form);
-
-
-            $form = secure_register_form('/', '127.0.0.a1', '127.0.0.1', 'username', 'username will be use','username can be empty', 'email', 'email will be use', 'email can be empty', 'password', 'password will be use', 'password not be empty', 'confirm the password','create account', 'register', true,['fr' => 'french','en' => 'English' ],
-                'select', 'lang will be use','select a lang', 'select a time zone', 'time zone will be use','time zone','az','btn btn-primary', fa('fas','fa-key'), fa('fas','fa-user'), fa('fas','fas-envelope'),fa('fas','fa-user-plus'), fa('fas', 'fa-globe'), '');
-
-            $this->assertEquals('',$form);
-        }
 
         /**
          * @throws Exception

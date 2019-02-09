@@ -1,0 +1,17 @@
+class:
+  submit: 'btn-success'
+  reset:  'btn-danger'
+  remove: 'btn-danger'
+  button: 'btn-secondary'
+  link:   'btn-primary'
+  group:  'btn-secondary'
+  checkbox: 'form-control'
+textarea:
+  col: 10
+  row: 10
+save: true
+padding: 2
+margin: 4
+validate: false
+large: true
+small: false

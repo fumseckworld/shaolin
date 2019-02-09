@@ -95,32 +95,32 @@ namespace Testing\Form {
          */
         public function test_textarea()
         {
-            $form = form('a','a')->textarea('name','value',10,10,'','',false)->get();
+            $form = form('a','a')->textarea('name','value','','',false)->get();
 
             $this->assertNotContains('autofocus',$form);
             $this->assertContains('name="name"',$form);
             $this->assertContains('10',$form);
 
-            $form = form('a','a')->textarea('name','value',10,10,'','',false)->get();
+            $form = form('a','a')->textarea('name','value','','',false)->get();
 
             $this->assertNotContains('autofocus',$form);
             $this->assertContains('name="name"',$form);
             $this->assertContains('10',$form);
 
-            $form = form('a','a')->textarea('name','value',10,10,'','',true)->get();
+            $form = form('a','a')->textarea('name','value','','',true)->get();
 
             $this->assertContains('autofocus',$form);
             $this->assertContains('name="name"',$form);
             $this->assertContains('10',$form);
 
-            $form = form('a','a')->textarea('name','value',10,10,'','',true)->get();
+            $form = form('a','a')->textarea('name','value','','',true)->get();
 
             $this->assertContains('autofocus',$form);
             $this->assertContains('name="name"',$form);
             $this->assertContains('10',$form);
 
 
-            $form = form('a','a')->textarea('name','value',10,10,'','',false)->get();
+            $form = form('a','a')->textarea('name','value','','',false)->get();
 
             $this->assertContains('placeholder="value"',$form);
             $this->assertNotContains('autofocus',$form);
@@ -152,7 +152,7 @@ namespace Testing\Form {
             $this->assertContains($fail,$x);
 
             $form = new Form();
-            $x = $form->validate()->start('a','a','confirm','form-control',true)->textarea('name','name',10,10,$success,$fail)->get();
+            $x = $form->validate()->start('a','a','confirm','form-control',true)->textarea('name','name',$success,$fail)->get();
             $this->assertContains('confirm',$x);
 
             $this->assertContains($success,$x);
@@ -164,21 +164,21 @@ namespace Testing\Form {
             $this->expectException(Exception::class);
 
             $x = new Form();
-            $x->validate()->start('a','a')->textarea('a','a',10,10)->get();
+            $x->validate()->start('a','a')->textarea('a','a')->get();
         }
         public function test_reset()
         {
             $icon = fa('fas','fa-linux');
-            $form = \form('a','a')->reset('reset','btn-danger','')->get();
+            $form = \form('a','a')->reset('reset')->get();
 
             $this->assertContains('reset',$form);
-            $this->assertContains('btn btn-danger',$form);
+            $this->assertContains('btn btn-lg btn-danger',$form);
             $this->assertNotContains($icon,$form);
 
-            $form = \form('a','a')->reset('reset','btn-danger',$icon)->get();
+            $form = \form('a','a')->reset('reset',$icon)->get();
 
             $this->assertContains('reset',$form);
-            $this->assertContains('btn btn-danger',$form);
+            $this->assertContains('btn btn-lg btn-danger',$form);
             $this->assertContains($icon,$form);
         }
 
@@ -367,19 +367,17 @@ namespace Testing\Form {
          */
         public function test_size()
         {
-            $small = 'btn btn-sm btn-primary';
-            $large = 'btn btn-lg btn-primary';
-            $submit_class = 'btn-primary';
-            $form =  form('a','a')->large()->input(Form::TEXT,'sql','sql file')->submit('a',$submit_class,'submit')->get();
+
+            $class = collection(config('form','class'))->get('submit');
+            $form =  form('a','a')->large()->input(Form::TEXT,'sql','sql file')->submit('a','submit')->get();
             $this->assertContains(Form::LARGE_CLASS,$form);
             $this->assertNotContains(Form::SMALL_CLASS,$form);
-            $this->assertContains($large,$form);
+            $this->assertContains($class,$form);
 
-            $form =  form('a','a')->small()->input(Form::TEXT,'sql','sql file')->submit('a',$submit_class,'a')->get();
+            $form =  form('a','a')->small()->input(Form::TEXT,'sql','sql file')->submit('a','a')->get();
             $this->assertContains(Form::SMALL_CLASS,$form);
             $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertContains($small,$form);
-            $this->assertContains($small,$form);
+            $this->assertContains($class,$form);
 
             $form =  form('a','a')->large()->select(true,'table',[1,2,3])->get();
             $this->assertContains(Form::LARGE_CLASS,$form);
@@ -448,35 +446,31 @@ namespace Testing\Form {
 
         public function test_checkbox()
         {
-            $class = 'form-control';
             $form = form('a','a')->checkbox('super','check me')->get();
             $this->assertContains('name="super"',$form);
             $this->assertContains('check me',$form);
-            $this->assertNotContains($class,$form);
             $this->assertNotContains('checked',$form);
 
-            $form = form('a','a')->checkbox('super','check me',$class)->get();
+            $form = form('a','a')->checkbox('super','check me')->get();
             $this->assertContains('name="super"',$form);
             $this->assertContains('check me',$form);
-            $this->assertContains($class,$form);
             $this->assertNotContains('checked',$form);
 
-            $form = form('a','a')->checkbox('super','check me',$class,true)->get();
+            $form = form('a','a')->checkbox('super','check me',true)->get();
             $this->assertContains('name="super"',$form);
             $this->assertContains('check me',$form);
-            $this->assertContains($class,$form);
             $this->assertContains('checked',$form);
         }
 
         public function test_button()
         {
-            $form = form('a','a')->button(Form::SUBMIT,'submit','btn-primary')->get();
+            $form = form('a','a')->button(Form::SUBMIT,'submit')->get();
 
             $this->assertContains('type="submit"',$form);
-            $form = form('a','a')->button(Form::RESET,'submit','btn-primary')->get();
+            $form = form('a','a')->button(Form::RESET,'submit')->get();
 
             $this->assertContains('type="reset"',$form);
-            $form = form('a','a')->button(Form::BUTTON,'submit','btn-primary')->get();
+            $form = form('a','a')->button(Form::BUTTON,'submit')->get();
 
             $this->assertContains('type="button"',$form);
         }
@@ -497,7 +491,7 @@ namespace Testing\Form {
             $this->assertContains('<option value="1">18</option>',$form);
             $this->assertContains('<option value="2">19</option>',$form);
 
-            $form =  form('a','a')->select(false,'age',[15,18,19],'','',$icon,false,false)->get();
+            $form =  form('a','a')->select(false,'age',[15,18,19],$icon,'','',false,false)->get();
 
             $this->assertNotContains('required',$form);
             $this->assertContains($icon,$form);
@@ -517,7 +511,7 @@ namespace Testing\Form {
             $this->assertContains('<option value="1">18</option>',$form);
             $this->assertContains('<option value="2">19</option>',$form);
 
-            $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , $icon ,  false, false)->get();
+            $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' ,   '',false, false)->get();
 
             $this->assertNotContains('required',$form);
             $this->assertContains($icon,$form);
@@ -526,17 +520,17 @@ namespace Testing\Form {
             $this->assertContains('<option value="15">15</option>',$form);
             $this->assertContains('<option value="18">18</option>',$form);
 
-            $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , '' ,  true, false)->get();
+            $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '' ,  true, false)->get();
 
             $this->assertNotContains('required',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertContains($icon,$form);
             $this->assertContains('multiple',$form);
             $this->assertContains('name="age"',$form);
             $this->assertContains('<option value="15">15</option>',$form);
             $this->assertContains('<option value="18">18</option>',$form);
             $this->assertContains('<option value="19">19</option>',$form);
 
-            $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , $icon ,  true, false)->get();
+            $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '',  true, false)->get();
 
             $this->assertNotContains('required',$form);
             $this->assertContains($icon,$form);
@@ -545,17 +539,17 @@ namespace Testing\Form {
             $this->assertContains('<option value="15">15</option>',$form);
             $this->assertContains('<option value="18">18</option>',$form);
 
-            $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , '' ,  true, true)->get();
+            $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '' ,  true, true)->get();
 
             $this->assertContains('required',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertContains($icon,$form);
             $this->assertContains('multiple',$form);
             $this->assertContains('name="age"',$form);
             $this->assertContains('<option value="15">15</option>',$form);
             $this->assertContains('<option value="18">18</option>',$form);
             $this->assertContains('<option value="19">19</option>',$form);
 
-            $form =  form('a','a')->select(false,'age',  [15,18,19], '' , '' , $icon ,  true, true)->get();
+            $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '',  true, true)->get();
 
             $this->assertContains('required',$form);
             $this->assertContains($icon,$form);
@@ -571,15 +565,16 @@ namespace Testing\Form {
         public function test_radio()
         {
 
-            $form = form('a','a')->radio('super','check me')->get();
-            $this->assertContains('name="super"',$form);
-            $this->assertContains('check me',$form);
-            $this->assertNotContains('checked',$form);
+            $form = form('a','a')->radio('super','check me','a',true)->get();
 
-            $form = form('a','a')->radio('super','check me',true)->get();
             $this->assertContains('name="super"',$form);
             $this->assertContains('check me',$form);
-            $this->assertContains('checked',$form);
+            $this->assertContains('checked="checked"',$form);
+
+            $form = form('a','a')->radio('super','check me','a')->get();
+            $this->assertContains('name="super"',$form);
+            $this->assertContains('check me',$form);
+
         }
 
         /**
@@ -589,36 +584,32 @@ namespace Testing\Form {
         {
 
             $icon = fa('fas','fa-rocket');
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append','btn-primary',"submit-id");
+            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id");
 
-            $this->assertContains('class="btn btn-primary"',$form);
             $this->assertContains('id="submit-id"',$form);
             $this->assertContains('id="a"',$form);
             $this->assertContains('append',$form);
             $this->assertNotEmpty($form);
 
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append','btn-primary',"submit-id",$icon);
+            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon);
 
-            $this->assertContains('class="btn btn-primary"',$form);
-            $this->assertContains('id="submit-id"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains('append',$form);
-            $this->assertContains($icon,$form);
-            $this->assertNotEmpty($form);
-
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append','btn-primary',"submit-id",$icon,Form::EDIT,1);
-
-            $this->assertContains('class="btn btn-primary"',$form);
             $this->assertContains('id="submit-id"',$form);
             $this->assertContains('id="a"',$form);
             $this->assertContains('append',$form);
             $this->assertContains($icon,$form);
             $this->assertNotEmpty($form);
 
+            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon,Form::EDIT,1);
 
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append','',"submit-id",$icon,Form::EDIT,1);
+            $this->assertContains('id="submit-id"',$form);
+            $this->assertContains('id="a"',$form);
+            $this->assertContains('append',$form);
+            $this->assertContains($icon,$form);
+            $this->assertNotEmpty($form);
 
-            $this->assertContains('class="btn "',$form);
+
+            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon,Form::EDIT,1);
+
             $this->assertContains('id="submit-id"',$form);
             $this->assertContains('id="a"',$form);
             $this->assertContains('append',$form);
@@ -643,40 +634,37 @@ namespace Testing\Form {
         public function test_link()
         {
             $icon = fa('fas','fa-home');
-            $form = \form('a','a')->link('/','btn-primary','home')->get();
-            $this->assertContains('class="btn btn-primary"',$form);
+            $form = \form('a','a')->link('/','home')->get();
             $this->assertContains('home',$form);
             $this->assertContains('href="/"',$form);
             $this->assertNotContains($icon,$form);
-            $form = \form('a','a')->link('/','','home')->get();
-            $this->assertNotContains($icon,$form);
-            $this->assertContains('home',$form);
-            $this->assertContains('href="/"',$form);
-            $form = \form('a','a')->link('/','','home',$icon)->get();
+
+            $form = \form('a','a')->link('/','home',$icon)->get();
             $this->assertContains($icon,$form);
             $this->assertContains('home',$form);
             $this->assertContains('href="/"',$form);
+
         }
 
         public function test_padding()
         {
 
-            $marge = 2;
+            $marge = config('form','padding');
             $form = form('a','a')->padding($marge)->input('text','name','username')->get();
             $this->assertContains("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
         }
         public function test_margin()
         {
-            $marge = 2;
+            $marge = config('form','margin');
             $form = form('a','a')->margin($marge)->input('text','name','username')->get();
             $this->assertContains("mt-$marge mb-$marge ml-$marge mr-$marge",$form);
         }
 
         public function test_margin_and_padding()
         {
-            $marge = 2;
-            $padding = 3;
-            $form = form('a','a')->margin($marge)->padding($padding)->input('text','name','username')->get();
+            $marge = config('form','margin');
+            $padding = config('form','padding');
+            $form = form('a','a')->margin()->padding()->input('text','name','username')->get();
             $this->assertContains("mt-$marge mb-$marge ml-$marge mr-$marge pt-$padding pb-$padding pl-$padding pr-$padding",$form);
         }
         /**
@@ -686,14 +674,14 @@ namespace Testing\Form {
         {
 
             $this->expectException(\Exception::class);
-            (new Form())->validate()->padding(20)->get();
-            (new Form())->validate()->margin(0)->get();
-            form('a','a')->validate()->textarea('name','a',10,10)->get();
+            (new Form())->validate()->padding()->get();
+            (new Form())->validate()->margin()->get();
+            form('a','a')->validate()->textarea('name','a')->get();
             form('a','a')->validate()->input(Form::TEXT,'a','a')->get();
-            form('a','a')->validate()->select('a',['1',2,3])->get();
-            form('a','adz')->validate()->textarea('a','adza',10,10)->get();
-            form('a','adz')->generate(2,$this->table,$this->mysql()->tables(),'submit','btn-primary',id(),'',500,1);
-            form('a','adz')->generate(2,$this->table,$this->mysql()->tables(),'submit','btn-primary',id(),'',500);
+            form('a','a')->validate()->select(true,'a',['1',2,3])->get();
+            form('a','adz')->validate()->textarea('a','adza')->get();
+            form('a','adz')->generate(2,$this->table,$this->mysql()->table(),'submit',id(),'',500,1);
+            form('a','adz')->generate(2,$this->table,$this->mysql()->table(),'submit',id(),'',500);
         }
 
     }

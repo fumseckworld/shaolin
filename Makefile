@@ -71,7 +71,6 @@ migrate: migrate_mysql migrate_pgsql migrate_sqlite ## Run all migrations
 serve: ## Start the development server
 	@clear
 	@php -S localhost:8000 -d display_errors=1 -t public
-
 cover: ## Start a server to display the coverage
 	@clear
 	@php -S localhost:3000 -t COVERAGE

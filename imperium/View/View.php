@@ -2,7 +2,6 @@
 
 namespace Imperium\View {
 
-    use Imperium\Directory\Dir;
     use Twig_Environment;
     use Twig_Error_Loader;
     use Twig_Error_Runtime;

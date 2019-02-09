@@ -12,12 +12,16 @@ namespace Imperium {
     use Imperium\Connexion\Connect;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
+    use Imperium\Middleware\Middleware;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Router\Router;
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+    use Psr\Http\Message\ResponseInterface;
+    use Psr\Http\Message\ServerRequestInterface;
+    use Psr\Http\Server\RequestHandlerInterface;
     use Symfony\Component\HttpFoundation\Request;
 
     interface Management
@@ -171,6 +175,7 @@ namespace Imperium {
          *
          */
         public function collection(array $data = []): Collection;
+
 
 
         /**
@@ -578,10 +583,13 @@ namespace Imperium {
         /**
          *
          * @param ServerRequest $serverRequest
-         * @param string $namespace
+         *
          * @return Router
+         *
+         * @throws Exception
+         *
          */
-        public function router(ServerRequest $serverRequest,string $namespace): Router;
+        public function router(ServerRequest $serverRequest): Router;
 
         /**
          *

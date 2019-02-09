@@ -199,7 +199,7 @@ namespace Testing\sqlite\table {
 
         public function test_create()
         {
-            $table = 'users';
+            $table = 'a';
             $bool =     $this->sqlite()->table()
                 ->column(Table::INTEGER,'id',true,0,true,true,false,'',false,Table::SUPERIOR_OR_EQUAL,1)
                 ->column(Table::INTEGER,'age',false,0,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
@@ -246,7 +246,7 @@ namespace Testing\sqlite\table {
          */
         public function test_found()
         {
-            $this->assertEquals(10,$this->table->found());
+            $this->assertEquals(11,$this->table->found());
 
         }
 

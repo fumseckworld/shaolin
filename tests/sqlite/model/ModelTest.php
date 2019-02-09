@@ -106,8 +106,7 @@ namespace Testing\sqlite\model {
 
         public function test_edit()
         {
-
-            $form = $this->model->edit_form($this->table,5,'/','edit','update','btn-primary');
+            $form = edit($this->table,5,'/','edit','update','btn-primary');
             $this->assertNotEmpty($form);
 
         }
@@ -119,7 +118,7 @@ namespace Testing\sqlite\model {
 
         public function test_create()
         {
-            $form = $this->model->create_form($this->table,'/','edit','update','btn-primary');
+            $form = create($this->table,'/','edit','update','');
             $this->assertNotEmpty($form);
         }
 
@@ -305,7 +304,7 @@ namespace Testing\sqlite\model {
          */
         public function test_found()
         {
-            $this->assertEquals(9,$this->model->found());
+            $this->assertEquals(10,$this->model->found());
         }
 
         /**

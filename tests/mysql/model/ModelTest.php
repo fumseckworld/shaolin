@@ -107,7 +107,7 @@ namespace Testing\mysql\model {
         public function test_edit()
         {
 
-            $form = $this->model->edit_form($this->table,5,'/','edit','update','btn-primary');
+            $form = edit($this->table,5,'/',id(),'update','');
             $this->assertNotEmpty($form);
 
         }
@@ -119,7 +119,8 @@ namespace Testing\mysql\model {
 
         public function test_create()
         {
-            $form = $this->model->create_form($this->table,'/','edit','update','btn-primary');
+
+            $form = create($this->table,'/',id(),'create','');
             $this->assertNotEmpty($form);
         }
 
@@ -304,7 +305,7 @@ namespace Testing\mysql\model {
          */
         public function test_found()
         {
-            $this->assertEquals(7,$this->model->found());
+            $this->assertEquals(8,$this->model->found());
         }
 
         /**

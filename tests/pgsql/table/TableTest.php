@@ -215,7 +215,7 @@ namespace Testing\pgsql\table {
 
         public function test_create()
         {
-            $table = 'users';
+            $table = 'a';
             $bool =     $this->postgresql()->table()
                 ->column(Table::INT,'id',true,0,true,true,false,'',false,Table::SUPERIOR_OR_EQUAL,1)
                 ->column(Table::INT,'age',false,0,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
@@ -262,7 +262,7 @@ namespace Testing\pgsql\table {
          */
         public function test_found()
         {
-            $this->assertEquals(8,$this->table->found());
+            $this->assertEquals(9,$this->table->found());
 
         }
 
