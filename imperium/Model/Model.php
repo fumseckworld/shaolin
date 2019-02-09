@@ -308,33 +308,35 @@ namespace Imperium\Model {
          * @param string $table_class
          * @param string $action_remove_text
          * @param string $confirm_text
-         * @param string $remove_btn_class
          * @param string $remove_icon
          * @param string $remove_url_prfix
          * @param string $action_edit_text
          * @param string $edit_url_prefix
          * @param string $edit_icon
-         * @param string $edit_btn_class
          * @param string $start_pagination_text
          * @param string $end_pagination_text
          * @param string $key
          * @param string $order_by
          * @param string $search_placeholder
-         * @param int $pagination_step
+         * @param string $table_icon
+         * @param string $search_icon
+         * @param string $pagination_icon
          * @param bool $pagination_to_right
          * @return string
          * @throws Exception
          */
         public function show(string $container_class,string $thead_class,string $url_prefix,int $current_page,
                                 string $table_class,string $action_remove_text,string $confirm_text,
-                                string $remove_btn_class,string $remove_icon,string $remove_url_prfix,
+                                string $remove_icon,string $remove_url_prfix,
                                 string $action_edit_text,string $edit_url_prefix,string $edit_icon,
-                                string $edit_btn_class,string $start_pagination_text,string $end_pagination_text,
-                                string $key,string $order_by,string $search_placeholder, int $pagination_step= 10,bool $pagination_to_right = true
+                                string $start_pagination_text,string $end_pagination_text,
+                                string $key,string $order_by,string $search_placeholder,string $table_icon,string $search_icon,string $pagination_icon,bool $pagination_to_right = true
         ): string
         {
 
 
+            $remove_btn_class = \collection(config('form','class'))->get('delete');
+            $edit_btn_class = \collection(config('form','class'))->get('edit');
 
             $table = current_table();
 
@@ -348,19 +350,23 @@ namespace Imperium\Model {
 
             $records = get_records($this->table(),$table,$current_page,$limit_records_per_page,$this->connexion,$key,$order_by);
 
-            $table_select = tables_select($table,$this->table(),$this->table->hidden_tables(),'?table','=');
 
             $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
 
-            append($html,'<div class="row mt-5">');
-            append($html,html('div',$table_select,'col'));
-            append($html,html('div','<input class="form-control form-control-lg" type="number" value="'.$limit_records_per_page.'"  data-url="?table='.$table.'&limit="  min="10" step="'.$pagination_step.'" onchange="location = this.attributes[3].value + this.value"','col'));
-            append($html,'</div></div>');
+            $current_table = current_table();
 
-            append($html,'<div class="row mt-2">');
-            append($html,html('div','<input placeholder="'.$search_placeholder.'"  class="form-control form-control-lg"  id="search"onchange="location = this.attributes[4].value + this.value"  data-url="?table='.$table.'&q='.'" value="" autofocus="autofocus" type="text">','col mb-5'));
+            $data = collection(['/' => $current_table]);
 
-            append($html,'</div>');
+            foreach ($this->show_tables() as $x)
+            {
+                if (different($x,$current_table))
+                    $data->merge(["?table=$x" => $x]);
+            }
+
+            $form = \form('/','a')->row()->redirect('table',$data->collection(),$table_icon)->pagination($pagination_icon)->end_row_and_new()->search($search_placeholder,$search_icon)->end_row()->get();
+
+            append($html,$form);
+
             append($html,simply_view($container_class,$thead_class,$table,$this->table(),$records,$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prfix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
 
 

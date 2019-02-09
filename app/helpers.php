@@ -1353,7 +1353,13 @@ if (not_exist('zones'))
         return $zones->collection();
     }
 }
-
+if (not_exist('https'))
+{
+    function https(): bool
+    {
+        return request()->isSecure();
+    }
+}
 if (not_exist('tables_select'))
 {
     /**
@@ -2610,6 +2616,9 @@ if (not_exist('change'))
 {
 
     /**
+     *
+     * Update a value in a file
+     *
      * @param string $filename
      * @param string $delimiter
      * @param string $key
@@ -2639,11 +2648,11 @@ if (not_exist('change'))
                     default:
                         fputs($file,$lines[$k]);
                     break;
+                }
             }
+            return File::close($file);
         }
-        return File::close($file);
-    }
-    return false;
+        return false;
     }
 }
 if(not_exist('slug'))

@@ -35,8 +35,8 @@ namespace Testing {
         public function show()
         {
             $table = current_table();
-            $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure','btn btn-danger',fa('fas','fa-trash'),"remove/$table",'edit','edit',
-                fa('fas','fa-edit'), 'btn btn-primary','start','previous','id','desc',trans('search')),'container');
+            $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure',fa('fas','fa-trash'),"remove/$table",'edit','edit',
+                fa('fas','fa-edit'),'start','previous','id','desc','search',fa('fas','fa-table'),fa('fas','fa-search'),fa('fas','fa-anchor"')),'container');
 
             return view('welcome.twig',compact('code'));
 

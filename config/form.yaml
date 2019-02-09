@@ -6,6 +6,8 @@ class:
   link:   'btn-primary'
   group:  'btn-secondary'
   checkbox: 'form-control'
+  edit:   'btn btn-primary'
+  delete : 'btn btn-danger'
 textarea:
   col: 10
   row: 10
@@ -15,3 +17,4 @@ margin: 4
 validate: false
 large: true
 small: false
+pagination_step: 10

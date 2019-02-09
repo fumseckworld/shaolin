@@ -86,10 +86,11 @@ namespace Testing\sqlite\model {
         }
         public function test_show()
         {
+
             $record  = $this->model->show(
                 'table-responsive','table-dark','?table=',1,'table','remove','sure',
-                'btn btn-danger','','remove','edit','edit','','btn btn-primary',
-                'previous','next','id',DESC,'search'
+                '','','remove','edit','edit','previous','next','id','desc','search','','',
+                ''
 
             );
 

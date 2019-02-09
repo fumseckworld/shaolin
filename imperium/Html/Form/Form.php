@@ -841,7 +841,6 @@ namespace Imperium\Html\Form {
             {
 
                 $start = '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ';
-
                 $end = "</div></div></div> ";
                 append($this->form,$this->generateInput($start, $end, $type, $name, $placeholder, $value, $required, $autofocus, $autoComplete,$success_text,$error_text));
             }
@@ -1195,6 +1194,66 @@ namespace Imperium\Html\Form {
             return $this;
         }
 
+
+        /**
+         *
+         * Add a search input
+         *
+         * @param $search_placeholder
+         * @param string $icon
+         * @param string $id
+         *
+         * @return Form
+         *
+         * @throws Exception
+         */
+        public function search($search_placeholder,string $icon, $id = 'search'): Form
+        {
+            $url = request()->getUri();
+            $keys = request()->query->keys();
+            $uri = $url;
+
+            if (not_in($keys,'&q='))
+                append($uri,'&q=');
+
+            $class = $this->get_input_complete_class();
+
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ');
+            append(
+                $this->form,'<input placeholder="'.$search_placeholder.'"  class="'.$class.'"  id="'.$id.'" onchange="location = this.attributes[4].value + this.value"  data-url="'.$uri.'" value="'.get('q').'" autofocus="autofocus" type="search"></div></div></div>');
+
+
+
+            return $this;
+        }
+
+
+        /**
+         * @param string $icon
+         * @return Form
+         *
+         * @throws Exception
+         */
+        public function pagination(string $icon): Form
+        {
+            $step = config('form','pagination_step');
+            $class = $this->get_input_complete_class();
+            $url = request()->getUri();
+            $keys = request()->query->keys();
+            $uri = $url;
+
+            if (not_in($keys,'&limit='))
+                append($uri,'&limit=');
+
+            $uri = str_replace('&q=','',$uri);
+            append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ');
+            append(
+                $this->form,'<input  class="'.$class.'"   onchange="location = this.attributes[2].value + this.value"  data-url="'.$uri.'" value="'.get('limit',10).'"  step="'.$step.'" min="10" type="number"></div></div></div>');
+
+
+
+            return $this;
+        }
         /**
          *
          * Generate a radio
