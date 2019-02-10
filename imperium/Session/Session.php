@@ -19,7 +19,7 @@ namespace Imperium\Session {
      **/
     class Session
     {
-       
+
         private function start_session()
         {
             if (session_status() === PHP_SESSION_DISABLED)
@@ -83,16 +83,13 @@ namespace Imperium\Session {
         }
 
         /**
-         *
-         * Get all values
-         *
          * @return array
-         *
          */
         public function all(): array
         {
             return $_SESSION;
         }
+
 
     }
 }

@@ -4,9 +4,10 @@
 namespace Testing {
 
 
-    use Imperium\Controller\BaseController;
+    use Imperium\Controller\Controller;
+    use Imperium\Request\Request;
 
-    class Controller extends BaseController
+    class Welcome extends Controller
     {
 
         /**
@@ -35,16 +36,30 @@ namespace Testing {
         public function show()
         {
             $table = current_table();
-            $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure',fa('fas','fa-trash'),"remove/$table",'edit','edit',
+            $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure',fa('fas','fa-trash'),"remove/$table",'edit',"edit/$table",
                 fa('fas','fa-edit'),'start','previous','id','desc','search',fa('fas','fa-table'),fa('fas','fa-search'),fa('fas','fa-anchor"')),'container');
 
-            return view('welcome.twig',compact('code'));
+           $del =  form(url('del',POST),'a')->select(false,'table',$this->table()->show())->submit('a','a')->get();
+            return view('welcome',compact('code','del'));
 
         }
 
         public function display(int $id,string $slug)
         {
             return "$id $slug";
+        }
+
+        public function edit(string $table,int $id)
+        {
+            $form = edit($table,$id,'/',id(),'update','');
+            return view('edit',compact('form'));
+        }
+
+        public function del()
+        {
+            d(\request()->get('table'));
+
+            d(Request::all());
         }
     }
 }

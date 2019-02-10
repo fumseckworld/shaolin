@@ -5,6 +5,7 @@ namespace Imperium\Router {
     use Exception;
     use GuzzleHttp\Psr7\ServerRequest;
 
+
     /**
      *
      * Router management
@@ -44,10 +45,7 @@ namespace Imperium\Router {
          * @var array
          *
          */
-        const METHOD_SUPPORTED = [
-            self::METHOD_GET,
-            self::METHOD_POST
-        ];
+        const METHOD_SUPPORTED =  ['DELETE', 'PATCH', 'POST', 'PUT', 'GET'];
 
         /**
          *
@@ -161,6 +159,15 @@ namespace Imperium\Router {
          */
         public function __construct(ServerRequest $request)
         {
+            $namespace = config('middleware','namespace');
+
+            foreach (config('middleware','all') as $middleware)
+            {
+
+                $class = "$namespace$middleware";
+
+                call_user_func_array(new $class(), [$request]);
+            }
 
             $this->method        = $request->getMethod();
 
@@ -180,7 +187,6 @@ namespace Imperium\Router {
          */
         public function run()
         {
-
             foreach(route($this->method) as $name => $route)
             {
                 $x = collection($route);

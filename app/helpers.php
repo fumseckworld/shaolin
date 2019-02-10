@@ -241,6 +241,10 @@ if (not_exist('view'))
 
         $view_dir   = realpath(config($file,'dir'));
 
+        $name =\collection(explode('.',$name))->begin();
+
+        append($name,'.twig');
+
         return View::init($view_dir,\config($file,'config'))->load($name,$args);
     }
 }
@@ -317,7 +321,7 @@ if (not_exist('session_loaded'))
         return session_status() === PHP_SESSION_ACTIVE;
     }
 }
-if (not_exist('csrf'))
+if (not_exist('csrf_field'))
 {
     /**
      *
@@ -327,7 +331,7 @@ if (not_exist('csrf'))
      *
      * @throws Exception
      */
-    function csrf(): string
+    function csrf_field(): string
     {
         return \Imperium\Middleware\CsrfMiddleware::init()->generate();
     }

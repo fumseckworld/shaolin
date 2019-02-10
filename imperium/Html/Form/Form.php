@@ -625,7 +625,7 @@ namespace Imperium\Html\Form {
             if (config($this->file,'save'))
                 $this->save();
 
-            return $this->margin()->padding()->csrf(csrf());
+            return $this->margin()->padding()->csrf(csrf_field());
         }
 
         /**
@@ -953,7 +953,12 @@ namespace Imperium\Html\Form {
             $col  = collection(config($this->file,'textarea'))->get('col');
 
             if ($this->save)
-                $value = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
+                $x = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
+            else
+                $x = '';
+
+            if (def($x))
+                $value = $x;
 
             if ($this->validate)
             {
@@ -1379,11 +1384,13 @@ namespace Imperium\Html\Form {
                     foreach ($columns as $k => $column)
                     {
 
+
                         if (is_null($record->$column))
-                        $record->$column = '';
+                            $record->$column = '';
 
                         if (different($column,$primary))
                         {
+
 
                             if (equal($i % $form_grid,0))
                             {

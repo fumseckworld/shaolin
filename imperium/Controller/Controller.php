@@ -6,7 +6,7 @@ namespace Imperium\Controller {
 
     use Imperium\App;
 
-    class BaseController extends App
+    class Controller extends App
     {
 
     }

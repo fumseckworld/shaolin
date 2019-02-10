@@ -3,10 +3,15 @@ namespace: 'Testing'
 GET:
   home:
      url: '/'
-     call: 'Controller@show'
+     call: 'Welcome@show'
 
   remove:
     url: '/remove/:table/:id'
-    call: 'Controller@remove'
+    call: 'Welcome@remove'
+  edit:
+    url: '/edit/:table/:id'
+    call: 'Welcome@edit'
 POST:
-
+  del:
+    url: '/del'
+    call: 'Welcome@del'
