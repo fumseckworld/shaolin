@@ -34,8 +34,23 @@ namespace Testing\mysql\model {
         {
             $this->assertCount(1,$this->model->find(2));
             $this->assertCount(1,$this->model->find_or_fail(2));
-        }
 
+            $records = $this->model->all();
+
+            foreach ($records as  $record)
+            {
+                foreach ($this->model->columns() as $k => $v)
+                {
+                    $this->assertNotEmpty($this->model->by($v,$record->$v));
+
+                }
+            }
+        }
+        public function test_only()
+        {
+            $this->assertNotEmpty($this->model->where('id', EQUAL,55)->only('name')->get());
+
+        }
         /**
          * @throws Exception
          */
@@ -76,7 +91,6 @@ namespace Testing\mysql\model {
         {
             $this->assertInstanceOf(Query::class,$this->model->query());
         }
-
 
 
         public function test_all()
@@ -308,25 +322,7 @@ namespace Testing\mysql\model {
             $this->assertEquals(8,$this->model->found());
         }
 
-        /**
-         * @throws Exception
-         */
-        public function test_get()
-        {
-            $id = 1;
 
-            $param = 'id';
-
-            $condition = '=';
-
-            $this->expectException(Exception::class);
-
-            $this->model->only('name')->get();
-
-            $this->assertNotEmpty($this->model->where($param, $condition,$id)->only('name')->get());
-
-            $this->assertNotEmpty($this->model->where($param, $condition,$id)->only('name','phone')->get());
-        }
 
 
         /**

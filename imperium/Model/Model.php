@@ -264,6 +264,23 @@ namespace Imperium\Model {
 
         /**
          *
+         * Find a record by a key
+         *
+         * @param string $key
+         * @param $expected
+         *
+         * @return array
+         *
+         * @throws Exception
+         *
+         */
+        public function by(string $key,$expected): array
+        {
+            return $this->from($this->current())->where($key,EQUAL,$expected)->get();
+        }
+
+        /**
+         *
          * Search in the current table a value
          *
          * @method search
@@ -346,9 +363,9 @@ namespace Imperium\Model {
 
             $current_page = def(get('current')) ? get('current') : $current_page;
 
-            $limit_records_per_page = def(get('limit')) ? get('limit') : 10;
+            $limit_records_per_page = get('limit',10);
 
-            $records = get_records($this->table(),$table,$current_page,$limit_records_per_page,$this->connexion,$key,$order_by);
+            $records = get_records($table,$current_page,$limit_records_per_page,$this->connexion,$key,$order_by);
 
 
             $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
@@ -367,7 +384,7 @@ namespace Imperium\Model {
 
             append($html,$form);
 
-            append($html,simply_view($container_class,$thead_class,$table,$this->table(),$records,$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prfix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
+            append($html,simply_view($container_class,$thead_class,$table,$records,$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prfix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
 
 
             return $html;
@@ -456,7 +473,8 @@ namespace Imperium\Model {
         {
             is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
 
-            return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->columns($this->only)->where($this->column,$this->condition,$this->expected)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
+
+            return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->columns($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
 
 

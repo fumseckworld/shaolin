@@ -5,6 +5,7 @@ use Faker\Generator;
 use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
+use Imperium\Hashing\Hash;
 use Imperium\Router\Router;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
@@ -789,6 +790,42 @@ if (not_exist('secure_register_form'))
 }
 
 
+if (not_exist('bcrypt'))
+{
+    /**
+     *
+     * Hash a value
+     *
+     * @param string $value
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function bcrypt(string $value): string
+    {
+        return Hash::make($value);
+    }
+}
+
+if (not_exist('check'))
+{
+    /**
+     *
+     * Check the password
+     *
+     * @param string $value
+     * @param string $bcrypt_value
+     *
+     * @return bool
+     *
+     */
+    function check(string $value,string $bcrypt_value): bool
+    {
+        return Hash::verify($value,$bcrypt_value);
+    }
+}
 
 if (not_exist('edit'))
 {
@@ -1471,7 +1508,6 @@ if (not_exist('simply_view'))
      * @param string $before_all_class
      * @param string $thead_class
      * @param string $current_table_name
-     * @param Table $instance
      * @param array $records
      * @param string $html_table_class
      * @param string $action_remove_text
@@ -1488,9 +1524,9 @@ if (not_exist('simply_view'))
      * @return string
      * @throws Exception
      */
-    function simply_view(string $before_all_class,string $thead_class,string $current_table_name, Table $instance , array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $pagination_to_right = true): string
+    function simply_view(string $before_all_class,string $thead_class,string $current_table_name, array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $pagination_to_right = true): string
     {
-        $instance = $instance->from($current_table_name);
+        $instance = \app()->table()->from($current_table_name);
 
         $columns  = $instance->columns();
         $primary  = $instance->primary_key();
@@ -1516,7 +1552,6 @@ if (not_exist('get_records'))
      *
      * @method get_records
      *
-     * @param  Table $instance The table instance
      * @param  string $current_table_name The current table name
      * @param  int $current_page The current page
      * @param  int $limit_per_page The limit
@@ -1529,9 +1564,9 @@ if (not_exist('get_records'))
      * @throws Exception
      *
      */
-    function get_records(Table $instance,string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,string $key = '',string $order_by = DESC): array
+    function get_records(string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,string $key = '',string $order_by = DESC): array
     {
-        $instance = $instance->from($current_table_name);
+        $instance = app()->table()->from($current_table_name);
 
         $key = def($key) ? $key : $instance->primary_key();
 
@@ -1539,10 +1574,14 @@ if (not_exist('get_records'))
 
         $sql = sql(query($instance,$connect),$current_table_name)->mode(Query::SELECT);
 
-        $like = get('q');
-        $records = def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
 
-        return $records;
+        $like = get('q');
+        $limit = get('limit');
+
+        if (def($limit) && def($like))
+            return $sql->like($like)->limit($limit,0)->order_by($key,$order_by)->get();
+
+        return def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
     }
 }
 

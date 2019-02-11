@@ -163,7 +163,6 @@ namespace Imperium\Router {
 
             foreach (config('middleware','all') as $middleware)
             {
-
                 $class = "$namespace$middleware";
 
                 call_user_func_array(new $class(), [$request]);

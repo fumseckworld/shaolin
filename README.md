@@ -392,7 +392,7 @@ The namespace it's the namespace of your application class
 | query_result          |   mixed   | A string                         | Print the query query result                                          |
 | execute_query         |   mixed   | mixed                            | Execute a query                                                       |
 | query_view            |   mixed   | A string                         | Display a query form builder                                          |
-| length                |   mixed   | A integer                        | Calcul the length of an array or a string                             |
+| length                |   mixed   | A integer                        | Return the length of an array or a string                             |
 | connect               |   mixed   | A instance of Connect            | Connect to the base                                                   |
 | collection            |   array   | A instance of Collection         | Management of the array                                               |
 | def                   |   mixed   | A Boolean                        | Check if a value is define and it's not empty                         |
@@ -443,3 +443,5 @@ The namespace it's the namespace of your application class
 | remove_tables         |   mixed   | A Boolean                        | Remove the tables                                                     |
 | remove_bases          |   mixed   | A Boolean                        | Remove the base                                                       |
 | faker                 |   string  | An instance of faker             | Return an instance of faker                                           |
+| bcrypt                |   string  | A string                         | Return a hash of the value                                            |
+| check                 |   string  | A Boolean                        | Check if the password is equal to the hash                            |

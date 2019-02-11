@@ -3,6 +3,8 @@
 namespace Testing\csrf {
 
 
+    use Exception;
+    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Middleware\CsrfMiddleware;
     use PHPUnit\Framework\TestCase;
 
@@ -20,7 +22,7 @@ namespace Testing\csrf {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test()
         {
@@ -29,5 +31,17 @@ namespace Testing\csrf {
             $this->assertNotEmpty($token);
         }
 
+        /**
+         * @throws Exception
+         */
+        public function test_exec()
+        {
+            $this->expectException(Exception::class);
+
+            $request = new ServerRequest('POST',url('del',POST));
+
+            app()->router($request)->run();
+
+        }
     }
 }

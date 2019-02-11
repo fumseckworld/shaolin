@@ -281,7 +281,7 @@ namespace Imperium\Query {
             if(not_in(self::VALID_OPERATORS,$condition))
                 throw new Exception("The operator is invalid");
 
-            $this->where = is_string($expected) ? "WHERE $column $condition '$expected'" : "WHERE $column $condition $expected";
+            $this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->instance()->quote($expected)}";
 
             return $this;
 
@@ -379,7 +379,7 @@ namespace Imperium\Query {
          */
         public function get(): array
         {
-            return $this->connexion->request($this->sql());
+            return  $this->connexion->request($this->sql());
         }
 
         /**
