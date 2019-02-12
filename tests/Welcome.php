@@ -18,12 +18,9 @@ namespace Testing {
          */
         public function remove(string $table,int $id)
         {
-            if ($this->table()->from($table)->remove($id))
-                $this->flash()->success('removed');
-            else
-                $this->flash()->failure('failure');
+            $message = $this->table()->from($table)->remove($id) ? "The record in the $table $id was removed successfully" : "Failure";
 
-            return redirect('home');
+            return redirect('home',$message);
         }
 
         /**

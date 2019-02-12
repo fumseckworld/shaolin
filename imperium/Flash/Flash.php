@@ -88,6 +88,20 @@ namespace Imperium\Flash {
 
         /**
          *
+         * Check if a key is defined
+         *
+         * @param string $key
+         *
+         * @return bool
+         *
+         */
+        public function has(string $key): bool
+        {
+            return def($this->session->get($key));
+        }
+
+        /**
+         *
          * Add a failure message
          *
          * @param string $message

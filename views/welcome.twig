@@ -2,11 +2,14 @@
 
 {% block content %}
 
-    {% if message.get('success') %}
-        <div class="alert-success alert">
-            {{ message.get('success') }}
-        </div>
-    {% endif %}
+    <div class="container">
+        {% if flash.has('success') %}
+            <div class="alert-success alert">
+                {{ flash.get('success') }}
+            </div>
+        {% endif %}
+    </div>
+
 
     {{ code | raw }}
     {{  del  | raw }}

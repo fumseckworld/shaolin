@@ -5,6 +5,7 @@ use Faker\Generator;
 use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Dump\Dump;
+use Imperium\Flash\Flash;
 use Imperium\Hashing\Hash;
 use Imperium\Router\Router;
 use Imperium\Trans\Trans;
@@ -93,16 +94,20 @@ if (not_exist('redirect'))
      * Redirect to a route
      *
      * @param string $route_name
-     * @param int $status
-     * @param array $header
-     *
+     * @param string $message
+     * @param bool $success
      * @return \Symfony\Component\HttpFoundation\RedirectResponse
      *
      * @throws Exception
      */
-    function redirect(string $route_name,int $status = 302,array $header = [])
+    function redirect(string $route_name,string $message ='',bool $success = true)
     {
-        return (new \Symfony\Component\HttpFoundation\RedirectResponse(url($route_name),$status,$header))->send();
+        if (def($message))
+        {
+            $flash = new Flash();
+            $success ? $flash->success($message) : $flash->failure($message);
+        }
+        return (new \Symfony\Component\HttpFoundation\RedirectResponse(url($route_name)))->send();
     }
 }
 
@@ -245,6 +250,10 @@ if (not_exist('view'))
         $name =\collection(explode('.',$name))->begin();
 
         append($name,'.twig');
+
+        $flash = new Flash();
+
+        $args = array_merge($args,['flash' => $flash]);
 
         return View::init($view_dir,\config($file,'config'))->load($name,$args);
     }
