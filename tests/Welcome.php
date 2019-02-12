@@ -55,9 +55,10 @@ namespace Testing {
 
         public function del()
         {
-            d(\request()->get('table'));
+            $message = $this->table()->drop(\request()->get('table')) ? "table removed" : "Failure";
 
-            d(Request::all());
+            return redirect('home',$message);
+
         }
     }
 }

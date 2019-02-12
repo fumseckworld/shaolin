@@ -1,0 +1,2 @@
+success: 'alert alert-success alert-dismissible fade show'
+failure: 'alert alert-danger alert-dismissible fade show'

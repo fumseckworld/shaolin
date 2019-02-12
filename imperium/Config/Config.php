@@ -58,7 +58,14 @@ namespace Imperium\Config {
             if (equal($file,'db'))
                return collection(collection(self::parseFile($x))->get(collection(self::parseFile($x))->get('use')))->get($key);
 
-           return  collection(self::parseFile($x))->get($key);
+
+
+            $data =  collection(self::parseFile($x));
+
+            if (!$data->has_key($key))
+                throw new Exception("The $key key was not found in the file $file at {$this->path()}");
+            else
+                return $data->get($key);
         }
 
 

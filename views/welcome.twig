@@ -4,9 +4,7 @@
 
     <div class="container">
         {% if flash.has('success') %}
-            <div class="alert-success alert">
-                {{ flash.get('success') }}
-            </div>
+            {{ flash.display('success') | raw }}
         {% endif %}
     </div>
 

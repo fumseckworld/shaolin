@@ -65,7 +65,6 @@ namespace Imperium\Flash {
         /**
          *
          * Flash constructor
-         *
          */
         public function __construct()
         {
@@ -98,6 +97,36 @@ namespace Imperium\Flash {
         public function has(string $key): bool
         {
             return def($this->session->get($key));
+        }
+
+
+        /**
+         *
+         * Generate a bootstrap alert
+         *
+         * @param string $key
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function display(string $key): string
+        {
+            $success  = equal($key,self::SUCCESS_KEY);
+            $file = 'flash';
+
+            $success_class = config($file,'success');
+            $danger_class = config($file,'failure');
+
+            $message = $this->get($key);
+
+            if ($success)
+                $html = '<div class="'.$success_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+            else
+                $html = '<div class="'.$danger_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+
+            return $html;
         }
 
         /**
