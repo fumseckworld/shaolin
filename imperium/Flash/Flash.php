@@ -21,36 +21,10 @@ namespace Imperium\Flash {
      **/
     class Flash
     {
-        /**
-         *
-         * The success key
-         *
-         * @var string
-         *
-         */
-        const SUCCESS_KEY   = 'success';
+        const SUCCESS_KEY = 'success';
+        const FAILURE_KEY = 'failure';
+        const VALID = [self::SUCCESS_KEY,self::FAILURE_KEY];
 
-        /**
-         *
-         * The failure key
-         *
-         * @var string
-         *
-         */
-        const FAILURE_KEY   = 'failure';
-
-        /**
-         *
-         * All valid get type keys
-         *
-         * @var array
-         *
-         */
-        const VALID =
-        [
-            self::SUCCESS_KEY,
-            self::FAILURE_KEY
-        ];
 
         /**
          * @var Session
@@ -116,17 +90,24 @@ namespace Imperium\Flash {
             $success  = equal($key,self::SUCCESS_KEY);
             $file = 'flash';
 
-            $success_class = config($file,'success');
-            $danger_class = config($file,'failure');
+            $success_class = collection(config($file,'success'))->get('class');
+            $danger_class = collection(config($file,'failure'))->get('class');
 
             $message = $this->get($key);
 
-            if ($success)
-                $html = '<div class="'.$success_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-            else
-                $html = '<div class="'.$danger_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+            $this->session->remove($key);
 
-            return $html;
+            if (def($message))
+            {
+                if ($success)
+                    $html = '<div class="'.$success_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                else
+                    $html = '<div class="'.$danger_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+
+                return $html;
+            }
+
+            return '';
         }
 
         /**

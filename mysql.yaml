@@ -4,10 +4,11 @@ development:
   base: zen
   username: root
   password: root
-  dump: '../dump'
+  dump: 'dump'
   host: 'localhost'
   hidden_tables: ['phinxlog']
   hidden_bases : []
+  hidden_users: []
 production:
   driver: mysql
   base: imperium

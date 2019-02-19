@@ -16,7 +16,7 @@ namespace Testing\sqlite\imperium {
         /**
          * @throws Exception
          */
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'base';
         }
@@ -172,7 +172,7 @@ namespace Testing\sqlite\imperium {
             $name = 'marion';
 
             $this->expectException(Exception::class);
-            add_user($this->sqlite()->users(),$name,$name);
+            add_user($name,$name);
             $this->sqlite()->remove_user($name);
         }
 

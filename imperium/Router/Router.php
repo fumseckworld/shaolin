@@ -4,6 +4,7 @@ namespace Imperium\Router {
 
     use Exception;
     use GuzzleHttp\Psr7\ServerRequest;
+    use Imperium\Request\Request;
 
 
     /**
@@ -176,6 +177,7 @@ namespace Imperium\Router {
 
         }
 
+
         /**
          *
          * Call the callable
@@ -183,6 +185,7 @@ namespace Imperium\Router {
          * @return mixed
          *
          * @throws Exception
+         *
          */
         public function run()
         {
@@ -264,26 +267,31 @@ namespace Imperium\Router {
          *
          * Get the url route by its name
          *
-         * @param string $name The route name
+         * @param string $route_name
          * @param string $method The route method
          *
          * @return string
          *
          * @throws Exception
-         *
          */
-        public static function url(string $name ,$method = self::METHOD_GET): string
+        public static function url(string $route_name,$method = self::METHOD_GET): string
         {
-
-            foreach (route($method) as  $names => $route)
+            foreach (route($method) as  $name => $route)
             {
                 $x      = collection($route);
                 $url    = $x->get(self::URL_INDEX);
 
-                if (equal($name,$names))
-                    return $url;
+                if (different(php_sapi_name(),'cli'))
+                {
+                    if (equal($route_name,$name))
+                        return https() ? 'https://'  . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url : 'http://' . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url ;
+                }else
+                {
+                    if (equal($route_name,$name))
+                        return $url;
+                }
             }
-            throw new Exception("We have not found an url with the $name name");
+            throw new Exception("We have not found an url with the $route_name name");
         }
 
         /**

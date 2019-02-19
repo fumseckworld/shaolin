@@ -4,7 +4,9 @@ GET:
   home:
      url: '/'
      call: 'Welcome@show'
-
+  pagination:
+    url: '/:x'
+    call: 'Welcome@pagination'
   remove:
     url: '/remove/:table/:id'
     call: 'Welcome@remove'
@@ -15,3 +17,6 @@ POST:
   del:
     url: '/del'
     call: 'Welcome@del'
+  update:
+    url: '/update'
+    call: 'Welcome@update'

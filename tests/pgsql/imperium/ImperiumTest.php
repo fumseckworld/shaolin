@@ -16,7 +16,7 @@ namespace Testing\pgsql\imperium {
         /**
          * @throws Exception
          */
-        public function setUp()
+        public function setUp(): void
         {
             $this->table = 'base';
         }
@@ -192,7 +192,7 @@ namespace Testing\pgsql\imperium {
         {
             $name = 'marion';
 
-            $this->assertTrue(add_user($this->postgresql()->users(),$name,$name));
+            $this->assertTrue(add_user($name,$name));
             $this->assertTrue($this->postgresql()->remove_user($name));
         }
 
@@ -225,7 +225,7 @@ namespace Testing\pgsql\imperium {
 
             $this->assertTrue($this->postgresql()->has_users());
 
-            $this->assertTrue($this->postgresql()->users()->hidden()->has());
+            $this->assertTrue($this->postgresql()->users()->has());
 
             $this->assertTrue($this->postgresql()->has_tables());
 

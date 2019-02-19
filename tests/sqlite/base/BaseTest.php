@@ -8,7 +8,7 @@ namespace Testing\sqlite\base {
     class BaseTest extends DatabaseTest
     {
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'base';
         }
@@ -70,8 +70,8 @@ namespace Testing\sqlite\base {
          */
         public  function test_dump()
         {
-            $this->assertTrue(dumper($this->sqlite()->connect(),true,''));
-            $this->assertFalse(dumper($this->sqlite()->connect(),false,current_table()));
+            $this->assertTrue(dumper(true,''));
+            $this->assertFalse(dumper(false,current_table()));
             $this->assertTrue($this->sqlite()->bases()->dump());
         }
 

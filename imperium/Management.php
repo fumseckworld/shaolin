@@ -12,16 +12,13 @@ namespace Imperium {
     use Imperium\Connexion\Connect;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
-    use Imperium\Middleware\Middleware;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Router\Router;
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
-    use Psr\Http\Message\ResponseInterface;
-    use Psr\Http\Message\ServerRequestInterface;
-    use Psr\Http\Server\RequestHandlerInterface;
+    use Imperium\View\View;
     use Symfony\Component\HttpFoundation\Request;
 
     interface Management
@@ -30,39 +27,35 @@ namespace Imperium {
          *
          * Display all tables
          *
-         * @param array $hidden
          *
          * @return array
          *
          * @throws Exception
          */
-        public function show_tables(array $hidden = []) : array;
+        public function show_tables() : array;
 
         /**
          *
          * Display all users
          *
-         * @param array $hidden
          *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function show_users(array $hidden = []) : array;
+        public function show_users() : array;
 
         /**
          *
          * Display all bases
          *
-         * @param array $hidden
-         *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function show_databases(array $hidden = []) : array;
+        public function show_databases() : array;
 
         /**
          *
@@ -590,6 +583,20 @@ namespace Imperium {
          *
          */
         public function router(ServerRequest $serverRequest): Router;
+
+        /**
+         *
+         * Return a view
+         *
+         * @param string $name
+         * @param array $args
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function view(string $name,array $args = []): string;
 
         /**
          *

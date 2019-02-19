@@ -9,6 +9,8 @@ namespace Testing\mysql\connect {
     class ConnectTest extends DatabaseTest
     {
 
+
+
         /**
          * @throws \Exception
          */
@@ -18,7 +20,7 @@ namespace Testing\mysql\connect {
 
             $table = 'base';
 
-            $m_queries->add(insert_into($this->mysql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+            $m_queries->add(insert_into($table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
 
             $all_mysql  = $this->mysql()->model()->count($table);
 
@@ -46,7 +48,7 @@ namespace Testing\mysql\connect {
 
             $table = 'base';
 
-            $m_queries->add(insert_into($this->mysql()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+            $m_queries->add(insert_into( $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
 
 
             $all_mysql  = $this->mysql()->model()->from($table )->count($table);

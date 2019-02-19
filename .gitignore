@@ -27,3 +27,5 @@ config/db.yaml
 cache
 .env
 zen.sqlite3
+.phpunit.result.cache
+tables.json

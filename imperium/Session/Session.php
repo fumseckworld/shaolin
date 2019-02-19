@@ -22,7 +22,7 @@ namespace Imperium\Session {
 
         private function start_session()
         {
-            if (different(request()->getScriptName(),'./vendor/bin/phpunit'))
+            if (request()->getScriptName() !== './vendor/bin/phpunit')
             {
                 if (session_status() === PHP_SESSION_NONE)
                     session_start();

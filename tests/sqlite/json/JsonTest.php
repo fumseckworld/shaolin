@@ -9,7 +9,7 @@ namespace Testing\sqlite\json {
     class JsonTest extends DatabaseTest
     {
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'model';
         }
@@ -44,7 +44,7 @@ namespace Testing\sqlite\json {
 
             $this->expectException(Exception::class);
 
-            bases_to_json($this->sqlite()->bases(),'base.json','base');
+            bases_to_json('base.json','base');
 
         }
 
@@ -63,7 +63,7 @@ namespace Testing\sqlite\json {
         public function test_tables_to_json()
         {
 
-            $this->assertTrue(tables_to_json($this->sqlite()->table(),'tables.json','tables'));
+            $this->assertTrue(tables_to_json('tables.json','tables'));
 
         }
 

@@ -5,7 +5,6 @@ namespace Testing {
 
 
     use Imperium\Controller\Controller;
-    use Imperium\Request\Request;
 
     class Welcome extends Controller
     {
@@ -23,6 +22,12 @@ namespace Testing {
             return redirect('home',$message);
         }
 
+        public function pagination(int $x)
+        {
+            $this->session()->set($x,'limit');
+            return back();
+        }
+
         /**
          * @return string
          * @throws \Twig_Error_Loader
@@ -38,6 +43,7 @@ namespace Testing {
                 fa('fas','fa-edit'),'start','previous','id','desc','search',fa('fas','fa-table'),fa('fas','fa-search'),fa('fas','fa-anchor"')),'container');
 
            $del =  form(url('del',POST),'a')->select(false,'table',$this->table()->show())->submit('a','a')->get();
+
             return view('welcome',compact('code','del'));
 
         }
@@ -47,18 +53,33 @@ namespace Testing {
             return "$id $slug";
         }
 
-        public function edit(string $table,int $id)
+        /**
+         * @param string $table
+         * @param int $id
+         *
+         * @return string
+         *
+         * @throws \Exception
+         */
+        public function edit(string $table,int $id): string
         {
-            $form = edit($table,$id,'/',id(),'update','');
-            return view('edit',compact('form'));
+            $form = edit($table,$id,url('update',POST),id(),'update','');
+            return $this->view('edit',compact('form'));
         }
 
         public function del()
         {
             $message = $this->table()->drop(\request()->get('table')) ? "table removed" : "Failure";
 
-            return redirect('home',$message);
+            return back($message);
 
+        }
+
+        public function update()
+        {
+            $bool = $this->model()->update();
+           $message = $bool ? 'success' : 'failure';
+           return back($message,$bool);
         }
     }
 }

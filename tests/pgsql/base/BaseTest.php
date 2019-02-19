@@ -8,7 +8,7 @@ namespace Testing\pgsql\base {
     class BaseTest extends DatabaseTest
     {
 
-        public function setUp()
+        public function setUp(): void
         {
             $this->table = 'base';
         }
@@ -20,8 +20,7 @@ namespace Testing\pgsql\base {
 
             $this->assertTrue($this->postgresql()->bases()->exist($this->base));
             $this->assertTrue($this->postgresql()->base_exist($this->base));
-            $this->assertTrue($this->postgresql()->bases()->exist($this->base));
-            $this->assertTrue($this->postgresql()->base_exist($this->base));
+
 
         }
 
@@ -63,10 +62,9 @@ namespace Testing\pgsql\base {
         public function test_hidden()
         {
             $this->assertEquals([],$this->postgresql()->bases()->hidden_bases());
-            $this->assertEquals(['zen'],$this->postgresql()->bases()->hidden(['zen'])->hidden_bases());
 
             $this->assertNotEmpty($this->postgresql()->bases()->hidden_tables());
-            $this->assertEmpty($this->postgresql()->bases()->hidden()->hidden_bases());
+            $this->assertEmpty($this->postgresql()->bases()->hidden_bases());
         }
         /**
          * @throws \Exception
@@ -84,8 +82,8 @@ namespace Testing\pgsql\base {
          */
         public  function test_dump()
         {
-            $this->assertTrue(dumper($this->postgresql()->connect(),true,''));
-            $this->assertTrue(dumper($this->postgresql()->connect(),false,$this->table));
+            $this->assertTrue(dumper(true,''));
+            $this->assertTrue(dumper(false,$this->table));
             $this->assertTrue($this->postgresql()->bases()->dump());
         }
 

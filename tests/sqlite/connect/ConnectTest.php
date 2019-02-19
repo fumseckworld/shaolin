@@ -18,7 +18,7 @@ namespace Testing\sqlite\connect {
 
             $table = 'base';
 
-            $m_queries->add(insert_into($this->sqlite()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+            $m_queries->add(insert_into($table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
 
             $all_sqlite  = $this->sqlite()->model()->count($table);
 
@@ -46,7 +46,7 @@ namespace Testing\sqlite\connect {
 
             $table = 'base';
 
-            $m_queries->add(insert_into($this->sqlite()->model(), $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+            $m_queries->add(insert_into($table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
 
 
             $all_sqlite  = $this->sqlite()->model()->from($table )->count($table);

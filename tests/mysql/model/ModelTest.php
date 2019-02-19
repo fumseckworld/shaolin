@@ -4,7 +4,6 @@ namespace Testing\mysql\model {
 
     use Exception;
     use Imperium\Connexion\Connect;
-    use Imperium\App;
     use Imperium\Model\Model;
     use PDO;
     use Imperium\Query\Query;
@@ -19,9 +18,14 @@ namespace Testing\mysql\model {
         private $model;
 
         /**
+         * @var string
+         */
+        private $table;
+
+        /**
          * @throws Exception
          */
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'model';
             $this->model = $this->mysql()->model()->from($this->table);
@@ -107,15 +111,15 @@ namespace Testing\mysql\model {
 
             );
 
-            $this->assertContains('?table=', $record);
-            $this->assertContains('remove', $record);
-            $this->assertContains('/', $record);
-            $this->assertContains('sure', $record);
-            $this->assertContains('next', $record);
-            $this->assertContains('previous', $record);
-            $this->assertContains('remove', $record);
-            $this->assertContains('class="btn btn-danger"', $record);
-            $this->assertContains('class="btn btn-primary"', $record);
+            $this->assertStringContainsString('?table=', $record);
+            $this->assertStringContainsString('remove', $record);
+            $this->assertStringContainsString('/', $record);
+            $this->assertStringContainsString('sure', $record);
+            $this->assertStringContainsString('next', $record);
+            $this->assertStringContainsString('previous', $record);
+            $this->assertStringContainsString('remove', $record);
+            $this->assertStringContainsString('class="btn btn-danger"', $record);
+            $this->assertStringContainsString('class="btn btn-primary"', $record);
         }
 
         public function test_edit()
@@ -150,10 +154,10 @@ namespace Testing\mysql\model {
 
             $this->assertTrue($this->model->truncate($this->table));
 
-            $result = query_result($this->table,SELECT,$this->mysql()->model(),$this->model->all('id'),$success,$empty,$empty,$sql);
+            $result = query_result($this->table,SELECT,$this->model->all('id'),$success,$empty,$empty,$sql);
 
             $this->assertCount(0,$this->model->all());
-            $this->assertContains($empty,$result);
+            $this->assertStringContainsString($empty,$result);
             $this->assertTrue( $this->model->is_empty($this->table));
 
         }
@@ -179,7 +183,7 @@ namespace Testing\mysql\model {
                     'date' => faker()->date()
                 ];
 
-                $this->assertTrue($this->model->insert($data));
+                $this->assertTrue($this->model->insert_new_record($data));
             }
 
             $this->assertCount($number,$this->model->all());
@@ -195,7 +199,6 @@ namespace Testing\mysql\model {
         public function test_show_tables()
         {
             $this->assertContains($this->table,$this->model->show_tables());
-            $this->assertNotContains($this->table,$this->model->show_tables([$this->table]));
 
         }
 
@@ -284,7 +287,7 @@ namespace Testing\mysql\model {
                 'date' => faker()->date()
             ];
 
-            $this->assertTrue($this->model->update(4,$data));
+            $this->assertTrue($this->model->update_record(4,$data));
         }
 
 
@@ -308,7 +311,7 @@ namespace Testing\mysql\model {
                     'days' => faker()->date(),
                     'date' => faker()->date()
                 ];
-                $this->assertTrue($this->model->insert($data));
+                $this->assertTrue($this->model->insert_new_record($data));
 
             }
             $this->assertCount(109,$this->model->all('id'));
@@ -353,7 +356,6 @@ namespace Testing\mysql\model {
         public function test_import()
         {
             $this->assertTrue($this->mysql()->model()->dump($this->table));
-            $this->assertTrue($this->mysql()->model()->import(sql_file_path($this->mysql()->connect())));
 
         }
     }

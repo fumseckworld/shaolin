@@ -2,10 +2,14 @@
 
 namespace Imperium\View {
 
+    use Imperium\Directory\Dir;
+    use Imperium\Flash\Flash;
+    use Twig\TwigFunction;
     use Twig_Environment;
     use Twig_Error_Loader;
     use Twig_Error_Runtime;
     use Twig_Error_Syntax;
+    use Twig_Function;
     use Twig_Loader_Filesystem;
 
     /**
@@ -41,34 +45,87 @@ namespace Imperium\View {
         /**
          * View constructor.
          *
-         * @param string $view_dir
          *
-         * @param array $config
-         * @param array $extensions
+         * @throws \Exception
          */
-        public function __construct(string $view_dir,array $config = [],array $extensions = [])
+        public function __construct()
         {
+
+            $file = 'views';
+
+            $view_dir = def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config($file,'dir') : config($file,'dir');
+
+            $config = config($file,'config');
+
+            Dir::create($view_dir);
+
             $this->view_dir = realpath($view_dir);
+
             $this->loader = new Twig_Loader_Filesystem($this->view_dir);
+
             $this->twig = new Twig_Environment($this->loader,$config);
 
-            foreach ($extensions as $extension)
-                $this->twig->addExtension($extension);
+
+            $functions = collection();
+
+            $functions->add(new Twig_Function('display',
+
+                function (string $key)
+                {
+                    $flash = new Flash();
+                    return $flash->has($key) ? $flash->display($key) : '';
+
+                },
+                ['is_safe' => ['html']]
+            ));
+
+           $functions->add(new TwigFunction('css',
+
+               function (string $name)
+               {
+                   return css($name);
+               },
+               ['is_safe' => ['html']]
+           ));
+
+           $functions->add(new TwigFunction('js',
+
+               function (string $name,string $type = '')
+               {
+                   return js($name,$type);
+               }
+               ,['is_safe' => ['html']]
+           ));
+
+            $functions->add(new TwigFunction('img',
+
+                function (string $name,string $alt)
+                {
+                    return img($name,$alt);
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+           $this->add_functions($functions->collection());
         }
 
         /**
          *
-         * @param string $view_dir
-         * @param array $config
-         * @param array $extensions
+         *
+         *
+         * @param array $functions
          *
          * @return View
          *
          */
-        public static function init(string $view_dir,array $config= [],array $extensions = []): View
+        public function add_functions(array $functions): View
         {
-            return new static($view_dir,$config,$extensions);
+            foreach ($functions as $function)
+                $this->twig()->addFunction($function);
+
+            return $this;
         }
+
 
         /**
          *
@@ -87,6 +144,8 @@ namespace Imperium\View {
          */
         public function load(string $name,array $args = []): string
         {
+            $name = collection(explode('.',$name))->begin();
+            append($name,'.twig');
             return $this->twig()->render($name,$args);
         }
 

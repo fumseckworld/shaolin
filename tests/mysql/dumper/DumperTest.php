@@ -8,7 +8,7 @@ namespace Testing\mysql\dumper {
     {
         public function test_dump()
         {
-            $this->assertTrue($this->mysql()->dump(true,'',''));
+            $this->assertTrue($this->mysql()->dump(true));
             $this->assertTrue($this->mysql()->dump(false,'base','helper'));
         }
     }

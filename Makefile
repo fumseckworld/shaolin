@@ -20,11 +20,11 @@ ifeq (send,$(firstword $(MAKECMDGOALS)))
   $(eval $(COMMIT):;@:)
 endif
 
-all: vendor mysql pgsql sqlite router form views dir config session flash app trans csrf hash
+all: vendor mysql pgsql sqlite router form  dir config session flash app trans csrf hash
 
 mysql: seed
 	@install -D $@.yaml config/db.yaml
-	@$(UNIT) tests/$@
+	$(UNIT) tests/$@
 pgsql: seed
 	@install -D $@.yaml config/db.yaml
 	@$(UNIT) tests/$@
@@ -37,8 +37,6 @@ flash:
 	@$(UNIT) tests/$@
 form:
 	@install -D mysql.yaml config/db.yaml
-	@$(UNIT) tests/$@
-views:
 	@$(UNIT) tests/$@
 dir:
 	@$(UNIT) tests/$@

@@ -1,0 +1,75 @@
+<?php
+
+namespace Imperium\Asset {
+
+    use Imperium\Request\Request;
+
+    class Asset
+    {
+
+        /**
+         *
+         * Generate a css link
+         *
+         * @param string $filename
+         *
+         * @return string
+         *
+         */
+        public static  function css(string $filename): string
+        {
+            $filename = collection(explode('.',$filename))->begin();
+
+            append($filename,'.css');
+
+            if (php_sapi_name() !== 'cli')
+                $filename = https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'css' .DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR. 'css'. DIRECTORY_SEPARATOR . $filename;
+
+
+            return '<link href="'.$filename.'"  rel="stylesheet" type="text/css">';
+
+        }
+
+        /**
+         *
+         * Generate a js link
+         *
+         * @param string $filename
+         *
+         * @param string $type
+         * @return string
+         */
+        public static function js(string $filename,string $type =''): string
+        {
+
+            $filename = collection(explode('.',$filename))->begin();
+
+            append($filename,'.js');
+
+            if (php_sapi_name() !== 'cli')
+                $filename = https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR .'js' . DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $filename;
+
+            return def($type) ? '<script src="'.$filename.'" type="'.$type.'"></script>' : '<script src="'.$filename.'" ></script>';
+        }
+
+        /**
+         *
+         * Generate a image link
+         *
+         * @param string $filename
+         * @param string $alt
+         *
+         * @return string
+         *
+         */
+        public static function img(string $filename,string $alt): string
+        {
+            if (php_sapi_name() !== 'cli')
+                $filename = https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'img' .DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR. 'img'. DIRECTORY_SEPARATOR . $filename;
+
+           return '<img src="'.$filename.'" alt="'.$alt.'">';
+        }
+
+
+    }
+}

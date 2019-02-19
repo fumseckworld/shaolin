@@ -88,24 +88,6 @@ use Imperium\Tables\Table;
 
         /**
          *
-         * All hidden bases
-         *
-         * @var array
-         *
-         */
-        private $hidden_bases;
-
-        /**
-         *
-         * All hidden tables
-         *
-         * @var array
-         *
-         */
-        private $hidden_tables;
-
-        /**
-         *
          * Create records in all tables not hidden
          *
          * @method seed
@@ -168,7 +150,7 @@ use Imperium\Tables\Table;
 
             $table   = table($connect);
 
-            return (new static($connect,$table,$this->hidden_tables,$this->hidden_bases))->drop($base);
+            return (new static($connect,$table))->drop($base);
         }
 
         /**
@@ -186,13 +168,11 @@ use Imperium\Tables\Table;
          */
         public function copy(string $new_base): bool
         {
-            dumper($this->connexion,true,'');
+            dumper(true);
 
             $this->create($new_base);
 
-            $sql = sql_file_path($this->connexion);
-
-            return (new Import($this->connexion,$sql,$new_base))->import();
+            return (new Import('',$new_base))->import();
         }
 
         /**
@@ -215,7 +195,7 @@ use Imperium\Tables\Table;
 
             $request = '';
 
-            $hidden =  collection($this->hidden_bases);
+            $hidden =  collection($this->hidden_bases());
 
             $this->connexion->mysql() ?  assign(true,$request,'SHOW DATABASES') : assign(true,$request,'select datname from pg_database');
 
@@ -436,7 +416,7 @@ use Imperium\Tables\Table;
          */
         public function dump(): bool
         {
-            return dumper($this->connexion,true);
+            return dumper(true);
         }
 
         /**
@@ -497,42 +477,22 @@ use Imperium\Tables\Table;
          *
          * @param  Connect $connect
          * @param  Table $table
-         * @param  array $hidden_tables
-         * @param  array $hidden_bases
          *
          * @throws Exception
          *
          */
-        public function __construct(Connect $connect,Table $table,array $hidden_tables = [], $hidden_bases = [] )
+        public function __construct(Connect $connect,Table $table )
         {
-            $this->hidden_tables    = $hidden_tables;
-            $this->hidden_bases     = $hidden_bases;
             $this->connexion        = $connect;
             $this->driver           = $connect->driver();
-            $this->tables           = $table->hidden($hidden_tables)->show();
+            $this->tables           = $table->show();
             $this->table            = $table;
 
             if(different($this->driver,Connect::SQLITE))
-                $this->all   = $this->hidden($hidden_bases)->show();
+                $this->all   = $this->show();
         }
 
-        /**
-         *
-         * Define all hidden base
-         *
-         * @method hidden
-         *
-         * @param  array  $base
-         *
-         * @return Base
-         *
-         */
-        public function hidden(array $base = []): Base
-        {
-            $this->hidden_bases = $base;
 
-            return $this;
-        }
 
         /**
          *
@@ -585,10 +545,12 @@ use Imperium\Tables\Table;
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function hidden_bases(): array
         {
-            return $this->hidden_bases;
+            return config('db','hidden_bases');
         }
 
         /**
@@ -597,10 +559,12 @@ use Imperium\Tables\Table;
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function hidden_tables(): array
         {
-            return $this->hidden_tables;
+            return config('db','hidden_tables');
         }
 
         /**

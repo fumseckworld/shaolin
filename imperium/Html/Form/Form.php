@@ -1016,7 +1016,7 @@ namespace Imperium\Html\Form {
         {
             $class  = collection(config($this->file,'class'))->get('submit');
 
-            append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '" name="'.$id.'">' . $icon . ' ' . $text . '</button></div></div>');
+            append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '">' . $icon . ' ' . $text . '</button></div></div>');
 
             return $this;
         }
@@ -1239,11 +1239,9 @@ namespace Imperium\Html\Form {
 
             $class = $this->get_input_complete_class();
 
-            $table = current_table();
-
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ');
             append(
-                $this->form,'<input  class="'.$class.'"   onchange="location = this.attributes[2].value + this.value"  data-url="?table='.$table.'&limit=" value="'.get('limit',10).'"  step="'.$step.'" min="10" type="number"></div></div></div>');
+                $this->form,'<input  class="'.$class.'"   onchange="location = this.attributes[2].value + this.value"  data-url="/" value="'.session('limit',10).'"  step="'.$step.'" min="1" type="number"></div></div></div>');
 
 
 
@@ -1374,32 +1372,30 @@ namespace Imperium\Html\Form {
                     foreach ($columns as $k => $column)
                     {
 
-
                         if (is_null($record->$column))
                             $record->$column = '';
 
                         if (different($column,$primary))
                         {
 
-
                             if (equal($i % $form_grid,0))
                             {
-                                $this->textarea($column, $column, '','',false, $record->$column);
-                                $this->end_row_and_new();
+                                $this->textarea($column, $column, '','',false, $record->$column)->end_row_and_new();
                             }else{
                                 $this->textarea($column, $column, '', '',false,$record->$column);
                             }
 
-                        } else {
-                            $this->input(Form::HIDDEN, $column, $column,'',$record->$column)->row();
+                        } else
+                        {
+                                $this->input(Form::HIDDEN, $column, $column,'','','',$id)->input(Form::HIDDEN,'__table__','','','','',$table)->row();
+
 
                         }
                         $i--;
                     }
 
                 }
-                $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon);
-                return $this->end_row()->get();
+              return  $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
             }else
             {
 
@@ -1433,13 +1429,12 @@ namespace Imperium\Html\Form {
 
                     } else {
 
-                        $this->input(Form::HIDDEN, $column, $column)->row();
+                        $this->input(Form::HIDDEN, $column, $column)->input(Form::HIDDEN,'__table__','','','','',$table)->row();
                     }
                     $i--;
                 }
-                $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon);
+               return $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
 
-                return $this->end_row()->get();
             }
         }
 

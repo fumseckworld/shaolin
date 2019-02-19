@@ -15,7 +15,7 @@ namespace Testing\mysql\table {
          */
         private $table;
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = $this->mysql()->table()->from('base');
         }
@@ -101,8 +101,6 @@ namespace Testing\mysql\table {
         public function test_show()
         {
             $this->assertContains('base',$this->table->show());
-            $this->assertNotContains('base',$this->table->hidden(['base'])->show());
-            $this->assertContains('base',$this->table->hidden()->show());
         }
 
         /**
@@ -160,8 +158,9 @@ namespace Testing\mysql\table {
         public function test_import()
         {
             $this->assertTrue($this->mysql()->model()->dump(current_table()));
-            $this->assertTrue($this->mysql()->table()->import(sql_file_path($this->mysql()->connect(),current_table())));
+            $this->assertTrue($this->mysql()->table()->import($this->base));
         }
+
         /**
          * @throws \Exception
          */
@@ -231,9 +230,8 @@ namespace Testing\mysql\table {
          */
         public function test_ignore()
         {
-            $this->assertNotContains(current_table(),$this->mysql()->table()->hidden([current_table()])->show());
 
-            $this->assertContains(current_table(),$this->table->hidden()->show());
+            $this->assertContains(current_table(),$this->table->show());
         }
 
 
@@ -261,7 +259,7 @@ namespace Testing\mysql\table {
          */
         public function test_found()
         {
-            $this->assertEquals(9,$this->table->found());
+            $this->assertEquals(8,$this->table->found());
 
         }
 

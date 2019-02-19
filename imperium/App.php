@@ -21,6 +21,7 @@ namespace Imperium {
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+    use Imperium\View\View;
     use Symfony\Component\HttpFoundation\Request;
 
 
@@ -117,47 +118,44 @@ namespace Imperium {
          *
          * Display all tables
          *
-         * @param array $hidden
          *
          * @return array
          *
          * @throws Exception
          */
-        public function show_tables(array $hidden = []): array
+        public function show_tables(): array
         {
-            return $this->table()->hidden($hidden)->show();
+            return $this->table()->show();
         }
 
         /**
          *
          * Display all users
          *
-         * @param array $hidden
          *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function show_users(array $hidden = []): array
+        public function show_users(): array
         {
-           return $this->users()->hidden($hidden)->show();
+           return $this->users()->show();
         }
 
         /**
          *
          * Display all bases
          *
-         * @param array $hidden
          *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function show_databases(array $hidden = []): array
+        public function show_databases(): array
         {
-            return $this->bases()->hidden($hidden)->show();
+            return $this->bases()->show();
         }
 
         /**
@@ -701,7 +699,7 @@ namespace Imperium {
          */
         public function dump(bool $base,string ...$tables): bool
         {
-            return (new Dump($this->connect,$base,$tables))->dump();
+            return (new Dump($base,$tables))->dump();
         }
 
         /**
@@ -722,7 +720,7 @@ namespace Imperium {
 
             $this->table            = new Table($this->connect);
             $this->query            = new Query($this->table,$this->connect);
-            $this->base             = new Base($this->connect,$this->table,$this->hidden_tables,$this->hidden_bases);
+            $this->base             = new Base($this->connect,$this->table);
             $this->users            = new Users($this->connect);
             $this->model            = new Model($this->connect,$this->table);
             $this->json             = new Json('app.json');
@@ -1066,6 +1064,23 @@ namespace Imperium {
             self::$middleware->add(new $middleware());
 
             return $this;
+        }
+
+        /**
+         *
+         * Return a view
+         *
+         * @param string $name
+         * @param array $args
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function view(string $name,array $args = []): string
+        {
+            return view($name,$args);
         }
     }
 }

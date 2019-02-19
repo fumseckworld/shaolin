@@ -90,9 +90,7 @@ namespace Testing\sqlite\app {
         {
             $word = "l'agent à été l'as du voyage d'affaire`";
 
-            $this->assertNotEquals($word,quote($this->sqlite()->connect(),$word));
-            $this->assertNotEquals($word,quote($this->postgresql()->connect(),$word));
-            $this->assertNotEquals($word,quote($this->sqlite()->connect(),$word));
+            $this->assertNotEquals($word,quote($word));
         }
 
 
@@ -102,7 +100,7 @@ namespace Testing\sqlite\app {
          */
         public function test_execute()
         {
-            $this->assertTrue(execute($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+            $this->assertTrue(execute("SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
 
         }
 
@@ -111,7 +109,7 @@ namespace Testing\sqlite\app {
          */
         public function test_req()
         {
-            $this->assertNotEmpty(req($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+            $this->assertNotEmpty(req("SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
         }
 
         /**
@@ -146,13 +144,6 @@ namespace Testing\sqlite\app {
 
         }
 
-        /**
-         *
-         */
-        public function test_twig()
-        {
-            $this->assertInstanceOf(Twig_Environment::class,twig('views',[]));
-        }
 
         /**
          * @throws Exception
@@ -391,7 +382,7 @@ namespace Testing\sqlite\app {
         public function test_base_to_json()
         {
             $this->expectException(Exception::class);
-            bases_to_json($this->sqlite()->bases(),'app.json','bases');
+            bases_to_json('app.json','bases');
         }
 
         /**
@@ -400,7 +391,7 @@ namespace Testing\sqlite\app {
         public function test_user_to_json()
         {
             $this->expectException(Exception::class);
-            users_to_json($this->sqlite()->users(),'app.json','bases');
+            users_to_json('app.json','bases');
         }
 
         /**
@@ -408,7 +399,7 @@ namespace Testing\sqlite\app {
          */
         public function test_table_to_json()
         {
-            $this->assertTrue(tables_to_json($this->sqlite()->table(),'app.json','bases'));
+            $this->assertTrue(tables_to_json('app.json'));
         }
 
         /**
@@ -416,7 +407,7 @@ namespace Testing\sqlite\app {
          */
         public function test_sql_to_json()
         {
-            $this->assertTrue(sql_to_json($this->sqlite()->connect(),'app.json',[$this->sqlite()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+            $this->assertTrue(sql_to_json('app.json',[$this->sqlite()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
         }
 
         /**
@@ -479,21 +470,10 @@ namespace Testing\sqlite\app {
          */
         public function test_table_select()
         {
-            $select = tables_select('base',$this->sqlite()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
-            $select = tables_select('base',$this->postgresql()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
-            $select = tables_select('base',$this->sqlite()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
+            $select = tables_select('base','?=','/');
+            $this->assertStringContainsString('base',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
         }
 
         /**
@@ -511,7 +491,7 @@ namespace Testing\sqlite\app {
         public function test_users_select()
         {
             $this->expectException(Exception::class);
-            users_select($this->sqlite()->users(),[],'?=','','choose',false);
+            users_select('?=','','choose',false);
 
 
         }
@@ -523,7 +503,7 @@ namespace Testing\sqlite\app {
         {
 
             $this->expectException(Exception::class);
-            bases_select($this->sqlite()->bases(),[],'?=','','choose',false);
+            bases_select('?=','','choose',false);
 
         }
 
@@ -673,7 +653,7 @@ namespace Testing\sqlite\app {
         public function test_pass()
         {
             $this->expectException(Exception::class);
-            pass($this->sqlite()->connect(),'root','root');
+            pass('root','root');
         }
 
         /**

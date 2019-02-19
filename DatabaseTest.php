@@ -5,8 +5,6 @@
 namespace Testing;
 
 require_once 'vendor/autoload.php';
-require_once 'config.php';
-
 
 use Imperium\App;
 
@@ -25,22 +23,31 @@ class DatabaseTest extends TestCase
     protected $class = 'btn btn-primary';
 
 
+    /**
+     * @return App
+     * @throws \Exception
+     */
     public function mysql(): App
     {
-        global $mysql;
-        return $mysql;
-
+       return app();
     }
+
+    /**
+     * @return App
+     * @throws \Exception
+     */
     public function postgresql(): App
     {
-        global $pgsql;
-        return $pgsql;
+        return  app();
     }
 
+    /**
+     * @return App
+     * @throws \Exception
+     */
     public function sqlite(): App
     {
-        global $sqlite;
-        return $sqlite;
+        return app();
     }
 
 }

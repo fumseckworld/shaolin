@@ -15,7 +15,7 @@ namespace Testing\pgsql\table {
          */
         private $table;
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = $this->postgresql()->table()->from('tbl');
         }
@@ -101,9 +101,7 @@ namespace Testing\pgsql\table {
          */
         public function test_show()
         {
-            $this->assertContains('base',$this->table->show());
-            $this->assertNotContains('base',$this->table->hidden(['base'])->show());
-            $this->assertContains('base',$this->table->hidden()->show());
+            $this->assertContains(current_table(),$this->table->show());
         }
 
         /**
@@ -161,7 +159,7 @@ namespace Testing\pgsql\table {
         public function test_import()
         {
             $this->assertTrue($this->postgresql()->model()->dump(current_table()));
-            $this->assertTrue($this->postgresql()->table()->import(sql_file_path($this->postgresql()->connect(),current_table())));
+            $this->assertTrue($this->postgresql()->table()->import());
         }
         /**
          * @throws \Exception
@@ -232,9 +230,8 @@ namespace Testing\pgsql\table {
          */
         public function test_ignore()
         {
-            $this->assertNotContains(current_table(),$this->postgresql()->table()->hidden([current_table()])->show());
+            $this->assertNotContains('phinxlog',$this->postgresql()->table()->show());
 
-            $this->assertContains(current_table(),$this->table->hidden()->show());
         }
 
 
@@ -253,7 +250,7 @@ namespace Testing\pgsql\table {
          */
         public function test_count()
         {
-            $this->assertEquals(0,$this->table->count());
+            $this->assertEquals(349,$this->table->count());
         }
 
 
@@ -262,7 +259,7 @@ namespace Testing\pgsql\table {
          */
         public function test_found()
         {
-            $this->assertEquals(9,$this->table->found());
+            $this->assertEquals(8,$this->table->found());
 
         }
 

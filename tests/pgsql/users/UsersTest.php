@@ -16,9 +16,7 @@ namespace Testing\pgsql\users {
 
             $this->assertNotEmpty($this->postgresql()->users()->show());
 
-            $this->assertContains(self::POSTGRESQL_USER,$this->postgresql()->users()->hidden([])->show());
-
-            $this->assertNotContains(self::POSTGRESQL_USER,$this->postgresql()->users()->hidden([self::POSTGRESQL_USER])->show());
+            $this->assertContains(self::POSTGRESQL_USER,$this->postgresql()->users()->show());
 
         }
 

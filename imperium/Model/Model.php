@@ -5,7 +5,10 @@ namespace Imperium\Model {
 
     use Exception;
     use Imperium\Connexion\Connect;
+    use Imperium\Middleware\CsrfMiddleware;
     use Imperium\Query\Query;
+    use Imperium\Request\Request;
+    use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Collection\Collection;
     use Imperium\Html\Form\Form;
@@ -95,7 +98,7 @@ namespace Imperium\Model {
          *
          * The selected columns
          *
-         * @var array
+         * @var string
          *
          */
         private $only;
@@ -142,7 +145,7 @@ namespace Imperium\Model {
          */
         public function dump(string $table): bool
         {
-            return dumper($this->connexion, false,$table);
+            return dumper( false,$table);
         }
 
         /**
@@ -156,7 +159,7 @@ namespace Imperium\Model {
          */
         public function dump_base(): bool
         {
-            return dumper($this->connexion,true);
+            return dumper(true);
         }
 
         /**
@@ -190,20 +193,39 @@ namespace Imperium\Model {
 
         /**
          *
+         * Update a record
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function update(): bool
+        {
+            $table = Request::get('__table__');
+
+            $id = intval(Request::get($this->from($table)->primary()));
+
+            $data = collection(Request::all())->remove(CsrfMiddleware::KEY)->remove('__table__')->collection();
+
+            return $this->table()->from($table)->update($id,$data);
+        }
+
+        /**
+         *
          * Import the sql file content in the base
          *
          * @method import
          *
-         * @param string $sql_file_path The sql file
          * @param  string $base The base name
          *
          * @return bool
          *
          * @throws Exception
          */
-        public function import(string $sql_file_path, string $base = ''): bool
+        public function import(string $base = ''): bool
         {
-            return (new Import($this->connexion, $sql_file_path,$base))->import();
+            return (new Import($base))->import();
         }
 
         /**
@@ -264,19 +286,19 @@ namespace Imperium\Model {
 
         /**
          *
-         * Find a record by a key
+         * Find a record by a column
          *
-         * @param string $key
-         * @param $expected
+         * @param string $column
+         * @param mixed $expected
          *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function by(string $key,$expected): array
+        public function by(string $column,$expected): array
         {
-            return $this->from($this->current())->where($key,EQUAL,$expected)->get();
+            return $this->from($this->current())->where($column,EQUAL,$expected)->get();
         }
 
         /**
@@ -294,7 +316,7 @@ namespace Imperium\Model {
          * @throws Exception
          *
          */
-        public function search(string $value,bool $json_output = false,string $filename = 'search.json')
+        public function search(string $value,bool $json_output = false, string $filename = 'search.json')
         {
             return $json_output ? collection($this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get())->convert_to_json($filename) : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
         }
@@ -305,16 +327,15 @@ namespace Imperium\Model {
          *
          * @method show_tables
          *
-         * @param  array $hidden The hidden table
          *
          * @return array
          *
          * @throws Exception
          *
          */
-        public function show_tables(array $hidden = []): array
+        public function show_tables(): array
         {
-            return $this->table->hidden($hidden)->show();
+            return $this->table->show();
         }
 
         /**
@@ -363,20 +384,25 @@ namespace Imperium\Model {
 
             $current_page = def(get('current')) ? get('current') : $current_page;
 
-            $limit_records_per_page = get('limit',10);
+            $session = new Session();
 
-            $records = get_records($table,$current_page,$limit_records_per_page,$this->connexion,$key,$order_by);
+            if (not_def($session->get('limit')))
+                $session->set(10,'limit');
+
+            $limit_records_per_page = $session->get('limit');
+
+            $records = get_records($table,$current_page,$limit_records_per_page,$key,$order_by);
 
 
             $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
 
-            $current_table = current_table();
 
-            $data = collection(['/' => $current_table]);
+
+            $data = collection(['/' => $table]);
 
             foreach ($this->show_tables() as $x)
             {
-                if (different($x,$current_table))
+                if (different($x,$table))
                     $data->merge(["?table=$x" => $x]);
             }
 
@@ -453,7 +479,7 @@ namespace Imperium\Model {
          */
         public function only(string ...$columns): Model
         {
-            $this->only = $columns;
+            $this->only = collection($columns)->join(', ');
 
             return $this;
         }
@@ -474,7 +500,7 @@ namespace Imperium\Model {
             is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
 
 
-            return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->columns($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
+            return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
 
 
@@ -507,15 +533,12 @@ namespace Imperium\Model {
          */
         public function save(): bool
         {
-
-            different(length($this->columns()),length($this->data->collection()),true,"You have missing values");
-
             $data = collection();
 
             foreach ($this->columns() as  $column)
                 $data->add($this->data->get($column),$column);
 
-            return $this->insert($data->collection());
+            return $this->insert_new_record($data->collection());
         }
         /**
          *
@@ -710,9 +733,25 @@ namespace Imperium\Model {
          *
          * @throws Exception
          */
-        public function insert(array $data,array $ignore = []): bool
+        public function insert_new_record(array $data,array $ignore = []): bool
         {
             return $this->table()->from($this->current())->save($data,$ignore);
+        }
+
+        /**
+         *
+         * Insert data in the current table
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function insert(): bool
+        {
+            $data = collection(Request::all())->remove(CsrfMiddleware::KEY)->remove('__table__')->collection();
+
+            return $this->table()->from($this->current())->save($data);
         }
 
         /**
@@ -788,9 +827,9 @@ namespace Imperium\Model {
          *
          * @throws Exception
          */
-        public function update(int $id,array $data,array $ignore =[]): bool
+        public function update_record(int $id,array $data,array $ignore =[]): bool
         {
-            return $this->table()->update($id,$data,$ignore);
+            return $this->table()->from($this->current())->update($id,$data,$ignore);
         }
 
         /**
@@ -806,14 +845,17 @@ namespace Imperium\Model {
         }
 
         /**
+         *
          * Check if the current table has not record
          *
          * @param string $table
+         *
          * @return bool
          *
          * @throws Exception
+         *
          */
-        public function is_empty( $table): bool
+        public function is_empty(string $table): bool
         {
             return $this->table()->from($table)->is_empty();
         }

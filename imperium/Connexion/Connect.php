@@ -110,7 +110,7 @@ namespace Imperium\Connexion {
          * @var int
          *
          */
-        private $mode;
+        private $mode = PDO::FETCH_OBJ;
 
         /**
          *
@@ -167,8 +167,6 @@ namespace Imperium\Connexion {
             $this->username     = $username;
 
             $this->password     = $password;
-
-            $this->mode         = self::PDO_MODE;     
 
             $this->dump_path    = realpath($dump_path);
 
@@ -287,7 +285,7 @@ namespace Imperium\Connexion {
          */
         public function mysql(): bool
         {
-            return equal($this->driver(),self::MYSQL);
+            return equal($this->driver(),MYSQL);
         }
 
         /**
@@ -303,7 +301,7 @@ namespace Imperium\Connexion {
          */
         public function postgresql(): bool
         {
-            return equal($this->driver(),self::POSTGRESQL);
+            return equal($this->driver(),POSTGRESQL);
         }
 
         /**
@@ -319,7 +317,7 @@ namespace Imperium\Connexion {
          */
         public function sqlite(): bool
         {
-            return equal($this->driver(),self::SQLITE);
+            return equal($this->driver(),SQLITE);
         }
 
        /**
@@ -448,12 +446,11 @@ namespace Imperium\Connexion {
          *
          * Execute the queries
          *
-         * @param string ...$queries
+         * @param string[] $queries
          *
          * @return Connect
          *
          * @throws Exception
-         *
          */
         public function queries(string ...$queries): Connect
         {
@@ -522,6 +519,7 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
+
                         return new PDO("$driver:host=$host;dbname=$database",$username,$password);
                     }catch (PDOException $e)
                     {

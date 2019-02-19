@@ -8,6 +8,7 @@ development:
   host: 'localhost'
   hidden_tables: ['phinxlog']
   hidden_bases : []
+  hidden_users: []
 production:
   driver: pgsql
   base: zen

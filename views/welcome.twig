@@ -2,13 +2,6 @@
 
 {% block content %}
 
-    <div class="container">
-        {% if flash.has('success') %}
-            {{ flash.display('success') | raw }}
-        {% endif %}
-    </div>
-
-
     {{ code | raw }}
     {{  del  | raw }}
 {% endblock %}

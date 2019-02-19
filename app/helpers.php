@@ -2,15 +2,20 @@
 
 use Faker\Factory;
 use Faker\Generator;
+use Imperium\Asset\Asset;
 use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
+use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
 use Imperium\Flash\Flash;
 use Imperium\Hashing\Hash;
 use Imperium\Router\Router;
+use Imperium\Session\Session;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Twig\TwigFunction;
 use Whoops\Run;
 use Carbon\Carbon;
 use Imperium\App;
@@ -107,7 +112,31 @@ if (not_exist('redirect'))
             $flash = new Flash();
             $success ? $flash->success($message) : $flash->failure($message);
         }
-        return (new \Symfony\Component\HttpFoundation\RedirectResponse(url($route_name)))->send();
+        return (new \Symfony\Component\HttpFoundation\RedirectResponse(name($route_name)))->send();
+    }
+}
+
+if (not_exist('to'))
+{
+    /**
+     *
+     * @param string $url
+     * @param string $message
+     *
+     * @param bool $success
+     *
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     *
+     */
+    function to(string $url,string $message = '',bool $success =  true): RedirectResponse
+    {
+        if (def($message))
+        {
+            $flash = new Flash();
+
+            $success ? $flash->success($message) : $flash->failure($message);
+        }
+        return (new \Symfony\Component\HttpFoundation\RedirectResponse($url))->send();
     }
 }
 
@@ -120,6 +149,7 @@ if (not_exist('route'))
      * @return array
      *
      * @throws Exception
+     *
      */
     function route(string $method): array
     {
@@ -181,7 +211,7 @@ if (not_exist('trans'))
 
         $values  = array_values($args);
 
-        $message = Trans::init()->get(\config('app','locale'),$message);
+        $message = Trans::init()->get(config('app','locale'),$message);
 
         while (preg_match('/%\(([a-zA-Z0-9_ -]+)\)/', $message, $m))
         {
@@ -225,6 +255,7 @@ if (not_exist('request'))
         return Request::createFromGlobals();
     }
 }
+
 if (not_exist('view'))
 {
 
@@ -239,23 +270,18 @@ if (not_exist('view'))
      * @throws Twig_Error_Loader
      * @throws Twig_Error_Runtime
      * @throws Twig_Error_Syntax
+     *
      * @throws Exception
+     *
      */
     function view(string $name,array $args =[]) : string
     {
-        $file = 'views';
-
-        $view_dir   = realpath(config($file,'dir'));
-
-        $name =\collection(explode('.',$name))->begin();
+        $name = collection(explode('.',$name))->begin();
 
         append($name,'.twig');
 
-        $flash = new Flash();
 
-        $args = array_merge($args,['flash' => $flash]);
-
-        return View::init($view_dir,\config($file,'config'))->load($name,$args);
+        return (new View())->load($name,$args);
     }
 }
 
@@ -290,7 +316,8 @@ if (not_exist('send_mail'))
                 ->setFrom(config($file,'from'))
                 ->setTo($to)
                 ->setBody(message($message),'text/html');
-        }else{
+        }else
+        {
             $message = (new Swift_Message($subject))
                 ->setFrom(config($file,'from'))
                 ->setTo($to)
@@ -301,7 +328,7 @@ if (not_exist('send_mail'))
 
     }
 }
-if (not_exist('get_table'))
+if (not_exist('current_table'))
 {
     /**
      *
@@ -364,7 +391,8 @@ if (not_exist('message'))
         return File::content(realpath(config('mail','dir')) . DIRECTORY_SEPARATOR . $filename);
     }
 }
-if (not_exist('sql_file_path'))
+
+if (not_exist('sql_file'))
 {
     /**
      *
@@ -372,14 +400,15 @@ if (not_exist('sql_file_path'))
      *
      * @method sql_file_path
      *
-     * @param  Connect       $connect The connexion to the base
-     *
+     * @param string $table
      * @return string
      *
+     * @throws Exception
+     *
      */
-    function sql_file_path(Connect $connect): string
+    function sql_file(string $table  = ''): string
     {
-        return "{$connect->dump_path()}/{$connect->base()}.sql";
+        return def($table) ? app()->connect()->dump_path() .DIRECTORY_SEPARATOR ."$table.sql" : app()->connect()->dump_path() . DIRECTORY_SEPARATOR . app()->connect()->base() .'.sql';
     }
 }
 
@@ -422,7 +451,6 @@ if (not_exist('quote'))
      *
      * @method quote
      *
-     * @param  Connect $connect The connexion
      * @param  string  $value   The value to secure
      *
      * @return string
@@ -430,9 +458,9 @@ if (not_exist('quote'))
      * @throws Exception
      *
      */
-    function quote(Connect $connect,string $value): string
+    function quote(string $value): string
     {
-        return $connect->instance()->quote($value);
+        return app()->connect()->instance()->quote($value);
     }
 }
 
@@ -860,6 +888,21 @@ if (not_exist('edit'))
     }
 }
 
+if (not_exist('back'))
+{
+    /**
+     * @param string $message
+     * @param bool $success
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @throws Exception
+     */
+    function back(string $message = '', bool $success = true): \Symfony\Component\HttpFoundation\RedirectResponse
+    {
+        $back = request()->server->get('HTTP_REFERER');
+
+        return to($back,$message,$success);
+    }
+}
 if(not_exist('create'))
 {
     /**
@@ -890,18 +933,17 @@ if (not_exist('bases_to_json'))
      *
      * @method bases_to_json
      *
-     * @param  Base          $base     An instance of base
-     * @param  string        $filename  The filename
-     * @param  string        $key      The optional key
+     * @param  string $filename The filename
+     * @param  string $key The optional key
      *
      * @return bool
      *
      * @throws Exception
      *
      */
-    function bases_to_json(Base $base,string $filename,string $key =''): bool
+    function bases_to_json(string $filename,string $key ='bases'): bool
     {
-        return json($filename)->add($base->show(),$key)->generate();
+        return json($filename)->add(app()->bases()->show(),$key)->generate();
     }
 }
 
@@ -914,7 +956,6 @@ if (not_exist('users_to_json'))
      *
      * @method users_to_json
      *
-     * @param  Users         $users    An instance of user
      * @param  string        $filename  The filename
      * @param  string        $key      The optional key
      *
@@ -923,9 +964,9 @@ if (not_exist('users_to_json'))
      * @throws Exception
      *
      */
-    function users_to_json(Users $users,$filename,string $key = '') : bool
+    function users_to_json($filename,string $key = 'users') : bool
     {
-        return json($filename)->add($users->show(),$key)->generate();
+        return json($filename)->add(app()->users()->show(),$key)->generate();
     }
 }
 
@@ -938,7 +979,6 @@ if (not_exist('tables_to_json'))
      *
      * @method tables_to_json
      *
-     * @param  Table          $table   An instance of table
      * @param  string         $filename The filename
      * @param  string         $key     The key
      *
@@ -947,38 +987,34 @@ if (not_exist('tables_to_json'))
      * @throws Exception
      *
      */
-    function tables_to_json(Table $table,string $filename,string $key= '') : bool
+    function tables_to_json(string $filename,string $key = 'tables') : bool
     {
-        return json($filename)->add($table->show(),$key)->generate();
+        return json($filename)->add(app()->table()->show(),$key)->generate();
     }
 }
 
 if (not_exist('sql_to_json'))
 {
+
     /**
      *
-     * Generate a json file with the result of all sql queries
-     *
-     * @method sql_to_json
-     *
-     * @param  Connect     $connect  [description]
-     * @param  string      $filename [description]
-     * @param  array       $query    [description]
-     * @param  array       $key      [description]
+     * @param string $filename
+     * @param array $query
+     * @param array $key
      *
      * @return bool
      *
      * @throws Exception
      *
      */
-    function sql_to_json(Connect $connect,string $filename,array $query, array $key) : bool
+    function sql_to_json(string $filename,array $query, array $key) : bool
     {
         $x =  json($filename);
 
         $keys = collection($key);
 
         foreach($query as $k => $v)
-            $x->add($connect->request($v),$keys->get($k));
+            $x->add(app()->connect()->request($v),$keys->get($k));
 
         return $x->generate();
     }
@@ -994,7 +1030,6 @@ if (not_exist('query_result'))
      *
      * @param string $table
      * @param int $mode
-     * @param  Model $model Instance of the model
      * @param  mixed $data The query results
      * @param  string $success_text The success text
      * @param  string $result_empty_text Result empty text
@@ -1005,7 +1040,7 @@ if (not_exist('query_result'))
      *
      * @throws Exception
      */
-    function query_result(string $table,int $mode,Model $model,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
+    function query_result(string $table,int $mode,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
 
         if (equal($mode,Query::UPDATE))
@@ -1019,10 +1054,10 @@ if (not_exist('query_result'))
         }
         if (is_bool($data) && $data)
            return html('code',$sql,'text-center').html('div',$success_text,'alert alert-success mt-5');
-        elseif(empty($model->from($table)->all()))
+        elseif(empty(app()->model()->from($table)->all()))
             return html('code',$sql,'text-center'). html('div',$table_empty_text,'alert alert-danger mt-5');
         else
-           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,$model->columns());
+           return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,\app()->model()->columns());
 
     }
 }
@@ -1048,27 +1083,12 @@ if (not_exist('length'))
             return count($data);
         elseif(is_string($data))
             return strlen($data);
-        else
-            throw new Exception('The parameter must be a string or an array');
+
+        throw new Exception('The parameter must be a string or an array');
     }
 }
 
-if (not_exist('twig'))
-{
-    /**
-     *
-     * @param string $views_path
-     * @param array $options
-     *
-     * @return Twig_Environment
-     *
-     */
-    function twig(string $views_path,array $options): Twig_Environment
-    {
-        $loader = new Twig_Loader_Filesystem($views_path);
-        return new Twig_Environment($loader,$options);
-    }
-}
+
 if (not_exist('execute_query'))
 {
     /**
@@ -1078,7 +1098,6 @@ if (not_exist('execute_query'))
      * @method execute_query
      *
      * @param string $table
-     * @param App $imperium
      * @param  int $mode The query mode
      * @param  string $column_name The where column name
      * @param  string $condition The where condition
@@ -1097,13 +1116,11 @@ if (not_exist('execute_query'))
      *
      * @throws Exception
      */
-    function execute_query(string $table, App $imperium, int $mode, string $column_name, string $condition, $expected, string $first_table, string $first_param, string $second_table, string $second_param, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
+    function execute_query(string $table, int $mode, string $column_name, string $condition, $expected, string $first_table, string $first_param, string $second_table, string $second_param, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
     {
 
-
-
-        $model = $imperium->model();
-        $x = $imperium->table()->from($table);
+        $model = app()->model();
+        $x = app()->table()->from($table);
 
         $form_grid = 2;
 
@@ -1148,7 +1165,6 @@ if (not_exist('query_view'))
     /**
      * @param string $confirm_message
      * @param string $query_action
-     * @param App $imperium
      * @param string $create_record_action
      * @param string $update_record_action
      * @param string $create_record_submit_text
@@ -1167,14 +1183,14 @@ if (not_exist('query_view'))
      * @return string
      * @throws Exception
      */
-    function query_view(string $confirm_message, string $query_action, App $imperium, string $create_record_action, string $update_record_action, string $create_record_submit_text, string $update_record_text, string $current_table_name, string $expected_placeholder, string $submit_query_text, string $submit_class, string $remove_success_text, string $record_not_found_text, string $table_empty_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
+    function query_view(string $confirm_message, string $query_action, string $create_record_action, string $update_record_action, string $create_record_submit_text, string $update_record_text, string $current_table_name, string $expected_placeholder, string $submit_query_text, string $submit_class, string $remove_success_text, string $record_not_found_text, string $table_empty_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
     {
 
-        $table = $imperium->table()->from($current_table_name);
+        $table = app()->table()->from($current_table_name);
         
         $columns = $table->columns();
 
-        $tables = $imperium->table()->show();
+        $tables = app()->table()->show();
 
         $x = count($columns);
 
@@ -1210,7 +1226,7 @@ if (not_exist('query_view'))
                     ->submit($submit_query_text,$submit_class,uniqid())
                ->end_row()->get()
                  .
-                query_result($current_table_name,post('mode'),$imperium->model(),execute_query($imperium,post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
+                query_result($current_table_name,post('mode'),execute_query(post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
 
             :
                 (new Form())->validate()->start($query_action,id(),$confirm_message)
@@ -1395,7 +1411,7 @@ if (not_exist('zones'))
      */
     function zones(string $select_time_zone_text) : array
     {
-        $zones = collection(array('' => $select_time_zone_text));
+        $zones = collection(['' => $select_time_zone_text]);
 
         foreach (DateTimeZone::listIdentifiers() as $x)
             $zones->merge([$x => $x]);
@@ -1410,6 +1426,24 @@ if (not_exist('https'))
         return request()->isSecure();
     }
 }
+
+if (not_exist('https_or_fail'))
+{
+    /**
+     *
+     * Check if the protocol is https or run exception if not found
+     *
+     * @throws Exception
+     *
+     */
+    function https_or_fail()
+    {
+        if (!https())
+        {
+            throw new Exception('The https protocol was not found');
+        }
+    }
+}
 if (not_exist('tables_select'))
 {
     /**
@@ -1419,8 +1453,6 @@ if (not_exist('tables_select'))
      * @method tables_select
      *
      * @param string $current
-     * @param  Table $instance An instance of table
-     * @param  array $hidden The hidden tables
      * @param  string $url_prefix The url prefix
      * @param  string $separator The url separator
      *
@@ -1428,11 +1460,11 @@ if (not_exist('tables_select'))
      *
      * @throws Exception
      */
-    function tables_select(string $current,Table $instance,array $hidden, string $url_prefix,string $separator): string
+    function tables_select(string $current, string $url_prefix,string $separator): string
     {
         $tables = collection(["$url_prefix$separator$current" => $current]);
 
-        foreach ($instance->hidden($hidden)->show() as $x)
+        foreach (app()->table()->show() as $x)
         {
             if (different($x,$current))
                 $tables->add($x,"$url_prefix$separator$x");
@@ -1448,8 +1480,6 @@ if (not_exist('users_select'))
      *
      * @method users_select
      *
-     * @param  Users $instance The user instance
-     * @param  array $hidden   All hidden users
      * @param  string $urlPrefix The url prefix
      * @param  string $currentUser The current username
      * @param  string $chooseText The select text
@@ -1462,11 +1492,11 @@ if (not_exist('users_select'))
      * @throws Exception
      *
      */
-    function users_select(Users $instance,array $hidden,string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = ''): string
+    function users_select(string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = ''): string
     {
         $users = collection(array('' => $chooseText));
 
-        foreach ($instance->hidden($hidden)->show() as $x)
+        foreach (app()->users()->show() as $x)
         {
             if (different($x,$currentUser))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
@@ -1482,8 +1512,6 @@ if (not_exist('bases_select'))
     /**
      * build a form to select a base
      *
-     * @param Base $instance
-     * @param array $hidden
      * @param string $urlPrefix
      * @param string $currentBase
      * @param string $chooseText
@@ -1495,11 +1523,11 @@ if (not_exist('bases_select'))
      *
      * @throws Exception
      */
-    function bases_select(Base $instance,array $hidden,string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
+    function bases_select(string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
     {
         $bases = collection(array('' => $chooseText));
 
-        foreach ($instance->hidden($hidden)->show() as $x)
+        foreach (app()->bases()->show() as $x)
         {
             if (different($x, $currentBase))
                 $bases->merge(["$urlPrefix$separator$x" => $x]);
@@ -1535,7 +1563,7 @@ if (not_exist('simply_view'))
      */
     function simply_view(string $before_all_class,string $thead_class,string $current_table_name, array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $pagination_to_right = true): string
     {
-        $instance = \app()->table()->from($current_table_name);
+        $instance =  app()->table()->from($current_table_name);
 
         $columns  = $instance->columns();
         $primary  = $instance->primary_key();
@@ -1564,7 +1592,6 @@ if (not_exist('get_records'))
      * @param  string $current_table_name The current table name
      * @param  int $current_page The current page
      * @param  int $limit_per_page The limit
-     * @param  Connect $connect The connexion to the base
      * @param  string $key The key
      * @param  string $order_by The order by
      *
@@ -1573,22 +1600,28 @@ if (not_exist('get_records'))
      * @throws Exception
      *
      */
-    function get_records(string $current_table_name,int $current_page,int $limit_per_page,Connect $connect,string $key = '',string $order_by = DESC): array
+    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $key = '',string $order_by = DESC): array
     {
+
+        $base = app()->connect()->base();
+
+        is_false(app()->table()->has(),true,"We have not found a table in the $base base");
+
         $instance = app()->table()->from($current_table_name);
 
         $key = def($key) ? $key : $instance->primary_key();
 
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 
-        $sql = sql(query($instance,$connect),$current_table_name)->mode(Query::SELECT);
+        $sql = sql($current_table_name)->mode(Query::SELECT);
 
 
         $like = get('q');
-        $limit = get('limit');
 
-        if (def($limit) && def($like))
-            return $sql->like($like)->limit($limit,0)->order_by($key,$order_by)->get();
+        $session= new Session();
+
+        if (def($session->get('limit') && def($like)))
+            return $sql->like($like)->limit($session->get('limit'),0)->order_by($key,$order_by)->get();
 
         return def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
     }
@@ -1967,7 +2000,7 @@ if (not_exist('method'))
     }
 }
 
-if (not_exist('url'))
+if (not_exist('name'))
 {
     /**
      *
@@ -1980,12 +2013,111 @@ if (not_exist('url'))
      *
      * @throws Exception
      */
-    function url(string $name,string $method = Router::METHOD_GET): string
+    function name(string $name,string $method = Router::METHOD_GET): string
     {
         return Router::url($name,$method);
     }
 }
 
+if (not_exist('url'))
+{
+    /**
+     *
+     * Return a route url by use it's name
+     *
+     * @param string $route_name
+     * @param string $method The route method
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function url(string $route_name,string $method = Router::METHOD_GET): string
+    {
+        return Router::url($route_name,$method);
+    }
+}
+
+if (not_exist('css'))
+{
+    /**
+     *
+     * Generate a css link
+     *
+     * @param string $filename
+     *
+     * @return string
+     *
+     */
+    function css(string $filename): string
+    {
+        return Asset::css($filename);
+    }
+}
+
+if (not_exist('img'))
+{
+    /**
+     *
+     * Generate a image link
+     *
+     * @param string $filename
+     * @param string $alt
+     *
+     * @return string
+     */
+    function img(string $filename,string $alt): string
+    {
+        return Asset::img($filename,$alt);
+    }
+}
+
+if (not_exist('js'))
+{
+    /**
+     *
+     * Generate a js link
+     *
+     * @param string $filename
+     *
+     * @param string $type
+     * @return string
+     */
+    function js(string  $filename,string $type= ''): string
+    {
+        return Asset::js($filename,$type);
+    }
+}
+
+if (not_exist('twig'))
+{
+
+    /**
+     * @return Twig_Environment
+     *
+     * @throws Exception
+     *
+     */
+    function twig(): Twig_Environment
+    {
+
+        $file = 'views';
+
+        $view_dir = def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config($file,'dir') : config($file,'dir');
+
+        $config = config($file,'config');
+
+
+        Dir::create($view_dir);
+
+        $view_dir = realpath($view_dir);
+
+        $loader = new Twig_Loader_Filesystem($view_dir);
+
+        return new Twig_Environment($loader,$config);
+    }
+}
 if (not_exist('files'))
 {
     /**
@@ -2079,21 +2211,24 @@ if (not_exist('collation'))
      *
      * @method collation
      *
-     * @param  Connect   $connexion The connection to the base
      *
+     * @param Connect $connect
      * @return array
      *
      * @throws Exception
-     *
      */
-    function collation(Connect $connexion): array
+    function collation(Connect $connect): array
     {
         $collation = collection();
 
-        if ($connexion->sqlite())
+        $connexion = $connect;
+
+
+        if($connexion->sqlite())
             return $collation->collection();
 
         $request = '';
+
 
         assign($connexion->mysql(),$request,'SHOW COLLATION');
 
@@ -2113,25 +2248,26 @@ if (not_exist('charset'))
      *
      * @method charset
      *
-     * @param  Connect  $connexion The connection to the base
      *
+     * @param Connect $connect
      * @return array
      *
      * @throws Exception
-     *
      */
-    function charset(Connect $connexion): array
+    function charset(Connect $connect): array
     {
         $collation = collection();
+
+        $connexion = $connect;
 
         if ($connexion->sqlite())
             return $collation->collection();
 
         $request = '';
 
-        assign(equal($connexion->driver(),Connect::MYSQL),$request,'SHOW CHARACTER SET');
+        assign($connexion->mysql(),$request,'SHOW CHARACTER SET');
 
-        assign(equal($connexion->driver(),Connect::POSTGRESQL),$request,'SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1');
+        assign($connexion->postgresql(),$request,'SELECT DISTINCT pg_encoding_to_char(conforencoding) FROM pg_conversion ORDER BY 1');
 
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));
@@ -2191,7 +2327,6 @@ if (not_exist('pass'))
      *
      * @method pass
      *
-     * @param  Connect $connect
      * @param  string $username
      * @param  string $new_password
      *
@@ -2199,9 +2334,9 @@ if (not_exist('pass'))
      *
      * @throws Exception
      */
-    function pass(Connect $connect,string $username ,string $new_password) : bool
+    function pass(string $username ,string $new_password) : bool
     {
-        return user($connect)->update_password($username,$new_password);
+        return user(app()->connect())->update_password($username,$new_password);
     }
 }
 
@@ -2459,7 +2594,6 @@ if(not_exist('req'))
      *
      * @method req
      *
-     * @param  Connect $instance The connexion to the base
      * @param  string[] $queries The sql queries
      *
      * @return array
@@ -2467,9 +2601,11 @@ if(not_exist('req'))
      * @throws Exception
      *
      */
-    function req(Connect $instance,string ...$queries): array
+    function req(string ...$queries): array
     {
         $data = collection();
+
+        $instance = app()->connect();
 
         foreach($queries as $k => $query)
             $data->add($instance->request($query),$k);
@@ -2487,7 +2623,6 @@ if(not_exist('execute'))
      *
      * @method execute
      *
-     * @param  Connect $instance The connexion to the base
      * @param  string[] $queries The sql queries
      *
      * @return bool
@@ -2495,9 +2630,12 @@ if(not_exist('execute'))
      * @throws Exception
      *
      */
-    function execute(Connect $instance,string ...$queries): bool
+    function execute(string ...$queries): bool
     {
+
         $data = collection();
+
+        $instance = app()->connect();
 
         foreach($queries as $k => $query)
             $data->add($instance->execute($query),$k);
@@ -2572,7 +2710,6 @@ if (not_exist('remove_users'))
      *
      * @method remove_users
      *
-     * @param  Users        $user  The instance of user
      * @param  string[]     $users The users to remove
      *
      * @return bool
@@ -2580,8 +2717,10 @@ if (not_exist('remove_users'))
      * @throws Exception
      *
      */
-    function remove_users(Users $user,string ...$users): bool
+    function remove_users(string ...$users): bool
     {
+        $user = app()->users();
+
         foreach ($users as $x)
             is_false($user->drop($x),true,"Failed to remove the user : $x");
 
@@ -2597,7 +2736,6 @@ if (not_exist('remove_tables'))
      *
      * @method remove_tables
      *
-     * @param  Table         $table  The instance of table
      * @param  string[]      $tables The tables to remove
      *
      * @return bool
@@ -2605,8 +2743,10 @@ if (not_exist('remove_tables'))
      * @throws Exception
      *
      */
-    function remove_tables(Table $table,string ...$tables): bool
+    function remove_tables(string ...$tables): bool
     {
+        $table = app()->table();
+
         foreach ($tables as $x)
             is_false($table->drop($x),true,"Failed to remove the table : $x");
 
@@ -2623,7 +2763,6 @@ if (not_exist('remove_bases'))
      *
      * @method remove_bases
      *
-     * @param  Base $base The instance of base
      * @param string[] $bases
      *
      * @return bool
@@ -2631,9 +2770,9 @@ if (not_exist('remove_bases'))
      * @throws Exception
      *
      */
-    function remove_bases(Base $base,string ...$bases): bool
+    function remove_bases(string ...$bases): bool
     {
-        return $base->remove($bases);
+        return app()->bases()->remove($bases);
     }
 }
 
@@ -2787,7 +2926,6 @@ if (not_exist('dumper'))
      *
      * @method dumper
      *
-     * @param  Connect $connect The connexion
      * @param  bool $base To dump a base
      * @param  string[] $tables The tables to dump
      *
@@ -2796,9 +2934,9 @@ if (not_exist('dumper'))
      * @throws Exception
      *
      */
-    function dumper(Connect $connect,bool $base, string ...$tables): bool
+    function dumper(bool $base, string ...$tables): bool
     {
-        return (new Dump($connect,$base,$tables))->dump();
+        return (new Dump($base,$tables))->dump();
     }
 }
 
@@ -2811,15 +2949,16 @@ if (not_exist('sql'))
      *
      * @method sql
      *
-     * @param  Query  $query The query instance
      * @param  string $table The table name
      *
      * @return Query
      *
+     * @throws Exception
+     *
      */
-    function sql(Query $query, string $table): Query
+    function sql(string $table): Query
     {
-        return $query->from($table);
+        return app()->query()->from($table);
     }
 }
 
@@ -2840,6 +2979,7 @@ if (not_exist('lines'))
          return File::lines($filename);
      }
 }
+
 if (not_exist('file_keys'))
 {
     /**
@@ -2903,6 +3043,7 @@ if (not_exist('pagination'))
         return Pagination::paginate($limit_per_page,$pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
     }
 }
+
 if (not_exist('add_user'))
 {
     /**
@@ -2911,7 +3052,6 @@ if (not_exist('add_user'))
      *
      * @method add_user
      *
-     * @param  Users $users The users instance
      * @param  string $user The username
      * @param  string $password The user password
      *
@@ -2920,9 +3060,9 @@ if (not_exist('add_user'))
      * @throws Exception
      *
      */
-    function add_user(Users $users,string $user,string $password): bool
+    function add_user(string $user,string $password): bool
     {
-        return $users->set_name($user)->set_password($password)->create();
+        return app()->users()->set_name($user)->set_password($password)->create();
     }
 }
 
@@ -3004,7 +3144,7 @@ if(not_exist('fa'))
     }
 }
 
-if (not_exist('cssLoader'))
+if (not_exist('css_loader'))
 {
     /**
      *
@@ -3113,17 +3253,17 @@ if (not_exist('insert_into'))
 {
     /**
      *
-     * @param Model $instance
      * @param string $table
      * @param mixed ...$values
      *
      * @return string
      *
      * @throws Exception
+     *
      */
-    function insert_into(Model $instance,string $table,...$values): string
+    function insert_into(string $table,...$values): string
     {
-        $instance = $instance->from($table);
+        $instance = app()->model()->from($table);
 
         $x = collection($instance->columns())->join(',');
 

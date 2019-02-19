@@ -19,21 +19,14 @@ class RouterTest extends DatabaseTest
      */
     private $router;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->request = new ServerRequest(GET,'/');
         $this->router = new Router($this->request);
       
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function test_run()
-    {
-        $this->assertNotEmpty($this->router->run());
 
-    }
 
     public function test_url()
     {

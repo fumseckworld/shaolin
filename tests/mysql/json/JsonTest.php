@@ -9,7 +9,7 @@ namespace Testing\mysql\json {
     class JsonTest extends DatabaseTest
     {
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'model';
         }
@@ -42,9 +42,8 @@ namespace Testing\mysql\json {
         public function test_bases_to_json()
         {
 
-            $this->assertTrue(bases_to_json($this->mysql()->bases(),'base.json','base'));
+            $this->assertTrue(bases_to_json('base.json'));
 
-            $this->assertTrue(bases_to_json($this->mysql()->bases(),'base.json'));
         }
 
         /**
@@ -60,12 +59,7 @@ namespace Testing\mysql\json {
          */
         public function test_user_to_json()
         {
-
-            $this->assertTrue(users_to_json($this->mysql()->users(),'base.json','users'));
-            $this->assertTrue(users_to_json($this->postgresql()->users(),'base.json','users'));
-
-            $this->assertTrue(users_to_json($this->mysql()->users(),'base.json'));
-            $this->assertTrue(users_to_json($this->postgresql()->users(),'base.json'));
+            $this->assertTrue(users_to_json('app.json'));
         }
 
         /**
@@ -73,8 +67,7 @@ namespace Testing\mysql\json {
          */
         public function test_tables_to_json()
         {
-
-            $this->assertTrue(tables_to_json($this->mysql()->table(),'tables.json','tables'));
+            $this->assertTrue(tables_to_json('tables.json'));
 
         }
 

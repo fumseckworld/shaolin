@@ -11,6 +11,7 @@ namespace Testing\dir {
         {
             $dir = "code";
             $this->assertTrue(Dir::create($dir));
+            $this->assertTrue(Dir::is($dir));
             $this->assertTrue(Dir::remove($dir));
         }
     }

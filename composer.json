@@ -44,17 +44,18 @@
     },
     "autoload": {
         "psr-4": {
-            "Imperium\\": "imperium/"
+            "Imperium\\": "imperium/",
+            "Extension\\" : "extensions"
         },
         "files": [
             "app/helpers.php"
         ]
     },
     "require-dev": {
-        "phpunit/phpunit": "^7.0",
+        "phpunit/phpunit": "^8.0",
+        "phpro/grumphp": "^0.14.3",
         "fzaninotto/faker": "^1.7",
-        "phpro/grumphp": "^0.14.0",
-        "codedungeon/phpunit-result-printer": "^0.22.0",
+        "codedungeon/phpunit-result-printer": "^0.26.0",
         "filp/whoops": "^2.2",
         "symfony/var-dumper": "^4.1"
     }

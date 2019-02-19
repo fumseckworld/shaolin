@@ -14,7 +14,7 @@ namespace Testing\flash {
          */
         private $flash;
 
-        public function setUp()
+        public function setUp(): void
         {
             $this->flash = new Flash();
         }
@@ -27,7 +27,22 @@ namespace Testing\flash {
             $this->flash->success('linux was found');
             $this->flash->failure('Windows is bad');
             $this->assertEquals('linux was found',$this->flash->get(Flash::SUCCESS_KEY));
+            $this->assertEquals('',$this->flash->get(Flash::SUCCESS_KEY));
             $this->assertEquals('Windows is bad',$this->flash->get(Flash::FAILURE_KEY));
+            $this->assertEquals('',$this->flash->get(Flash::FAILURE_KEY));
+        }
+
+        /**
+         * @throws \Exception
+         */
+        public function test_display()
+        {
+            $this->flash->success('linux was found');
+            $this->flash->failure('Windows is bad');
+            $this->assertStringContainsString('linux was found',$this->flash->display(Flash::SUCCESS_KEY));
+            $this->assertEquals('',$this->flash->display(Flash::SUCCESS_KEY));
+            $this->assertStringContainsString('Windows is bad',$this->flash->display(Flash::FAILURE_KEY));
+            $this->assertEquals('',$this->flash->display(Flash::FAILURE_KEY));
         }
 
         /**

@@ -59,16 +59,16 @@ namespace Imperium\Import {
         /**
          * Import constructor.
          *
-         * @param Connect $connect
-         * @param string $sql_file
          * @param string $base
+         *
+         * @throws Exception
          */
-        public function __construct(Connect $connect,string $sql_file,string $base = '')
+        public function __construct(string $base = '')
         {
-            $this->connexion = $connect;
-            $this->driver    = $connect->driver();
-            $this->base      = def($base) ? $base : $connect->base();
-            $this->sql_file   = $sql_file;
+            $this->connexion = app()->connect();
+            $this->driver    = $this->connexion->driver();
+            $this->base      = def($base) ? $base : $this->connexion->base();
+            $this->sql_file  = sql_file();
         }
 
         /**

@@ -76,14 +76,15 @@ namespace Imperium\Dump {
          *
          * @method __construct
          *
-         * @param  Connect     $connect The connexion to the base
-         * @param  bool        $base    The option to dump the base
-         * @param  array       $tables  The names of the tables
+         * @param  bool $base The option to dump the base
+         * @param  array $tables The names of the tables
+         *
+         * @throws Exception
          *
          */
-        public function __construct(Connect $connect,bool $base,array $tables)
+        public function __construct(bool $base,array $tables)
         {
-            $this->connexion = $connect;
+            $this->connexion = app()->connect();
             $this->base = $base;
             $this->tables = collection($tables);
             $this->command = '';

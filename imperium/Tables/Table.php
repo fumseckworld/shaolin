@@ -54,10 +54,6 @@ namespace Imperium\Tables {
          */
         private $driver;
 
-        /**
-         * @var array
-         */
-        private $hidden;
 
         /**
          * @var string
@@ -373,31 +369,7 @@ namespace Imperium\Tables {
          */
         public function columns(): array
         {
-            $fields = collection();
-
-            switch ($this->driver)
-            {
-                case MYSQL :
-
-                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $column)
-                        $fields->push($column->Field);
-
-                break;
-
-                case POSTGRESQL :
-
-                    foreach ($this->connexion->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->current()}'") as $column)
-                         $fields->push($column->column_name);
-
-                break;
-
-                case SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $column)
-                        $fields->push($column->name);
-                break;
-            }
-
-            return $fields->collection();
+            return (new Column($this->connexion))->for($this->current())->show();
         }
 
         /**
@@ -518,18 +490,22 @@ namespace Imperium\Tables {
             if ($this->column_not_exist($name))
             {
                 $data = collection();
+
                 $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
 
                 different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
 
                 if(is_false($nullable))
-                    append($command,' NOT NULL');
+                {
+                   $this->connexion->postgresql() ?  append($command,' NOT NULL DEFAULT 0') :  append($command,' NOT NULL');
+                }
 
                 $data->add($this->connexion->execute($command));
 
-                if($unique && ! $this->connexion->sqlite())
+                if($unique && $this->connexion->not(SQLITE) && $this->connexion->not(POSTGRESQL))
                     $data->add($this->alter_table(App::FIELD_UNIQUE,$name));
 
+                debug($data->exist(false),$data);
                 return $data->not_exist(false);
             }
             return false;
@@ -563,7 +539,7 @@ namespace Imperium\Tables {
             {
                 if (equal($constraint,App::FIELD_UNIQUE))
                 {
-                    return $this->connexion->execute("ALTER TABLE $table ADD UNIQUE ($column);");
+                    return $this->connexion->execute('ALTER TABLE '.$table.' ADD CONSTRAINT uniq_'.$column.' UNIQUE ('.$column.');');
                 }
             }
             return false;
@@ -652,16 +628,14 @@ namespace Imperium\Tables {
          *
          * @method import
          *
-         * @param  string $sql_file
-         *
+         * @param string $base
          * @return bool
          *
          * @throws Exception
-         *
-         **/
-        public function import(string $sql_file): bool
+         */
+        public function import(string $base = ''): bool
         {
-            return (new Import($this->connexion,$sql_file))->import();
+            return (new Import($base))->import();
         }
 
         /**
@@ -886,23 +860,6 @@ namespace Imperium\Tables {
             }
         }
 
-        /**
-         *
-         * Set hidden tables
-         *
-         * @method hidden
-         *
-         * @param array  $hidden The hidden tables
-         *
-         * @return Table
-         *
-         */
-        public function hidden(array $hidden = []) : Table
-        {
-            $this->hidden = $hidden;
-
-            return $this;
-        }
 
         /**
          *
@@ -919,7 +876,7 @@ namespace Imperium\Tables {
          */
         public function dump(string $table = ''): bool
         {
-            return def($table) ? dumper($this->connexion,false,$table) : dumper($this->connexion,false,$this->current());
+            return def($table) ? dumper(false,$table) : dumper(false,$this->current());
         }
 
         /**
@@ -1349,8 +1306,7 @@ namespace Imperium\Tables {
         {
             $tables = collection();
 
-            $hidden = def($this->hidden) ?  collection($this->hidden) : collection();
-
+            $hidden = collection($this->hidden_tables());
 
             switch ($this->driver)
             {
@@ -1477,9 +1433,11 @@ namespace Imperium\Tables {
         public function update(int $id,array $values,array $ignore= []): bool
         {
             $primary = $this->primary_key();
+
             $columns = collection();
 
             $ignoreValues = collection($ignore);
+
             foreach ($values  as $k => $value)
             {
                 if (different($k,$primary))
@@ -1489,7 +1447,7 @@ namespace Imperium\Tables {
                         if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                         else
-                            $columns->push("$k =" .quote($this->connexion,$value));
+                            $columns->push("$k =" .quote($value));
 
                     }else
                     {
@@ -1499,7 +1457,7 @@ namespace Imperium\Tables {
                             if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                             else
-                                $columns->push("$k = ".quote($this->connexion,$value));
+                                $columns->push("$k = ".quote($value));
                         }
                     }
                 }
@@ -1576,7 +1534,7 @@ namespace Imperium\Tables {
          */
         public function drop_all_tables(): bool
         {
-            $hidden = collection($this->hidden);
+            $hidden = collection($this->hidden_tables());
 
 
             if ($hidden->empty())
@@ -2134,10 +2092,12 @@ namespace Imperium\Tables {
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
         public function hidden_tables(): array
         {
-            return $this->hidden;
+            return config('db','hidden_tables');
         }
 
     }

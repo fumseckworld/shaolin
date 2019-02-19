@@ -8,8 +8,9 @@ namespace Testing\mysql\base {
     class BaseTest extends DatabaseTest
     {
 
-        public function setUp()
+        public function setUp(): void
         {
+
             $this->table = 'base';
         }
 
@@ -17,11 +18,7 @@ namespace Testing\mysql\base {
         {
             $this->assertContains($this->base,$this->mysql()->show_databases());
             $this->assertContains($this->base,$this->mysql()->bases()->show());
-
-            $this->assertTrue($this->mysql()->bases()->exist($this->base));
             $this->assertTrue($this->mysql()->base_exist($this->base));
-            $this->assertTrue($this->postgresql()->bases()->exist($this->base));
-            $this->assertTrue($this->postgresql()->base_exist($this->base));
 
         }
 
@@ -60,13 +57,15 @@ namespace Testing\mysql\base {
 
         }
 
+        /**
+         * @throws Exception
+         */
         public function test_hidden()
         {
             $this->assertEquals([],$this->mysql()->bases()->hidden_bases());
-            $this->assertEquals(['zen'],$this->mysql()->bases()->hidden(['zen'])->hidden_bases());
 
             $this->assertNotEmpty($this->mysql()->bases()->hidden_tables());
-            $this->assertEmpty($this->mysql()->bases()->hidden()->hidden_bases());
+            $this->assertEmpty($this->mysql()->bases()->hidden_bases());
         }
         /**
          * @throws \Exception
@@ -78,15 +77,6 @@ namespace Testing\mysql\base {
 
             $this->assertNotEmpty($this->mysql()->bases()->collations());
             $this->assertNotEmpty($this->mysql()->bases()->charsets());
-        }
-        /**
-         * @throws \Exception
-         */
-        public  function test_dump()
-        {
-            $this->assertTrue(dumper($this->mysql()->connect(),true,''));
-            $this->assertTrue(dumper($this->mysql()->connect(),false,$this->table));
-            $this->assertTrue($this->mysql()->bases()->dump());
         }
 
 

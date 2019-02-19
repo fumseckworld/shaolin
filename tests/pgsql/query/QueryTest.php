@@ -23,7 +23,7 @@ namespace Testing\pgsql\query {
         private $second_table;
 
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'query';
             $this->second_table = 'helpers';
@@ -38,7 +38,7 @@ namespace Testing\pgsql\query {
         public function test_where()
         {
 
-            $this->assertNotEmpty($this->query->where('id','=',5)->only(['date'])->get());
+            $this->assertNotEmpty($this->query->mode(SELECT)->where('id','=',5)->only('date')->get());
 
 
             $b = '1988-07-15 00:00:00';
@@ -53,12 +53,12 @@ namespace Testing\pgsql\query {
 
             $this->assertNotEmpty($this->query->mode(Query::SELECT)->between('id',1,16)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::SELECT)->columns(['id'])->between('id',1,16)->get());
+            $this->assertNotEmpty($this->query->mode(Query::SELECT)->only('id')->between('id',1,16)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::SELECT)->columns(['id'])->between('date',$b,$e)->get());
+            $this->assertNotEmpty($this->query->mode(Query::SELECT)->only('id')->between('date',$b,$e)->get());
 
 
-            $this->assertNotContains("ORDER BY ",$this->query->mode(Query::DELETE)->where('id','=',16)->sql());
+            $this->assertStringNotContainsString("ORDER BY ",$this->query->mode(Query::DELETE)->where('id','=',16)->sql());
 
 
         }
@@ -131,6 +131,11 @@ namespace Testing\pgsql\query {
 
         }
 
+        public function test_run()
+        {
+            $this->expectException(Exception::class);
+            $this->query->only('id')->from($this->second_table)->get();
+        }
 
     }
 }

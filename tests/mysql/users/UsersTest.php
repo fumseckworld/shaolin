@@ -16,9 +16,8 @@ namespace Testing\mysql\users {
 
             $this->assertNotEmpty($this->mysql()->users()->show());
 
-            $this->assertContains(self::MYSQL_USER,$this->mysql()->users()->hidden([])->show());
+            $this->assertContains(self::MYSQL_USER,$this->mysql()->users()->show());
 
-            $this->assertNotContains(self::MYSQL_USER,$this->mysql()->users()->hidden([self::MYSQL_USER])->show());
 
         }
 

@@ -23,7 +23,7 @@ namespace Testing\mysql\query {
         private $second_table;
 
 
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'query';
             $this->second_table = 'helpers';
@@ -38,7 +38,7 @@ namespace Testing\mysql\query {
         public function test_where()
         {
 
-            $this->assertNotEmpty($this->query->where('id','=',5)->only(['date'])->get());
+            $this->assertNotEmpty($this->query->mode(SELECT)->where('id','=',5)->only('date')->sql());
 
 
             $b = '1988-07-15 00:00:00';
@@ -53,12 +53,12 @@ namespace Testing\mysql\query {
 
             $this->assertNotEmpty($this->query->mode(Query::SELECT)->between('id',1,16)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::SELECT)->columns(['id'])->between('id',1,16)->get());
+            $this->assertNotEmpty($this->query->mode(Query::SELECT)->only('id')->between('id',1,16)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::SELECT)->columns(['id'])->between('date',$b,$e)->get());
+            $this->assertNotEmpty($this->query->mode(Query::SELECT)->only('id')->between('date',$b,$e)->get());
 
 
-            $this->assertNotContains("ORDER BY ",$this->query->mode(Query::DELETE)->where('id','=',16)->sql());
+            $this->assertStringNotContainsString("ORDER BY ",$this->query->mode(Query::DELETE)->where('id','=',16)->sql());
 
 
         }

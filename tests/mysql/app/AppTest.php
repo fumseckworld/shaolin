@@ -17,7 +17,6 @@ namespace Testing\mysql\app {
     use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Browser;
     use Testing\DatabaseTest;
-    use Twig_Environment;
     use Whoops\Run;
 
     /**
@@ -27,10 +26,11 @@ namespace Testing\mysql\app {
     {
 
 
+
         /**
          * @throws Exception
          */
-        public function test_apps()
+        public function test_app()
         {
 
             $this->assertInstanceOf(App::class,app());
@@ -41,7 +41,7 @@ namespace Testing\mysql\app {
          */
         public function test_env()
         {
-            $this->mysql()->env()->load();
+
             $this->assertEquals('mysql',env('driver'));
 
         }
@@ -91,9 +91,7 @@ namespace Testing\mysql\app {
         {
             $word = "l'agent à été l'as du voyage d'affaire`";
 
-            $this->assertNotEquals($word,quote($this->mysql()->connect(),$word));
-            $this->assertNotEquals($word,quote($this->postgresql()->connect(),$word));
-            $this->assertNotEquals($word,quote($this->sqlite()->connect(),$word));
+            $this->assertNotEquals($word,quote($word));
         }
 
 
@@ -103,9 +101,7 @@ namespace Testing\mysql\app {
          */
         public function test_execute()
         {
-            $this->assertTrue(execute($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertTrue(execute($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertTrue(execute($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+            $this->assertTrue(execute("SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
 
         }
 
@@ -114,9 +110,7 @@ namespace Testing\mysql\app {
          */
         public function test_req()
         {
-            $this->assertNotEmpty(req($this->mysql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertNotEmpty(req($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertNotEmpty(req($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+            $this->assertNotEmpty(req("SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
         }
 
         /**
@@ -141,34 +135,13 @@ namespace Testing\mysql\app {
         public function test_query()
         {
             $this->assertInstanceOf(Query::class,\query($this->mysql()->table(),$this->mysql()->connect()));
-            $this->assertInstanceOf(Query::class,\query($this->postgresql()->table(),$this->postgresql()->connect()));
-            $this->assertInstanceOf(Query::class,\query($this->sqlite()->table(),$this->sqlite()->connect()));
-            $this->assertInstanceOf(Query::class,\query($this->sqlite()->table(),$this->sqlite()->connect()));
 
             $this->assertInstanceOf(Model::class,\model($this->mysql()->connect(),$this->mysql()->table()));
-            $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->table()));
-            $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->table()));
-
 
             $this->assertInstanceOf(Table::class,table($this->mysql()->connect()));
-            $this->assertInstanceOf(Table::class,table($this->postgresql()->connect()));
-            $this->assertInstanceOf(Table::class,table($this->sqlite()->connect()));
-
-
 
         }
 
-        /**
-         *
-         */
-        public function test_twig()
-        {
-            $this->assertInstanceOf(Twig_Environment::class,twig('views',[]));
-        }
-
-        /**
-         * @throws Exception
-         */
         public function test_awesome()
         {
             $this->assertNotEmpty(awesome());
@@ -402,8 +375,7 @@ namespace Testing\mysql\app {
          */
         public function test_base_to_json()
         {
-            $this->assertTrue(bases_to_json($this->mysql()->bases(),'app.json','bases'));
-            $this->assertTrue(bases_to_json($this->postgresql()->bases(),'app.json','bases'));
+            $this->assertTrue(bases_to_json('app.json'));
         }
 
         /**
@@ -411,8 +383,7 @@ namespace Testing\mysql\app {
          */
         public function test_user_to_json()
         {
-            $this->assertTrue(users_to_json($this->mysql()->users(),'app.json','bases'));
-            $this->assertTrue(users_to_json($this->postgresql()->users(),'app.json','bases'));
+            $this->assertTrue(users_to_json('app.json'));
         }
 
         /**
@@ -420,9 +391,7 @@ namespace Testing\mysql\app {
          */
         public function test_table_to_json()
         {
-            $this->assertTrue(tables_to_json($this->mysql()->table(),'app.json','bases'));
-            $this->assertTrue(tables_to_json($this->postgresql()->table(),'app.json','bases'));
-            $this->assertTrue(tables_to_json($this->sqlite()->table(),'app.json','bases'));
+            $this->assertTrue(tables_to_json('app.json'));
         }
 
         /**
@@ -430,9 +399,7 @@ namespace Testing\mysql\app {
          */
         public function test_sql_to_json()
         {
-            $this->assertTrue(sql_to_json($this->mysql()->connect(),'app.json',["show databases","show tables","select host, User from mysql.user",$this->mysql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],['bases','tables',"user","base_records"]));
-            $this->assertTrue(sql_to_json($this->postgresql()->connect(),'app.json',[$this->postgresql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
-            $this->assertTrue(sql_to_json($this->sqlite()->connect(),'app.json',[$this->sqlite()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+            $this->assertTrue(sql_to_json('app.json',["show databases","show tables","select host, User from mysql.user",$this->mysql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],['bases','tables',"user","base_records"]));
         }
 
         /**
@@ -497,21 +464,10 @@ namespace Testing\mysql\app {
          */
         public function test_table_select()
         {
-            $select = tables_select('base',$this->mysql()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
-            $select = tables_select('base',$this->postgresql()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
-            $select = tables_select('base',$this->sqlite()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
+            $select = tables_select('base','?=','/');
+            $this->assertStringContainsString('base',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
         }
 
         /**
@@ -528,14 +484,14 @@ namespace Testing\mysql\app {
          */
         public function test_users_select()
         {
-            $select = users_select($this->mysql()->users(),[],'?=','','choose',false);
+            $select = users_select('?=','','choose',false);
 
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-            $this->assertContains('root',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
+            $this->assertStringContainsString('root',$select);
 
-            $select = users_select($this->mysql()->users(),[],'?=','root','choose',true);
-            $this->assertContains('location',$select);
+            $select = users_select('?=','root','choose',true);
+            $this->assertStringContainsString('location',$select);
 
         }
 
@@ -544,14 +500,14 @@ namespace Testing\mysql\app {
          */
         public function test_base_select()
         {
-            $select = bases_select($this->mysql()->bases(),[],'?=','','choose',false);
+            $select = bases_select('?=','','choose',false);
 
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-            $this->assertContains('zen',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
+            $this->assertStringContainsString('zen',$select);
 
-            $select = bases_select($this->mysql()->bases(),[],'?=','','choose',true);
-            $this->assertContains('location',$select);
+            $select = bases_select('?=','','choose',true);
+            $this->assertStringContainsString('location',$select);
 
 
         }
@@ -666,7 +622,6 @@ namespace Testing\mysql\app {
         public function test_collation()
         {
             $this->assertNotEmpty(collation($this->mysql()->connect()));
-            $this->assertNotEmpty(collation($this->postgresql()->connect()));
         }
 
         /**
@@ -675,7 +630,6 @@ namespace Testing\mysql\app {
         public function test_charset()
         {
             $this->assertNotEmpty(charset($this->mysql()->connect()));
-            $this->assertNotEmpty(charset($this->postgresql()->connect()));
         }
 
         /**
@@ -702,7 +656,7 @@ namespace Testing\mysql\app {
          */
         public function test_pass()
         {
-            $this->assertTrue(pass($this->mysql()->connect(),'root','root'));
+            $this->assertTrue(pass('root','root'));
         }
 
         /**

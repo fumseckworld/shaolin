@@ -17,7 +17,7 @@ namespace Testing\mysql\imperium {
         /**
          * @throws Exception
          */
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'base';
         }
@@ -143,7 +143,6 @@ namespace Testing\mysql\imperium {
             $this->assertContains('root',$this->mysql()->show_users());
             $this->assertTrue($this->mysql()->user_exist('root'));
 
-            $this->assertNotContains('root',$this->mysql()->show_users(['root']));
         }
 
         /**
@@ -191,10 +190,11 @@ namespace Testing\mysql\imperium {
          */
         public function test_remove_user()
         {
-            $name = 'marion';
-
-            $this->assertTrue(add_user($this->mysql()->users(),$name,$name));
-            $this->assertTrue($this->mysql()->remove_user($name));
+            $first = 'dupond';
+            $second = 'dupont';
+            $this->assertTrue(add_user($first,$first));
+            $this->assertTrue(add_user($second,$second));
+            $this->assertTrue(remove_users($first,$second));
         }
 
         /**
@@ -224,8 +224,9 @@ namespace Testing\mysql\imperium {
 
             $this->assertFalse($this->mysql()->has_column($this->table,'utf8_general_ci'));
 
+            $this->assertTrue($this->mysql()->users()->has());
 
-            $this->assertTrue($this->mysql()->users()->hidden()->has());
+            $this->assertTrue($this->mysql()->has_users());
 
             $this->assertTrue($this->mysql()->has_tables());
 

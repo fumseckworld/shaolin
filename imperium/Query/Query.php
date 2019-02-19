@@ -173,6 +173,14 @@ namespace Imperium\Query {
          */
         private $order_key;
 
+        /**
+         * The current table
+         *
+         * @var string
+         *
+         */
+        private $table;
+
 
         /**
          *
@@ -206,6 +214,8 @@ namespace Imperium\Query {
         {
             $this->from = "FROM $table";
 
+            $this->table = $table;
+
             return $this;
         }
 
@@ -231,6 +241,8 @@ namespace Imperium\Query {
             $mode       = def($this->mode)      ? $this->mode  : '';
             $columns    = def($this->columns)   ? $this->columns :  "*";
 
+
+            is_true(not_def($mode),true,'The query mode is missing');
 
             switch($mode)
             {
@@ -278,8 +290,7 @@ namespace Imperium\Query {
             $this->where_condition = $condition;
             $this->where_expected = $expected;
 
-            if(not_in(self::VALID_OPERATORS,$condition))
-                throw new Exception("The operator is invalid");
+            is_true(not_in(self::VALID_OPERATORS,$condition),true,"The operator is invalid");
 
             $this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->instance()->quote($expected)}";
 
@@ -291,12 +302,11 @@ namespace Imperium\Query {
          *
          * Select only column
          *
-         * @param array columns
+         * @param string[] $columns
          *
          * @return Query
-         *
          */
-        public function only(array $columns): Query
+        public function only(string ...$columns): Query
         {
             $this->columns  = collection($columns)->join(', ');
 
@@ -347,25 +357,6 @@ namespace Imperium\Query {
             return $this;
         }
 
-
-        /**
-         *
-         * Select columns
-         *
-         * @method columns
-         *
-         * @param  array  $columns The columns to use
-         *
-         * @return Query
-         *
-         */
-        public function columns(array $columns): Query
-        {
-            $this->columns = collection($columns)->join(', ');
-
-            return $this;
-        }
-
         /**
          *
          * Return the result of the generated query in an array
@@ -379,6 +370,7 @@ namespace Imperium\Query {
          */
         public function get(): array
         {
+
             return  $this->connexion->request($this->sql());
         }
 
@@ -566,14 +558,14 @@ namespace Imperium\Query {
 
             if (has($driver,[Connect::POSTGRESQL,Connect::MYSQL]))
             {
-                $columns = collection($this->tables->columns())->join(', ');
+                $columns = collection($this->tables->from($this->table())->columns())->join(', ');
 
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             }
 
             if (has($driver,[Connect::SQLITE]))
             {
-                $fields = collection($this->tables->columns());
+                $fields = collection($this->tables->from($this->table())->columns());
                 $end =  $fields->last();
                 $columns = '';
 
@@ -588,6 +580,18 @@ namespace Imperium\Query {
                 $this->where = "WHERE $columns";
             }
             return $this;
+        }
+
+        /**
+         *
+         * Get the current table
+         *
+         * @return string
+         *
+         */
+        public function table(): string
+        {
+            return $this->table;
         }
     }
 

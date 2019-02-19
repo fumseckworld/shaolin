@@ -90,9 +90,7 @@ namespace Testing\pgsql\app {
         {
             $word = "l'agent à été l'as du voyage d'affaire`";
 
-            $this->assertNotEquals($word,quote($this->postgresql()->connect(),$word));
-            $this->assertNotEquals($word,quote($this->postgresql()->connect(),$word));
-            $this->assertNotEquals($word,quote($this->sqlite()->connect(),$word));
+            $this->assertNotEquals($word,quote($word));
         }
 
 
@@ -101,9 +99,7 @@ namespace Testing\pgsql\app {
          */
         public function test_execute()
         {
-            $this->assertTrue(execute($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertTrue(execute($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertTrue(execute($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+            $this->assertTrue(execute("SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
 
         }
 
@@ -112,9 +108,7 @@ namespace Testing\pgsql\app {
          */
         public function test_req()
         {
-            $this->assertNotEmpty(req($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertNotEmpty(req($this->postgresql()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
-            $this->assertNotEmpty(req($this->sqlite()->connect(),"SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
+            $this->assertNotEmpty(req("SELECT * FROM model","SELECT * FROM base","SELECT * FROM helpers"));
         }
 
         /**
@@ -140,29 +134,16 @@ namespace Testing\pgsql\app {
         {
             $this->assertInstanceOf(Query::class,\query($this->postgresql()->table(),$this->postgresql()->connect()));
             $this->assertInstanceOf(Query::class,\query($this->postgresql()->table(),$this->postgresql()->connect()));
-            $this->assertInstanceOf(Query::class,\query($this->sqlite()->table(),$this->sqlite()->connect()));
-            $this->assertInstanceOf(Query::class,\query($this->sqlite()->table(),$this->sqlite()->connect()));
 
             $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->table()));
-            $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->table()));
-            $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->table()));
 
 
             $this->assertInstanceOf(Table::class,table($this->postgresql()->connect()));
-            $this->assertInstanceOf(Table::class,table($this->postgresql()->connect()));
-            $this->assertInstanceOf(Table::class,table($this->sqlite()->connect()));
 
 
 
         }
 
-        /**
-         *
-         */
-        public function test_twig()
-        {
-            $this->assertInstanceOf(Twig_Environment::class,twig('views',[]));
-        }
 
         /**
          * @throws Exception
@@ -400,8 +381,7 @@ namespace Testing\pgsql\app {
          */
         public function test_base_to_json()
         {
-            $this->assertTrue(bases_to_json($this->postgresql()->bases(),'app.json','bases'));
-            $this->assertTrue(bases_to_json($this->postgresql()->bases(),'app.json','bases'));
+            $this->assertTrue(bases_to_json('app.json'));
         }
 
         /**
@@ -409,8 +389,7 @@ namespace Testing\pgsql\app {
          */
         public function test_user_to_json()
         {
-            $this->assertTrue(users_to_json($this->postgresql()->users(),'app.json','bases'));
-            $this->assertTrue(users_to_json($this->postgresql()->users(),'app.json','bases'));
+            $this->assertTrue(users_to_json('app.json'));
         }
 
         /**
@@ -418,8 +397,7 @@ namespace Testing\pgsql\app {
          */
         public function test_table_to_json()
         {
-            $this->assertTrue(tables_to_json($this->postgresql()->table(),'app.json','bases'));
-            $this->assertTrue(tables_to_json($this->postgresql()->table(),'app.json','bases'));
+            $this->assertTrue(tables_to_json('app.json'));
         }
 
         /**
@@ -427,7 +405,7 @@ namespace Testing\pgsql\app {
          */
         public function test_sql_to_json()
         {
-            $this->assertTrue(sql_to_json($this->postgresql()->connect(),'app.json',[$this->postgresql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+            $this->assertTrue(sql_to_json('app.json',[$this->postgresql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
         }
 
         /**
@@ -492,21 +470,10 @@ namespace Testing\pgsql\app {
          */
         public function test_table_select()
         {
-            $select = tables_select('base',$this->postgresql()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
-            $select = tables_select('base',$this->postgresql()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
-            $select = tables_select('base',$this->sqlite()->table(),[],'?=','');
-            $this->assertContains('base',$select);
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-
+            $select = tables_select('base','?=','/');
+            $this->assertStringContainsString('base',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
         }
 
         /**
@@ -523,14 +490,14 @@ namespace Testing\pgsql\app {
          */
         public function test_users_select()
         {
-            $select = users_select($this->postgresql()->users(),[],'?=','','choose',false);
+            $select = users_select('?=','','choose',false);
 
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-            $this->assertContains('postgres',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
+            $this->assertStringContainsString('postgres',$select);
 
-            $select = users_select($this->postgresql()->users(),[],'?=','root','choose',true);
-            $this->assertContains('location',$select);
+            $select = users_select('?=','root','choose',true);
+            $this->assertStringContainsString('location',$select);
 
         }
 
@@ -539,14 +506,14 @@ namespace Testing\pgsql\app {
          */
         public function test_base_select()
         {
-            $select = bases_select($this->postgresql()->bases(),[],'?=','','choose',false);
+            $select = bases_select('?=','','choose',false);
 
-            $this->assertContains('?=',$select);
-            $this->assertContains('/',$select);
-            $this->assertContains('zen',$select);
+            $this->assertStringContainsString('?=',$select);
+            $this->assertStringContainsString('/',$select);
+            $this->assertStringContainsString('zen',$select);
 
-            $select = bases_select($this->postgresql()->bases(),[],'?=','','choose',true);
-            $this->assertContains('location',$select);
+            $select = bases_select('?=','','choose',true);
+            $this->assertStringContainsString('location',$select);
 
 
         }
@@ -697,7 +664,7 @@ namespace Testing\pgsql\app {
          */
         public function test_pass()
         {
-            $this->assertTrue(pass($this->postgresql()->connect(),self::POSTGRESQL_USER,self::POSTGRESQL_USER));
+            $this->assertTrue(pass(self::POSTGRESQL_USER,self::POSTGRESQL_USER));
         }
 
         /**

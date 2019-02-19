@@ -18,9 +18,14 @@ namespace Testing\pgsql\model {
         private $model;
 
         /**
+         * @var string
+         */
+        private $table;
+
+        /**
          * @throws Exception
          */
-        public function setUp()
+        public function setUp():void
         {
             $this->table = 'model';
             $this->model = $this->postgresql()->model()->from($this->table);
@@ -111,15 +116,15 @@ namespace Testing\pgsql\model {
 
             );
 
-            $this->assertContains('?table=', $record);
-            $this->assertContains('remove', $record);
-            $this->assertContains('/', $record);
-            $this->assertContains('sure', $record);
-            $this->assertContains('next', $record);
-            $this->assertContains('previous', $record);
-            $this->assertContains('remove', $record);
-            $this->assertContains('class="btn btn-danger"', $record);
-            $this->assertContains('class="btn btn-primary"', $record);
+            $this->assertStringContainsString('?table=', $record);
+            $this->assertStringContainsString('remove', $record);
+            $this->assertStringContainsString('/', $record);
+            $this->assertStringContainsString('sure', $record);
+            $this->assertStringContainsString('next', $record);
+            $this->assertStringContainsString('previous', $record);
+            $this->assertStringContainsString('remove', $record);
+            $this->assertStringContainsString('class="btn btn-danger"', $record);
+            $this->assertStringContainsString('class="btn btn-primary"', $record);
         }
 
         public function test_edit()
@@ -153,10 +158,10 @@ namespace Testing\pgsql\model {
 
             $this->assertTrue($this->model->truncate($this->table));
 
-            $result = query_result($this->table,SELECT,$this->postgresql()->model(),$this->model->all('id'),$success,$empty,$empty,$sql);
+            $result = query_result($this->table,SELECT,$this->model->all('id'),$success,$empty,$empty,$sql);
 
             $this->assertCount(0,$this->model->all());
-            $this->assertContains($empty,$result);
+            $this->assertStringContainsString($empty,$result);
             $this->assertTrue( $this->model->is_empty($this->table));
 
         }
@@ -183,7 +188,7 @@ namespace Testing\pgsql\model {
                 ];
 
 
-                $this->assertTrue($this->model->insert($data));
+                $this->assertTrue($this->model->insert_new_record($data));
             }
 
             $this->assertCount($number,$this->model->all());
@@ -199,7 +204,6 @@ namespace Testing\pgsql\model {
         public function test_show_tables()
         {
             $this->assertContains($this->table,$this->model->show_tables());
-            $this->assertNotContains($this->table,$this->model->show_tables([$this->table]));
 
         }
 
@@ -289,7 +293,7 @@ namespace Testing\pgsql\model {
 
             ];
 
-            $this->assertTrue($this->model->update(4,$data));
+            $this->assertTrue($this->model->update_record(4,$data));
         }
 
 
@@ -313,7 +317,7 @@ namespace Testing\pgsql\model {
                     'days' => faker()->date(),
                     'date' => faker()->date(),
                 ];
-                $this->assertTrue($this->model->insert($data));
+                $this->assertTrue($this->model->insert_new_record($data));
 
             }
             $this->assertCount(109,$this->model->all('id'));
@@ -351,7 +355,7 @@ namespace Testing\pgsql\model {
         public function test_import()
         {
             $this->assertTrue($this->postgresql()->model()->dump($this->table));
-            $this->assertTrue($this->postgresql()->model()->import(sql_file_path($this->postgresql()->connect())));
+            $this->assertTrue($this->postgresql()->model()->import());
 
         }
     }

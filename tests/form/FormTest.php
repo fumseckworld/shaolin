@@ -16,7 +16,7 @@ namespace Testing\Form {
          */
         private $table;
 
-        public function setUp()
+        public function setUp(): void 
         {
             $this->table = 'model';
         }
@@ -30,33 +30,33 @@ namespace Testing\Form {
             $class = 'form-horizontal';
 
             $form =  form('a','a','','','POST',true)->get();
-            $this->assertContains("enctype",$form);
-            $this->assertContains('method="post"',$form);
-            $this->assertContains('action="a"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertNotContains($class,$form);
+            $this->assertStringContainsString("enctype",$form);
+            $this->assertStringContainsString('method="post"',$form);
+            $this->assertStringContainsString('action="a"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringNotContainsString($class,$form);
 
             $form =  form('a','a',$class,'','POST',true)->get();
-            $this->assertContains("enctype",$form);
-            $this->assertContains('method="post"',$form);
-            $this->assertContains('action="a"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains($class,$form);
+            $this->assertStringContainsString("enctype",$form);
+            $this->assertStringContainsString('method="post"',$form);
+            $this->assertStringContainsString('action="a"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString($class,$form);
 
 
             $form =  form('a','a','','','POST',false)->get();
-            $this->assertNotContains("enctype",$form);
-            $this->assertContains('method="post"',$form);
-            $this->assertContains('action="a"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertNotContains($class,$form);
+            $this->assertStringNotContainsString("enctype",$form);
+            $this->assertStringContainsString('method="post"',$form);
+            $this->assertStringContainsString('action="a"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringNotContainsString($class,$form);
 
             $form =  form('a','a','',$class,'POST',false)->get();
-            $this->assertNotContains("enctype",$form);
-            $this->assertContains('method="post"',$form);
-            $this->assertContains('action="a"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains($class,$form);
+            $this->assertStringNotContainsString("enctype",$form);
+            $this->assertStringContainsString('method="post"',$form);
+            $this->assertStringContainsString('action="a"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString($class,$form);
 
         }
 
@@ -66,8 +66,8 @@ namespace Testing\Form {
         public function test_hide()
         {
             $form =  form('a','a','','','POST',false)->hide()->input(Form::HIDDEN,'id','')->end_hide()->get();
-            $this->assertContains(Form::HIDE_CLASS,$form);
-            $this->assertContains(Form::HIDDEN,$form);
+            $this->assertStringContainsString(Form::HIDE_CLASS,$form);
+            $this->assertStringContainsString(Form::HIDDEN,$form);
             $this->assertStringEndsWith('</div></form>',$form);
 
         }
@@ -79,15 +79,15 @@ namespace Testing\Form {
         {
             $ico = fa('fas','fa-file');
             $form =  form('a','a','','','POST',false)->file('sql','sql file')->get();
-            $this->assertContains('name="sql"',$form);
-            $this->assertContains('sql file',$form);
-            $this->assertNotContains($ico,$form);
+            $this->assertStringContainsString('name="sql"',$form);
+            $this->assertStringContainsString('sql file',$form);
+            $this->assertStringNotContainsString($ico,$form);
 
             $form =  form('a','a','','','POST',false)->file('sql','sql file',$ico)->get();
 
-            $this->assertContains('name="sql"',$form);
-            $this->assertContains('sql file',$form);
-            $this->assertContains($ico,$form);
+            $this->assertStringContainsString('name="sql"',$form);
+            $this->assertStringContainsString('sql file',$form);
+            $this->assertStringContainsString($ico,$form);
         }
 
         /**
@@ -97,35 +97,35 @@ namespace Testing\Form {
         {
             $form = form('a','a')->textarea('name','value','','',false)->get();
 
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains('10',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString('10',$form);
 
             $form = form('a','a')->textarea('name','value','','',false)->get();
 
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains('10',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString('10',$form);
 
             $form = form('a','a')->textarea('name','value','','',true)->get();
 
-            $this->assertContains('autofocus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains('10',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString('10',$form);
 
             $form = form('a','a')->textarea('name','value','','',true)->get();
 
-            $this->assertContains('autofocus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains('10',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString('10',$form);
 
 
             $form = form('a','a')->textarea('name','value','','',false)->get();
 
-            $this->assertContains('placeholder="value"',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains('10',$form);
+            $this->assertStringContainsString('placeholder="value"',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString('10',$form);
         }
 
         /**
@@ -140,23 +140,23 @@ namespace Testing\Form {
 
             $x = $form->validate()->start('a','a','confirm','')->input(Form::TEXT,'name','name','',$success,$fail)->get();
 
-            $this->assertContains('confirm',$x);
-            $this->assertContains($success,$x);
-            $this->assertContains($fail,$x);
+            $this->assertStringContainsString('confirm',$x);
+            $this->assertStringContainsString($success,$x);
+            $this->assertStringContainsString($fail,$x);
 
             $form = new Form();
             $x = $form->validate()->start('a','a','confirm','',true)->select(false,'select',['a','a'],$success,$fail)->get();
 
-            $this->assertContains('confirm',$x);
-            $this->assertContains($success,$x);
-            $this->assertContains($fail,$x);
+            $this->assertStringContainsString('confirm',$x);
+            $this->assertStringContainsString($success,$x);
+            $this->assertStringContainsString($fail,$x);
 
             $form = new Form();
             $x = $form->validate()->start('a','a','confirm','form-control',true)->textarea('name','name',$success,$fail)->get();
-            $this->assertContains('confirm',$x);
+            $this->assertStringContainsString('confirm',$x);
 
-            $this->assertContains($success,$x);
-            $this->assertContains($fail,$x);
+            $this->assertStringContainsString($success,$x);
+            $this->assertStringContainsString($fail,$x);
         }
 
         public function test_execp()
@@ -171,15 +171,15 @@ namespace Testing\Form {
             $icon = fa('fas','fa-linux');
             $form = \form('a','a')->reset('reset')->get();
 
-            $this->assertContains('reset',$form);
-            $this->assertContains('btn btn-lg btn-danger',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringContainsString('reset',$form);
+            $this->assertStringContainsString('btn btn-lg btn-danger',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = \form('a','a')->reset('reset',$icon)->get();
 
-            $this->assertContains('reset',$form);
-            $this->assertContains('btn btn-lg btn-danger',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('reset',$form);
+            $this->assertStringContainsString('btn btn-lg btn-danger',$form);
+            $this->assertStringContainsString($icon,$form);
         }
 
         /**
@@ -191,176 +191,176 @@ namespace Testing\Form {
 
             $form = form('a','a')->input(Form::TEXT,'name','name')->get();
 
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon)->get();
 
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','maximus',false,false,false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('maximus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('maximus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','maximus',false,true,false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('maximus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('maximus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','maximus',false,false,true)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('maximus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('maximus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',false,true,true)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,false,false)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,false,true)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,true,false)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,true,true)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name','','','','maximus',false,false,false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('maximus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('maximus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name','','','','maximus',false,true,false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('maximus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('maximus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name','','','','maximus',false,false,true)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('maximus',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('maximus',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',false,true,true)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name',$icon,'','','',true,false,false)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringContainsString($icon,$form);
 
 
 
             $form = form('a','a')->input(Form::TEXT,'name','name','','','','',true,false,true)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertNotContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringNotContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name','','','','',true,true,false)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertNotContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringNotContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = form('a','a')->input(Form::TEXT,'name','name','','','','',true,true,true)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertContains('autofocus',$form);
-            $this->assertContains('autocomplete="on"',$form);
-            $this->assertContains('placeholder="name"',$form);
-            $this->assertContains('name="name"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringContainsString('autofocus',$form);
+            $this->assertStringContainsString('autocomplete="on"',$form);
+            $this->assertStringContainsString('placeholder="name"',$form);
+            $this->assertStringContainsString('name="name"',$form);
+            $this->assertStringNotContainsString($icon,$form);
         }
         /**
          * @throws \Exception
@@ -370,109 +370,109 @@ namespace Testing\Form {
 
             $class = collection(config('form','class'))->get('submit');
             $form =  form('a','a')->large()->input(Form::TEXT,'sql','sql file')->submit('a','submit')->get();
-            $this->assertContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
-            $this->assertContains($class,$form);
+            $this->assertStringContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString($class,$form);
 
             $form =  form('a','a')->small()->input(Form::TEXT,'sql','sql file')->submit('a','a')->get();
-            $this->assertContains(Form::SMALL_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertContains($class,$form);
+            $this->assertStringContainsString(Form::SMALL_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringContainsString($class,$form);
 
             $form =  form('a','a')->large()->select(true,'table',[1,2,3])->get();
-            $this->assertContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small()->select(false,'table',[1,2,3])->get();
-            $this->assertContains(Form::SMALL_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
+            $this->assertStringContainsString(Form::SMALL_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
 
             $form =  form('a','a')->large()->textarea('table','a',10,10)->get();
-            $this->assertContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small()->textarea('table','a',10,10)->get();
-            $this->assertContains(Form::SMALL_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
+            $this->assertStringContainsString(Form::SMALL_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
 
             $form =  form('a','a')->large()->file('table','a')->get();
-            $this->assertContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small()->file('table','a')->get();
-            $this->assertContains(Form::SMALL_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
+            $this->assertStringContainsString(Form::SMALL_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
 
 
             $form =  form('a','a')->large(false)->input(Form::TEXT,'sql','sql file')->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small(false)->input(Form::TEXT,'sql','sql file')->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
             $form =  form('a','a')->large(false)->select(true,'table',[1,2,3])->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small(false)->select(false,'table',[1,2,3])->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->large(false)->textarea('table','a',10,10)->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small(false)->textarea('table','a',10,10)->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->large(false)->file('table','a')->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
 
             $form =  form('a','a')->small(false)->file('table','a')->get();
-            $this->assertContains(Form::BASIC_CLASS,$form);
-            $this->assertNotContains(Form::LARGE_CLASS,$form);
-            $this->assertNotContains(Form::SMALL_CLASS,$form);
+            $this->assertStringContainsString(Form::BASIC_CLASS,$form);
+            $this->assertStringNotContainsString(Form::LARGE_CLASS,$form);
+            $this->assertStringNotContainsString(Form::SMALL_CLASS,$form);
         }
 
         public function test_checkbox()
         {
             $form = form('a','a')->checkbox('super','check me')->get();
-            $this->assertContains('name="super"',$form);
-            $this->assertContains('check me',$form);
-            $this->assertNotContains('checked',$form);
+            $this->assertStringContainsString('name="super"',$form);
+            $this->assertStringContainsString('check me',$form);
+            $this->assertStringNotContainsString('checked',$form);
 
             $form = form('a','a')->checkbox('super','check me')->get();
-            $this->assertContains('name="super"',$form);
-            $this->assertContains('check me',$form);
-            $this->assertNotContains('checked',$form);
+            $this->assertStringContainsString('name="super"',$form);
+            $this->assertStringContainsString('check me',$form);
+            $this->assertStringNotContainsString('checked',$form);
 
             $form = form('a','a')->checkbox('super','check me',true)->get();
-            $this->assertContains('name="super"',$form);
-            $this->assertContains('check me',$form);
-            $this->assertContains('checked',$form);
+            $this->assertStringContainsString('name="super"',$form);
+            $this->assertStringContainsString('check me',$form);
+            $this->assertStringContainsString('checked',$form);
         }
 
         public function test_button()
         {
             $form = form('a','a')->button(Form::SUBMIT,'submit')->get();
 
-            $this->assertContains('type="submit"',$form);
+            $this->assertStringContainsString('type="submit"',$form);
             $form = form('a','a')->button(Form::RESET,'submit')->get();
 
-            $this->assertContains('type="reset"',$form);
+            $this->assertStringContainsString('type="reset"',$form);
             $form = form('a','a')->button(Form::BUTTON,'submit')->get();
 
-            $this->assertContains('type="button"',$form);
+            $this->assertStringContainsString('type="button"',$form);
         }
 
 
@@ -483,80 +483,80 @@ namespace Testing\Form {
 
             $form =  form('a','a')->select(true,'age',[15,18,19],'','','',false,false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertNotContains($icon,$form);
-            $this->assertNotContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="0">15</option>',$form);
-            $this->assertContains('<option value="1">18</option>',$form);
-            $this->assertContains('<option value="2">19</option>',$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringNotContainsString($icon,$form);
+            $this->assertStringNotContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="0">15</option>',$form);
+            $this->assertStringContainsString('<option value="1">18</option>',$form);
+            $this->assertStringContainsString('<option value="2">19</option>',$form);
 
             $form =  form('a','a')->select(false,'age',[15,18,19],$icon,'','',false,false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains($icon,$form);
-            $this->assertNotContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="15">15</option>',$form);
-            $this->assertContains('<option value="18">18</option>',$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringNotContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="15">15</option>',$form);
+            $this->assertStringContainsString('<option value="18">18</option>',$form);
 
 
             $form =  form('a','a')->select(true,'age',  [15,18,19], '' , '' , '' ,  false, false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertNotContains($icon,$form);
-            $this->assertNotContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="0">15</option>',$form);
-            $this->assertContains('<option value="1">18</option>',$form);
-            $this->assertContains('<option value="2">19</option>',$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringNotContainsString($icon,$form);
+            $this->assertStringNotContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="0">15</option>',$form);
+            $this->assertStringContainsString('<option value="1">18</option>',$form);
+            $this->assertStringContainsString('<option value="2">19</option>',$form);
 
             $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' ,   '',false, false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains($icon,$form);
-            $this->assertNotContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="15">15</option>',$form);
-            $this->assertContains('<option value="18">18</option>',$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringNotContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="15">15</option>',$form);
+            $this->assertStringContainsString('<option value="18">18</option>',$form);
 
             $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '' ,  true, false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains($icon,$form);
-            $this->assertContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="15">15</option>',$form);
-            $this->assertContains('<option value="18">18</option>',$form);
-            $this->assertContains('<option value="19">19</option>',$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="15">15</option>',$form);
+            $this->assertStringContainsString('<option value="18">18</option>',$form);
+            $this->assertStringContainsString('<option value="19">19</option>',$form);
 
             $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '',  true, false)->get();
 
-            $this->assertNotContains('required',$form);
-            $this->assertContains($icon,$form);
-            $this->assertContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="15">15</option>',$form);
-            $this->assertContains('<option value="18">18</option>',$form);
+            $this->assertStringNotContainsString('required',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="15">15</option>',$form);
+            $this->assertStringContainsString('<option value="18">18</option>',$form);
 
             $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '' ,  true, true)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertContains($icon,$form);
-            $this->assertContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="15">15</option>',$form);
-            $this->assertContains('<option value="18">18</option>',$form);
-            $this->assertContains('<option value="19">19</option>',$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="15">15</option>',$form);
+            $this->assertStringContainsString('<option value="18">18</option>',$form);
+            $this->assertStringContainsString('<option value="19">19</option>',$form);
 
             $form =  form('a','a')->select(false,'age',  [15,18,19], $icon , '' , '',  true, true)->get();
 
-            $this->assertContains('required',$form);
-            $this->assertContains($icon,$form);
-            $this->assertContains('multiple',$form);
-            $this->assertContains('name="age"',$form);
-            $this->assertContains('<option value="15">15</option>',$form);
-            $this->assertContains('<option value="18">18</option>',$form);
+            $this->assertStringContainsString('required',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('multiple',$form);
+            $this->assertStringContainsString('name="age"',$form);
+            $this->assertStringContainsString('<option value="15">15</option>',$form);
+            $this->assertStringContainsString('<option value="18">18</option>',$form);
 
 
 
@@ -567,13 +567,13 @@ namespace Testing\Form {
 
             $form = form('a','a')->radio('super','check me','a',true)->get();
 
-            $this->assertContains('name="super"',$form);
-            $this->assertContains('check me',$form);
-            $this->assertContains('checked="checked"',$form);
+            $this->assertStringContainsString('name="super"',$form);
+            $this->assertStringContainsString('check me',$form);
+            $this->assertStringContainsString('checked="checked"',$form);
 
             $form = form('a','a')->radio('super','check me','a')->get();
-            $this->assertContains('name="super"',$form);
-            $this->assertContains('check me',$form);
+            $this->assertStringContainsString('name="super"',$form);
+            $this->assertStringContainsString('check me',$form);
 
         }
 
@@ -586,34 +586,34 @@ namespace Testing\Form {
             $icon = fa('fas','fa-rocket');
             $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id");
 
-            $this->assertContains('id="submit-id"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains('append',$form);
+            $this->assertStringContainsString('id="submit-id"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString('append',$form);
             $this->assertNotEmpty($form);
 
             $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon);
 
-            $this->assertContains('id="submit-id"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains('append',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('id="submit-id"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString('append',$form);
+            $this->assertStringContainsString($icon,$form);
             $this->assertNotEmpty($form);
 
             $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon,Form::EDIT,1);
 
-            $this->assertContains('id="submit-id"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains('append',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('id="submit-id"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString('append',$form);
+            $this->assertStringContainsString($icon,$form);
             $this->assertNotEmpty($form);
 
 
             $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon,Form::EDIT,1);
 
-            $this->assertContains('id="submit-id"',$form);
-            $this->assertContains('id="a"',$form);
-            $this->assertContains('append',$form);
-            $this->assertContains($icon,$form);
+            $this->assertStringContainsString('id="submit-id"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString('append',$form);
+            $this->assertStringContainsString($icon,$form);
             $this->assertNotEmpty($form);
 
         }
@@ -622,27 +622,27 @@ namespace Testing\Form {
         {
             $icon = fa('fas','fa-trash');
             $form = \form('a','a')->redirect('a',['a' => 2])->get();
-            $this->assertNotContains($icon,$form);
-            $this->assertContains('name="a"',$form);
-            $this->assertContains('location',$form);
+            $this->assertStringNotContainsString($icon,$form);
+            $this->assertStringContainsString('name="a"',$form);
+            $this->assertStringContainsString('location',$form);
 
             $form = \form('a','a')->redirect('a',['a' => 2],$icon)->get();
-            $this->assertContains($icon,$form);
-            $this->assertContains('location',$form);
-            $this->assertContains('name="a"',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('location',$form);
+            $this->assertStringContainsString('name="a"',$form);
         }
         public function test_link()
         {
             $icon = fa('fas','fa-home');
             $form = \form('a','a')->link('/','home')->get();
-            $this->assertContains('home',$form);
-            $this->assertContains('href="/"',$form);
-            $this->assertNotContains($icon,$form);
+            $this->assertStringContainsString('home',$form);
+            $this->assertStringContainsString('href="/"',$form);
+            $this->assertStringNotContainsString($icon,$form);
 
             $form = \form('a','a')->link('/','home',$icon)->get();
-            $this->assertContains($icon,$form);
-            $this->assertContains('home',$form);
-            $this->assertContains('href="/"',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('home',$form);
+            $this->assertStringContainsString('href="/"',$form);
 
         }
 
@@ -651,13 +651,13 @@ namespace Testing\Form {
 
             $marge = config('form','padding');
             $form = form('a','a')->padding($marge)->input('text','name','username')->get();
-            $this->assertContains("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
+            $this->assertStringContainsString("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
         }
         public function test_margin()
         {
             $marge = config('form','margin');
             $form = form('a','a')->margin($marge)->input('text','name','username')->get();
-            $this->assertContains("mt-$marge mb-$marge ml-$marge mr-$marge",$form);
+            $this->assertStringContainsString("mt-$marge mb-$marge ml-$marge mr-$marge",$form);
         }
 
         public function test_margin_and_padding()
@@ -665,7 +665,7 @@ namespace Testing\Form {
             $marge = config('form','margin');
             $padding = config('form','padding');
             $form = form('a','a')->margin()->padding()->input('text','name','username')->get();
-            $this->assertContains("mt-$marge mb-$marge ml-$marge mr-$marge pt-$padding pb-$padding pl-$padding pr-$padding",$form);
+            $this->assertStringContainsString("mt-$marge mb-$marge ml-$marge mr-$marge pt-$padding pb-$padding pl-$padding pr-$padding",$form);
         }
         /**
          * @throws \Exception

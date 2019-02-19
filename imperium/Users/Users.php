@@ -49,14 +49,6 @@ namespace Imperium\Users {
          */
         private $connexion;
 
-        /**
-         *
-         * All  hidden users
-         *
-         * @var array
-         *
-         */
-        private $hidden;
 
         /**
          *
@@ -106,21 +98,6 @@ namespace Imperium\Users {
             return def($this->show());
         }
 
-        /**
-         *
-         * Define all hidden users
-         *
-         * @param array $hidden
-         *
-         * @return Users
-         *
-         */
-        public function hidden(array $hidden =[]): Users
-        {
-            $this->hidden = $hidden;
-
-            return $this;
-        }
 
         /**
          * show user
@@ -128,6 +105,7 @@ namespace Imperium\Users {
          * @return array
          *
          * @throws Exception
+         *
          */
         public function show(): array
         {
@@ -137,11 +115,11 @@ namespace Imperium\Users {
 
             $users = collection();
 
-            $hidden = def($this->hidden) ? collection($this->hidden) : collection();
+            $hidden = collection($this->hidden_users());
 
             $request = '';
 
-            equal($driver,Connect::MYSQL) ?  assign(true,$request,"SELECT user from mysql.user") :   assign(true,$request,"SELECT rolname FROM pg_roles");
+            $this->connexion->mysql() ?  assign(true,$request,"SELECT user from mysql.user") :   assign(true,$request,"SELECT rolname FROM pg_roles");
 
             foreach ($this->connexion->request($request) as $user)
             {
@@ -276,6 +254,21 @@ namespace Imperium\Users {
             not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The $driver driver has not users");
 
             return $this;
+        }
+
+
+        /**
+         *
+         * Get all hidden user
+         *
+         * @return array
+         *
+         * @throws Exception
+         *
+         */
+        public function hidden_users():array
+        {
+            return config('db','hidden_users');
         }
     }
 }
