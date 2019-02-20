@@ -41,11 +41,6 @@ namespace Imperium\Asset {
          */
         public static function js(string $filename,string $type =''): string
         {
-
-            $filename = collection(explode('.',$filename))->begin();
-
-            append($filename,'.js');
-
             if (php_sapi_name() !== 'cli')
                 $filename = https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR .'js' . DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $filename;
 
