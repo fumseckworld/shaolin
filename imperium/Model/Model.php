@@ -5,10 +5,9 @@ namespace Imperium\Model {
 
     use Exception;
     use Imperium\Connexion\Connect;
-    use Imperium\Middleware\CsrfMiddleware;
     use Imperium\Query\Query;
     use Imperium\Request\Request;
-    use Imperium\Session\Session;
+    use Imperium\Security\Csrf\Csrf;
     use Imperium\Tables\Table;
     use Imperium\Collection\Collection;
     use Imperium\Html\Form\Form;
@@ -206,7 +205,7 @@ namespace Imperium\Model {
 
             $id = intval(Request::get($this->from($table)->primary()));
 
-            $data = collection(Request::all())->remove(CsrfMiddleware::KEY)->remove('__table__')->collection();
+            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__')->collection();
 
             return $this->table()->from($table)->update($id,$data);
         }
@@ -749,7 +748,7 @@ namespace Imperium\Model {
          */
         public function add(): bool
         {
-            $data = collection(Request::all())->remove(CsrfMiddleware::KEY)->remove('__table__')->collection();
+            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__')->collection();
 
             return $this->table()->from(Request::get('__table__'))->save($data);
         }

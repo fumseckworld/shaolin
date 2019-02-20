@@ -1034,7 +1034,6 @@ namespace Imperium\Html\Form {
          * @return Form
          *
          * @throws Exception
-         *
          */
         public function group(array $text,string ...$href): Form
         {

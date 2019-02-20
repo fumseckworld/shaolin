@@ -5,20 +5,24 @@ namespace Testing\csrf {
 
     use Exception;
     use GuzzleHttp\Psr7\ServerRequest;
-    use Imperium\Middleware\CsrfMiddleware;
+    use Imperium\Security\Csrf\Csrf;
     use PHPUnit\Framework\TestCase;
 
     class CsrfTest extends TestCase
     {
 
         /**
-         * @var CsrfMiddleware
+         * @var Csrf
+         *
          */
         private $csrf;
 
+        /**
+         * @throws Exception
+         */
         public function setUp():void
         {
-            $this->csrf = new CsrfMiddleware();
+            $this->csrf = new Csrf(app()->session());
         }
 
         /**
@@ -26,7 +30,7 @@ namespace Testing\csrf {
          */
         public function test()
         {
-            $token = $this->csrf->generate();
+            $token = $this->csrf->token();
 
             $this->assertNotEmpty($token);
         }
@@ -43,5 +47,7 @@ namespace Testing\csrf {
             app()->router($request)->run();
 
         }
+
+
     }
 }

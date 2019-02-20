@@ -11,6 +11,7 @@ use Imperium\Dump\Dump;
 use Imperium\Flash\Flash;
 use Imperium\Hashing\Hash;
 use Imperium\Router\Router;
+use Imperium\Security\Csrf\Csrf;
 use Imperium\Session\Session;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
@@ -394,7 +395,9 @@ if (not_exist('csrf_field'))
      */
     function csrf_field(): string
     {
-        return \Imperium\Middleware\CsrfMiddleware::init()->generate();
+        $value = (new Csrf(\app()->session()))->token();
+
+        return '<input type="hidden" name="'. Csrf::KEY.'" value="'.$value.'">';
     }
 }
 

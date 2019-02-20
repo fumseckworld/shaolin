@@ -1,6 +1,6 @@
 <?php
 
-namespace Imperium\Auth {
+namespace Imperium\Security\Auth {
 
 
     use Exception;

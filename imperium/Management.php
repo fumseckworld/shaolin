@@ -6,7 +6,6 @@ namespace Imperium {
 
 
     use GuzzleHttp\Psr7\ServerRequest;
-    use Imperium\Auth\Oauth;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
@@ -16,10 +15,10 @@ namespace Imperium {
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Router\Router;
+    use Imperium\Security\Auth\Oauth;
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
-    use Imperium\View\View;
     use Symfony\Component\HttpFoundation\Request;
 
     interface Management
@@ -581,7 +580,6 @@ namespace Imperium {
          * @return Oauth
          */
         public function auth(): Oauth;
-
 
         /**
          *
