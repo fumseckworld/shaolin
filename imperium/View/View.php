@@ -115,7 +115,25 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('_',
+
+                function (string $name,array $args = [])
+                {
+                    return trans($name,$args);
+                }
+                ,['is_safe' => ['html']]
+            ));
+
             $functions->add(new TwigFunction('url',
+
+                function (string $name,string $method = GET,bool $admin = false)
+                {
+                    return url($name,$method,$admin);
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('name',
 
                 function (string $name,string $method = GET,bool $admin = false)
                 {
