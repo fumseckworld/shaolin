@@ -8,16 +8,6 @@ namespace Imperium\Security\Csrf {
 
     class Csrf
     {
-
-        /**
-         *
-         * The limit of tokens
-         *
-         * @var int
-         *
-         */
-        const LIMIT = 50;
-
         /**
          *
          * All method to secure
@@ -44,17 +34,6 @@ namespace Imperium\Security\Csrf {
         private $session;
 
         /**
-         * @var int
-         */
-        private $i;
-
-        /**
-         * @var \Imperium\Collection\Collection
-         */
-        private $tokens;
-
-
-        /**
          *
          * Csrf constructor.
          *
@@ -66,10 +45,6 @@ namespace Imperium\Security\Csrf {
         public function __construct(Session $session)
         {
             $this->session = $session;
-
-            $this->tokens = collection();
-
-            $this->generate();
         }
 
         /**
@@ -78,15 +53,17 @@ namespace Imperium\Security\Csrf {
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         public function token()
         {
-            if ($this->i > self::LIMIT)
-                $this->i = 0;
+            if ($this->session->has(self::KEY))
+                return $this->session->get(self::KEY);
 
-            $this->i++;
+            $this->session->set(bin2hex(random_bytes(16)),self::KEY);
 
-            return $this->tokens->get($this->i);
+            return $this->session->get(self::KEY);
         }
 
         /**
@@ -109,39 +86,11 @@ namespace Imperium\Security\Csrf {
 
                 is_true(not_def($token),true,'We have not found the csrf token');
 
-                is_true(!has($token,$this->session->all()),true,"The token is invalid");
+                is_true(different($token,$this->session->get(self::KEY)),true,"The token is invalid");
 
+                $this->session->remove(self::KEY);
 
-                $this->clean();
             }
-        }
-
-        /**
-         * @throws \Exception
-         */
-        private  function generate()
-        {
-            $this->clean();
-
-            for ($i =0;different($i,self::LIMIT);$i++)
-            {
-                $token = bin2hex(random_bytes(16));
-
-                $this->tokens->add($token,$i);
-                $this->session->set($token,$token);
-            }
-        }
-
-        /**
-         * @throws Exception
-         */
-        private function clean()
-        {
-            foreach ($this->tokens->collection() as $k => $v)
-            {
-                $this->session->remove($this->tokens->get($k));
-            }
-
         }
 
     }

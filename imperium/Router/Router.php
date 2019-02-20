@@ -3,8 +3,8 @@
 namespace Imperium\Router {
 
     use Exception;
-    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Request\Request;
+    use Psr\Http\Message\ServerRequestInterface;
 
 
     /**
@@ -163,11 +163,11 @@ namespace Imperium\Router {
         /**
          * Router constructor.
          *
-         * @param ServerRequest $request
+         * @param ServerRequestInterface $request
          *
          * @throws Exception
          */
-        public function __construct(ServerRequest $request)
+        public function __construct(ServerRequestInterface $request)
         {
             $namespace = config('middleware','namespace');
 

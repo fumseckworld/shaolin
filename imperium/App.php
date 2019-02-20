@@ -1031,8 +1031,6 @@ namespace Imperium {
             return new Oauth($this->session());
         }
 
-
-
         /**
          * @return Session
          */
