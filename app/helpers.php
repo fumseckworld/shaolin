@@ -1322,7 +1322,7 @@ if (not_exist('login'))
      */
     function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_id,string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
-        return form($action,$id)->row()->input(Form::TEXT,'username',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
+        return form($action,$id)->row()->input(Form::TEXT,'username',$name_placeholder,$user_icon,'','','',true,true)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
     }
 }
 if (not_exist('json'))

@@ -488,7 +488,7 @@ namespace Imperium\Html\Form {
 
             not_in([1,2,3,4,5],$length,true,"The padding number must be an integer between 1 and 5");
 
-            $this->padding = "pt-$length pb-$length pl-$length pr-$length";
+            $this->padding = "pt-$length pb-$length";
 
             return $this;
         }
@@ -510,7 +510,7 @@ namespace Imperium\Html\Form {
 
             not_in([1,2,3,4,5],$length,true,"The margin number must be an integer between 1 and 5");
 
-            $this->margin = "mt-$length mb-$length ml-$length mr-$length";
+            $this->margin = "mt-$length mb-$length";
 
             return $this;
         }
