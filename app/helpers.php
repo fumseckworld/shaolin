@@ -227,8 +227,14 @@ if (not_exist('trans'))
 
         $values  = array_values($args);
 
-        $message = Trans::init()->get(config('app','locale'),$message);
 
+
+        $x = Trans::init()->get(config('app','locale'),$message);
+
+       if (not_def($x))
+           return $message;
+       else
+           $message = $x;
         while (preg_match('/%\(([a-zA-Z0-9_ -]+)\)/', $message, $m))
         {
             if (not_def($keysmap[$m[1]]))
