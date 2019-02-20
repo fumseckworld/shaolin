@@ -99,12 +99,9 @@ namespace Imperium\Flash {
 
             if (def($message))
             {
-                if ($success)
-                    $html = '<div class="'.$success_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
-                else
-                    $html = '<div class="'.$danger_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                return $success ?  '<div class="'.$success_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
+                                :  '<div class="'.$danger_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
 
-                return $html;
             }
 
             return '';

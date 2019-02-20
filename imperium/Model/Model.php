@@ -747,11 +747,11 @@ namespace Imperium\Model {
          * @throws Exception
          *
          */
-        public function insert(): bool
+        public function add(): bool
         {
             $data = collection(Request::all())->remove(CsrfMiddleware::KEY)->remove('__table__')->collection();
 
-            return $this->table()->from($this->current())->save($data);
+            return $this->table()->from(Request::get('__table__'))->save($data);
         }
 
         /**

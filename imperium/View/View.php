@@ -106,6 +106,15 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('form',
+
+                function ($name)
+                {
+                    return $name;
+                }
+                ,['is_safe' => ['html']]
+            ));
+
            $this->add_functions($functions->collection());
         }
 

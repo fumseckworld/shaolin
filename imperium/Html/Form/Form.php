@@ -1429,7 +1429,9 @@ namespace Imperium\Html\Form {
 
                     } else {
 
-                        $this->input(Form::HIDDEN, $column, $column)->input(Form::HIDDEN,'__table__','','','','',$table)->row();
+                       $id = app()->connect()->postgresql() ? 'DEFAULT' : 'NULL';
+
+                        $this->input(Form::HIDDEN, $column, $column,'','','',$id)->input(Form::HIDDEN,'__table__','','','','',$table)->row();
                     }
                     $i--;
                 }

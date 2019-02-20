@@ -20,3 +20,6 @@ POST:
   update:
     url: '/update'
     call: 'Welcome@update'
+  create:
+    url: '/create'
+    call: 'Welcome@create'

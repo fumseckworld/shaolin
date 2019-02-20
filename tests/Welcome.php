@@ -5,6 +5,7 @@ namespace Testing {
 
 
     use Imperium\Controller\Controller;
+    use Imperium\Request\Request;
 
     class Welcome extends Controller
     {
@@ -22,6 +23,11 @@ namespace Testing {
             return redirect('home',$message);
         }
 
+        /**
+         * @param int $x
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         * @throws \Exception
+         */
         public function pagination(int $x)
         {
             $this->session()->set($x,'limit');
@@ -63,10 +69,28 @@ namespace Testing {
          */
         public function edit(string $table,int $id): string
         {
-            $form = edit($table,$id,url('update',POST),id(),'update','');
-            return $this->view('edit',compact('form'));
+            $edit = edit($table,$id,url('update',POST),id(),'update','');
+            $create = create($table,name('create',POST),'','create',fa('fas','fa-plus'));
+            return $this->view('edit',compact('edit','create'));
         }
 
+
+        /**
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         *
+         * @throws \Exception
+         */
+        public function create()
+        {
+            $bool = $this->model()->add();
+            $message  = $bool ? 'success' : 'failure';
+            return back($message,$bool);
+        }
+
+        /**
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         * @throws \Exception
+         */
         public function del()
         {
             $message = $this->table()->drop(\request()->get('table')) ? "table removed" : "Failure";
@@ -75,10 +99,14 @@ namespace Testing {
 
         }
 
+        /**
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         * @throws \Exception
+         */
         public function update()
         {
             $bool = $this->model()->update();
-           $message = $bool ? 'success' : 'failure';
+            $message = $bool ? 'success' : 'failure';
            return back($message,$bool);
         }
     }
