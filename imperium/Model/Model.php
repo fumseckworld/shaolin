@@ -384,9 +384,9 @@ namespace Imperium\Model {
 
             $current_page = def(get('current')) ? get('current') : $current_page;
 
-            $session = new Session();
+            $session = app()->session();
 
-            if (not_def($session->get('limit')))
+            if (is_false($session->has('limit')))
                 $session->set(10,'limit');
 
             $limit_records_per_page = $session->get('limit');
@@ -406,7 +406,7 @@ namespace Imperium\Model {
                     $data->merge(["?table=$x" => $x]);
             }
 
-            $form = \form('/','a')->row()->redirect('table',$data->collection(),$table_icon)->pagination($pagination_icon)->end_row_and_new()->search($search_placeholder,$search_icon)->end_row()->get();
+            $form = \form('/','a')->row()->redirect('table',$data->collection(),$table_icon)->pagination($pagination_icon,'/pagination/')->end_row_and_new()->search($search_placeholder,$search_icon)->end_row()->get();
 
             append($html,$form);
 

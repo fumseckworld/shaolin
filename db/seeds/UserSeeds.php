@@ -14,17 +14,9 @@ class UserSeeds extends AbstractSeed
      * http://docs.phinx.org/en/latest/seeding.html
      */
     public function run()
-    {  $country = [];
-
-        $number = 100;
-        for ($i = 0; $i != $number ; ++$i)
-        {
-            $country[] = [
-                'name'      => faker()->text,
-                'email'      => faker()->email,
-            ];
-        }
-        $this->insert('users', $country);
+    {
+        $user = [ 'username' => 'will' ,'password' => bcrypt('will')];
+        $this->insert('users', $user);
 
     }
 }

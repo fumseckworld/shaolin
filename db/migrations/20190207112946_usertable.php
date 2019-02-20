@@ -30,8 +30,8 @@ class Usertable extends AbstractMigration
     {
 
         $this->table('users')
-            ->addColumn('name','string')
-            ->addColumn('email','string')
+            ->addColumn('username','string')
+            ->addColumn('password','string')
             ->create();
     }
 }

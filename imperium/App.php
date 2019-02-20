@@ -5,6 +5,7 @@ namespace Imperium {
     use Dotenv\Dotenv;
     use Exception;
     use GuzzleHttp\Psr7\ServerRequest;
+    use Imperium\Auth\Oauth;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
@@ -1022,6 +1023,16 @@ namespace Imperium {
         {
             return new Flash();
         }
+
+        /**
+         * @return Oauth
+         */
+        public function auth(): Oauth
+        {
+            return new Oauth($this->session());
+        }
+
+
 
         /**
          * @return Session

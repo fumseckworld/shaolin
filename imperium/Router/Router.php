@@ -128,6 +128,15 @@ namespace Imperium\Router {
          * @var string
          *
          */
+        private static $URL;
+
+        /**
+         *
+         * The url
+         *
+         * @var string
+         *
+         */
         private  $url;
 
         /***
@@ -173,6 +182,8 @@ namespace Imperium\Router {
 
             $this->url           = $request->getUri()->getPath();
 
+            self::$URL            = $this->url;
+
             $this->namespace =  config('app','namespace');
 
         }
@@ -189,16 +200,33 @@ namespace Imperium\Router {
          */
         public function run()
         {
-            foreach(route($this->method) as $name => $route)
+
+            if (has(config('admin','prefix'),parse_url($this->url)))
             {
-                $x = collection($route);
+                foreach(admin($this->method) as $name => $route)
+                {
+                    $x = collection($route);
 
-                $url       = $x->get(self::URL_INDEX);
-                $callable  = $x->get(self::CALLABLE_INDEX);
+                    $url       = $x->get(self::URL_INDEX);
+                    $callable  = $x->get(self::CALLABLE_INDEX);
 
-                if ($this->match($url))
-                    return $this->call($callable);
+                    if ($this->match($url))
+                        return $this->call($callable);
+                }
+            }else
+            {
+                foreach(web($this->method) as $name => $route)
+                {
+                    $x = collection($route);
+
+                    $url       = $x->get(self::URL_INDEX);
+                    $callable  = $x->get(self::CALLABLE_INDEX);
+
+                    if ($this->match($url))
+                        return $this->call($callable);
+                }
             }
+
             throw new Exception('No routes match');
         }
 
@@ -214,6 +242,7 @@ namespace Imperium\Router {
          */
         private function match(string $url): bool
         {
+
             $path =  preg_replace('#:([\w]+)#', '([^/]+)',$url);
 
             $regex = "#^$path$#";
@@ -274,12 +303,14 @@ namespace Imperium\Router {
          *
          * @throws Exception
          */
-        public static function url(string $route_name,$method = self::METHOD_GET): string
+        public static function web(string $route_name,$method = self::METHOD_GET): string
         {
-            foreach (route($method) as  $name => $route)
+
+            foreach(web($method) as $name => $route)
             {
-                $x      = collection($route);
-                $url    = $x->get(self::URL_INDEX);
+                $x = collection($route);
+
+                $url       = $x->get(self::URL_INDEX);
 
                 if (different(php_sapi_name(),'cli'))
                 {
@@ -291,49 +322,84 @@ namespace Imperium\Router {
                         return $url;
                 }
             }
+
             throw new Exception("We have not found an url with the $route_name name");
         }
+        /**
+         *
+         * Get the url route by its name
+         *
+         * @param string $route_name
+         * @param string $method The route method
+         *
+         * @return string
+         *
+         * @throws Exception
+         */
+        public static function admin(string $route_name,$method = self::METHOD_GET): string
+        {
 
+            foreach(admin($method) as $name => $route)
+            {
+                $x = collection($route);
+
+                $url       = $x->get(self::URL_INDEX);
+
+                if (different(php_sapi_name(),'cli'))
+                {
+                    if (equal($route_name,$name))
+                        return https() ? 'https://'  . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url : 'http://' . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url ;
+                }else
+                {
+                    if (equal($route_name,$name))
+                        return $url;
+                }
+            }
+
+            throw new Exception("We have not found an url with the $route_name name");
+        }
         /**
          *
          * Get the route callable by the route name
          *
-         * @param string $name The route name
+         * @param string $route_name
          * @param string $method The route method
          *
          * @return callable
          *
          * @throws Exception
-         *
          */
-        public static function callback(string $name,string $method = self::METHOD_GET): callable
+        public static function callback(string $route_name,string $method = self::METHOD_GET): callable
         {
-            foreach (route($method) as  $names =>  $route)
+            if (has(config('admin','prefix'),parse_url(self::$URL)))
             {
-                $x          = collection($route);
-                $callback   = $x->get(self::CALLABLE_INDEX);
+                foreach(admin($method) as $name => $route)
+                {
+                    $x = collection($route);
 
-                if (equal($name,$names))
-                    return $callback;
+
+                    $callback       = $x->get(self::CALLABLE_INDEX);
+
+                    if (equal($name,$route_name))
+                        return $callback;
+
+                }
+            }else
+            {
+                foreach(web($method) as $name => $route)
+                {
+                    $x = collection($route);
+
+
+                    $callback       = $x->get(self::CALLABLE_INDEX);
+
+                    if (equal($name,$route_name))
+                        return $callback;
+                }
             }
             throw new Exception('The callback was not found');
         }
 
-        /**
-         *
-         * Get all routes of a method
-         *
-         * @param string $method
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function routes(string $method): array
-        {
-            return route($method);
-        }
 
     }
 }

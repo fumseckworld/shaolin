@@ -4,6 +4,7 @@ use Faker\Factory;
 use Faker\Generator;
 use Imperium\Asset\Asset;
 use Imperium\Config\Config;
+use Imperium\Config\Routes;
 use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
@@ -15,7 +16,6 @@ use Imperium\Trans\Trans;
 use Imperium\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Twig\TwigFunction;
 use Whoops\Run;
 use Carbon\Carbon;
 use Imperium\App;
@@ -140,7 +140,23 @@ if (not_exist('to'))
     }
 }
 
-if (not_exist('route'))
+if (not_exist('web'))
+{
+    /**
+     *
+     *
+     * @param string $method
+     * @return array
+     *
+     * @throws Exception
+     */
+    function web(string $method): array
+    {
+        return Routes::init()->get('web',strtoupper($method));
+    }
+}
+
+if (not_exist('admin'))
 {
     /**
      *
@@ -151,9 +167,9 @@ if (not_exist('route'))
      * @throws Exception
      *
      */
-    function route(string $method): array
+    function admin(string $method): array
     {
-        return config('routes',strtoupper($method));
+        return Routes::init()->get('admin',strtoupper($method));
     }
 }
 
@@ -900,6 +916,9 @@ if (not_exist('back'))
     {
         $back = request()->server->get('HTTP_REFERER');
 
+        if (is_null($back))
+            $back = '/';
+
         return to($back,$message,$success);
     }
 }
@@ -1303,7 +1322,7 @@ if (not_exist('login'))
      */
     function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_id,string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
     {
-        return form($action,$id)->row()->input(Form::TEXT,'name',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
+        return form($action,$id)->row()->input(Form::TEXT,'username',$name_placeholder,$user_icon)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
     }
 }
 if (not_exist('json'))
@@ -2008,14 +2027,16 @@ if (not_exist('name'))
      *
      * @param string $name The route name
      * @param string $method The route method
+     * @param bool $admin
      *
      * @return string
      *
      * @throws Exception
+     *
      */
-    function name(string $name,string $method = Router::METHOD_GET): string
+    function name(string $name,string $method = Router::METHOD_GET,bool $admin = false): string
     {
-        return Router::url($name,$method);
+        return url($name,$method,$admin);
     }
 }
 
@@ -2027,15 +2048,16 @@ if (not_exist('url'))
      *
      * @param string $route_name
      * @param string $method The route method
+     * @param bool $admin
      *
      * @return string
      *
      * @throws Exception
      *
      */
-    function url(string $route_name,string $method = Router::METHOD_GET): string
+    function url(string $route_name,string $method = Router::METHOD_GET,bool $admin = false): string
     {
-        return Router::url($route_name,$method);
+        return $admin ? Router::admin($route_name,$method) : Router::web($route_name,$method);
     }
 }
 

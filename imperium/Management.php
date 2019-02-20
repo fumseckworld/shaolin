@@ -6,6 +6,7 @@ namespace Imperium {
 
 
     use GuzzleHttp\Psr7\ServerRequest;
+    use Imperium\Auth\Oauth;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
@@ -566,12 +567,21 @@ namespace Imperium {
          */
         public function session(): Session;
 
+        /**
+         * @return Request
+         */
         public function request(): Request;
 
         /**
          * @return Config
          */
         public function config(): Config;
+
+        /**
+         * @return Oauth
+         */
+        public function auth(): Oauth;
+
 
         /**
          *

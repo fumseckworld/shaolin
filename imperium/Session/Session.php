@@ -43,7 +43,22 @@ namespace Imperium\Session {
         {
             $this->start_session();
 
-            return array_key_exists($key,$_SESSION) ? $_SESSION[$key] : '';
+            return $this->has($key) ? $_SESSION[$key] : '';
+        }
+
+        /**
+         *
+         * Check if a key exist
+         *
+         * @param $key
+         *
+         * @return bool
+         *
+         */
+        public function has($key): bool
+        {
+            $this->start_session();
+            return array_key_exists($key,$_SESSION);
         }
 
         /**
@@ -78,7 +93,7 @@ namespace Imperium\Session {
         {
             $this->start_session();
 
-            if (array_key_exists($key,$_SESSION))
+            if ($this->has($key))
             {
                 unset($_SESSION[$key]);
                 return true;

@@ -23,6 +23,11 @@ namespace Testing {
             return redirect('home',$message);
         }
 
+        public function logout()
+        {
+            return $this->auth()->logout();
+        }
+
         /**
          * @param int $x
          * @return \Symfony\Component\HttpFoundation\RedirectResponse
@@ -45,8 +50,8 @@ namespace Testing {
         {
             $table = current_table();
 
-            $code = html('div',$this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure',fa('fas','fa-trash'),"remove/$table",'edit',"edit/$table",
-                fa('fas','fa-edit'),'start','previous','id','desc','search',fa('fas','fa-table'),fa('fas','fa-search'),fa('fas','fa-anchor"')),'container');
+            $code = $this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure',fa('fas','fa-trash'),"remove/$table",'edit',"edit/$table",
+                fa('fas','fa-edit'),'start','previous','id','desc','search',fa('fas','fa-table'),fa('fas','fa-search'),fa('fas','fa-anchor"'));
 
            $del =  form(url('del',POST),'a')->select(false,'table',$this->table()->show())->submit('a','a')->get();
 
@@ -54,6 +59,25 @@ namespace Testing {
 
         }
 
+        public function check()
+        {
+            $pass = Request::get('password');
+            $username   = Request::get('username');
+
+            return $this->auth()->redirect_url(url('home','GET',true))->login($username,$pass);
+        }
+        /**
+         * @return string
+         * @throws \Twig_Error_Loader
+         * @throws \Twig_Error_Runtime
+         * @throws \Twig_Error_Syntax
+         */
+        public function login()
+        {
+            $form = login('/login',id(),'username','password','login','a');
+
+            return view('login',compact('form'));
+        }
         public function display(int $id,string $slug)
         {
             return "$id $slug";

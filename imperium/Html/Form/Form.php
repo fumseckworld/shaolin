@@ -625,7 +625,10 @@ namespace Imperium\Html\Form {
             if (config($this->file,'save'))
                 $this->save();
 
-            return $this->margin()->padding()->csrf(csrf_field());
+            if (config($this->file,'space'))
+                $this->margin()->padding();
+
+            return $this->csrf(csrf_field());
         }
 
         /**
@@ -1229,11 +1232,12 @@ namespace Imperium\Html\Form {
 
         /**
          * @param string $icon
+         * @param string $url
          * @return Form
          *
          * @throws Exception
          */
-        public function pagination(string $icon): Form
+        public function pagination(string $icon,string $url): Form
         {
             $step = config('form','pagination_step');
 
@@ -1241,7 +1245,7 @@ namespace Imperium\Html\Form {
 
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><div class="input-group-text">' . $icon . '</div></div> ');
             append(
-                $this->form,'<input  class="'.$class.'"   onchange="location = this.attributes[2].value + this.value"  data-url="/" value="'.session('limit',10).'"  step="'.$step.'" min="1" type="number"></div></div></div>');
+                $this->form,'<input  class="'.$class.'"   onchange="location = this.attributes[2].value + this.value"  data-url="'.$url.'" value="'.session('limit',10).'"  step="'.$step.'" min="1" type="number"></div></div></div>');
 
 
 

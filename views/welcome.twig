@@ -2,6 +2,12 @@
 
 {% block content %}
 
-    {{ code | raw }}
-    {{  del  | raw }}
+
+    <a href="{{ url('login') }}" class="btn btn-success mb-2"> login</a>
+    <a href="{{ url('admin') }}" class="btn btn-danger mb-2"> admin</a>
+
+    {{ form(code) }}
+
+        {{  form(del) }}
+
 {% endblock %}
