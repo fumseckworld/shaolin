@@ -651,13 +651,13 @@ namespace Testing\Form {
 
             $marge = config('form','padding');
             $form = form('a','a')->padding($marge)->input('text','name','username')->get();
-            $this->assertStringContainsString("pt-$marge pb-$marge pl-$marge pr-$marge",$form);
+            $this->assertStringContainsString("pt-$marge pb-$marge",$form);
         }
         public function test_margin()
         {
             $marge = config('form','margin');
             $form = form('a','a')->margin($marge)->input('text','name','username')->get();
-            $this->assertStringContainsString("mt-$marge mb-$marge ml-$marge mr-$marge",$form);
+            $this->assertStringContainsString("mt-$marge mb-$marge",$form);
         }
 
         public function test_margin_and_padding()
@@ -665,7 +665,7 @@ namespace Testing\Form {
             $marge = config('form','margin');
             $padding = config('form','padding');
             $form = form('a','a')->margin()->padding()->input('text','name','username')->get();
-            $this->assertStringContainsString("mt-$marge mb-$marge ml-$marge mr-$marge pt-$padding pb-$padding pl-$padding pr-$padding",$form);
+            $this->assertStringContainsString("mt-$marge mb-$marge pt-$padding pb-$padding",$form);
         }
         /**
          * @throws \Exception
