@@ -212,42 +212,44 @@ if (not_exist('trans'))
 {
 
     /**
-     * @param $message
+     *
+     * Translate the message by using a file
+     *
+     * @param string $message
      * @param mixed ...$args
      *
      * @return string
      *
      * @throws Exception
+     *
      */
-   function trans($message,...$args): string
-    {
-
+   function trans(string $message,...$args): string
+   {
         $keys    = array_keys($args);
+
         $keysmap = array_flip($keys);
 
         $values  = array_values($args);
-
-
 
         $x = Trans::init()->get(config('app','locale'),$message);
 
        if (not_def($x))
            return $message;
-       else
-           $message = $x;
-        while (preg_match('/%\(([a-zA-Z0-9_ -]+)\)/', $message, $m))
-        {
+
+       $message = $x;
+
+       while (preg_match('/%\(([a-zA-Z0-9_ -]+)\)/', $message, $m))
+       {
             if (not_def($keysmap[$m[1]]))
                     return '';
 
-
             $message = str_replace($m[0], '%' . ($keysmap[$m[1]] + 1) . '$', $message);
-        }
+       }
 
-        array_unshift($values, $message);
-        return call_user_func_array('sprintf', $values);
+       array_unshift($values, $message);
 
-    }
+       return call_user_func_array('sprintf', $values);
+   }
 }
 
 if (not_exist('config_path'))
