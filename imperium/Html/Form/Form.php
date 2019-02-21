@@ -1374,7 +1374,7 @@ namespace Imperium\Html\Form {
             if (equal($mode,Form::EDIT))
             {
 
-                $data = collection($instance->select_or_fail($id));
+                $data = $instance->select_or_fail($id);
 
                 $numeric = collection();
                 $date = collection();
@@ -1504,7 +1504,7 @@ namespace Imperium\Html\Form {
                     }
                     else
                     {
-                        if (equal($k % 3,0) && different($k,0))
+                        if (equal($k % 3,0))
                             $this->textarea($t,$t)->end_row_and_new();
                         else
                             $this->textarea($t,$t);
@@ -1544,7 +1544,7 @@ namespace Imperium\Html\Form {
                             $this->input(Form::DATE,$d,$d,'','','',$current)->end_row_and_new();
                     }else
                     {
-                        if (equal($k % 3,0) && different($k,0))
+                        if (equal($k % 3,0))
                             $this->input(Form::DATE,$d,$d,'','','',$current)->end_row_and_new();
                         else
                             $this->input(Form::DATE,$d,$d,'','','',$current);

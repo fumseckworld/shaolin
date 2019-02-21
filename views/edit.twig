@@ -1,7 +1,7 @@
 {% extends 'layout.twig' %}
 
 {% block content %}
-
+    <a href="{{ name('home') }}" class="btn-primary btn"> {{ _('Home') }}</a>
     {{ form(edit) }}
     {{ form(create) }}
 

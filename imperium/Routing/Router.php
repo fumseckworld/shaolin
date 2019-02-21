@@ -169,7 +169,6 @@ namespace Imperium\Routing {
          */
         public function __construct(ServerRequestInterface $request)
         {
-
             $this->call_middleware($request);
 
             $this->method        = $request->getMethod();
@@ -179,9 +178,6 @@ namespace Imperium\Routing {
             self::$URL            = $this->url;
 
             $this->namespace =  config('app','namespace');
-
-
-
         }
 
 
