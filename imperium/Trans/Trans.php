@@ -15,7 +15,7 @@ namespace Imperium\Trans {
          * @var string
          *
          */
-        const CONFIG_DIR = 'trans';
+        const CONFIG_DIR = 'locales';
 
         /**
          * @var string

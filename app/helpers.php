@@ -232,7 +232,7 @@ if (not_exist('trans'))
 
         $values  = array_values($args);
 
-        $x = Trans::init()->get(config('app','locale'),$message);
+        $x = Trans::init()->get(config('locales','locale'),$message);
 
        if (not_def($x))
            return $message;
