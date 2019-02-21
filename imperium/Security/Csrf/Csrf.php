@@ -88,10 +88,7 @@ namespace Imperium\Security\Csrf {
 
                 is_true(different($token,$this->session->get(self::KEY)),true,"The token is invalid");
 
-                $this->session->remove(self::KEY);
-
             }
         }
-
     }
 }
