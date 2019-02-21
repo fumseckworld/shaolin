@@ -12,15 +12,17 @@ class Test implements Middleware
     /**
      * @param ServerRequestInterface $request
      * @return mixed
+     * @throws \Exception
      */
     public function __invoke(ServerRequestInterface $request)
     {
         $url = (string)$request->getUri();
-        if (!empty($url) && $url[-1] === '/') {
-            $response = new \GuzzleHttp\Psr7\Response();
-            return $response
-                ->withHeader('Location', substr($url, 0, -1))
-                ->withStatus(301);
+
+        if (different($request->getUri()->getPath(),'/'))
+        {
+            if ($url[-1] === '/' )
+                return to(trim($url,'/'));
         }
+
     }
 }

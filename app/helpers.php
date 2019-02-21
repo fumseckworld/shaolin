@@ -10,7 +10,7 @@ use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
 use Imperium\Flash\Flash;
 use Imperium\Hashing\Hash;
-use Imperium\Router\Router;
+use Imperium\Routing\Router;
 use Imperium\Security\Csrf\Csrf;
 use Imperium\Session\Session;
 use Imperium\Trans\Trans;
@@ -1368,8 +1368,18 @@ if(not_exist('collection'))
      * @return Collection
      *
      */
-    function collection(array $data = []): Collection
+    function collection($data = []): Collection
     {
+        if (is_object($data))
+        {
+            $x = [];
+            foreach ($data as $k => $v)
+                $x[$k] = $v;
+
+            return new Collection($x);
+        }
+
+
         return new Collection($data);
     }
 }

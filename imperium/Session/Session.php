@@ -20,14 +20,10 @@ namespace Imperium\Session {
     class Session
     {
 
-        private function start_session()
+        public function __construct()
         {
-            if (request()->getScriptName() !== './vendor/bin/phpunit')
-            {
-                if (session_status() === PHP_SESSION_NONE)
-                    session_start();
-            }
-
+            if (session_status() === PHP_SESSION_NONE)
+                session_start();
         }
 
         /**
@@ -41,7 +37,7 @@ namespace Imperium\Session {
          */
         public function get($key)
         {
-            $this->start_session();
+
 
             return $this->has($key) ? $_SESSION[$key] : '';
         }
@@ -57,7 +53,6 @@ namespace Imperium\Session {
          */
         public function has($key): bool
         {
-            $this->start_session();
             return array_key_exists($key,$_SESSION);
         }
 
@@ -73,7 +68,6 @@ namespace Imperium\Session {
          */
         public function set($value,$key): Session
         {
-            $this->start_session();
 
             $_SESSION[$key] = $value;
 
@@ -91,7 +85,6 @@ namespace Imperium\Session {
          */
         public function remove($key): bool
         {
-            $this->start_session();
 
             if ($this->has($key))
             {

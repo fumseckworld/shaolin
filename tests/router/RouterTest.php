@@ -3,7 +3,7 @@
 namespace Testing\router;
 
 use GuzzleHttp\Psr7\ServerRequest;
-use Imperium\Router\Router;
+use Imperium\Routing\Router;
 use Testing\DatabaseTest;
 
 class RouterTest extends DatabaseTest

@@ -3,9 +3,10 @@
 namespace Imperium\Html\Form {
 
     use Exception;
+    use Imperium\App;
     use Imperium\Tables\Table;
 
-   /**
+    /**
     *
     * Form management
     *
@@ -1331,6 +1332,12 @@ namespace Imperium\Html\Form {
         }
 
 
+        public function primary(string $column,string $value,string $table) : Form
+        {
+            append($this->form,'<input type="hidden" name="'.$column.'" value="'.$value.'"> <input type="hidden" name="__table__" value="'.$table.'"> ');
+
+            return $this;
+        }
         /**
          *
          * Generate a form to edit or create a record
@@ -1355,90 +1362,202 @@ namespace Imperium\Html\Form {
         public function generate(int $form_grid,string $table, Table $instance, string $submit_text, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
             $instance   = $instance->from($table);
-            $types      = $instance->columns_types();
-            $columns    = $instance->columns();
+
+            $types      = collection($instance->get_columns_with_types());
+
             $primary    = $instance->primary_key();
 
             equal($form_grid,0,true,"Zero is not a valid number");
 
             not_in([Form::EDIT,Form::CREATE],$mode,true,"The mode used is not a valid mode");
 
-            $i = count($columns);
-
-            $date = Table::DATE_TYPES;
-
             if (equal($mode,Form::EDIT))
             {
 
-                foreach ($instance->select_or_fail($id) as $record)
+                $data = collection($instance->select_or_fail($id));
+
+                $numeric = collection();
+                $date = collection();
+                $text = collection();
+
+                $columns = collection($instance->get_columns_with_types());
+
+                $values = collection();
+
+                foreach ($data as $x)
                 {
-                    foreach ($columns as $k => $column)
+                    foreach ($columns->collection() as $k => $v)
                     {
+                        $type = $v;
 
-                        if (is_null($record->$column))
-                            $record->$column = '';
+                        if (has($type,App::NUMERIC_TYPES) && different($primary,$k))
+                            $numeric->add($type,$k);
 
-                        if (different($column,$primary))
-                        {
+                        if (has($type,App::TEXT_TYPES))
+                            $text->add($type,$k);
 
-                            if (equal($i % $form_grid,0))
-                            {
-                                $this->textarea($column, $column, '','',false, $record->$column)->end_row_and_new();
-                            }else{
-                                $this->textarea($column, $column, '', '',false,$record->$column);
-                            }
+                        if (has($type,App::DATE_TYPES))
+                            $date->add($type,$k);
 
-                        } else
-                        {
-                                $this->input(Form::HIDDEN, $column, $column,'','','',$id)->input(Form::HIDDEN,'__table__','','','','',$table)->row();
-
-
-                        }
-                        $i--;
+                        $values->add($x->$k,$k) ;
                     }
-
                 }
-              return  $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
+
+                $all_num = $numeric->length();
+                $all_date = $date->length();
+                $all_text = $text->length();
+
+                $this->row();
+
+                foreach ($text->collection() as $k =>  $t)
+                {
+                    $value = $values->get($k);
+
+                    if (is_pair($all_text))
+                    {
+                        if (is_pair($all_text))
+                            $this->textarea($k,$k,'','',false,$value);
+                        else
+                            $this->textarea($k,$k,'','','',$value)->end_row_and_new();
+                    }
+                    else
+                    {
+                        if (equal($all_text % 3,0))
+                            $this->textarea($k,$k,'','',false,$value);
+                        else
+                            $this->textarea($k,$k)->end_row_and_new();
+                    }
+                }
+
+                $this->end_row_and_new();
+
+                foreach ($numeric->collection() as $k =>  $n)
+                {
+
+                    $value = $values->get($k);
+
+                    if (is_pair($all_num))
+                    {
+                        if (is_pair($all_num))
+                            $this->input(Form::NUMBER,$k,$k,'','','',$value);
+                        else
+                            $this->input(Form::NUMBER,$k,$k,'','','',$value)->end_row_and_new();
+                    }
+                    else
+                    {
+                        if (equal($all_num % 3,0))
+                            $this->input(Form::NUMBER,$k,$k,'','','',$value);
+                        else
+                            $this->input(Form::NUMBER,$k,$k,'','','',$value)->end_row_and_new();
+                    }
+                }
+
+
+                $this->end_row_and_new();
+
+                foreach ($date->collection() as $k =>  $n)
+                {
+                    $value = $values->get($k);
+
+                    if (is_pair($all_date))
+                    {
+                        if (is_pair($all_date))
+                            $this->input(Form::DATETIME,$k,$k,'','','',$value);
+                        else
+                            $this->input(Form::DATETIME,$k,$k,'','','',$value)->end_row_and_new();
+                    }
+                    else
+                    {
+                        if (equal($all_date % 3,0))
+                            $this->input(Form::DATETIME,$k,$k,'','','',$value);
+                        else
+                            $this->input(Form::DATETIME,$k,$k,'','','',$value)->end_row_and_new();
+                    }
+                }
+
+                return $this->end_row_and_new()->primary($primary,$id,$table)->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
+
             }else
             {
+                $current = date('Y-m-d');
 
-                foreach ($types as $k => $type)
+                $numeric = $types->data(App::NUMERIC_TYPES);
+                $date    = $types->data(App::DATE_TYPES);
+                $text    = $types->data(App::TEXT_TYPES);
+
+
+                $all_num = collection($numeric)->length();
+                $all_date = collection($date)->length();
+                $all_text = collection($text)->length();
+
+
+                $this->row();
+
+                foreach ($text as $k =>  $t)
                 {
-                    $column = $columns[$k];
-
-                    if (different($column,$primary))
+                    if (is_pair($all_text))
                     {
-                        $current = date('Y-m-d');
+                        if (is_pair($all_text))
+                            $this->textarea($t,$t);
+                        else
+                            $this->textarea($t,$t)->end_row_and_new();
+                    }
+                    else
+                    {
+                        if (equal($k % 3,0) && different($k,0))
+                            $this->textarea($t,$t)->end_row_and_new();
+                        else
+                            $this->textarea($t,$t);
+                    }
+                }
 
-                        $type = explode('(', $type);
+                $this->end_row_and_new();
 
-                        $type = $type[0];
 
-                        if (equal($i % $form_grid, 0))
+                foreach ($numeric as $k => $n)
+                {
+                    if (different($n,$primary))
+                    {
+                        if (is_pair($all_num))
                         {
-                            if (has($type,$date))
-                                $this->textarea($column, $column, '','',false,$current);
+                            if (is_pair($all_num))
+                                $this->input(Form::NUMBER,$n,$n);
                             else
-                                $this->textarea($column, $column );
-
-                            $this->end_row_and_new();
+                                $this->input(Form::NUMBER,$n,$n)->end_row_and_new();
                         }else
                         {
-                            if (has($type,$date))
-                                $this->textarea($column, $column, '','',false,$current);
-                            else
-                                $this->textarea($column, $column) ;
+                            $this->input(Form::NUMBER,$n,$n);
                         }
-
-                    } else {
-
-                       $id = app()->connect()->postgresql() ? 'DEFAULT' : 'NULL';
-
-                        $this->input(Form::HIDDEN, $column, $column,'','','',$id)->input(Form::HIDDEN,'__table__','','','','',$table)->row();
                     }
-                    $i--;
                 }
-               return $this->end_row_and_new()->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
+
+                $this->end_row_and_new();
+
+                foreach ($date as $k =>  $d)
+                {
+
+                    if (is_pair($all_date))
+                    {
+                        if (is_pair($all_date))
+                            $this->input(Form::DATE,$d,$d,'','','',$current);
+                        else
+                            $this->input(Form::DATE,$d,$d,'','','',$current)->end_row_and_new();
+                    }else
+                    {
+                        if (equal($k % 3,0) && different($k,0))
+                            $this->input(Form::DATE,$d,$d,'','','',$current)->end_row_and_new();
+                        else
+                            $this->input(Form::DATE,$d,$d,'','','',$current);
+
+                    }
+
+                }
+
+                $this->end_row_and_new();
+
+                $id = app()->connect()->postgresql() ? 'DEFAULT' : 'NULL';
+
+               return $this->primary($primary,$id,$table)->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
 
             }
         }

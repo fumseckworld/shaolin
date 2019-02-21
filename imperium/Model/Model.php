@@ -205,9 +205,16 @@ namespace Imperium\Model {
 
             $id = intval(Request::get($this->from($table)->primary()));
 
-            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__')->collection();
 
-            return $this->table()->from($table)->update($id,$data);
+            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
+            $columns = $this->table()->from($table)->columns();
+
+            $x = \collection();
+            foreach ($columns as $column)
+
+                $x->add($data->get($column),$column);
+
+            return $this->table()->from($table)->update($id,$x->collection());
         }
 
         /**
@@ -748,9 +755,16 @@ namespace Imperium\Model {
          */
         public function add(): bool
         {
-            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__')->collection();
+            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
 
-            return $this->table()->from(Request::get('__table__'))->save($data);
+            $columns = $this->from(Request::get('__table__'))->columns();
+
+            $x = collection();
+
+            foreach ($columns as $column)
+                $x->add($data->get($column),$column);
+
+            return $this->table()->from(Request::get('__table__'))->save($x->collection());
         }
 
         /**

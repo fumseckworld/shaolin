@@ -3,3 +3,4 @@ GET:
   home:
     url: '/admin'
     call: 'Admin@home'
+

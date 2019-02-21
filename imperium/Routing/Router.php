@@ -1,6 +1,6 @@
 <?php
 
-namespace Imperium\Router {
+namespace Imperium\Routing {
 
     use Exception;
     use Imperium\Request\Request;
@@ -169,14 +169,8 @@ namespace Imperium\Router {
          */
         public function __construct(ServerRequestInterface $request)
         {
-            $namespace = config('middleware','namespace');
 
-            foreach (config('middleware','all') as $middleware)
-            {
-                $class = "$namespace$middleware";
-
-                call_user_func_array(new $class(), [$request]);
-            }
+            $this->call_middleware($request);
 
             $this->method        = $request->getMethod();
 
@@ -186,8 +180,28 @@ namespace Imperium\Router {
 
             $this->namespace =  config('app','namespace');
 
+
+
         }
 
+
+        /**
+         * @param ServerRequestInterface $request
+         *
+         * @throws Exception
+         *
+         */
+        private function call_middleware(ServerRequestInterface $request): void
+        {
+            $namespace = config('middleware','namespace');
+
+            foreach (config('middleware','all') as $middleware)
+            {
+                $class = "$namespace$middleware";
+
+                call_user_func_array(new $class(), [$request]);
+            }
+        }
 
         /**
          *
@@ -203,6 +217,7 @@ namespace Imperium\Router {
 
             if (has(config('admin','prefix'),parse_url($this->url)))
             {
+
                 foreach(admin($this->method) as $name => $route)
                 {
                     $x = collection($route);

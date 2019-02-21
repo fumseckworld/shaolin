@@ -404,6 +404,39 @@ namespace Imperium\Collection {
         }
 
         /**
+         * @return array
+         */
+        public function count_values(): array
+        {
+            return array_count_values($this->data);
+        }
+
+        /**
+         * @param $expected
+         * @return array
+         * @throws Exception
+         */
+        public function data($expected): array
+        {
+
+            $data = collection();
+            foreach ($this->collection() as $k => $v)
+            {
+                if (is_array($expected))
+                {
+                    if (has($v,$expected))
+                        $data->add($k);
+                }else
+                {
+                    if (equal($v,$expected))
+                        $data->add($k);
+                }
+
+            }
+            return $data->collection();
+        }
+
+        /**
         *
         * Add the values to the begin ot the array
         *

@@ -18,7 +18,7 @@ class Auth implements Middleware
     {
        if(strpos($request->getUri()->getPath(),config('admin','prefix')) === 0)
        {
-           if (!app()->auth()->connected())
+           if (!app()->auth()->connected() && different($request->getUri()->getPath(),'/login'))
                return to('/login');
        }
     }

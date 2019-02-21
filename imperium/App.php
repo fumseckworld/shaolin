@@ -17,7 +17,7 @@ namespace Imperium {
     use Imperium\Middleware\Middleware;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
-    use Imperium\Router\Router;
+    use Imperium\Routing\Router;
     use Imperium\Security\Auth\Oauth;
     use Imperium\Session\Session;
     use Imperium\Tables\Table;
