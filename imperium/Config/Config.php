@@ -87,10 +87,19 @@ namespace Imperium\Config {
         public static function init()
         {
 
+            if (def(request()->server->get('PWD')) && Dir::is('vendor'))
+            {
+                self::$config = request()->server->get('PWD') . DIRECTORY_SEPARATOR .self::CONFIG_DIR;
+
+                is_false(Dir::is(self::$config),true,'We have not fond the config dir');
+
+                return new static();
+            }
+
             if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
                 self::$config = dirname(request()->server->get('SCRIPT_FILENAME'),3) .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
             else
-                self::$config = dirname(server('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
+                self::$config = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
 
             is_false(Dir::is(self::$config),true,'We have not fond the config dir');
 

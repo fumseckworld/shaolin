@@ -1,3 +1,4 @@
 namespace: 'Testing'
 charset: 'utf8'
 debug: true
+controller_path: 'test'

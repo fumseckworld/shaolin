@@ -1578,6 +1578,46 @@ if (not_exist('bases_select'))
      }
 }
 
+if (not_exist('commands'))
+{
+    /**
+     *
+     * Return all available command
+     *
+     * @return array
+     *
+     * @throws Exception
+     *
+     */
+    function commands(): array
+    {
+        $path = config('command','dir');
+
+        $namespace = config('command','namespace');
+
+        Dir::create($path);
+
+        $path = realpath($path);
+
+        $data =   glob($path .DIRECTORY_SEPARATOR . '*.php');
+
+        $commands = collection();
+
+       foreach ($data as $c)
+       {
+           $command = collection(explode('/',$c))->last();
+
+           $command = collection(explode('.',$command))->begin();
+
+           $command = "$namespace\\$command";
+
+           $commands->add(new $command());
+       }
+
+       return $commands->collection();
+    }
+}
+
 if (not_exist('simply_view'))
 {
 
