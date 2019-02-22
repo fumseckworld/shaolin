@@ -25,4 +25,6 @@ class Admin extends Controller
     {
         return $this->view('admin');
     }
+
+
 }

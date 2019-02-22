@@ -186,7 +186,11 @@ namespace Imperium\View {
             $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
 
             if (!File::exist($file))
+            {
                 File::create($file);
+                File::put($file,"{% extends 'layout.twig' %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+            }
+
             return $this->twig->render($view,$args);
         }
 
