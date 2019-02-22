@@ -254,7 +254,7 @@ namespace Imperium\Query {
                 break;
                 case Query::UNION:
                 case Query::UNION_ALL:
-                    return "$union $order $limit";
+                    return "$union $where $order $limit";
                 break;
                 case collection(self::JOIN_MODE)->exist($mode) :
                     return "$join $order";
@@ -506,31 +506,30 @@ namespace Imperium\Query {
          *
          * @param  string $first_table      The first table name
          * @param  string $second_table    The second table name
-         * @param  array  $first_columns    The first columns
-         * @param  array  $second_columns  The seconds columns
+         * @param  string $first_column    The first columns
+         * @param  string  $second_column  The seconds columns
          *
          * @return Query
          *
          */
-        public function union(string $first_table,string $second_table,array $first_columns,array $second_columns): Query
+        public function union(string $first_table,string $second_table,string $first_column,string $second_column): Query
         {
-            $first   = collection($first_columns)->join(', ');
-            $second = collection($second_columns)->join(', ');
+
 
             switch ($this->mode)
             {
                 case Query::UNION:
-                    if (not_def($first_columns,$second_columns))
+                    if (not_def($first_column,$second_column))
                         $this->union = "SELECT * FROM $first_table UNION SELECT * FROM $second_table";
                     else
-                        $this->union = "SELECT $first FROM $first_table UNION SELECT $second FROM $second_table";
+                        $this->union = "SELECT $first_column FROM $first_table UNION SELECT $second_column FROM $second_table";
                 break;
 
                 case Query::UNION_ALL:
-                    if (not_def($first_columns,$second_columns))
+                    if (not_def($first_column,$second_column))
                         $this->union = "SELECT * FROM $first_table UNION ALL SELECT * FROM $second_table";
                     else
-                        $this->union = "SELECT $first FROM $first_table UNION ALL SELECT $second FROM $second_table";
+                        $this->union = "SELECT $first_column FROM $first_table UNION ALL SELECT $second_column FROM $second_table";
                 break;
 
             }
@@ -558,14 +557,14 @@ namespace Imperium\Query {
 
             if (has($driver,[Connect::POSTGRESQL,Connect::MYSQL]))
             {
-                $columns = collection($this->tables->from($this->table())->columns())->join(', ');
+                $columns = $this->tables->column()->for($this->table())->columns_to_string();
 
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             }
 
             if (has($driver,[Connect::SQLITE]))
             {
-                $fields = collection($this->tables->from($this->table())->columns());
+                $fields = collection($this->tables->column()->for($this->table())->show());
                 $end =  $fields->last();
                 $columns = '';
 

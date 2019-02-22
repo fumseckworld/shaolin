@@ -207,7 +207,7 @@ namespace Imperium\Model {
 
 
             $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
-            $columns = $this->table()->from($table)->columns();
+            $columns = $this->table()->column()->for($table)->show();
 
             $x = \collection();
             foreach ($columns as $column)
@@ -246,7 +246,7 @@ namespace Imperium\Model {
          */
         public function primary(): string
         {
-            return $this->table()->from($this->current())->primary_key();
+            return $this->table()->column()->for($this->current())->primary_key();
         }
 
         /**
@@ -267,7 +267,7 @@ namespace Imperium\Model {
          */
         public function edit_form(string $table,int $id,string $action,string $form_id,string $submit_text,string $submit_icon): string
         {
-            return form($action,'')->generate(2,$table,$this->table,$submit_text,$form_id,$submit_icon,Form::EDIT,$id);
+            return form($action,id())->generate(2,$table,$submit_text,$form_id,$submit_icon,Form::EDIT,$id);
         }
 
         /**
@@ -287,7 +287,7 @@ namespace Imperium\Model {
          */
         public function create_form(string $table,string $action,string $form_id,string $submit_text,string $submit_icon): string
         {
-            return form($action,'')->generate(2,$table,$this->table,$submit_text,$form_id,$submit_icon);
+            return form($action,'')->generate(2,$table,$submit_text,$form_id,$submit_icon);
         }
 
         /**
@@ -403,7 +403,6 @@ namespace Imperium\Model {
 
 
             $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
-
 
 
             $data = collection(['/' => $table]);
@@ -735,15 +734,14 @@ namespace Imperium\Model {
          * Insert data in the table
          *
          * @param array $data
-         * @param array $ignore
          *
          * @return bool
          *
          * @throws Exception
          */
-        public function insert_new_record(array $data,array $ignore = []): bool
+        public function insert_new_record(array $data): bool
         {
-            return $this->table()->from($this->current())->save($data,$ignore);
+            return $this->table()->from($this->current())->save($data);
         }
 
         /**
@@ -856,7 +854,7 @@ namespace Imperium\Model {
          */
         public function columns(): array
         {
-            return $this->table()->from($this->current())->columns();
+            return $this->table()->column()->for($this->current())->show();
         }
 
         /**
@@ -917,6 +915,33 @@ namespace Imperium\Model {
         public function execute(string $query): bool
         {
             return $this->connexion->execute($query);
+        }
+
+        public function parse($record,string $action,string $submit_text,string $table,string $primary)
+        {
+
+            if (empty($record))
+                return back();
+
+            $form = \form($action,id())->row();
+            $i = 1;
+            foreach ($record as $rec)
+            {
+                foreach ($rec as $k => $v)
+                {
+                    if (!is_pair($i))
+                    {
+                        $form->end_row_and_new();
+                    }
+                    if (equal($k,$primary))
+                        $form->primary($k,$v,$table);
+                    else
+                        $form->textarea($k,$k,'','','',$v);
+
+                    $i++;
+                }
+            }
+           return $form->end_row_and_new()->submit($submit_text,id())->get();
         }
     }
 }

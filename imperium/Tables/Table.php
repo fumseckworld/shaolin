@@ -54,12 +54,6 @@ namespace Imperium\Tables {
          */
         private $driver;
 
-
-        /**
-         * @var string
-         */
-        private $engine;
-
         /**
          * @var string
          */
@@ -78,14 +72,6 @@ namespace Imperium\Tables {
          */
         private $all_types;
 
-        /**
-         *
-         * All tables name
-         *
-         * @var array
-         *
-         */
-        private $all;
 
         /**
          *
@@ -105,62 +91,11 @@ namespace Imperium\Tables {
          */
         private $all_charset;
 
-
-
         /**
-         *
-         * Return the type of a column
-         *
-         * @param string $column
-         *
-         * @return mixed
-         *
-         * @throws Exception
-         *
+         * @var Column
          */
-        public function type(string $column)
-        {
-            return collection($this->columns())->search($column)->set_new_data($this->columns_types())->result();
-        }
+        private $column;
 
-        /**
-         *
-         * Get columns name with types
-         *
-         * @method get_columns_with_types
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function get_columns_with_types():array
-        {
-            $data = collection();
-            foreach ($this->columns() as $k => $v)
-            {
-                $data->add($this->type($v),$v);
-            }
-            return $data->collection();
-        }
-
-        /**
-         *
-         * Return the check clause
-         *
-         * @method check
-         *
-         * @param  string $column
-         * @param  string $condition
-         * @param  mixed  $expected
-         *
-         * @return string
-         *
-         */
-        private function check(string $column,string $condition,$expected): string
-        {
-            return is_string($expected) ?  "CHECK ($column $condition '$expected')" :  "CHECK ($column $condition $expected)";
-        }
 
         /**
          * Select a table
@@ -198,8 +133,21 @@ namespace Imperium\Tables {
             $this->all_types        = collection()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->collection();
             $this->all_collation    = collation($connect);
             $this->all_charset      = charset($connect);
+            $this->column = new Column($connect);
         }
 
+
+        /**
+         *
+         * Get an instance of column
+         *
+         * @return Column
+         *
+         */
+        public function column(): Column
+        {
+            return $this->column;
+        }
 
         /**
          *
@@ -210,45 +158,7 @@ namespace Imperium\Tables {
          */
         public function current(): string
         {
-            return  $this->table;
-        }
-
-        /**
-         *
-         * Get columns information
-         *
-         * @method get_columns_info
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function get_columns_info(): array
-        {
-            $fields = collection();
-
-            switch ($this->driver)
-            {
-                case MYSQL :
-
-                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $column)
-                        $fields->push($column);
-                break;
-
-                case POSTGRESQL :
-
-                    foreach ($this->connexion->request("SELECT * FROM information_schema.columns WHERE table_name ='{$this->current()}'") as $column)
-                        $fields->push($column);
-
-                break;
-
-                case SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $column)
-                        $fields->push($column);
-                break;
-            }
-            return $fields->collection();
+            return $this->table;
         }
 
         /**
@@ -322,58 +232,6 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Check if a column exist in the current table
-         *
-         * @method has_column
-         *
-         * @param  string $column The column name
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function has_column(string $column): bool
-        {
-            return collection($this->columns())->exist($column);
-        }
-
-
-        /**
-         *
-         * Check if a column not exist in the current table
-         *
-         * @method column_not_exist
-         *
-         * @param  string $column The column name
-         *
-         * @return bool
-         *
-         * @throws Exception
-         */
-        public function column_not_exist(string $column): bool
-        {
-            return collection($this->columns())->not_exist($column);
-        }
-
-        /**
-         *
-         * Display all columns inside a table
-         *
-         * @method get_columns
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function columns(): array
-        {
-            return (new Column($this->connexion))->for($this->current())->show();
-        }
-
-        /**
-         *
          * Remove a table
          *
          * @method drop
@@ -427,128 +285,6 @@ namespace Imperium\Tables {
 
         /**
          *
-         * Append a column in the create table
-         *
-         * @method column
-         *
-         * @param  string $type            The field type
-         * @param  string $name            The field name
-         * @param  bool   $primary         To create a primary key
-         * @param  int    $length          The field length
-         * @param  bool   $unique          To create a unique field
-         * @param  bool   $nullable        To create a nullable or not field
-         * @param  bool   $default         To add a default value
-         * @param  mixed  $default_value   The default value
-         * @param  bool   $check           To add a check clause
-         * @param  string $check_condition The check condition
-         * @param  mixed $check_expected   The check expected value
-         *
-         * @return Table
-         *
-         **/
-        public function column(string $type, string $name, bool $primary, int $length, bool $unique, bool $nullable,bool $default,$default_value,bool $check,string $check_condition,$check_expected): Table
-        {
-
-            $x = collection()
-                ->add($name,self::FIELD_NAME)
-                ->add($type,self::FIELD_TYPE)
-                ->add($primary, self::FIELD_PRIMARY)
-                ->add($length, self::FIELD_LENGTH )
-                ->add($unique,self::FIELD_UNIQUE)
-                ->add($nullable,self::FIELD_NULLABLE)
-                ->add($default,self::DEFAULT)
-                ->add($default_value,self::DEFAULT_VALUE)
-                ->add($check,self::CHECK)
-                ->add($check_condition,self::CHECK_CONDITION)
-                ->add($check_expected,self::CHECK_EXPECTED)
-            ->collection();
-
-            $this->added_columns->push($x);
-
-            return $this;
-        }
-
-        /**
-         *
-         * Append a column in a existing table
-         *
-         * @method append_column
-         *
-         * @param  string $name The column name
-         * @param  string $type The column type
-         * @param  int $size The column size
-         * @param  bool $unique The column unique constraint
-         * @param  bool $nullable The column not null constraint
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function append_column(string $name, string $type, int $size, bool $unique,bool $nullable): bool
-        {
-            if ($this->column_not_exist($name))
-            {
-                $data = collection();
-
-                $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
-
-                different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
-
-                if(is_false($nullable))
-                {
-                   $this->connexion->postgresql() ?  append($command,' NOT NULL DEFAULT 0') :  append($command,' NOT NULL');
-                }
-
-                $data->add($this->connexion->execute($command));
-
-                if($unique && $this->connexion->not(SQLITE) && $this->connexion->not(POSTGRESQL))
-                    $data->add($this->alter_table(App::FIELD_UNIQUE,$name));
-
-                debug($data->exist(false),$data);
-                return $data->not_exist(false);
-            }
-            return false;
-        }
-
-        /**
-         *
-         *
-         * @method alter_table
-         *
-         * @param  string $constraint
-         * @param  string $column
-         * @param  string $table
-         *
-         * @return bool       
-         * @throws Exception
-         */
-        public function alter_table(string $constraint,string $column,$table = ''): bool
-        {
-            $table = def($table) ? $table : $this->current();
-
-            if (equal($this->driver,Connect::MYSQL))
-            {
-                if (equal($constraint,App::FIELD_UNIQUE))
-                {
-                    return $this->connexion->execute("ALTER TABLE $table ADD  UNIQUE ($column)");
-                }
-            }
-
-            if (equal($this->driver,Connect::POSTGRESQL))
-            {
-                if (equal($constraint,App::FIELD_UNIQUE))
-                {
-                    return $this->connexion->execute('ALTER TABLE '.$table.' ADD CONSTRAINT uniq_'.$column.' UNIQUE ('.$column.');');
-                }
-            }
-            return false;
-        }
-
-
-
-        /**
-         *
          * Remove a constraint in a table
          *
          * @param string $column
@@ -563,10 +299,10 @@ namespace Imperium\Tables {
         {
             switch ($this->driver)
             {
-                case Connect::MYSQL;
+                case MYSQL;
                     return  $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT $constraint;");
                 break;
-                case Connect::SQLITE:
+                case SQLITE:
                     return $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN $column DROP $constraint;");
                 break;
                 default:
@@ -653,23 +389,7 @@ namespace Imperium\Tables {
             return "CREATE TABLE IF NOT EXISTS $table ( ";
         }
 
-        /**
-         *
-         * Check if the fields is equal to the last field
-         *
-         * @method is_the_last_field
-         *
-         * @param  string $field The field name
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function is_the_last_field(string $field): bool
-        {
-            return equal($field,collection($this->columns())->last());
-        }
+
 
         /**
          *
@@ -704,13 +424,13 @@ namespace Imperium\Tables {
             {
                 switch ($this->driver)
                 {
-                    case Connect::MYSQL:
+                    case MYSQL:
                          append($command,' AUTO_INCREMENT PRIMARY KEY');
                     break;
-                    case Connect::POSTGRESQL:
+                    case POSTGRESQL:
                           append($command,'  PRIMARY KEY');
                     break;
-                    case Connect::SQLITE:
+                    case SQLITE:
                        append($command,'  PRIMARY KEY AUTOINCREMENT');
                     break;
                     }
@@ -751,9 +471,9 @@ namespace Imperium\Tables {
          */
         public function seed(int $records): bool
         {
-            $rec = $this->from($this->current());
+            $rec = $this->column->for($this->current());
 
-            $columns = $rec->columns();
+            $columns = $rec->show();
             $columns_str = collection($columns)->join(',');
 
             $query = "INSERT INTO {$this->current()} ($columns_str) VALUES ";
@@ -764,7 +484,7 @@ namespace Imperium\Tables {
 
             $sqlite = $this->connexion->sqlite();
 
-            $types = collection($rec->columns_types());
+            $types = collection($rec->types());
 
             for($i=0;different($i,$records);$i++)
             {
@@ -776,8 +496,8 @@ namespace Imperium\Tables {
                     {
                         switch ($this->driver)
                         {
-                            case Connect::MYSQL:
-                            case Connect::SQLITE:
+                            case MYSQL:
+                            case SQLITE:
                                 $x->add('NULL', $column);
                             break;
                             default:
@@ -879,45 +599,6 @@ namespace Imperium\Tables {
             return def($table) ? dumper(false,$table) : dumper(false,$this->current());
         }
 
-        /**
-         *
-         * Found the primary key
-         *
-         * @return string
-         *
-         * @throws Exception
-         *
-         */
-        public function primary_key(): string
-        {
-            switch ($this->driver)
-            {
-                case Connect::MYSQL:
-
-                    foreach ($this->connexion->request("show columns from {$this->current()} where `Key` = 'PRI';") as $key)
-                        return $key->Field;
-
-                break;
-
-                case Connect::POSTGRESQL:
-
-                    foreach($this->connexion->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->current()}';") as $key)
-                        return $key->column_name;
-                break;
-
-                case Connect::SQLITE:
-
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $field)
-                    {
-                        if (def($field->pk))
-                            return $field->name;
-                    }
-
-                break;
-            }
-
-            throw  new Exception('We have not found a primary key');
-        }
 
         /**
          *
@@ -932,7 +613,7 @@ namespace Imperium\Tables {
          */
         public function is_empty(): bool
         {
-            return collection($this->all($this->primary_key()))->empty();
+            return collection($this->all())->empty();
         }
 
         /**
@@ -950,7 +631,7 @@ namespace Imperium\Tables {
          */
         public function select(int $id): array
         {
-            return $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->primary_key()} = $id" );
+            return $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = $id" );
         }
 
 
@@ -969,7 +650,7 @@ namespace Imperium\Tables {
          */
         public function select_or_fail(int $id): array
         {
-            $data = $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->primary_key()} = $id" );
+            $data = $this->from($this->current())->select($id);
 
             superior($data,1,true,"The primary key is not unique");
 
@@ -992,78 +673,12 @@ namespace Imperium\Tables {
          */
         public function remove(int $id): bool
         {
-            return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->primary_key()} = $id");
+            return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = $id");
         }
 
-        /**
-         *
-         * Return a string with all columns
-         *
-         * @param string $glue
-         *
-         * @return string
-         *
-         * @throws Exception
-         */
-        public function columns_to_string(string $glue = ', '): string
-        {
-            return collection($this->columns())->join($glue);
-        }
 
-        /**
-         *
-         * Return a string with all columns
-         *
-         * @param string $old
-         * @param string $new
-         * @param string $glue
-         *
-         * @return string
-         *
-         * @throws Exception
-         */
-        public function change_columns_name_to_string(string $old,string $new,string $glue): string
-        {
-            return collection($this->columns())->change_value($old,$new)->join($glue);
-        }
 
-        /**
-         *
-         * Rename a column
-         *
-         * @method rename_column
-         *
-         * @param  string $old The old column name
-         * @param  string $new The new column name
-         *
-         * @return bool
-         *
-         * @throws Exception
-         */
-        public function rename_column(string $old, string $new): bool
-        {
 
-            switch ($this->driver)
-            {
-                case MYSQL :
-
-                    $type = $this->type($old);
-
-                    $length = $this->length($old);
-
-                    $x =  $length  ?  "($length)" : '';
-
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->current()} CHANGE COLUMN  $old $new $type$x ;");
-                break;
-                case POSTGRESQL :
-                case SQLITE :
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->current()} RENAME COLUMN $old TO $new;");
-                break;
-                default:
-                    return false;
-                break;
-            }
-        }
 
         /**
          *
@@ -1099,93 +714,6 @@ namespace Imperium\Tables {
             }
         }
 
-        /**
-         *
-         * Get the columns length
-         *
-         * @method get_columns_length
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function columns_length(): array
-        {
-            $types = collection();
-
-            switch ($this->driver)
-            {
-                case MYSQL :
-
-                  foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $type)
-                  {
-                      $x = collection(explode('(', trim($type->Type,')')));
-
-                      $x->has_key(1) ?  $types->push($x->get(1)) : $types->push(0);
-                  }
-
-                break;
-
-                case POSTGRESQL :
-
-                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name =' {$this->current()}';") as $type)
-                    {
-                        $x = collection(explode('(', trim($type->data_type,')')));
-                        $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
-                    }
-
-                break;
-
-                case SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $type)
-                    {
-                        $x = collection(explode('(', trim($type->type,')')));
-                        $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
-                    }
-                break;
-            }
-
-            return $types->collection();
-        }
-
-        /**
-         *
-         * Remove the columns
-         *
-         * @param string[] $columns
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function remove_column(string ...$columns): bool
-        {
-            $data = collection();
-            $primary = $this->primary_key();
-            $table = $this->current();
-
-            foreach($columns as $k => $column)
-            {
-                switch ($this->driver)
-                {
-                    case MYSQL :
-                        equal($column,$primary) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE $table DROP $column"));
-                    break;
-
-                    case POSTGRESQL :
-                        equal($column,$primary) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT"));
-                    break;
-
-                    case SQLITE :
-                        return false;
-                    break;
-
-                }
-            }
-            return $data->not_exist(false);
-        }
 
 
         /**
@@ -1205,7 +733,6 @@ namespace Imperium\Tables {
         {
             return  collection($this->show())->not_exist($table);
         }
-
 
         /**
          *
@@ -1232,62 +759,15 @@ namespace Imperium\Tables {
          * @method save
          *
          * @param  array $values The values
-         * @param  array $ignore The value to ignore
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        public function save(array $values,array $ignore = []): bool
+        public function save(array $values): bool
         {
-
-            $primary = $this->primary_key();
-
-            $columns = '(' . collection($this->columns())->join(', ') .') ';
-
-            $val = collection();
-
-            $ignore = collection($ignore);
-
-            foreach ($values as $key => $value)
-            {
-                if (different($key,$primary))
-                {
-                    if ($ignore->not_exist($value))
-                    {
-                        if ($val->not_exist($value))
-                        {
-
-                            if ($val->numeric($value))
-                                $val->push($value);
-                            else
-                                $val->push($this->connexion->instance()->quote($value));
-                        }
-                    }
-
-                }
-                else
-                {
-                    switch ($this->driver)
-                    {
-                        case POSTGRESQL:
-                            $val->push(" DEFAULT");
-                        break;
-                        default:
-                            $val->push('NULL');
-                        break;
-                    }
-                }
-
-            }
-
-            $value = '(' .$val->join(', ') . ')';
-
-            $command = "INSERT INTO {$this->current()}  $columns VALUES $value";
-
-
-            return $this->connexion->execute($command);
+            return $this->connexion->execute(insert_into($this->current(),$values));
         }
 
 
@@ -1362,15 +842,17 @@ namespace Imperium\Tables {
          *
          * Count number of records inside a table
          *
-         *
          * @param string $table
+         *
          * @return int
          *
          * @throws Exception
+         *
          */
         public function count(string $table =  ''): int
         {
             $table = def($table) ? $table : $this->current();
+
             foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
                 return current($number);
 
@@ -1393,8 +875,10 @@ namespace Imperium\Tables {
          * @throws Exception
          *
          */
-        public function all(string $column,string $order = DESC): array
+        public function all(string $column ='',string $order = DESC): array
         {
+            $column = def($column) ? $column : $this->column->for($this->current())->primary_key();
+
             return $this->connexion->request("SELECT * FROM {$this->current()} ORDER BY $column $order");
         }
 
@@ -1432,7 +916,7 @@ namespace Imperium\Tables {
          */
         public function update(int $id,array $values,array $ignore= []): bool
         {
-            $primary = $this->primary_key();
+            $primary = $this->column->for($this->current())->primary_key();
 
             $columns = collection();
 
@@ -1471,370 +955,6 @@ namespace Imperium\Tables {
             return $this->connexion->execute($command);
         }
 
-
-        /**
-         *
-         * Modify a column
-         *
-         * @method modify_column
-         *
-         * @param  string $column The column name
-         * @param  string $type The column type
-         * @param  int $size The column size
-         *
-         * @return bool
-         *
-         * @throws Exception
-         * 
-         */
-        public function modify_column(string $column,string $type,int $size = 0): bool
-        {
-            switch ($this->driver)
-            {
-                case MYSQL :
-                    return $size ? $this->connexion->execute("ALTER TABLE {$this->current()} MODIFY $column $type($size)"):  $this->connexion->execute("ALTER TABLE {$this->current()} MODIFY $column $type");
-                break;
-                case POSTGRESQL :
-                    return $size ? $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN $column TYPE $type($size)") : $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN $column TYPE $type");
-                break;
-                default :
-                    return false;
-                break;
-            }
-        }
-
-        /**
-         *
-         * Set engine
-         *
-         * @method set_engine
-         *
-         * @param  string     $engine The engine
-         *
-         * @return Table
-         *
-         */
-        public function set_engine(string $engine): Table
-        {
-            $this->engine = $engine;
-
-            return $this;
-        }
-
-        /**
-         *
-         * Remove all tables
-         *
-         * @method drop_all_tables
-         *
-         * @return bool
-         *
-         * @throws Exception
-         * 
-         */
-        public function drop_all_tables(): bool
-        {
-            $hidden = collection($this->hidden_tables());
-
-
-            if ($hidden->empty())
-            {
-                foreach ($this->all as $table)
-                    is_false($this->drop($table),true,"Failed to remove the table : $table");
-
-            }else
-            {
-                foreach ($this->all as $table)
-                {
-                    if ($hidden->not_exist($table))
-                    {
-                        is_false($this->drop($table),true,"Failed to remove the table : $table");
-                    }
-                }
-
-            }
-            return true;
-        }
-
-
-        /**
-         *
-         * Append multiples columns before or after column
-         *
-         * @method append_columns
-         *
-         * @param  array $new_columns_names
-         * @param  array $new_columns_types
-         * @param  array $new_column_order
-         * @param  array $existing_columns_selected
-         * @param  array $unique
-         * @param  array $null
-         *
-         * @return bool          
-         * @throws Exception
-         */
-        public function append_columns(array $new_columns_names, array $new_columns_types, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
-        {
-            $table_columns = $this->columns();
-
-            $the_end_of_new_columns =  collection($new_columns_names)->last();
-
-            switch ($this->driver)
-            {
-                case Connect::MYSQL:
-
-                    $command = "ALTER TABLE `{$this->current()}`  ";
-
-
-                    for ($i=0;$i<count($new_columns_names);$i++)
-                    {
-                        $columnName     = $new_columns_names[$i];
-                        $columnType     = $new_columns_types[$i];
-                        $columnLength   = $new_columns_types[$i];
-                        $columnSelected = $existing_columns_selected[$i];
-
-                        $isFirst        = equal($new_column_order[$i],'FIRST');
-                        $isUnique       = equal($unique[$i],true);
-                        $isNullable     = equal($null[$i],true);
-                        $islength       = def($columnLength);
-                        $isTheEnd       = equal($new_columns_names[$i],$the_end_of_new_columns);
-
-
-
-                        $columnPrev = before_key($table_columns,$columnSelected);
-
-                        // UNIQUE WITH LENGTH
-
-                        if ($islength)
-                        {
-                            if ($isUnique)
-                            {
-                                if ($isNullable)
-                                {
-
-                                    if ($isFirst)
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnPrev` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnPrev` , ";
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnSelected` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE AFTER `$columnSelected` , ";
-                                        }
-                                    }
-
-                                }
-
-                                // UNIQUE  NOT NULL WITH LENGTH
-
-                                else
-                                {
-                                    if ($isFirst)
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnPrev` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnPrev` , ";
-                                        }
-                                    }else
-                                    {
-
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnSelected` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) UNIQUE NOT NULL AFTER `$columnSelected` , ";
-                                        }
-                                    }
-                                }
-                            }
-
-                            // NOT UNIQUE WITH LENGTH
-
-                            else{
-
-                                if ($isNullable)
-                                {
-                                    if ($isFirst)
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) AFTER `$columnPrev` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) AFTER `$columnPrev` , ";
-                                        }
-
-                                    }
-
-                                    // NOT UNIQUE NOT NULL WITH LENGTH
-
-                                    else
-                                    {
-
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) NOT NULL AFTER `$columnSelected` ;";
-
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType($columnLength) NOT NULL AFTER `$columnSelected` , ";
-                                        }
-                                    }
-                                }
-                            }
-
-
-                        }
-
-                        // NO LENGTH
-
-                        else
-                        {
-
-                            if ($isUnique)
-                            {
-                                if ($isNullable)
-                                {
-
-                                    if ($isFirst)
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType  UNIQUE AFTER `$columnPrev` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE AFTER `$columnPrev` , ";
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE AFTER `$columnSelected` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE AFTER `$columnSelected` , ";
-                                        }
-                                    }
-
-                                }
-
-                                // UNIQUE  NOT NULL WITH LENGTH
-
-                                else
-                                {
-                                    if ($isFirst)
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnPrev` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnPrev` , ";
-                                        }
-                                    }else
-                                    {
-
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnSelected` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType UNIQUE NOT NULL AFTER `$columnSelected` , ";
-                                        }
-                                    }
-                                }
-                            }
-
-                            // NOT UNIQUE WITH LENGTH
-
-                            else{
-
-                                if ($isNullable)
-                                {
-                                    if ($isFirst)
-                                    {
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType AFTER `$columnPrev` ;";
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType AFTER `$columnPrev` , ";
-                                        }
-
-                                    }
-
-                                    // NOT UNIQUE NOT NULL WITH LENGTH
-
-                                    else
-                                    {
-
-                                        if ($isTheEnd)
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType NOT NULL AFTER `$columnSelected` ;";
-
-                                        }else
-                                        {
-                                            $command .= "ADD COLUMN `$columnName` $columnType NOT NULL AFTER `$columnSelected` , ";
-                                        }
-                                    }
-                                }
-                            }
-
-                        }
-
-
-                    }
-                    return $this->connexion->execute($command);
-                break;
-                default:
-                    return false;
-                break;
-            }
-
-
-        }
-
-        /**
-         *
-         * Check if the current table has types
-         *
-         * @method has_types
-         *
-         * @param  string[] $types All types expected
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function has_types(string ...$types): bool
-        {
-            $x = collection($this->columns_types());
-
-
-            foreach ($types as $type)
-            {
-                if ($x->not_exist($type))
-                    return false;
-            }
-            return true;
-        }
-
         /**
          *
          * Rename a table
@@ -1851,16 +971,18 @@ namespace Imperium\Tables {
         public function rename(string $new_name): bool
         {
 
+            is_false(def($this->table),true,"Missing the table name");
+
             switch ($this->driver)
             {
                 case MYSQL :
-                    $data =  $this->connexion->execute("RENAME TABLE {$this->table} TO $new_name");
+                    $data =  $this->connexion->execute("RENAME TABLE {$this->current()} TO $new_name");
                     assign($data,$this->table,$new_name);
                     return $data;
                 break;
                 case POSTGRESQL :
                 case SQLITE :
-                    $data =   $this->connexion->execute("ALTER TABLE {$this->table} RENAME TO $new_name");
+                    $data =   $this->connexion->execute("ALTER TABLE {$this->current()} RENAME TO $new_name");
                     assign($data,$this->table,$new_name);
                     return $data;
                 break;
@@ -1870,54 +992,6 @@ namespace Imperium\Tables {
             }
         }
 
-        /**
-         *
-         * Display columns types
-         *
-         * @method columns_types
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function columns_types(): array
-        {
-            $types = collection();
-
-            switch ($this->driver)
-            {
-                case MYSQL :
-
-                  foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $type)
-                  {
-                      $x = collection(explode('(', trim($type->Type,')')));
-                      $types->push($x->get(0));
-                  }
-
-                break;
-
-                case POSTGRESQL :
-
-                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='{$this->current()}';") as $type)
-                    {
-                        $x = collection(explode('(', trim($type->data_type,')')));
-                        $types->push($x->get(0));
-                    }
-
-                break;
-
-                case SQLITE :
-                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $type)
-                    {
-                        $x = collection(explode('(', trim($type->type,')')));
-                        $types->push($x->get(0));
-                    }
-                break;
-            }
-
-            return $types->collection();
-        }
 
         /**
          *
@@ -1943,8 +1017,6 @@ namespace Imperium\Tables {
 
                 $this->collation = $new_collation;
             }
-
-
 
             return $this;
         }
@@ -1981,23 +1053,6 @@ namespace Imperium\Tables {
             return $this;
         }
 
-        /**
-         *
-         * Return the column length
-         *
-         * @method length
-         *
-         * @param  string $column The column name
-         *
-         * @return mixed
-         *
-         * @throws Exception
-         *
-         */
-        public function length(string $column)
-        {
-            return collection($this->columns())->search($column)->set_new_data($this->columns_length())->result();
-        }
 
         /**
          *
@@ -2030,9 +1085,10 @@ namespace Imperium\Tables {
         public function insert_multiples(array $collection,array $ignore = []): bool
         {
 
-            $query = "INSERT INTO {$this->current()} ({$this->columns_to_string()}) VALUES ";
+            $rec = $this->column->for($this->current());
+            $query = "INSERT INTO {$this->current()} ({$rec->columns_to_string()}) VALUES ";
 
-            $primary = $this->primary_key();
+            $primary = $rec->primary_key();
 
             $hidden = collection($ignore);
             $values = collection();
@@ -2060,7 +1116,7 @@ namespace Imperium\Tables {
 
                         switch ($this->driver)
                         {
-                            case Connect::POSTGRESQL:
+                            case POSTGRESQL:
                                 $values->push(" DEFAULT");
                             break;
                             default:

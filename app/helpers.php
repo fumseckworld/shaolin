@@ -456,11 +456,11 @@ if (not_exist('true_or_false'))
     {
         switch ($driver)
         {
-            case Connect::MYSQL:
+            case MYSQL:
                 return rand(0,1);
             break;
-            case Connect::POSTGRESQL:
-            case Connect::SQLITE:
+            case POSTGRESQL:
+            case SQLITE:
                 return rand(0,1) === 1 ? 'TRUE' : 'FALSE';
             break;
             default:
@@ -1127,62 +1127,50 @@ if (not_exist('execute_query'))
      *
      * @method execute_query
      *
-     * @param string $table
-     * @param  int $mode The query mode
-     * @param  string $column_name The where column name
-     * @param  string $condition The where condition
-     * @param  mixed $expected The where expected
-     * @param string $first_table
-     * @param string $first_param
-     * @param string $second_table
-     * @param string $second_param
-     * @param  string $submit_update_text The submit update text
-     * @param  string $form_update_action The update action
-     * @param  string $key The order by key
-     * @param  string $order The order type
-     * @param  mixed &$show_sql_variable The variable to store the sql query
+     * @param $sql_variable
      *
      * @return mixed
      *
      * @throws Exception
      */
-    function execute_query(string $table, int $mode, string $column_name, string $condition, $expected, string $first_table, string $first_param, string $second_table, string $second_param, $submit_update_text, string $form_update_action, string $key, string $order, &$show_sql_variable)
+    function execute_query(&$sql_variable)
     {
 
-        $model = app()->model();
-        $x = app()->table()->from($table);
 
-        $form_grid = 2;
+        $data = collection(\Imperium\Request\Request::all());
+        $column_name = $data->get('column');
+        $condition   = $data->get('condition');
+        $expected = $data->get('expected');
+        $mode = intval($data->get('mode'));
+        $first_table = $data->get('first_table');
+        $first_param  = $data->get('first_param');
+        $second_table = $data->get('second_table');
+        $second_param = $data->get('second_param');
+        $order_column = $data->get('key');
+        $order = $data->get('order');
+        $model = app()->model();
 
         switch ($mode)
         {
-            case UPDATE:
-                $code = collection();
-                $show_sql_variable = $model->query()->mode(SELECT)->from($first_table)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
-                foreach ( $model->query()->mode(SELECT)->from($first_table)->where($column_name,$condition,$expected)->order_by($key,$order)->get()  as $record)
-                {
-                    $id = $x->primary_key();
-
-                    $code->push(form($form_update_action,id())->generate($form_grid,$table,$x,$submit_update_text,uniqid($table),'',Form::EDIT,$record->$id));
-                }
-                return $code->collection();
-            break;
             case DELETE:
 
-                $show_sql_variable = $model->query()->from($table)->mode($mode)->where($column_name,$condition,$expected)->sql();
+                $sql_variable = $model->query()->from($first_table)->mode($mode)->where($column_name,$condition,$expected)->sql();
 
-                $data = $model->from($table)->where($column_name,$condition,$expected)->get();
+                $data = $model->from($first_table)->where($column_name,$condition,$expected)->get();
 
-                return empty($data) ? $data :  $model->query()->from($table)->mode($mode)->where($column_name, $condition, $expected)->delete() ;
+                return empty($data) ? $data :  $model->query()->from($first_table)->mode($mode)->where($column_name, $condition, $expected)->delete() ;
             break;
             case has($mode,Query::JOIN_MODE):
-                $show_sql_variable = $model->query()->from($table)->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->sql();
-                return $model->query()->from($table)->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($key,$order)->get();
+                $sql_variable = $model->query()->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($order_column,$order)->sql();
+                return $model->query()->mode($mode)->join($condition,$first_table,$second_table,$first_param,$second_param)->order_by($order_column,$order)->get();
             break;
-
+            case  has($mode,Query::UNION_MODE);
+                $sql_variable = $model->query()->mode($mode)->union($first_table,$second_table,$first_param,$second_param)->order_by($order_column,$order)->where($column_name,$condition,$expected)->sql();
+                return  $model->query()->mode($mode)->union($first_table,$second_table,$first_param,$second_param)->where($column_name,$condition,$expected)->order_by($order_column,$order)->get();
+            break;
             default:
-                $show_sql_variable = $model->query()->from($table)->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->sql();
-               return $model->query()->from($table)->mode($mode)->where($column_name,$condition,$expected)->order_by($key,$order)->get();
+                $sql_variable = $model->query()->from($first_table)->mode($mode)->where($column_name,$condition,$expected)->order_by($order_column,$order)->sql();
+               return $model->query()->from($first_table)->mode($mode)->where($column_name,$condition,$expected)->order_by($order_column,$order)->get();
             break;
         }
     }
@@ -1196,16 +1184,10 @@ if (not_exist('query_view'))
      * @param string $confirm_message
      * @param string $query_action
      * @param string $create_record_action
-     * @param string $update_record_action
      * @param string $create_record_submit_text
-     * @param string $update_record_text
      * @param string $current_table_name
      * @param string $expected_placeholder
      * @param string $submit_query_text
-     * @param string $submit_class
-     * @param string $remove_success_text
-     * @param string $record_not_found_text
-     * @param string $table_empty_text
      * @param string $reset_form_text
      * @param string $validation_success_text
      * @param string $validation_error_text
@@ -1213,72 +1195,47 @@ if (not_exist('query_view'))
      * @return string
      * @throws Exception
      */
-    function query_view(string $confirm_message, string $query_action, string $create_record_action, string $update_record_action, string $create_record_submit_text, string $update_record_text, string $current_table_name, string $expected_placeholder, string $submit_query_text, string $submit_class, string $remove_success_text, string $record_not_found_text, string $table_empty_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
+    function query_view(string $confirm_message, string $query_action, string $create_record_action,  string $create_record_submit_text,  string $current_table_name, string $expected_placeholder, string $submit_query_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
     {
 
-        $table = app()->table()->from($current_table_name);
+        $table = app()->table();
         
-        $columns = $table->columns();
+        $columns = $table->column()->for($current_table_name)->show();
 
-        $tables = app()->table()->show();
+        $primary = $table->column()->for($current_table_name)->primary_key();
+        $tables = $table->show();
 
         $x = count($columns);
 
         $condition = Query::CONDITION;
 
-        $operations = Query::MODE;
+        $operations =  Query::QUERY_VIEW_MODE;
 
         is_pair($x) ?  $form_grid =  2 :  $form_grid =  3;
 
-        $sql = '';
 
-        return post('mode')
-
-            ?
-               (new Form())->validate()->start($query_action,id(),$confirm_message)
+              return  (new Form())->validate()->start($query_action,id(),$confirm_message)
                 ->row()
-                        ->reset($reset_form_text,$submit_class)
+                    ->reset($reset_form_text)
+                      ->input(Form::HIDDEN,'primary','','',$validation_success_text,$validation_error_text,$primary)
+                      ->input(Form::HIDDEN,'__table__','','',$validation_success_text,$validation_error_text,$current_table_name)
                 ->end_row_and_new()
-                    ->select(false,QUERY_COLUMN,$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(true,QUERY_CONDITION,$condition,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_COLUMN,$columns,$icon,$validation_success_text,$validation_error_text)
+                    ->select(true,QUERY_CONDITION,$condition,$icon,$validation_success_text,$validation_error_text)
                     ->input(Form::TEXT,QUERY_EXPECTED,$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select(true,QUERY_MODE,$operations ,$validation_success_text,$validation_error_text,$icon)
+                    ->select(true,QUERY_MODE,$operations ,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select(false,QUERY_FIRST_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_FIRST_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_SECOND_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_SECOND_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_FIRST_TABLE,$tables,$icon,$validation_success_text,$validation_error_text)
+                    ->select(false,QUERY_FIRST_PARAM,$columns,$icon,$validation_success_text,$validation_error_text)
+                    ->select(false,QUERY_SECOND_TABLE,$tables,$icon,$validation_success_text,$validation_error_text)
+                    ->select(false,QUERY_SECOND_PARAM,$columns,$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->select(false,QUERY_ORDER_KEY,$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_ORDER,[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
+                    ->select(false,QUERY_ORDER_KEY,$columns,$icon,$validation_success_text,$validation_error_text)
+                    ->select(false,QUERY_ORDER,[ASC,DESC],$icon,$validation_success_text,$validation_error_text)
                 ->end_row_and_new()
-                    ->submit($submit_query_text,$submit_class,uniqid())
-               ->end_row()->get()
-                 .
-                query_result($current_table_name,post('mode'),execute_query(post('mode'),post('key'),post('condition'),post('expected'),post('first_table'),post('first_param'),post('second_table'),post('second_param'),$submit_class,$update_record_text,$update_record_action,post('key'),post('order'),$sql),$remove_success_text,$record_not_found_text,$table_empty_text,$sql)
-
-            :
-                (new Form())->validate()->start($query_action,id(),$confirm_message)
-                ->row()
-                    ->reset($reset_form_text,$submit_class)
-                ->end_row_and_new()
-                    ->select(false,QUERY_COLUMN,$columns,$validation_success_text,'error',$icon)
-                    ->select(true,QUERY_CONDITION,$condition,$validation_success_text,'error',$icon)
-                    ->input(Form::TEXT,QUERY_EXPECTED,$expected_placeholder,$icon,$validation_success_text,$validation_error_text)
-                ->end_row_and_new()
-                    ->select(true,QUERY_MODE,$operations ,$validation_success_text,$validation_error_text,$icon)
-                ->end_row_and_new()
-                    ->select(false,QUERY_FIRST_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_FIRST_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_SECOND_TABLE,$tables,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_SECOND_PARAM,$columns,$validation_success_text,$validation_error_text,$icon)
-                ->end_row_and_new()
-                    ->select(false,QUERY_ORDER_KEY,$columns,$validation_success_text,$validation_error_text,$icon)
-                    ->select(false,QUERY_ORDER,[ASC,DESC],$validation_success_text,$validation_error_text,$icon)
-                ->end_row_and_new()
-                    ->submit($submit_query_text,$submit_class,uniqid())
-                ->end_row()->get() .form($create_record_action,uniqid())->generate($form_grid,$current_table_name,$table,$create_record_submit_text,$submit_class,uniqid())
+                    ->submit($submit_query_text,id())
+                ->end_row()->get() .form($create_record_action,id())->generate($form_grid,$current_table_name,$create_record_submit_text,uniqid())
             ;
     }
 }
@@ -1645,8 +1602,8 @@ if (not_exist('simply_view'))
     {
         $instance =  app()->table()->from($current_table_name);
 
-        $columns  = $instance->columns();
-        $primary  = $instance->primary_key();
+        $columns  = $instance->column()->for($current_table_name)->show();
+        $primary  = $instance->column()->for($current_table_name)->primary_key();
 
         $before_content = '<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
         $after_content = '';
@@ -1689,11 +1646,11 @@ if (not_exist('get_records'))
 
         $instance = app()->table()->from($current_table_name);
 
-        $key = def($key) ? $key : $instance->primary_key();
+        $key = def($key) ? $key : $instance->column()->for($current_table_name)->primary_key();
 
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 
-        $sql = sql($current_table_name)->mode(Query::SELECT);
+        $sql = sql($current_table_name)->mode(SELECT);
 
 
         $like = get('q');
@@ -3345,7 +3302,7 @@ if (not_exist('insert_into'))
      * @throws Exception
      *
      */
-    function insert_into(string $table,...$values): string
+    function insert_into(string $table,array  $values): string
     {
         $instance = app()->model()->from($table);
 
@@ -3355,11 +3312,12 @@ if (not_exist('insert_into'))
 
         $primary = $instance->primary();
 
-        foreach ($values as $value)
+        foreach ($values as $k=> $v)
         {
-            if(different($value,$primary))
+
+            if(different($k,$primary))
             {
-                is_string($value) ? append($data,$instance->quote($value) .', ') : append($data,$value.', ');
+                is_string($v) ? append($data,$instance->quote($v) .', ') : append($data,$v.', ');
             }
             else
             {

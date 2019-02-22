@@ -22,6 +22,7 @@ GET:
   admin:
     url: '/admin'
     call: 'Welcome@login'
+
 POST:
   del:
     url: '/del'
@@ -35,3 +36,8 @@ POST:
   login:
     url : '/login'
     call: 'Welcome@check'
+  query:
+    url: '/show'
+    call: 'Welcome@display'
+
+

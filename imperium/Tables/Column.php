@@ -397,11 +397,12 @@ namespace Imperium\Tables {
          * @return Column
          *
          */
-        public function begin(): Column
+        public function column(): Column
         {
             $this->clean();
 
             return $this;
+
         }
 
 
@@ -412,7 +413,7 @@ namespace Imperium\Tables {
          * @throws Exception
          *
          */
-        public function end(): Column
+        public function end_column(): Column
         {
             $columns            = $this->get($this->columns);
             $type               = $this->get($this->type);
@@ -426,7 +427,7 @@ namespace Imperium\Tables {
             $check              = $this->get($this->check);
             $after              = $this->get($this->after);
             $first              = $this->get($this->first);
-            $foreign_index      =  $this->get($this->foreign_index);
+            $foreign_index      = $this->get($this->foreign_index);
             $foreign_column     = $this->get($this->foreign_column);
             $foreign_table      = $this->get($this->foreign_table);
             $action             = $this->get($this->action);
@@ -460,6 +461,22 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Return a string with all columns
+         *
+         * @param string $glue
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function columns_to_string(string $glue = ', '): string
+        {
+            return collection($this->show())->join($glue);
+        }
+
+        /**
+         *
          * Add a check verification
          *
          * @param string $condition
@@ -467,10 +484,14 @@ namespace Imperium\Tables {
          *
          * @return Column
          *
+         * @throws Exception
+         *
          */
         public function check(string $condition,$expected): Column
         {
-            $this->check = is_string($expected) ?  "CHECK ({$this->column} $condition '$expected')" :  "CHECK ({$this->column} $condition $expected)";
+            $condition = html_entity_decode($condition);
+
+            $this->check = is_string($expected) ?  'CHECK ('. $this->column  .' '.$condition . $this->connexion->instance()->quote($expected).')' :  "CHECK ({$this->column} $condition $expected)";
 
             return $this;
         }
@@ -574,6 +595,44 @@ namespace Imperium\Tables {
             return $this;
         }
 
+        /**
+         *
+         * Found the primary key
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function primary_key(): string
+        {
+            switch ($this->driver)
+            {
+                case MYSQL:
+
+                    foreach ($this->connexion->request("show columns from {$this->current()} where `Key` = 'PRI';") as $key)
+                        return $key->Field;
+                break;
+
+                case POSTGRESQL:
+
+                    foreach($this->connexion->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->current()}';") as $key)
+                        return $key->column_name;
+                break;
+
+                case SQLITE:
+
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $field)
+                    {
+                        if (def($field->pk))
+                            return $field->name;
+                    }
+                break;
+            }
+
+            throw  new Exception('We have not found a primary key');
+        }
+
 
 
         /**
@@ -675,6 +734,65 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Add a new column in a table
+         *
+         * @param string $name
+         * @param string $type
+         * @param int $size
+         * @param bool $nullable
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function add(string $name, string $type, int $size,bool $nullable): bool
+        {
+
+            $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
+
+            different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
+
+            if(is_false($nullable))
+            {
+                $this->connexion->postgresql() ?  append($command,' NOT NULL DEFAULT 0') :  append($command,' NOT NULL');
+            }
+
+            return $this->connexion->execute($command);
+
+        }
+
+        /**
+         *
+         * Return the last column
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function last(): string
+        {
+            return collection($this->show())->last();
+        }
+
+
+        /**
+         *
+         * Return the first column
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function begin():string
+        {
+            return collection($this->show())->begin();
+        }
+
+        /**
+         *
          * Verify if a column not exist
          *
          * @param string $column
@@ -729,6 +847,8 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Check if a table has column
+         *
          * @return bool
          *
          * @throws Exception
@@ -755,65 +875,181 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case MYSQL :
-
                     foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $column)
                         $fields->push($column);
-                    break;
+                break;
 
                 case POSTGRESQL :
-
                     foreach ($this->connexion->request("SELECT * FROM information_schema.columns WHERE table_name ='{$this->current()}'") as $column)
                         $fields->push($column);
-
-                    break;
+                break;
 
                 case SQLITE :
                     foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $column)
                         $fields->push($column);
-                    break;
+                break;
             }
             return $fields->collection();
         }
 
         /**
          *
-         * Display all types in the table
+         * Rename a column
+         *
+         * @param string $old
+         * @param string $new_name
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function rename(string $old,string $new_name): bool
+        {
+           switch ($this->driver)
+            {
+                case MYSQL :
+
+                    $type = $this->column_type($old);
+
+                    $length = $this->column_length($old);
+
+                    $x =  $length  ?  "($length)" : '';
+
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->current()} CHANGE COLUMN  $old $new_name $type$x ;");
+                break;
+                case POSTGRESQL :
+                case SQLITE :
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->current()} RENAME COLUMN $old TO $new_name;");
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
+
+
+        /**
+         *
+         * Display all types
          *
          * @return array
          *
+         * @throws Exception
+         *
          */
-        public function types(): array
+        public function types():array
         {
 
-        }
+            $types = collection();
 
+            switch ($this->driver)
+            {
+                case MYSQL :
+                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $type)
+                    {
+                        $x = collection(explode('(', trim($type->Type,')')));
+                        $types->push($x->get(0));
+                    }
+                break;
+
+                case POSTGRESQL :
+                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='{$this->current()}';") as $type)
+                    {
+                        $x = collection(explode('(', trim($type->data_type,')')));
+                        $types->push($x->get(0));
+                    }
+                break;
+
+                case SQLITE :
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $type)
+                    {
+                        $x = collection(explode('(', trim($type->type,')')));
+                        $types->push($x->get(0));
+                    }
+                break;
+            }
+
+            return $types->collection();
+
+        }
 
         /**
          *
-         * Rename a column
+         * Check if a the current has type
          *
-         * @param string $new_name
+         * @param string $type
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
-        public function rename_column(string $new_name): bool
+        public function has_type(string $type): bool
         {
-
+            return collection($this->types())->exist($type);
         }
 
         /**
-         * Rename a index
          *
-         * @param string $new_name
+         * Check if types exist
+         *
+         * @param string ...$types
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
-        public function rename_index(string $new_name): bool
+        public function has_types(string ...$types): bool
         {
+            foreach ($types as $type)
+            {
+                if (is_false($this->has_type($type)))
+                    return false;
+            }
 
+            return true;
         }
+
+        /**
+         *
+         * Return the column type
+         *
+         * @param string $column
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function column_type(string $column)
+        {
+            return collection($this->show())->search($column)->set_new_data($this->types())->result();
+        }
+
+        /**
+         *
+         * Get columns name with types
+         *
+         * @method get_columns_with_types
+         *
+         * @return array
+         *
+         * @throws Exception
+         *
+         */
+        public function columns_with_types():array
+        {
+            $data = collection();
+
+            foreach ($this->show() as $k => $v)
+            {
+                $data->add($this->column_type($v),$v);
+            }
+            return $data->collection();
+        }
+
 
         /**
          *
@@ -833,19 +1069,6 @@ namespace Imperium\Tables {
 
         }
 
-        /**
-         *
-         * Change the column type
-         *
-         * @param string $new_type
-         *
-         * @return bool
-         *
-         */
-        public function change_type(string $new_type): bool
-        {
-
-        }
 
         /**
          *
@@ -866,6 +1089,20 @@ namespace Imperium\Tables {
 
         /**
          *
+         * Return the number of all columns found
+         *
+         * @return int
+         *
+         * @throws Exception
+         *
+         */
+        public function found(): int
+        {
+            return collection($this->show())->length();
+        }
+
+        /**
+         *
          * Define the constraint
          *
          * @param string ...$constraint
@@ -881,6 +1118,9 @@ namespace Imperium\Tables {
         }
 
         /**
+         *
+         * Define the columns
+         *
          * @param string[] $columns
          *
          * @return Column
@@ -888,7 +1128,6 @@ namespace Imperium\Tables {
          */
         public function set(string ...$columns): Column
         {
-
             $this->columns = $columns;
 
             return $this;
@@ -900,47 +1139,23 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
+         * @throws Exception
+         *
          */
-        public function drop_columns(): bool
+        public function remove(): bool
         {
+            foreach ($this->columns as $column)
+                is_false($this->drop($column),true,"The column $column has not been removed");
+
+            return true;
 
         }
 
 
-        public function drop_check(): bool
-        {
-
-        }
 
         /**
          *
-         * Remove an index
-         *
-         *
-         * @return bool
-         *
-         */
-        public function drop_index(): bool
-        {
-
-        }
-
-        /**
-         *
-         * Drop the primary
-         *
-         * @return bool
-         *
-         */
-        public function drop_primary(): bool
-        {
-
-
-        }
-
-        /**
          * @param $value
-         *
          *
          * @return null
          */
@@ -972,6 +1187,100 @@ namespace Imperium\Tables {
 
             foreach (get_object_vars($this) as $k => $v)
                 assign(!has($k, $required), $this->$k, null);
+        }
+
+        /**
+         *
+         *
+         * @param string $column
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function column_length(string $column)
+        {
+            return collection($this->show())->search($column)->set_new_data($this->columns_length())->result();
+        }
+
+        /**
+         * @return array
+         *
+         * @throws Exception
+         *
+         */
+        public function columns_length():array
+        {
+
+            $types = collection();
+
+            switch ($this->driver)
+            {
+                case MYSQL :
+
+                    foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $type)
+                    {
+                        $x = collection(explode('(', trim($type->Type,')')));
+
+                        $x->has_key(1) ?  $types->push($x->get(1)) : $types->push(0);
+                    }
+
+                    break;
+
+                case POSTGRESQL :
+
+                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name =' {$this->current()}';") as $type)
+                    {
+                        $x = collection(explode('(', trim($type->data_type,')')));
+                        $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
+                    }
+
+                    break;
+
+                case SQLITE :
+                    foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $type)
+                    {
+                        $x = collection(explode('(', trim($type->type,')')));
+                        $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
+                    }
+                    break;
+            }
+
+            return $types->collection();
+        }
+
+        /**
+         *
+         * Remove a column
+         *
+         * @param string $column
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function drop(string $column): bool
+        {
+            $primary = $this->primary_key();
+            $table = $this->current();
+
+            switch ($this->driver)
+            {
+                case MYSQL :
+                    return equal($column,$primary) ? false :  $this->connexion->execute("ALTER TABLE $table DROP $column");
+                break;
+
+                case POSTGRESQL :
+                    return  equal($column,$primary) ? false : $this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT");
+                break;
+
+                default :
+                    return false;
+                break;
+
+            }
         }
     }
 }

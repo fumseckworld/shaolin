@@ -15,14 +15,20 @@ namespace Testing\sqlite\table {
          */
         private $table;
 
+        /**
+         * @throws \Exception
+         */
         public function setUp():void
         {
-            $this->table = $this->sqlite()->table()->from('tbl');
+            $this->table = $this->sqlite()->table()->from('base');
         }
 
+        /**
+         * @throws \Exception
+         */
         public function test_columns_info()
         {
-            $this->assertNotEmpty($this->table->get_columns_info());
+            $this->assertNotEmpty($this->table->column()->info());
         }
 
 
@@ -57,7 +63,6 @@ namespace Testing\sqlite\table {
                         'sex' => faker()->firstNameMale,
                         'status' => faker()->text(20),
                         'days' => faker()->date(),
-                        'date' => faker()->date(),
                     ]);
 
             }
@@ -81,12 +86,11 @@ namespace Testing\sqlite\table {
          */
         public function test_change()
         {
-            $this->expectException(\Exception::class);
-            $this->table->set_charset('utf8')->change_charset();
-            $this->table->set_collation('utf8_general_ci')->change_collation();
+            $this->assertTrue($this->table->set_charset('utf8')->change_charset());
+            $this->assertTrue($this->table->set_collation('utf8_general_ci')->change_collation());
 
 
-            $this->table->convert('utf8','utf8_general_ci');
+            $this->assertTrue($this->table->convert('utf8','utf8_general_ci'));
         }
 
         /**
@@ -94,7 +98,7 @@ namespace Testing\sqlite\table {
          */
         public function test_primary_key()
         {
-            $this->assertEquals('id',$this->table->primary_key());
+            $this->assertEquals('id',$this->table->column()->primary_key());
         }
 
         /**
@@ -111,10 +115,9 @@ namespace Testing\sqlite\table {
         public function test_has_columns_type()
         {
 
+            $this->assertTrue($this->table->column()->has_types('datetime','int'));
 
-            $this->assertTrue($this->table->has_types('INTEGER'));
-
-            $this->assertFalse($this->table->has_types('char'));
+            $this->assertFalse($this->table->column()->has_types('integer'));
         }
         /**
          * @throws \Exception
@@ -130,8 +133,8 @@ namespace Testing\sqlite\table {
          */
         public function test_type()
         {
-            foreach ($this->table->columns() as $column)
-                $this->assertNotEmpty($this->table->type($column));
+            foreach ($this->table->column()->show() as $column)
+                $this->assertNotEmpty($this->table->column()->column_type($column));
         }
 
         /**
@@ -140,7 +143,7 @@ namespace Testing\sqlite\table {
         public function test_has()
         {
             $this->assertTrue($this->table->has());
-            $this->assertTrue($this->table->has_column('id'));
+            $this->assertTrue($this->table->column()->exist('id'));
         }
 
 
@@ -153,6 +156,9 @@ namespace Testing\sqlite\table {
             $this->assertTrue($this->table->remove(20));
         }
 
+        /**
+         * @throws \Exception
+         */
         public function test_not_exist()
         {
             $this->assertTrue($this->table->not_exist('alexandra'));
@@ -161,15 +167,25 @@ namespace Testing\sqlite\table {
         /**
          * @throws \Exception
          */
+        public function test_import()
+        {
+            $this->assertTrue($this->sqlite()->model()->dump(current_table()));
+            $this->assertTrue($this->sqlite()->table()->import($this->base));
+        }
+
+        /**
+         * @throws \Exception
+         */
         public function test_the_last_field()
         {
 
-            $columns = $this->table->columns();
-            $end = end($columns);
-            $this->assertFalse($this->table->is_the_last_field('id',$this->table->columns()));
-            $this->assertFalse($this->table->is_the_last_field('name',$this->table->columns()));
+            $columns = $this->table->column()->show();
+            $end = collection($columns)->last();
 
-            $this->assertTrue($this->table->is_the_last_field($end,$this->table->columns()));
+            $this->assertFalse(equal($this->table->column()->last(),'id'));
+            $this->assertFalse(equal($this->table->column()->last(),'name'));
+
+            $this->assertTrue(equal($this->table->column()->last(),$end));
         }
 
         /**
@@ -180,6 +196,7 @@ namespace Testing\sqlite\table {
             $this->assertTrue($this->table->truncate(current_table()));
 
         }
+
         /**
          * @throws \Exception
          */
@@ -187,25 +204,15 @@ namespace Testing\sqlite\table {
         {
             $column = 'moria';
 
-            $instance = $this->table;
+            $instance = $this->table->column();
 
-            $this->assertTrue($instance->append_column($column,App::TEXT,255,false,true));
-            $this->assertTrue($instance->has_column($column));
+            $this->assertTrue($instance->add($column,App::VARCHAR,255,false));
+            $this->assertTrue($instance->exist($column));
+            $this->assertTrue($instance->drop($column));
 
-        }
-
-
-        public function test_create()
-        {
-            $table = 'a';
-            $bool =     $this->sqlite()->table()
-                ->column(Table::INTEGER,'id',true,0,true,true,false,'',false,Table::SUPERIOR_OR_EQUAL,1)
-                ->column(Table::INTEGER,'age',false,0,false,true,true,18,true,Table::SUPERIOR_OR_EQUAL,18)
-                ->column(Table::TEXT,'name',false,100,true,false,false,'',true,Table::DIFFERENT,'willy')
-                ->column(Table::TEXT,'username',false,100,true,true,true,'champion',true,Table::DIFFERENT,'fumseck')
-                ->create($table);
-            $this->assertTrue($bool);
-            $this->assertTrue($this->sqlite()->table()->drop($table));
+            $this->assertTrue($instance->add($column,App::VARCHAR,255,true));
+            $this->assertTrue($instance->exist($column));
+            $this->assertTrue($instance->drop($column));
 
         }
 
@@ -214,8 +221,8 @@ namespace Testing\sqlite\table {
          */
         public function test_ignore()
         {
-            $this->assertNotContains('phinxlog',$this->sqlite()->table()->show());
 
+            $this->assertContains(current_table(),$this->table->show());
         }
 
 
@@ -225,7 +232,7 @@ namespace Testing\sqlite\table {
         public function test_columns_to_string()
         {
 
-            $this->assertEquals('id, name, age, phone, sex, status, days, date, moria',$this->table->columns_to_string());
+            $this->assertEquals('id, name, age, phone, sex, status, days',$this->table->column()->columns_to_string());
         }
 
 
@@ -234,7 +241,7 @@ namespace Testing\sqlite\table {
          */
         public function test_count()
         {
-            $this->assertEquals(349,$this->table->count());
+            $this->assertEquals(0,$this->table->count());
         }
 
 
@@ -253,8 +260,7 @@ namespace Testing\sqlite\table {
          */
         public function test_current()
         {
-
-            $this->assertEquals('tbl',$this->table->current());
+            $this->assertEquals(current_table(),$this->table->current());
         }
 
 
@@ -263,18 +269,19 @@ namespace Testing\sqlite\table {
          */
         public function test_columns_not_exist()
         {
-            $this->assertTrue($this->table->column_not_exist('excalibur'));
+            $this->assertTrue($this->table->column()->not_exist('excalibur'));
 
-            $this->assertFalse($this->table->column_not_exist('id'));
+            $this->assertFalse($this->table->column()->not_exist('id'));
         }
-
-
         /**
          * @throws \Exception
          */
-        public function test_modify_column()
+        public function test_dump()
         {
-            $this->assertFalse($this->table->modify_column('status',App::VARCHAR,200));
+
+            $this->assertTrue($this->table->dump());
+            $this->assertTrue($this->table->dump(current_table()));
+
         }
 
         /**
@@ -287,8 +294,8 @@ namespace Testing\sqlite\table {
             $old = 'name';
             $new = 'username';
 
-            $this->assertTrue($this->table->rename_column($old, $new));
-            $this->assertTrue($this->table->rename_column($new, $old));
+            $this->assertTrue($this->table->column()->rename($old, $new));
+            $this->assertTrue($this->table->column()->rename($new, $old));
 
 
             $this->assertTrue($this->table->rename($new));

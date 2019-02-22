@@ -55,7 +55,8 @@ namespace Testing {
 
            $del =  form(url('del',POST),'delete')->select(false,'table',$this->table()->show())->submit('a','a')->get();
 
-            return view('welcome',compact('code','del'));
+           $query = query_view('sure',name('query',POST),name('create',POST),'create',$table,'expected','submit','reset');
+           return view('welcome',compact('code','del','query'));
 
         }
 
@@ -78,9 +79,19 @@ namespace Testing {
 
             return view('login',compact('form'));
         }
-        public function display(int $id,string $slug)
+        public function display()
         {
-            return "$id $slug";
+
+            $sql = '';
+
+           $data =  execute_query($sql);
+
+           if (is_bool($data))
+               return is_true($data) ? back('success') : back('failure',false);
+
+
+           $data = $this->model()->parse($data,name('update',POST),'update',Request::get('__table__'),Request::get('primary'));
+           return view('show',compact('data','sql'));
         }
 
         /**
@@ -131,7 +142,7 @@ namespace Testing {
         {
             $bool = $this->model()->update();
             $message = $bool ? 'success' : 'failure';
-           return back($message,$bool);
+           return to('/',$message,$bool);
         }
     }
 }

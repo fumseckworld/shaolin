@@ -1353,7 +1353,6 @@ namespace Imperium\Html\Form {
          *
          * @param  int      $form_grid    The number to modify the form generation output
          * @param  string   $table        The current table
-         * @param  Table    $instance     The table instance
          * @param  string   $submit_text  The submit button text
          * @param  string   $submit_id    The submit button id
          * @param  string   $submit_icon  The submit icon
@@ -1365,11 +1364,11 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function generate(int $form_grid,string $table, Table $instance, string $submit_text, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
+        public function generate(int $form_grid,string $table, string $submit_text, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
-            $instance   = $instance->from($table);
+            $instance   = \app()->table()->column()->for($table);
 
-            $types      = collection($instance->get_columns_with_types());
+            $types      = collection($instance->columns_with_types());
 
             $primary    = $instance->primary_key();
 
@@ -1380,13 +1379,13 @@ namespace Imperium\Html\Form {
             if (equal($mode,Form::EDIT))
             {
 
-                $data = $instance->select_or_fail($id);
+                $data = \app()->table()->from($table)->select_or_fail($id);
 
                 $numeric = collection();
                 $date = collection();
                 $text = collection();
 
-                $columns = collection($instance->get_columns_with_types());
+                $columns = collection($instance->columns_with_types());
 
                 $values = collection();
 

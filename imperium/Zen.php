@@ -356,6 +356,18 @@ namespace Imperium {
                 NATURAL_JOIN  =>'NATURAL JOIN'
         ];
 
+        const QUERY_VIEW_MODE = [
+            SELECT        => 'SELECT', // 21
+            DELETE        => 'DELETE', // 22
+            UNION         => 'UNION', //12
+            UNION_ALL     => 'UNION_ALL' , //13
+            INNER_JOIN    => 'INNER JOIN', // 14
+            CROSS_JOIN    => 'CROSS JOIN', //15
+            LEFT_JOIN     => 'LEFT JOIN', //16
+            RIGHT_JOIN    => 'RIGHT JOIN', //17
+            FULL_JOIN     => 'FULL JOIN',  // 18
+            NATURAL_JOIN  =>'NATURAL JOIN'
+        ];
         /**
          *
          * All join modes supported
@@ -373,6 +385,10 @@ namespace Imperium {
             NATURAL_JOIN
         ];
 
+        const UNION_MODE = [
+            self::UNION,
+            self::UNION_ALL,
+        ];
         /**
          *
          * The query mode to execute a between
