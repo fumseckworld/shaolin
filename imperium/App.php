@@ -1088,7 +1088,7 @@ namespace Imperium {
          */
         public function view(string $name,array $args = []): string
         {
-            return view($name,$args);
+            return view(get_called_class(),$name,$args);
         }
     }
 }

@@ -42,8 +42,6 @@ namespace Testing {
         /**
          * @return string
          * @throws \Twig_Error_Loader
-         * @throws \Twig_Error_Runtime
-         * @throws \Twig_Error_Syntax
          * @throws \Exception
          */
         public function show()
@@ -56,7 +54,8 @@ namespace Testing {
            $del =  form(url('del',POST),'delete')->select(false,'table',$this->table()->show())->submit('a','a')->get();
 
            $query = query_view('sure',name('query',POST),name('create',POST),'create',$table,'expected','submit','reset');
-           return view('welcome',compact('code','del','query'));
+
+           return $this->view('welcome',compact('code','del','query'));
 
         }
 
@@ -67,18 +66,8 @@ namespace Testing {
 
             return $this->auth()->redirect_url(url('home','GET',true))->login($username,$pass);
         }
-        /**
-         * @return string
-         * @throws \Twig_Error_Loader
-         * @throws \Twig_Error_Runtime
-         * @throws \Twig_Error_Syntax
-         */
-        public function login()
-        {
-            $form = login('/login',id(),'username','password','login','a');
 
-            return view('login',compact('form'));
-        }
+
         public function display()
         {
 
@@ -91,7 +80,7 @@ namespace Testing {
 
 
            $data = $this->model()->parse($data,name('update',POST),'update',Request::get('__table__'),Request::get('primary'));
-           return view('show',compact('data','sql'));
+           return $this->view('show',compact('data','sql'));
         }
 
         /**

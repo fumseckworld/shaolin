@@ -3,6 +3,7 @@
 namespace Imperium\View {
 
     use Imperium\Directory\Dir;
+    use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Twig\TwigFunction;
     use Twig_Environment;
@@ -170,26 +171,23 @@ namespace Imperium\View {
         }
 
 
-        /**
-         *
-         * Return a view
-         *
-         * @method load
-         *
-         * @param string $name
-         * @param array $args
-         *
-         * @return string
-         *
-         * @throws Twig_Error_Loader
-         * @throws Twig_Error_Runtime
-         * @throws Twig_Error_Syntax
-         */
-        public function load(string $name,array $args = []): string
+        public function load(string $view,array $args)
         {
-            $name = collection(explode('.',$name))->begin();
-            append($name,'.twig');
-            return $this->twig()->render($name,$args);
+            $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
+
+            $dir = strtolower(str_replace('Controller','',$parts->get(0)));
+
+            $view = $dir .DIRECTORY_SEPARATOR . $parts->get(1);
+
+            $dir = $this->view_dir . DIRECTORY_SEPARATOR . $dir;
+
+            Dir::create($dir);
+
+            $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
+
+            if (!File::exist($file))
+                File::create($file);
+            return $this->twig->render($view,$args);
         }
 
 

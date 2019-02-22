@@ -287,6 +287,7 @@ if (not_exist('view'))
     /**
      * Load a view
      *
+     * @param string $class
      * @param string $name
      * @param array $args
      *
@@ -295,18 +296,22 @@ if (not_exist('view'))
      * @throws Twig_Error_Loader
      * @throws Twig_Error_Runtime
      * @throws Twig_Error_Syntax
-     *
      * @throws Exception
-     *
      */
-    function view(string $name,array $args =[]) : string
+    function view(string $class,string $name,array $args =[]) : string
     {
-        $name = collection(explode('.',$name))->begin();
-
-        append($name,'.twig');
+        $dir = collection(explode('\\',$class))->last();
 
 
-        return (new View())->load($name,$args);
+        $file = collection(explode('.',$name))->begin();
+
+
+        append($file,'.twig');
+
+        $file = $dir .DIRECTORY_SEPARATOR . $file;
+
+
+        return (new View())->load($file,$args);
     }
 }
 

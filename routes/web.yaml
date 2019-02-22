@@ -9,7 +9,7 @@ GET:
     call: 'Welcome@pagination'
   login:
     url: '/login'
-    call: 'Welcome@login'
+    call: 'Admin@login'
   remove:
     url: '/remove/:table/:id'
     call: 'Welcome@remove'
