@@ -912,7 +912,7 @@ namespace Imperium\Tables {
 
                     $type = $this->column_type($old);
 
-                    $length = $this->column_length($old);
+                    $length = $this->length($old);
 
                     $x =  $length  ?  "($length)" : '';
 
@@ -1144,6 +1144,8 @@ namespace Imperium\Tables {
          */
         public function remove(): bool
         {
+            is_true(not_def($this->columns),true,"Missing the column names");
+
             foreach ($this->columns as $column)
                 is_false($this->drop($column),true,"The column $column has not been removed");
 
@@ -1199,7 +1201,7 @@ namespace Imperium\Tables {
          * @throws Exception
          *
          */
-        public function column_length(string $column)
+        public function length(string $column)
         {
             return collection($this->show())->search($column)->set_new_data($this->columns_length())->result();
         }
