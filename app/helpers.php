@@ -1502,7 +1502,7 @@ if (not_exist('tables_select'))
      */
     function tables_select(string $current, string $url_prefix,string $separator): string
     {
-        $tables = collection(["$url_prefix$separator$current" => $current]);
+        $tables = collection(["" => $current]);
 
         foreach (app()->table()->show() as $x)
         {
@@ -2840,7 +2840,7 @@ if (not_exist('form'))
      * @throws Exception
      *
      */
-    function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf8'): Form
+    function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf-8'): Form
     {
         return def($confirm) ? (new Form())->validate()->start($action,$id,$confirm,$class,$enctype,strtolower($method),$charset) : (new Form())->start($action,$id,$confirm,$class,$enctype,strtolower($method),$charset);
     }
@@ -3183,7 +3183,8 @@ if(not_exist('fa'))
      */
     function fa(string $prefix,string $icon, string $options = ''): string
     {
-        return '<i class="'.$prefix.'  '.$icon.' '.$options.'" ></i>';
+        $x = "$prefix $icon $options";
+        return '<i class="'.$x.'"></i>';
     }
 }
 

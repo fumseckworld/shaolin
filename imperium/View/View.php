@@ -115,6 +115,14 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('lang',
+
+                function ()
+                {
+                    return config('locales','locale');
+                }
+                ,['is_safe' => ['html']]
+            ));
             $functions->add(new TwigFunction('_',
 
                 function (string $name,array $args = [])

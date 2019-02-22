@@ -361,6 +361,8 @@ namespace Imperium\Model {
          * @param string $end_pagination_text
          * @param string $key
          * @param string $order_by
+         * @param string $form_action
+         * @param string $form_id
          * @param string $search_placeholder
          * @param string $table_icon
          * @param string $search_icon
@@ -374,7 +376,7 @@ namespace Imperium\Model {
                                 string $remove_icon,string $remove_url_prfix,
                                 string $action_edit_text,string $edit_url_prefix,string $edit_icon,
                                 string $start_pagination_text,string $end_pagination_text,
-                                string $key,string $order_by,string $search_placeholder,string $table_icon,string $search_icon,string $pagination_icon,bool $pagination_to_right = true
+                                string $key,string $order_by,string $form_action,string $form_id,string $search_placeholder,string $table_icon,string $search_icon,string $pagination_icon,bool $pagination_to_right = true
         ): string
         {
 
@@ -412,7 +414,7 @@ namespace Imperium\Model {
                     $data->merge(["?table=$x" => $x]);
             }
 
-            $form = \form('/','a')->row()->redirect('table',$data->collection(),$table_icon)->pagination($pagination_icon,'/pagination/')->end_row_and_new()->search($search_placeholder,$search_icon)->end_row()->get();
+            $form =  form($form_action,$form_id)->row()->redirect('table',$data->collection(),$table_icon)->pagination($pagination_icon,'/pagination/')->end_row_and_new()->search($search_placeholder,$search_icon)->end_row()->get();
 
             append($html,$form);
 

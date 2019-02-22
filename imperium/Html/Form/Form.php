@@ -577,7 +577,7 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function start(string $action, string $id,string $confirm ='', string $class = '',  bool $enctype = false, string $method = POST,string $charset = 'utf8'): Form
+        public function start(string $action, string $id,string $confirm ='', string $class = '',  bool $enctype = false, string $method = POST,string $charset = 'utf-8'): Form
         {
 
             $this->method = $method;
@@ -1119,17 +1119,20 @@ namespace Imperium\Html\Form {
             else
                 $validation = '';
 
+            $first = collection($options)->begin();
+
             if ($required)
             {
+
                 if (not_def($icon))
                 {
+
                     if ($multiple)
                         append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" multiple required="required">');
                     else
                         append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" required="required">');
                     foreach ($options as $k => $v)
-                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
-
+                            $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
                     append($this->form,'</select>'.$validation.'</div></div>');
                 } else {
 
@@ -1139,7 +1142,9 @@ namespace Imperium\Html\Form {
                         append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'" required="required">');
 
                     foreach ($options as $k => $v)
-                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
+                    {
+                            $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
+                    }
 
                     append($this->form,'</select>'.$validation.'</div></div></div>');
                 }
@@ -1152,9 +1157,10 @@ namespace Imperium\Html\Form {
                         append($this->form, '<div class="'.self::AUTO_COL.'"><div  class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '" multiple>');
                     else
                         append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><select class="' . $class . '"  name="' . $name . '">');
-                    foreach ($options as $k=> $v)
-                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
-
+                    foreach ($options as $k => $v)
+                    {
+                            $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
+                    }
                     $this->form .= '</select>'.$validation.'</div></div>';
 
                 } else
@@ -1164,10 +1170,10 @@ namespace Imperium\Html\Form {
                         append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'" multiple>');
                     else
                         append($this->form ,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text">'.$icon.'</span></div> <select name="'.$name.'" class="'.$class.'">');
-
                     foreach ($options as $k => $v)
-                        $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
-
+                    {
+                            $use_index ?  append($this->form, '<option value="'.$k.'">'.$v.'</option>') :  append($this->form, '<option value="'.$v.'">'.$v.'</option>') ;
+                    }
                     append($this->form,'</select>'.$validation.'</div></div></div>');
                 }
             }

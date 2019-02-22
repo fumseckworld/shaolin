@@ -37,8 +37,6 @@ namespace Imperium\Session {
          */
         public function get($key)
         {
-
-
             return $this->has($key) ? $_SESSION[$key] : '';
         }
 
@@ -68,7 +66,6 @@ namespace Imperium\Session {
          */
         public function set($value,$key): Session
         {
-
             $_SESSION[$key] = $value;
 
             return $this;
@@ -85,7 +82,6 @@ namespace Imperium\Session {
          */
         public function remove($key): bool
         {
-
             if ($this->has($key))
             {
                 unset($_SESSION[$key]);

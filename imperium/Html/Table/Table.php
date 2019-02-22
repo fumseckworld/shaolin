@@ -331,7 +331,7 @@ namespace Imperium\Html\Table {
                 $this->end_row();
             }
 
-            return $this->end_row()->end_tbody()->end()->after_content($this->after_content)->get();
+            return $this->end_tbody()->end()->after_content($this->after_content)->get();
         }
 
         /**
