@@ -9,6 +9,7 @@ development:
   hidden_tables: ['phinxlog']
   hidden_bases : []
   hidden_users: []
+  debug: true
 production:
   driver: pgsql
   base: zen
@@ -18,3 +19,4 @@ production:
   host: 'localhost'
   hidden_tables: ['phinxlog']
   hidden_bases: []
+  debug: false

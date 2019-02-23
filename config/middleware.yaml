@@ -1,3 +1,2 @@
-namespace: 'Imperium\Middleware\'
-
-all: ['CsrfMiddleware', 'Test','Auth']
+namespace: 'Shaolin\Middleware\'
+dir: 'Middleware'

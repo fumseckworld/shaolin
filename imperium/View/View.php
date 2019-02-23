@@ -8,8 +8,6 @@ namespace Imperium\View {
     use Twig\TwigFunction;
     use Twig_Environment;
     use Twig_Error_Loader;
-    use Twig_Error_Runtime;
-    use Twig_Error_Syntax;
     use Twig_Function;
     use Twig_Loader_Filesystem;
 
@@ -124,6 +122,7 @@ namespace Imperium\View {
                 }
                 ,['is_safe' => ['html']]
             ));
+
             $functions->add(new TwigFunction('_',
 
                 function (string $name,array $args = [])
@@ -133,23 +132,15 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('url',
-
-                function (string $name,string $method = GET,bool $admin = false)
-                {
-                    return url($name,$method,$admin);
-                }
-                ,['is_safe' => ['html']]
-            ));
-
             $functions->add(new TwigFunction('name',
 
-                function (string $name,string $method = GET,bool $admin = false)
+                function (string $name,string $method = GET)
                 {
-                    return url($name,$method,$admin);
+                    return name($name,$method);
                 }
                 ,['is_safe' => ['html']]
             ));
+
            $this->add_functions($functions->collection());
         }
 
@@ -171,6 +162,14 @@ namespace Imperium\View {
         }
 
 
+        /**
+         * @param string $view
+         * @param array $args
+         * @return string
+         * @throws Twig_Error_Loader
+         * @throws \Twig_Error_Runtime
+         * @throws \Twig_Error_Syntax
+         */
         public function load(string $view,array $args)
         {
             $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
@@ -185,7 +184,7 @@ namespace Imperium\View {
 
             $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
 
-            if (!File::exist($file))
+            if (File::not_exist($file))
             {
                 File::create($file);
                 File::put($file,"{% extends 'layout.twig' %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
@@ -215,20 +214,6 @@ namespace Imperium\View {
             return $this;
         }
 
-
-        /**
-         *
-         * Return all globals variables
-         *
-         * @method globals
-         *
-         * @return array
-         *
-         */
-        public function globals(): array
-        {
-            return $this->twig()->getGlobals();
-        }
 
         /**
          *

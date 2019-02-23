@@ -158,6 +158,9 @@ namespace Imperium\Connexion {
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
+
+            $dump_path = dump_path($dump_path);
+
             Dir::create($dump_path);
 
             $this->driver       = $driver;

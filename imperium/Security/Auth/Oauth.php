@@ -102,7 +102,7 @@ namespace Imperium\Security\Auth {
          */
         public function login(string $username,string $password): RedirectResponse
         {
-            $user = app()->model()->from(config('auth','users_table'))->by('username',$username);
+            $user = app()->model()->from(config('auth','auth_table'))->by('username',$username);
 
             superior($user,1,true,'We have found multiple username identical');
 

@@ -46,7 +46,7 @@
     "autoload": {
         "psr-4": {
             "Imperium\\": "imperium/",
-            "Command\\" : "commands"
+            "Shaolin\\" : "core"
         },
         "files": [
             "app/helpers.php"

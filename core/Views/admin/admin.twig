@@ -1,0 +1,6 @@
+{% extends 'layout.twig' %}
+
+{% block content %}
+    <h1>admin</h1>
+    <a href="{{ name('logout') }}" class="btn btn-danger "> {{ _('Logout') }}</a> <a href="{{ name('home') }}" class="btn-primary btn"> {{ _('Home') }}</a>
+{% endblock %}

@@ -1244,6 +1244,10 @@ namespace Imperium\File {
             return file_exists($file);
         }
 
+        public static function not_exist(string $file): bool
+        {
+            return ! file_exists($file);
+        }
         /**
          * exit the app with a message
          *

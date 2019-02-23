@@ -1,4 +1,4 @@
-dir: 'views'
+dir: 'core/Views'
 config:
   cache : false
   charset: 'utf-8'

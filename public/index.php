@@ -1,6 +1,8 @@
 <?php
 
 
+use Imperium\App;
+
 require_once '../vendor/autoload.php';
 
-\Imperium\App::run();
+echo  App::run('Shaolin\Controllers');

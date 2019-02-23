@@ -1,2 +1,4 @@
-dir: 'commands'
-namespace: 'Command'
+dir: 'core/Command'
+namespace: 'Shaolin\Command'
+controllers_dir: 'core/Controllers'
+controllers_namespace: 'Shaolin\Controllers'

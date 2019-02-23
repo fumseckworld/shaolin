@@ -194,6 +194,57 @@ if (not_exist('config'))
     }
 }
 
+if (not_exist('core_path'))
+{
+    /**
+     *
+     * The app core path
+     *
+     * @param string $dir
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function core_path(string $dir): string
+    {
+        if (def(request()->server->get('PWD')) && Dir::is('vendor'))
+            return request()->server->get('PWD') . DIRECTORY_SEPARATOR . $dir;
+
+        if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
+           return dirname(request()->server->get('SCRIPT_FILENAME'),3) .DIRECTORY_SEPARATOR .$dir;
+        else
+            return dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR . $dir;
+
+    }
+}
+
+if (not_exist('dump_path'))
+{
+    /**
+     *
+     * The dump dir
+     *
+     * @param string $dir
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function dump_path(string $dir): string
+    {
+        if (def(request()->server->get('PWD')) && Dir::is('vendor'))
+            return request()->server->get('PWD') . DIRECTORY_SEPARATOR . $dir;
+
+        if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
+            return dirname(request()->server->get('SCRIPT_FILENAME'),3) .DIRECTORY_SEPARATOR .$dir;
+        else
+            return dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR . $dir;
+
+    }
+}
 if (not_exist('locales'))
 {
     /**
@@ -2041,7 +2092,29 @@ if (not_exist('method'))
         return Router::callback($name,$method);
     }
 }
+if (not_exist('is_admin'))
+{
+    /**
+     * @return bool
+     *
+     * @throws Exception
+     *
+     */
+    function is_admin(): bool
+    {
+        $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
+        $prefix = \config('auth','admin_prefix');
+        $connected = \app()->session()->has('__connected__');
 
+        if (equal($prefix,'/') && $connected)
+            return true;
+
+        if(is_not_false(strstr($request->getUri()->getPath(),$prefix)) && $connected)
+            return true;
+
+        return false;
+    }
+}
 if (not_exist('name'))
 {
     /**
@@ -2050,39 +2123,17 @@ if (not_exist('name'))
      *
      * @param string $name The route name
      * @param string $method The route method
-     * @param bool $admin
      *
      * @return string
      *
      * @throws Exception
-     *
      */
-    function name(string $name,string $method = Router::METHOD_GET,bool $admin = false): string
+    function name(string $name,string $method = GET): string
     {
-        return url($name,$method,$admin);
+        return is_admin() ? Router::admin($name,$method) : Router::web($name,$method);
     }
 }
 
-if (not_exist('url'))
-{
-    /**
-     *
-     * Return a route url by use it's name
-     *
-     * @param string $route_name
-     * @param string $method The route method
-     * @param bool $admin
-     *
-     * @return string
-     *
-     * @throws Exception
-     *
-     */
-    function url(string $route_name,string $method = Router::METHOD_GET,bool $admin = false): string
-    {
-        return $admin ? Router::admin($route_name,$method) : Router::web($route_name,$method);
-    }
-}
 
 if (not_exist('css'))
 {

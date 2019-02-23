@@ -1,6 +1,35 @@
-namespace: 'Testing'
 GET:
   home:
+    url: '/'
+    call: 'WelcomeController@home'
+  del:
+    url: '/del'
+    call: 'Welcome@del'
+  admin:
     url: '/admin'
-    call: 'Admin@home'
-
+    call: 'WelcomeController@home'
+  login:
+    url: '/login'
+    call: 'AdminController@login'
+  edit:
+    url: '/edit/:table/:id'
+    call: 'WelcomeController@edit'
+  remove:
+    url: '/remove/:table/:id'
+    call: 'WelcomeController@remove'
+  logout:
+    url: '/logout'
+    call: 'AdminController@logout'
+POST:
+  del:
+    url: 'del'
+    call: 'WelcomeController@del'
+  query:
+    url: '/query'
+    call: 'WelcomeController@display'
+  create:
+    url: '/create'
+    call: 'WelcomeController@create'
+  update:
+    url: '/update'
+    call: 'WelcomeController@update'

@@ -3,5 +3,5 @@ port: 25
 username: ''
 password: ''
 from: 'fumseckworld@gmail.com'
-dir: '../emails'
+dir: 'core/Emails'
 html: true

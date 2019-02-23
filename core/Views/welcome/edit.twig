@@ -1,0 +1,8 @@
+{% extends 'layout.twig' %}
+
+{% block content %}
+    <a href="{{ name('home','GET',true) }}" class="btn-primary btn"> {{ _('Home') }}</a>
+    {{ form(edit) }}
+    {{ form(create) }}
+
+{% endblock %}

@@ -736,24 +736,24 @@ namespace Imperium {
         }
 
 
-
         /**
          *
          * Run the application
          *
+         * @param string $namespace
          *
-         * @return void
+         * @param string $core_path
+         * @return string
          *
          * @throws Exception
-         *
          */
-        public static function run(): void
+        public static function run(string $namespace,string $core_path = 'core'):string
         {
-            if (config('app','debug'))
+            if(config('db','debug'))
             {
                 whoops();
             }
-            echo (new Router(ServerRequest::fromGlobals()))->run();
+            return (new Router(ServerRequest::fromGlobals(),$namespace,$core_path))->run();
         }
 
         /**

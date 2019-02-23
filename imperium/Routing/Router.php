@@ -3,6 +3,8 @@
 namespace Imperium\Routing {
 
     use Exception;
+    use Imperium\Directory\Dir;
+    use Imperium\File\File;
     use Imperium\Request\Request;
     use Psr\Http\Message\ServerRequestInterface;
 
@@ -159,16 +161,26 @@ namespace Imperium\Routing {
          */
         private $method;
 
+        /**
+         * @var string
+         */
+        private $core_path;
+
 
         /**
          * Router constructor.
          *
          * @param ServerRequestInterface $request
          *
+         * @param string $namespace
+         * @param string $core_path
          * @throws Exception
          */
-        public function __construct(ServerRequestInterface $request)
+        public function __construct(ServerRequestInterface $request,string $namespace,string $core_path)
         {
+
+            $this->core_path = $core_path;
+
             $this->call_middleware($request);
 
             $this->method        = $request->getMethod();
@@ -177,7 +189,7 @@ namespace Imperium\Routing {
 
             self::$URL            = $this->url;
 
-            $this->namespace =  config('app','namespace');
+            $this->namespace = $namespace;
         }
 
 
@@ -191,8 +203,18 @@ namespace Imperium\Routing {
         {
             $namespace = config('middleware','namespace');
 
-            foreach (config('middleware','all') as $middleware)
+            $dir = core_path($this->core_path) .DIRECTORY_SEPARATOR .config('middleware','dir');
+
+            is_false(Dir::is($dir),true,"$dir was not found");
+
+            $middle = File::search("$dir/*php");
+
+            foreach  ($middle as $middleware)
             {
+                $middle = collection(explode(DIRECTORY_SEPARATOR,$middleware))->last();
+                $middleware = collection(explode('.',$middle))->begin();
+
+
                 $class = "$namespace$middleware";
 
                 call_user_func_array(new $class(), [$request]);
@@ -211,7 +233,7 @@ namespace Imperium\Routing {
         public function run()
         {
 
-            if (has(config('admin','prefix'),parse_url($this->url)))
+            if (is_admin())
             {
 
                 foreach(admin($this->method) as $name => $route)

@@ -1,43 +1,12 @@
-namespace: 'Testing'
-
 GET:
   home:
-     url: '/'
-     call: 'Welcome@show'
-  pagination:
-    url: '/pagination/:x'
-    call: 'Welcome@pagination'
+    url: '/'
+    call: 'WelcomeController@home'
   login:
     url: '/login'
-    call: 'Admin@login'
-  remove:
-    url: '/remove/:table/:id'
-    call: 'Welcome@remove'
-  edit:
-    url: '/edit/:table/:id'
-    call: 'Welcome@edit'
-  logout:
-    url: '/logout'
-    call: 'Welcome@logout'
-  admin:
-    url: '/admin'
-    call: 'Welcome@login'
+    call: 'AdminController@login'
 
 POST:
-  del:
-    url: '/del'
-    call: 'Welcome@del'
-  update:
-    url: '/update'
-    call: 'Welcome@update'
-  create:
-    url: '/create'
-    call: 'Welcome@create'
   login:
-    url : '/login'
-    call: 'Welcome@check'
-  query:
-    url: '/show'
-    call: 'Welcome@display'
-
-
+    url: '/login'
+    call: 'AdminController@check'
