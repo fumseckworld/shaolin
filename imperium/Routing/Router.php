@@ -341,7 +341,6 @@ namespace Imperium\Routing {
          */
         public static function web(string $route_name,$method = self::METHOD_GET): string
         {
-
             foreach(web($method) as $name => $route)
             {
                 $x = collection($route);

@@ -12,3 +12,6 @@ POST:
   login:
     url: '/login'
     call: 'AdminController@check'
+  del:
+    url: '/del'
+    call: 'o@a'

@@ -631,6 +631,30 @@ namespace Testing\Form {
             $this->assertStringContainsString('location',$form);
             $this->assertStringContainsString('name="a"',$form);
         }
+
+        public function test_pagination()
+        {
+            $icon = fa('fas','fa-search');
+            $form = \form('a','a')->pagination($icon,'pag')->get();
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('pag',$form);
+        }
+        public function test_search()
+        {
+            $icon = fa('fas','fa-search');
+            $form = \form('a','a')->search('search',$icon)->get();
+            $this->assertStringContainsString('placeholder="search"',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertStringContainsString('&q=',$form);
+        }
+        public function test_group()
+        {
+            $form = form('a','a')->group(['login','email'],'/login','/email')->get();
+            $this->assertStringContainsString('href="/login"',$form);
+            $this->assertStringContainsString('login',$form);
+            $this->assertStringContainsString('email',$form);
+            $this->assertStringContainsString('href="/email"',$form);
+        }
         public function test_link()
         {
             $icon = fa('fas','fa-home');

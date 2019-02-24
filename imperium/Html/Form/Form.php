@@ -957,12 +957,8 @@ namespace Imperium\Html\Form {
             $col  = collection(config($this->file,'textarea'))->get('col');
 
             if ($this->save)
-                $x = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
-            else
-                $x = '';
+                $value = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
 
-            if (def($x))
-                $value = $x;
 
             if ($this->validate)
             {

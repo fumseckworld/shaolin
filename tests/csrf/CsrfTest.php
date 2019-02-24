@@ -16,6 +16,10 @@ namespace Testing\csrf {
          *
          */
         private $csrf;
+        /**
+         * @var ServerRequest
+         */
+        private $request;
 
         /**
          * @throws Exception
@@ -23,6 +27,7 @@ namespace Testing\csrf {
         public function setUp():void
         {
             $this->csrf = new Csrf(app()->session());
+            $this->request = new ServerRequest('POST',name('del',POST));
         }
 
         /**
@@ -42,12 +47,19 @@ namespace Testing\csrf {
         {
             $this->expectException(Exception::class);
 
-            $request = new ServerRequest('POST',name('del',POST));
 
-            app()->router($request,'Shaolin\Controllers','a')->run();
+            app()->router($this->request,'Shaolin\Controllers','core')->run();
 
         }
 
+        /**
+         * @throws Exception
+         */
+        public function test_check()
+        {
+            $this->expectException(Exception::class);
+            $this->csrf->check($this->request);
+        }
 
     }
 }

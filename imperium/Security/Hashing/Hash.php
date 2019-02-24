@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Imperium\Hashing {
+namespace Imperium\Security\Hashing {
 
     use Exception;
 
@@ -42,7 +42,7 @@ namespace Imperium\Hashing {
          */
         public static function make($value)
         {
-            $hash = password_hash($value, PASSWORD_BCRYPT, ['cost' => self::cost()]);
+            $hash = password_hash($value, PASSWORD_BCRYPT, self::cost());
 
             is_false($hash,true,'Bcrypt hashing not supported.');
 
@@ -59,7 +59,7 @@ namespace Imperium\Hashing {
          */
         public static function need_rehash(string $hashedValue): bool
         {
-            return password_needs_rehash($hashedValue, PASSWORD_BCRYPT, ['cost' => self::cost()]);
+            return password_needs_rehash($hashedValue, PASSWORD_BCRYPT, self::cost());
         }
 
         /**
@@ -80,11 +80,12 @@ namespace Imperium\Hashing {
         /**
          * Extract the cost value from the options array.
          *
-         * @return int
+         * @return array
+         *
          */
-        protected static function cost(): int
+        private static function cost(): array
         {
-            return  self::COST;
+            return ['cost' => self::COST];
         }
     }
 }

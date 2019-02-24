@@ -93,16 +93,17 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Initialise a array multidimensional
+         * Get a value
          *
-         * @param $prefix
+         * @param mixed $prefix
+         * @param mixed $key
          *
-         * @return Collection
+         * @return mixed|null
          *
          */
-        public function init_double($prefix): Collection
+        public function value($prefix,$key)
         {
-            return $this->set_new_data([$prefix => []]);
+            return array_key_exists($prefix,$this->data) ? $this->data[$prefix][$key] : null;
         }
 
         /**
@@ -116,7 +117,7 @@ namespace Imperium\Collection {
          * @return Collection
          *
          */
-        public function double($prefix,$value,string $key = ''): Collection
+        public function double($prefix,$value,$key): Collection
         {
             def($key) ?  $this->data[$prefix][$key] = $value : $this->data[$prefix][] = $value;
 
@@ -416,22 +417,14 @@ namespace Imperium\Collection {
          * @return array
          * @throws Exception
          */
-        public function data($expected): array
+        public function data(array $expected): array
         {
 
             $data = collection();
             foreach ($this->collection() as $k => $v)
             {
-                if (is_array($expected))
-                {
-                    if (has($v,$expected))
-                        $data->add($k);
-                }else
-                {
-                    if (equal($v,$expected))
-                        $data->add($k);
-                }
-
+                if (has($v,$expected))
+                    $data->add($v);
             }
             return $data->collection();
         }

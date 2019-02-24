@@ -9,10 +9,9 @@ use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
 use Imperium\Flash\Flash;
-use Imperium\Hashing\Hash;
 use Imperium\Routing\Router;
 use Imperium\Security\Csrf\Csrf;
-use Imperium\Session\Session;
+use Imperium\Security\Hashing\Hash;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -2130,6 +2129,7 @@ if (not_exist('name'))
      */
     function name(string $name,string $method = GET): string
     {
+
         return is_admin() ? Router::admin($name,$method) : Router::web($name,$method);
     }
 }

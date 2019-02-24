@@ -18,5 +18,4 @@ validate: false
 large: true
 small: false
 pagination_step: 10
-csrf_protection: true
 space: true

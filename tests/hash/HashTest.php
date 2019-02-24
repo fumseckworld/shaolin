@@ -4,7 +4,7 @@
 namespace Testing\hash;
 
 
-use Imperium\Hashing\Hash;
+use Imperium\Security\Hashing\Hash;
 use PHPUnit\Framework\TestCase;
 
 class HashTest  extends TestCase

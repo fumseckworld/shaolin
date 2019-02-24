@@ -18,8 +18,22 @@ namespace Testing\config {
             $this->assertEquals('root',config('db.example','username'));
             $this->assertEquals(['phinxlog'],config('db.example','hidden_tables'));
             $this->assertEquals([],config('db.example','hidden_bases'));
+            $this->assertEquals(true,config('form','save'));
+            $this->assertEquals(2,config('form','padding'));
         }
 
+        /**
+         * @throws \Exception
+         */
+        public function test_not_fond_key()
+        {
+            $this->expectException(\Exception::class);
+            config('form','azdazdadaz');
+        }
+
+        /**
+         * @throws \Exception
+         */
         public function test_exception()
         {
             $this->expectException(\Exception::class);

@@ -45,6 +45,13 @@ namespace Testing\flash {
             $this->assertEquals('',$this->flash->display(Flash::FAILURE_KEY));
         }
 
+
+        public function test_has()
+        {
+            $this->flash->success('a');
+            $this->assertTrue($this->flash->has('success'));
+            $this->assertFalse($this->flash->has('failure'));
+        }
         /**
          * @throws \Exception
          */
