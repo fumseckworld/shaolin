@@ -38,7 +38,7 @@ namespace Testing\pgsql\query {
         public function test_where()
         {
 
-            $this->assertNotEmpty($this->query->mode(SELECT)->where('id','=',5)->only('date')->get());
+            $this->assertNotEmpty($this->query->mode(SELECT)->where('id','=',5)->only('date')->sql());
 
 
             $b = '1988-07-15 00:00:00';
@@ -72,11 +72,11 @@ namespace Testing\pgsql\query {
 
             $limit = 10;
 
-            $columns = ['id','name'];
+            $columns = 'id, name';
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->get());
 
             $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
 
@@ -84,21 +84,22 @@ namespace Testing\pgsql\query {
 
 
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
 
-            $this->assertCount($limit,$this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertCount($limit,$this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
-            $this->assertCount($limit,$this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertCount($limit,$this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
 
         }
+
 
 
         public function test_join()
@@ -131,11 +132,6 @@ namespace Testing\pgsql\query {
 
         }
 
-        public function test_run()
-        {
-            $this->expectException(Exception::class);
-            $this->query->only('id')->from($this->second_table)->get();
-        }
 
     }
 }

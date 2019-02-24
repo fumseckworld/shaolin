@@ -6,13 +6,16 @@ namespace Testing\sqlite\imperium {
     use Exception;
     use Imperium\Collection\Collection;
     use Imperium\App;
-    use Imperium\Tables\Table;
-
-    use Imperium\Users\Users;
     use Testing\DatabaseTest;
+    
 
     class ImperiumTest extends DatabaseTest
     {
+        /**
+         * @var string
+         */
+        private $table;
+
         /**
          * @throws Exception
          */
@@ -52,8 +55,7 @@ namespace Testing\sqlite\imperium {
          */
         public function test_append_column()
         {
-            $this->assertTrue($this->sqlite()->append_column($this->table,'salary',App::INTEGER,0,false,true));
-
+            $this->assertTrue($this->sqlite()->append_column($this->table,'salary',App::INTEGER,0,true));
         }
 
         public function test_save()
@@ -63,7 +65,7 @@ namespace Testing\sqlite\imperium {
             {
 
                 $data= [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -71,7 +73,7 @@ namespace Testing\sqlite\imperium {
                     'status' => faker()->text(20),
                     'days' => faker()->date(),
                     'date' => faker()->date(),
-                    'salary' => faker()->numberBetween(4,10)
+                    'salary' => faker()->numberBetween(0,200)
                 ];
                 $this->assertTrue($this->sqlite()->update_record(5,$data,$this->table));
                 $this->assertTrue($this->sqlite()->save($this->table,$data));
@@ -82,21 +84,15 @@ namespace Testing\sqlite\imperium {
         {
             $this->assertTrue($this->sqlite()->remove_record($this->table,50));
         }
-        /**
-         * @throws \Exception
-         */
-        public function test_json()
-        {
-            $filename = 'app.json';
-            $this->assertTrue($this->sqlite()->json()->set_name($filename)->add($this->sqlite()->model()->from(current_table())->all(),'database')->generate());
 
 
-        }
+
+
 
         public function test_change_base()
         {
             $this->expectException(Exception::class);
-            $this->sqlite()->change_base_charset('utf8');
+            $this->assertTrue($this->sqlite()->change_base_charset('UTF8'));
         }
 
         public function test_get_host()
@@ -109,9 +105,10 @@ namespace Testing\sqlite\imperium {
          */
         public function test_remove_column()
         {
-            $this->assertFalse($this->sqlite()->table()->from($this->table)->remove_column('id'));
+            $this->assertFalse($this->sqlite()->table()->column()->for($this->table)->drop('id'));
 
-            $this->assertTrue($this->sqlite()->table()->from($this->table)->has_column('date'));
+            $this->assertFalse($this->sqlite()->table()->column()->for($this->table)->drop('date'));
+
         }
 
 
@@ -123,43 +120,32 @@ namespace Testing\sqlite\imperium {
         {
             $this->expectException(Exception::class);
             $this->sqlite()->show_users();
-            $this->sqlite()->user_exist('root');
-        }
 
-        /**
-         * @throws \Exception
-         */
-        public function test_drop()
-        {
-            $table = 'luxoria';
 
-            $this->assertTrue($this->sqlite()->table()->column(Table::INTEGER,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->column(Table::VARCHAR,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
-
-            $this->assertTrue($this->sqlite()->remove_table($table));
 
         }
+
+
 
         /**
          * @throws \Exception
          */
         public function test_add_databases()
         {
-            $name = 'alexandra';
+
             $this->expectException(Exception::class);
-            $this->sqlite()->add_database($name,'utf8','utf8_general_ci');
-
-
-
+            $name = 'alexandra';
+            $this->sqlite()->add_database($name,'UTF8','C');
+            $this->sqlite()->remove_database($name);
 
         }
+
         /**
          * @throws \Exception
          */
         public function test_exist()
         {
             $this->assertTrue($this->sqlite()->table_exist($this->table));
-
-
         }
 
 
@@ -169,11 +155,12 @@ namespace Testing\sqlite\imperium {
          */
         public function test_remove_user()
         {
-            $name = 'marion';
-
             $this->expectException(Exception::class);
-            add_user($name,$name);
-            $this->sqlite()->remove_user($name);
+            $first = 'dupond';
+            $second = 'dupont';
+            $this->assertTrue(add_user($first,$first));
+            $this->assertTrue(add_user($second,$second));
+            $this->assertTrue(remove_users($first,$second));
         }
 
         /**
@@ -183,14 +170,14 @@ namespace Testing\sqlite\imperium {
         public function test_pass()
         {
             $this->expectException(Exception::class);
-            $this->sqlite()->change_user_password('sqlite','mya');
+            $this->sqlite()->change_user_password('postgres','postgres');
         }
         /**
          * @throws \Exception
          */
         public function test_show_columns()
         {
-            $this->assertNotEmpty($this->sqlite()->table()->from($this->table)->columns_types());
+            $this->assertNotEmpty($this->sqlite()->table()->column()->for($this->table)->types());
 
             $this->assertNotEmpty($this->sqlite()->show_columns($this->table));
         }
@@ -202,8 +189,10 @@ namespace Testing\sqlite\imperium {
         {
             $this->assertTrue($this->sqlite()->has_column($this->table,'id'));
 
-            $this->assertFalse($this->sqlite()->has_column($this->table,'c'));
+            $this->assertFalse($this->sqlite()->has_column($this->table,'utf8_general_ci'));
+
             $this->assertTrue($this->sqlite()->has_tables());
+
 
         }
 
@@ -220,7 +209,6 @@ namespace Testing\sqlite\imperium {
          */
         public function test_add_user()
         {
-
             $this->expectException(Exception::class);
             $this->sqlite()->add_user('linux','linux');
 
@@ -228,13 +216,30 @@ namespace Testing\sqlite\imperium {
         }
 
 
+        /**
+         * @throws Exception
+         */
+        public function test_change()
+        {
+            $this->expectException(Exception::class);
+
+            $this->sqlite()->change_base_collation('C');
+
+            $this->sqlite()->change_table_charset($this->table,"UTF8");
+
+            $this->sqlite()->change_table_collation($this->table,"C");
+        }
+
         public function test_collection()
         {
+
             $this->assertInstanceOf(Collection::class,$this->sqlite()->collection());
 
             $this->assertEquals([],$this->sqlite()->collection()->collection());
 
             $this->assertEquals(['3'],$this->sqlite()->collection(['3'])->collection());
         }
+
+
     }
 }

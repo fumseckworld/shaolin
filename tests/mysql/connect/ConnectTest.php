@@ -16,17 +16,19 @@ namespace Testing\mysql\connect {
          */
         public function test_transaction()
         {
-            $m_queries = collection();
+            $m_queries = app()->connect();
 
             $table = 'base';
 
-            $m_queries->add(insert_into($table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+            $data = ['id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()];
 
             $all_mysql  = $this->mysql()->model()->count($table);
 
-            $m = $this->mysql()->connect()->transaction();
+            $m_queries->queries(insert_into($table,$data));
 
-            $m->queries($m_queries->join(','));
+
+
+            $m = $this->mysql()->connect()->transaction();
 
             $this->assertTrue($m->commit());
             $this->assertTrue(different($this->mysql()->model()->count($table),$all_mysql));
@@ -34,33 +36,14 @@ namespace Testing\mysql\connect {
 
         public function test_not()
         {
-            $this->assertTrue($this->mysql()->connect()->not(Connect::SQLITE));
-            $this->assertTrue($this->mysql()->connect()->not(Connect::POSTGRESQL));
-            $this->assertFalse($this->mysql()->connect()->not(Connect::MYSQL));
+
+            $this->assertTrue($this->mysql()->connect()->not(SQLITE));
+            $this->assertTrue($this->mysql()->connect()->not(POSTGRESQL));
+            $this->assertFalse($this->mysql()->connect()->not(MYSQL));
+            $this->assertTrue($this->mysql()->connect()->mysql());
 
         }
-        /**
-         * @throws \Exception
-         */
-        public function test_rollback()
-        {
-            $m_queries = collection();
 
-            $table = 'base';
-
-            $m_queries->add(insert_into( $table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
-
-
-            $all_mysql  = $this->mysql()->model()->from($table )->count($table);
-
-            $m = $this->mysql()->connect()->transaction();
-
-            $m->queries($m_queries->join(','));
-
-            $m->rollback();
-            $this->assertTrue(equal($this->mysql()->model()->count($table),$all_mysql));
-
-        }
 
 
 

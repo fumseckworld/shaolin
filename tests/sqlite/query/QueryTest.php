@@ -38,7 +38,7 @@ namespace Testing\sqlite\query {
         public function test_where()
         {
 
-            $this->assertNotEmpty($this->query->mode(SELECT)->where('id','=',5)->only('date')->get());
+            $this->assertNotEmpty($this->query->mode(SELECT)->where('id','=',5)->only('date')->sql());
 
 
             $b = '1988-07-15 00:00:00';
@@ -72,11 +72,11 @@ namespace Testing\sqlite\query {
 
             $limit = 10;
 
-            $columns = ['id','name'];
+            $columns = 'id, name';
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->get());
 
             $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
 
@@ -84,32 +84,23 @@ namespace Testing\sqlite\query {
 
 
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
 
-            $this->assertCount($limit,$this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertCount($limit,$this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
-            $this->assertCount($limit,$this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertCount($limit,$this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
 
         }
 
-        public function test_join_execp()
-        {
 
-
-            $this->expectException(Exception::class);
-
-            $this->query->mode(Query::FULL_JOIN)->join(EQUAL,$this->table,$this->second_table,'id','id')->get();
-            $this->query->mode(Query::FULL_JOIN)->join(EQUAL,$this->table,$this->second_table,'id','id')->get();
-
-        }
 
         public function test_join()
         {

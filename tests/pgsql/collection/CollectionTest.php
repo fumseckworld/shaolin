@@ -20,9 +20,9 @@ namespace Testing\pgsql\collection {
 
         public function test_convert_to_json()
         {
-            $this->assertTrue(collection($this->postgresql()->show_databases())->convert_to_json('app.json'));
+            $this->assertTrue(collection($this->mysql()->show_databases())->convert_to_json('app.json'));
 
-            $this->assertTrue(collection($this->postgresql()->show_databases())->convert_to_json('app.json','bases'));
+            $this->assertTrue(collection($this->mysql()->show_databases())->convert_to_json('app.json','bases'));
         }
 
         public function test_remove_values()
@@ -220,7 +220,7 @@ namespace Testing\pgsql\collection {
          */
         public function test_print()
         {
-            $m = $this->postgresql()->model()->from(current_table());
+            $m = $this->mysql()->model()->from(current_table());
             $data = collection($m->all());
 
             $this->assertNotEmpty($data->print(true,$m->columns()));

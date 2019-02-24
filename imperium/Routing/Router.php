@@ -168,13 +168,16 @@ namespace Imperium\Routing {
 
 
         /**
+         *
          * Router constructor.
          *
          * @param ServerRequestInterface $request
          *
          * @param string $namespace
          * @param string $core_path
+         *
          * @throws Exception
+         *
          */
         public function __construct(ServerRequestInterface $request,string $namespace,string $core_path)
         {
@@ -212,8 +215,8 @@ namespace Imperium\Routing {
             foreach  ($middle as $middleware)
             {
                 $middle = collection(explode(DIRECTORY_SEPARATOR,$middleware))->last();
-                $middleware = collection(explode('.',$middle))->begin();
 
+                $middleware = collection(explode('.',$middle))->begin();
 
                 $class = "$namespace$middleware";
 

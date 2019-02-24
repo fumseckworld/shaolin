@@ -20,7 +20,8 @@ namespace Testing\sqlite\collection {
 
         public function test_convert_to_json()
         {
-            $this->assertTrue(collection($this->sqlite()->model()->from(current_table())->all())->convert_to_json('app.json'));
+            $this->assertTrue(collection($this->sqlite()->model()->from('base')->all())->convert_to_json('app.json'));
+
 
         }
 
@@ -219,7 +220,7 @@ namespace Testing\sqlite\collection {
          */
         public function test_print()
         {
-            $m = $this->sqlite()->model()->from(current_table());
+            $m = $this->mysql()->model()->from(current_table());
             $data = collection($m->all());
 
             $this->assertNotEmpty($data->print(true,$m->columns()));

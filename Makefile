@@ -4,13 +4,20 @@ BASE=zen
 
 UNIT="./vendor/bin/phpunit"
 MYSQL_PASSWORD=root
-
+COVERAGE='--coverage-html '
 
 ifeq (phinx,$(firstword $(MAKECMDGOALS)))
   # use the rest as arguments for "run"
   PHINX := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
   # ...and turn them into do-nothing targets
   $(eval $(PHINX):;@:)
+endif
+
+ifeq (cover,$(firstword $(MAKECMDGOALS)))
+  # use the rest as arguments for "run"
+  DIR := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  # ...and turn them into do-nothing targets
+  $(eval $(DIR):;@:)
 endif
 
 ifeq (send,$(firstword $(MAKECMDGOALS)))
@@ -24,35 +31,35 @@ all: vendor mysql pgsql sqlite router form  dir config session flash app trans c
 
 mysql: seed
 	@install -D $@.yaml config/db.yaml
-	$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 pgsql: seed
 	@install -D $@.yaml config/db.yaml
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 sqlite: seed
 	@install -D $@.yaml config/db.yaml
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 router:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 flash:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 form:
 	@install -D mysql.yaml config/db.yaml
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 dir:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 config:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 app:
 	@$(UNIT) tests/$@
 seed: dbs migrate
 session:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 csrf:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 trans:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 hash:
-	@$(UNIT) tests/$@
+	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 send: all
 	git add .
 	git commit -m "$(COMMIT)" -n
@@ -75,7 +82,7 @@ serve: ## Start the development server
 	@php -S localhost:8000 -d display_errors=1 -t public
 cover: ## Start a server to display the coverage
 	@clear
-	@php -S localhost:3000 -t COVERAGE
+	@php -S localhost:3000 -t coverage/$(DIR)
 
 phinx: phinx.yml ## Create migration and seed
 	 @vendor/bin/phinx create $(PHINX)table

@@ -72,11 +72,11 @@ namespace Testing\mysql\query {
 
             $limit = 10;
 
-            $columns = ['id','name'];
+            $columns = 'id, name';
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->get());
 
             $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,$columns, $columns)->limit($limit,0)->get());
 
@@ -84,18 +84,18 @@ namespace Testing\mysql\query {
 
 
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
-            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[],[])->limit($limit,0)->get());
+            $this->assertNotEmpty($this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
 
-            $this->assertCount($limit,$this->query->mode(Query::UNION)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertCount($limit,$this->query->mode(Query::UNION)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
-            $this->assertCount($limit,$this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,[], [])->limit($limit,0)->get());
+            $this->assertCount($limit,$this->query->mode(Query::UNION_ALL)->union($this->table,$this->second_table,'','')->limit($limit,0)->get());
 
 
         }

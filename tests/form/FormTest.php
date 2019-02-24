@@ -584,22 +584,14 @@ namespace Testing\Form {
         {
 
             $icon = fa('fas','fa-rocket');
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id");
+            $form = form('a','a')->generate(2,$this->table,'append',"submit-id");
 
             $this->assertStringContainsString('id="submit-id"',$form);
             $this->assertStringContainsString('id="a"',$form);
             $this->assertStringContainsString('append',$form);
             $this->assertNotEmpty($form);
 
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon);
-
-            $this->assertStringContainsString('id="submit-id"',$form);
-            $this->assertStringContainsString('id="a"',$form);
-            $this->assertStringContainsString('append',$form);
-            $this->assertStringContainsString($icon,$form);
-            $this->assertNotEmpty($form);
-
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon,Form::EDIT,1);
+            $form = form('a','a')->generate(2,$this->table,'append',"submit-id",$icon);
 
             $this->assertStringContainsString('id="submit-id"',$form);
             $this->assertStringContainsString('id="a"',$form);
@@ -607,8 +599,16 @@ namespace Testing\Form {
             $this->assertStringContainsString($icon,$form);
             $this->assertNotEmpty($form);
 
+            $form = form('a','a')->generate(2,$this->table,'append',"submit-id",$icon,Form::EDIT,1);
 
-            $form = form('a','a')->generate(2,$this->table,$this->mysql()->table(),'append',"submit-id",$icon,Form::EDIT,1);
+            $this->assertStringContainsString('id="submit-id"',$form);
+            $this->assertStringContainsString('id="a"',$form);
+            $this->assertStringContainsString('append',$form);
+            $this->assertStringContainsString($icon,$form);
+            $this->assertNotEmpty($form);
+
+
+            $form = form('a','a')->generate(2,$this->table,'append',"submit-id",$icon,Form::EDIT,1);
 
             $this->assertStringContainsString('id="submit-id"',$form);
             $this->assertStringContainsString('id="a"',$form);

@@ -42,9 +42,9 @@ namespace Testing\csrf {
         {
             $this->expectException(Exception::class);
 
-            $request = new ServerRequest('POST',url('del',POST));
+            $request = new ServerRequest('POST',name('del',POST));
 
-            app()->router($request)->run();
+            app()->router($request,'Shaolin\Controllers','a')->run();
 
         }
 

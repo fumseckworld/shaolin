@@ -31,7 +31,6 @@ namespace Testing\pgsql\model {
             $this->model = $this->postgresql()->model()->from($this->table);
         }
 
-
         /**
          * @throws \Exception
          */
@@ -47,16 +46,15 @@ namespace Testing\pgsql\model {
                 foreach ($this->model->columns() as $k => $v)
                 {
                     $this->assertNotEmpty($this->model->by($v,$record->$v));
+
                 }
             }
         }
-
         public function test_only()
         {
             $this->assertNotEmpty($this->model->where('id', EQUAL,55)->only('name')->get());
 
         }
-
         /**
          * @throws Exception
          */
@@ -80,14 +78,13 @@ namespace Testing\pgsql\model {
         }
         public function test_cool()
         {
-
             $bool = $this->model
-                ->set('id','NULL')
+                ->set('id','id')
                 ->set('phone',faker()->randomNumber(8))
                 ->set('name', faker()->name)
+                ->set('date', faker()->date())
                 ->set('sex', 'F')
                 ->set('days', faker()->date())
-                ->set('date', faker()->date())
                 ->set('age',  faker()->numberBetween(1,100))
                 ->set('status','dead')
                 ->save();
@@ -100,7 +97,6 @@ namespace Testing\pgsql\model {
         }
 
 
-
         public function test_all()
         {
             $this->assertNotEmpty($this->model->all());
@@ -108,11 +104,10 @@ namespace Testing\pgsql\model {
         }
         public function test_show()
         {
-
             $record  = $this->model->show(
                 'table-responsive','table-dark','?table=',1,'table','remove','sure',
                 '','','remove','edit','edit','previous','next','id','desc','search','','',
-                ''
+                '','',''
 
             );
 
@@ -130,7 +125,7 @@ namespace Testing\pgsql\model {
         public function test_edit()
         {
 
-            $form = edit($this->table,5,'/','edit','update','');
+            $form = edit($this->table,5,'/',id(),'update','');
             $this->assertNotEmpty($form);
 
         }
@@ -142,7 +137,8 @@ namespace Testing\pgsql\model {
 
         public function test_create()
         {
-            $form = create($this->table,'/','edit','update','');
+
+            $form = create($this->table,'/',id(),'create','');
             $this->assertNotEmpty($form);
         }
 
@@ -177,7 +173,7 @@ namespace Testing\pgsql\model {
             for ($i = 0; $i != $number; ++$i)
             {
                 $data = [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -186,7 +182,6 @@ namespace Testing\pgsql\model {
                     'days' => faker()->date(),
                     'date' => faker()->date()
                 ];
-
 
                 $this->assertTrue($this->model->insert_new_record($data));
             }
@@ -282,15 +277,14 @@ namespace Testing\pgsql\model {
         {
 
             $data = [
-                'id' => null,
+                'id' => 'id',
                 'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
                 'sex' => faker()->firstNameMale,
                 'status' => faker()->text(20),
                 'days' => faker()->date(),
-                'date' => faker()->date(),
-
+                'date' => faker()->date()
             ];
 
             $this->assertTrue($this->model->update_record(4,$data));
@@ -308,14 +302,14 @@ namespace Testing\pgsql\model {
             {
 
                 $data = [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
                     'sex' => faker()->firstNameMale,
                     'status' => faker()->text(20),
                     'days' => faker()->date(),
-                    'date' => faker()->date(),
+                    'date' => faker()->date()
                 ];
                 $this->assertTrue($this->model->insert_new_record($data));
 
@@ -328,7 +322,7 @@ namespace Testing\pgsql\model {
          */
         public function test_found()
         {
-            $this->assertEquals(8,$this->model->found());
+            $this->assertEquals(10,$this->model->found());
         }
 
 
@@ -345,6 +339,13 @@ namespace Testing\pgsql\model {
 
             $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
             $this->assertInstanceOf($expected,$x->instance());
+
+            $this->expectException(Exception::class);
+
+            $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
+            $x->instance();
+            $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
+            $x->instance();
         }
 
         public function test_dump()
@@ -355,7 +356,6 @@ namespace Testing\pgsql\model {
         public function test_import()
         {
             $this->assertTrue($this->postgresql()->model()->dump($this->table));
-            $this->assertTrue($this->postgresql()->model()->import());
 
         }
     }

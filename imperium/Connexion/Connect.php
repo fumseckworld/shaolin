@@ -139,6 +139,10 @@ namespace Imperium\Connexion {
          *
          */
         private $host;
+        /**
+         * @var string
+         */
+        private $queries;
 
         /**
          *
@@ -176,6 +180,8 @@ namespace Imperium\Connexion {
             $this->host         = $host;
 
             $this->instance     = $this->getInstance();
+
+
         }
 
 
@@ -457,13 +463,13 @@ namespace Imperium\Connexion {
          */
         public function queries(string ...$queries): Connect
         {
+            $this->queries = $queries;
             foreach ($queries as $query)
                 is_false($this->execute($query),true,$query);
 
             return $this;
 
         }
-
         /**
          *
          * Abort the current transaction

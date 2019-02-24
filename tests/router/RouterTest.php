@@ -22,7 +22,7 @@ class RouterTest extends DatabaseTest
     public function setUp(): void
     {
         $this->request = new ServerRequest(GET,'/');
-        $this->router = new Router($this->request);
+        $this->router = new Router($this->request,'Shaolin\\Controllers','core');
       
     }
 
@@ -30,8 +30,8 @@ class RouterTest extends DatabaseTest
 
     public function test_url()
     {
-        $this->assertEquals('/remove/:table/:id',url('remove'));
-        $this->assertEquals('/',url('home'));
+        $this->assertEquals('/remove/:table/:id',name('remove'));
+        $this->assertEquals('/',name('home'));
     }
 
 }

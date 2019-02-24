@@ -17,7 +17,7 @@ namespace Imperium\Session {
      * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
      *
      **/
-    class Session
+    class Session implements SessionInterface
     {
 
         public function __construct()
@@ -61,14 +61,11 @@ namespace Imperium\Session {
          * @param $value
          * @param string $key
          *
-         * @return Session
-         *
+         * @return void
          */
-        public function set($value,$key): Session
+        public function set($key,$value): void
         {
             $_SESSION[$key] = $value;
-
-            return $this;
         }
 
         /**

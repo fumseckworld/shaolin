@@ -4,6 +4,7 @@ namespace Imperium\Flash {
 
 
     use Exception;
+    use Imperium\Session\ArraySession;
     use Imperium\Session\Session;
 
     /**
@@ -42,7 +43,7 @@ namespace Imperium\Flash {
          */
         public function __construct()
         {
-            $this->session = new Session();
+            $this->session = request()->getScriptName() === './vendor/bin/phpunit' ? new ArraySession() : new Session();
         }
 
         /**
@@ -56,7 +57,7 @@ namespace Imperium\Flash {
          */
         public function success(string $message): void
         {
-            $this->session->set($message,self::SUCCESS_KEY);
+            $this->session->set(self::SUCCESS_KEY,$message);
         }
 
         /**
@@ -118,7 +119,7 @@ namespace Imperium\Flash {
          */
         public function failure(string $message): void
         {
-            $this->session->set($message,self::FAILURE_KEY);
+            $this->session->set(self::FAILURE_KEY,$message);
         }
 
         /**

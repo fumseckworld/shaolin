@@ -17,6 +17,7 @@ namespace Imperium {
     use Imperium\Routing\Router;
     use Imperium\Security\Auth\Oauth;
     use Imperium\Session\Session;
+    use Imperium\Session\SessionInterface;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Symfony\Component\HttpFoundation\Request;
@@ -232,13 +233,12 @@ namespace Imperium {
          * @param string $column
          * @param string $type
          * @param int $size
-         * @param bool $unique
          * @param bool $nullable
          *
          * @return bool
          *
          */
-        public function append_column(string $table,string $column, string $type, int $size, bool $unique,bool $nullable): bool;
+        public function append_column(string $table,string $column, string $type, int $size, bool $nullable): bool;
 
         /**
          *
@@ -406,12 +406,11 @@ namespace Imperium {
          *
          * @param string $table
          * @param array $data
-         * @param array $ignore
          *
          * @return bool
          *
          */
-        public function save(string $table,array $data,array $ignore = []) : bool;
+        public function save(string $table,array $data) : bool;
 
         /**
          *
@@ -562,9 +561,9 @@ namespace Imperium {
         public function flash(): Flash;
 
         /**
-         * @return Session
+         * @return SessionInterface
          */
-        public function session(): Session;
+        public function session(): SessionInterface;
 
         /**
          * @return Request
@@ -585,12 +584,12 @@ namespace Imperium {
          *
          * @param ServerRequest $serverRequest
          *
+         * @param string $namespace
+         * @param string $core_path
          * @return Router
          *
-         * @throws Exception
-         *
          */
-        public function router(ServerRequest $serverRequest): Router;
+        public function router(ServerRequest $serverRequest,string $namespace,string $core_path): Router;
 
         /**
          *

@@ -4,6 +4,7 @@ namespace Imperium\Security\Csrf {
 
     use Exception;
     use Imperium\Session\Session;
+    use Imperium\Session\SessionInterface;
     use Psr\Http\Message\ServerRequestInterface;
 
     class Csrf
@@ -37,12 +38,12 @@ namespace Imperium\Security\Csrf {
          *
          * Csrf constructor.
          *
-         * @param Session $session
+         * @param SessionInterface $session
          *
          * @throws Exception
          *
          */
-        public function __construct(Session $session)
+        public function __construct(SessionInterface $session)
         {
             $this->session = $session;
         }
@@ -61,7 +62,7 @@ namespace Imperium\Security\Csrf {
             if ($this->session->has(self::KEY))
                 return $this->session->get(self::KEY);
 
-            $this->session->set(bin2hex(random_bytes(16)),self::KEY);
+            $this->session->set(self::KEY,bin2hex(random_bytes(16)));
 
             return $this->session->get(self::KEY);
         }

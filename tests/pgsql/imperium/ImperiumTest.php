@@ -10,13 +10,19 @@ namespace Testing\pgsql\imperium {
 
     use Imperium\Users\Users;
     use Testing\DatabaseTest;
+    
 
     class ImperiumTest extends DatabaseTest
     {
         /**
+         * @var string
+         */
+        private $table;
+
+        /**
          * @throws Exception
          */
-        public function setUp(): void
+        public function setUp():void
         {
             $this->table = 'base';
         }
@@ -63,7 +69,7 @@ namespace Testing\pgsql\imperium {
             {
 
                 $data= [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -123,11 +129,11 @@ namespace Testing\pgsql\imperium {
          */
         public function test_remove_column()
         {
-            $this->assertFalse($this->postgresql()->table()->from($this->table)->remove_column('id'));
+            $this->assertFalse($this->postgresql()->table()->column()->for($this->table)->drop('id'));
 
-            $this->assertTrue($this->postgresql()->table()->from($this->table)->remove_column('date'));
+            $this->assertTrue($this->postgresql()->table()->column()->for($this->table)->drop('date'));
 
-            $this->assertFalse($this->postgresql()->table()->from($this->table)->has_column('date'));
+            $this->assertFalse($this->postgresql()->table()->column()->for($this->table)->exist('date'));
         }
 
 
@@ -142,21 +148,9 @@ namespace Testing\pgsql\imperium {
             $this->assertContains('postgres',$this->postgresql()->show_users());
             $this->assertTrue($this->postgresql()->user_exist('postgres'));
 
-            $this->assertNotContains('root',$this->postgresql()->show_users(['root']));
         }
 
-        /**
-         * @throws \Exception
-         */
-        public function test_drop()
-        {
-            $table = 'luxoria';
 
-            $this->assertTrue($this->postgresql()->table()->column(Table::SERIAL,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->column(Table::VARCHAR,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
-
-            $this->assertTrue($this->postgresql()->remove_table($table));
-
-        }
 
         /**
          * @throws \Exception
@@ -190,10 +184,11 @@ namespace Testing\pgsql\imperium {
          */
         public function test_remove_user()
         {
-            $name = 'marion';
-
-            $this->assertTrue(add_user($name,$name));
-            $this->assertTrue($this->postgresql()->remove_user($name));
+            $first = 'dupond';
+            $second = 'dupont';
+            $this->assertTrue(add_user($first,$first));
+            $this->assertTrue(add_user($second,$second));
+            $this->assertTrue(remove_users($first,$second));
         }
 
         /**
@@ -202,14 +197,14 @@ namespace Testing\pgsql\imperium {
 
         public function test_pass()
         {
-            $this->assertTrue($this->postgresql()->change_user_password(self::POSTGRESQL_USER,self::POSTGRESQL_PASS));
+            $this->assertTrue($this->postgresql()->change_user_password('postgres','postgres'));
         }
         /**
          * @throws \Exception
          */
         public function test_show_columns()
         {
-            $this->assertNotEmpty($this->postgresql()->table()->from($this->table)->columns_types());
+            $this->assertNotEmpty($this->postgresql()->table()->column()->for($this->table)->types());
 
             $this->assertNotEmpty($this->postgresql()->show_columns($this->table));
         }
@@ -221,11 +216,11 @@ namespace Testing\pgsql\imperium {
         {
             $this->assertTrue($this->postgresql()->has_column($this->table,'id'));
 
-            $this->assertFalse($this->postgresql()->has_column($this->table,'c'));
-
-            $this->assertTrue($this->postgresql()->has_users());
+            $this->assertFalse($this->postgresql()->has_column($this->table,'utf8_general_ci'));
 
             $this->assertTrue($this->postgresql()->users()->has());
+
+            $this->assertTrue($this->postgresql()->has_users());
 
             $this->assertTrue($this->postgresql()->has_tables());
 
@@ -273,13 +268,6 @@ namespace Testing\pgsql\imperium {
             $this->assertEquals(['3'],$this->postgresql()->collection(['3'])->collection());
         }
 
-        /**
-         * @throws Exception
-         */
-        public function test_user()
-        {
-            $this->assertInstanceOf(Users::class,$this->postgresql()->users());
-            $this->assertNotEmpty($this->postgresql()->users()->show());
-        }
+
     }
 }

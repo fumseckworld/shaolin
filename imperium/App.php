@@ -19,7 +19,9 @@ namespace Imperium {
     use Imperium\Query\Query;
     use Imperium\Routing\Router;
     use Imperium\Security\Auth\Oauth;
+    use Imperium\Session\ArraySession;
     use Imperium\Session\Session;
+    use Imperium\Session\SessionInterface;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Symfony\Component\HttpFoundation\Request;
@@ -354,16 +356,15 @@ namespace Imperium {
          * @param string $column
          * @param string $type
          * @param int $size
-         * @param bool $unique
          * @param bool $nullable
          *
          * @return bool
          *
          * @throws Exception
          */
-        public function append_column(string $table,string $column, string $type, int $size, bool $unique,bool $nullable): bool
+        public function append_column(string $table,string $column, string $type, int $size, bool $nullable): bool
         {
-            return $this->table()->from($table)->append_column($column,$type,$size,$unique,$nullable);
+            return $this->table()->column()->for($table)->add($column,$type,$size,$nullable);
         }
 
         /**
@@ -377,7 +378,7 @@ namespace Imperium {
          */
         public function show_columns(string $table): array
         {
-            return $this->table()->from($table)->columns();
+            return $this->table()->column()->for($table)->show();
         }
 
         /**
@@ -393,7 +394,7 @@ namespace Imperium {
          */
         public function show_columns_types(string $table): array
         {
-             return $this->table()->from($table)->columns_types();
+             return $this->table()->column()->for($table)->types();
         }
 
         /**
@@ -410,7 +411,7 @@ namespace Imperium {
          */
         public function has_column(string $table,string $column): bool
         {
-            return $this->table()->from($table)->has_column($column);
+            return $this->table()->column()->for($table)->exist($column);
         }
 
         /**
@@ -578,15 +579,14 @@ namespace Imperium {
          *
          * @param string $table
          * @param array $data
-         * @param array $ignore
          *
          * @return bool
          *
          * @throws Exception
          */
-        public function save(string $table,array $data, array $ignore = []): bool
+        public function save(string $table,array $data): bool
         {
-            return $this->table()->from($table)->save($data,$ignore);
+            return $this->table()->from($table)->save($data);
         }
 
         /**
@@ -639,7 +639,7 @@ namespace Imperium {
          */
         public function rename_column(string $table,string $column, string $new_name): bool
         {
-            return $this->table()->from($table)->rename_column($column,$new_name);
+            return $this->table()->column()->for($table)->rename($column,$new_name);
         }
 
         /**
@@ -656,7 +656,7 @@ namespace Imperium {
          */
         public function remove_column(string $table,string $column): bool
         {
-            return $this->table()->from($table)->remove_column($column);
+            return $this->table()->column()->for($table)->drop($column);
         }
 
 
@@ -980,14 +980,15 @@ namespace Imperium {
          *
          * @param ServerRequest $serverRequest
          *
+         * @param string $namespace
+         * @param string $core_path
          * @return Router
          *
          * @throws Exception
-         *
          */
-        public function router(ServerRequest $serverRequest): Router
+        public function router(ServerRequest $serverRequest,string $namespace,string $core_path): Router
         {
-            return new Router($serverRequest);
+            return new Router($serverRequest,$namespace,$core_path);
         }
 
         /**
@@ -1032,10 +1033,13 @@ namespace Imperium {
         }
 
         /**
-         * @return Session
+         * @return SessionInterface
          */
-        public function session(): Session
+        public function session():SessionInterface
         {
+            if ($this->request()->getScriptName() === './vendor/bin/phpunit')
+                return new ArraySession();
+
             return new Session();
         }
 

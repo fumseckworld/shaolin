@@ -15,8 +15,8 @@ namespace Testing\sqlite\users {
         {
 
             $this->expectException(\Exception::class);
-            $this->sqlite()->users()->show();
 
+            $this->sqlite()->users()->show();
 
         }
 
@@ -28,6 +28,7 @@ namespace Testing\sqlite\users {
 
             $this->expectException(\Exception::class);
             $name = 'voku';
+
             $this->sqlite()->users()->set_name($name)->set_password($name)->create();
             $this->sqlite()->users()->drop($name);
         }

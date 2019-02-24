@@ -14,9 +14,10 @@ namespace Testing\pgsql\users {
         public function test_show()
         {
 
-            $this->assertNotEmpty($this->postgresql()->users()->show());
+            $this->assertNotEmpty($this->mysql()->users()->show());
 
-            $this->assertContains(self::POSTGRESQL_USER,$this->postgresql()->users()->show());
+            $this->assertContains('postgres',$this->mysql()->users()->show());
+
 
         }
 
@@ -28,8 +29,8 @@ namespace Testing\pgsql\users {
 
             $name = 'voku';
 
-            $this->assertTrue($this->postgresql()->users()->set_name($name)->set_password($name)->create());
-            $this->assertTrue($this->postgresql()->users()->drop($name));
+            $this->assertTrue($this->mysql()->users()->set_name($name)->set_password($name)->create());
+            $this->assertTrue($this->mysql()->users()->drop($name));
         }
 
     }

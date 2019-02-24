@@ -1,4 +1,5 @@
 <?php
+
 namespace Testing\pgsql\app {
 
     use Exception;
@@ -16,7 +17,6 @@ namespace Testing\pgsql\app {
     use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Browser;
     use Testing\DatabaseTest;
-    use Twig_Environment;
     use Whoops\Run;
 
     /**
@@ -26,10 +26,11 @@ namespace Testing\pgsql\app {
     {
 
 
+
         /**
          * @throws Exception
          */
-        public function test_apps()
+        public function test_app()
         {
 
             $this->assertInstanceOf(App::class,app());
@@ -40,7 +41,7 @@ namespace Testing\pgsql\app {
          */
         public function test_env()
         {
-            $this->postgresql()->env()->load();
+
             $this->assertEquals('mysql',env('driver'));
 
         }
@@ -94,6 +95,7 @@ namespace Testing\pgsql\app {
         }
 
 
+
         /**
          * @throws Exception
          */
@@ -133,21 +135,13 @@ namespace Testing\pgsql\app {
         public function test_query()
         {
             $this->assertInstanceOf(Query::class,\query($this->postgresql()->table(),$this->postgresql()->connect()));
-            $this->assertInstanceOf(Query::class,\query($this->postgresql()->table(),$this->postgresql()->connect()));
 
             $this->assertInstanceOf(Model::class,\model($this->postgresql()->connect(),$this->postgresql()->table()));
 
-
             $this->assertInstanceOf(Table::class,table($this->postgresql()->connect()));
-
-
 
         }
 
-
-        /**
-         * @throws Exception
-         */
         public function test_awesome()
         {
             $this->assertNotEmpty(awesome());
@@ -405,7 +399,7 @@ namespace Testing\pgsql\app {
          */
         public function test_sql_to_json()
         {
-            $this->assertTrue(sql_to_json('app.json',[$this->postgresql()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+            $this->assertTrue(sql_to_json('app.json',["SELECT * FROM model","SELECT * FROM users"],['bases','tables']));
         }
 
         /**
@@ -422,9 +416,9 @@ namespace Testing\pgsql\app {
          */
         public function test_connect_instance()
         {
-
+            $this->assertInstanceOf(Connect::class,\connect(Connect::MYSQL,'zen','root','root',Connect::LOCALHOST,'dump'));
             $this->assertInstanceOf(Connect::class,\connect(Connect::POSTGRESQL,'zen','postgres','postgres',Connect::LOCALHOST,'dump'));
-
+            $this->assertInstanceOf(Connect::class,\connect(Connect::SQLITE,'zen','','',Connect::LOCALHOST,'dump'));
         }
 
         /**
@@ -496,7 +490,7 @@ namespace Testing\pgsql\app {
             $this->assertStringContainsString('/',$select);
             $this->assertStringContainsString('postgres',$select);
 
-            $select = users_select('?=','root','choose',true);
+            $select = users_select('?=','postgres','choose',true);
             $this->assertStringContainsString('location',$select);
 
         }
@@ -628,7 +622,6 @@ namespace Testing\pgsql\app {
         public function test_collation()
         {
             $this->assertNotEmpty(collation($this->postgresql()->connect()));
-            $this->assertNotEmpty(collation($this->postgresql()->connect()));
         }
 
         /**
@@ -636,7 +629,6 @@ namespace Testing\pgsql\app {
          */
         public function test_charset()
         {
-            $this->assertNotEmpty(charset($this->postgresql()->connect()));
             $this->assertNotEmpty(charset($this->postgresql()->connect()));
         }
 
@@ -664,7 +656,7 @@ namespace Testing\pgsql\app {
          */
         public function test_pass()
         {
-            $this->assertTrue(pass(self::POSTGRESQL_USER,self::POSTGRESQL_USER));
+            $this->assertTrue(pass('postgres','postgres'));
         }
 
         /**

@@ -128,6 +128,7 @@ use Imperium\Tables\Table;
             }
             return $data->not_exist(false);
         }
+
         /**
          *
          * Rename a base

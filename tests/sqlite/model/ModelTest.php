@@ -16,6 +16,7 @@ namespace Testing\sqlite\model {
          * @var Model
          */
         private $model;
+
         /**
          * @var string
          */
@@ -29,7 +30,6 @@ namespace Testing\sqlite\model {
             $this->table = 'model';
             $this->model = $this->sqlite()->model()->from($this->table);
         }
-
 
         /**
          * @throws \Exception
@@ -46,6 +46,7 @@ namespace Testing\sqlite\model {
                 foreach ($this->model->columns() as $k => $v)
                 {
                     $this->assertNotEmpty($this->model->by($v,$record->$v));
+
                 }
             }
         }
@@ -78,7 +79,7 @@ namespace Testing\sqlite\model {
         public function test_cool()
         {
             $bool = $this->model
-                ->set('id','NULL')
+                ->set('id','id')
                 ->set('phone',faker()->randomNumber(8))
                 ->set('name', faker()->name)
                 ->set('date', faker()->date())
@@ -96,7 +97,6 @@ namespace Testing\sqlite\model {
         }
 
 
-
         public function test_all()
         {
             $this->assertNotEmpty($this->model->all());
@@ -104,11 +104,10 @@ namespace Testing\sqlite\model {
         }
         public function test_show()
         {
-
             $record  = $this->model->show(
                 'table-responsive','table-dark','?table=',1,'table','remove','sure',
                 '','','remove','edit','edit','previous','next','id','desc','search','','',
-                ''
+                '','',''
 
             );
 
@@ -125,7 +124,8 @@ namespace Testing\sqlite\model {
 
         public function test_edit()
         {
-            $form = edit($this->table,5,'/','edit','update','btn-primary');
+
+            $form = edit($this->table,5,'/',id(),'update','');
             $this->assertNotEmpty($form);
 
         }
@@ -137,7 +137,8 @@ namespace Testing\sqlite\model {
 
         public function test_create()
         {
-            $form = create($this->table,'/','edit','update','');
+
+            $form = create($this->table,'/',id(),'create','');
             $this->assertNotEmpty($form);
         }
 
@@ -172,7 +173,7 @@ namespace Testing\sqlite\model {
             for ($i = 0; $i != $number; ++$i)
             {
                 $data = [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -181,7 +182,6 @@ namespace Testing\sqlite\model {
                     'days' => faker()->date(),
                     'date' => faker()->date()
                 ];
-
 
                 $this->assertTrue($this->model->insert_new_record($data));
             }
@@ -208,8 +208,8 @@ namespace Testing\sqlite\model {
         public function test_is()
         {
             $this->assertTrue($this->model->is_sqlite());
-            $this->assertFalse($this->model->is_postgresql());
             $this->assertFalse($this->model->is_mysql());
+            $this->assertFalse($this->model->is_postgresql());
 
         }
 
@@ -277,7 +277,7 @@ namespace Testing\sqlite\model {
         {
 
             $data = [
-                'id' => null,
+                'id' => 'id',
                 'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
@@ -302,7 +302,7 @@ namespace Testing\sqlite\model {
             {
 
                 $data = [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -322,8 +322,11 @@ namespace Testing\sqlite\model {
          */
         public function test_found()
         {
-            $this->assertEquals(8,$this->model->found());
+            $this->assertEquals(10,$this->model->found());
         }
+
+
+
 
         /**
          * @throws Exception
@@ -331,13 +334,25 @@ namespace Testing\sqlite\model {
         public function test_get_instance()
         {
             $expected = PDO::class;
-            $x = new Connect(Connect::SQLITE,'','','',Connect::LOCALHOST,'dump');
+            $x = new Connect(Connect::POSTGRESQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
             $this->assertInstanceOf($expected,$x->instance());
+
+            $x = new Connect(Connect::POSTGRESQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
+            $this->assertInstanceOf($expected,$x->instance());
+
+            $this->expectException(Exception::class);
+
+            $x = new Connect(Connect::MYSQL,'',self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
+            $x->instance();
+            $x = new Connect(Connect::MYSQL,$this->base,self::POSTGRESQL_USER,self::POSTGRESQL_PASS,Connect::LOCALHOST,'dump');
+            $x->instance();
         }
 
         public function test_dump()
         {
+            $this->assertFalse($this->sqlite()->model()->dump($this->table));
             $this->assertTrue($this->sqlite()->model()->dump_base());
         }
+
     }
 }

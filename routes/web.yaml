@@ -5,7 +5,9 @@ GET:
   login:
     url: '/login'
     call: 'AdminController@login'
-
+  remove:
+    url: '/remove/:table/:id'
+    call: 'WelcomeController@remove'
 POST:
   login:
     url: '/login'

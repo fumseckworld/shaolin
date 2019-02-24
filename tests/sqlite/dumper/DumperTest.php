@@ -8,8 +8,8 @@ namespace Testing\sqlite\dumper {
     {
         public function test_dump()
         {
-            $this->assertTrue($this->sqlite()->dump(true,'',''));
-            $this->assertFalse($this->sqlite()->dump(false,'base','helper'));
+            $this->assertTrue($this->mysql()->dump(true));
+            $this->assertFalse($this->mysql()->dump(false,'base','helper'));
         }
     }
 }

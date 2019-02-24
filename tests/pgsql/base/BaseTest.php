@@ -10,6 +10,7 @@ namespace Testing\pgsql\base {
 
         public function setUp(): void
         {
+
             $this->table = 'base';
         }
 
@@ -17,10 +18,7 @@ namespace Testing\pgsql\base {
         {
             $this->assertContains($this->base,$this->postgresql()->show_databases());
             $this->assertContains($this->base,$this->postgresql()->bases()->show());
-
-            $this->assertTrue($this->postgresql()->bases()->exist($this->base));
             $this->assertTrue($this->postgresql()->base_exist($this->base));
-
 
         }
 
@@ -59,6 +57,9 @@ namespace Testing\pgsql\base {
 
         }
 
+        /**
+         * @throws Exception
+         */
         public function test_hidden()
         {
             $this->assertEquals([],$this->postgresql()->bases()->hidden_bases());
@@ -76,15 +77,6 @@ namespace Testing\pgsql\base {
 
             $this->assertNotEmpty($this->postgresql()->bases()->collations());
             $this->assertNotEmpty($this->postgresql()->bases()->charsets());
-        }
-        /**
-         * @throws \Exception
-         */
-        public  function test_dump()
-        {
-            $this->assertTrue(dumper(true,''));
-            $this->assertTrue(dumper(false,$this->table));
-            $this->assertTrue($this->postgresql()->bases()->dump());
         }
 
 

@@ -15,6 +15,11 @@ namespace Testing\mysql\imperium {
     class ImperiumTest extends DatabaseTest
     {
         /**
+         * @var string
+         */
+        private $table;
+
+        /**
          * @throws Exception
          */
         public function setUp():void
@@ -64,7 +69,7 @@ namespace Testing\mysql\imperium {
             {
 
                 $data= [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -124,11 +129,11 @@ namespace Testing\mysql\imperium {
          */
         public function test_remove_column()
         {
-            $this->assertFalse($this->mysql()->table()->from($this->table)->remove_column('id'));
+            $this->assertFalse($this->mysql()->table()->column()->for($this->table)->drop('id'));
 
-            $this->assertTrue($this->mysql()->table()->from($this->table)->remove_column('date'));
+            $this->assertTrue($this->mysql()->table()->column()->for($this->table)->drop('date'));
 
-            $this->assertFalse($this->mysql()->table()->from($this->table)->has_column('date'));
+            $this->assertFalse($this->mysql()->table()->column()->for($this->table)->exist('date'));
         }
 
 
@@ -145,18 +150,7 @@ namespace Testing\mysql\imperium {
 
         }
 
-        /**
-         * @throws \Exception
-         */
-        public function test_drop()
-        {
-            $table = 'luxoria';
 
-            $this->assertTrue($this->mysql()->table()->column(Table::INT,Table::PRIMARY_KEY,true,0,true,false,false,'',false,'','')->column(Table::VARCHAR,'name',false,255,true,false,false,'',true,Table::DIFFERENT,"willy")->create($table));
-
-            $this->assertTrue($this->mysql()->remove_table($table));
-
-        }
 
         /**
          * @throws \Exception
@@ -210,7 +204,7 @@ namespace Testing\mysql\imperium {
          */
         public function test_show_columns()
         {
-            $this->assertNotEmpty($this->mysql()->table()->from($this->table)->columns_types());
+            $this->assertNotEmpty($this->mysql()->table()->column()->for($this->table)->types());
 
             $this->assertNotEmpty($this->mysql()->show_columns($this->table));
         }

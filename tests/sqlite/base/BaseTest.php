@@ -8,16 +8,18 @@ namespace Testing\sqlite\base {
     class BaseTest extends DatabaseTest
     {
 
-        public function setUp():void
+        public function setUp(): void
         {
+
             $this->table = 'base';
         }
 
         public function test_show()
         {
-
             $this->expectException(Exception::class);
             $this->sqlite()->show_databases();
+            $this->sqlite()->bases()->show();
+
         }
 
 
@@ -55,6 +57,17 @@ namespace Testing\sqlite\base {
             $this->assertTrue($this->sqlite()->bases()->drop($base));
 
         }
+
+        /**
+         * @throws Exception
+         */
+        public function test_hidden()
+        {
+            $this->assertEquals([],$this->sqlite()->bases()->hidden_bases());
+
+            $this->assertNotEmpty($this->sqlite()->bases()->hidden_tables());
+            $this->assertEmpty($this->sqlite()->bases()->hidden_bases());
+        }
         /**
          * @throws \Exception
          */
@@ -63,16 +76,6 @@ namespace Testing\sqlite\base {
             $this->expectException(Exception::class);
             $this->sqlite()->collations();
             $this->sqlite()->charsets();
-
-        }
-        /**
-         * @throws \Exception
-         */
-        public  function test_dump()
-        {
-            $this->assertTrue(dumper(true,''));
-            $this->assertFalse(dumper(false,current_table()));
-            $this->assertTrue($this->sqlite()->bases()->dump());
         }
 
 
@@ -82,8 +85,23 @@ namespace Testing\sqlite\base {
 
             $this->sqlite()->bases()->change_collation();
             $this->sqlite()->bases()->change_charset();
+            $bidon = faker()->text(5);
 
+
+            $this->sqlite()->bases()->set_collation($bidon)->change_collation();
+            $this->sqlite()->bases()->set_charset($bidon)->change_charset();
+        }
+        /**
+         * @throws \Exception
+         */
+        public function test_change()
+        {
+            $this->expectException(Exception::class);
+            $this->sqlite()->bases()->set_charset('UTF8')->change_charset();
+            $this->sqlite()->bases()->set_collation('C')->change_collation();
 
         }
+
+
     }
 }

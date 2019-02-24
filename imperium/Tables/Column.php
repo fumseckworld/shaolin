@@ -1256,33 +1256,37 @@ namespace Imperium\Tables {
          *
          * Remove a column
          *
-         * @param string $column
+         * @param string[] $columns
          *
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function drop(string $column): bool
+        public function drop(string ...$columns): bool
         {
             $primary = $this->primary_key();
             $table = $this->current();
-
-            switch ($this->driver)
+            $data = \collection();
+            foreach ($columns as $column)
             {
-                case MYSQL :
-                    return equal($column,$primary) ? false :  $this->connexion->execute("ALTER TABLE $table DROP $column");
-                break;
 
-                case POSTGRESQL :
-                    return  equal($column,$primary) ? false : $this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT");
-                break;
+                switch ($this->driver)
+                {
+                    case MYSQL :
+                        equal($column,$primary) ? $data->add(false) :  $data->add($this->connexion->execute("ALTER TABLE $table DROP $column"),$column);
+                    break;
 
-                default :
-                    return false;
-                break;
+                    case POSTGRESQL :
+                         equal($column,$primary) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT"),$column);
+                    break;
 
+                    default :
+                        return false;
+                    break;
+
+                }
             }
+            return $data->not_exist(false);
         }
     }
 }

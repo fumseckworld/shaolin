@@ -1711,7 +1711,7 @@ if (not_exist('get_records'))
 
         $like = get('q');
 
-        $session= new Session();
+        $session = app()->session();
 
         if (def($session->get('limit') && def($like)))
             return $sql->like($like)->limit($session->get('limit'),0)->order_by($key,$order_by)->get();
@@ -3370,8 +3370,7 @@ if (not_exist('insert_into'))
 
         foreach ($values as $k=> $v)
         {
-
-            if(different($k,$primary))
+            if(different($v,$primary))
             {
                 is_string($v) ? append($data,$instance->quote($v) .', ') : append($data,$v.', ');
             }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Testing\sqlite\app {
 
     use Exception;
@@ -16,7 +17,6 @@ namespace Testing\sqlite\app {
     use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Browser;
     use Testing\DatabaseTest;
-    use Twig_Environment;
     use Whoops\Run;
 
     /**
@@ -26,10 +26,11 @@ namespace Testing\sqlite\app {
     {
 
 
+
         /**
          * @throws Exception
          */
-        public function test_apps()
+        public function test_app()
         {
 
             $this->assertInstanceOf(App::class,app());
@@ -40,7 +41,7 @@ namespace Testing\sqlite\app {
          */
         public function test_env()
         {
-            $this->sqlite()->env()->load();
+
             $this->assertEquals('mysql',env('driver'));
 
         }
@@ -78,7 +79,7 @@ namespace Testing\sqlite\app {
          */
         public function test_loaded()
         {
-            $this->assertTrue(sqlite_loaded());
+            $this->assertTrue(mysql_loaded());
             $this->assertTrue(pgsql_loaded());
             $this->assertTrue(sqlite_loaded());
         }
@@ -137,17 +138,10 @@ namespace Testing\sqlite\app {
 
             $this->assertInstanceOf(Model::class,\model($this->sqlite()->connect(),$this->sqlite()->table()));
 
-
             $this->assertInstanceOf(Table::class,table($this->sqlite()->connect()));
-
-
 
         }
 
-
-        /**
-         * @throws Exception
-         */
         public function test_awesome()
         {
             $this->assertNotEmpty(awesome());
@@ -382,7 +376,7 @@ namespace Testing\sqlite\app {
         public function test_base_to_json()
         {
             $this->expectException(Exception::class);
-            bases_to_json('app.json','bases');
+            bases_to_json('app.json');
         }
 
         /**
@@ -391,7 +385,7 @@ namespace Testing\sqlite\app {
         public function test_user_to_json()
         {
             $this->expectException(Exception::class);
-            users_to_json('app.json','bases');
+            users_to_json('app.json');
         }
 
         /**
@@ -407,7 +401,7 @@ namespace Testing\sqlite\app {
          */
         public function test_sql_to_json()
         {
-            $this->assertTrue(sql_to_json('app.json',[$this->sqlite()->query()->mode(Query::SELECT)->from('base')->where('id',Query::INFERIOR,5)->sql()],["base_records"]));
+            $this->assertTrue(sql_to_json('app.json',["SELECT * FROM model","SELECT * FROM users"],['bases','tables']));
         }
 
         /**
@@ -424,7 +418,9 @@ namespace Testing\sqlite\app {
          */
         public function test_connect_instance()
         {
-            $this->assertInstanceOf(Connect::class,\connect(Connect::SQLITE,'zen.sqlite3','','',Connect::LOCALHOST,'dump'));
+            $this->assertInstanceOf(Connect::class,\connect(Connect::MYSQL,'zen','root','root',Connect::LOCALHOST,'dump'));
+            $this->assertInstanceOf(Connect::class,\connect(Connect::POSTGRESQL,'zen','postgres','postgres',Connect::LOCALHOST,'dump'));
+            $this->assertInstanceOf(Connect::class,\connect(Connect::SQLITE,'zen','','',Connect::LOCALHOST,'dump'));
         }
 
         /**
@@ -491,8 +487,7 @@ namespace Testing\sqlite\app {
         public function test_users_select()
         {
             $this->expectException(Exception::class);
-            users_select('?=','','choose',false);
-
+            users_select('?=','postgres','choose',true);
 
         }
 
@@ -501,9 +496,11 @@ namespace Testing\sqlite\app {
          */
         public function test_base_select()
         {
-
             $this->expectException(Exception::class);
             bases_select('?=','','choose',false);
+
+
+
 
         }
 
@@ -617,7 +614,6 @@ namespace Testing\sqlite\app {
         public function test_collation()
         {
             $this->assertEmpty(collation($this->sqlite()->connect()));
-
         }
 
         /**
@@ -634,7 +630,7 @@ namespace Testing\sqlite\app {
         public function test_base()
         {
             $this->assertInstanceOf(Base::class,base($this->sqlite()->connect(),$this->sqlite()->table()));
-            $this->assertInstanceOf(Base::class,base($this->postgresql()->connect(),$this->postgresql()->table()));
+            $this->assertInstanceOf(Base::class,base($this->sqlite()->connect(),$this->sqlite()->table()));
 
         }
 
@@ -644,7 +640,7 @@ namespace Testing\sqlite\app {
         public function test_user()
         {
             $this->assertInstanceOf(Users::class,user($this->sqlite()->connect()));
-            $this->assertInstanceOf(Users::class,user($this->postgresql()->connect()));
+            $this->assertInstanceOf(Users::class,user($this->sqlite()->connect()));
         }
 
         /**
@@ -653,7 +649,7 @@ namespace Testing\sqlite\app {
         public function test_pass()
         {
             $this->expectException(Exception::class);
-            pass('root','root');
+            pass('postgres','postgres');
         }
 
         /**

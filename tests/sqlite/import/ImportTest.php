@@ -1,6 +1,6 @@
 <?php
 
-namespace Testing\pgsql\import {
+namespace Testing\sqlite\import {
 
     use Testing\DatabaseTest;
 
@@ -13,7 +13,7 @@ namespace Testing\pgsql\import {
         public function test_import()
         {
             $base = "marion";
-            $this->assertTrue($this->mysql()->bases()->copy($base));
+            $this->assertTrue($this->sqlite()->bases()->copy($base));
         }
     }
 }

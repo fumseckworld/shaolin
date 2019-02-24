@@ -697,11 +697,10 @@ namespace Imperium\Collection {
          *
          * @return bool
          *
-         * @throws Exception
          */
         public function not_exist($value): bool
         {
-            return is_false($this->exist($value));
+            return ! $this->exist($value);
         }
 
         /**

@@ -8,8 +8,8 @@ namespace Testing\pgsql\dumper {
     {
         public function test_dump()
         {
-            $this->assertTrue($this->postgresql()->dump(true,'',''));
-            $this->assertTrue($this->postgresql()->dump(false,'base','helper'));
+            $this->assertTrue($this->mysql()->dump(true));
+            $this->assertTrue($this->mysql()->dump(false,'base','helper'));
         }
     }
 }

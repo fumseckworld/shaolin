@@ -395,9 +395,9 @@ namespace Imperium\Model {
             $session = app()->session();
 
             if (is_false($session->has('limit')))
-                $session->set(10,'limit');
+                $session->set('limit',10);
 
-            $limit_records_per_page = $session->get('limit');
+            $limit_records_per_page = intval($session->get('limit'));
 
             $records = get_records($table,$current_page,$limit_records_per_page,$key,$order_by);
 

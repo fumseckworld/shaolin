@@ -79,7 +79,7 @@ namespace Testing\mysql\model {
         public function test_cool()
         {
             $bool = $this->model
-                ->set('id','NULL')
+                ->set('id','id')
                 ->set('phone',faker()->randomNumber(8))
                 ->set('name', faker()->name)
                 ->set('date', faker()->date())
@@ -107,7 +107,7 @@ namespace Testing\mysql\model {
             $record  = $this->model->show(
                 'table-responsive','table-dark','?table=',1,'table','remove','sure',
                 '','','remove','edit','edit','previous','next','id','desc','search','','',
-                ''
+                '','',''
 
             );
 
@@ -173,7 +173,7 @@ namespace Testing\mysql\model {
             for ($i = 0; $i != $number; ++$i)
             {
                 $data = [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -277,7 +277,7 @@ namespace Testing\mysql\model {
         {
 
             $data = [
-                'id' => null,
+                'id' => 'id',
                 'name' => faker()->name,
                 'age' => faker()->numberBetween(1,100),
                 'phone' => faker()->randomNumber(8),
@@ -302,7 +302,7 @@ namespace Testing\mysql\model {
             {
 
                 $data = [
-                    'id' => null,
+                    'id' => 'id',
                     'name' => faker()->name,
                     'age' => faker()->numberBetween(1,100),
                     'phone' => faker()->randomNumber(8),
@@ -322,7 +322,7 @@ namespace Testing\mysql\model {
          */
         public function test_found()
         {
-            $this->assertEquals(8,$this->model->found());
+            $this->assertEquals(10,$this->model->found());
         }
 
 

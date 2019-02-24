@@ -9,56 +9,41 @@ namespace Testing\sqlite\connect {
     class ConnectTest extends DatabaseTest
     {
 
+
+
         /**
          * @throws \Exception
          */
         public function test_transaction()
         {
-            $m_queries = collection();
+            $m_queries = app()->connect();
 
             $table = 'base';
 
-            $m_queries->add(insert_into($table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
+            $data = ['id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()];
 
-            $all_sqlite  = $this->sqlite()->model()->count($table);
+            $all_mysql  = $this->postgresql()->model()->count($table);
 
-            $m = $this->sqlite()->connect()->transaction();
+            $m_queries->queries(insert_into($table,$data));
 
-            $m->queries($m_queries->join(','));
+
+
+            $m = $this->postgresql()->connect()->transaction();
 
             $this->assertTrue($m->commit());
-            $this->assertTrue(different($this->sqlite()->model()->count($table),$all_sqlite));
+            $this->assertTrue(different($this->postgresql()->model()->count($table),$all_mysql));
         }
 
         public function test_not()
         {
-            $this->assertTrue($this->sqlite()->connect()->not(Connect::MYSQL));
-            $this->assertTrue($this->sqlite()->connect()->not(Connect::POSTGRESQL));
-            $this->assertFalse($this->sqlite()->connect()->not(Connect::SQLITE));
+
+            $this->assertTrue($this->postgresql()->connect()->not(POSTGRESQL));
+            $this->assertTrue($this->postgresql()->connect()->not(MYSQL));
+            $this->assertFalse($this->postgresql()->connect()->not(SQLITE));
+            $this->assertTrue($this->postgresql()->connect()->sqlite());
 
         }
-        /**
-         * @throws \Exception
-         */
-        public function test_rollback()
-        {
-            $m_queries = collection();
 
-            $table = 'base';
-
-            $m_queries->add(insert_into($table,'id',faker()->name,faker()->numberBetween(1,100),faker()->randomNumber(8),faker()->firstNameFemale,faker()->text(10),faker()->date(),faker()->date()));
-
-
-            $all_sqlite  = $this->sqlite()->model()->from($table )->count($table);
-
-            $m = $this->sqlite()->connect()->transaction();
-
-            $m->queries($m_queries->join(','));
-
-            $m->rollback();
-            $this->assertTrue(equal($this->sqlite()->model()->count($table),$all_sqlite));
-
-        }
 
 
 

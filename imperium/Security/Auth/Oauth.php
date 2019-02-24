@@ -4,14 +4,14 @@ namespace Imperium\Security\Auth {
 
 
     use Exception;
-    use Imperium\Session\Session;
+    use Imperium\Session\SessionInterface;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
     class Oauth
     {
 
         /**
-         * @var Session
+         * @var SessionInterface
          */
         private $session;
 
@@ -41,7 +41,7 @@ namespace Imperium\Security\Auth {
          */
         private $path;
 
-        public function __construct(Session $session)
+        public function __construct(SessionInterface$session)
         {
             $this->session = $session;
         }

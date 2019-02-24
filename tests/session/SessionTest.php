@@ -4,6 +4,7 @@
 namespace Testing\session {
 
 
+    use Imperium\Session\ArraySession;
     use Imperium\Session\Session;
     use PHPUnit\Framework\TestCase;
 
@@ -16,7 +17,7 @@ namespace Testing\session {
 
         public function setUp(): void
         {
-            $this->session = new Session();
+            $this->session = new ArraySession();
         }
 
         public function test_get()
@@ -33,7 +34,7 @@ namespace Testing\session {
 
         public function test_remove()
         {
-            $this->session->set('alex','a');
+            $this->session->set('a','alex');
 
             $this->assertContains('alex',$this->session->all());
             $this->session->remove('a');
