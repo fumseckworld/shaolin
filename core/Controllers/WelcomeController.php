@@ -23,6 +23,10 @@ namespace  Shaolin\Controllers;
             return redirect('home',$message);
         }
 
+        /**
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         * @throws Exception
+         */
         public function logout()
         {
             return $this->auth()->logout();
@@ -35,7 +39,7 @@ namespace  Shaolin\Controllers;
          */
         public function pagination(int $x)
         {
-            $this->session()->set($x,'limit');
+            $this->session()->set('limit',$x);
             return back();
         }
 

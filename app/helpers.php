@@ -1514,6 +1514,7 @@ if (not_exist('tables_select'))
      */
     function tables_select(string $current, string $url_prefix,string $separator): string
     {
+
         $tables = collection(["" => $current]);
 
         foreach (app()->table()->show() as $x)
@@ -3372,7 +3373,10 @@ if (not_exist('insert_into'))
         {
             if(different($v,$primary))
             {
-                is_string($v) ? append($data,$instance->quote($v) .', ') : append($data,$v.', ');
+                if (is_numeric($v))
+                    append($data,quote($v). ', ');
+                else
+                    append($data,$instance->quote($v) .', ') ;
             }
             else
             {
@@ -3384,9 +3388,10 @@ if (not_exist('insert_into'))
             }
         }
 
-
         $data = trim($data,', ');
+
         append($data, ')');
+
         return $data;
 
     }

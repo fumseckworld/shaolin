@@ -41,7 +41,7 @@ namespace Imperium\Security\Auth {
          */
         private $path;
 
-        public function __construct(SessionInterface$session)
+        public function __construct(SessionInterface $session)
         {
             $this->session = $session;
         }
@@ -50,6 +50,8 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
+         * @throws Exception
+         *
          */
         public function logout(): RedirectResponse
         {
@@ -57,7 +59,8 @@ namespace Imperium\Security\Auth {
 
             $this->session->remove(self::USERNAME);
 
-            return to('/','bye');
+            return to('/',collection(config('auth','messages'))->get('bye'));
+
         }
 
         /**
@@ -104,7 +107,7 @@ namespace Imperium\Security\Auth {
         {
             $user = app()->model()->from(config('auth','auth_table'))->by('username',$username);
 
-            superior($user,1,true,'We have found multiple username identical');
+            superior($user,1,true, collection(config('auth','messages'))->get('not_unique'));
 
             if (def($user))
             {
@@ -112,18 +115,18 @@ namespace Imperium\Security\Auth {
                 {
                     if (check($password,$u->password))
                     {
-                        $this->session->set($username,self::USERNAME);
+                        $this->session->set(self::USERNAME,$username);
 
-                        $this->session->set(true,self::CONNECTED);
+                        $this->session->set(self::CONNECTED,true);
 
                         is_true(not_def($this->path),true,'Please set the redirect url');
 
-                        return to($this->path,'welcome');
+                        return to($this->path,collection(config('auth','messages'))->get('welcome'));
                     }else
                     {
                         $this->session->remove(self::CONNECTED);
                         $this->session->remove(self::USERNAME);
-                        return back('Password not math',false);
+                        return back(collection(config('auth','messages'))->get('password_no_match'),false);
                     }
 
                 }
@@ -133,7 +136,8 @@ namespace Imperium\Security\Auth {
 
             $this->session->remove(self::USERNAME);
 
-            return back('Not found user',false);
+            return back(collection(config('auth','messages'))->get('not_found'),false);
+
         }
     }
 }

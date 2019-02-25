@@ -22,6 +22,7 @@ class AdminController extends Controller
 
     /**
      * @return RedirectResponse
+     * @throws \Exception
      */
     public function logout(): RedirectResponse
     {

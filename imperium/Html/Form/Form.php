@@ -938,27 +938,22 @@ namespace Imperium\Html\Form {
          *
          * @method textarea
          *
-         * @param  string   $name                    The input name
-         * @param  string   $placeholder             The placeholder
-         * @param  string   $validation_success_text The success validation text
-         * @param  string   $validation_error_text   The error validation text
-         * @param  bool     $autofocus               Option to add autofocus
-         * @param  string   $value                   The value
+         * @param string $name The input name
+         * @param string $placeholder The placeholder
+         * @param string $validation_success_text The success validation text
+         * @param string $validation_error_text The error validation text
+         * @param bool $autofocus Option to add autofocus
+         * @param string $value The value
          *
          * @return Form
          *
          * @throws Exception
-         *
          */
         public function textarea(string $name, string $placeholder,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false,string $value = ''): Form
         {
             $row  = collection(config($this->file,'textarea'))->get('row');
 
             $col  = collection(config($this->file,'textarea'))->get('col');
-
-            if ($this->save)
-                $value = def($value) ?  $value  : equal($this->method, self::POST) ? post($name) : get($name);
-
 
             if ($this->validate)
             {
@@ -1376,7 +1371,6 @@ namespace Imperium\Html\Form {
             {
 
                 $data = \app()->table()->from($table)->select_or_fail($id);
-
                 $numeric = collection();
                 $date = collection();
                 $text = collection();
@@ -1392,13 +1386,13 @@ namespace Imperium\Html\Form {
                         $type = $v;
 
                         if (has($type,App::NUMERIC_TYPES) && different($primary,$k))
-                            $numeric->add($type,$k);
+                            $numeric->add($v,$k);
 
                         if (has($type,App::TEXT_TYPES))
-                            $text->add($type,$k);
+                            $text->add($v,$k);
 
                         if (has($type,App::DATE_TYPES))
-                            $date->add($type,$k);
+                            $date->add($v,$k);
 
                         $values->add($x->$k,$k) ;
                     }
@@ -1419,14 +1413,14 @@ namespace Imperium\Html\Form {
                         if (is_pair($all_text))
                             $this->textarea($k,$k,'','',false,$value);
                         else
-                            $this->textarea($k,$k,'','','',$value)->end_row_and_new();
+                            $this->textarea($k,$k,'','',false,$value)->end_row_and_new();
                     }
                     else
                     {
                         if (equal($all_text % 3,0))
                             $this->textarea($k,$k,'','',false,$value);
                         else
-                            $this->textarea($k,$k)->end_row_and_new();
+                            $this->textarea($k,$k,'','','',$value)->end_row_and_new();
                     }
                 }
 

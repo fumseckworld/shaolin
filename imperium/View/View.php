@@ -2,12 +2,14 @@
 
 namespace Imperium\View {
 
+    use Exception;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Twig\TwigFunction;
     use Twig_Environment;
     use Twig_Error_Loader;
+    use Twig_Extensions_Extension_I18n;
     use Twig_Function;
     use Twig_Loader_Filesystem;
 
@@ -49,7 +51,6 @@ namespace Imperium\View {
          */
         public function __construct()
         {
-
             $file = 'views';
 
             $view_dir = def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config($file,'dir') : config($file,'dir');
@@ -118,7 +119,7 @@ namespace Imperium\View {
 
                 function ()
                 {
-                    return config('locales','locale');
+                    return $this->locale();
                 }
                 ,['is_safe' => ['html']]
             ));
@@ -141,7 +142,19 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-           $this->add_functions($functions->collection());
+            $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
+
+            $this->add_functions($functions->collection());
+
+            putenv("LC_ALL={$this->locale()}");
+
+            setlocale(LC_ALL, $this->locale());
+
+            bindtextdomain($this->domain(),$this->locale_path());
+
+            bind_textdomain_codeset($this->domain(), 'UTF-8');
+
+            textdomain($this->domain());
         }
 
         /**
@@ -278,6 +291,45 @@ namespace Imperium\View {
         public function loader(): Twig_Loader_Filesystem
         {
             return $this->loader;
+        }
+
+        /**
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function domain()
+        {
+            return config('locales', 'domain');
+        }
+
+        /**
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function locale()
+        {
+            return config('locales', 'locale');
+        }
+
+        /**
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function locale_path():string
+        {
+            $dir = dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config('locales','dir');
+
+            Dir::create($dir);
+
+            return realpath($dir);
         }
     }
 }

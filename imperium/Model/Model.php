@@ -256,10 +256,10 @@ namespace Imperium\Model {
          * @method edit
          *
          * @param string $table
-         * @param  int $id The record id
-         * @param  string $action The form action
-         * @param  string $form_id The form id
-         * @param  string $submit_text The submit text
+         * @param int $id The record id
+         * @param string $action The form action
+         * @param string $form_id The form id
+         * @param string $submit_text The submit text
          * @param string $submit_icon
          * @return string
          *
@@ -383,6 +383,8 @@ namespace Imperium\Model {
 
             $remove_btn_class = \collection(config('form','class'))->get('delete');
             $edit_btn_class = \collection(config('form','class'))->get('edit');
+            $session = app()->session();
+
 
             $table = current_table();
 
@@ -392,7 +394,7 @@ namespace Imperium\Model {
 
             $current_page = def(get('current')) ? get('current') : $current_page;
 
-            $session = app()->session();
+
 
             if (is_false($session->has('limit')))
                 $session->set('limit',10);
@@ -757,14 +759,20 @@ namespace Imperium\Model {
         {
             $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
 
+            $primary = $this->table()->column()->for(Request::get('__table__'))->primary_key();
             $columns = $this->from(Request::get('__table__'))->columns();
 
             $x = collection();
 
             foreach ($columns as $column)
-                $x->add($data->get($column),$column);
+            {
+                if (equal($column, $primary))
+                    $x->add($column, $column);
+                else
+                    $x->add($data->get($column), $column);
+            }
 
-            return $this->table()->from(Request::get('__table__'))->save($x->collection());
+            return  $this->table()->from(Request::get('__table__'))->save($x->collection());
         }
 
         /**

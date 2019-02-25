@@ -1236,6 +1236,7 @@ namespace Imperium\File {
          * @param string $file
          *
          * @return bool
+         *
          */
         public static function exist(string $file): bool
         {
@@ -1244,10 +1245,20 @@ namespace Imperium\File {
             return file_exists($file);
         }
 
+        /**
+         *
+         * Check if a file not exist
+         *
+         * @param string $file
+         *
+         * @return bool
+         *
+         */
         public static function not_exist(string $file): bool
         {
             return ! file_exists($file);
         }
+
         /**
          * exit the app with a message
          *

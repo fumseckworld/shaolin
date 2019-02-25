@@ -423,8 +423,18 @@ namespace Imperium\Collection {
             $data = collection();
             foreach ($this->collection() as $k => $v)
             {
-                if (has($v,$expected))
-                    $data->add($v);
+
+                if (is_numeric($k))
+                {
+                    if (has($v,$expected))
+                        $data->add($v);
+                }else
+                {
+                    if (has($v,$expected))
+                        $data->add($k);
+
+                }
+
             }
             return $data->collection();
         }

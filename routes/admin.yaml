@@ -20,6 +20,9 @@ GET:
   logout:
     url: '/logout'
     call: 'AdminController@logout'
+  pagination:
+    url: '/pagination/:x'
+    call: 'WelcomeController@pagination'
 POST:
   del:
     url: 'del'

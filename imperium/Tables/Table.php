@@ -587,7 +587,7 @@ namespace Imperium\Tables {
          *
          * @method dump
          *
-         * @param  string $table The table name
+         * @param string $table The table name
          *
          * @return bool
          *
@@ -928,11 +928,7 @@ namespace Imperium\Tables {
                 {
                     if ($ignoreValues->empty())
                     {
-                        if ($columns->numeric($value))
-                                $columns->push("$k = $value");
-                        else
-                            $columns->push("$k =" .quote($value));
-
+                        $columns->push("$k =" .quote($value));
                     }else
                     {
 
@@ -951,6 +947,7 @@ namespace Imperium\Tables {
             $columns =  $columns->join(', ');
 
             $command = "UPDATE  {$this->current()} SET $columns WHERE $primary = $id";
+
 
             return $this->connexion->execute($command);
         }

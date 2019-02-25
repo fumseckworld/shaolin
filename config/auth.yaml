@@ -1,2 +1,8 @@
 auth_table: 'users'
 admin_prefix: '/'
+messages:
+  welcome: 'Welcome'
+  not_found: 'User not found'
+  password_no_match: 'Password not match'
+  bye: 'Bye'
+  not_unique: 'Username must be unique'
