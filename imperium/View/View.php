@@ -51,11 +51,12 @@ namespace Imperium\View {
          */
         public function __construct()
         {
-            $file = 'views';
+            $file = 'app';
 
-            $view_dir = def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config($file,'dir') : config($file,'dir');
+            $view_dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('view');
 
             $config = config($file,'config');
+
 
             Dir::create($view_dir);
 
@@ -64,7 +65,6 @@ namespace Imperium\View {
             $this->loader = new Twig_Loader_Filesystem($this->view_dir);
 
             $this->twig = new Twig_Environment($this->loader,$config);
-
 
             $functions = collection();
 
@@ -124,11 +124,21 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('_',
+            $functions->add(new TwigFunction('t',
 
                 function (string $name,array $args = [])
                 {
                     return trans($name,$args);
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+
+            $functions->add(new TwigFunction('_',
+
+                function (string $name)
+                {
+                    return gettext($name);
                 }
                 ,['is_safe' => ['html']]
             ));
@@ -325,7 +335,7 @@ namespace Imperium\View {
          */
         public function locale_path():string
         {
-            $dir = dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config('locales','dir');
+            $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . 'po';
 
             Dir::create($dir);
 

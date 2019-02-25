@@ -32,10 +32,14 @@ namespace Shaolin\Command;
 
             $output->write("generating $controller controller\n");
 
-            $dir = config('command','controllers_dir');
-            $namespace = config('command','controllers_namespace');
+            $controllers = collection(config('app','dir'))->get('controller');
 
-            $file =  $dir.DIRECTORY_SEPARATOR . $controller .'.php';
+            $core  = core_path(collection(config('app','dir'))->get('app'));
+
+            $namespace = config('app','namespace') . '\\' . $controllers;
+
+
+            $file =  $core .DIRECTORY_SEPARATOR . $controllers  .DIRECTORY_SEPARATOR. $controller .'.php';
 
             File::create($file);
 

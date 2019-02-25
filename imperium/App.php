@@ -14,7 +14,6 @@ namespace Imperium {
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
     use Imperium\Json\Json;
-    use Imperium\Middleware\Middleware;
     use Imperium\Model\Model;
     use Imperium\Query\Query;
     use Imperium\Routing\Router;
@@ -24,6 +23,7 @@ namespace Imperium {
     use Imperium\Session\SessionInterface;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+    use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\Request;
 
 
@@ -42,10 +42,6 @@ namespace Imperium {
     **/
     class App extends Zen implements Management
     {
-        /**
-         * @var Collection
-         */
-        private static $middleware;
 
         /**
          *
@@ -104,7 +100,6 @@ namespace Imperium {
          * @var array
          */
         private $hidden_bases;
-
 
         /**
          * @var Table
@@ -659,30 +654,6 @@ namespace Imperium {
             return $this->table()->column()->for($table)->drop($column);
         }
 
-
-        /**
-         *
-         * Append multiples columns inb current table
-         *
-         * @param string $table
-         * @param array $new_columns_names
-         * @param array $new_columns_types
-         * @param array $new_columns_length
-         * @param array $new_column_order
-         * @param array $existing_columns_selected
-         * @param array $unique
-         * @param array $null
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function append_columns(string $table, array $new_columns_names, array $new_columns_types, array $new_columns_length, array $new_column_order, array $existing_columns_selected, array $unique, array $null): bool
-        {
-           return $this->table()->from($table)->append_columns($$new_columns_names,$new_columns_types,$new_column_order,$existing_columns_selected,$unique,$null);
-        }
-
         /**
          *
          * Dump a base or multiples tables
@@ -725,7 +696,7 @@ namespace Imperium {
             $this->model            = new Model($this->connect,$this->table);
             $this->json             = new Json('app.json');
             $this->form             = new Form();
-            self::$middleware        = collection();
+
             if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
                $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
             else
@@ -740,20 +711,18 @@ namespace Imperium {
          *
          * Run the application
          *
-         * @param string $namespace
-         *
-         * @param string $core_path
          * @return string
          *
          * @throws Exception
+         *
          */
-        public static function run(string $namespace,string $core_path = 'core'):string
+        public function run():string
         {
             if(config('db','debug'))
             {
                 whoops();
             }
-            return (new Router(ServerRequest::fromGlobals(),$namespace,$core_path))->run();
+            return $this->router(ServerRequest::fromGlobals())->run();
         }
 
         /**
@@ -978,17 +947,15 @@ namespace Imperium {
          *
          * Get the router
          *
-         * @param ServerRequest $serverRequest
+         * @param ServerRequestInterface $serverRequest
          *
-         * @param string $namespace
-         * @param string $core_path
          * @return Router
          *
          * @throws Exception
          */
-        public function router(ServerRequest $serverRequest,string $namespace,string $core_path): Router
+        public function router( ServerRequestInterface $serverRequest): Router
         {
-            return new Router($serverRequest,$namespace,$core_path);
+            return new Router($serverRequest);
         }
 
         /**
@@ -1057,25 +1024,6 @@ namespace Imperium {
         public function config():Config
         {
             return Config::init();
-        }
-
-        /**
-         *
-         * @param Middleware $middleware
-         *
-         * @return App
-         */
-        /**
-         *
-         * @param string $middleware
-         *
-         * @return App
-         */
-        public function middleware(string $middleware): App
-        {
-            self::$middleware->add(new $middleware());
-
-            return $this;
         }
 
         /**

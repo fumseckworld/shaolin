@@ -1,0 +1,10 @@
+dir:
+  app: 'core'
+  controller: 'Controllers'
+  command: 'Command'
+  middleware: 'Middleware'
+  view: 'Views'
+namespace: 'Shaolin'
+config:
+  cache: false
+  charset: 'utf-8'

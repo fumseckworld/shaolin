@@ -166,6 +166,11 @@ namespace Imperium\Routing {
          */
         private $core_path;
 
+        /**
+         * @var string
+         */
+        private $controller_dir;
+
 
         /**
          *
@@ -173,18 +178,23 @@ namespace Imperium\Routing {
          *
          * @param ServerRequestInterface $request
          *
-         * @param string $namespace
-         * @param string $core_path
-         *
          * @throws Exception
          *
          */
-        public function __construct(ServerRequestInterface $request,string $namespace,string $core_path)
+        public function __construct(ServerRequestInterface $request)
         {
 
-            $this->core_path = $core_path;
+            $controller_dir = collection(config('app','dir'))->get('controller');
 
-            $this->call_middleware($request);
+            $this->core_path = core_path(collection(config('app','dir'))->get('app'));
+
+            $this->namespace = config('app','namespace'). '\\' . $controller_dir. '\\';
+
+            $this->controller_dir  = $this->core_path . DIRECTORY_SEPARATOR . $controller_dir ;
+
+            is_false(Dir::is($this->core_path),true,"The directory {$this->core_path} was not found");
+
+            is_false(Dir::is($this->controller_dir),true,"The directory $controller_dir was not found at {$this->core_path}");
 
             $this->method        = $request->getMethod();
 
@@ -192,11 +202,12 @@ namespace Imperium\Routing {
 
             self::$URL            = $this->url;
 
-            $this->namespace = $namespace;
+            $this->call_middleware($request);
         }
 
 
         /**
+         *
          * @param ServerRequestInterface $request
          *
          * @throws Exception
@@ -204,11 +215,13 @@ namespace Imperium\Routing {
          */
         private function call_middleware(ServerRequestInterface $request): void
         {
-            $namespace = config('middleware','namespace');
+            $middleware_dir = collection(config('app','dir'))->get('middleware');
 
-            $dir = core_path($this->core_path) .DIRECTORY_SEPARATOR .config('middleware','dir');
+            $namespace = config('app','namespace') . '\\' . $middleware_dir. '\\';
 
-            is_false(Dir::is($dir),true,"$dir was not found");
+            $dir = $this->core_path .DIRECTORY_SEPARATOR . $middleware_dir;
+
+            is_false(Dir::is($dir),true,"The directory $dir was not found");
 
             $middle = File::search("$dir/*php");
 
@@ -235,10 +248,8 @@ namespace Imperium\Routing {
          */
         public function run()
         {
-
             if (is_admin())
             {
-
                 foreach(admin($this->method) as $name => $route)
                 {
                     $x = collection($route);
@@ -309,19 +320,20 @@ namespace Imperium\Routing {
                 $params = collection(explode(self::MVC_SEPARATOR, $callable));
 
                 $controller = $params->get(0);
+
                 $action     = $params->get(1);
 
-                is_true(not_def($controller,true,"No found the controller"));
+                is_true(not_def($controller),true,'The controller was not found use the @ separator');
 
-                is_true(not_def($action,true,"No found the action"));
+                is_true(not_def($action),true,'The action was not found use the @ separator');
 
-                $controller = $this->namespace .'\\' .$controller;
+                $controller = $this->namespace  . $controller;
 
-                is_false(class_exists($controller),true,"The class {$params->get(0)} not exist");
+                is_false(class_exists($controller),true,"The class {$params->get(0)} not exist at {$this->controller_dir}");
 
                 $controller = new $controller();
 
-                is_false(method_exists($controller,$action),true,"The method $action was not found inside the controller named {$params->get(0)}");
+                is_false(method_exists($controller,$action),true,"The  $action method  was not found inside the controller named {$params->get(0)} at {$this->controller_dir}");
 
                 return call_user_func_array([$controller, $action], $this->matches);
             }
@@ -338,8 +350,9 @@ namespace Imperium\Routing {
          * @return string
          *
          * @throws Exception
+         *
          */
-        public static function web(string $route_name,$method = self::METHOD_GET): string
+        public static function web(string $route_name,$method = GET): string
         {
             foreach(web($method) as $name => $route)
             {
@@ -371,7 +384,7 @@ namespace Imperium\Routing {
          *
          * @throws Exception
          */
-        public static function admin(string $route_name,$method = self::METHOD_GET): string
+        public static function admin(string $route_name,$method = GET): string
         {
 
             foreach(admin($method) as $name => $route)
@@ -393,6 +406,7 @@ namespace Imperium\Routing {
 
             throw new Exception("We have not found an url with the $route_name name");
         }
+
         /**
          *
          * Get the route callable by the route name
@@ -400,24 +414,23 @@ namespace Imperium\Routing {
          * @param string $route_name
          * @param string $method The route method
          *
-         * @return callable
+         * @return string
          *
          * @throws Exception
+         *
          */
-        public static function callback(string $route_name,string $method = self::METHOD_GET): callable
+        public static function callback(string $route_name,string $method = GET): string
         {
-            if (has(config('admin','prefix'),parse_url(self::$URL)))
+            if (is_admin())
             {
                 foreach(admin($method) as $name => $route)
                 {
                     $x = collection($route);
 
-
                     $callback       = $x->get(self::CALLABLE_INDEX);
 
                     if (equal($name,$route_name))
                         return $callback;
-
                 }
             }else
             {

@@ -32,12 +32,11 @@ namespace Imperium\Directory {
          *
          * @method clear
          *
-         * @param  string $directory The directory path to clear
+         * @param string $directory The directory path to clear
          *
          * @return bool
          *
-         * @throws \Exception
-         *
+         * @throws Exception
          */
         public static function clear(string $directory): bool
         {
@@ -65,7 +64,8 @@ namespace Imperium\Directory {
          *
          * @return bool
          *
-         *
+         * @throws Exception
+         * 
          */
         public static function create(string $directory): bool
         {

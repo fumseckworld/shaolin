@@ -2,8 +2,8 @@
 
 {% block content %}
 
-    <a href="{{ name('login') }}" class="btn btn-success mb-2"> {{ _('Login') }}</a>
-    <a href="{{ name('admin') }}" class="btn btn-danger mb-2"> {{ _('Administration') }}</a>
+    <a href="{{ name('login') }}" class="btn btn-success mb-2"> {{ t('Login') }}</a>
+    <a href="{{ name('admin') }}" class="btn btn-danger mb-2"> {{ t('Administration') }}</a>
 
     {{ form(code) }}
 

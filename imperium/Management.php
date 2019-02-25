@@ -5,7 +5,6 @@ namespace Imperium {
     use Exception;
 
 
-    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
@@ -16,10 +15,10 @@ namespace Imperium {
     use Imperium\Query\Query;
     use Imperium\Routing\Router;
     use Imperium\Security\Auth\Oauth;
-    use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
+    use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\Request;
 
     interface Management
@@ -498,26 +497,6 @@ namespace Imperium {
 
         /**
          *
-         * Append multiples columns inb current table
-         *
-         * @param string $table
-         * @param array $new_columns_names
-         * @param array $new_columns_types
-         * @param array $new_columns_length
-         * @param array $new_column_order
-         * @param array $existing_columns_selected
-         * @param array $unique
-         * @param array $null
-         *
-         * @return bool
-         *
-         * @throws Exception
-         *
-         */
-        public function append_columns(string $table,array  $new_columns_names, array $new_columns_types, array $new_columns_length, array $new_column_order, array $existing_columns_selected, array $unique, array $null) : bool;
-
-        /**
-         *
          * @return Model
          *
          */
@@ -582,14 +561,12 @@ namespace Imperium {
 
         /**
          *
-         * @param ServerRequest $serverRequest
+         * @param ServerRequestInterface $serverRequest
          *
-         * @param string $namespace
-         * @param string $core_path
          * @return Router
          *
          */
-        public function router(ServerRequest $serverRequest,string $namespace,string $core_path): Router;
+        public function router(ServerRequestInterface $serverRequest): Router;
 
         /**
          *

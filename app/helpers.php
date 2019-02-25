@@ -1604,13 +1604,19 @@ if (not_exist('commands'))
      */
     function commands(): array
     {
-        $path = config('command','dir');
+        $core_path =  core_path(collection(config('app','dir'))->get('app'));
 
-        $namespace = config('command','namespace');
+        $command_dir = collection(config('app','dir'))->get('command');
 
-        Dir::create($path);
+        $commands = $core_path .DIRECTORY_SEPARATOR . $command_dir;
 
-        $path = realpath($path);
+        is_false(Dir::is($core_path),true,"The directory $core_path was not found");
+
+        is_false(Dir::is($commands),true,"The directory $command_dir was not found at $core_path");
+
+        $namespace =  config('app','namespace') . '\\' . $command_dir;
+
+        $path = realpath($commands);
 
         $data =   glob($path .DIRECTORY_SEPARATOR . '*.php');
 
@@ -2130,7 +2136,6 @@ if (not_exist('name'))
      */
     function name(string $name,string $method = GET): string
     {
-
         return is_admin() ? Router::admin($name,$method) : Router::web($name,$method);
     }
 }
