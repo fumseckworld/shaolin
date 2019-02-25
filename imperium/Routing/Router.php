@@ -221,7 +221,7 @@ namespace Imperium\Routing {
 
             $dir = $this->core_path .DIRECTORY_SEPARATOR . $middleware_dir;
 
-            is_false(Dir::is($dir),true,"The directory $dir was not found");
+            is_false(Dir::is($dir),true,"The $dir directory was not found");
 
             $middle = File::search("$dir/*php");
 

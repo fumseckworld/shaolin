@@ -9,6 +9,8 @@ namespace Imperium\View {
     use Twig\TwigFunction;
     use Twig_Environment;
     use Twig_Error_Loader;
+    use Twig_Error_Runtime;
+    use Twig_Error_Syntax;
     use Twig_Extensions_Extension_I18n;
     use Twig_Function;
     use Twig_Loader_Filesystem;
@@ -126,9 +128,9 @@ namespace Imperium\View {
 
             $functions->add(new TwigFunction('t',
 
-                function (string $name,array $args = [])
+                function (string $message,array $args = [])
                 {
-                    return trans($name,$args);
+                    return trans($message,$args);
                 }
                 ,['is_safe' => ['html']]
             ));
@@ -136,9 +138,9 @@ namespace Imperium\View {
 
             $functions->add(new TwigFunction('_',
 
-                function (string $name)
+                function (string $message)
                 {
-                    return gettext($name);
+                    return gettext($message);
                 }
                 ,['is_safe' => ['html']]
             ));
@@ -169,7 +171,7 @@ namespace Imperium\View {
 
         /**
          *
-         *
+         * Add twig functions
          *
          * @param array $functions
          *
@@ -186,12 +188,19 @@ namespace Imperium\View {
 
 
         /**
+         *
+         * Load a view
+         *
          * @param string $view
          * @param array $args
+         *
          * @return string
+         *
          * @throws Twig_Error_Loader
-         * @throws \Twig_Error_Runtime
-         * @throws \Twig_Error_Syntax
+         * @throws Twig_Error_Runtime
+         * @throws Twig_Error_Syntax
+         * @throws Exception
+         *
          */
         public function load(string $view,array $args)
         {
