@@ -1110,7 +1110,6 @@ namespace Imperium\Html\Form {
             else
                 $validation = '';
 
-            $first = collection($options)->begin();
 
             if ($required)
             {

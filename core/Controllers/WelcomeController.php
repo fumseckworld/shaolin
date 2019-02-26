@@ -54,7 +54,7 @@ namespace  Shaolin\Controllers;
             $code = $this->model()->show('table-responsive','thead-dark','?current',1,'table','remove','sure',fa('fas','fa-trash'),"remove/$table",'edit',"edit/$table",
                 fa('fas','fa-edit'),'start','previous','id','desc',name('home'),'manage','search',fa('fas','fa-table'),fa('fas','fa-search'),fa('fas','fa-anchor'));
 
-           $del =  form(name('del',POST),'delete')->select(false,'table',$this->table()->show())->submit('a','a')->get();
+           $del =  form(name('del',POST),'delete')->row()->select(false,'table',$this->table()->show())->end_row_and_new()->submit('a','a')->end_row()->get();
 
            $query = query_view('sure',name('query',POST),name('create',POST),'create',$table,'expected','submit','reset');
 

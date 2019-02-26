@@ -354,7 +354,7 @@ namespace Imperium\View {
          */
         public function locale_path():string
         {
-            $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . 'po';
+            $dir = dirname(core_path(collection(config('app','dir'))->get('app'))) . DIRECTORY_SEPARATOR . 'po';
 
             Dir::create($dir);
 
