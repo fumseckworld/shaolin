@@ -829,6 +829,7 @@ namespace Imperium\Model {
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function truncate(string $table): bool
         {
@@ -847,6 +848,7 @@ namespace Imperium\Model {
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function update_record(int $id,array $data,array $ignore =[]): bool
         {
@@ -887,6 +889,7 @@ namespace Imperium\Model {
          * @return PDO
          *
          * @throws Exception
+         *
          */
         public function pdo(): PDO
         {
@@ -925,7 +928,23 @@ namespace Imperium\Model {
             return $this->connexion->execute($query);
         }
 
-        public function parse($record,string $action,string $submit_text,string $table,string $primary)
+
+        /**
+         *
+         * Generate a form by a pdo record
+         *
+         * @param $record
+         * @param string $action
+         * @param string $submit_text
+         * @param string $table
+         * @param string $primary
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function parse($record,string $action,string $submit_text,string $table,string $primary): string
         {
 
             if (empty($record))

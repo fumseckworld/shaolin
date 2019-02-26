@@ -5,7 +5,7 @@
 <img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence">
 </p>
 
-* [**Imperium**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Imperium.php)
+* [**Imperium**](https://git.fumseck.eu/cgit/imperium/tree/imperium/App.php)
     * [**Bases**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php)
     * [**Users**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Users/Users.php)
     * [**Tables**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Tables/Table.php)
@@ -18,23 +18,60 @@
     * [**Json**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php)
     * [**Query**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php)
     * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
-    * [**Views**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php)
+    * [**Views**](https://git.fumseck.eu/cgit/imperium/tree/imperium/View/View.php)
     * [**Router**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php)
-* [**Coverage**](https://imperium.fumseck.eu)
+    * [**Oauth**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Security/Auth/Oauth.php)
+    * [**Csrf**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Security/Csrf/Csrf.php)
+    * [**Hash**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Security/Hashing/Hash.php)
+    * [**Asset**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Asset/Asset.php)
+    * [**Controllers**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Controller/Controller.php)
+    * [**Import**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Import/Import.php)
+    * [**Dump**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Dump/Dump.php)
+    * [**Flash**](https://git.fumseck.eu/cgit/imperium/tree/imperium/imperium/Flash/Flash.php)
+    * [**Email**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Mail/Mail.php)
+    * [**Middleware**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Middleware/Middleware.php)
+    * [**Request**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Request/Request.php)
+    * [**Session**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Session)
+    * [**Trans**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Trans/Trans.php)
+    * [**Views**](https://git.fumseck.eu/cgit/imperium/tree/imperium/View/View.php)
+    * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
 * [**Discord**](https://discord.gg/fUPyd9K)
 * [**Trello**](https://trello.com/b/28tMSSDG/imperium)
+* [**Diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=4.2&id2=4.3&dt=2)
 
 # What it's ?
 
-It is a free php library written to be useful for everybody and to be included in [Ji](https://git.fumseck.eu/cgit/ji/), and [Shaolin](https://git.fumseck.eu/cgit/shaolin) projects.
+It is a free php library written to be useful for everybody and to be included in the [Shaolin](https://git.fumseck.eu/cgit/shaolin) project.
 
 # Objectives
 
 Imperium was born to you offer a system to manage your databases more simply without use obligatory a framework.
 
-To allow you to use it in your own projects, and group my projects in one to update them more simply.
 
 Its objectives are to supports all [types of databases](http://php.net/manual/en/pdo.drivers.php) possibles, and be useful for all developers to build a admin area more simply.
+
+# Views helpers
+
+`display`  Display a flash message
+
+`css`  Generate a css link
+
+`js`  Generate a js link
+
+`img`  Generate a image link
+
+`form`  Display a form
+
+`print`  No escape html 
+
+`lang`  Display the current lang
+
+`t`  translate a message
+
+`_`  translate a message using gettext
+
+`name`  Return the url of the route name
+
 
 # **Installation**
 
@@ -62,7 +99,7 @@ Your help are welcome.
 
 Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more simply.
 
-# [View](https://git.fumseck.eu/cgit/imperium/tree/imperium/View/View.php) [Coverage](https://imperium.fumseck.eu/imperium/View/View.php.html)
+# [View](https://git.fumseck.eu/cgit/imperium/tree/imperium/View/View.php) 
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
@@ -70,12 +107,11 @@ Join me on [**discord**](https://discord.gg/qn6yptm) to can speak together more 
 |  load                 |  mixed    | Mixed                            | Return the view content                                            |
 |  add_global           |  mixed    | An instance of the view          | Add a global value                                                 |
 |  add_path             |  mixed    | An instance of the view          | Add a view path                                                    |
-|  globals              |  void     | An array                         | Return the global values                                           |
 |  paths                |  void     | An array                         | Return the views paths                                             |
 |  twig                 |  void     | An instance of twig              | Return the twig instance                                           |
 |  loader               |  void     | An instance of the loader        | Return the loader instance                                         |
      
-# [Router](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php) [Coverage](https://imperium.fumseck.eu/imperium/Router/Router.php.html)
+# [Router](https://git.fumseck.eu/cgit/imperium/tree/imperium/Router/Router.php)
 
 
 The controller and method separator it's **@**
@@ -84,18 +120,17 @@ The url **params** must be  prefixed by **:**
 
 The namespace it's the namespace of your application class
  
-| Method                | arguments | return                           |   do                                                               |    
-|-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
-|  __construct          |  string   | An instance of the router        | Save the data                                                      |
-|  run                  |  void     | Mixed                            | Call the callable                                                  |
-|  with                 |  string   | An instance of the router        | Add a regex for a parameter                                        |
-|  add                  |  mixed    | An instance of the router        | Add a route                                                        |
-|  ::url                |  string   | A string                         | Return the route url                                               |
-|  ::callback           |  string   | A string                         | Return the route callback                                          |
-|  routes               |  string   | An array                         | Return the route saved                                             |
+| Method                | arguments                 | return                           |   do                                                               |    
+|-----------------------|---------------------------|----------------------------------|--------------------------------------------------------------------|    
+|  __construct          |  ServerRequestInterface   | An instance of the router        | Save the data                                                      |
+|  run                  |  void                     | Mixed                            | Call the callable                                                  |
+|  ::url                |  string                   | A string                         | Return the route url                                               |
+|  ::callback           |  string                   | A string                         | Return the route callback                                          |
+|  ::admin              |  string                   | A string                         | Return the admin routes                                            |
+|  ::web                |  string                   | A string                         | Return the web routes                                              |
         
         
-# [Base](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php) [Coverage](https://imperium.fumseck.eu/imperium/Bases/Base.php.html)
+# [Base](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php)
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
@@ -120,7 +155,7 @@ The namespace it's the namespace of your application class
 
 
 
-# [Users](https://git.fumseck.eu/cgit/imperium/tree/imperium/Users/Users.php) [Coverage](https://imperium.fumseck.eu/imperium/Users/Users.php.html)
+# [Users](https://git.fumseck.eu/cgit/imperium/tree/imperium/Users/Users.php)
 
 | Method                | arguments | return                                    |   do                                                               |    
 |-----------------------|-----------|-------------------------------------------|--------------------------------------------------------------------|    
@@ -136,7 +171,7 @@ The namespace it's the namespace of your application class
 | update_password       |   string  | A boolean                                 | Change the user password                                           |
 
 
-# [Table](https://git.fumseck.eu/cgit/imperium/tree/imperium/Tables/Table.php) [Coverage](https://imperium.fumseck.eu/imperium/Tables/Table.php.html)
+# [Table](https://git.fumseck.eu/cgit/imperium/tree/imperium/Tables/Table.php) 
 
 | Method                            | arguments | return                     | do                                                                                       |    
 |-----------------------------------|-----------|----------------------------|------------------------------------------------------------------------------------------|    
@@ -159,33 +194,20 @@ The namespace it's the namespace of your application class
 | alter_table                       |   string  | A boolean                  | Alter column table constraint                                                            |
 | remove_constraint                 |   string  | A boolean                  | Remove column constraint                                                                 |
 | create                            |   void    | A boolean                  | Create the table                                                                         |
-| is_the_last_field                 |   mixed   | A boolean                  | Check if the current field is the last                                                   |
 | seed                              |   int     | A boolean                  | Seed the table                                                                           |
-| hidden                            |   array   | An instance of Table       | Define all table to not display in the app                                               |
 | dump                              |   string  | A boolean                  | Dump the table                                                                           |
-| get_primary_key                   |   void    | mixed                      | Return the primary key                                                                   |
 | is_empty                          |   void    | A boolean                  | Check if a table is empty                                                                |
-| select_by_id                      |   int     | A array                    | Select a record by it's id                                                               |
-| select_by_id_or_fail              |   int     | A array                    | Select a record by it's id or fails if not found                                         |
-| remove_by_id                      |   int     | A boolean                  | Remove a record by it's id                                                               |
-| columns_to_string                 |   string  | A string                   | Return all columns separated by a glue                                                   |
-| change_columns_name_to_string     |   string  | A string                   | Replace a column by a new name and return columns separated by a glue                    |
-| rename_column                     |   string  | A boolean                  | Rename a column                                                                          |
+| select                            |   int     | A array                    | Select a record by it's id                                                               |
+| select_or_fail                    |   int     | A array                    | Select a record by it's id or fails if not found                                         |
+| remove                            |   int     | A boolean                  | Remove a record by it's id                                                               |
 | convert                           |   string  | A boolean                  | Convert table with new charset and collation                                             |
-| remove_column                     |   string  | A boolean                  | Remove a column inside a table                                                           |
 | exist                             |   string  | A boolean                  | Check if a table exist                                                                   |
-| insert                            |   mixed   | A boolean                  | Insert data in the table                                                                 |
 | save                              |   mixed   | A boolean                  | Insert data in the table                                                                 |
 | show                              |   void    | A array                    | Displays all tables                                                                      |
 | count                             |   string  | An int                     | Count number of records inside a table                                                   |
 | all                               |   string  | An array                   | Return all records inside a table                                                        |
 | found                             |   void    | An integer                 | Return number of tables found inside the database                                        |
-| update                            |   mixed   | A boolean                  | Update a record                                                                          |
-| modify_column                     |   mixed   | A boolean                  | Modify a column                                                                          |
-| set_engine                        |   string  | An instance of Table       | Define mysql engine                                                                      |
-| drop_all_tables                   |   void    | An boolean                 | Drop all tables                                                                          |
-| append_columns                    |   mixed   | An boolean                 | Append multiple columns                                                                  |
-| has_column_type                   |   string  | An boolean                 | Check if types exists                                                                    |
+| update_record                     |   mixed   | A boolean                  | Update a record                                                                          |
 | rename                            |   string  | An boolean                 | Rename the table                                                                         |
 | set_collation                     |   string  | An instance of Table       | Define the collation                                                                     |
 | set_charset                       |   string  | An instance of Table       | Define the charset                                                                       |
@@ -193,7 +215,7 @@ The namespace it's the namespace of your application class
 | insert_multiples                  |   array   | A boolean                  | Insert multiples values                                                                  |
 
 
-# [Model](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php) [Coverage](https://imperium.fumseck.eu/imperium/Model/Model.php.html)
+# [Model](https://git.fumseck.eu/cgit/imperium/tree/imperium/Model/Model.php)
 
 | Method                | arguments | return                                    |   do                                                               |    
 |-----------------------|-----------|-------------------------------------------|--------------------------------------------------------------------|    
@@ -215,18 +237,21 @@ The namespace it's the namespace of your application class
 | save                  |   mixed   | A boolean                                 | Insert data inside the table                                       |                                                    
 | count                 |   void    | A integer                                 | Count all data in a table                                          |                                                    
 | truncate              |   void    | A boolean                                 | Empty all records inside the table                                 |                                                     
-| update                |   mixed   | A boolean                                 | Update a record inside the table                                   |                                                     
+| update                |   void    | A boolean                                 | Update a record inside the table from request                      |                                                     
+| update_record         |   void    | A boolean                                 | Update a record by this id                                         |                                                     
 | columns               |   void    | An array                                  | Display all columns inside the table                               |                                                     
 | is_empty              |   void    | A boolean                                 | Check if the table is empty                                        |
 | pdo                   |   void    | An instance of pdo                        | Return the pdo instance                                            |
-| request               |   string  | An array                                  | Return the result of the query inside an array                     |
 | request               |   string  | An array                                  | Return the result of the query inside an array                     |
 | set                   |   mixed   | An instance of Model                      | Set a new value for a column                                       |   
 | save                  |   void    | A boolean                                 | Insert the new record build with set method                        |   
 | news                  |   mixed   | An array                                  | Return the news added records with a limit and order by            |   
 | last                  |   mixed   | An array                                  | Return the lasts records with a limit and order by                 |   
+| edit_form             |   mixed   | A string                                  | Generate a form to update a record                                 |   
+| update_form           |   mixed   | A string                                  | Generate a form to create a record                                 |   
+| parse                 |   mixed   | A string                                  | Generate a form by a record                                        |   
 
-# [Collection](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php) [Coverage](https://imperium.fumseck.eu/imperium/Collection/Collection.php.html)
+# [Collection](https://git.fumseck.eu/cgit/imperium/tree/imperium/Collection/Collection.php) 
 
 | Method                | arguments | return                     | do                                                                                       |    
 |-----------------------|-----------|----------------------------|------------------------------------------------------------------------------------------|    
@@ -273,7 +298,7 @@ The namespace it's the namespace of your application class
 | next                  |   void    | void                       | Move forward to next element                                                             |                
 
 
-# [Directory](https://git.fumseck.eu/cgit/imperium/tree/imperium/Directory/Dir.php) [Coverage](https://imperium.fumseck.eu/imperium/Directory/Dir.php.html)
+# [Directory](https://git.fumseck.eu/cgit/imperium/tree/imperium/Directory/Dir.php) 
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|     
@@ -283,17 +308,17 @@ The namespace it's the namespace of your application class
 | ::is                  |   string  | A boolean                        | Check if arg is a directory                                        |
 
 
-# [Connexion](https://git.fumseck.eu/cgit/imperium/tree/imperium/Connexion/Connect.php) [Coverage](https://imperium.fumseck.eu/imperium/Connexion/Connect.php.html)
+# [Connexion](https://git.fumseck.eu/cgit/imperium/tree/imperium/Connexion/Connect.php) 
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
 | __construct           |   string  | An instance of Connect           | Save the connection of the database                                |
-| get_driver            |   void    | An string                        | Return the current driver                                          |
-| get_database          |   void    | An string                        | Return the current database                                        |
-| get_username          |   void    | An string                        | Return the current username                                        |
-| get_password          |   void    | An string                        | Return the current password                                        |
-| get_fetch_mode        |   void    | An integer                       | Return the current fetch mode                                      |
-| get_dump_path         |   void    | A string                         | Return the current dump path                                       |
+| driver                |   void    | An string                        | Return the current driver                                          |
+| base                  |   void    | An string                        | Return the current database                                        |
+| user                  |   void    | An string                        | Return the current username                                        |
+| password              |   void    | An string                        | Return the current password                                        |
+| fetch_mode            |   void    | An int                           | Return the current fetch mode                                      |
+| dump_path             |   void    | A string                         | Return the current dump path                                       |
 | mysql                 |   void    | A boolean                        | Return if the current driver is mysql                              |
 | postgresql            |   void    | A boolean                        | Return if the current driver is postgresql                         |
 | sqlite                |   void    | A boolean                        | Return if the current driver is sqlite                             |
@@ -305,8 +330,10 @@ The namespace it's the namespace of your application class
 | queries               |   string  | A instance of Connect            | Execute the queries                                                |
 | commit                |   void    | A boolean                        | Commit the current transaction                                     |
 
-# [Form](https://git.fumseck.eu/cgit/imperium/tree/imperium/Html/Form/Form.php) [Coverage](https://imperium.fumseck.eu/imperium/Html/Form/Form.php.html)
-
+# [Form](https://git.fumseck.eu/cgit/imperium/tree/imperium/Html/Form/Form.php) 
+ 
+**All forms have a csrf token by default**
+ 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
 | start                 |   mixed   | An instance of the form builder  | Open the form                                                      |
@@ -315,7 +342,6 @@ The namespace it's the namespace of your application class
 | file                  |   mixed   | An instance of the form builder  | Create a file input                                                |
 | input                 |   mixed   | An instance of the form builder  | Create a input                                                     |
 | button                |   mixed   | An instance of the form builder  | Create a button                                                    |
-| csrf                  |   string  | An instance of the form builder  | Add the csrf token field                                           |
 | reset                 |   string  | An instance of the form builder  | Create a reset button                                              |
 | textarea              |   mixed   | An instance of the form builder  | Create a textarea                                                  |
 | create                |   void    | An instance of the form builder  | Return an instance of the form builder                             |
@@ -340,7 +366,7 @@ The namespace it's the namespace of your application class
 
 
 
-# [Json](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php) [Coverage](https://imperium.fumseck.eu/imperium/Json/Json.php.html)
+# [Json](https://git.fumseck.eu/cgit/imperium/tree/imperium/Json/Json.php)
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
@@ -353,26 +379,32 @@ The namespace it's the namespace of your application class
 | decode                |   bool    | mixed                            | Decode a json file or a json string encoded to utf8                |
 
 
-# [Query](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php) [Coverage](https://imperium.fumseck.eu/imperium/Query/Query.php.html)
+# [Query](https://git.fumseck.eu/cgit/imperium/tree/imperium/Query/Query.php)
 
 | Method                | arguments | return                           |   do                                                               |    
 |-----------------------|-----------|----------------------------------|--------------------------------------------------------------------|    
 | __construct           |   mixed   | An instance of the query builder | Save the connection                                                |
-| set_current_table_name|   string  | An instance of the query builder | Save the table name                                                |
+| from                  |   string  | An instance of the query builder | Save the table name                                                |
 | sql                   |   void    | A string                         | Return the generated sql query                                     |
 | where                 |   mixed   | An instance of the query builder | Generate a where clause                                            |
+| only                  |   mixed   | An instance of the query builder | Save the request columns                                           |
 | between               |   mixed   | An instance of the query builder | Generate a where clause with between                               |
 | order_by              |   string  | An instance of the query builder | Generate a order by clause                                         |
-| set_columns           |   array   | An instance of the query builder | Define the columns to select                                       |
-| connect               |   Connect | An instance of the query builder | Define the connection                                              |
+| limit                 |   mixed   | An instance of the query builder | Define the limit                                                   |
+| mode                  |   int     | An instance of the query builder | Define the query mode                                              |
+| delete                |   void    | A boolean                        | Execute the query to delete                                        |
+| join                  |   string  | An instance of the query builder | Generate a join query                                              |
+| union                 |   string  | An instance of the query builder | Generate a union query                                             |
+| like                  |   string  | An instance of the query builder | Generate a like query                                              |
+| get                   |   Void    | An array                         | Execute the query                                                  |
 
 
-# [Helpers](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php) [Coverage](https://imperium.fumseck.eu/app/helpers.php.html)
+# [Helpers](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php) 
 
 | Method                | arguments | return                           |   do                                                                  |    
 |-----------------------|-----------|----------------------------------|-----------------------------------------------------------------------|    
 | quote                 |   mixed   | A string                         | Quote a string to use in a query                                      |
-| apps                  |   mixed   | An instance of Imperium          | Group all possible class instances in a class                         |
+| app                   |   mixed   | An instance of Imperium          | Group all possible class instances in a class                         |
 | assign                |   mixed   | void                             | Assign to a variable a content by a condition                         |
 | query                 |   mixed   | An instance of Query builder     | Create the instance                                                   |
 | is_pair               |   int     | A Boolean                        | Check if a number is pair                                             |

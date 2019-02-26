@@ -205,10 +205,9 @@ namespace Imperium\Query {
          *
          * @method from
          *
-         * @param  string $table The table to manage
+         * @param string $table The table to manage
          *
          * @return Query
-         *
          */
         public function from(string $table): Query
         {
@@ -348,7 +347,7 @@ namespace Imperium\Query {
          * @return Query
          *
          */
-        public function order_by(string $column, string $order = 'DESC'): Query
+        public function order_by(string $column, string $order = DESC): Query
         {
             $this->order_cond = $order;
             $this->order_key = $column;
@@ -370,7 +369,6 @@ namespace Imperium\Query {
          */
         public function get(): array
         {
-
             return  $this->connexion->request($this->sql());
         }
 
@@ -453,6 +451,7 @@ namespace Imperium\Query {
          * @return Query
          *
          * @throws Exception
+         *
          */
         public function join(string $condition,string $first_table,string $second_table,string $first_param ,string $second_param,string ...$columns) : Query
         {
@@ -588,7 +587,7 @@ namespace Imperium\Query {
          * @return string
          *
          */
-        public function table(): string
+        private function table(): string
         {
             return $this->table;
         }

@@ -154,6 +154,16 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('print',
+
+                function (string $code)
+                {
+                    return $code;
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+
             $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 
             $this->add_functions($functions->collection());
