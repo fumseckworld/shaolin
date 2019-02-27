@@ -105,38 +105,50 @@ namespace Imperium\Security\Auth {
          */
         public function login(string $username,string $password): RedirectResponse
         {
-            $user = app()->model()->from(config('auth','auth_table'))->by('username',$username);
+            $table = config('auth','auth_table');
 
-            superior($user,1,true, collection(config('auth','messages'))->get('not_unique'));
-
-            if (def($user))
+            if (app()->table_exist($table))
             {
-                foreach ($user as $u)
+                $user = app()->model()->from($table)->by('username', $username);
+
+                superior($user, 1, true, collection(config('auth', 'messages'))->get('not_unique'));
+
+                if (def($user))
                 {
-                    if (check($password,$u->password))
+                    foreach ($user as $u)
                     {
-                        $this->session->set(self::USERNAME,$username);
+                        if (check($password, $u->password))
+                        {
+                            $this->session->set(self::USERNAME, $username);
 
-                        $this->session->set(self::CONNECTED,true);
+                            $this->session->set(self::CONNECTED, true);
 
-                        is_true(not_def($this->path),true,'Please set the redirect url');
+                            is_true(not_def($this->path), true, 'Please set the redirect url');
 
-                        return to($this->path,collection(config('auth','messages'))->get('welcome'));
-                    }else
-                    {
-                        $this->session->remove(self::CONNECTED);
-                        $this->session->remove(self::USERNAME);
-                        return back(collection(config('auth','messages'))->get('password_no_match'),false);
+                            return to($this->path, collection(config('auth', 'messages'))->get('welcome'));
+                        } else {
+
+                            $this->session->remove(self::CONNECTED);
+                            $this->session->remove(self::USERNAME);
+                            return back(collection(config('auth', 'messages'))->get('password_no_match'), false);
+                        }
+
                     }
-
                 }
+
+                $this->session->remove(self::CONNECTED);
+
+                $this->session->remove(self::USERNAME);
+
+                return back(collection(config('auth','messages'))->get('user_not_found'),false);
+
             }
 
             $this->session->remove(self::CONNECTED);
 
             $this->session->remove(self::USERNAME);
 
-            return back(collection(config('auth','messages'))->get('not_found'),false);
+            return back(collection(config('auth','messages'))->get('table_not_found'),false);
 
         }
     }
