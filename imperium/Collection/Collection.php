@@ -251,25 +251,25 @@ namespace Imperium\Collection {
         }
 
         /**
-        *
-        * Convert the data in the array to html code
-        *
-        * @method print
-        *
-        * @param  bool   $html_table              To print a html table
-        * @param  array  $columns                 Print defined columns name
-        * @param  bool   $html_cards              To print cards
-        * @param  string $html_head_code          The customize html head code
-        * @param  string $html_end_head_code      The customize html end head code
-        * @param  string $html_body_element       The body code
-        * @param  string $body_class              The body class
-        * @param  string $body_elements_separator The html tag to separate the elements
-        * @param  string $html_before_all         The html code to add before all
-        * @param  string $html_after_all          The html code to add after_all
-        *
-        * @return string
-        *
-        */
+         *
+         * Convert the data in the array to html code
+         *
+         * @method print
+         *
+         * @param  bool $html_table To print a html table
+         * @param  array $columns Print defined columns name
+         * @param  bool $html_cards To print cards
+         * @param  string $html_head_code The customize html head code
+         * @param  string $html_end_head_code The customize html end head code
+         * @param  string $html_body_element The body code
+         * @param  string $body_class The body class
+         * @param  string $body_elements_separator The html tag to separate the elements
+         * @param  string $html_before_all The html code to add before all
+         * @param  string $html_after_all The html code to add after_all
+         *
+         * @return string
+         *
+         */
         public function print( bool $html_table = true ,array $columns =[],bool $html_cards = false,string $html_head_code= '',string $html_end_head_code ='',string $html_body_element = '',string $body_class= '',string $body_elements_separator= '',string $html_before_all = '<div class="row">',string $html_after_all = '</div>'): string
         {
             $this->rewind();

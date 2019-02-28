@@ -6,6 +6,7 @@ namespace Imperium\View {
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
+    use Imperium\Routing\Router;
     use Twig\TwigFunction;
     use Twig_Environment;
     use Twig_Error_Loader;
@@ -163,6 +164,23 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('root',
+
+                function ()
+                {
+                    return root();
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('site',
+
+                function (string $name,string $method = GET)
+                {
+                    return Router::web($name,$method);
+                }
+                ,['is_safe' => ['html']]
+            ));
 
             $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 
@@ -229,7 +247,7 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);

@@ -184,7 +184,10 @@ class Pagination implements PaginationManagement
      */
     private static function createLiFirstAndSecond(string $path): string
     {
-        return '<li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance. '/1" class="page-link"> 1 </a></li><li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance.'/2" class="page-link"> 2</a></li>';
+        $bool = def(strstr(self::$instance,'='));
+        return $bool ?
+            '<li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance. '1" class="page-link"> 1 </a></li><li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance.'2" class="page-link"> 2</a></li>'
+        :'<li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance. '/1" class="page-link"> 1 </a></li><li class="'.self::$liCssClass.'"> <a href="'.$path. self::$instance.'/2" class="page-link"> 2</a></li>';
     }
 
     /**

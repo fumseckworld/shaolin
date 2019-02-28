@@ -33,13 +33,6 @@ namespace Imperium\Security\Auth {
          */
         const USERNAME = '__username__';
 
-        /**
-         *
-         * The url path
-         *
-         * @var string
-         */
-        private $path;
 
         public function __construct(SessionInterface $session)
         {
@@ -61,22 +54,6 @@ namespace Imperium\Security\Auth {
 
             return to('/',collection(config('auth','messages'))->get('bye'));
 
-        }
-
-        /**
-         *
-         * Set the login redirect url
-         *
-         * @param string $path
-         *
-         * @return Oauth
-         *
-         */
-        public function redirect_url(string $path): Oauth
-        {
-            $this->path = $path;
-
-            return $this;
         }
 
         /**
@@ -123,9 +100,7 @@ namespace Imperium\Security\Auth {
 
                             $this->session->set(self::CONNECTED, true);
 
-                            is_true(not_def($this->path), true, 'Please set the redirect url');
-
-                            return to($this->path, collection(config('auth', 'messages'))->get('welcome'));
+                            return equal($u->id,1) ?  to(config('auth','admin_prefix'), collection(config('auth', 'messages'))->get('welcome')) : to(config('auth','user_home'), collection(config('auth', 'messages'))->get('welcome'))  ;
                         } else {
 
                             $this->session->remove(self::CONNECTED);

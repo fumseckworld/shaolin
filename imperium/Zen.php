@@ -231,6 +231,14 @@ namespace Imperium {
          */
         const INSERT = 24;
 
+
+
+
+        const DISPLAY_MODE = [
+            DISPLAY_TABLE,
+            DISPLAY_ARTICLE,
+
+        ];
         /**
          *
          * The field primary key name

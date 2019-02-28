@@ -1,5 +1,6 @@
 auth_table: 'users'
 admin_prefix: '/'
+user_home: '/home'
 messages:
   welcome: 'Welcome'
   user_not_found: 'User was not found'

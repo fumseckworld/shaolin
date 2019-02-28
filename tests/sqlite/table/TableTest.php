@@ -213,7 +213,7 @@ namespace Testing\sqlite\table {
          */
         public function test_found()
         {
-            $this->assertEquals(10,$this->table()->found());
+            $this->assertEquals(11,$this->table()->found());
 
         }
 

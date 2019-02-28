@@ -37,7 +37,7 @@
     * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
 * [**Discord**](https://discord.gg/fUPyd9K)
 * [**Trello**](https://trello.com/b/28tMSSDG/imperium)
-* [**Diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=5.1&id2=5.0&dt=2)
+* [**Diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=5.2&id2=5.1&dt=2)
 
 # What it's ?
 
@@ -67,6 +67,10 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 `lang`  Display the current lang
 
 `t`  translate a message
+
+`root`  The root path
+
+`site` Generate url based on the site 
 
 `_`  translate a message using gettext
 

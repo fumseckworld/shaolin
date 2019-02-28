@@ -81,6 +81,9 @@ define('DELETE',22);
 define('UPDATE',23);
 define('INSERT',24);
 
+define('DISPLAY_TABLE',25);
+define('DISPLAY_ARTICLE',26);
+
 define('QUERY_COLUMN','column');
 define('QUERY_CONDITION','condition');
 define('QUERY_EXPECTED','expected');
@@ -113,6 +116,58 @@ if (not_exist('redirect'))
             $success ? $flash->success($message) : $flash->failure($message);
         }
         return (new \Symfony\Component\HttpFoundation\RedirectResponse(name($route_name)))->send();
+    }
+}
+
+if (not_exist('article'))
+{
+    /**
+     *
+     * Generate a card list with pagination
+     *
+     * @param array $records
+     * @param string $pagination
+     * @param string $icon
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function article(array $records,string  $pagination,$icon =  '<i class="fas fa-newspaper"></i>'): string
+    {
+
+        $data = collection($records);
+        $file = 'article';
+        $code = '';
+        $parts =  collection(config($file,'columns'));
+
+        $img = $parts->get('image');
+        $title = $parts->get('title');
+        $content = $parts->get('content');
+        $created = $parts->get('created_at');
+        $slug = $parts->get('slug');
+        
+        append($code,'<div class="row mt-5 mb-5">');
+
+        $data->rewind();
+
+        while ($data->valid())
+        {
+            $values = $data->current();
+
+            append($code,'<div class="col-lg-6"><div class="card ml-4 mr-4 mt-4 mb-4"><img src="'.$values->$img.'" alt="'.$values->$title.'"><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><p class="card-text"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></p>');
+
+            append($code,'</div></div></div>');
+
+            $data->next();
+        }
+        append($code,'</div>');
+        append($code,'<div class="row ml-4">');
+        append($code,$pagination);
+        append($code,'</div>');
+        return $code;
+
     }
 }
 
@@ -302,7 +357,16 @@ if (not_exist('trans'))
        return call_user_func_array('sprintf', $values);
    }
 }
+if (not_exist('root'))
+{
+    function root(): string
+    {
+        if (php_sapi_name() !== 'cli')
+            return https() ? 'https://' . request()->server->get('HTTP_HOST') :  'http://' . request()->server->get('HTTP_HOST');
 
+        return '/';
+    }
+}
 if (not_exist('config_path'))
 {
     /**

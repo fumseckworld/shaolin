@@ -4,6 +4,7 @@
 namespace Imperium\Model {
 
     use Exception;
+    use Imperium\App;
     use Imperium\Connexion\Connect;
     use Imperium\Query\Query;
     use Imperium\Request\Request;
@@ -295,16 +296,62 @@ namespace Imperium\Model {
          * Find a record by a column
          *
          * @param string $column
+         * @param string $condition
          * @param mixed $expected
          *
          * @return array
          *
          * @throws Exception
+         */
+        public function by(string $column,string $condition,$expected): array
+        {
+            return $this->from($this->current())->where($column,$condition,$expected)->get();
+        }
+
+        /**
+         *
+         * Display records without action
+         *
+         * @param int $mode
+         * @param string $url_prefix
+         * @param int $current_page
+         * @param string $column
+         * @param string $start_pagination_text
+         * @param string $end_pagination_text
+         * @param string $order
+         *
+         * @return string
+         *
+         * @throws Exception
          *
          */
-        public function by(string $column,$expected): array
+        public function display(int $mode,string $url_prefix,int $current_page,string $column,string $start_pagination_text,string $end_pagination_text,string $order = DESC):string
         {
-            return $this->from($this->current())->where($column,EQUAL,$expected)->get();
+
+            is_true(not_in(App::DISPLAY_MODE,$mode),true,"The mode is not valid");
+
+            $table = current_table();
+
+            $current_page = def(get('current')) ? get('current') : $current_page;
+
+            $limit_records_per_page = different($mode,DISPLAY_ARTICLE)  ? get('limit',10) : 8;
+
+            $records = get_records($table,$current_page,$limit_records_per_page,$column,$order);
+
+            $pagination = different($url_prefix,'/') ?
+                pagination($limit_records_per_page,"$url_prefix?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text)
+            : pagination($limit_records_per_page,"?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
+
+
+            switch ($mode)
+            {
+                case DISPLAY_TABLE:
+                    return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current='. $current_page .'&limit='.'" value="'.get('limit',10).'"  step="10" min="1" type="number"></div>'.\Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(),$records,'table-responsive','','','')->generate(\collection(config('form','class'))->get('table')). html('div',$pagination,'mt-4');
+                break;
+                default:
+                   return article($records,$pagination);
+                break;
+            }
         }
 
         /**
@@ -368,8 +415,11 @@ namespace Imperium\Model {
          * @param string $search_icon
          * @param string $pagination_icon
          * @param bool $pagination_to_right
+         *
          * @return string
+         *
          * @throws Exception
+         *
          */
         public function show(string $container_class,string $thead_class,string $url_prefix,int $current_page,
                                 string $table_class,string $action_remove_text,string $confirm_text,

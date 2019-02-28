@@ -45,7 +45,7 @@ namespace Testing\pgsql\model {
             {
                 foreach ($this->model->columns() as $k => $v)
                 {
-                    $this->assertNotEmpty($this->model->by($v,$record->$v));
+                    $this->assertNotEmpty($this->model->by($v,EQUAL,$record->$v));
 
                 }
             }
@@ -322,7 +322,7 @@ namespace Testing\pgsql\model {
          */
         public function test_found()
         {
-            $this->assertEquals(10,$this->model->found());
+            $this->assertEquals(11,$this->model->found());
         }
 
 
