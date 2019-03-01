@@ -260,22 +260,29 @@ namespace Imperium\Routing {
                     if ($this->match($url))
                         return $this->call($callable);
                 }
-            }else
+                if (def(name('404')))
+                    return to(name('404'));
+
+                throw new Exception('The route was not found in the admin.yaml file');
+            }
+            foreach(web($this->method) as $name => $route)
             {
-                foreach(web($this->method) as $name => $route)
-                {
-                    $x = collection($route);
+                $x = collection($route);
 
-                    $url       = $x->get(self::URL_INDEX);
-                    $callable  = $x->get(self::CALLABLE_INDEX);
+                $url       = $x->get(self::URL_INDEX);
+                $callable  = $x->get(self::CALLABLE_INDEX);
 
-                    if ($this->match($url))
-                        return $this->call($callable);
-                }
+                if ($this->match($url))
+                    return $this->call($callable);
             }
 
-            throw new Exception('No routes match');
+            if (def(name('404')))
+                return to(name('404'));
+            
+            throw new Exception('The route was not found in the web.yaml file');
         }
+
+
 
 
         /**
@@ -371,7 +378,7 @@ namespace Imperium\Routing {
                 }
             }
 
-            throw new Exception("We have not found an url with the $route_name name");
+            throw new Exception("We have not found an url with the $route_name name in the web.yaml file");
         }
         /**
          *
@@ -405,7 +412,7 @@ namespace Imperium\Routing {
                 }
             }
 
-            throw new Exception("We have not found an url with the $route_name name");
+            throw new Exception("We have not found an url with the $route_name name in the admin.yaml file");
         }
 
         /**
