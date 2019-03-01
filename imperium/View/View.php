@@ -175,12 +175,22 @@ namespace Imperium\View {
 
             $functions->add(new TwigFunction('route',
 
-            function (string $name,string $method = GET)
-            {
-                return route($name,$method);
-            }
-            ,['is_safe' => ['html']]
-        ));
+                function (string $name,string $method = GET)
+                {
+                    return route($name,$method);
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('logged',
+
+                function ()
+                {
+                    return app()->auth()->connected();
+                }
+                ,['is_safe' => ['html']]
+            ));
+
             $functions->add(new TwigFunction('site',
 
                 function (string $name,string $method = GET)
