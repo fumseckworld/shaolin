@@ -119,7 +119,7 @@ if (not_exist('redirect'))
     }
 }
 
-if (not_exist(''))
+if (not_exist('current_user'))
 {
     /**
      *
