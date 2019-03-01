@@ -45,7 +45,7 @@ namespace Testing\sqlite\model {
             {
                 foreach ($this->model->columns() as $k => $v)
                 {
-                    $this->assertNotEmpty($this->model->by($v,EQUAL,$record->$v));
+                    $this->assertNotEmpty($this->model->by($v,$record->$v));
 
                 }
             }

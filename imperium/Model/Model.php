@@ -296,16 +296,15 @@ namespace Imperium\Model {
          * Find a record by a column
          *
          * @param string $column
-         * @param string $condition
          * @param mixed $expected
          *
          * @return array
          *
          * @throws Exception
          */
-        public function by(string $column,string $condition,$expected): array
+        public function by(string $column,$expected): array
         {
-            return $this->from($this->current())->where($column,$condition,$expected)->get();
+            return $this->from($this->current())->where($column,EQUAL,$expected)->get();
         }
 
         /**
