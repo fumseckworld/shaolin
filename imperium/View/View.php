@@ -3,6 +3,7 @@
 namespace Imperium\View {
 
     use Exception;
+    use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
@@ -188,6 +189,14 @@ namespace Imperium\View {
                 {
                     return app()->auth()->connected();
                 }
+                ,['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('user',
+
+                function (): Collection
+                {
+                    return current_user();               }
                 ,['is_safe' => ['html']]
             ));
 

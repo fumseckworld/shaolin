@@ -119,6 +119,28 @@ if (not_exist('redirect'))
     }
 }
 
+if (not_exist(''))
+{
+    /**
+     *
+     * Get the user if is logged
+     *
+     * @return  Collection
+     *
+     * @throws Exception
+     *
+     */
+    function current_user(): Collection
+    {
+        if (app()->auth()->connected())
+        {
+            foreach (app()->model()->from(config('auth','auth_table'))->by('username',app()->session()->get('__username__'))  as $x)
+                return collection($x);
+        }
+        return collection();
+
+    }
+}
 if (not_exist('route'))
 {
     /**
@@ -1473,8 +1495,6 @@ if(not_exist('collection'))
 
             return new Collection($x);
         }
-
-
         return new Collection($data);
     }
 }

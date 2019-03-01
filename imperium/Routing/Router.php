@@ -278,7 +278,7 @@ namespace Imperium\Routing {
 
             if (def(name('404')))
                 return to(name('404'));
-            
+
             throw new Exception('The route was not found in the web.yaml file');
         }
 

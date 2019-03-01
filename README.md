@@ -70,6 +70,8 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 `route` Return the route url
 
+`user` Return a collection instance with the current user logged if is logged
+
 `t`  translate a message
 
 `root`  The root path
