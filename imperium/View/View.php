@@ -173,6 +173,14 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('route',
+
+            function (string $name,string $method = GET)
+            {
+                return route($name,$method);
+            }
+            ,['is_safe' => ['html']]
+        ));
             $functions->add(new TwigFunction('site',
 
                 function (string $name,string $method = GET)
@@ -247,7 +255,7 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);

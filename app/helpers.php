@@ -119,6 +119,25 @@ if (not_exist('redirect'))
     }
 }
 
+if (not_exist('route'))
+{
+    /**
+     *
+     * Get a route name
+     *
+     * @param string $name
+     * @param string $method
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function route(string $name,string $method = GET): string
+    {
+        return is_admin() ? Router::admin($name,$method): Router::web($name,$method);
+    }
+}
 if (not_exist('article'))
 {
     /**
