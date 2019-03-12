@@ -329,7 +329,7 @@ namespace Imperium\Model {
 
             is_true(not_in(App::DISPLAY_MODE,$mode),true,"The mode is not valid");
 
-            $table = current_table();
+            $table = equal($mode,DISPLAY_CONTRIBUTORS) ? $this->current : current_table();
 
             $current_page = def(get('current')) ? get('current') : $current_page;
 
@@ -347,8 +347,34 @@ namespace Imperium\Model {
                 case DISPLAY_TABLE:
                     return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current='. $current_page .'&limit='.'" value="'.get('limit',10).'"  step="10" min="1" type="number"></div>'.\Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(),$records,'table-responsive','','','')->generate(\collection(config('form','class'))->get('table')). html('div',$pagination,'mt-4');
                 break;
+                case DISPLAY_CONTRIBUTORS:
+
+                    $data = collection($records);
+                    $code = '';
+
+                    append($code,'<div class="row mt-5 mb-5">');
+
+                    $data->rewind();
+
+                    while ($data->valid())
+                    {
+                        $values = $data->current();
+
+                        d($values);
+                        append($code,'<div class="col-lg-6"><div class="card ml-4 mr-4 mt-4 mb-4"><img src="/img/user-silhouette.png" alt="developer"><div class="card-body"><h5 class="card-title text-center text-uppercase"></h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
+
+                        append($code,'</div></div></div>');
+
+                        $data->next();
+                    }
+                    append($code,'</div>');
+                    append($code,'<div class="row ml-4">');
+                    append($code,$pagination);
+                    append($code,'</div>');
+                    return $code;
+                break;
                 default:
-                   return article($records,$pagination);
+                    return article($records,$pagination);
                 break;
             }
         }
@@ -361,16 +387,15 @@ namespace Imperium\Model {
          *
          * @param  string $value The value to search
          * @param bool $json_output To save data in a json file
-         * @param string $filename The json filename
          *
          * @return array|bool
          *
          * @throws Exception
          *
          */
-        public function search(string $value,bool $json_output = false, string $filename = 'search.json')
+        public function search(string $value,bool $json_output = false)
         {
-            return $json_output ? collection($this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get())->convert_to_json($filename) : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
+            return $json_output ? collection($this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
         }
 
         /**

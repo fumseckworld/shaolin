@@ -36,7 +36,8 @@
         "symfony/yaml": "^4.2",
         "swiftmailer/swiftmailer": "^6.1",
         "psr/http-server-middleware": "^1.0",
-        "symfony/console": "^4.2"
+        "symfony/console": "^4.2",
+        "ext-intl": "^7.3"
     },
     "autoload-dev":{
         "psr-4":{

@@ -92,6 +92,15 @@ namespace Imperium\View {
                ['is_safe' => ['html']]
            ));
 
+           $functions->add(new TwigFunction('csrf_field',
+
+            function ()
+            {
+                return csrf_field();
+            },
+            ['is_safe' => ['html']]
+        ));
+
            $functions->add(new TwigFunction('js',
 
                function (string $name,string $type = '')

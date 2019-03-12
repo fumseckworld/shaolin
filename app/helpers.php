@@ -83,6 +83,7 @@ define('INSERT',24);
 
 define('DISPLAY_TABLE',25);
 define('DISPLAY_ARTICLE',26);
+define('DISPLAY_CONTRIBUTORS',27);
 
 define('QUERY_COLUMN','column');
 define('QUERY_CONDITION','condition');
@@ -197,7 +198,7 @@ if (not_exist('article'))
         {
             $values = $data->current();
 
-            append($code,'<div class="col-lg-6"><div class="card ml-4 mr-4 mt-4 mb-4"><img src="'.$values->$img.'" alt="'.$values->$title.'"><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><p class="card-text"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></p>');
+            append($code,'<div class="col-lg-6"><div class="card ml-4 mr-4 mt-4 mb-4"><img src="'.$values->$img.'" alt="'.$values->$title.'"><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
 
             append($code,'</div></div></div>');
 
@@ -3248,7 +3249,21 @@ if (not_exist('pagination'))
         return Pagination::paginate($limit_per_page,$pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
     }
 }
+if (not_exist('months'))
+{
 
+   function months()
+    {
+        $data = collection();
+
+        $format = new IntlDateFormatter(\config('locales','locale'),IntlDateFormatter::FULL, IntlDateFormatter::FULL, null, null, "MMM");
+
+         for($i=1;$i!=12;$i++)
+            $data->add(ufirst($format->format(mktime(0, 0, 0, $i))));
+
+        return $data->collection();
+    }
+}
 if (not_exist('add_user'))
 {
     /**

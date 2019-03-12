@@ -74,6 +74,20 @@ namespace Imperium\Directory {
 
         /**
          *
+         * Checkout on a new directory
+         *
+         * @param string $directory
+         *
+         * @return bool
+         *
+         */
+        public static function checkout(string $directory): bool
+        {
+            return self::is($directory) ? chdir($directory) : false;
+        }
+
+        /**
+         *
          * Remove a directory
          *
          * @method remove

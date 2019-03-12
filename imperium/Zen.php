@@ -237,7 +237,7 @@ namespace Imperium {
         const DISPLAY_MODE = [
             DISPLAY_TABLE,
             DISPLAY_ARTICLE,
-
+            DISPLAY_CONTRIBUTORS
         ];
         /**
          *
