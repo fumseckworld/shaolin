@@ -14,7 +14,6 @@ use Imperium\Security\Csrf\Csrf;
 use Imperium\Security\Hashing\Hash;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Whoops\Run;
 use Carbon\Carbon;
@@ -433,7 +432,7 @@ if (not_exist('request'))
      */
     function request(): Request
     {
-        return Request::createFromGlobals();
+        return \Symfony\Component\HttpFoundation\Request::createFromGlobals();
     }
 }
 
@@ -1092,6 +1091,16 @@ if (not_exist('back'))
             $back = '/';
 
         return to($back,$message,$success);
+    }
+}
+
+if (not_exist('url'))
+{
+    function url()
+    {
+        return '<a href="javascript:history.go(-1)" class="'.config('back','class').'">'.config('back','message').'</a>';
+
+
     }
 }
 if(not_exist('create'))

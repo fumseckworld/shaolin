@@ -56,6 +56,8 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 `csrf_field`  Generate a csrf token
 
+`back`  Generate a back link 
+
 `css`  Generate a css link
 
 `js`  Generate a js link
