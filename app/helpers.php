@@ -197,7 +197,7 @@ if (not_exist('article'))
         {
             $values = $data->current();
 
-            append($code,'<div class="col-lg-6"><div class="card ml-4 mr-4 mt-4 mb-4"><img src="'.$values->$img.'" alt="'.$values->$title.'"><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
+            append($code,'<div class="col-lg-6"><div class="card ml-4 mr-4 mt-4 mb-4"><img  class="card-img-top" src="'.$values->$img.'" alt="'.$values->$title.'"><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
 
             append($code,'</div></div></div>');
 
