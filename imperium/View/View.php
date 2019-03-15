@@ -93,6 +93,17 @@ namespace Imperium\View {
            ));
 
 
+            $functions->add(new TwigFunction('mobile',
+
+                function ()
+                {
+                    return is_mobile();
+                },
+                ['is_safe' => ['html']]
+            ));
+
+
+
             $functions->add(new TwigFunction('back',
 
                 function ()

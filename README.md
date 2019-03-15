@@ -58,6 +58,8 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 `back`  Generate a back link 
 
+`mobile`  Check if device is a mobile 
+
 `css`  Generate a css link
 
 `js`  Generate a js link
