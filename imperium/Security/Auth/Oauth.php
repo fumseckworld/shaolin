@@ -86,7 +86,7 @@ namespace Imperium\Security\Auth {
 
             if (app()->table_exist($table))
             {
-                $user = app()->model()->from($table)->by('username', $username);
+                $user = app()->model()->from($table)->by(config('auth','column'), $username);
 
                 superior($user, 1, true, collection(config('auth', 'messages'))->get('not_unique'));
 

@@ -60,7 +60,11 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 `mobile`  Check if device is a mobile 
 
+`print`  Print code
+
 `css`  Generate a css link
+
+`copyright` Print copyright
 
 `js`  Generate a js link
 

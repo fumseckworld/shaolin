@@ -212,6 +212,23 @@ if (not_exist('article'))
     }
 }
 
+if(not_exist('copyright'))
+{
+    /**
+     *
+     * Display copyright
+     *
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function copyright(): string
+    {
+        return  '© ' .config('copyright','owner');
+    }
+}
 if (not_exist('to'))
 {
     /**

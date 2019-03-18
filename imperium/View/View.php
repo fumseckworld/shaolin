@@ -92,6 +92,26 @@ namespace Imperium\View {
                ['is_safe' => ['html']]
            ));
 
+            $functions->add(new TwigFunction('copyright',
+
+                function ()
+                {
+                    return copyright();
+                },
+                ['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('print',
+
+                function (string $code)
+                {
+                    return $code;
+                },
+                ['is_safe' => ['html']]
+            ));
+
+
+
 
             $functions->add(new TwigFunction('mobile',
 
