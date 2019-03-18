@@ -8,14 +8,14 @@ namespace Imperium\View {
     use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Imperium\Routing\Router;
+    use Twig\Environment;
+    use Twig\Error\LoaderError as LoaderErrorAlias;
+    use Twig\Error\RuntimeError;
+    use Twig\Error\SyntaxError;
+    use Twig\Loader\FilesystemLoader;
     use Twig\TwigFunction;
-    use Twig_Environment;
-    use Twig_Error_Loader;
-    use Twig_Error_Runtime;
-    use Twig_Error_Syntax;
     use Twig_Extensions_Extension_I18n;
-    use Twig_Function;
-    use Twig_Loader_Filesystem;
+
 
     /**
      *
@@ -37,15 +37,21 @@ namespace Imperium\View {
          */
         private $view_dir;
 
+
         /**
-         * @var Twig_Loader_Filesystem
+         * @var FilesystemLoader
          */
         private $loader;
 
         /**
-         * @var Twig_Environment
+         * @var Environment
          */
         private $twig;
+
+        /**
+         * @var array
+         */
+        private $registered_path;
 
         /**
          * View constructor.
@@ -57,26 +63,37 @@ namespace Imperium\View {
         {
             $file = 'app';
 
+            Dir::create(core_path(\collection(config('app','dir'))->get('app')));
+
             $view_dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('view');
 
             $config = config($file,'config');
-
 
             Dir::create($view_dir);
 
             $this->view_dir = realpath($view_dir);
 
-            $this->loader = new Twig_Loader_Filesystem($this->view_dir);
+            $this->loader = new  FilesystemLoader($this->view_dir);
 
-            $this->twig = new Twig_Environment($this->loader,$config);
+            $this->twig = new Environment($this->loader,$config);
+
+            $namespace = config('twig','namespaces');
+
+            is_true(!is_array($namespace),true,'The twig namespace config must be an array');
+
+            $this->registered_path = $namespace;
+
+            foreach ($namespace as $k => $v)
+               $this->add_path($k,$v);
 
             $functions = collection();
 
-            $functions->add(new Twig_Function('display',
+            $functions->add(new TwigFunction('display',
 
                 function (string $key)
                 {
                     $flash = new Flash();
+
                     return $flash->has($key) ? $flash->display($key) : '';
 
                 },
@@ -101,18 +118,6 @@ namespace Imperium\View {
                 ['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('print',
-
-                function (string $code)
-                {
-                    return $code;
-                },
-                ['is_safe' => ['html']]
-            ));
-
-
-
-
             $functions->add(new TwigFunction('mobile',
 
                 function ()
@@ -122,13 +127,20 @@ namespace Imperium\View {
                 ['is_safe' => ['html']]
             ));
 
-
-
             $functions->add(new TwigFunction('back',
 
                 function ()
                 {
                     return url();
+                },
+                ['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('auth',
+
+                function ()
+                {
+                    return app()->auth();
                 },
                 ['is_safe' => ['html']]
             ));
@@ -246,7 +258,8 @@ namespace Imperium\View {
 
                 function (): Collection
                 {
-                    return current_user();               }
+                    return current_user();
+                }
                 ,['is_safe' => ['html']]
             ));
 
@@ -275,6 +288,18 @@ namespace Imperium\View {
         }
 
         /**
+         * @return array
+         */
+        public function registered_path(): array
+        {
+            $data = \collection();
+
+            foreach ($this->registered_path as $k => $v)
+                $data->add($this->loader()->getPaths($k),$k);
+
+            return $data->collection();
+        }
+        /**
          *
          * Add twig functions
          *
@@ -301,11 +326,10 @@ namespace Imperium\View {
          *
          * @return string
          *
-         * @throws Twig_Error_Loader
-         * @throws Twig_Error_Runtime
-         * @throws Twig_Error_Syntax
+         * @throws LoaderErrorAlias
+         * @throws RuntimeError
+         * @throws SyntaxError
          * @throws Exception
-         *
          */
         public function load(string $view,array $args)
         {
@@ -372,17 +396,20 @@ namespace Imperium\View {
          *
          * @method add_path
          *
-         * @param string $dir
+         * @param string $path
          * @param string $namespace
          *
          * @return View
          *
-         * @throws Twig_Error_Loader
+         * @throws LoaderErrorAlias
          *
          */
-        public function add_path(string $dir, string $namespace): View
+        public function add_path(string $path, string $namespace): View
         {
-            $dir = $this->view_dir .DIRECTORY_SEPARATOR .$dir;
+
+            $dir = $this->view_dir .DIRECTORY_SEPARATOR .$path;
+
+            Dir::create($dir);
 
             $this->loader()->addPath($dir,$namespace);
 
@@ -395,10 +422,10 @@ namespace Imperium\View {
          *
          * @method twig
          *
-         * @return Twig_Environment
+         * @return Environment
          *
          */
-        public function twig(): Twig_Environment
+        public function twig(): Environment
         {
             return $this->twig;
         }
@@ -409,10 +436,10 @@ namespace Imperium\View {
          *
          * @method loader
          *
-         * @return Twig_Loader_Filesystem
+         * @return FilesystemLoader
          *
          */
-        public function loader(): Twig_Loader_Filesystem
+        public function loader(): FilesystemLoader
         {
             return $this->loader;
         }

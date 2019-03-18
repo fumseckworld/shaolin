@@ -69,6 +69,7 @@ namespace Imperium\Directory {
          */
         public static function create(string $directory): bool
         {
+
             return is_false(self::is($directory)) ? mkdir($directory):  false;
         }
 

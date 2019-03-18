@@ -2,13 +2,16 @@
 
 namespace Imperium\Security\Auth {
 
-
     use Exception;
+    use Imperium\Collection\Collection;
+    use Imperium\Request\Request;
+    use Imperium\Security\Csrf\Csrf;
     use Imperium\Session\SessionInterface;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
     class Oauth
     {
+
 
         /**
          * @var SessionInterface
@@ -33,13 +36,67 @@ namespace Imperium\Security\Auth {
          */
         const USERNAME = '__username__';
 
+        /**
+         *
+         * The username session id key
+         *
+         * @var string
+         *
+         */
+        const ID = '__id__';
 
+        /**
+         * @var \Imperium\Model\Model
+         */
+        private $model;
+
+        /**
+         * @var string
+         */
+        private $table;
+
+
+        /**
+         *
+         * Oauth constructor.
+         *
+         * @param SessionInterface $session
+         *
+         * @throws Exception
+         *
+         */
         public function __construct(SessionInterface $session)
         {
+            $this->table = config('auth','table');
+
+            is_true(app()->table_not_exist($this->table),true,"The {$this->table}'s table was not found on your system");
+
             $this->session = $session;
+
+            $this->model = app()->model()->from(config('auth','table'));
         }
 
         /**
+         * 
+         * Send an email to reset password
+         * 
+         * @param string $subject
+         * @param string $to
+         * @param string $message
+         * 
+         * @return bool
+         * 
+         * @throws Exception
+         * 
+         */
+        public function send_reset_email(string $subject,string $to,string $message): bool
+        {
+            return send_mail($subject,$to,$message);
+        }
+
+        /**
+         *
+         * Logout the user
          *
          * @return RedirectResponse
          *
@@ -48,33 +105,127 @@ namespace Imperium\Security\Auth {
          */
         public function logout(): RedirectResponse
         {
-            $this->session->remove(self::CONNECTED);
+            $this->clean_session();
 
-            $this->session->remove(self::USERNAME);
+            return to('/',$this->messages()->get('bye'));
 
-            return to('/',collection(config('auth','messages'))->get('bye'));
+        }
 
+
+        /**
+         *
+         * Return the current logged user
+         *
+         * @return Collection
+         *
+         * @throws Exception
+         *
+         */
+        public function current(): Collection
+        {
+            return $this->connected() ? \collection($this->model->find($this->session->get(self::ID))) : \collection();
+        }
+
+        /**
+         *
+         * Create the new user from a form
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function create(): bool
+        {
+            return $this->model->insert_new_record(\collection(Request::all())->remove(Csrf::KEY)->collection());
         }
 
         /**
          *
          * Check if an user is connected
          *
-         *
          * @return bool
          *
          */
         public function connected(): bool
         {
-            return $this->session->has(self::CONNECTED) && $this->session->has(self::USERNAME) && $this->session->get(self::CONNECTED) === true;
+            return $this->session->has(self::CONNECTED) && $this->session->has(self::ID) && $this->session->has(self::USERNAME) && $this->session->get(self::CONNECTED) === true;
         }
 
+        /**
+         *
+         * Count users found
+         *
+         * @return int
+         *
+         * @throws Exception
+         *
+         */
+        public function count(): int
+        {
+            return $this->model->count($this->table);
+        }
+
+        /**
+         *
+         *
+         * @param string $expected
+         *
+         * @return array
+         *
+         * @throws Exception
+         *
+         */
+        public function find(string $expected): array
+        {
+            return $this->model->where($this->column(),EQUAL,$expected)->get();
+        }
+
+        /**
+         *
+         * Reset the user password
+         *
+         * @param string $expected
+         * @param string $new_password
+         *
+         *
+         * @return RedirectResponse
+         *
+         * @throws Exception
+         *
+         */
+        public function reset(string $expected,string $new_password): RedirectResponse
+        {
+
+            $id  = $this->columns()->get('id');
+
+            $password  = $this->columns()->get('password');
+
+            $user =  $this->model->by($this->column(), $expected);
+
+            $data = collection();
+
+            if (def($user))
+            {
+                foreach ($user as $u)
+                {
+                    $data->merge(collection($u)->collection());
+
+                    $data->change_value($u->$password,bcrypt($new_password));
+
+                    return $this->model->update_record($u->$id,$data->collection()) ? $this->redirect($u->$id) : to('/',$this->messages()->get('reset_fail'));
+                }
+            }
+            return $this->user_not_found();
+        }
+        
         /**
          *
          * Connect an user on success
          *
          * @param string $username
          * @param string $password
+         *
          * @return RedirectResponse
          *
          * @throws Exception
@@ -82,49 +233,112 @@ namespace Imperium\Security\Auth {
          */
         public function login(string $username,string $password): RedirectResponse
         {
-            $table = config('auth','auth_table');
+            $user = $this->model->by($this->column(), $username);
 
-            if (app()->table_exist($table))
+            $column = $this->columns()->get('password');
+
+            superior($user, 1, true,$this->messages()->get('not_unique'));
+
+            if (def($user))
             {
-                $user = app()->model()->from($table)->by(config('auth','column'), $username);
-
-                superior($user, 1, true, collection(config('auth', 'messages'))->get('not_unique'));
-
-                if (def($user))
+                foreach ($user as $u)
                 {
-                    foreach ($user as $u)
+                    if (check($password, $u->$column))
                     {
-                        if (check($password, $u->password))
-                        {
-                            $this->session->set(self::USERNAME, $username);
+                        $this->session->set(self::USERNAME, $username);
 
-                            $this->session->set(self::CONNECTED, true);
+                        $this->session->set(self::CONNECTED, true);
+                        $this->session->set(self::ID,$u->id);
 
-                            return equal($u->id,1) ?  to(config('auth','admin_prefix'), collection(config('auth', 'messages'))->get('welcome')) : to(config('auth','user_home'), collection(config('auth', 'messages'))->get('welcome'))  ;
-                        } else {
 
-                            $this->session->remove(self::CONNECTED);
-                            $this->session->remove(self::USERNAME);
-                            return back(collection(config('auth', 'messages'))->get('password_no_match'), false);
-                        }
+                    } else 
+                    {
+                        $this->clean_session();
 
+                        return back(collection(config('auth', 'messages'))->get('password_no_match'), false);
                     }
+
                 }
-
-                $this->session->remove(self::CONNECTED);
-
-                $this->session->remove(self::USERNAME);
-
-                return back(collection(config('auth','messages'))->get('user_not_found'),false);
-
             }
+            return $this->user_not_found();
+            
+        }
 
+        /**
+         * @return RedirectResponse
+         * @throws Exception
+         */
+        private function user_not_found(): RedirectResponse
+        {
+            $this->clean_session();
+
+            return back($this->messages()->get('user_not_found'), false);
+        }
+
+        /**
+         * 
+         * Remove auth information
+         * 
+         */
+        private function clean_session(): void
+        {
             $this->session->remove(self::CONNECTED);
 
             $this->session->remove(self::USERNAME);
 
-            return back(collection(config('auth','messages'))->get('table_not_found'),false);
+            $this->session->remove(self::ID);
+        }
 
+        /**
+         * 
+         * Get the auth column name
+         * 
+         * @return string
+         * 
+         * @throws Exception
+         * 
+         */
+        private function column(): string 
+        {
+            return collection(config('auth','columns'))->get('auth');
+        }
+
+        /**
+         *
+         * Redirect user
+         *
+         * @param int $id
+         *
+         * @return \RedirectResponse|RedirectResponse
+         *
+         * @throws Exception
+         *
+         */
+        public function redirect(int $id): RedirectResponse
+        {
+            return $id === 1 ?  to(config('auth','admin_prefix'), collection(config('auth', 'messages'))->get('welcome')) : to(config('auth','user_home'), collection(config('auth', 'messages'))->get('welcome'))  ;
+        }
+
+        /**
+         * @return Collection
+         *
+         * @throws Exception
+         *
+         */
+        private function messages(): Collection
+        {
+            return collection(config('auth', 'messages'));
+        }
+
+        /**
+         * @return Collection
+         *
+         * @throws Exception
+         *
+         */
+        private function columns(): Collection
+        {
+            return collection(config('auth','columns'));
         }
     }
 }

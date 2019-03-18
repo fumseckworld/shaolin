@@ -218,6 +218,22 @@ namespace Imperium {
 
         /**
          *
+         * Check if a table not exist
+         *
+         * @param string $table
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function  table_not_exist(string $table): bool
+        {
+            return $this->table()->not_exist($table);
+        }
+
+        /**
+         *
          * Check if a base exist
          *
          * @param string $base

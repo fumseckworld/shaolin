@@ -14,6 +14,7 @@ use Imperium\Security\Csrf\Csrf;
 use Imperium\Security\Hashing\Hash;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Whoops\Run;
 use Carbon\Carbon;
@@ -132,15 +133,10 @@ if (not_exist('current_user'))
      */
     function current_user(): Collection
     {
-        if (app()->auth()->connected())
-        {
-            foreach (app()->model()->from(config('auth','auth_table'))->by('username',app()->session()->get('__username__'))  as $x)
-                return collection($x);
-        }
-        return collection();
-
+       return app()->auth()->current();
     }
 }
+
 if (not_exist('route'))
 {
     /**
@@ -197,8 +193,7 @@ if (not_exist('article'))
         {
             $values = $data->current();
 
-            append($code,'<div class="col-lg-6"><div class="card"><img  class="card-img-top" src="'.$values->$img.'" alt="'.$values->$title.'"><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
-
+            append($code,'<div class="col-6 "><div class="card mt-4 mb-4"><div class="embed-responsive embed-responsive-21by9"><div class="card-img-top" ><img src="'.$values->$img.'" alt="'.$values->$title.'" class="embed-responsive-item"></div></div><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
             append($code,'</div></div></div>');
 
             $data->next();
@@ -238,10 +233,9 @@ if (not_exist('to'))
      *
      * @param bool $success
      *
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     *
+     * @return RedirectResponse
      */
-    function to(string $url,string $message = '',bool $success =  true): RedirectResponse
+    function to(string $url,string $message = '',bool $success =  true)
     {
         if (def($message))
         {
@@ -465,10 +459,8 @@ if (not_exist('view'))
      *
      * @return string
      *
-     * @throws Twig_Error_Loader
-     * @throws Twig_Error_Runtime
-     * @throws Twig_Error_Syntax
      * @throws Exception
+     *
      */
     function view(string $class,string $name,array $args =[]) : string
     {
@@ -530,6 +522,7 @@ if (not_exist('send_mail'))
 
     }
 }
+
 if (not_exist('current_table'))
 {
     /**
@@ -546,6 +539,7 @@ if (not_exist('current_table'))
         return  def(get('table')) ? get('table') : collection(app()->table()->show())->begin();
     }
 }
+
 if (not_exist('session_loaded'))
 {
     /**
@@ -1116,10 +1110,9 @@ if (not_exist('url'))
     function url()
     {
         return '<a href="javascript:history.go(-1)" class="'.config('back','class').'">'.config('back','message').'</a>';
-
-
     }
 }
+
 if(not_exist('create'))
 {
     /**
@@ -1141,6 +1134,7 @@ if(not_exist('create'))
         return app()->model()->create_form($table,$action,$form_id,$submit_text,$icon);
     }
 }
+
 if (not_exist('bases_to_json'))
 {
     /**
@@ -1522,7 +1516,7 @@ if(not_exist('collection'))
 
             return new Collection($x);
         }
-        return new Collection($data);
+        return is_array($data) ? new Collection($data) : new Collection();
     }
 }
 
@@ -2322,34 +2316,6 @@ if (not_exist('js'))
     }
 }
 
-if (not_exist('twig'))
-{
-
-    /**
-     * @return Twig_Environment
-     *
-     * @throws Exception
-     *
-     */
-    function twig(): Twig_Environment
-    {
-
-        $file = 'views';
-
-        $view_dir = def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .config($file,'dir') : config($file,'dir');
-
-        $config = config($file,'config');
-
-
-        Dir::create($view_dir);
-
-        $view_dir = realpath($view_dir);
-
-        $loader = new Twig_Loader_Filesystem($view_dir);
-
-        return new Twig_Environment($loader,$config);
-    }
-}
 if (not_exist('files'))
 {
     /**
