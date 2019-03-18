@@ -12,7 +12,6 @@ namespace Imperium\Security\Auth {
     class Oauth
     {
 
-
         /**
          * @var SessionInterface
          */
@@ -137,7 +136,10 @@ namespace Imperium\Security\Auth {
          */
         public function create(): bool
         {
-            return $this->model->insert_new_record(\collection(Request::all())->remove(Csrf::KEY)->collection());
+
+            $x = $this->columns()->get('password');
+
+            return $this->model->insert_new_record(\collection(Request::all())->change_value(Request::get($x),bcrypt(Request::get($x)))->remove(Csrf::KEY)->collection());
         }
 
         /**
