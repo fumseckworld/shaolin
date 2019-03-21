@@ -137,9 +137,26 @@ namespace Imperium\Security\Auth {
         public function create(): bool
         {
 
-            $x = $this->columns()->get('password');
+            $password = $this->columns()->get('password');
 
-            return $this->model->insert_new_record(\collection(Request::all())->change_value(Request::get($x),bcrypt(Request::get($x)))->remove(Csrf::KEY)->collection());
+            foreach ($this->model->columns() as $column)
+            {
+                if (different($column,Csrf::KEY) && different($column,$this->columns()->get('confirm')))
+                {
+
+                    if (not_def(Request::get($column)))
+                    {
+                        $this->model->set($column,$column);
+                    }else
+                    {
+                        if (equal($column,$password))
+                            $this->model->set($column,bcrypt(Request::get($column)));
+                        else
+                            $this->model->set($column,Request::get($column));
+                    }
+                }
+            }
+            return $this->model->save();
         }
 
         /**
@@ -252,7 +269,7 @@ namespace Imperium\Security\Auth {
                         $this->session->set(self::CONNECTED, true);
                         $this->session->set(self::ID,$u->id);
 
-
+                        return $this->redirect($u->id);
                     } else 
                     {
                         $this->clean_session();
@@ -302,7 +319,7 @@ namespace Imperium\Security\Auth {
          */
         private function column(): string 
         {
-            return collection(config('auth','columns'))->get('auth');
+            return $this->columns()->get('auth');
         }
 
         /**

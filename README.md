@@ -52,6 +52,8 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 # Views helpers
 
+`app` The main class instance
+
 `display`  Display a flash message
 
 `csrf_field`  Generate a csrf token

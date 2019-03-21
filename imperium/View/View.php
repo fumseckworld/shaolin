@@ -88,6 +88,16 @@ namespace Imperium\View {
 
             $functions = collection();
 
+            $functions->add(new TwigFunction('app',
+
+                function ()
+                {
+                   return app();
+
+                },
+                ['is_safe' => ['html']]
+            ));
+
             $functions->add(new TwigFunction('display',
 
                 function (string $key)
