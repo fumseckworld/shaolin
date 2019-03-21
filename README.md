@@ -67,7 +67,7 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 `img`  Generate a image link
 
-`form`  Display a form
+`form`  Get an instance of the form class
 
 `print`  No escape html 
 
@@ -88,6 +88,10 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 `_`  translate a message using gettext
 
 `name`  Return the url of the route name
+
+`os` Return an instance of os class
+
+`device` Return an instance of device class
 
 
 # **Installation**

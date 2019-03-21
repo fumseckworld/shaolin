@@ -9,6 +9,8 @@ namespace Imperium\View {
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
     use Imperium\Routing\Router;
+    use Sinergi\BrowserDetector\Device;
+    use Sinergi\BrowserDetector\Os;
     use Twig\Environment;
     use Twig\Error\LoaderError as LoaderErrorAlias;
     use Twig\Error\RuntimeError;
@@ -148,6 +150,27 @@ namespace Imperium\View {
                 ['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('os',
+
+                function ()
+                {
+                    return new Os();
+                },
+                ['is_safe' => ['html']]
+            ));
+
+
+            $functions->add(new TwigFunction('device',
+
+                function ()
+                {
+                    return new Device();
+                },
+                ['is_safe' => ['html']]
+            ));
+
+
+
             $functions->add(new TwigFunction('back',
 
                 function ()
@@ -189,15 +212,6 @@ namespace Imperium\View {
                 function (string $name,string $alt)
                 {
                     return img($name,$alt);
-                }
-                ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('form',
-
-                function ($name)
-                {
-                    return $name;
                 }
                 ,['is_safe' => ['html']]
             ));

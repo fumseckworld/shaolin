@@ -221,7 +221,7 @@ if(not_exist('copyright'))
      */
     function copyright(): string
     {
-        return  '© ' .config('copyright','owner');
+        return  '© ' .config('copyright','owner') .' ' .\config('copyright','creation')  .' '. now()->format('Y') . \config('copyright','text');
     }
 }
 if (not_exist('to'))
