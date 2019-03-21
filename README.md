@@ -1,9 +1,4 @@
 <p align="center"><a href="https://discord.gg/fUPyd9K" title="discord"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></a></p>
-<p align="center">
-<img src="https://poser.pugx.org/imperium/imperium/v/stable" alt="Latest Stable Version">
-<img src="https://poser.pugx.org/imperium/imperium/downloads" alt="Download">
-<img src="https://poser.pugx.org/imperium/imperium/license" alt="Licence">
-</p>
 
 * [**Imperium**](https://git.fumseck.eu/cgit/imperium/tree/imperium/App.php)
     * [**Bases**](https://git.fumseck.eu/cgit/imperium/tree/imperium/Bases/Base.php)
