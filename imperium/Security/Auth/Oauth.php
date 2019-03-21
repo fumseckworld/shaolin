@@ -339,6 +339,70 @@ namespace Imperium\Security\Auth {
         }
 
         /**
+         *
+         * Remove user account
+         *
+         * @return RedirectResponse
+         *
+         * @throws Exception
+         *
+         */
+        public function remove_account()
+        {
+            if ($this->connected())
+            {
+                is_false($this->model->remove($this->session->get(self::ID)),true,'Failed to remove user');
+
+                $this->clean_session();
+
+                return to('/',$this->messages()->get('account_deleted'));
+            }
+            return to('/');
+        }
+
+
+        /**
+         *
+         * Remove an user on success
+         *
+         * @param int $id
+         *
+         * @return RedirectResponse
+         *
+         * @throws Exception
+         *
+         */
+        public function remove_user(int $id)
+        {
+            if ($this->connected())
+            {
+                return $this->model->remove($id) ? back($this->messages()->get('user_removed')) : back($this->messages()->get('user_remove_failure'));
+            }
+            return to('/');
+        }
+
+        /**
+         *
+         * Update the user account
+         *
+         * @param array $data
+         *
+         * @return RedirectResponse
+         *
+         * @throws Exception
+         *
+         */
+        public function update_account(array $data): RedirectResponse
+        {
+            if ($this->connected())
+            {
+                return $this->model->update_record($this->session->get(self::ID),$data,[Request::get(Csrf::KEY)]) ? back($this->messages()->get('account_updated_successfully')) : back($this->messages()->get('account_updated_failure'),false);
+
+            }
+            return to('/');
+        }
+
+        /**
          * @return Collection
          *
          * @throws Exception

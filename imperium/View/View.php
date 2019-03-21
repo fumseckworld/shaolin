@@ -7,6 +7,7 @@ namespace Imperium\View {
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
+    use Imperium\Html\Form\Form;
     use Imperium\Routing\Router;
     use Twig\Environment;
     use Twig\Error\LoaderError as LoaderErrorAlias;
@@ -93,6 +94,16 @@ namespace Imperium\View {
                 function ()
                 {
                    return app();
+
+                },
+                ['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('form',
+
+                function ()
+                {
+                    return new Form();
 
                 },
                 ['is_safe' => ['html']]
