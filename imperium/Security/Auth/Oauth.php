@@ -333,9 +333,9 @@ namespace Imperium\Security\Auth {
          * @throws Exception
          *
          */
-        public function redirect(int $id): RedirectResponse
+        public function redirect(string $id): RedirectResponse
         {
-            return $id === 1 ?  to(config('auth','admin_prefix'), collection(config('auth', 'messages'))->get('welcome')) : to(config('auth','user_home'), collection(config('auth', 'messages'))->get('welcome'))  ;
+            return equal($id,'1')  ?  to(config('auth','admin_prefix'), collection(config('auth', 'messages'))->get('welcome')) : to(config('auth','user_home'), collection(config('auth', 'messages'))->get('welcome'))  ;
         }
 
         /**
