@@ -122,7 +122,12 @@ namespace Imperium\Security\Auth {
          */
         public function current(): Collection
         {
-            return $this->connected() ? \collection($this->model->find($this->session->get(self::ID))) : \collection();
+            if ($this->connected())
+            {
+                foreach ($this->model->find($this->session->get(self::ID)) as $u)
+                    return collection($u);
+            }
+            return collection();
         }
 
         /**

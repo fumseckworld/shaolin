@@ -162,12 +162,12 @@ namespace Imperium {
          *
          * Management iof the array
          *
-         * @param array $data
+         * @param mixed $data
          *
          * @return Collection
          *
          */
-        public function collection(array $data = []): Collection;
+        public function collection($data = []): Collection;
 
 
 
