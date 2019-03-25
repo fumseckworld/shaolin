@@ -146,9 +146,8 @@ namespace Imperium\Security\Auth {
 
             foreach ($this->model->columns() as $column)
             {
-                if (different($column,Csrf::KEY) && different($column,$this->columns()->get('confirm')))
+                if (different($column,$this->columns()->get('confirm')))
                 {
-
                     if (not_def(Request::get($column)))
                     {
                         $this->model->set($column,$column);
