@@ -170,6 +170,16 @@ namespace Imperium\View {
             ));
 
 
+            $functions->add(new TwigFunction('bootswatch',
+
+                function (string $theme)
+                {
+                    return bootswatch($theme);
+                },
+                ['is_safe' => ['html']]
+            ));
+
+
 
             $functions->add(new TwigFunction('back',
 
@@ -360,14 +370,14 @@ namespace Imperium\View {
          * @param string $view
          * @param array $args
          *
+         * @param string $namespace
          * @return string
          *
          * @throws LoaderErrorAlias
          * @throws RuntimeError
          * @throws SyntaxError
-         * @throws Exception
          */
-        public function load(string $view,array $args=[])
+        public function load(string $view,array $args=[],string $namespace = '')
         {
             $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
 
@@ -384,7 +394,15 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+
+                if (def($namespace))
+                {
+                    File::put($file,"{% extends '$namespace.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+                }else
+                {
+                    File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+
+                }
             }
 
             return $this->twig->render($view,$args);
