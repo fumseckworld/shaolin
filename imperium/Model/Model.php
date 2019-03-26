@@ -333,7 +333,7 @@ namespace Imperium\Model {
 
             $current_page = def(get('current')) ? get('current') : $current_page;
 
-            $limit_records_per_page = different($mode,DISPLAY_ARTICLE)  ? get('limit',10) : 8;
+            $limit_records_per_page = different($mode,DISPLAY_ARTICLE)  ? get('limit',10) : 12;
 
             $records = get_records($table,$current_page,$limit_records_per_page,$column,$order);
 
@@ -367,9 +367,9 @@ namespace Imperium\Model {
                         $data->next();
                     }
                     append($code,'</div>');
-                    append($code,'<div class="row ml-4">');
+                    append($code,'<div class="row ml-0">');
+                    append($code,'</dv>');
                     append($code,$pagination);
-                    append($code,'</div>');
                     return $code;
                 break;
                 default:
