@@ -476,7 +476,7 @@ if (not_exist('view'))
         }
         else
         {
-            $file = collection(explode('.',$name));
+            $file = collection(explode('.',$name))->begin();
             append($file,'.twig');
         }
 
