@@ -199,7 +199,7 @@ if (not_exist('article'))
             $data->next();
         }
         append($code,'</div>');
-        append($code,'<div class="row ml-4">');
+        append($code,'<div class="row mt-2>');
         append($code,$pagination);
         append($code,'</div>');
         return $code;
