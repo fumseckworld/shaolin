@@ -334,6 +334,7 @@ namespace Imperium\View {
 
             return $data->collection();
         }
+
         /**
          *
          * Add twig functions
@@ -366,7 +367,7 @@ namespace Imperium\View {
          * @throws SyntaxError
          * @throws Exception
          */
-        public function load(string $view,array $args)
+        public function load(string $view,array $args=[])
         {
             $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
 
@@ -383,16 +384,7 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-                if(strstr($view,'@'))
-                {
-                    $layout = strtolower(str_replace('@','',collection(explode('/',$view))->begin()));
-                    File::put($file,"{% extends '$layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
-
-                }else
-                {
-                    File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
-
-                }
+                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);

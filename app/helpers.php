@@ -1806,7 +1806,7 @@ if (not_exist('simply_view'))
         else
             append($after_content ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
 
-        return \Imperium\Html\Table\Table::table($columns,$records,$before_all_class,$thead_class,$before_content,$after_content)->set_action($action_edit_text,$action_remove_text,$before_remove_text,$action_edit_url_prefix,$edit_button_class,$edit_icon,$remove_url_prefix,$remove_button_class,$remove_icon,$primary)->generate($html_table_class);
+        return \Imperium\Html\Table\Table::table($columns,$records,$before_all_class,$thead_class,$before_content,$after_content)->set_action($action_edit_text,$action_remove_text,$before_remove_text,$action_edit_url_prefix,$edit_button_class,$edit_icon,$remove_url_prefix,$remove_button_class,$remove_icon,$primary)->limit(\config('admin','limit_table_char'))->generate($html_table_class);
 
     }
 }

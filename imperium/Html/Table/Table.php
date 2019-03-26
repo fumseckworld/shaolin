@@ -173,6 +173,15 @@ namespace Imperium\Html\Table {
 
         /**
          *
+         * The character limit size
+         *
+         * @var int
+         *
+         */
+        private $limit;
+
+        /**
+         *
          * @param array $columns
          * @param array $data
          * @param string $before_class
@@ -272,6 +281,22 @@ namespace Imperium\Html\Table {
             return $this;
         }
 
+        /**
+         *
+         * Limit the characters size
+         *
+         * @param int $size
+         *
+         * @return Table
+         *
+         */
+        public function limit(int $size): Table
+        {
+            $this->limit = $size;
+
+            return $this;
+
+        }
 
         /**
          *
@@ -311,7 +336,7 @@ namespace Imperium\Html\Table {
                         $edit = '<a href="'.$this->edit_url_prefix.'/'.$v->$primary.'" class="'.$this->edit_class.'">'.$this->edit_icon.'</a>';
                         $remove = '<a href="'.$this->remove_url_prefix.'/'.$v->$primary.'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
 
-                        $this->td($edit)->td($remove);
+                        $this->action($edit)->action($remove);
                     }
                 }else {
 
@@ -324,7 +349,7 @@ namespace Imperium\Html\Table {
                         $edit = '<a href="'.$this->edit_url_prefix.'/'.$v[$primary].'" class="'.$this->edit_class.'">'.$this->edit_icon.'</a>';
                         $remove = '<a href="'.$this->remove_url_prefix.'/'.$v[$primary].'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
 
-                        $this->td($edit)->td($remove);
+                        $this->action($edit)->action($remove);
                     }
                 }
 
@@ -462,7 +487,7 @@ namespace Imperium\Html\Table {
         public function td($value): Table
         {
 
-            $x = '<td>'.$value.'</td>';
+            $x = def($this->limit) ? '<td>'.substr($value,0,$this->limit).' </td> '   : '<td>'.$value.'</td>';
 
             append($this->html,$x);
 
@@ -526,6 +551,20 @@ namespace Imperium\Html\Table {
         public function get(): string
         {
             return $this->html;
+        }
+
+        /**
+         * @param string $action
+         *
+         * @return Table
+         */
+        public function action(string $action): Table
+        {
+            $x = '<td>'.$action.'</td>';
+
+            append($this->html,$x);
+
+            return $this;
         }
     }
 }
