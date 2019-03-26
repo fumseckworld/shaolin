@@ -464,16 +464,23 @@ if (not_exist('view'))
      */
     function view(string $class,string $name,array $args =[]) : string
     {
-        $dir = collection(explode('\\',$class))->last();
+
+        $dir = str_replace('Controller','',collection(explode("\\",$class))->last());
 
 
-        $file = collection(explode('.',$name))->begin();
-
-
-        append($file,'.twig');
+        if (strstr($name,'@'))
+        {
+            $file = collection(explode('/',$name));
+            $file = collection(explode('.',$file->last()))->begin();
+            append($file,'.twig');
+        }
+        else
+        {
+            $file = collection(explode('.',$name));
+            append($file,'.twig');
+        }
 
         $file = $dir .DIRECTORY_SEPARATOR . $file;
-
 
         return (new View())->load($file,$args);
     }

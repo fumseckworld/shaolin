@@ -383,7 +383,16 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+                if(strstr($view,'@'))
+                {
+                    $layout = strtolower(str_replace('@','',collection(explode('/',$view))->begin()));
+                    File::put($file,"{% extends '$layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+
+                }else
+                {
+                    File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
+
+                }
             }
 
             return $this->twig->render($view,$args);
