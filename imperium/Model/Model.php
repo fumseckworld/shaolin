@@ -210,9 +210,8 @@ namespace Imperium\Model {
             $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
             $columns = $this->table()->column()->for($table)->show();
 
-            $x = \collection();
+            $x = collection();
             foreach ($columns as $column)
-
                 $x->add($data->get($column),$column);
 
             return $this->table()->from($table)->update($id,$x->collection());

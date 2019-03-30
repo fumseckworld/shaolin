@@ -173,7 +173,7 @@ use Imperium\Tables\Table;
 
             $this->create($new_base);
 
-            return (new Import('',$new_base))->import();
+            return (new Import($new_base))->import();
         }
 
         /**

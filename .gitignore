@@ -29,3 +29,7 @@ cache
 zen.sqlite3
 .phpunit.result.cache
 tables.json
+app
+web
+locales
+po

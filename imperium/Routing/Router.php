@@ -5,7 +5,10 @@ namespace Imperium\Routing {
     use Exception;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
+    use Imperium\Middleware\TrailingSlashMiddleware;
     use Imperium\Request\Request;
+    use Imperium\Security\Auth\AuthMiddleware;
+    use Imperium\Security\Csrf\CsrfMiddleware;
     use Psr\Http\Message\ServerRequestInterface;
 
 
@@ -113,6 +116,14 @@ namespace Imperium\Routing {
          */
         const CALLABLE_INDEX = 'call';
 
+        /**
+         *
+         * The route regex key
+         *
+         * @var string
+         *
+         */
+        const REGEX = 'regex';
 
         /**
          *
@@ -122,6 +133,43 @@ namespace Imperium\Routing {
          *
          */
         const MVC_SEPARATOR = '@';
+
+        /**
+         *
+         * The controller method to execute before the action
+         *
+         * @var string
+         *
+         */
+        const BEFORE_ACTION = 'before_action';
+
+        /**
+         *
+         * The controller method to execute after the action
+         *
+         * @var string
+         *
+         */
+        const AFTER_ACTION = 'after_action';
+
+        /**
+         *
+         * The route prefix
+         *
+         * @var string
+         *
+         */
+        const PREFIX = 'prefix';
+
+
+        /**
+         *
+         * The route name key
+         *
+         * @var string
+         *
+         */
+        const NAME = 'name';
 
         /**
          *
@@ -143,12 +191,19 @@ namespace Imperium\Routing {
 
         /***
          *
+         * Matches routes
+         *
          * @var array
+         *
          */
         private $matches = [];
 
         /**
+         *
+         * The controllers namespace
+         *
          * @var string
+         *
          */
         private $namespace;
 
@@ -162,14 +217,31 @@ namespace Imperium\Routing {
         private $method;
 
         /**
+         *
+         * The application core directory
+         *
          * @var string
+         *
          */
         private $core_path;
 
         /**
+         *
+         * The controllers directory name
+         *
          * @var string
+         *
          */
         private $controller_dir;
+
+        /**
+         *
+         * All regex
+         *
+         * @var array
+         *
+         */
+        private $regex;
 
 
         /**
@@ -203,6 +275,7 @@ namespace Imperium\Routing {
             self::$URL            = $this->url;
 
             $this->call_middleware($request);
+
         }
 
 
@@ -224,6 +297,12 @@ namespace Imperium\Routing {
             is_false(Dir::is($dir),true,"The $dir directory was not found");
 
             $middle = File::search("$dir/*php");
+
+            call_user_func_array(new CsrfMiddleware(), [$request]);
+
+            call_user_func_array(new TrailingSlashMiddleware(), [$request]);
+
+            call_user_func_array(new AuthMiddleware(), [$request]);
 
             foreach  ($middle as $middleware)
             {
@@ -248,42 +327,73 @@ namespace Imperium\Routing {
          */
         public function run()
         {
+
             if (is_admin())
             {
-                foreach(admin($this->method) as $name => $route)
+                foreach(admin($this->method) as $route)
                 {
+
                     $x = collection($route);
 
                     $url       = $x->get(self::URL_INDEX);
                     $callable  = $x->get(self::CALLABLE_INDEX);
+                    $regex     = $x->get(self::REGEX);
+                    $prefix    = $x->get(self::PREFIX);
+
+                    $url = self::url($url, $prefix);
+
+                    if (def($regex))
+                    {
+                        foreach ($regex as $k => $v)
+                            $this->with($k,$v);
+                    }
 
                     if ($this->match($url))
                         return $this->call($callable);
                 }
-                if (def(name('404')))
-                    return to(name('404'));
-
-                throw new Exception('The route was not found in the admin.yaml file');
+                return to(name('404'));
             }
-            foreach(web($this->method) as $name => $route)
+
+            foreach(web($this->method) as $name => $routes)
             {
-                $x = collection($route);
+
+                $x = collection($routes);
 
                 $url       = $x->get(self::URL_INDEX);
                 $callable  = $x->get(self::CALLABLE_INDEX);
+                $regex     = $x->get(self::REGEX);
+                $prefix     = $x->get(self::PREFIX);
+
+
+                $url = self::url($url, $prefix);
+
+
+                if (def($regex))
+                {
+                    foreach ($regex as $k => $v)
+                        $this->with($k,$v);
+                }
 
                 if ($this->match($url))
                     return $this->call($callable);
             }
 
-            if (def(name('404')))
-                return to(name('404'));
-
-            throw new Exception('The route was not found in the web.yaml file');
+            return to(name('404'));
         }
 
+        /**
+         * @param $param
+         * @param $regex
+         *
+         * @return Router
+         *
+         */
+        public function with($param, $regex): Router
+        {
+            $this->regex[$param] = str_replace('(', '(?:', $regex);
 
-
+            return $this;
+        }
 
         /**
          *
@@ -296,19 +406,11 @@ namespace Imperium\Routing {
          */
         private function match(string $url): bool
         {
-
-            $path =  preg_replace('#:([\w]+)#', '([^/]+)',$url);
+            $path = preg_replace_callback('#:([\w]+)#', [$this, 'paramMatch'], $url);
 
             $regex = "#^$path$#";
 
-            if (preg_match($regex,$this->url,$matches))
-            {
-                array_shift($matches);
-                $this->matches = $matches;
-                return true;
-            }
-
-            return false;
+            return preg_match($regex,$this->url,$this->matches) === 1;
         }
 
         /**
@@ -342,7 +444,17 @@ namespace Imperium\Routing {
 
                 is_false(method_exists($controller,$action),true,"The  $action method  was not found inside the controller named {$params->get(0)} at {$this->controller_dir}");
 
-                return call_user_func_array([$controller, $action], $this->matches);
+                if (method_exists($controller, self::BEFORE_ACTION))
+                    call_user_func_array( [$controller,self::BEFORE_ACTION],[]);
+
+                if (method_exists($controller, self::AFTER_ACTION))
+                {
+                    $x =  call_user_func_array([$controller, $action], $this->matches);
+                    call_user_func_array( [$controller, self::AFTER_ACTION],[]);
+                    return $x;
+                }else{
+                    return call_user_func_array([$controller, $action], $this->matches);
+                }
             }
             return call_user_func_array($callable, $this->matches);
         }
@@ -361,11 +473,16 @@ namespace Imperium\Routing {
          */
         public static function web(string $route_name,$method = GET): string
         {
-            foreach(web($method) as $name => $route)
+            foreach(web($method) as $route)
             {
                 $x = collection($route);
 
                 $url       = $x->get(self::URL_INDEX);
+                $prefix    = $x->get(self::PREFIX);
+                $name      = $x->get(self::NAME);
+
+
+                $url = self::url($url, $prefix);
 
                 if (different(php_sapi_name(),'cli'))
                 {
@@ -378,7 +495,7 @@ namespace Imperium\Routing {
                 }
             }
 
-            throw new Exception("We have not found an url with the $route_name name in the web.yaml file");
+            throw new Exception("We have not found an url with the $route_name name in the web.yaml file with the $method method");
         }
         /**
          *
@@ -395,11 +512,16 @@ namespace Imperium\Routing {
         public static function admin(string $route_name,$method = GET): string
         {
 
-            foreach(admin($method) as $name => $route)
+            foreach(admin($method) as $route)
             {
                 $x = collection($route);
 
                 $url       = $x->get(self::URL_INDEX);
+                $prefix    = $x->get(self::PREFIX);
+                $name      = $x->get(self::NAME);
+
+                $url = self::url($url, $prefix);
+
 
                 if (different(php_sapi_name(),'cli'))
                 {
@@ -412,7 +534,7 @@ namespace Imperium\Routing {
                 }
             }
 
-            throw new Exception("We have not found an url with the $route_name name in the admin.yaml file");
+            throw new Exception("We have not found an url with the $route_name name in the admin.yaml file with the $method method");
         }
 
         /**
@@ -431,9 +553,12 @@ namespace Imperium\Routing {
         {
             if (is_admin())
             {
-                foreach(admin($method) as $name => $route)
+                foreach(admin($method) as $route)
                 {
+
                     $x = collection($route);
+
+                    $name      = $x->get(self::NAME);
 
                     $callback       = $x->get(self::CALLABLE_INDEX);
 
@@ -442,9 +567,11 @@ namespace Imperium\Routing {
                 }
             }else
             {
-                foreach(web($method) as $name => $route)
+                foreach(web($method) as  $route)
                 {
                     $x = collection($route);
+
+                    $name = $x->get(self::NAME);
 
 
                     $callback       = $x->get(self::CALLABLE_INDEX);
@@ -454,6 +581,38 @@ namespace Imperium\Routing {
                 }
             }
             throw new Exception('The callback was not found');
+        }
+
+        /**
+         *
+         * @param $match
+         *
+         * @return string
+         *
+         */
+        private function paramMatch($match):string
+        {
+            if(isset($this->regex[$match[1]]))
+            {
+                return '(' . $this->regex[$match[1]] . ')';
+            }
+            return '([^/]+)';
+        }
+
+        /**
+         * @param $url
+         * @param $prefix
+         * @return string
+         * @throws Exception
+         */
+        private static function url($url, $prefix): string
+        {
+            if (def($url))
+                $url = different($prefix, $url) ? '/' . trim($prefix, '/') . '/' . trim($url, '/') : $prefix . trim($url, '/');
+            else
+                $url = '/' . trim($prefix, '/');
+
+            return $url;
         }
 
 

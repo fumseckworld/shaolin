@@ -811,11 +811,15 @@ namespace Imperium\Collection {
          */
         public function change_value($old,$new): Collection
         {
-            foreach ($this->data as $k => $v)
+            if (different($old,$new))
             {
-                if (equal($v,$old) && $this->has_key($k))
-                    $this->data[$k] = $new;
+                foreach ($this->data as $k => $v)
+                {
+                    if (equal($v,$old) && $this->has_key($k))
+                        $this->data[$k] = $new;
+                }
             }
+
 
             return $this;
         }

@@ -3,6 +3,7 @@
 namespace Imperium\Command {
 
     use Exception;
+    use Sinergi\BrowserDetector\Os;
     use Symfony\Component\Console\Application;
 
     class Command
@@ -23,7 +24,11 @@ namespace Imperium\Command {
          */
         public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN')
         {
+            os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
+
             $this->command = new Application($name,$version);
+
+
         }
 
         /**
@@ -37,9 +42,29 @@ namespace Imperium\Command {
          */
         public function run(): int
         {
-             $this->command->addCommands(commands());
+            $commands = [
+                new GenerateController(),
+                new CreateDatabase(),
+                new CleanDatabase(),
+                new Server(),
+                new GenerateRessource(),
+                new MigrateDatabase(),
+                new RollbackDatabase(),
+                new SeedDatabase(),
+                new App()
 
+            ];
+
+             $this->add($commands)->add(commands());
              return $this->command->run();
+        }
+
+        private function add(array $commands)
+        {
+            foreach ($commands as $command)
+                $this->command->add($command);
+
+            return $this;
         }
     }
 }

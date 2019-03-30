@@ -702,7 +702,9 @@ namespace Imperium {
             $this->hidden_tables    = config($file,'hidden_tables');
             $this->hidden_bases     = config($file,'hidden_bases');
 
+
             $this->connect          = connect(config($file,'driver'),config($file,'base'),config($file,'username'),config($file,'password'),config($file,'host'),config($file,'dump'));
+
             $this->driver           = $this->connect->driver();
 
             $this->table            = new Table($this->connect);
@@ -717,6 +719,9 @@ namespace Imperium {
                $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
             else
                 $path = dirname(request()->server->get('DOCUMENT_ROOT'));
+
+            if (def($this->request()->server->get('PWD')))
+                $path = $this->request()->server->get('PWD');
 
             $this->env              = Dotenv::create($path);
             $this->env->load();

@@ -2,7 +2,9 @@
 <?php
 
 
+use Imperium\Command\Command;
+
 require __DIR__.'/vendor/autoload.php';
 
-exit((new \Imperium\Command\Command('shaolin','1.0'))->run());
+exit((new Command('shaolin','1.0'))->run());
 

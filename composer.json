@@ -45,7 +45,7 @@
             "Imperium\\": "imperium/"
         },
         "files": [
-            "app/helpers.php"
+            "helpers/helpers.php"
         ]
     },
     "require-dev": {
@@ -55,5 +55,13 @@
         "codedungeon/phpunit-result-printer": "^0.26.0",
         "filp/whoops": "^2.2",
         "symfony/var-dumper": "^4.1"
+    },
+    "scripts": {
+
+        "post-install-cmd": [
+            "cp config/app.example.yaml  config/app.yaml",
+            "mkdir tmp && mkdir tmp/Command"
+        ]
+
     }
 }

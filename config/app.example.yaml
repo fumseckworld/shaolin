@@ -1,10 +1,12 @@
 dir:
-  app: 'core'
+  app: 'tmp'
   controller: 'Controllers'
   command: 'Command'
   middleware: 'Middleware'
   view: 'Views'
-namespace: 'Shaolin'
+namespace: 'App'
+web_root: 'web'
+development_server_port: '3000'
 config:
   cache: false
   charset: 'utf-8'

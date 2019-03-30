@@ -15,7 +15,7 @@ namespace Imperium\Config {
          * @var string
          *
          */
-        const CONFIG_DIR = 'routes';
+        const CONFIG_DIR = 'Routes';
 
         /**
          * @var string
@@ -39,14 +39,14 @@ namespace Imperium\Config {
          * Get a config value
          *
          * @param string $file
-         * @param $key
+         * @param $method
          *
          * @return mixed
          *
          * @throws Exception
          *
          */
-        public function get(string $file, $key)
+        public function get(string $file, $method)
         {
             $file = collection(explode('.', $file))->begin();
 
@@ -57,15 +57,35 @@ namespace Imperium\Config {
             self::check($x);
 
             if (equal($file, 'db'))
-                return collection(collection(self::parseFile($x))->get(collection(self::parseFile($x))->get('use')))->get($key);
+                return collection(collection(self::parseFile($x))->get(collection(self::parseFile($x))->get('use')))->get($method);
 
 
             $data = collection(self::parseFile($x));
 
-            if (!$data->has_key($key))
-                throw new Exception("The $key key was not found in the file $file at {$this->path()}");
-            else
-                return $data->get($key);
+
+            if (!$data->has_key($method))
+                throw new Exception("The $method key was not found in the file $file at {$this->path()}");
+
+            $result = collection();
+
+            $names = collection();
+
+            foreach ($data->get($method) as $prefix => $routes)
+            {
+                foreach ($routes as $name => $route)
+                {
+
+                    is_true($names->exist($name),true,"The route name $name is not unique");
+
+                    $names->add($name);
+
+                    $result->push(collection($route)->add($name,'name')->add($prefix,'prefix')->collection());
+
+                }
+
+            }
+            return $result->collection();
+
         }
 
 
@@ -87,11 +107,21 @@ namespace Imperium\Config {
         public static function init()
         {
 
-            if (equal(request()->getScriptName(), './vendor/bin/phpunit'))
-                self::$config = dirname(request()->server->get('SCRIPT_FILENAME'), 3) . DIRECTORY_SEPARATOR . self::CONFIG_DIR;
-            else
-                self::$config = dirname(server('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . self::CONFIG_DIR;
+            $core = core_path(collection(config('app','dir'))->get('app'));
 
+            if (equal(request()->getScriptName(), './vendor/bin/phpunit'))
+                self::$config = $core .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
+            else
+                self::$config =  $core . DIRECTORY_SEPARATOR .self::CONFIG_DIR;
+
+
+            if(def(request()->server->get('PWD')))
+            {
+
+                self::$config =  $core . DIRECTORY_SEPARATOR .self::CONFIG_DIR;
+            }
+
+          
             is_false(Dir::is(self::$config), true, 'We have not fond the config dir');
 
             return new static();

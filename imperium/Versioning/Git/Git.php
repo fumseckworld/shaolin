@@ -48,13 +48,13 @@ namespace Imperium\Versioning\Git {
         {
             is_false(Dir::is($repository),true,"The $repository repository not exist");
 
-             
             $this->repository = realpath($repository);
 
-            $this->name = collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
-            $this->data = [];
-
             Dir::checkout($this->repository);
+
+            $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
+
+            $this->data = [];
 
             is_false(Dir::is('.git'),true,"The current repository is not a git project");
 
@@ -366,54 +366,103 @@ namespace Imperium\Versioning\Git {
            return $this->format($this->commits()->length());
         }
 
+        public function between(string $first,string $second)
+        {
 
+            $this->execute("git diff $first $second --stat");
 
+            return \collection($this->data);
+
+        }
 
         /**
          *
          * Display log
          *
          * @return string
-         *
+         * 
          */
         public function log(): string
         {
             $command = 'git log ';
 
-            if (def(get('limit')))
-                append($command, " --max-count=",intval($_GET['limit']));
-            else
-                append($command,' --max-count=10 ');
+            $current = get('current',0);
+
+            $limit = get('limit',10);
+
+            append($command, " --max-count=$limit");
 
             if (def(get('author')))
             {
                 $author = $_GET['author'] ;
 
                 append($command," --author=$author ");
-
             }
-            $html = '<table class="table table-bordered"><thead><tr><th>author</th><th>commit</th><th>date</th><th>diff</th></tr></thead><tbody>';
 
-            $format = '<tr><td><a href="mailto:%ae">%an</a></td><td>%s</td><td>%ar</td><td><a href="commit/%H">show diff</a></td></tr>';
+            $html = '<table class="table table-bordered"><thead><tr><th>author</th><th>commit</th><th>date</th><th>lines</th><th>diff</th></tr></thead><tbody>';
 
-            append($command," --pretty=format:'$format' " );
+            $format = '<tr><td><a href="mailto:%ae">%an</a></td><td>%s</td><td>%ar</td><p>%H</p>';
 
+            append($command," --pretty=format:'$format'" );
 
             $this->execute($command);
 
-            foreach ($this->data as $x)
-                append($html,$x);
 
+
+
+            foreach ($this->data as $x)
+            {
+
+                $commit = \collection(explode('<p>',$x));
+
+                $commit =  str_replace('</p>','',$commit->get(1));
+
+
+                $x = str_replace("<p>$commit</p>",'',$x);
+
+                $repo = $this->name;
+
+                append($x,"<td>",$this->removed_added($commit),'</td><td>','<a href="/'.$repo .'/commit/'.$commit.'">show diff</a></td></tr>');
+
+                append($html, $x);
+            }
 
             append($html,'</tbody></table>');
+
             exec("git log",$logs);
-            append($html,pagination(10,'?after=',1,count($logs),'previous','next'));
+
+
+            append($html,pagination($limit,'?current=',$current,count($logs),'previous','next'));
+
             return $html;
-
-
-
         }
 
+        /**
+         *
+         *
+         * @param string $sha1
+         *
+         * @return string
+         *
+         */
+        public function removed_added(string $sha1):string
+        {
+            return $this->lines($sha1)->last();
+        }
+
+        /**
+         *
+         * @param string $sha1
+         *
+         * @return Collection
+         *
+         */
+        public function lines(string $sha1): Collection
+        {
+            $this->execute("git show $sha1 --stat ");
+
+            return collection($this->data);
+        }
 
         /**
          *
@@ -496,7 +545,7 @@ namespace Imperium\Versioning\Git {
          */
         private function get_branch(): array
         {
-            $this->execute('git show-branch --list');
+            $this->execute('git branch');
 
             return $this->data;
         }

@@ -27,6 +27,38 @@ namespace Imperium\Directory {
         );
 
         /**
+         * @param string $directory
+         * @return bool
+         * @throws Exception
+         */
+        public static function remove(string $directory): bool
+        {
+
+            if (self::is($directory))
+            {
+                $dir = opendir($directory);
+
+                while(false !== ( $file = readdir($dir)) )
+                {
+                    if (( $file != '.' ) && ( $file != '..' ))
+                    {
+                        $full = $directory . '/' . $file;
+                        if ( is_dir($full) )
+                        {
+                            self::remove($full);
+                        }
+                        else {
+                            unlink($full);
+                        }
+                    }
+                }
+                closedir($dir);
+                return rmdir($directory);
+            }
+            return false;
+        }
+
+        /**
          *
          * Remove all files in the directory expect ignore files
          *
@@ -85,22 +117,6 @@ namespace Imperium\Directory {
         public static function checkout(string $directory): bool
         {
             return self::is($directory) ? chdir($directory) : false;
-        }
-
-        /**
-         *
-         * Remove a directory
-         *
-         * @method remove
-         *
-         * @param  string $directory  The directory to remove
-         *
-         * @return bool
-         *
-         */
-        public static function remove(string $directory): bool
-        {
-            return self::is($directory) ? rmdir($directory) : false;
         }
 
         /**
