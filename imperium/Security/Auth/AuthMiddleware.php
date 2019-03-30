@@ -2,7 +2,6 @@
 
 namespace Imperium\Security\Auth {
 
-
     use Imperium\Middleware\Middleware;
     use Psr\Http\Message\ServerRequestInterface;
 

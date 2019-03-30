@@ -4,6 +4,7 @@
 namespace Imperium\Security\Csrf {
 
     use Exception;
+    use Imperium\Middleware\Middleware;
     use Psr\Http\Message\ServerRequestInterface;
 
     class CsrfMiddleware implements Middleware
