@@ -608,7 +608,7 @@ namespace Imperium\Routing {
         private static function url($url, $prefix): string
         {
             if (def($url))
-                $url = different($prefix, $url) ? '/' . trim($prefix, '/') . '/' . trim($url, '/') : $prefix . trim($url, '/');
+                $url = different($prefix, $url) ? '/' . trim($prefix, '/') . trim($url, '/') : $prefix . trim($url, '/');
             else
                 $url = '/' . trim($prefix, '/');
 
