@@ -25,6 +25,7 @@ namespace Imperium\Directory {
             '.gitignore',
             '.hgignore',
         );
+        
 
         /**
          * @param string $directory
@@ -69,6 +70,7 @@ namespace Imperium\Directory {
          * @return bool
          *
          * @throws Exception
+         * 
          */
         public static function clear(string $directory): bool
         {
@@ -87,6 +89,64 @@ namespace Imperium\Directory {
         }
 
         /**
+         * 
+         * Copy a dir
+         * 
+         * @param string   $source    Source path
+         * @param string   $dest      Destination path
+         * @param int      $permissions New folder creation permissions
+         *
+         * @return bool    
+         * 
+         */
+        public static function copy(string $source,string $dest,int $permissions = 0755): bool
+        {
+            
+            if (is_link($source))
+            {
+                return symlink(readlink($source), $dest);
+            }
+            
+            // Simple copy for a file
+            if (is_file($source))
+            {
+                return copy($source, $dest);
+            }
+        
+            // Make destination directory
+            if (!self::is($dest))
+            {
+                self::create($dest,$permissions);
+            }
+        
+            $dir = dir($source);
+
+            while (false !== $entry = $dir->read()) 
+            {
+                // Skip pointers
+                if ($entry == '.' || $entry == '..') 
+                {
+                    continue;
+                }
+        
+                // Deep copy directories
+                self::copy("$source/$entry", "$dest/$entry");
+            }
+
+            $dir->close();
+            return true;
+        
+        }
+
+        /**
+         * 
+         */
+        public static function scan(string $dir,$sorting_order = SCANDIR_SORT_ASCENDING ): array
+        {
+            return collection(scandir($dir,$sorting_order))->remove_value('.')->remove_value('..')->collection();
+        }
+
+        /**²
          *
          * Create a new directory if not exist
          *
@@ -99,10 +159,10 @@ namespace Imperium\Directory {
          * @throws Exception
          * 
          */
-        public static function create(string $directory): bool
+        public static function create(string $directory,int $permissions = 0755): bool
         {
 
-            return is_false(self::is($directory)) ? mkdir($directory):  false;
+            return is_false(self::is($directory)) ? mkdir($directory,$permissions):  false;
         }
 
         /**

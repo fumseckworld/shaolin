@@ -3028,7 +3028,7 @@ if (not_exist('change'))
         $lines = File::lines($filename);
 
         $keys = File::keys($filename,$delimiter);
-
+    
         $file = File::open($filename,File::EMPTY_AND_WRITE);
 
         if ($file)
@@ -3038,12 +3038,12 @@ if (not_exist('change'))
                 switch ($v)
                 {
                     case $key:
-                        $x = "$key=$value";
+                        $x = "$key= \"$value\"";
                         fputs($file,"$x\n");
-                        break;
+                    break;
                     default:
                         fputs($file,$lines[$k]);
-                        break;
+                    break;
                 }
             }
             return File::close($file);

@@ -22,7 +22,7 @@ namespace Imperium\Collection {
     class Collection implements ArrayAccess, Iterator
     {
 
-        /**
+       /*
         *
         * Contains of the array
         *
@@ -769,6 +769,23 @@ namespace Imperium\Collection {
             if ($this->has_key($key))
                 unset($this->data[$key]);
 
+            return $this;
+        }
+
+        
+
+        /**
+         * 
+         * Remove a value in thje array
+         * 
+         * @return Collection
+         * 
+         */
+        public function remove_value($value): Collection
+        {
+            if (($key = array_search($value, $this->data)) !== false) 
+                unset($this->data[$key]);
+          
             return $this;
         }
 

@@ -64,9 +64,7 @@ namespace Imperium\Command {
 
             $this->namespace =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the server directory : </info>",'web');
-
-            $this->web =  $helper->ask($input,$output,$question);
+            $this->web = 'web';
 
             $question = new Question("<info>Enabled cache ? : </info>",'false');
 
@@ -85,7 +83,7 @@ namespace Imperium\Command {
             File::put($file,"dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: $this->cache\n  charset: 'utf-8'");
 
             Dir::create('locales');
-
+            
             Dir::create('po');
             Dir::create('db');
             Dir::create("db/seeds");
@@ -140,12 +138,21 @@ return [
 
             Dir::checkout($app);
             Dir::create('Helpers');
+            
+            Dir::create('Assets');
+            Dir::create('Assets/sass');
+          
+            Dir::create('Assets/js');
+
             Dir::checkout('Helpers');
             File::create('web.php');
             File::create('admin.php');
             File::put("web.php","<?php\n");
             File::put("admin.php","<?php\n");
             Dir::checkout('../..');
+           
+            change('assets/config.rb',"=",'css_dir ',"../../$web/css");
+            Dir::copy('assets',"$app/Assets");
             Dir::checkout($views);
 
             $layout ='layout.twig';
