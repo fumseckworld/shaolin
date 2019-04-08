@@ -150,8 +150,7 @@ return [
             File::put("web.php","<?php\n");
             File::put("admin.php","<?php\n");
             Dir::checkout('../..');
-           
-            change('assets/config.rb',"=",'css_dir ',"../../$web/css");
+            
             Dir::copy('assets',"$app/Assets");
             Dir::checkout($views);
 
