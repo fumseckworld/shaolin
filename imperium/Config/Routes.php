@@ -39,14 +39,14 @@ namespace Imperium\Config {
          * Get a config value
          *
          * @param string $file
-         * @param $method
+         * @param string method
          *
          * @return mixed
          *
          * @throws Exception
          *
          */
-        public function get(string $file, $method)
+        public function get(string $file, string $method)
         {
             $file = collection(explode('.', $file))->begin();
 
@@ -90,6 +90,7 @@ namespace Imperium\Config {
 
 
         /**
+         * 
          * @param string $file
          *
          * @throws Exception
@@ -102,7 +103,7 @@ namespace Imperium\Config {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public static function init()
         {

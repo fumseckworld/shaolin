@@ -25,6 +25,7 @@ namespace Imperium {
     use Imperium\Users\Users;
     use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\Request;
+    use Symfony\Component\HttpFoundation\Response;
 
 
     /**
@@ -191,9 +192,11 @@ namespace Imperium {
          * @param string $table
          * @param string $column
          * @param string $order
+         *
          * @return array
          *
          * @throws Exception
+         *
          */
         public function all(string $table,string $column,string $order = DESC) : array
         {
@@ -893,6 +896,7 @@ namespace Imperium {
                 break;
             }
         }
+        
 
         /**
          *
@@ -1013,7 +1017,11 @@ namespace Imperium {
         }
 
         /**
+         *
          * @return Oauth
+         *
+         * @throws Exception
+         *
          */
         public function auth(): Oauth
         {
@@ -1031,6 +1039,9 @@ namespace Imperium {
             return new Session();
         }
 
+        /**
+         * @return Request
+         */
         public function request(): Request
         {
             return Request::createFromGlobals();
@@ -1045,6 +1056,14 @@ namespace Imperium {
         public function config():Config
         {
             return Config::init();
+        }
+
+        /**
+         * @return Response
+         */
+        public function response(): Response
+        {
+            return new Response();
         }
 
         /**

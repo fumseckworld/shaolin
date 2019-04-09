@@ -4,9 +4,8 @@ namespace Imperium\Html\Form {
 
     use Exception;
     use Imperium\App;
-    use Imperium\Tables\Table;
 
-    /**
+   /**
     *
     * Form management
     *

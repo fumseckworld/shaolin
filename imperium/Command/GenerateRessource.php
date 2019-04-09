@@ -22,14 +22,15 @@ namespace Imperium\Command {
                 ->setAliases(['r'])
                 // the full command description shown when running the command with
                 // the "--help" option
-                ->setHelp('php shaolin make:resource name')
-                ->addArgument('resource', InputArgument::REQUIRED, 'The resource name.');
+                ->addArgument('resource', InputArgument::REQUIRED, 'The resource name.')
+                ->addArgument('table', InputArgument::REQUIRED, 'The table name.');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
             $controller = ucfirst(str_replace('Controller','',$input->getArgument('resource')));
-
+            $x = $controller;
+            $table = $input->getArgument('table');
             append($controller,'Controller');
             $controllers = collection(config('app','dir'))->get('controller');
 
@@ -44,7 +45,7 @@ namespace Imperium\Command {
             {
                 File::create($file);
 
-                File::put($file,"<?php\n\nnamespace $namespace { \n\n\tuse Imperium\Controller\Controller;\n\tuse Imperium\Model\Model;\n\tuse Symfony\Component\HttpFoundation\RedirectResponse;\n\n\tClass $controller extends Controller\n\t{\n\n\t\tconst TABLE = '';\n\n\t\t/**\n\t\t*\n\t\t* @var Model\n\t\t*\n\t\t**/\n\t\tprivate \$model;\n\n\t\tpublic function before_action()\n\t\t{\n\t\t\t\$this->model =  \$this->model()->from(self::TABLE);\n\t\t}\n\n\t\tpublic function create(): string\n\t\t{\n\t\t\t return \$this->model->create_form(self::TABLE,route('',POST),id(),'create',fa('fas','fa-plus'));\n\t\t}\n\n\t\tpublic function edit(int \$id): string\n\t\t{\n\t\t\treturn \$this->model->edit_form(self::TABLE,\$id,route('',POST),id(),'update',fa('fas','fa-sync'));\n\t\t}\n\n\t\tpublic function update(): RedirectResponse\n\t\t{\n\t\t\t return \$this->model->update() ? back('success') : back('fail',false);\n\t\t}\n\n\t\tpublic function destroy(int \$id): RedirectResponse\n\t\t{\n\t\t\treturn \$this->model->remove(\$id) ? back('success') : back('fail',false);\n\t\t}\n\n\t}\n}\n");
+                File::put($file,"<?php\n\nnamespace $namespace { \n\n\tuse Imperium\Controller\Controller;\n\tuse Imperium\Model\Model;\n\tuse Symfony\Component\HttpFoundation\RedirectResponse;\n\n\tClass $controller extends Controller\n\t{\n\n\t\tconst TABLE = '$table';\n\n\t\t/**\n\t\t*\n\t\t* @var Model\n\t\t*\n\t\t**/\n\t\tprivate \$model;\n\n\t\tpublic function before_action()\n\t\t{\n\t\t\t\$this->model =  \$this->model()->from(self::TABLE);\n\t\t}\n\n\t\tpublic function create(): string\n\t\t{\n\t\t\t\$form = \$this->model->create_form(self::TABLE,route('',POST),id(),'create',fa('fas','fa-plus'));\n\n\t\t\treturn \$this->view('$x/create',compact('form'));\n\t\t}\n\n\t\tpublic function edit(int \$id): string\n\t\t{\n\t\t\t\$form = \$this->model->edit_form(self::TABLE,\$id,route('',POST),id(),'update',fa('fas','fa-sync'));\n\n\t\t\treturn \$this->view('$x/edit',compact('form'));\n\t\t}\n\n\t\tpublic function update(): RedirectResponse\n\t\t{\n\t\t\t return \$this->model->update() ? back('success') : back('fail',false);\n\t\t}\n\n\t\tpublic function destroy(int \$id): RedirectResponse\n\t\t{\n\t\t\treturn \$this->model->remove(\$id) ? back('success') : back('fail',false);\n\t\t}\n\n\t}\n}\n");
 
                 if (File::exist($file))
                     $output->write("<bg=green;fg=white>The $controller controller was generated successfully\n");

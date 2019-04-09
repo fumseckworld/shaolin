@@ -20,6 +20,7 @@ namespace Imperium\Versioning\Git {
          * @var array
          */
         private $data;
+
         /**
          * @var string
          */
@@ -94,7 +95,7 @@ namespace Imperium\Versioning\Git {
          */
         public function interval(): array
         {
-            $start = Carbon::now()->month  ;
+            $start = Carbon::now()->month;
             $end = $start - 13;
             $month = collection();
 

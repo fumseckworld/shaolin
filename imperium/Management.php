@@ -20,6 +20,7 @@ namespace Imperium {
     use Imperium\Users\Users;
     use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\Request;
+    use Symfony\Component\HttpFoundation\Response;
 
     interface Management
     {
@@ -601,6 +602,13 @@ namespace Imperium {
          * @method __construct
          */
         public function __construct();
+
+        /**
+         *
+         * @return Response
+         *
+         */
+        public function response(): Response;
 
         // GETTER
 
