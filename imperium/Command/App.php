@@ -150,8 +150,8 @@ return [
             File::put("web.php","<?php\n");
             File::put("admin.php","<?php\n");
             Dir::checkout('../..');
-            
             Dir::copy('assets',"$app/Assets");
+            Dir::remove('assets');
             Dir::checkout($views);
 
             $layout ='layout.twig';

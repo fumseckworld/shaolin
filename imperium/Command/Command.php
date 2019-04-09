@@ -22,7 +22,7 @@ namespace Imperium\Command {
          * @param string $version
          *
          */
-        public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN')
+        public function __construct(string $name = "UNKNOWN", string $version = 'UNKNOWN')
         {
             os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
 
@@ -51,7 +51,9 @@ namespace Imperium\Command {
                 new MigrateDatabase(),
                 new RollbackDatabase(),
                 new SeedDatabase(),
-                new App()
+                new App(),
+                new GenerateUser()
+
 
             ];
 

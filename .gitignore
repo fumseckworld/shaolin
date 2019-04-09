@@ -33,3 +33,4 @@ app
 web
 locales
 po
+package-lock.json

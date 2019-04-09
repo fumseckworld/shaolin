@@ -4,27 +4,27 @@ const CONCAT = require('gulp-concat');
 
 function js()
 {
-   return src(['js/jquery-3.3.1.min.js','js/popper.min.js','js/bootstrap.min.js'])
+   return src(['app/Assets/js/jquery-3.3.1.min.js','app/Assets/js/popper.min.js','app/Assets/js/bootstrap.min.js'])
    .pipe(CONCAT('app.js'))
-    .pipe(dest('../../web/js'))
+    .pipe(dest('web/js'))
     
 }
 
 function sass()
 {
-  return  src('sass/*scss')
+  return  src('app/Assets/sass/*scss')
     .pipe(SASS())
     .pipe(CONCAT('app.css'))
-    .pipe(dest('../../web/css'));
+    .pipe(dest('web/css'));
 }
 
 function w()
 {
-   watch('sass/*.scss',sass);
-   watch('js/*.js',js);
+   watch('app/Assets/sass/*.scss',sass);
+   watch('app/Assets/js/*.js',js);
 }
 
 module.exports = {
    default: series(parallel(sass,js)),
    watch : w
-}
+};

@@ -55,11 +55,6 @@ namespace Imperium\Config {
 
             self::check($x);
 
-            if (equal($file,'db'))
-               return collection(collection(self::parseFile($x))->get(collection(self::parseFile($x))->get('use')))->get($key);
-
-
-
             $data =  collection(self::parseFile($x));
 
             if (!$data->has_key($key))

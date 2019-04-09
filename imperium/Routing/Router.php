@@ -469,9 +469,8 @@ namespace Imperium\Routing {
          * @return string
          *
          * @throws Exception
-         *
          */
-        public static function web(string $route_name,$method = GET): string
+        public static function web(string $route_name,string $method = GET): string
         {
             foreach(web($method) as $route)
             {

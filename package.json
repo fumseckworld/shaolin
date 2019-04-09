@@ -2,7 +2,7 @@
   "name": "assets",
   "version": "1.0.0",
   "description": "",
-  "main": "gulpfile.js",
+  "main": "assets/gulpfile.js",
   "dependencies": {},
   "devDependencies": {
     "gulp": "^4.0.0",
@@ -12,7 +12,7 @@
     "gulp-uglify": "^3.0.2"
   },
   "scripts": {
-    "watch": "gulp watch"
+    "watch": "assets/node_modules/.bin/gulp watch"
   },
   "keywords": [],
   "author": "",

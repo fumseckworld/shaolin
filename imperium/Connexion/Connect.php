@@ -7,7 +7,7 @@ namespace Imperium\Connexion {
     use PDOException;
     use Imperium\Directory\Dir;
 
-   /**
+    /**
     *
     * Management of the connections to the bases
     *
@@ -150,22 +150,21 @@ namespace Imperium\Connexion {
          *
          * @method __construct
          *
-         * @param  string $driver
-         * @param  string $base The base's name
-         * @param  string $username The base's username
-         * @param  string $password The base's password
-         * @param  string $host The base's host
-         * @param  string $dump_path The path to dump directory
+         * @param string $driver
+         * @param string $base The base's name
+         * @param string $username The base's username
+         * @param string $password The base's password
+         * @param string $host The base's host
+         * @param string $dump_path The path to dump directory
          *
          * @throws Exception
-         *
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
 
-            $dump_path = dump_path($dump_path);
+            $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . $dump_path;
 
-            Dir::create($dump_path);
+            Dir::create($this->dump_path);
 
             $this->driver       = $driver;
 
@@ -174,8 +173,6 @@ namespace Imperium\Connexion {
             $this->username     = $username;
 
             $this->password     = $password;
-
-            $this->dump_path    = realpath($dump_path);
 
             $this->host         = $host;
 

@@ -8,7 +8,7 @@ namespace Imperium\Command {
 
     class Server extends Command
     {
-        protected static $defaultName = 'serve';
+        protected static $defaultName = 'app:run';
         protected function configure()
         {
             $this->setAliases(['s']);

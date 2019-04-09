@@ -4,6 +4,7 @@ namespace Imperium\Security\Auth {
 
     use Exception;
     use Imperium\Collection\Collection;
+    use Imperium\Model\Model;
     use Imperium\Request\Request;
     use Imperium\Security\Csrf\Csrf;
     use Imperium\Session\SessionInterface;
@@ -45,7 +46,7 @@ namespace Imperium\Security\Auth {
         const ID = '__id__';
 
         /**
-         * @var \Imperium\Model\Model
+         * @var Model
          */
         private $model;
 
@@ -330,12 +331,11 @@ namespace Imperium\Security\Auth {
          *
          * Redirect user
          *
-         * @param int $id
+         * @param string $id
          *
-         * @return \RedirectResponse|RedirectResponse
+         * @return RedirectResponse
          *
          * @throws Exception
-         *
          */
         public function redirect(string $id): RedirectResponse
         {

@@ -2,17 +2,18 @@
 
 namespace Imperium\Security\Auth {
 
+    use Exception;
     use Imperium\Middleware\Middleware;
     use Psr\Http\Message\ServerRequestInterface;
 
     class AuthMiddleware implements Middleware
     {
 
-
         /**
          * @param ServerRequestInterface $request
-         * @return mixed
-         * @throws \Exception
+         *
+         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         * @throws Exception
          */
         public function __invoke(ServerRequestInterface $request)
         {

@@ -1,22 +1,9 @@
-use: 'development'
-development:
-  driver: mysql
-  base: zen
-  username: root
-  password: root
-  dump: 'database/dump'
-  host: 'localhost'
-  hidden_tables: ['phinxlog']
-  hidden_bases : []
-  hidden_users: []
-  debug: true
-production:
-  driver: mysql
-  base: imperium
-  username: imperium
-  password: imperium
-  dump: '../dump'
-  host: 'localhost'
-  hidden_tables: ['phinxlog']
-  hidden_bases: []
-  debug: false
+driver: mysql
+base: zen
+username: root
+password: root
+dump: 'db/dump'
+host: 'localhost'
+hidden_tables: ['phinxlog']
+hidden_bases: []
+debug: true

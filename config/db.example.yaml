@@ -2,8 +2,8 @@ driver: mysql
 base: zen
 username: root
 password: root
-dump: '../dump'
+dump: 'db/dump'
 host: 'localhost'
 hidden_tables: ['phinxlog']
-hidden_bases : []
-
+hidden_bases: []
+debug: true
