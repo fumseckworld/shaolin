@@ -707,7 +707,6 @@ namespace Imperium {
 
 
             $this->connect          = connect(config($file,'driver'),config($file,'base'),config($file,'username'),config($file,'password'),config($file,'host'),config($file,'dump'));
-            d($this->connect);
             $this->driver           = $this->connect->driver();
 
             $this->table            = new Table($this->connect);

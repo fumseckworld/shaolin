@@ -169,7 +169,6 @@ namespace Imperium\Model {
          * @param string $table
          *
          * @return Model
-         *
          */
         public function from(string $table): Model
         {
