@@ -77,7 +77,7 @@ namespace Imperium\Config {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public static function init()
         {

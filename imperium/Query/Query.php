@@ -523,7 +523,6 @@ namespace Imperium\Query {
                     else
                         $this->union = "SELECT $first_column FROM $first_table UNION SELECT $second_column FROM $second_table";
                 break;
-
                 case Query::UNION_ALL:
                     if (not_def($first_column,$second_column))
                         $this->union = "SELECT * FROM $first_table UNION ALL SELECT * FROM $second_table";
@@ -590,6 +589,42 @@ namespace Imperium\Query {
         private function table(): string
         {
             return $this->table;
+        }
+
+        /**
+         *
+         * Add on the where clause an and clause
+         *
+         * @param string $value
+         * @param string $condition
+         * @param string $expected
+         *
+         * @return Query
+         *
+         */
+        public function and(string $value, string $condition, string $expected): Query
+        {
+            append($this->where," AND $value $condition '$expected'");
+
+            return $this;
+        }
+
+        /**
+         *
+         * Add on the where clause a n or clause
+         *
+         * @param string $value
+         * @param string $condition
+         * @param string $expected
+         *
+         * @return Query
+         *
+         */
+        public function or(string $value, string $condition, string $expected): Query
+        {
+            append($this->where," OR $value $condition '$expected'");
+
+            return $this;
         }
     }
 

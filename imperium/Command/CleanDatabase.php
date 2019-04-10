@@ -24,16 +24,23 @@ namespace Imperium\Command {
 
             $base = config('db','base');
 
-            $app = app();
+            $tables = [];
 
-            is_false(app()->bases()->drop($base),true,'Failed to remove database');
+            $hidden  = config('db','hidden_tables');
 
-            is_false( $app->bases()->create($base),true,'Failed to create the database');
+            merge($tables,app()->show_tables(),$hidden);
+
+            foreach ($tables as $table)
+            {
+                is_false(app()->table()->drop($table),true,"Failed to remove the $table table");
+
+            }
 
             $output->write("<bg=green;fg=white>The $base database was cleaned successfully\n");
 
-
             return 0;
+
+
         }
     }
 }
