@@ -39,37 +39,36 @@ namespace Imperium\Command {
         {
             $helper = $this->getHelper('question');
 
-            $question = new Question("<info>Set the application directory : </info>",'app');
+            $question = new Question("<info>Set the application directory</info> <comment>[app]</comment> : ",'app');
 
             $this->app_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the controllers directory: </info>",'Controllers');
+            $question = new Question("<info>Set the controllers directory</info> <comment>[Controllers]</comment> : ",'Controllers');
 
             $this->controller_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the commands directory: </info>",'Command');
+            $question = new Question("<info>Set the commands directory</info> <comment>[Command]</comment> : ",'Command');
 
             $this->command_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the middleware directory: </info>",'Middleware');
+            $question = new Question("<info>Set the middleware directory</info> <comment>[Middleware]</comment> : ",'Middleware');
 
             $this->middleware_dir =  $helper->ask($input,$output,$question);
 
 
-            $question = new Question("<info>Set the views directory: </info>",'Views');
+            $question = new Question("<info>Set the views directory</info> <comment>[Views]</comment> : ",'Views');
 
             $this->views_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the application namespace : </info>",'App');
+            $question = new Question("<info>Set the application namespace </info> <comment>[App]</comment> : ",'App');
 
             $this->namespace =  $helper->ask($input,$output,$question);
 
             $this->web = 'web';
 
-            $question = new Question("<info>Enabled cache ? : </info>",'false');
+            $question = new Question("<info>Enabled cache ? </info><comment>[false]</comment> : ",'false');
 
             $this->cache =  $helper->ask($input,$output,$question);
-
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
@@ -122,7 +121,6 @@ return [
             $controllers = $app .DIRECTORY_SEPARATOR . $this->controller_dir;
             $middleware = $app .DIRECTORY_SEPARATOR . $this->middleware_dir;
             $views = $app .DIRECTORY_SEPARATOR . $this->views_dir;
-            $routes = $app .DIRECTORY_SEPARATOR . 'Routes';
 
             Dir::remove($app);
             Dir::create($app);
@@ -134,7 +132,6 @@ return [
             Dir::create($controllers);
             Dir::create($middleware);
             Dir::create($views);
-            Dir::create($routes);
 
             Dir::checkout($app);
             Dir::create('Helpers');
@@ -167,7 +164,7 @@ return [
 
         <!-- Bootstrap CSS -->
         {{ css('app') }}
-
+        {% block css %} {% endblock %}
         <title>{% block title %}{% endblock %}</title>
 
         <meta name=\"description\" content=\"{% block description %} {% endblock %}\">
@@ -213,44 +210,14 @@ return [
         </main>
 
         {{ js('app.js') }}
+        {% block js %} {% endblock %}
     </body>
 </html>");
 
-            Dir::checkout("../..")
-            ;
-            Dir::checkout($routes);
+            Dir::checkout("../..");
 
-            File::create('admin.yaml');
-            File::create('web.yaml');
-            File::put('admin.yaml',"GET:
-  /:
-    home:
-      url: '/'
-      call: 'AdminController@home'
-    logout:
-        url: 'logout'
-        call: 'AdminController@logout'
-POST:
-  /:
-    login:
-      url: 'login'
-      call: 'AuthController@login'
 
-");
-            File::put('web.yaml',"GET:
-  /:
-    home:
-      url: '/'
-      call: 'WelcomeController@welcome'
-POST:
-  /:
-    login:
-      url: 'login'
-      call: 'AuthController@login'
-
-");
-
-            Dir::checkout("../../$web");
+            Dir::checkout("$web");
 
 
 
