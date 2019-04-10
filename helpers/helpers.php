@@ -2,9 +2,9 @@
 
 use Faker\Factory;
 use Faker\Generator;
+use GuzzleHttp\Psr7\ServerRequest;
 use Imperium\Asset\Asset;
 use Imperium\Config\Config;
-use Imperium\Config\Routes;
 use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
@@ -105,7 +105,7 @@ if (not_exist('redirect'))
      * @param string $route_name
      * @param string $message
      * @param bool $success
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      *
      * @throws Exception
      */
@@ -116,7 +116,7 @@ if (not_exist('redirect'))
             $flash = new Flash();
             $success ? $flash->success($message) : $flash->failure($message);
         }
-        return (new \Symfony\Component\HttpFoundation\RedirectResponse(name($route_name)))->send();
+        return (new RedirectResponse(name($route_name)))->send();
     }
 }
 
@@ -153,7 +153,7 @@ if (not_exist('route'))
      */
     function route(string $name,string $method = GET): string
     {
-        return is_admin() ? Router::admin($name,$method): Router::web($name,$method);
+        return name($name,$method);
     }
 }
 if (not_exist('article'))
@@ -224,6 +224,7 @@ if(not_exist('copyright'))
         return  '© ' .config('copyright','owner') .' ' .\config('copyright','creation')  .' '. now()->format('Y') . \config('copyright','text');
     }
 }
+
 if (not_exist('to'))
 {
     /**
@@ -243,42 +244,10 @@ if (not_exist('to'))
 
             $success ? $flash->success($message) : $flash->failure($message);
         }
-        return (new \Symfony\Component\HttpFoundation\RedirectResponse($url))->send();
+        return (new RedirectResponse($url))->send();
     }
 }
 
-if (not_exist('web'))
-{
-    /**
-     *
-     *
-     * @param string $method
-     * @return array
-     *
-     * @throws Exception
-     */
-    function web(string $method): array
-    {
-        return Routes::init()->get('web',strtoupper($method));
-    }
-}
-
-if (not_exist('admin'))
-{
-    /**
-     *
-     * @param string $method
-     *
-     * @return array
-     *
-     * @throws Exception
-     *
-     */
-    function admin(string $method): array
-    {
-        return Routes::init()->get('admin',strtoupper($method));
-    }
-}
 
 if (not_exist('config'))
 {
@@ -443,7 +412,7 @@ if (not_exist('request'))
      */
     function request(): Request
     {
-        return \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+        return Request::createFromGlobals();
     }
 }
 
@@ -1098,10 +1067,10 @@ if (not_exist('back'))
     /**
      * @param string $message
      * @param bool $success
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     * @return RedirectResponse
      * @throws Exception
      */
-    function back(string $message = '', bool $success = true): \Symfony\Component\HttpFoundation\RedirectResponse
+    function back(string $message = '', bool $success = true): RedirectResponse
     {
         $back = request()->server->get('HTTP_REFERER');
 
@@ -2210,25 +2179,6 @@ if (not_exist('get'))
     }
 }
 
-if (not_exist('method'))
-{
-    /**
-     *
-     * Return the route callable
-     *
-     * @param string $name
-     * @param string $method
-     *
-     * @return callable
-     *
-     * @throws Exception
-     *
-     */
-    function method(string $name,string $method = Router::METHOD_GET): callable
-    {
-        return Router::callback($name,$method);
-    }
-}
 if (not_exist('is_admin'))
 {
     /**
@@ -2239,7 +2189,7 @@ if (not_exist('is_admin'))
      */
     function is_admin(): bool
     {
-        $request = \GuzzleHttp\Psr7\ServerRequest::fromGlobals();
+        $request = ServerRequest::fromGlobals();
         $prefix = \config('auth','admin_prefix');
         $connected = \app()->session()->has('__connected__');
 
@@ -2267,7 +2217,18 @@ if (not_exist('name'))
      */
     function name(string $name,string $method = GET): string
     {
-        return is_admin() ? Router::admin($name,$method) : Router::web($name,$method);
+        $x = app()->model()->query()->from(Router::ROUTES)->mode(SELECT)->where('name',EQUAL,$name)->and('method',EQUAL,$method)->get();
+        $host = \request()->getHost();
+        foreach ($x as $route)
+        {
+            if (https())
+            {
+                return equal($route->url,'/')  ?  "https://$host" : "https://$host$route->url";
+            }else{
+                return equal($route->url,'/')  ?  "http://$host" : "http://$host$route->url";
+            }
+        }
+        throw new Exception('Route was not found');
     }
 }
 
@@ -2390,7 +2351,6 @@ if (not_exist('generate'))
      * @param  string $class
      * @param  string $action
      * @param  string $table
-     * @param  Table $instance
      * @param  string $submitText
      * @param  string $submitIcon
      * @param  string $submitId
@@ -2402,9 +2362,9 @@ if (not_exist('generate'))
      * @throws Exception
      *
      */
-    function generate(string $formId,string $class,string $action,string $table,Table $instance,string $submitText,string $submitIcon,string $submitId,int $mode = Form::CREATE,int $id = 0): string
+    function generate(string $formId,string $class,string $action,string $table,string $submitText,string $submitIcon,string $submitId,int $mode = Form::CREATE,int $id = 0): string
     {
-        return form($action,$formId,$class)->generate(2,$table,$instance,$submitText,$submitId,$submitIcon,$mode,$id);
+        return form($action,$formId,$class)->generate(2,$table,$submitText,$submitId,$submitIcon,$mode,$id);
     }
 }
 
@@ -3258,7 +3218,7 @@ if (not_exist('months'))
         $format = new IntlDateFormatter(\config('locales','locale'),IntlDateFormatter::FULL, IntlDateFormatter::FULL, null, null, "MMM");
 
         for($i=1;$i!=12;$i++)
-            $data->add(ufirst($format->format(mktime(0, 0, 0, $i))));
+            $data->add(ucfirst($format->format(mktime(0, 0, 0, $i))));
 
         return $data->collection();
     }
@@ -3560,7 +3520,7 @@ if (not_exist('today'))
     /**
      * Create a new Carbon instance for the current date.
      *
-     * @param  \DateTimeZone|string|null $tz
+     * @param DateTimeZone|string|null $tz
      *
      * @return Carbon
      *
@@ -3577,7 +3537,7 @@ if (not_exist('now'))
     /**
      * Create a new Carbon instance for the current date.
      *
-     * @param  \DateTimeZone|string|null $tz
+     * @param DateTimeZone|string|null $tz
      * @return Carbon
      */
     function now($tz = null): Carbon
@@ -3592,7 +3552,7 @@ if (not_exist('future'))
     /**
      * Create a new future date.
      *
-     * @param  \DateTimeZone|string|null $tz
+     * @param DateTimeZone|string|null $tz
      * @param string                     $mode
      * @param int                        $time
      *

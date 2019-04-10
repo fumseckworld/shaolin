@@ -4,6 +4,7 @@ username: postgres
 password: postgres
 dump: 'db/dump'
 host: 'localhost'
-hidden_tables: ['phinxlog']
+hidden_tables: ['migrations']
 hidden_bases: []
 debug: true
+port: 5432

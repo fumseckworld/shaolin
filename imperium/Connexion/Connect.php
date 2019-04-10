@@ -139,6 +139,7 @@ namespace Imperium\Connexion {
          *
          */
         private $host;
+
         /**
          * @var string
          */
@@ -175,10 +176,6 @@ namespace Imperium\Connexion {
             $this->password     = $password;
 
             $this->host         = $host;
-
-            $this->instance     = $this->getInstance();
-
-
         }
 
 
@@ -339,7 +336,7 @@ namespace Imperium\Connexion {
         **/
         public function instance(): PDO
         {
-            $instance = $this->instance;
+            $instance = $this->getInstance();
 
             if(is_string($instance))
                 throw new Exception($instance);
@@ -382,6 +379,7 @@ namespace Imperium\Connexion {
         {
             $query = $this->instance()->query($request);
 
+
             is_true(is_bool($query),true,$request);
 
             $data = $query->fetchAll($this->fetch_mode());
@@ -406,7 +404,7 @@ namespace Imperium\Connexion {
         */
         public function execute(string $request): bool
         {
-            $response = $this->instance->prepare($request);
+            $response = $this->instance()->prepare($request);
 
             is_true(is_bool($response),true,$request);
 
@@ -505,7 +503,7 @@ namespace Imperium\Connexion {
                     {
                         try
                         {
-                            return new PDO("$driver:$database");
+                            $this->instance =  new PDO("$driver:$database");
                         }catch (PDOException $e)
                         {
                             return $e->getMessage();
@@ -513,7 +511,7 @@ namespace Imperium\Connexion {
                     }else{
                         try
                         {
-                            return new PDO("$driver::memory:");
+                            $this->instance =  new PDO("$driver::memory:");
                         }catch (PDOException $e)
                         {
                             return $e->getMessage();
@@ -525,8 +523,7 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
-
-                        return new PDO("$driver:host=$host;dbname=$database",$username,$password);
+                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
                     }catch (PDOException $e)
                     {
                         return $e->getMessage();
@@ -536,13 +533,14 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
-                        return new PDO( "$driver:host=$host;",$username,$password);
+                        $this->instance =  new PDO( "$driver:host=$host;",$username,$password);
                     }catch (PDOException $e)
                     {
                         return $e->getMessage();
                     }
                 }
             }
+
            return $this->instance;
 
         }

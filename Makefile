@@ -87,21 +87,21 @@ cover: ## Start a server to display the coverage
 	@clear
 	@php -S localhost:3000 -t coverage/$(DIR)
 
-phinx: phinx.yml ## Create migration and seed
+phinx: ## Create migration and seed
 	 @vendor/bin/phinx create $(PHINX)table
 	 @vendor/bin/phinx seed:create $(PHINX)Seeds
 
 migrate_pgsql: ## Seed postgresql database
-	@vendor/bin/phinx migrate -e pgsql
-	@vendor/bin/phinx seed:run -e pgsql
+	@vendor/bin/phinx migrate
+	@vendor/bin/phinx seed:run
 
 migrate_mysql: ## Seed mysql database
-	@vendor/bin/phinx migrate -e mysql
-	@vendor/bin/phinx seed:run -e mysql
+	@vendor/bin/phinx migrate
+	@vendor/bin/phinx seed:run
 
 migrate_sqlite: ## Seed sqlite database
-	@vendor/bin/phinx migrate -e sqlite
-	@vendor/bin/phinx seed:run -e sqlite
+	@vendor/bin/phinx migrate
+	@vendor/bin/phinx seed:run
 
 dbs: clean ## Create all databases
 	@psql -c "create database $(BASE);" -U postgres

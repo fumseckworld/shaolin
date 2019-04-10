@@ -33,6 +33,7 @@ namespace Imperium\Command {
                 try
                 {
                     $connect = new Connect($driver,'',config('db','username'),config('db','password'),config('db','host'),'');
+
                     $connect->execute("CREATE DATABASE IF NOT EXISTS $db");
                     $output->write("<bg=green;fg=white>The $db base was created successfully\n");
 

@@ -4,6 +4,7 @@ username:
 password:
 dump: 'db/dump'
 host: 'localhost'
-hidden_tables: ['phinxlog','sqlite_sequence']
+hidden_tables: ['migrations','sqlite_sequence']
 hidden_bases: []
 debug: true
+port:

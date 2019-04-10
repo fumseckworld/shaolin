@@ -6,7 +6,6 @@ namespace Imperium\Routing {
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Imperium\Middleware\TrailingSlashMiddleware;
-    use Imperium\Request\Request;
     use Imperium\Security\Auth\AuthMiddleware;
     use Imperium\Security\Csrf\CsrfMiddleware;
     use Psr\Http\Message\ServerRequestInterface;
@@ -100,33 +99,6 @@ namespace Imperium\Routing {
 
         /**
          *
-         * The url route index
-         *
-         * @var int
-         *
-         */
-        const URL_INDEX = 'url';
-
-        /**
-         *
-         * The route callable index
-         *
-         * @var int
-         *
-         */
-        const CALLABLE_INDEX = 'call';
-
-        /**
-         *
-         * The route regex key
-         *
-         * @var string
-         *
-         */
-        const REGEX = 'regex';
-
-        /**
-         *
          * The separator used to determine the controller and the action
          *
          * @var string
@@ -151,34 +123,8 @@ namespace Imperium\Routing {
          *
          */
         const AFTER_ACTION = 'after_action';
+        const ROUTES = 'routes';
 
-        /**
-         *
-         * The route prefix
-         *
-         * @var string
-         *
-         */
-        const PREFIX = 'prefix';
-
-
-        /**
-         *
-         * The route name key
-         *
-         * @var string
-         *
-         */
-        const NAME = 'name';
-
-        /**
-         *
-         * The url
-         *
-         * @var string
-         *
-         */
-        private static $URL;
 
         /**
          *
@@ -272,8 +218,6 @@ namespace Imperium\Routing {
 
             $this->url           = $request->getUri()->getPath();
 
-            self::$URL            = $this->url;
-
             $this->call_middleware($request);
 
         }
@@ -327,57 +271,13 @@ namespace Imperium\Routing {
          */
         public function run()
         {
+            is_true(app()->table_not_exist(self::ROUTES),true,"The routes table was not found");
 
-            if (is_admin())
+            foreach(app()->model()->from(self::ROUTES)->all() as $route)
             {
-                foreach(admin($this->method) as $route)
-                {
-
-                    $x = collection($route);
-
-                    $url       = $x->get(self::URL_INDEX);
-                    $callable  = $x->get(self::CALLABLE_INDEX);
-                    $regex     = $x->get(self::REGEX);
-                    $prefix    = $x->get(self::PREFIX);
-
-                    $url = self::url($url, $prefix);
-
-                    if (def($regex))
-                    {
-                        foreach ($regex as $k => $v)
-                            $this->with($k,$v);
-                    }
-
-                    if ($this->match($url))
-                        return $this->call($callable);
-                }
-                return to(name('404'));
+                if ($this->match($route->url))
+                    return $this->call($route);
             }
-
-            foreach(web($this->method) as $name => $routes)
-            {
-
-                $x = collection($routes);
-
-                $url       = $x->get(self::URL_INDEX);
-                $callable  = $x->get(self::CALLABLE_INDEX);
-                $regex     = $x->get(self::REGEX);
-                $prefix     = $x->get(self::PREFIX);
-
-
-                $url = self::url($url, $prefix);
-
-
-                if (def($regex))
-                {
-                    foreach ($regex as $k => $v)
-                        $this->with($k,$v);
-                }
-
-                if ($this->match($url))
-                    return $this->call($callable);
-            }
-
             return to(name('404'));
         }
 
@@ -415,171 +315,39 @@ namespace Imperium\Routing {
 
         /**
          *
-         * @param $callable
+         * @param $route
          *
          * @return mixed
          *
          * @throws Exception
-         *
          */
-        private function call($callable)
-        {
-            if(is_string($callable))
-            {
-                $params = collection(explode(self::MVC_SEPARATOR, $callable));
-
-                $controller = $params->get(0);
-
-                $action     = $params->get(1);
-
-                is_true(not_def($controller),true,'The controller was not found use the @ separator');
-
-                is_true(not_def($action),true,'The action was not found use the @ separator');
-
-                $controller = $this->namespace  . $controller;
-
-                is_false(class_exists($controller),true,"The class {$params->get(0)} not exist at {$this->controller_dir}");
-
-                $controller = new $controller();
-
-                is_false(method_exists($controller,$action),true,"The  $action method  was not found inside the controller named {$params->get(0)} at {$this->controller_dir}");
-
-                if (method_exists($controller, self::BEFORE_ACTION))
-                    call_user_func_array( [$controller,self::BEFORE_ACTION],[]);
-
-                if (method_exists($controller, self::AFTER_ACTION))
-                {
-                    $x =  call_user_func_array([$controller, $action], $this->matches);
-                    call_user_func_array( [$controller, self::AFTER_ACTION],[]);
-                    return $x;
-                }else{
-                    return call_user_func_array([$controller, $action], $this->matches);
-                }
-            }
-            return call_user_func_array($callable, $this->matches);
-        }
-
-        /**
-         *
-         * Get the url route by its name
-         *
-         * @param string $route_name
-         * @param string $method The route method
-         *
-         * @return string
-         *
-         * @throws Exception
-         */
-        public static function web(string $route_name,string $method = GET): string
-        {
-            foreach(web($method) as $route)
-            {
-                $x = collection($route);
-
-                $url       = $x->get(self::URL_INDEX);
-                $prefix    = $x->get(self::PREFIX);
-                $name      = $x->get(self::NAME);
-
-
-                $url = self::url($url, $prefix);
-
-                if (different(php_sapi_name(),'cli'))
-                {
-                    if (equal($route_name,$name))
-                        return https() ? 'https://'  . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url : 'http://' . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url ;
-                }else
-                {
-                    if (equal($route_name,$name))
-                        return $url;
-                }
-            }
-
-            throw new Exception("We have not found an url with the $route_name name in the web.yaml file with the $method method");
-        }
-        /**
-         *
-         * Get the url route by its name
-         *
-         * @param string $route_name
-         * @param string $method The route method
-         *
-         * @return string
-         *
-         * @throws Exception
-         *
-         */
-        public static function admin(string $route_name,$method = GET): string
+        private function call($route)
         {
 
-            foreach(admin($method) as $route)
+            $controller = $route->controller;
+
+            $action     = $route->action;
+
+            $controller = $this->namespace  . $controller;
+
+            is_false(class_exists($controller),true,"The class {$route->controller} not exist at {$this->controller_dir}");
+
+            $controller = new $controller();
+
+            is_false(method_exists($controller,$action),true,"The  $action method  was not found inside the controller named {$route->controller} at {$this->controller_dir}");
+
+            if (method_exists($controller, self::BEFORE_ACTION))
+                call_user_func_array( [$controller,self::BEFORE_ACTION],[]);
+
+            if (method_exists($controller, self::AFTER_ACTION))
             {
-                $x = collection($route);
-
-                $url       = $x->get(self::URL_INDEX);
-                $prefix    = $x->get(self::PREFIX);
-                $name      = $x->get(self::NAME);
-
-                $url = self::url($url, $prefix);
-
-
-                if (different(php_sapi_name(),'cli'))
-                {
-                    if (equal($route_name,$name))
-                        return https() ? 'https://'  . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url : 'http://' . trim(Request::request()->server->get('HTTP_HOST'),'/') . $url ;
-                }else
-                {
-                    if (equal($route_name,$name))
-                        return $url;
-                }
+                $x =  call_user_func_array([$controller, $action], $this->matches);
+                call_user_func_array( [$controller, self::AFTER_ACTION],[]);
+                return $x;
+            }else{
+                return call_user_func_array([$controller, $action], $this->matches);
             }
 
-            throw new Exception("We have not found an url with the $route_name name in the admin.yaml file with the $method method");
-        }
-
-        /**
-         *
-         * Get the route callable by the route name
-         *
-         * @param string $route_name
-         * @param string $method The route method
-         *
-         * @return string
-         *
-         * @throws Exception
-         *
-         */
-        public static function callback(string $route_name,string $method = GET): string
-        {
-            if (is_admin())
-            {
-                foreach(admin($method) as $route)
-                {
-
-                    $x = collection($route);
-
-                    $name      = $x->get(self::NAME);
-
-                    $callback       = $x->get(self::CALLABLE_INDEX);
-
-                    if (equal($name,$route_name))
-                        return $callback;
-                }
-            }else
-            {
-                foreach(web($method) as  $route)
-                {
-                    $x = collection($route);
-
-                    $name = $x->get(self::NAME);
-
-
-                    $callback       = $x->get(self::CALLABLE_INDEX);
-
-                    if (equal($name,$route_name))
-                        return $callback;
-                }
-            }
-            throw new Exception('The callback was not found');
         }
 
         /**
@@ -599,19 +367,22 @@ namespace Imperium\Routing {
         }
 
         /**
-         * @param $url
-         * @param $prefix
+         * @param $name
          * @return string
          * @throws Exception
          */
-        private static function url($url, $prefix): string
+        private static function route($name): string
         {
-            if (def($url))
-                $url = different($prefix, $url) ? '/' . trim($prefix, '/') . trim($url, '/') : $prefix . trim($url, '/');
-            else
-                $url = '/' . trim($prefix, '/');
+            $x = app()->model()->from('tables')->by('name',$name);
 
-            return $url;
+            is_true(not_def($x),true,'Route was not found');
+
+            $host = \request()->getHost();
+
+            foreach ($x as $route)
+                return https() ? "https://$host$route->url" : "http://$host$route->url";
+
+            return '';
         }
 
 

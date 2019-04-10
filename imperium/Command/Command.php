@@ -52,7 +52,11 @@ namespace Imperium\Command {
                 new RollbackDatabase(),
                 new SeedDatabase(),
                 new App(),
-                new GenerateUser()
+                new GenerateUser(),
+                new AddRoutes(),
+                new RoutesList(),
+                new UpdateRoutes(),
+                new RemoveRoutes()
 
 
             ];
