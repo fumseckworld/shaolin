@@ -26,8 +26,9 @@ namespace Imperium\Command {
         {
             $name  = $input->getArgument('name');
 
+            $seed = $name .'Seed';
             shell_exec("vendor/bin/phinx create $name");
-            shell_exec("vendor/bin/phinx seed:create $name");
+            shell_exec("vendor/bin/phinx seed:create $seed");
             return 0;
         }
 
