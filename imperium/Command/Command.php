@@ -3,7 +3,6 @@
 namespace Imperium\Command {
 
     use Exception;
-    use Sinergi\BrowserDetector\Os;
     use Symfony\Component\Console\Application;
 
     class Command
@@ -24,7 +23,7 @@ namespace Imperium\Command {
          */
         public function __construct(string $name = "UNKNOWN", string $version = 'UNKNOWN')
         {
-            os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
+          clear_terminal();
 
             $this->command = new Application($name,$version);
 
@@ -56,7 +55,11 @@ namespace Imperium\Command {
                 new AddRoutes(),
                 new RoutesList(),
                 new UpdateRoutes(),
-                new RemoveRoutes()
+                new RemoveRoutes(),
+                new GenerateCommand(),
+                new DumpDatabase(),
+                new UpdateDatabase(),
+                new GenerateMigrations()
 
 
             ];

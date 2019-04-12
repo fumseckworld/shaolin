@@ -19,7 +19,6 @@ namespace Imperium\Command {
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new resource')
-                ->setAliases(['r'])
                 // the full command description shown when running the command with
                 // the "--help" option
                 ->addArgument('resource', InputArgument::REQUIRED, 'The resource name.')

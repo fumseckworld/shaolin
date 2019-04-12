@@ -17,8 +17,6 @@ namespace Imperium\Command {
 
         protected function configure()
         {
-            $this->setAliases(['G']);
-
             $base = config('db','base');
             $this->setDescription("Create the $base database");
         }

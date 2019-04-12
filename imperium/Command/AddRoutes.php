@@ -28,11 +28,10 @@ namespace Imperium\Command {
 
         private function clean()
         {
-            os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
+            clear_terminal();
         }
         protected function configure()
         {
-            $this->setAliases(['A']);
             $this->setDescription('Create a new route');
         }
 

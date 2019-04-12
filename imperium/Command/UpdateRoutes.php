@@ -29,12 +29,11 @@ namespace Imperium\Command {
 
         private function clean()
         {
-            os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
+           clear_terminal();
         }
         protected function configure()
         {
-            $this->setAliases(['W']);
-            $this->setDescription('Update the routes');
+          $this->setDescription('Update the routes');
         }
 
 

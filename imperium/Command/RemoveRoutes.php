@@ -5,7 +5,6 @@ namespace Imperium\Command {
 
 
     use Imperium\Routing\Router;
-    use Sinergi\BrowserDetector\Os;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -20,12 +19,11 @@ namespace Imperium\Command {
 
         private function clean()
         {
-            os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
+           clear_terminal();
         }
 
         protected function configure()
         {
-            $this->setAliases(['D']);
             $this->setDescription('Remove a route');
         }
 

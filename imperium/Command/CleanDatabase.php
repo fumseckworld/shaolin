@@ -12,7 +12,6 @@ namespace Imperium\Command {
         protected static $defaultName = 'db:clean';
         protected function configure()
         {
-            $this->setAliases(['C']);
 
             $base = config('db','base');
 

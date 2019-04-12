@@ -19,7 +19,6 @@ namespace Imperium\Command {
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new controller')
-                ->setAliases(['c'])
                 // the full command description shown when running the command with
                 // the "--help" option
                 ->setHelp('php shaolin make:controller controller_name')

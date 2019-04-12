@@ -25,14 +25,7 @@ namespace Imperium\Command {
 
         protected function configure()
         {
-            $this->setAliases(['a']);
-
             $this->setDescription("Create the application structure");
-        }
-
-        public function initialize(InputInterface $input, OutputInterface $output)
-        {
-
         }
 
         public function interact(InputInterface $input, OutputInterface $output)

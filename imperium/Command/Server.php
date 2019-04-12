@@ -11,13 +11,12 @@ namespace Imperium\Command {
         protected static $defaultName = 'app:run';
         protected function configure()
         {
-            $this->setAliases(['s']);
             $this->setDescription('Run a development server');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $web = config('app','web_root');
+            $web = 'web';
             $port = config('app','development_server_port');
 
             $output->write("<info>The web server has been started at :</info> http://localhost:$port\n");

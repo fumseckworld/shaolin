@@ -13,8 +13,6 @@ namespace Imperium\Command {
         protected function configure()
         {
 
-            $this->setAliases(['M']);
-
             $this->setDescription('Execute all migrations');
         }
 

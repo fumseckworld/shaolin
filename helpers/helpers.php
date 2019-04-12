@@ -586,6 +586,13 @@ if (not_exist('sql_file'))
     }
 }
 
+if (not_exist('clear_terminal'))
+{
+    function clear_terminal(): void
+    {
+        os(true) ==  Os::WINDOWS ? system('cls') : system('clear');
+    }
+}
 
 if (not_exist('true_or_false'))
 {
