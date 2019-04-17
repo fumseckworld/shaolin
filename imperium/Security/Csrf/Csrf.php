@@ -17,7 +17,7 @@ namespace Imperium\Security\Csrf {
          * @var array
          *
          */
-        const METHOD = [ 'GET','DELETE', 'PATCH', 'POST', 'PUT'];
+        const METHOD = ['DELETE', 'PATCH', 'POST', 'PUT'];
 
         /**
          *
