@@ -62,6 +62,7 @@ namespace Imperium\Command {
                 new GenerateMigrations()
 
 
+
             ];
 
              $this->add($commands)->add(commands());

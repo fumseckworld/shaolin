@@ -181,6 +181,10 @@ namespace Imperium\Query {
          */
         private $table;
 
+        /**
+         * @var bool
+         */
+        private $use_fetch = false;
 
         /**
          *
@@ -256,7 +260,7 @@ namespace Imperium\Query {
                     return "$union $where $order $limit";
                 break;
                 case collection(self::JOIN_MODE)->exist($mode) :
-                    return "$join $order";
+                    return "$join $order $limit";
                 break;
 
                 default:
@@ -361,28 +365,40 @@ namespace Imperium\Query {
          * Return the result of the generated query in an array
          *
          * @method get
-         *
-         * @return array
-         *
+         * 
+         * @return mixed
+         * 
          * @throws Exception
          *
          */
-        public function get(): array
+        public function get()
         {
-            return  $this->connexion->request($this->sql());
+            return $this->use_fetch ?  $this->connexion->fetch($this->sql()) : $this->connexion->request($this->sql());
         }
 
+        /**
+         *
+         * Use a simple fetch
+         *
+         * @return Query
+         *
+         */
+        public function use_fetch(): Query
+        {
+            $this->use_fetch = true;
+
+            return $this;
+        }
         /**
          *
          * Generate a limit clause
          *
          * @method limit
          *
-         * @param  int   $limit  The limit value
-         * @param  int   $offset  The limit offset
+         * @param int $limit The limit value
+         * @param int $offset The limit offset
          *
          * @return Query
-         *
          */
         public function limit(int $limit,int $offset): Query
         {

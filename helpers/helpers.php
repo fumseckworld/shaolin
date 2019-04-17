@@ -1775,12 +1775,12 @@ if (not_exist('simply_view'))
         $primary  = $instance->column()->for($current_table_name)->primary_key();
 
         $before_content = '<script>function sure(e,text){ if (! confirm(text)) {e.preventDefault()} }</script>';
-        $after_content = '';
+        $after_content = '<div class="container">';
 
         if ($pagination_to_right)
-            append($after_content ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div>');
+            append($after_content ,    '<div class="row"><div class="ml-auto mt-5 mb-5">'.$pagination.'</div></div></div>');
         else
-            append($after_content ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div>');
+            append($after_content ,    '<div class="row"><div class="mr-auto mt-5 mb-5">'.$pagination.'</div></div></div>');
 
         return \Imperium\Html\Table\Table::table($columns,$records,$before_all_class,$thead_class,$before_content,$after_content)->set_action($action_edit_text,$action_remove_text,$before_remove_text,$action_edit_url_prefix,$edit_button_class,$edit_icon,$remove_url_prefix,$remove_button_class,$remove_icon,$primary)->limit(\config('admin','limit_table_char'))->generate($html_table_class);
 
@@ -1833,7 +1833,27 @@ if (not_exist('get_records'))
     }
 }
 
+if (not_exist('seo'))
+{
+    /**
+     * prepares a string optimized for SEO
+     *
+     * @param string $x
+     *
+     * @return string
+     */
+    function seo(string $x): string
+    {
+        $sString = preg_replace('/[^\\pL\d_]+/u', '-', $x);
+        $sString = trim($sString, "-");
+        $sString = iconv('utf-8', "us-ascii//TRANSLIT", $sString);
+        $sString = strtolower($sString);
+        $sString = preg_replace('/[^-a-z0-9_]+/', '', $sString);
 
+        return $sString;
+    }
+
+}
 if (not_exist('bootstrap_js'))
 {
     /**
@@ -2398,8 +2418,6 @@ if (not_exist('collation'))
 
         if($connexion->sqlite())
             return $collation->collection();
-
-        $request = '';
 
 
         assign($connexion->mysql(),$request,'SHOW COLLATION');

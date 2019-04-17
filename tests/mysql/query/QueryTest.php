@@ -100,17 +100,6 @@ namespace Testing\mysql\query {
 
         }
 
-        public function test_join_execp()
-        {
-
-
-            $this->expectException(Exception::class);
-
-            $this->query->mode(Query::FULL_JOIN)->join(EQUAL,$this->table,$this->second_table,'id','id')->get();
-            $this->query->mode(Query::FULL_JOIN)->join(EQUAL,$this->table,$this->second_table,'id','id')->get();
-
-        }
-
         public function test_join()
         {
             $this->assertNotEmpty($this->query->mode(INNER_JOIN)->join(EQUAL,$this->table,$this->second_table,'id','id')->get());

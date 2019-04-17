@@ -136,16 +136,14 @@ namespace Imperium\Model {
          *
          * @method dump
          *
-         * @param  string $table The table name
-         *
+         * @param string[] $tables
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function dump(string $table): bool
+        public function dump(string ...$tables): bool
         {
-            return dumper( false,$table);
+            return dumper( false,$tables);
         }
 
         /**
@@ -184,9 +182,13 @@ namespace Imperium\Model {
          *
          * @return string
          *
+         * @throws Exception
+         *
          */
         public function current(): string
         {
+            is_true(not_def($this->current),true,"No table selected");
+
             return $this->current;
         }
 
@@ -205,8 +207,8 @@ namespace Imperium\Model {
 
             $id = intval(Request::get($this->from($table)->primary()));
 
-
             $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
+
             $columns = $this->table()->column()->for($table)->show();
 
             $x = collection();
@@ -296,13 +298,13 @@ namespace Imperium\Model {
          * @param string $column
          * @param mixed $expected
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          */
-        public function by(string $column,$expected): array
+        public function by(string $column,$expected)
         {
-            return $this->from($this->current())->where($column,EQUAL,$expected)->get();
+            return $this->from($this->current())->by($column,$expected);
         }
 
         /**
@@ -345,31 +347,6 @@ namespace Imperium\Model {
                 case DISPLAY_TABLE:
                     return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current='. $current_page .'&limit='.'" value="'.get('limit',10).'"  step="10" min="1" type="number"></div>'.\Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(),$records,'table-responsive','','','')->generate(\collection(config('form','class'))->get('table')). html('div',$pagination,'mt-4');
                 break;
-                case DISPLAY_CONTRIBUTORS:
-
-                    $data = collection($records);
-                    $code = '';
-
-                    append($code,'<div class="row mt-5 mb-5">');
-
-                    $data->rewind();
-
-                    while ($data->valid())
-                    {
-                        $values = $data->current();
-
-                        append($code,'<div class="col-lg-6"><div class="card  mt-4 mb-4"><img src="/img/user-silhouette.png" alt="developer"><div class="card-body"><h5 class="card-title text-center text-uppercase"></h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
-
-                        append($code,'</div></div></div>');
-
-                        $data->next();
-                    }
-                    append($code,'</div>');
-                    append($code,'<div class="row ml-0">');
-                    append($code,'</dv>');
-                    append($code,$pagination);
-                    return $code;
-                break;
                 default:
                     return article($records,$pagination);
                 break;
@@ -385,7 +362,7 @@ namespace Imperium\Model {
          * @param  string $value The value to search
          * @param bool $json_output To save data in a json file
          *
-         * @return array|bool
+         * @return object|bool
          *
          * @throws Exception
          *
@@ -413,58 +390,57 @@ namespace Imperium\Model {
         }
 
         /**
-         * @param string $container_class
-         * @param string $thead_class
-         * @param string $url_prefix
-         * @param int $current_page
-         * @param string $table_class
          * @param string $action_remove_text
          * @param string $confirm_text
-         * @param string $remove_icon
-         * @param string $remove_url_prfix
          * @param string $action_edit_text
-         * @param string $edit_url_prefix
-         * @param string $edit_icon
          * @param string $start_pagination_text
          * @param string $end_pagination_text
-         * @param string $key
-         * @param string $order_by
-         * @param string $form_action
-         * @param string $form_id
          * @param string $search_placeholder
-         * @param string $table_icon
-         * @param string $search_icon
-         * @param string $pagination_icon
          * @param bool $pagination_to_right
          *
          * @return string
          *
          * @throws Exception
-         *
          */
-        public function show(string $container_class,string $thead_class,string $url_prefix,int $current_page,
-                                string $table_class,string $action_remove_text,string $confirm_text,
-                                string $remove_icon,string $remove_url_prfix,
-                                string $action_edit_text,string $edit_url_prefix,string $edit_icon,
-                                string $start_pagination_text,string $end_pagination_text,
-                                string $key,string $order_by,string $form_action,string $form_id,string $search_placeholder,string $table_icon,string $search_icon,string $pagination_icon,bool $pagination_to_right = true
+        public function show(   string $action_remove_text ='Remove',string $confirm_text = 'Are you sure ?',
+                                 string $action_edit_text ='Edit',
+                                 string $start_pagination_text= 'Previous',string $end_pagination_text = 'Next',
+                                 string $search_placeholder = 'Search',bool $pagination_to_right = true
         ): string
         {
+            $url = request()->getRequestUri();
+            $table = current_table();
 
+            if(not_def(strstr($url,"?table=$table")))
+            {
+                $host = \request()->getHost();
+                $path = \request()->getPathInfo();
 
+                $url = https() ? "https://$host$path?table=$table" : "http://$host$path?table=$table";
+                return to($url);
+
+            }
             $remove_btn_class = \collection(config('form','class'))->get('delete');
             $edit_btn_class = \collection(config('form','class'))->get('edit');
             $session = app()->session();
 
+            $search_icon = fa('fas','fa-search');
+            $table_icon = fa('fas','fa-table');
+            $pagination_icon = fa('fas','fa-heart');
+            $edit_icon = fa('fas','fa-edit');
+            $remove_icon = fa('fas','fa-trash-alt');
+            $remove_url_prefix =  config('auth','admin_prefix') .'/' . $table .'/remove';
+            $edit_url_prefix =  config('auth','admin_prefix') .'/' . $table .'/edit';
 
-            $table = current_table();
 
             $url_separator = '=';
 
             $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
 
-            $current_page = def(get('current')) ? get('current') : $current_page;
+            $current_page = get('current',1);
+            $key = get('column','');
 
+            $url_prefix = '?table';
 
 
             if (is_false($session->has('limit')))
@@ -472,25 +448,47 @@ namespace Imperium\Model {
 
             $limit_records_per_page = intval($session->get('limit'));
 
-            $records = get_records($table,$current_page,$limit_records_per_page,$key,$order_by);
+            $records = get_records($table,$current_page,$limit_records_per_page,$key,get('order',DESC));
 
 
             $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
 
+            $primary =  $this->from($table)->primary();
 
-            $data = collection(['/' => $table]);
+            $tables = collection(['/' => $table]);
+
+
+            $columns = collection(['/' => get('column',$primary)]);
+
+            $order = collection(['/' => get('order',ASC)]);
 
             foreach ($this->show_tables() as $x)
             {
                 if (different($x,$table))
-                    $data->merge(["?table=$x" => $x]);
+                    $tables->merge(["?table=$x" => $x]);
             }
 
-            $form =  form($form_action,$form_id)->row()->redirect('table',$data->collection(),$table_icon)->pagination($pagination_icon,'/pagination/')->end_row_and_new()->search($search_placeholder,$search_icon)->end_row()->get();
+            $x = strstr($url,'&column=');
+            $url = str_replace($x, "", $url);
+            foreach ($this->from($table)->columns() as $x)
+            {
+                if ($columns->not_exist($x))
+                    $columns->merge(["$url&column=$x" => $x]);
+            }
+            $x = strstr($url,'&order=');
+            $url = str_replace($x, "", $url);
+            foreach ([DESC,ASC] as $x)
+            {
+                if ($order->not_exist($x))
+                    $order->merge(["$url&order=$x" => $x]);
+            }
 
-            append($html,$form);
 
-            append($html,simply_view($container_class,$thead_class,$table,$records,$table_class,$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prfix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
+            $form =  form('',id())->row()->search($search_placeholder,$search_icon)->end_row_and_new()->redirect('table',$tables->collection(),$table_icon)->redirect('column',$columns->collection(),$pagination_icon)->redirect('order',$order->collection(),$pagination_icon)->pagination($pagination_icon,'/pagination/')->end_row()->get();
+
+            append($html,html('div',$form,'container'));
+
+            append($html,simply_view('container','',$table,$records,'table table-bordered table-striped',$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
 
 
             return $html;
@@ -570,15 +568,17 @@ namespace Imperium\Model {
          *
          * @method get
          *
-         * @return array
+         * @param bool $use_fetch
+         * @return mixed
          *
          * @throws Exception
-         *
          */
-        public function get(): array
+        public function get(bool $use_fetch = false)
         {
             is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
 
+            if ($use_fetch)
+                return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->use_fetch()->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->use_fetch()->get();
 
             return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
@@ -681,11 +681,11 @@ namespace Imperium\Model {
          * @param int $limit
          * @param int $offset
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          */
-        public function news(string $order_column,int $limit,int $offset = 0): array
+        public function news(string $order_column,int $limit,int $offset = 0)
         {
             return $this->query()->from($this->current())->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column)->get();
         }
@@ -698,11 +698,11 @@ namespace Imperium\Model {
          * @param int $limit
          * @param int $offset
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          */
-        public function last(string $order_column,int $limit,int $offset = 0): array
+        public function last(string $order_column,int $limit,int $offset = 0)
         {
             return $this->query()->from($this->current())->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column,ASC)->get();
         }
@@ -729,16 +729,16 @@ namespace Imperium\Model {
          *
          * @param int $id
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          */
-        public function find(int $id): array
+        public function find(int $id)
         {
-            return $this->query()->from($this->current())->mode(Query::SELECT)->where($this->primary(),EQUAL,$id)->get();
+            return $this->query()->from($this->current())->mode(Query::SELECT)->where($this->primary(),EQUAL,$id)->use_fetch()->get();
         }
 
-        /**
+        /**object
          *
          * Find a record or fail if not found
          *
@@ -746,17 +746,15 @@ namespace Imperium\Model {
          *
          * @param  int $id The record id
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          */
-        public function find_or_fail(int $id): array
+        public function find_or_fail(int $id)
         {
             $data = $this->find($id);
 
-            inferior($data,1,true,'Record not found');
-
-            superior($data,1,true,"The primary key is not unique");
+            is_true(not_def($data),true,'Record was not found');
 
             return $data;
         }
@@ -983,6 +981,17 @@ namespace Imperium\Model {
             return $this->connexion->request($query);
         }
 
+        /**
+         * @param string $request
+         *
+         * @return object
+         *
+         * @throws Exception
+         */
+        public function fetch(string $request)
+        {
+            return $this->connexion->fetch($request);
+        }
         /**
          *
          * Execute a custom query

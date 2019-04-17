@@ -203,14 +203,13 @@ namespace Imperium\Collection {
         }
 
         /**
-        *
-        * Return the result value
-        *
-        * @param bool $length
-        *
-        * @return mixed
-        *
-        */
+         *
+         * Return the result value
+         *
+         * @param bool $length
+         *
+         * @return mixed
+         */
         public function result(bool $length = false)
         {
             if ($length)
@@ -776,7 +775,7 @@ namespace Imperium\Collection {
 
         /**
          * 
-         * Remove a value in thje array
+         * Remove a value in the array
          * 
          * @return Collection
          * 

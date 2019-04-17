@@ -31,30 +31,12 @@ namespace Testing\mysql\model {
             $this->model = $this->mysql()->model()->from($this->table);
         }
 
-        /**
-         * @throws \Exception
-         */
-        public function test_find()
-        {
-            $this->assertCount(1,$this->model->find(2));
-            $this->assertCount(1,$this->model->find_or_fail(2));
-
-            $records = $this->model->all();
-
-            foreach ($records as  $record)
-            {
-                foreach ($this->model->columns() as $k => $v)
-                {
-                    $this->assertNotEmpty($this->model->by($v,$record->$v));
-
-                }
-            }
-        }
         public function test_only()
         {
             $this->assertNotEmpty($this->model->where('id', EQUAL,55)->only('name')->get());
 
         }
+
         /**
          * @throws Exception
          */
@@ -322,7 +304,7 @@ namespace Testing\mysql\model {
          */
         public function test_found()
         {
-            $this->assertEquals(11,$this->model->found());
+            $this->assertEquals(12,$this->model->found());
         }
 
 

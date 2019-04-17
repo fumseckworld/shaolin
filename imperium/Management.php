@@ -92,8 +92,9 @@ namespace Imperium {
          * @param string $order
          *
          * @return array
+         *
          */
-        public function all(string $table,string $column,string $order = DESC) : array;
+        public function all(string $table,string $column,string $order = DESC): array;
 
         /**
          *
@@ -382,10 +383,10 @@ namespace Imperium {
          * @param string $table
          * @param int $id
          *
-         * @return array
+         * @return object
          *
          */
-        public function find(string $table,int $id) : array;
+        public function find(string $table,int $id);
 
         /**
          *
@@ -394,10 +395,10 @@ namespace Imperium {
          * @param string $table
          * @param int $id
          *
-         * @return array
+         * @return object
          *
          */
-        public function find_or_fail(string $table,int $id) : array;
+        public function find_or_fail(string $table,int $id);
 
 
         /**

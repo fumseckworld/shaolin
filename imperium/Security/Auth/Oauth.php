@@ -116,19 +116,18 @@ namespace Imperium\Security\Auth {
          *
          * Return the current logged user
          *
-         * @return Collection
+         * @return object
          *
          * @throws Exception
          *
          */
-        public function current(): Collection
+        public function current()
         {
             if ($this->connected())
             {
-                foreach ($this->model->find($this->session->get(self::ID)) as $u)
-                    return collection($u);
+                return $this->model->find($this->session->get(self::ID));
             }
-            return collection();
+            throw new Exception('No user connected');
         }
 
         /**
@@ -202,7 +201,7 @@ namespace Imperium\Security\Auth {
          */
         public function find(string $expected): array
         {
-            return $this->model->where($this->column(),EQUAL,$expected)->get();
+            return $this->model->by($this->column(),$expected);
         }
 
         /**

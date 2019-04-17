@@ -8,7 +8,6 @@ namespace Imperium\View {
     use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
-    use Imperium\Routing\Router;
     use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Os;
     use Twig\Environment;
@@ -59,8 +58,8 @@ namespace Imperium\View {
         /**
          * View constructor.
          *
+         * @throws Exception
          *
-         * @throws \Exception
          */
         public function __construct()
         {
@@ -308,15 +307,6 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('site',
-
-                function (string $name,string $method = GET)
-                {
-                    return Router::web($name,$method);
-                }
-                ,['is_safe' => ['html']]
-            ));
-
             $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 
             $this->add_functions($functions->collection());
@@ -370,14 +360,14 @@ namespace Imperium\View {
          * @param string $view
          * @param array $args
          *
-         * @param string $namespace
          * @return string
          *
          * @throws LoaderErrorAlias
          * @throws RuntimeError
          * @throws SyntaxError
+         * @throws Exception
          */
-        public function load(string $view,array $args=[],string $namespace = '')
+        public function load(string $view,array $args=[])
         {
             $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
 
@@ -394,15 +384,7 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-
-                if (def($namespace))
-                {
-                    File::put($file,"{% extends '$namespace.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
-                }else
-                {
-                    File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n");
-
-                }
+                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n\n\n{% block css %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);
@@ -456,6 +438,7 @@ namespace Imperium\View {
          * @return View
          *
          * @throws LoaderErrorAlias
+         * @throws Exception
          *
          */
         public function add_path(string $path, string $namespace): View

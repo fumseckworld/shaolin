@@ -198,7 +198,7 @@ namespace Imperium {
          * @throws Exception
          *
          */
-        public function all(string $table,string $column,string $order = DESC) : array
+        public function all(string $table,string $column,string $order = DESC): array
         {
             return $this->model()->from($table)->all($column,$order);
         }
@@ -561,11 +561,11 @@ namespace Imperium {
          * @param string $table
          * @param int $id
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          */
-        public function find(string $table,int $id): array
+        public function find(string $table,int $id)
         {
            return $this->model()->from($table)->find($id);
         }
@@ -577,12 +577,12 @@ namespace Imperium {
          * @param string $table
          * @param int $id
          *
-         * @return array
+         * @return object
          *
          * @throws Exception
          *
          */
-        public function find_or_fail(string $table,int $id): array
+        public function find_or_fail(string $table,int $id)
         {
            return $this->model()->from($table)->find_or_fail($id);
         }

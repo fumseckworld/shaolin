@@ -1212,7 +1212,10 @@ namespace Imperium\Html\Form {
          */
         public function search($search_placeholder,string $icon, $id = 'search'): Form
         {
+
             $url = request()->getRequestUri();
+            $x = strstr($url,'&q=');
+            $url = str_replace($x, "", $url);
 
             $class = $this->get_input_complete_class();
 
@@ -1333,6 +1336,7 @@ namespace Imperium\Html\Form {
 
             return $this;
         }
+
         /**
          *
          * Generate a form to edit or create a record
@@ -1340,18 +1344,17 @@ namespace Imperium\Html\Form {
          *
          * @method generate
          *
-         * @param  int      $form_grid    The number to modify the form generation output
-         * @param  string   $table        The current table
-         * @param  string   $submit_text  The submit button text
-         * @param  string   $submit_id    The submit button id
-         * @param  string   $submit_icon  The submit icon
-         * @param  int      $mode         Define the mode edit or create
-         * @param  int      $id           The record id
+         * @param int $form_grid The number to modify the form generation output
+         * @param string $table The current table
+         * @param string $submit_text The submit button text
+         * @param string $submit_id The submit button id
+         * @param string $submit_icon The submit icon
+         * @param int $mode Define the mode edit or create
+         * @param int $id The record id
          *
          * @return string
          *
          * @throws Exception
-         *
          */
         public function generate(int $form_grid,string $table, string $submit_text, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {

@@ -1,5 +1,5 @@
 table: 'users'
-admin_prefix: '/'
+admin_prefix: '/admin'
 user_home: '/home'
 create_action: '/create'
 columns:

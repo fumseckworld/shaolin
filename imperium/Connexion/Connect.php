@@ -346,6 +346,30 @@ namespace Imperium\Connexion {
         }
 
         /**
+         * @param string $request
+         *
+         * @return object
+         *
+         * @throws Exception
+         *
+         */
+        public function fetch(string $request)
+        {
+            $query = $this->instance()->prepare($request);
+
+            is_true(is_bool($query),true,$request);
+
+            $query->execute();
+
+            $data = $query->fetch($this->fetch_mode());
+
+            is_false($query->closeCursor(),true,"Fail to close the connection");
+
+            $query = null;
+            return $data;
+        }
+
+        /**
          *
          * Check if the driver is not the current
          *
@@ -377,14 +401,17 @@ namespace Imperium\Connexion {
          */
         public function request(string $request): array
         {
-            $query = $this->instance()->query($request);
+            $query = $this->instance()->prepare($request);
 
+            $query->execute();
 
             is_true(is_bool($query),true,$request);
 
             $data = $query->fetchAll($this->fetch_mode());
 
             is_false($query->closeCursor(),true,"Fail to close the connection");
+
+            $query = null;
 
             return $data;
         }
@@ -404,14 +431,14 @@ namespace Imperium\Connexion {
         */
         public function execute(string $request): bool
         {
-            $response = $this->instance()->prepare($request);
+            $query = $this->instance()->prepare($request);
 
-            is_true(is_bool($response),true,$request);
+            is_true(is_bool($query),true,$request);
 
-            $data = $response->execute();
+            $data = $query->execute();
 
-            is_false($response->closeCursor(),true,"Fail to close the connection");
-
+            is_false($query->closeCursor(),true,"Fail to close the connection");
+            $query = null;
             return $data;
 
         }
@@ -503,7 +530,9 @@ namespace Imperium\Connexion {
                     {
                         try
                         {
-                            $this->instance =  new PDO("$driver:$database");
+                            $this->instance =  new PDO("$driver:$database",null,null,[
+                                PDO::ATTR_PERSISTENT => true
+                            ]);
                         }catch (PDOException $e)
                         {
                             return $e->getMessage();
@@ -523,7 +552,9 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
-                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
+                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password,[
+                            PDO::ATTR_PERSISTENT => true
+                        ]);
                     }catch (PDOException $e)
                     {
                         return $e->getMessage();
@@ -533,14 +564,18 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
-                        $this->instance =  new PDO( "$driver:host=$host;",$username,$password);
+                        $this->instance =  new PDO( "$driver:host=$host;",$username,$password,[
+                        PDO::ATTR_PERSISTENT => true
+                            ]);
                     }catch (PDOException $e)
                     {
                         return $e->getMessage();
                     }
                 }
+            }else{
+                return $this->instance;
             }
-
+            $this->instance->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
            return $this->instance;
 
         }

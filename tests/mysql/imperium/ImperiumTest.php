@@ -32,9 +32,13 @@ namespace Testing\mysql\imperium {
          */
         public function test_find()
         {
+            $x = $this->mysql()->find($this->table,50);
+            $this->assertIsNotString($x);
+            $this->assertIsNotArray($x);
 
-            $this->assertNotEmpty($this->mysql()->find($this->table,50));
-            $this->assertNotEmpty($this->mysql()->find_or_fail($this->table,50));
+            $x = $this->mysql()->find_or_fail($this->table,50);
+            $this->assertIsNotString($x);
+            $this->assertIsNotArray($x);
 
         }
         /**

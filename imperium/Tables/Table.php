@@ -868,12 +868,11 @@ namespace Imperium\Tables {
          * @method all
          *
          * @param string $column
-         * @param  string $order The order clause
+         * @param string $order The order clause
          *
          * @return array
          *
          * @throws Exception
-         *
          */
         public function all(string $column ='',string $order = DESC): array
         {
