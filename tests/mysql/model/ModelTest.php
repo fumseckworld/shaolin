@@ -84,25 +84,6 @@ namespace Testing\mysql\model {
             $this->assertNotEmpty($this->model->all());
 
         }
-        public function test_show()
-        {
-            $record  = $this->model->show(
-                'table-responsive','table-dark','?table=',1,'table','remove','sure',
-                '','','remove','edit','edit','previous','next','id','desc','search','','',
-                '','',''
-
-            );
-
-            $this->assertStringContainsString('?table=', $record);
-            $this->assertStringContainsString('remove', $record);
-            $this->assertStringContainsString('/', $record);
-            $this->assertStringContainsString('sure', $record);
-            $this->assertStringContainsString('next', $record);
-            $this->assertStringContainsString('previous', $record);
-            $this->assertStringContainsString('remove', $record);
-            $this->assertStringContainsString('class="btn btn-danger"', $record);
-            $this->assertStringContainsString('class="btn btn-primary"', $record);
-        }
 
         public function test_edit()
         {
@@ -330,14 +311,14 @@ namespace Testing\mysql\model {
             $x->instance();
         }
 
-        public function test_dump()
+        public function     test_dump()
         {
             $this->assertTrue($this->mysql()->model()->dump($this->table));
             $this->assertTrue($this->mysql()->model()->dump_base());
         }
         public function test_import()
         {
-            $this->assertTrue($this->mysql()->model()->dump($this->table));
+            $this->assertTrue($this->mysql()->model()-> dump($this->table));
 
         }
     }

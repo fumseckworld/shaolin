@@ -163,13 +163,14 @@ namespace Imperium\Connexion {
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
 
+
             $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . $dump_path;
 
             Dir::create($this->dump_path);
 
             $this->driver       = $driver;
 
-            $this->database     = $base;
+            $this->database     = equal($driver,SQLITE) ? dirname($this->dump_path) .DIRECTORY_SEPARATOR . $base : $base;
 
             $this->username     = $username;
 
@@ -530,9 +531,7 @@ namespace Imperium\Connexion {
                     {
                         try
                         {
-                            $this->instance =  new PDO("$driver:$database",null,null,[
-                                PDO::ATTR_PERSISTENT => true
-                            ]);
+                            $this->instance =  new PDO("$driver:$database");
                         }catch (PDOException $e)
                         {
                             return $e->getMessage();
@@ -552,11 +551,10 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
-                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password,[
-                            PDO::ATTR_PERSISTENT => true
-                        ]);
+                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
                     }catch (PDOException $e)
                     {
+                        d($e->errorInfo,$this->instance->errorInfo(),$e->getLine(),$e->getMessage());
                         return $e->getMessage();
                     }
                 }
@@ -564,9 +562,7 @@ namespace Imperium\Connexion {
                 {
                     try
                     {
-                        $this->instance =  new PDO( "$driver:host=$host;",$username,$password,[
-                        PDO::ATTR_PERSISTENT => true
-                            ]);
+                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
                     }catch (PDOException $e)
                     {
                         return $e->getMessage();

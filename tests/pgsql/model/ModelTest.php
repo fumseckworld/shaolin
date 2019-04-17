@@ -36,19 +36,8 @@ namespace Testing\pgsql\model {
          */
         public function test_find()
         {
-            $this->assertCount(1,$this->model->find(2));
-            $this->assertCount(1,$this->model->find_or_fail(2));
-
-            $records = $this->model->all();
-
-            foreach ($records as  $record)
-            {
-                foreach ($this->model->columns() as $k => $v)
-                {
-                    $this->assertNotEmpty($this->model->by($v,$record->$v));
-
-                }
-            }
+            $this->assertTrue(def($this->model->find(2)));
+            $this->assertTrue(def($this->model->find_or_fail(2)));
         }
         public function test_only()
         {
@@ -102,25 +91,7 @@ namespace Testing\pgsql\model {
             $this->assertNotEmpty($this->model->all());
 
         }
-        public function test_show()
-        {
-            $record  = $this->model->show(
-                'table-responsive','table-dark','?table=',1,'table','remove','sure',
-                '','','remove','edit','edit','previous','next','id','desc','search','','',
-                '','',''
 
-            );
-
-            $this->assertStringContainsString('?table=', $record);
-            $this->assertStringContainsString('remove', $record);
-            $this->assertStringContainsString('/', $record);
-            $this->assertStringContainsString('sure', $record);
-            $this->assertStringContainsString('next', $record);
-            $this->assertStringContainsString('previous', $record);
-            $this->assertStringContainsString('remove', $record);
-            $this->assertStringContainsString('class="btn btn-danger"', $record);
-            $this->assertStringContainsString('class="btn btn-primary"', $record);
-        }
 
         public function test_edit()
         {
@@ -322,7 +293,7 @@ namespace Testing\pgsql\model {
          */
         public function test_found()
         {
-            $this->assertEquals(11,$this->model->found());
+            $this->assertEquals(12,$this->model->found());
         }
 
 

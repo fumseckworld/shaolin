@@ -3,7 +3,9 @@
 
 namespace Testing\mysql\table {
 
+    use Exception;
     use Imperium\App;
+    use Imperium\Tables\Column;
     use Imperium\Tables\Table;
     use Testing\DatabaseTest;
 
@@ -16,7 +18,7 @@ namespace Testing\mysql\table {
         private $table;
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function setUp():void
         {
@@ -24,7 +26,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_columns_info()
         {
@@ -33,14 +35,14 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_types()
         {
             $this->assertNotEmpty($this->column()->types());
         }
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_seed()
         {
@@ -48,7 +50,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_insert_multiples()
         {
@@ -74,7 +76,7 @@ namespace Testing\mysql\table {
             $this->assertTrue($this->table()->insert_multiples($data->collection()));
         }
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_select()
         {
@@ -85,7 +87,7 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_change()
         {
@@ -97,7 +99,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_primary_key()
         {
@@ -105,7 +107,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_show()
         {
@@ -113,7 +115,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_has_columns_type()
         {
@@ -123,7 +125,7 @@ namespace Testing\mysql\table {
             $this->assertFalse($this->column()->has_types('integer'));
         }
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_get_tpm_name()
         {
@@ -132,7 +134,7 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_type()
         {
@@ -141,7 +143,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_has()
         {
@@ -151,7 +153,7 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
 
         public function test_remove_by_id()
@@ -160,7 +162,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_not_exist()
         {
@@ -168,7 +170,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_import()
         {
@@ -177,7 +179,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_the_last_field()
         {
@@ -192,7 +194,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_truncate()
         {
@@ -201,7 +203,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_append_column()
         {
@@ -220,7 +222,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_ignore()
         {
@@ -230,7 +232,7 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_columns_to_string()
         {
@@ -240,26 +242,26 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_count()
         {
-            $this->assertEquals(354    ,$this->table()->count());
+            $this->assertEquals(554    ,$this->table()->count());
         }
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_found()
         {
-            $this->assertEquals(11,$this->table()->found());
+            $this->assertEquals(12,$this->table()->found());
 
         }
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_current()
         {
@@ -268,7 +270,7 @@ namespace Testing\mysql\table {
 
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_columns_not_exist()
         {
@@ -277,7 +279,7 @@ namespace Testing\mysql\table {
             $this->assertFalse($this->column()->not_exist('id'));
         }
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_dump()
         {
@@ -288,7 +290,7 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test_rename()
         {
@@ -311,7 +313,7 @@ namespace Testing\mysql\table {
 
         /**
          * @return Table
-         * @throws \Exception
+         * @throws Exception
          */
         private function table(): Table
         {
@@ -319,10 +321,10 @@ namespace Testing\mysql\table {
         }
 
         /**
-         * @return \Imperium\Tables\Column
-         * @throws \Exception
+         * @return Column
+         * @throws Exception
          */
-        private function column(): \Imperium\Tables\Column
+        private function column(): Column
         {
             return $this->table()->column()->for($this->table);
         }

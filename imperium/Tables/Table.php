@@ -596,7 +596,7 @@ namespace Imperium\Tables {
          */
         public function dump(string $table = ''): bool
         {
-            return def($table) ? dumper(false,$table) : dumper(false,$this->current());
+            return def($table) ? dumper(false,[$table]) : dumper(false,[$this->current()]);
         }
 
 
@@ -847,7 +847,6 @@ namespace Imperium\Tables {
          * @return int
          *
          * @throws Exception
-         *
          */
         public function count(string $table =  ''): int
         {

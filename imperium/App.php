@@ -705,8 +705,10 @@ namespace Imperium {
             $this->hidden_tables    = config($file,'hidden_tables');
             $this->hidden_bases     = config($file,'hidden_bases');
 
-
-            $this->connect          = connect(config($file,'driver'),config($file,'base'),config($file,'username'),config($file,'password'),config($file,'host'),config($file,'dump'));
+            if (equal(\config($file,'driver'),SQLITE))
+                $this->connect = connect(SQLITE,config($file,'base'),'','','',\config($file,'dump'));
+            else
+                $this->connect          = connect(config($file,'driver'),config($file,'base'),config($file,'username'),config($file,'password'),config($file,'host'),config($file,'dump'));
             $this->driver           = $this->connect->driver();
 
             $this->table            = new Table($this->connect);

@@ -244,7 +244,7 @@ namespace Testing\pgsql\table {
          */
         public function test_count()
         {
-            $this->assertEquals(354,$this->table()->count());
+            $this->assertEquals(554,$this->table()->count());
         }
 
 
@@ -253,7 +253,7 @@ namespace Testing\pgsql\table {
          */
         public function test_found()
         {
-            $this->assertEquals(11,$this->table()->found());
+            $this->assertEquals(12,$this->table()->found());
 
         }
 

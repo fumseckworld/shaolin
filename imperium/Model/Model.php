@@ -136,7 +136,7 @@ namespace Imperium\Model {
          *
          * @method dump
          *
-         * @param string[] $tables
+         * @param string ...$tables
          * @return bool
          *
          * @throws Exception
@@ -157,7 +157,7 @@ namespace Imperium\Model {
          */
         public function dump_base(): bool
         {
-            return dumper(true);
+            return dumper(true,[]);
         }
 
         /**

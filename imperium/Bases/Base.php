@@ -169,7 +169,7 @@ use Imperium\Tables\Table;
          */
         public function copy(string $new_base): bool
         {
-            dumper(true);
+            dumper(true,[]);
 
             $this->create($new_base);
 

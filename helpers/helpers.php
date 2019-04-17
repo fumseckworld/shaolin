@@ -3117,14 +3117,14 @@ if (not_exist('dumper'))
      * @method dumper
      *
      * @param  bool $base To dump a base
-     * @param  string[] $tables The tables to dump
+     * @param  array $tables The tables to dump
      *
      * @return bool
      *
      * @throws Exception
      *
      */
-    function dumper(bool $base, string ...$tables): bool
+    function dumper(bool $base, array $tables): bool
     {
         return (new Dump($base,$tables))->dump();
     }

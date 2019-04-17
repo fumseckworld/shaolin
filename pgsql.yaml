@@ -6,5 +6,6 @@ dump: 'db/dump'
 host: 'localhost'
 hidden_tables: ['migrations']
 hidden_bases: []
+hidden_users: []
 debug: true
 port: 5432
