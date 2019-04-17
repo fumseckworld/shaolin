@@ -53,7 +53,7 @@ namespace Imperium\Security\Hashing {
          *
          * Check if the given hash has been hashed using the given options.
          *
-         * @param  string  $hashedValue
+         * @param string $hashedValue
          *
          * @return bool
          */

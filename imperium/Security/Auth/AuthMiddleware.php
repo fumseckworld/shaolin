@@ -5,6 +5,7 @@ namespace Imperium\Security\Auth {
     use Exception;
     use Imperium\Middleware\Middleware;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\HttpFoundation\RedirectResponse;
 
     class AuthMiddleware implements Middleware
     {
@@ -12,7 +13,8 @@ namespace Imperium\Security\Auth {
         /**
          * @param ServerRequestInterface $request
          *
-         * @return \Symfony\Component\HttpFoundation\RedirectResponse
+         * @return RedirectResponse
+         *
          * @throws Exception
          */
         public function __invoke(ServerRequestInterface $request)
@@ -20,30 +22,28 @@ namespace Imperium\Security\Auth {
             $admin = config('auth','admin_prefix');
             $home   = config('auth','user_home');
 
-            if (current_user()->get('id') !== "1" && is_admin())
-                return to($home);
-
-            if(strpos($request->getUri()->getPath(),$admin) === 0)
+            if (app()->auth()->connected())
             {
-                if (!app()->auth()->connected() && different($request->getUri()->getPath(),'/login'))
-                    return to('/login');
-
-                if (app()->auth()->connected() && equal($request->getUri()->getPath(),"/login"))
-                    return to($admin);
-            }
-
-            if(strpos($request->getUri()->getPath(),$home) === 0)
-            {
-                if (!app()->auth()->connected() && different($request->getUri()->getPath(),'/login'))
-                    return to('/login');
-
-                if (app()->auth()->connected() && equal($request->getUri()->getPath(),"/login"))
+                if (current_user()->id != "1" && is_admin())
                     return to($home);
-            }
 
-            if(strpos($request->getUri()->getPath(),'/login') === 0 && app()->auth()->connected())
+                if(strpos($request->getUri()->getPath(),'/login') === 0 || equal($request->getUri()->getPath(),"/login"))
+                {
+                    return current_user()->id == "1" ? to($admin) :  to($home);
+                }
+            }else
             {
-                return current_user()->get('id') === "1" ? to($admin) :  to($home);
+                if(strpos($request->getUri()->getPath(),$admin) === 0)
+                {
+                    if (different($request->getUri()->getPath(),'/login'))
+                        return to('/login');
+                }
+                if(strpos($request->getUri()->getPath(),$home) === 0)
+                {
+                    if (different($request->getUri()->getPath(),'/login'))
+                        return to('/login');
+
+                }
             }
         }
     }
