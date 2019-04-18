@@ -14,6 +14,7 @@ use Imperium\Security\Csrf\Csrf;
 use Imperium\Security\Hashing\Hash;
 use Imperium\Trans\Trans;
 use Imperium\View\View;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Whoops\Run;
@@ -1788,7 +1789,71 @@ if (not_exist('extensions'))
         return $x->collection();
     }
 }
+if(not_exist('routes'))
+{
+    /**
+     *
+     * List routes
+     *
+     * @param OutputInterface $output
+     * @param array $routes
+     *
+     * @throws Exception
+     *
+     */
+    function routes(OutputInterface $output,array $routes): void
+    {
+           if (app()->table_exist(Router::ROUTES))
+           {
+                if (def($routes))
+                {
+                    $output->write("+-----------------------+-----------------------+-------------------------------+-------------------------------+---------------------+\n");
+                    $output->write("|\tMETHOD\t\t|\tNAME\t\t|\tURL\t\t\t|\tCONTROLLER\t\t|\tACTION\t\t|\n");
+                    $output->write("+-----------------------+-----------------------+-------------------------------+-------------------------------+---------------------+\n");
+                    foreach ($routes as $route)
+                    {
+                        $name = $route->name;
+                        $url = $route->url;
+                        $controller = $route->controller;
+                        $action = $route->action;
+                        $method = $route->method;
 
+                        $output->write("|\t$method\t\t");
+
+                        if (length($name) < 8)
+                            $output->write("|\t$name\t\t|");
+                        else
+                            $output->write("|\t$name\t|");
+
+                        if (length($url) < 8)
+                            $output->write("\t$url\t\t\t|");
+                        else
+                            $output->write("\t$url\t\t|");
+
+
+                        if (length($controller) < 8)
+                            $output->write("\t$controller\t\t\t|");
+                        else if(length($controller)> 15)
+                            $output->write("\t$controller\t|");
+                        else
+                            $output->write("\t$controller\t\t|");
+
+                        if (length($action) < 8)
+                            $output->write("\t$action\t\t|\n");
+                        else
+                            $output->write("\t$action\t|\n");
+
+                        $output->write("+-----------------------+-----------------------+-------------------------------+-------------------------------+---------------------+\n");
+                    }
+                }else{
+                    $output->write("<error>No routes was found</error>\n");
+                }
+
+           }else{
+               $output->write("<error>The routes table was not fond</error>\n");
+           }
+        }
+    }
 if (not_exist('simply_view'))
 {
 
