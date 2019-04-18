@@ -106,8 +106,6 @@ migrate_sqlite: ## Seed sqlite database
 dbs: clean ## Create all databases
 	@psql -c "create database $(BASE);" -U postgres
 	@mysql -uroot -p$(MYSQL_PASSWORD) -e "CREATE DATABASE $(BASE);"
-	@touch $(BASE).sqlite3 && chmod 777 $(BASE).sqlite3
 clean: ## Remove all databases
 	psql  -c "DROP DATABASE IF EXISTS $(BASE);" -U postgres
 	mysql -uroot -p$(MYSQL_PASSWORD) -e "DROP DATABASE IF EXISTS $(BASE);"
-	$(RM) $(BASE).sqlite3

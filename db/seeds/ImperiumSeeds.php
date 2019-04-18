@@ -14,7 +14,8 @@ class ImperiumSeeds extends AbstractSeed
      * http://docs.phinx.org/en/latest/seeding.html
      */
     public function run()
-    {$driver  = $this->getAdapter()->getAdapterType();
+    {
+
         $country = [];
 
         $number = 100;

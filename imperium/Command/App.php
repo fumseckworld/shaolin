@@ -22,6 +22,7 @@ namespace Imperium\Command {
         private $namespace;
         private $cache;
         private $web;
+        private $database_dir;
 
         protected function configure()
         {
@@ -59,9 +60,13 @@ namespace Imperium\Command {
 
             $this->web = 'web';
 
-            $question = new Question("<info>Enabled cache ? </info><comment>[false]</comment> : ",'false');
+            $question = new Question("<info>Cache directory </info> <comment>[cache]</comment> : ",'cache');
 
             $this->cache =  $helper->ask($input,$output,$question);
+
+            $question = new Question("<info>Set the migrations, seeding, dump directory name </info> <comment>[db]</comment> : ",'db');
+
+            $this->database_dir =  $helper->ask($input,$output,$question);
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
@@ -72,15 +77,14 @@ namespace Imperium\Command {
 
             File::create($file);
 
-            File::put($file,"dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: $this->cache\n  charset: 'utf-8'");
+            File::put($file,"dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\n  db: '$this->database_dir'\n\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: '$this->cache'\n  charset: 'utf-8'");
 
             Dir::create('locales');
             
             Dir::create('po');
-            Dir::create('db');
-            Dir::create("db/seeds");
-            Dir::create("db/migrations");
-            Dir::create("db/dump");
+
+            Dir::structure($this->database_dir,'seeds','migrations','dump');
+
 
             File::remove_if_exist('phinx.php');
             File::create('phinx.php');
@@ -89,8 +93,8 @@ namespace Imperium\Command {
 \$file = 'db';
 return [
     \"paths\" => [
-        \"migrations\" => \"db/migrations\",
-        \"seeds\" => \"db/seeds\"
+        \"migrations\" => \"{$this->database_dir}/migrations\",
+        \"seeds\" => \"{$this->database_dir}/seeds\"
     ],
     \"environments\" =>
         [
@@ -110,38 +114,28 @@ return [
 
             $app = $this->app_dir;
             $web = $this->web;
-            $command = $app .DIRECTORY_SEPARATOR . $this->command_dir;
-            $controllers = $app .DIRECTORY_SEPARATOR . $this->controller_dir;
-            $middleware = $app .DIRECTORY_SEPARATOR . $this->middleware_dir;
             $views = $app .DIRECTORY_SEPARATOR . $this->views_dir;
 
-            Dir::remove($app);
-            Dir::create($app);
 
-            Dir::remove($web);
-            Dir::create($web);
+            Dir::structure($app,$this->controller_dir,$this->middleware_dir,$this->views_dir,$this->command_dir,'Helpers');
 
-            Dir::create($command);
-            Dir::create($controllers);
-            Dir::create($middleware);
-            Dir::create($views);
+            Dir::structure("$app/Assets",'js','sass');
 
-            Dir::checkout($app);
-            Dir::create('Helpers');
-            
-            Dir::create('Assets');
-            Dir::create('Assets/sass');
-          
-            Dir::create('Assets/js');
+            Dir::structure("$app/Twig",'Extensions','Functions','Filters','Tags','Tests','Globals');
 
-            Dir::checkout('Helpers');
-            File::create('web.php');
-            File::create('admin.php');
-            File::put("web.php","<?php\n");
-            File::put("admin.php","<?php\n");
-            Dir::checkout('../..');
+            Dir::structure($web,'img','css','js');
+
+            File::structure("$app/Helpers",'web.php','admin.php');
+
+            File::put("$app/Helpers/web.php","<?php\n");
+            File::put("$app/Helpers/admin.php","<?php\n");
+
+            Dir::copy('assets_demo',"assets");
+
             Dir::copy('assets',"$app/Assets");
+
             Dir::remove('assets');
+
             Dir::checkout($views);
 
             $layout ='layout.twig';
@@ -174,22 +168,22 @@ return [
                     {% if logged() %}
                         <li class=\"nav-item dropdown\">
                             <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"user\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">
-                                {{ user().get('username') }}
+                                {{ user()->username }}
                             </a>
                             <div class=\"dropdown-menu\" aria-labelledby=\"user\">
-                                {% if user().get('id') == \"1\" %}
-                                    <a class=\"dropdown-item\" href=\"{{ route('admin') }}\">{{ t('Admin') }}</a>
-                                    <a class=\"dropdown-item\" href=\"{{ route('home') }}\">{{ t('Home') }}</a>
+                                {% if user()->id == \"1\" %}
+                                    <a class=\"dropdown-item\" href=\"{{ route('admin') }}\">Admin</a>
+                                    <a class=\"dropdown-item\" href=\"{{ route('home') }}\">Home</a>
                                 {% else %}
-                                    <a class=\"dropdown-item\" href=\"{{ route('home') }}\">{{ t('Home') }}</a>
+                                    <a class=\"dropdown-item\" href=\"{{ route('home') }}\">Home</a>
                                 {% endif %}
                                 <div class=\"dropdown-divider\"></div>
-                                <a class=\"dropdown-item\" href=\"{{ route('logout') }}\">{{ t('Logout') }}</a>
+                                <a class=\"dropdown-item\" href=\"{{ route('logout') }}\">Logout</a>
                             </div>
                         </li>
                     {% else %}
                         <li class=\"nav-item\">
-                            <a class=\"nav-link\" href=\"{{ route('login') }}\">{{ t('Login') }}</a>
+                            <a class=\"nav-link\" href=\"{{ route('login') }}\">Login</a>
                         </li>
                     {% endif %}
                 </ul>
@@ -238,14 +232,9 @@ return [
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$  index.php [L]
 </IfModule>');
-            Dir::create('img');
-            Dir::create('css');
-            Dir::create('js');
 
             Dir::checkout('..');
             Dir::remove('tmp');
-
-
 
 
             return 0;

@@ -387,6 +387,20 @@ namespace Imperium\File {
         }
 
         /**
+         * Generate file in the source dir
+         *
+         * @param string $source
+         * @param string ...$filenames
+         *
+         * @return void
+         *
+         */
+        public static function structure(string $source,string ...$filenames):void
+        {
+            foreach ($filenames as $filename)
+                self::create("$source/$filename");
+        }
+        /**
          * Get the files's last modification time.
          *
          * @param string $filename

@@ -221,7 +221,7 @@ namespace Imperium\Users {
 
             $this->check($driver);
 
-            return equal($driver,Connect::MYSQL) ? $this->connexion->execute("SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES") : $this->connexion->execute( "ALTER ROLE $user WITH PASSWORD '$password'");
+            return equal($driver,MYSQL) ? $this->connexion->execute("SET PASSWORD FOR '$user'@'localhost' = PASSWORD('$password');FLUSH PRIVILEGES;") : $this->connexion->execute( "ALTER ROLE $user WITH PASSWORD '$password'");
         }
 
 

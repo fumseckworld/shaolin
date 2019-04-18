@@ -53,18 +53,6 @@ namespace Imperium\Command {
 
                 }while (is_null($this->name));
 
-                while (not_def($this->get($this->name)))
-                {
-
-                    do {
-                        $this->clean();
-                        $question = new Question("<info>Please enter the route name : </info>");
-
-                        $this->name = $helper->ask($input, $output, $question);
-
-
-                    }while (is_null($this->name));
-                }
                 $this->clean();
                 $this->print($output);
                 foreach ($this->get($this->name) as $route)

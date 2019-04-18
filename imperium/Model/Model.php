@@ -298,13 +298,14 @@ namespace Imperium\Model {
          * @param string $column
          * @param mixed $expected
          *
-         * @return object
+         * @return array
          *
          * @throws Exception
+         *
          */
-        public function by(string $column,$expected)
+        public function by(string $column,$expected): array
         {
-            return $this->from($this->current())->by($column,$expected);
+            return $this->from($this->current())->where($column,EQUAL,$expected)->get();
         }
 
         /**
@@ -359,13 +360,12 @@ namespace Imperium\Model {
          *
          * @method search
          *
-         * @param  string $value The value to search
+         * @param string $value The value to search
          * @param bool $json_output To save data in a json file
          *
-         * @return object|bool
+         * @return array|string
          *
          * @throws Exception
-         *
          */
         public function search(string $value,bool $json_output = false)
         {
@@ -568,17 +568,13 @@ namespace Imperium\Model {
          *
          * @method get
          *
-         * @param bool $use_fetch
-         * @return mixed
+         * @return array
          *
          * @throws Exception
          */
-        public function get(bool $use_fetch = false)
+        public function get(): array
         {
             is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
-
-            if ($use_fetch)
-                return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->use_fetch()->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->use_fetch()->get();
 
             return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
@@ -672,7 +668,6 @@ namespace Imperium\Model {
         }
 
 
-
         /**
          *
          * Get the news records with a limit and order by clause
@@ -681,11 +676,11 @@ namespace Imperium\Model {
          * @param int $limit
          * @param int $offset
          *
-         * @return object
+         * @return array
          *
          * @throws Exception
          */
-        public function news(string $order_column,int $limit,int $offset = 0)
+        public function news(string $order_column,int $limit,int $offset = 0): array
         {
             return $this->query()->from($this->current())->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column)->get();
         }
@@ -698,11 +693,11 @@ namespace Imperium\Model {
          * @param int $limit
          * @param int $offset
          *
-         * @return object
+         * @return array
          *
          * @throws Exception
          */
-        public function last(string $order_column,int $limit,int $offset = 0)
+        public function last(string $order_column,int $limit,int $offset = 0): array
         {
             return $this->query()->from($this->current())->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column,ASC)->get();
         }
@@ -744,7 +739,7 @@ namespace Imperium\Model {
          *
          * @method find_or_fail
          *
-         * @param  int $id The record id
+         * @param int $id The record id
          *
          * @return object
          *

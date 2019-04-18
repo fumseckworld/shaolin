@@ -187,6 +187,16 @@ namespace Imperium\Query {
         private $use_fetch = false;
 
         /**
+         * @var string
+         */
+        private $and;
+
+        /**
+         * @var string
+         */
+        private $or;
+
+        /**
          *
          * The constructor
          *
@@ -242,6 +252,8 @@ namespace Imperium\Query {
             $join       = def($this->join)      ? $this->join  : '';
             $union      = def($this->union)     ? $this->union : '';
             $mode       = def($this->mode)      ? $this->mode  : '';
+            $or         = def($this->or)        ? $this->or  : '';
+            $and        = def($this->and)       ? $this->and  : '';
             $columns    = def($this->columns)   ? $this->columns :  "*";
 
 
@@ -250,14 +262,14 @@ namespace Imperium\Query {
             switch($mode)
             {
                 case Query::SELECT:
-                    return "SELECT $columns $table $where $order $limit";
+                    return "SELECT $columns $table $where $and $or $order $limit";
                 break;
                 case Query::DELETE :
-                    return "DELETE $table $where";
+                    return "DELETE $table $where $and $or";
                 break;
                 case Query::UNION:
                 case Query::UNION_ALL:
-                    return "$union $where $order $limit";
+                    return "$union $where $and $or $order $limit";
                 break;
                 case collection(self::JOIN_MODE)->exist($mode) :
                     return "$join $order $limit";
@@ -367,13 +379,13 @@ namespace Imperium\Query {
          * @method get
          * 
          * @return mixed
-         * 
+         *
          * @throws Exception
          *
          */
         public function get()
         {
-            return $this->use_fetch ?  $this->connexion->fetch($this->sql()) : $this->connexion->request($this->sql());
+            return  $this->use_fetch  ? $this->connexion->fetch($this->sql()) : $this->connexion->request($this->sql());
         }
 
         /**
@@ -611,16 +623,20 @@ namespace Imperium\Query {
          *
          * Add on the where clause an and clause
          *
-         * @param string $value
+         * @param string $column
          * @param string $condition
          * @param string $expected
          *
          * @return Query
          *
+         * @throws Exception
          */
-        public function and(string $value, string $condition, string $expected): Query
+        public function and(string $column, string $condition, string $expected): Query
         {
-            append($this->where," AND $value $condition '$expected'");
+            if (is_string($expected))
+                $this->and = "AND $column $condition {$this->connexion->instance()->quote($expected)}";
+            else
+                $this->and = "AND $column $condition $expected";
 
             return $this;
         }
@@ -635,10 +651,15 @@ namespace Imperium\Query {
          *
          * @return Query
          *
+         * @throws Exception
+         *
          */
         public function or(string $value, string $condition, string $expected): Query
         {
-            append($this->where," OR $value $condition '$expected'");
+            if (is_string($expected))
+                $this->or = "OR $value $condition {$this->connexion->instance()->quote($expected)}";
+            else
+                $this->or = "OR $value $condition $expected";
 
             return $this;
         }

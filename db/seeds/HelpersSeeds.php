@@ -15,7 +15,7 @@ class HelpersSeeds extends AbstractSeed
      */
     public function run()
     {
-        $driver  = $this->getAdapter()->getAdapterType();
+
         $country = [];
 
         $number = 100;

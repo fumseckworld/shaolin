@@ -126,12 +126,12 @@ if (not_exist('current_user'))
      *
      * Get the user if is logged
      *
-     * @return  Collection
+     * @return  object
      *
      * @throws Exception
      *
      */
-    function current_user(): Collection
+    function current_user()
     {
         return app()->auth()->current();
     }
@@ -1741,6 +1741,51 @@ if (not_exist('commands'))
         }
 
         return $commands->collection();
+    }
+}
+
+
+if (not_exist('extensions'))
+{
+    /**
+     *
+     * Return all available command
+     *
+     * @param string $expected
+     * @return array
+     *
+     * @throws Exception
+     */
+    function extensions(string $expected): array
+    {
+        $core_path =  core_path(collection(config('app','dir'))->get('app'));
+
+        $dir  =  $core_path . DIRECTORY_SEPARATOR . 'Twig' . DIRECTORY_SEPARATOR. $expected;
+
+        is_false(Dir::is($core_path),true,"The directory $core_path was not found");
+
+        is_false(Dir::is($dir),true,"The directory $dir was not found");
+
+        $namespace =  config('app','namespace') . "\\Extentions\\$expected";
+
+        $path = realpath($dir);
+
+        $data =   glob($path .DIRECTORY_SEPARATOR . '*.php');
+
+        $x = collection();
+
+        foreach ($data as $c)
+        {
+            $code = collection(explode(DIRECTORY_SEPARATOR,$c))->last();
+
+            $class = collection(explode('.',$code))->begin();
+
+            $code = "$namespace\\$class";
+
+            $x->add(new $code(),strtolower($class));
+        }
+
+        return $x->collection();
     }
 }
 

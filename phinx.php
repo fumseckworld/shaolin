@@ -3,8 +3,8 @@
 $file = 'db';
 return [
     "paths" => [
-        "migrations" => "db/migrations",
-        "seeds" => "db/seeds"
+        "migrations" => "azerty/migrations",
+        "seeds" => "azerty/seeds"
     ],
     "environments" =>
         [

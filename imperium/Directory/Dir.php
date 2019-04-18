@@ -25,7 +25,7 @@ namespace Imperium\Directory {
             '.gitignore',
             '.hgignore',
         );
-        
+
 
         /**
          * @param string $directory
@@ -59,6 +59,26 @@ namespace Imperium\Directory {
             return false;
         }
 
+
+        /**
+         *
+         * Create a structure
+         *
+         * @param string $source
+         * @param string ...$dirs
+         *
+         * @throws Exception
+         *
+         */
+        public static function structure(string $source,string ...$dirs): void
+        {
+            if (self::is($source))
+                self::remove($source);
+
+            self::create($source);
+            foreach ($dirs as $dir)
+                self::create("$source/$dir");
+        }
         /**
          *
          * Remove all files in the directory expect ignore files
@@ -89,15 +109,16 @@ namespace Imperium\Directory {
         }
 
         /**
-         * 
-         * Copy a dir
-         * 
-         * @param string   $source    Source path
-         * @param string   $dest      Destination path
-         * @param int      $permissions New folder creation permissions
          *
-         * @return bool    
-         * 
+         * Copy a dir
+         *
+         * @param string $source Source path
+         * @param string $dest Destination path
+         * @param int $permissions New folder creation permissions
+         *
+         * @return bool
+         *
+         * @throws Exception
          */
         public static function copy(string $source,string $dest,int $permissions = 0755): bool
         {
@@ -139,7 +160,9 @@ namespace Imperium\Directory {
         }
 
         /**
-         * 
+         * @param string $dir
+         * @param int $sorting_order
+         * @return array
          */
         public static function scan(string $dir,$sorting_order = SCANDIR_SORT_ASCENDING ): array
         {
@@ -152,16 +175,15 @@ namespace Imperium\Directory {
          *
          * @method create
          *
-         * @param  string $directory The name of directory
+         * @param string $directory The name of directory
          *
+         * @param int $permissions
          * @return bool
          *
          * @throws Exception
-         * 
          */
         public static function create(string $directory,int $permissions = 0755): bool
         {
-
             return is_false(self::is($directory)) ? mkdir($directory,$permissions):  false;
         }
 

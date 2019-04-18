@@ -30,8 +30,17 @@ namespace Imperium\Command {
 
         public function interact(InputInterface $input, OutputInterface $output)
         {
-
             $helper = $this->getHelper('question');
+
+            do {
+                $this->clean();
+                $question = new Question("<info>Please enter the route name : </info>");
+
+                $this->name = $helper->ask($input, $output, $question);
+
+            }while (is_null($this->name));
+            while (not_def($this->get($this->name)))
+            {
 
                 do {
                     $this->clean();
@@ -41,32 +50,16 @@ namespace Imperium\Command {
 
 
                 }while (is_null($this->name));
+            }
 
-                while (not_def($this->get($this->name)))
-                {
-
-                    do {
-                        $this->clean();
-                        $question = new Question("<info>Please enter the route name : </info>");
-
-                        $this->name = $helper->ask($input, $output, $question);
-
-
-                    }while (is_null($this->name));
-                }
-
-                foreach ($this->get($this->name) as $route)
-                    $this->id = $route->id;
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
-            if (app()->model()->from(Router::ROUTES)->remove($this->id))
+            if (app()->model()->query()->from(Router::ROUTES)->mode(DELETE)->where('name',EQUAL,$this->name)->delete())
                 $output->write("<info>The route has been deleted successfully</info>\n");
             else
                 $output->write("<error>The route deletion has failed</error>\n");
-
         }
 
 

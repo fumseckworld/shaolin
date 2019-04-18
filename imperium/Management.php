@@ -589,11 +589,9 @@ namespace Imperium {
          * Dump a base or  tables
          *
          * @param bool $base
-         * @param string[] $tables
+         * @param string ...$tables
          *
          * @return bool
-         *
-         * @throws Exception
          *
          */
         public function dump(bool $base,string ...$tables) : bool;

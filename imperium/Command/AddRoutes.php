@@ -1,11 +1,9 @@
 <?php
 
-
 namespace Imperium\Command {
 
 
     use Imperium\Routing\Router;
-    use Sinergi\BrowserDetector\Os;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -116,7 +114,7 @@ namespace Imperium\Command {
 
             $data = collection();
             foreach ($this->routes as $route)
-               $data->add(app()->model()->from(Router::ROUTES)->insert_new_record($route));
+                $data->add(app()->model()->from(Router::ROUTES)->insert_new_record($route));
 
             if ($data->not_exist(false))
                 $output->write("<info>All routes has been successfully created</info>\n");

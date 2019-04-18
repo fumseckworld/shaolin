@@ -19,7 +19,6 @@ namespace Imperium\Command {
          *
          * @param string $name
          * @param string $version
-         *
          */
         public function __construct(string $name = "UNKNOWN", string $version = 'UNKNOWN')
         {
@@ -59,7 +58,8 @@ namespace Imperium\Command {
                 new GenerateCommand(),
                 new DumpDatabase(),
                 new UpdateDatabase(),
-                new GenerateMigrations()
+                new GenerateMigrations(),
+                new FindRoute()
 
 
 

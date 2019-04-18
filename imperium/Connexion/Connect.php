@@ -164,9 +164,7 @@ namespace Imperium\Connexion {
         {
 
 
-            $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . $dump_path;
-
-            Dir::create($this->dump_path);
+            $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . $dump_path;
 
             $this->driver       = $driver;
 
@@ -554,7 +552,6 @@ namespace Imperium\Connexion {
                         $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
                     }catch (PDOException $e)
                     {
-                        d($e->errorInfo,$this->instance->errorInfo(),$e->getLine(),$e->getMessage());
                         return $e->getMessage();
                     }
                 }
@@ -572,6 +569,7 @@ namespace Imperium\Connexion {
                 return $this->instance;
             }
             $this->instance->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+            $this->instance->setAttribute(PDO::ATTR_EMULATE_PREPARES,false);
            return $this->instance;
 
         }

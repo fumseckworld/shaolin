@@ -1330,6 +1330,14 @@ namespace Imperium\Html\Form {
         }
 
 
+        /**
+         * @param string $column
+         * @param string $value
+         * @param string $table
+         *
+         * @return Form
+         *
+         */
         public function primary(string $column,string $value,string $table) : Form
         {
             append($this->form,'<input type="hidden" name="'.$column.'" value="'.$value.'"> <input type="hidden" name="__table__" value="'.$table.'"> ');

@@ -209,7 +209,7 @@ namespace Imperium\View {
 
            $functions->add(new TwigFunction('js',
 
-               function (string $name,string $type = '')
+               function (string $name,string $type = 'js')
                {
                    return js($name,$type);
                }
@@ -310,6 +310,18 @@ namespace Imperium\View {
             $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 
             $this->add_functions($functions->collection());
+
+            $this->add_extensions(extensions('Extensions'));
+
+            $this->add_filters(extensions('Filters'));
+
+            $this->add_functions(extensions('Functions'));
+
+            $this->add_globals(extensions('Globals'));
+
+            $this->add_tags(extensions('Tags'));
+
+            $this->add_test(extensions('Tests'));
 
             putenv("LC_ALL={$this->locale()}");
 
@@ -511,13 +523,74 @@ namespace Imperium\View {
          * @throws Exception
          *
          */
-        public function locale_path():string
+        public function locale_path(): string
         {
             $dir = dirname(core_path(collection(config('app','dir'))->get('app'))) . DIRECTORY_SEPARATOR . 'po';
 
             Dir::create($dir);
 
             return realpath($dir);
+        }
+
+        /**
+         *
+         * Add twig filters
+         *
+         * @param array $filters
+         *
+         */
+        public function add_filters(array $filters): void
+        {
+            foreach ($filters as $filter)
+                $this->twig->addFilter($filter);
+
+        }
+
+        /**
+         *
+         * Add twig test
+         *
+         * @param array $tests
+         *
+         */
+        public function add_test(array $tests): void
+        {
+            foreach ($tests as $test)
+                $this->twig->addTest($test);
+        }
+
+        /**
+         *
+         * Add twig global
+         *
+         * @param array $globals
+         *
+         */
+        public function add_globals(array $globals): void
+        {
+            foreach ($globals as $k => $v)
+                $this->twig->addGlobal($k,$v);
+        }
+
+        /**
+         * Add twig extensions
+         *
+         * @param array $extensions
+         *
+         */
+        public function add_extensions(array $extensions): void
+        {
+            foreach ($extensions as $extension)
+                $this->twig->addExtension($extension);
+        }
+
+        /**
+         * @param array $extensions
+         */
+        public function add_tags(array $extensions): void
+        {
+            foreach ($extensions as $extension)
+                $this->twig->addTokenParser($extension);
         }
     }
 }

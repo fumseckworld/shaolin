@@ -37,6 +37,7 @@ namespace Imperium\Asset {
          * @param string $filename
          *
          * @param string $type
+         *
          * @return string
          */
         public static function js(string $filename,string $type =''): string
