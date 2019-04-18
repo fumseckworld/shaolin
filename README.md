@@ -32,7 +32,7 @@
     * [**Helpers**](https://git.fumseck.eu/cgit/imperium/tree/app/helpers.php)
 * [**Discord**](https://discord.gg/fUPyd9K)
 * [**Trello**](https://trello.com/b/28tMSSDG/imperium)
-* [**Diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=8.0.6&id2=8.0.5&dt=2)
+* [**Diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=8.1&id2=8.0.6&dt=2)
 
 # What it's ?
 
