@@ -194,13 +194,11 @@ if (not_exist('article'))
         {
             $values = $data->current();
 
-            append($code,'<div class="col-6"><div class="card mt-4 mb-4"><div class="embed-responsive embed-responsive-21by9"><div class="card-img-top" ><img src="'.$values->$img.'" alt="'.$values->$title.'" class="embed-responsive-item"></div></div><div class="card-body"><h5 class="card-title text-center text-uppercase">'.$values->$title.'</h5><hr><p class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</p><p class="card-text"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div>');
-            append($code,'</div></div></div>');
-
+            append($code,'<div class="col-lg-4 col-sm-6"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->$title.'</h4><a href="'.config($file,'prefix').'/'.$values->$slug.'"><img src="'.$values->$img.'" alt="'.$values->$title.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</div><p class="card-text mt-2"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div></div></div>');
             $data->next();
         }
         append($code,'</div>');
-        append($code,'<div class="row ml-0">');
+        append($code,'<div class="row ml-0 mb-5">');
         append($code,$pagination);
         append($code,'</div>');
         return $code;
