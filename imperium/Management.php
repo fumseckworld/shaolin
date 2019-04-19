@@ -19,6 +19,7 @@ namespace Imperium {
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\HttpFoundation\RedirectResponse;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\Response;
 
@@ -116,8 +117,6 @@ namespace Imperium {
          * @param string $base
          *
          * @return bool
-         *
-         * @throws Exception
          *
          */
         public function base_exist(string $base) : bool;
@@ -592,9 +591,50 @@ namespace Imperium {
          * @param string ...$tables
          *
          * @return bool
-         *
          */
         public function dump(bool $base,string ...$tables) : bool;
+
+
+        /**
+         *
+         * Redirect user to a route
+         *
+         * @param string $route
+         * @param string $message
+         * @param bool $success
+         *
+         * @return RedirectResponse
+         *
+         * @throws Exception
+         *
+         */
+        public function redirect(string $route,string $message ='',bool $success = true): RedirectResponse;
+
+        /**
+         *
+         * Redirect user back
+         *
+         * @param string $message
+         * @param bool $success
+         *
+         * @return RedirectResponse
+         *
+         */
+        public function back(string $message ='',bool $success = true): RedirectResponse;
+
+
+        /**
+         *
+         * Redirect user to an url
+         *
+         * @param string $url
+         * @param string $message
+         * @param bool $success
+         *
+         * @return RedirectResponse
+         *
+         */
+        public function to(string $url,string $message = '',bool $success = true): RedirectResponse;
 
         /**
          *

@@ -209,7 +209,7 @@ namespace Imperium\View {
 
            $functions->add(new TwigFunction('js',
 
-               function (string $name,string $type = 'js')
+               function (string $name,string $type = '')
                {
                    return js($name,$type);
                }
@@ -285,6 +285,15 @@ namespace Imperium\View {
                 function (string $name,string $method = GET)
                 {
                     return route($name,$method);
+                }
+                ,['is_safe' => ['html']]
+            ));
+
+             $functions->add(new TwigFunction('navbar',
+
+                function (string $app_name,string $class,string ...$names)
+                {
+                    return navbar($app_name,$class,$names);
                 }
                 ,['is_safe' => ['html']]
             ));

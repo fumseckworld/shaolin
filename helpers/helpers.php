@@ -109,6 +109,7 @@ if (not_exist('redirect'))
      * @return RedirectResponse
      *
      * @throws Exception
+     *
      */
     function redirect(string $route_name,string $message ='',bool $success = true)
     {
@@ -1215,13 +1216,43 @@ if (not_exist('edit'))
     }
 }
 
+if(not_exist('navbar'))
+{
+    function navbar(string $app_name,string $classes,array $routes)
+    {
+        $html = '
+<nav class="'.$classes.'">
+  <div class="container">
+    <a class="navbar-brand" href="'.root().'">'.strtoupper($app_name).'</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    <div class="collapse navbar-collapse" id="navbarResponsive">
+      <ul class="navbar-nav ml-auto">
+        ';
+
+
+        foreach ($routes as $route)
+            $html.='<li class="nav-item">          <a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
+
+        $html .= '
+      
+      </ul>
+    </div>
+  </div>
+</nav>';
+        return $html;
+    }
+}
+
 if (not_exist('back'))
 {
     /**
      * @param string $message
      * @param bool $success
+     *
      * @return RedirectResponse
-     * @throws Exception
+     *
      */
     function back(string $message = '', bool $success = true): RedirectResponse
     {
@@ -2490,6 +2521,30 @@ if (not_exist('name'))
             }
         }
         throw new Exception('Route was not found');
+    }
+}
+
+if (not_exist('route_name'))
+{
+    /**
+     *
+     * Display a route name
+     *
+     * @param string $name
+     * @param string $method
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function route_name(string $name,string $method = GET): string
+    {
+        $x = app()->model()->query()->from(Router::ROUTES)->mode(SELECT)->where('name',EQUAL,$name)->and('method',EQUAL,$method)->get();
+        foreach ($x as $route)
+            return $route->name;
+
+       throw new Exception('Route was not found');
     }
 }
 
