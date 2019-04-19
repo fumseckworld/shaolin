@@ -206,6 +206,153 @@ if (not_exist('article'))
     }
 }
 
+if (not_exist('login_page'))
+{
+    /**
+     *
+     * Display a page to login an user
+     *
+     * @param string $welcome_text
+     * @param string $login_route_name
+     * @param string $send_reset_email_action_name
+     * @param string $password_text
+     * @param string $identifier_text
+     * @param string $forgot_password_email_text
+     * @param string $forgot_password_send_email_text
+     * @param string $sign_in_text
+     * @param string $logo_path
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function login_page(string $welcome_text,string $login_route_name,string $send_reset_email_action_name,string $password_text,string $identifier_text,string $forgot_password_email_text,string $forgot_password_send_email_text,string $sign_in_text,string $logo_path =''): string
+    {
+        $column   = collection(config('auth','columns'))->get('auth');
+        $username = equal($column,'username');
+
+        $class = collection(config('form','class'))->get('submit');
+
+        $logo = def($logo_path) ? '<div class="mb-3"><img src="'.$logo_path.'" alt="logo"></div>' : '';
+
+        $html =  '<div class="container-fluid">
+                    <div class="row no-gutter">
+                        <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+                        <div class="col-md-8 col-lg-6">
+                            <div class="login d-flex align-items-center py-5">
+                                <div class="container">
+                                    <div class="row">
+                                        <div class="col-md-9 col-lg-8 mx-auto">
+                                            <header class="text-center">          
+                                                '.$logo.'                  
+                                                <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>  
+                                            </header>';
+
+                    if ($username)
+                    {
+                        $html .= ' <form action="'.route($login_route_name,POST).'" method="post">'.csrf_field().'
+                        <div class="form-label-group">
+                          <input type="text" id="'.$column.'" name="'.$column.'" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
+                          <label for="'.$column.'">'.$identifier_text.'</label>
+                        </div>';
+
+                    }else
+                        {
+                            $html .= ' <form action="'.route($login_route_name,POST).'" method="post">'.csrf_field().'
+                        <div class="form-label-group">
+                          <input type="email" id="'.$column.'" name="'.$column.'" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
+                          <label for="'.$column.'">'.$identifier_text.'</label>
+                        </div>';
+
+                    }
+                    $html .=' 
+                    <div class="form-label-group">
+                      <input type="password" id="inputPassword" class="form-control" placeholder="'.$password_text.'" required>
+                      <label for="inputPassword">'.$password_text.'</label>
+                    </div>
+                    <button class="'.$class.'" type="submit">'.$sign_in_text.'</button>
+                </form>
+                <form action="'.route($send_reset_email_action_name,POST).'" method="post">'.csrf_field().'       
+                     <div class="form-label-group">
+                      <input type="text" id="inputEmail" name="email" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
+                      <label for="inputEmail">'.$forgot_password_email_text.'</label>
+                    </div>
+                    <button class="'.$class.'" type="submit">'.$forgot_password_send_email_text.'</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>';
+                return $html;
+
+        }
+}
+if (not_exist('register_page'))
+{
+
+    /**
+     *
+     * Display a page to create a new user
+     *
+     * @param string $welcome_text
+     * @param string $register_route_name
+     * @param string $username_text
+     * @param string $email_address_text
+     * @param string $password_text
+     * @param string $confirm_password_text
+     * @param string $create_account_text
+     * @param string $logo_path
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function register_page(string $welcome_text,string $register_route_name,string $username_text,string $email_address_text,string $password_text,string $confirm_password_text,string $create_account_text,string $logo_path =''): string
+    {
+
+        $class = collection(config('form','class'))->get('submit');
+        $logo = def($logo_path) ? '<div class="mb-3"><img src="'.$logo_path.'" alt="logo"></div>' : '';
+        return '  <div class="container-fluid">
+  <div class="row no-gutter">
+    <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
+        <div class="col-md-8 col-lg-6">
+            <div class="login d-flex align-items-center py-5">
+                <div class="container">
+                <div class="col-md-9 col-lg-8 mx-auto">
+                    <header class="text-center">          
+                        '.$logo.'                  
+                        <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>  
+                    </header>
+                    <form action="'.route($register_route_name,POST).'" method="post">
+                        <div class="form-label-group">
+                            <input type="text" id="email" class="form-control" placeholder="'.$username_text.'" required>
+                            <label for="email">'.$username_text.'</label>
+                        </div>
+                        <div class="form-label-group">
+                            <input type="email" id="email" class="form-control" placeholder="'.$email_address_text.'" required>
+                            <label for="email">'.$email_address_text.'</label>
+                        </div>
+                        <div class="form-label-group">
+                            <input type="password" id="inputPassword" class="form-control" placeholder="'.$password_text.'" required>
+                            <label for="inputPassword">'.$password_text.'</label>
+                        </div>
+                        <div class="form-label-group">
+                            <input type="password" id="inputConfirmPassword" class="form-control" placeholder="'.$confirm_password_text.'" required>
+                            <label for="inputConfirmPassword">'.$confirm_password_text.'</label>
+                        </div>                        
+                        <button class="'.$class.'" type="submit">'.$create_account_text.'</button>            
+                    </form>
+                </div>
+            </div>
+         ';
+    }
+}
+
 if(not_exist('copyright'))
 {
     /**
@@ -1428,34 +1575,7 @@ if (not_exist('connect'))
     }
 }
 
-if (not_exist('login'))
-{
-    /**
-     *
-     * Generate a form to login user
-     *
-     * @method login
-     *
-     * @param  string $action The login action
-     * @param  string $id The form id
-     * @param  string $name_placeholder The username placeholder
-     * @param  string $password_placeholder The password placeholder
-     * @param  string $submit_text The submit button text
-     * @param  string $submit_id The submit button id
-     * @param  string $submit_icon The submit icon
-     * @param  string $user_icon The user icon
-     * @param  string $password_icon The password icon
-     *
-     * @return string
-     *
-     * @throws Exception
-     *
-     */
-    function login(string $action,string $id,string $name_placeholder,string  $password_placeholder,string $submit_text,string $submit_id,string $submit_icon ='<i class="fas fa-sign-in-alt"></i>',string $user_icon ='<i class="fas fa-user"></i>',string $password_icon ='<i class="fas fa-key"></i>'): string
-    {
-        return form($action,$id)->row()->input(Form::TEXT,'username',$name_placeholder,$user_icon,'','','',true,true)->input(Form::PASSWORD,'password',$password_placeholder,$password_icon)->end_row_and_new()->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
-    }
-}
+
 if (not_exist('json'))
 {
     /**
@@ -1805,9 +1925,10 @@ if(not_exist('routes'))
            {
                 if (def($routes))
                 {
-                    $output->write("+-----------------------+-----------------------+-------------------------------+-------------------------------+---------------------+\n");
-                    $output->write("|\tMETHOD\t\t|\tNAME\t\t|\tURL\t\t\t|\tCONTROLLER\t\t|\tACTION\t\t|\n");
-                    $output->write("+-----------------------+-----------------------+-------------------------------+-------------------------------+---------------------+\n");
+                    $output->write("+-----------------------+-------------------------------+-------------------------------+-------------------------------+-----------------------+\n");
+                    $output->write("|\tMETHOD\t\t|\tNAME\t\t\t|\tURL\t\t\t|\tCONTROLLER\t\t|\tACTION\t\t|\n");
+                    $output->write("+-----------------------+-------------------------------+-------------------------------+-------------------------------+-----------------------+\n");
+
                     foreach ($routes as $route)
                     {
                         $name = $route->name;
@@ -1819,14 +1940,20 @@ if(not_exist('routes'))
                         $output->write("|\t$method\t\t");
 
                         if (length($name) < 8)
-                            $output->write("|\t$name\t\t|");
-                        else
+                            $output->write("|\t$name\t\t\t|");
+                        elseif(length($name) > 15)
                             $output->write("|\t$name\t|");
+                        else
+                            $output->write("|\t$name\t\t|");
+
 
                         if (length($url) < 8)
                             $output->write("\t$url\t\t\t|");
+                        elseif(length($name) > 15)
+                            $output->write("\t$url\t|");
                         else
                             $output->write("\t$url\t\t|");
+
 
 
                         if (length($controller) < 8)
@@ -1841,8 +1968,7 @@ if(not_exist('routes'))
                         else
                             $output->write("\t$action\t|\n");
 
-                        $output->write("+-----------------------+-----------------------+-------------------------------+-------------------------------+---------------------+\n");
-                    }
+                        $output->write("+-----------------------+-------------------------------+-------------------------------+-------------------------------+-----------------------+\n");       }
                 }else{
                     $output->write("<error>No routes was found</error>\n");
                 }
