@@ -21,8 +21,8 @@ class ArticlesSeeds extends AbstractSeed
             $articles[] = [
                 'img' => 'http://lorempixel.com/400/200',
                 'slug' => faker()->slug,
-                'content' => faker()->text(),
-                'title' => faker()->title(),
+                'content' => faker()->text(200),
+                'title' => $i,
                 'created_at' => faker()->date(),
                 'updated_at' => faker()->date()
             ];

@@ -314,29 +314,27 @@ namespace Imperium\Model {
          *
          * @param int $mode
          * @param string $url_prefix
-         * @param int $current_page
          * @param string $column
          * @param string $start_pagination_text
          * @param string $end_pagination_text
-         * @param string $order
-         *
+         * @param string $expected
+         * @param string $identifier_column
          * @return string
          *
          * @throws Exception
-         *
          */
-        public function display(int $mode,string $url_prefix,int $current_page,string $column,string $start_pagination_text,string $end_pagination_text,string $order = DESC):string
+        public function display(int $mode,string $url_prefix,string $column,string $start_pagination_text,string $end_pagination_text,string $expected = '',string $identifier_column =''):string
         {
 
             is_true(not_in(App::DISPLAY_MODE,$mode),true,"The mode is not valid");
 
             $table = equal($mode,DISPLAY_CONTRIBUTORS) ? $this->current : current_table();
 
-            $current_page = def(get('current')) ? get('current') : $current_page;
+            $current_page =  get('current',1);
 
             $limit_records_per_page = different($mode,DISPLAY_ARTICLE)  ? get('limit',10) : 12;
 
-            $records = get_records($table,$current_page,$limit_records_per_page,$column,$order);
+            $records = get_records($table,$current_page,$limit_records_per_page,$identifier_column,$expected);
 
             $pagination = different($url_prefix,'/') ?
                 pagination($limit_records_per_page,"$url_prefix?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text)
@@ -348,7 +346,7 @@ namespace Imperium\Model {
                 case DISPLAY_TABLE:
                     return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current='. $current_page .'&limit='.'" value="'.get('limit',10).'"  step="10" min="1" type="number"></div>'.\Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(),$records,'table-responsive','','','')->generate(\collection(config('form','class'))->get('table')). html('div',$pagination,'mt-4');
                 break;
-                default:
+                case DISPLAY_ARTICLE:
                     return article($records,$pagination);
                 break;
             }

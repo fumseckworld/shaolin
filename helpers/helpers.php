@@ -1245,6 +1245,52 @@ if(not_exist('navbar'))
     }
 }
 
+if (not_exist('display_article'))
+{
+    /**
+     *
+     * Display an article and others
+     *
+     * @param string $slug
+     * @param string $others_articles_text
+     * @param string $previous
+     * @param string $next
+     * @param string $order_column
+     * @param string $table
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function display_article(string $slug,string $others_articles_text,string $previous,string $next,string $order_column = 'created_at',string $table ='articles'): string
+    {
+        $article = app()->model()->from($table)->by('slug',$slug);
+        $others  = app()->model()->from($table)->display(DISPLAY_ARTICLE,'/article',$order_column,$previous,$next,$slug,'slug');
+        $html = '';
+        foreach ($article as $item)
+        {
+            $html .= '<section>
+            <header>
+                <div class="img-thumbnail mt-3 mb-3">
+                    <img src="'.$item->img.'" alt="'.$item->title.'"  width="100%">
+                </div>
+                <h1 class="subheading text-center">'.$item->title.'</h1>
+                <hr>
+            </header>
+            <article>
+             '. nl2br($item->content).'
+            </article>
+            <div class="mt-2">
+               '.url().'
+            </div>
+        </section>';
+        }
+        $html .= '<section> <header class="mt-5"><h2 class="text-uppercase text-center">'.$others_articles_text.'</h2><hr></header><article>'.$others.'</article></section>';
+    return $html;
+    }
+}
+
 if (not_exist('back'))
 {
     /**
@@ -2060,41 +2106,46 @@ if (not_exist('get_records'))
      *
      * @method get_records
      *
-     * @param  string $current_table_name The current table name
-     * @param  int $current_page The current page
-     * @param  int $limit_per_page The limit
-     * @param  string $key The key
-     * @param  string $order_by The order by
+     * @param string $current_table_name The current table name
+     * @param int $current_page The current page
+     * @param int $limit_per_page The limit
+     * @param string $column
+     * @param string $expected
+     * @param string $condition
+     * @param string $key The key
+     * @param string $order_by The order by
      *
      * @return array
      *
      * @throws Exception
-     *
      */
-    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $key = '',string $order_by = DESC): array
+    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $column ='',string $expected = '',string $condition = DIFFERENT,string $key = 'created_at',string $order_by = DESC): array
     {
 
         $base = app()->connect()->base();
 
         is_false(app()->table()->has(),true,"We have not found a table in the $base base");
 
-        $instance = app()->table()->from($current_table_name);
-
-        $key = def($key) ? $key : $instance->column()->for($current_table_name)->primary_key();
-
         $offset = ($limit_per_page * $current_page) - $limit_per_page;
 
         $sql = sql($current_table_name)->mode(SELECT);
-
 
         $like = get('q');
 
         $session = app()->session();
 
-        if (def($session->get('limit') && def($like)))
-            return $sql->like($like)->limit($session->get('limit'),0)->order_by($key,$order_by)->get();
+        if (not_def($column))
+        {
+            if (def($session->get('limit') && def($like)))
+                return $sql->like($like)->limit($session->get('limit'),0)->order_by($key,$order_by)->get();
 
-        return def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+            return def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+        }
+
+        if (def($session->get('limit') && def($like)))
+            return $sql->like($like)->limit($session->get('limit'),0)->where($column,$condition,$expected)->order_by($key,$order_by)->get();
+
+        return def($like) ? $sql->like($like)->where($column,$condition,$expected)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->where($column,$condition,$expected)->order_by($key,$order_by)->get();
     }
 }
 
