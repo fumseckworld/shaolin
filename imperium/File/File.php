@@ -477,6 +477,9 @@ namespace Imperium\File {
          * @param string $filename
          *
          * @return bool
+         *
+         * @throws Exception
+         *
          */
         public static function remove(string $filename): bool
         {
@@ -496,6 +499,9 @@ namespace Imperium\File {
          * @param string $dir
          *
          * @return bool
+         *
+         * @throws Exception
+         *
          */
         public static function remove_directory(string $dir): bool
         {
@@ -654,6 +660,9 @@ namespace Imperium\File {
          * @param string $destination
          *
          * @return bool
+         *
+         * @throws Exception
+         *
          */
         public static function copy_directory(string $source, string $destination): bool
         {
@@ -663,10 +672,10 @@ namespace Imperium\File {
             {
                 case true:
                     self::remove_directory($destination);
-                    mkdir($destination);
+                    Dir::create($destination);
                 break;
                 default:
-                    mkdir($destination);
+                    Dir::create($destination);
                 break;
             }
 
@@ -679,10 +688,10 @@ namespace Imperium\File {
                 switch ($element->isDir())
                 {
                     case true:
-                        mkdir($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                        Dir::create($destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
                     break;
                     default:
-                        copy($element, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                        self::copy($element, $destination . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
                     break;
                 }
             }
