@@ -1258,29 +1258,15 @@ if(not_exist('navbar'))
 
                     if (equal(current_user()->id,1))
                     {
-                        $html .= '<li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle" href="#" id="users" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                          '.strtoupper(current_user()->username).'
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="users">
-                                          <a class="dropdown-item" href="'.route($admin_route).'">'.strtoupper($admin_text).'</a>
-                                          <a class="dropdown-item" href="'.route($home_route).'">'.strtoupper($home_text).'</a> 
-                                            <div class="dropdown-divider"></div>
-                                          <a class="dropdown-item" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a>
-                                        </div>
-                                    </li>';
-                        }else{
-                            $html .= '<li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="users" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                             '.strtoupper(current_user()->username).'
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="users">
-                                            <a class="dropdown-item" href="'.route($admin_route).'">'.strtoupper($admin_text).'</a>
-                                            <a class="dropdown-item" href="'.route($home_route).'">'.strtoupper($home_text).'</a> 
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a>
-                                        </div>
-                                    </li>';
+
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($admin_route).'">'.strtoupper($admin_text).'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($home_route).'">'.strtoupper($home_text).'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
+
+                    }else{
+                        
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($home_route).'">'.strtoupper($home_text).'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
                         }
 
                     }else{
