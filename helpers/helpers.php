@@ -330,9 +330,10 @@ if (not_exist('register_page'))
                         <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>  
                     </header>
                     <form action="'.route($register_route_name,POST).'" method="post">
+                    '.csrf_field().'
                         <div class="form-label-group">
-                            <input type="text" id="email" class="form-control" placeholder="'.$username_text.'" required>
-                            <label for="email">'.$username_text.'</label>
+                            <input type="text" id="username" class="form-control" placeholder="'.$username_text.'" required>
+                            <label for="username">'.$username_text.'</label>
                         </div>
                         <div class="form-label-group">
                             <input type="email" id="email" class="form-control" placeholder="'.$email_address_text.'" required>
