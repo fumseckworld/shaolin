@@ -73,7 +73,7 @@ namespace Imperium\Security\Auth {
 
             $this->session = $session;
 
-            $this->model = app()->model()->from(config('auth','table'));
+            $this->model = app()->model()->from($this->table);
         }
 
         /**
@@ -141,7 +141,7 @@ namespace Imperium\Security\Auth {
          */
         public function create(): bool
         {
-
+            
             $password = $this->columns()->get('password');
 
             foreach ($this->model->columns() as $column)
