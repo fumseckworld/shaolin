@@ -1220,27 +1220,77 @@ if(not_exist('navbar'))
 {
     function navbar(string $app_name,string $classes,array $routes)
     {
-        $html = '
-<nav class="'.$classes.'">
-  <div class="container">
-    <a class="navbar-brand" href="'.root().'">'.strtoupper($app_name).'</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-    <div class="collapse navbar-collapse" id="navbarResponsive">
-      <ul class="navbar-nav ml-auto">
-        ';
+        $html = '<nav class="'.$classes.'">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="'.root().'">'.strtoupper($app_name).'</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">';
+                foreach ($routes as $route)
+                    $html.='<li class="nav-item"><a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
 
+                $file = collection(config('navigation','routes'));
 
-        foreach ($routes as $route)
-            $html.='<li class="nav-item">          <a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
+                if (app()->auth()->connected())
+                {
+                    $x = collection(explode('@',$file->get('admin')));
 
-        $html .= '
-      
-      </ul>
-    </div>
-  </div>
-</nav>';
+                    $admin_route = $x->begin();
+                    $admin_text = $x->last();
+
+                    $x = collection(explode('@',$file->get('home')));
+                    $home_route = $x->begin();
+                    $home_text = $x->last();
+
+                    $x = collection(explode('@',$file->get('logout')));
+                    $logout_route = $x->begin();
+                    $logout_text = $x->last();
+
+                    if (equal(current_user()->id,1))
+                    {
+                        $html .= '<li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="users" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                          '.strtoupper(current_user()->username).'
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="users">
+                                          <a class="dropdown-item" href="'.route($admin_route).'">'.strtoupper($admin_text).'</a>
+                                          <a class="dropdown-item" href="'.route($home_route).'">'.strtoupper($home_text).'</a> 
+                                            <div class="dropdown-divider"></div>
+                                          <a class="dropdown-item" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a>
+                                        </div>
+                                    </li>';
+                        }else{
+                            $html .= '<li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="users" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                             '.strtoupper(current_user()->username).'
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="users">
+                                            <a class="dropdown-item" href="'.route($admin_route).'">'.strtoupper($admin_text).'</a>
+                                            <a class="dropdown-item" href="'.route($home_route).'">'.strtoupper($home_text).'</a> 
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a>
+                                        </div>
+                                    </li>';
+                        }
+
+                    }else{
+
+                        $x = collection(explode('@',$file->get('login')));
+
+                        $login_route = $x->begin();
+                        $login_text = $x->last();
+
+                        $x = \collection(explode('@',$file->get('register')));
+
+                        $register_route = $x->begin();
+                        $register_text = $x->last();
+
+                    $html.=' <li class="nav-item"><a class="nav-link" href="'.route($login_route).'">'.strtoupper($login_text).'</a></li>';
+                    $html.=' <li class="nav-item"><a class="nav-link" href="'.route($register_route).'">'.strtoupper($register_text).'</a></li>';
+                }
+            $html .= '</ul></div></div></nav>';
         return $html;
     }
 }
@@ -2571,7 +2621,7 @@ if (not_exist('name'))
                 return equal($route->url,'/')  ?  "http://$host" : "http://$host$route->url";
             }
         }
-        throw new Exception('Route was not found');
+        throw new Exception("The $name route was not found");
     }
 }
 
@@ -2595,7 +2645,7 @@ if (not_exist('route_name'))
         foreach ($x as $route)
             return $route->name;
 
-       throw new Exception('Route was not found');
+        throw new Exception("The $name route name was not found");
     }
 }
 

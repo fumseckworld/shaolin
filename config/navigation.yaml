@@ -1,0 +1,6 @@
+routes :
+  login : 'login@Connexion'
+  register : 'register@Inscription'
+  admin : 'admin@admin'
+  home: 'home@home'
+  logout: 'logout@logout'
