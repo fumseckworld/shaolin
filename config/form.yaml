@@ -8,7 +8,7 @@ class:
   checkbox: 'form-control'
   edit:   'btn btn-primary'
   delete : 'btn btn-danger'
-  table:  'table table-bordered table-striped'
+  table:  'table table-bordered table-hover'
 textarea:
   col: 10
   row: 5

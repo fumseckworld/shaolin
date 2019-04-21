@@ -314,16 +314,15 @@ namespace Imperium\Model {
          *
          * @param int $mode
          * @param string $url_prefix
-         * @param string $column
          * @param string $start_pagination_text
          * @param string $end_pagination_text
+         * @param string $column
          * @param string $expected
-         * @param string $identifier_column
          * @return string
          *
          * @throws Exception
          */
-        public function display(int $mode,string $url_prefix,string $column,string $start_pagination_text,string $end_pagination_text,string $expected = '',string $identifier_column =''):string
+        public function display(int $mode,string $url_prefix,string $start_pagination_text,string $end_pagination_text,string $column ='',string $expected = ''):string
         {
 
             is_true(not_in(App::DISPLAY_MODE,$mode),true,"The mode is not valid");
@@ -334,7 +333,7 @@ namespace Imperium\Model {
 
             $limit_records_per_page = different($mode,DISPLAY_ARTICLE)  ? get('limit',10) : 12;
 
-            $records = get_records($table,$current_page,$limit_records_per_page,$identifier_column,$expected);
+            $records = different($mode,DISPLAY_ARTICLE) ? get_records($table,$current_page,$limit_records_per_page,\app()->model()->from($table)->primary(),$column,$expected) : get_records($table,$current_page,$limit_records_per_page,'created_at',$column,$expected);
 
             $pagination = different($url_prefix,'/') ?
                 pagination($limit_records_per_page,"$url_prefix?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text)
@@ -348,6 +347,9 @@ namespace Imperium\Model {
                 break;
                 case DISPLAY_ARTICLE:
                     return article($records,$pagination);
+                break;
+                default:
+                    return '';
                 break;
             }
         }
@@ -436,7 +438,6 @@ namespace Imperium\Model {
             $html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
 
             $current_page = get('current',1);
-            $key = get('column','');
 
             $url_prefix = '?table';
 
@@ -445,13 +446,13 @@ namespace Imperium\Model {
                 $session->set('limit',10);
 
             $limit_records_per_page = intval($session->get('limit'));
-
-            $records = get_records($table,$current_page,$limit_records_per_page,$key,get('order',DESC));
+            $primary =  $this->from($table)->primary();
+            $records = get_records($table,$current_page,$limit_records_per_page,get('column',$primary));
 
 
             $pagination = pagination($limit_records_per_page,"$url_prefix$url_separator$table&current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
 
-            $primary =  $this->from($table)->primary();
+
 
             $tables = collection(['/' => $table]);
 
@@ -486,7 +487,7 @@ namespace Imperium\Model {
 
             append($html,html('div',$form,'container'));
 
-            append($html,simply_view('container','',$table,$records,'table table-bordered table-striped',$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
+            append($html,simply_view('container','',$table,$records,\collection(config('form','class'))->get('table'),$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
 
 
             return $html;

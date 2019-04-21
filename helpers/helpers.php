@@ -1299,18 +1299,16 @@ if (not_exist('display_article'))
      * @param string $others_articles_text
      * @param string $previous
      * @param string $next
-     * @param string $order_column
      * @param string $table
      *
      * @return string
      *
      * @throws Exception
-     *
      */
-    function display_article(string $slug,string $others_articles_text,string $previous,string $next,string $order_column = 'created_at',string $table ='articles'): string
+    function display_article(string $slug,string $others_articles_text,string $previous,string $next,string $table ='articles'): string
     {
         $article = app()->model()->from($table)->by('slug',$slug);
-        $others  = app()->model()->from($table)->display(DISPLAY_ARTICLE,'/article',$order_column,$previous,$next,$slug,'slug');
+        $others  = app()->model()->from($table)->display(DISPLAY_ARTICLE,'/article',$previous,$next,'slug',$slug);
         $html = '';
         foreach ($article as $item)
         {
@@ -2153,18 +2151,19 @@ if (not_exist('get_records'))
      * @param string $current_table_name The current table name
      * @param int $current_page The current page
      * @param int $limit_per_page The limit
+     * @param string $order_column
      * @param string $column
      * @param string $expected
      * @param string $condition
-     * @param string $key The key
      * @param string $order_by The order by
      *
      * @return array
      *
      * @throws Exception
      */
-    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $column ='',string $expected = '',string $condition = DIFFERENT,string $key = 'created_at',string $order_by = DESC): array
+    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $order_column,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array
     {
+
 
         $base = app()->connect()->base();
 
@@ -2175,21 +2174,20 @@ if (not_exist('get_records'))
         $sql = sql($current_table_name)->mode(SELECT);
 
         $like = get('q');
-
         $session = app()->session();
 
         if (not_def($column))
         {
             if (def($session->get('limit') && def($like)))
-                return $sql->like($like)->limit($session->get('limit'),0)->order_by($key,$order_by)->get();
+                return $sql->like($like)->limit($session->get('limit'),0)->order_by($order_column,$order_by)->get();
 
-            return def($like) ? $sql->like($like)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($key,$order_by)->get();
+            return def($like) ? $sql->like($like)->order_by($order_column,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($order_column,$order_by)->get();
         }
 
         if (def($session->get('limit') && def($like)))
-            return $sql->like($like)->limit($session->get('limit'),0)->where($column,$condition,$expected)->order_by($key,$order_by)->get();
+            return $sql->like($like)->limit($session->get('limit'),0)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get();
 
-        return def($like) ? $sql->like($like)->where($column,$condition,$expected)->order_by($key,$order_by)->get() : $sql->limit($limit_per_page, $offset)->where($column,$condition,$expected)->order_by($key,$order_by)->get();
+        return def($like) ? $sql->like($like)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get() : $sql->limit($limit_per_page, $offset)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get();
     }
 }
 
