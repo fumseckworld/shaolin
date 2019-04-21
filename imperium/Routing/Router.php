@@ -323,6 +323,7 @@ namespace Imperium\Routing {
          */
         private function call($route)
         {
+            array_shift($this->matches);
 
             $controller = $route->controller;
 

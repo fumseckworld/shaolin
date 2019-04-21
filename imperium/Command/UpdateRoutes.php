@@ -93,7 +93,7 @@ namespace Imperium\Command {
 
                     do {
 
-                        $question = new Question("<info>Change the ulr</info> <comment>[$route->url]</comment> : ",$route->url);
+                        $question = new Question("<info>Change the url</info> <comment>[$route->url]</comment> : ",$route->url);
 
                         $this->url = $helper->ask($input, $output, $question);
 
