@@ -4,8 +4,8 @@ $x = app()->connect();
 
 return [
     "paths" => [
-        "migrations" => "db/migrations",
-        "seeds" => "db/seeds"
+        "migrations" => "dbs/migrations",
+        "seeds" => "dbs/seeds"
     ],
     "environments" =>
         [

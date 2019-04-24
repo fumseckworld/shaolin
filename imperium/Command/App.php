@@ -159,37 +159,7 @@ return [
 
     </head>
     <body>
-        <nav class=\"navbar navbar-expand-md  navbar-dark bg-primary mb-5\">
-            <a class=\"navbar-brand\" href=\"{{ root() }}\">Shaolin</a>
-            <button class=\"navbar-toggler\" type=\"button\" data-toggle=\"collapse\" data-target=\"#navbarCollapse\" aria-controls=\"navbarCollapse\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">
-                <span class=\"navbar-toggler-icon\"></span>
-            </button>
-            <div class=\"collapse navbar-collapse\" id=\"navbarCollapse\">
-                <ul class=\"navbar-nav mr-auto\">
-                    {% if logged() %}
-                        <li class=\"nav-item dropdown\">
-                            <a class=\"nav-link dropdown-toggle\" href=\"#\" id=\"user\" role=\"button\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">
-                                {{ user()->username }}
-                            </a>
-                            <div class=\"dropdown-menu\" aria-labelledby=\"user\">
-                                {% if user()->id == \"1\" %}
-                                    <a class=\"dropdown-item\" href=\"{{ route('admin') }}\">Admin</a>
-                                    <a class=\"dropdown-item\" href=\"{{ route('home') }}\">Home</a>
-                                {% else %}
-                                    <a class=\"dropdown-item\" href=\"{{ route('home') }}\">Home</a>
-                                {% endif %}
-                                <div class=\"dropdown-divider\"></div>
-                                <a class=\"dropdown-item\" href=\"{{ route('logout') }}\">Logout</a>
-                            </div>
-                        </li>
-                    {% else %}
-                        <li class=\"nav-item\">
-                            <a class=\"nav-link\" href=\"{{ route('login') }}\">Login</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </nav>
+        {{navbar('shaolin','navbar navbar-expand-lg navbar-light bg-light shadow fixed-top','')}}
 
         <main class=\"container mt-5\">
             {{ display('success') }}
