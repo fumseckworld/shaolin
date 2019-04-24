@@ -26,7 +26,7 @@ namespace Imperium\Command {
 
         protected function configure()
         {
-            $this->setDescription("Create the application structure");
+            $this->setDescription("Create the application structure")->setAliases(['create']);
         }
 
         public function interact(InputInterface $input, OutputInterface $output)
@@ -89,12 +89,13 @@ namespace Imperium\Command {
             File::remove_if_exist('phinx.php');
             File::create('phinx.php');
             File::put('phinx.php',"<?php
-                        
-\$file = 'db';
+
+\$x = app()->connect();
+
 return [
     \"paths\" => [
-        \"migrations\" => \"{$this->database_dir}/migrations\",
-        \"seeds\" => \"{$this->database_dir}/seeds\"
+        \"migrations\" => \"$this->database_dir/migrations\",
+        \"seeds\" => \"$this->database_dir/seeds\"
     ],
     \"environments\" =>
         [
@@ -102,12 +103,12 @@ return [
             'default_database' => 'development',
             'development' =>
                 [
-                    \"adapter\" => config(\$file,'driver'),
-                    \"host\" => config(\$file,'host'),
-                    \"name\" => config(\$file,'base'),
-                    \"user\" => config(\$file,'username'),
-                    \"pass\" => config(\$file,'password'),
-                    \"port\" => config(\$file,'port'),
+                    \"adapter\" =>    \$x->driver(),
+                    \"host\" =>       \$x->host(),
+                    \"name\" =>       \$x->base(),
+                    \"user\" =>       \$x->user(),
+                    \"pass\" =>       \$x->password(),
+                    \"port\" =>       config('db','port'),
                 ]
         ]
 ];");

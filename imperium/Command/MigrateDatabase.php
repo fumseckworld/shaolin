@@ -12,7 +12,7 @@ namespace Imperium\Command {
         protected static $defaultName = 'db:migrate';
         protected function configure()
         {
-
+            $this->setAliases(['migrate']);
             $this->setDescription('Execute all migrations');
         }
 

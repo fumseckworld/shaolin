@@ -12,6 +12,7 @@ namespace Imperium\Command {
         protected static $defaultName = 'db:seed';
         protected function configure()
         {
+            $this->setAliases(['seed']);
             $this->setDescription('Seed the database');
         }
 

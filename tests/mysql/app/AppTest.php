@@ -651,13 +651,7 @@ namespace Testing\mysql\app {
             $this->assertInstanceOf(Users::class,user($this->postgresql()->connect()));
         }
 
-        /**
-         * @throws Exception
-         */
-        public function test_pass()
-        {
-            $this->assertTrue(pass('root','root'));
-        }
+
 
         /**
          *

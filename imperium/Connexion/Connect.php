@@ -6,6 +6,7 @@ namespace Imperium\Connexion {
     use PDO;
     use PDOException;
     use Imperium\Directory\Dir;
+    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
     /**
     *
@@ -163,12 +164,11 @@ namespace Imperium\Connexion {
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
 
-
             $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . $dump_path;
 
             $this->driver       = $driver;
 
-            $this->database     = equal($driver,SQLITE) ? dirname($this->dump_path) .DIRECTORY_SEPARATOR . $base : $base;
+            $this->database     = equal($driver,SQLITE)  ? realpath(dirname(config_path())) .DIRECTORY_SEPARATOR  . 'web'  .DIRECTORY_SEPARATOR . $base : $base;
 
             $this->username     = $username;
 
@@ -544,27 +544,29 @@ namespace Imperium\Connexion {
                         }
                     }
 
-                }
-                if (def($database))
-                {
-                    try
+                }else{
+                    if (def($database))
                     {
-                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
-                    }catch (PDOException $e)
+                        try
+                        {
+                            $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
+                        }catch (PDOException $e)
+                        {
+                            return $e->getMessage();
+                        }
+                    }
+                    else
                     {
-                        return $e->getMessage();
+                        try
+                        {
+                            $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
+                        }catch (PDOException $e)
+                        {
+                            return $e->getMessage();
+                        }
                     }
                 }
-                else
-                {
-                    try
-                    {
-                        $this->instance =  new PDO("$driver:host=$host;dbname=$database",$username,$password);
-                    }catch (PDOException $e)
-                    {
-                        return $e->getMessage();
-                    }
-                }
+
             }else{
                 return $this->instance;
             }

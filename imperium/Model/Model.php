@@ -729,7 +729,7 @@ namespace Imperium\Model {
          */
         public function find(int $id)
         {
-            return $this->query()->from($this->current())->mode(Query::SELECT)->where($this->primary(),EQUAL,$id)->use_fetch()->get();
+            return $this->query()->from($this->current())->mode(SELECT)->where($this->primary(),EQUAL,$id)->use_fetch()->get();
         }
 
         /**object

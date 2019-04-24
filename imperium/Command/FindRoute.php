@@ -13,9 +13,9 @@ namespace Imperium\Command {
 
     class FindRoute extends Command
     {
-        protected static $defaultName = 'routes:find';
+        protected static $defaultName = 'routes:search';
 
-        private $name;
+        private $search;
 
         private function clean()
         {
@@ -43,12 +43,12 @@ namespace Imperium\Command {
 
                     do {
                         $this->clean();
-                        $question = new Question("<info>Please enter the route name : </info>");
+                        $question = new Question("<info>Please enter the search value : </info>");
 
-                        $this->name = $helper->ask($input, $output, $question);
-                    }while (is_null($this->name));
+                        $this->search = $helper->ask($input, $output, $question);
+                    }while (is_null($this->search));
 
-                    $routes = app()->model()->from(Router::ROUTES)->search($this->name);
+                    $routes = app()->model()->from(Router::ROUTES)->search($this->search);
 
                     routes($output,$routes);
                     $question = new Question("<info>Continue searching ? [Y/n] : </info>",'Y');

@@ -2,7 +2,7 @@ driver: mysql
 base: zen
 username: root
 password: root
-dump: 'db/dump'
+dump: 'dump'
 host: 'localhost'
 hidden_tables: ['migrations']
 hidden_bases: []

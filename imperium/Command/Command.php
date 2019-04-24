@@ -22,7 +22,7 @@ namespace Imperium\Command {
          */
         public function __construct(string $name = "UNKNOWN", string $version = 'UNKNOWN')
         {
-          clear_terminal();
+            clear_terminal();
 
             $this->command = new Application($name,$version);
 
@@ -59,7 +59,9 @@ namespace Imperium\Command {
                 new DumpDatabase(),
                 new UpdateDatabase(),
                 new GenerateMigrations(),
-                new FindRoute()
+                new FindRoute(),
+                new MaintenanceMode(),
+                new RunMode()
 
 
 

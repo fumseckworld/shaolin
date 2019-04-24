@@ -335,7 +335,7 @@ if (not_exist('register_page'))
                         <input type="hidden" name="created_at" value="'.now()->format('Y-m-d').'">
                         <input type="hidden" name="updated_at" value="'.now()->format('Y-m-d').'">
                         <div class="form-label-group">
-                            <input type="text" id="username" name="username" class="form-control" placeholder="'.$username_text.'" required>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="'.$username_text.'" required autofocus="autofocus                    ">
                             <label for="username">'.$username_text.'</label>
                         </div>
                         <div class="form-label-group">
@@ -588,24 +588,29 @@ if (not_exist('view'))
      */
     function view(string $class,string $name,array $args =[]) : string
     {
-
-        $dir = str_replace('Controller','',collection(explode("\\",$class))->last());
-
-
-        if (strstr($name,'@'))
+        if (def($class))
         {
-            $file = collection(explode('/',$name));
-            $file = collection(explode('.',$file->last()))->begin();
-            append($file,'.twig');
-        }
-        else
-        {
-            $file = collection(explode('.',$name))->begin();
-            append($file,'.twig');
-        }
+            $dir = str_replace('Controller','',collection(explode("\\",$class))->last());
 
-        $file = $dir .DIRECTORY_SEPARATOR . $file;
 
+            if (strstr($name,'@'))
+            {
+                $file = collection(explode('/',$name));
+                $file = collection(explode('.',$file->last()))->begin();
+                append($file,'.twig');
+            }
+            else
+            {
+                $file = collection(explode('.',$name))->begin();
+                append($file,'.twig');
+            }
+
+            $file = $dir .DIRECTORY_SEPARATOR . $file;
+
+            return (new View())->load($file,$args);
+        }
+        $file = collection(explode('.',$name))->begin();
+        append($file,'.twig');
         return (new View())->load($file,$args);
     }
 }
@@ -737,7 +742,10 @@ if (not_exist('sql_file'))
      */
     function sql_file(string $table  = ''): string
     {
-        return def($table) ? app()->connect()->dump_path() .DIRECTORY_SEPARATOR ."$table.sql" : app()->connect()->dump_path() . DIRECTORY_SEPARATOR . app()->connect()->base() .'.sql';
+        if (def($table) && different(\app()->connect()->driver(),SQLITE))
+            return def($table) ? app()->connect()->dump_path() .DIRECTORY_SEPARATOR ."$table.sql" : app()->connect()->dump_path() . DIRECTORY_SEPARATOR . app()->connect()->base() .'.sql';
+        else
+            return \app()->connect()->dump_path() .DIRECTORY_SEPARATOR . \collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,app()->connect()->base()))->last()))->begin() .'.sql';
     }
 }
 
@@ -1226,7 +1234,7 @@ if (not_exist('edit'))
 
 if(not_exist('navbar'))
 {
-    function navbar(string $app_name,string $classes,array $routes)
+    function navbar(string $app_name,string $classes,array $routes =[])
     {
         $html = '<nav class="'.$classes.'">
         <div class="container-fluid">
@@ -1234,11 +1242,15 @@ if(not_exist('navbar'))
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
+            
+            
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">';
-                foreach ($routes as $route)
-                    $html.='<li class="nav-item"><a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
-
+                if (def($routes))
+                {
+                    foreach ($routes as $route)
+                        $html.='<li class="nav-item"><a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
+                }
                 $file = collection(config('navigation','routes'));
 
                 if (app()->auth()->connected())
@@ -2040,63 +2052,72 @@ if(not_exist('routes'))
      */
     function routes(OutputInterface $output,array $routes): void
     {
-           if (app()->table_exist(Router::ROUTES))
-           {
-                if (def($routes))
+
+
+        if (app()->table_exist(Router::ROUTES))
+        {
+            if (def($routes))
+            {
+                $output->write("+-------+-------------------------------+---------------------------------------+-------------------------------+-----------------------+\n");
+
+                foreach ($routes as $route)
                 {
-                    $output->write("+-----------------------+-------------------------------+-------------------------------+-------------------------------+-----------------------+\n");
-                    $output->write("|\tMETHOD\t\t|\tNAME\t\t\t|\tURL\t\t\t|\tCONTROLLER\t\t|\tACTION\t\t|\n");
-                    $output->write("+-----------------------+-------------------------------+-------------------------------+-------------------------------+-----------------------+\n");
 
-                    foreach ($routes as $route)
-                    {
-                        $name = $route->name;
-                        $url = $route->url;
-                        $controller = $route->controller;
-                        $action = $route->action;
-                        $method = $route->method;
+                    $name =  "<fg=blue;options=bold>$route->name</>";
 
-                        $output->write("|\t$method\t\t");
+                    $url =  "<fg=magenta;options=bold>$route->url</>";
+                    $controller =  "<fg=green;options=bold>$route->controller</>";
+                    $action =  "<fg=yellow;options=bold>$route->action</>";
+                    $method =  "<fg=cyan;options=bold>$route->method</>";
 
-                        if (length($name) < 8)
-                            $output->write("|\t$name\t\t\t|");
-                        elseif(length($name) > 15)
-                            $output->write("|\t$name\t|");
+
+                    $output->write("|  $method\t");
+
+                    if (length($route->name) < 5)
+                        $output->write("|  $name\t\t\t\t|");
+
+                    elseif(length($route->name) > 10)
+                        $output->write("|  $name\t\t|");
+                    else
+                        $output->write("|  $name\t\t\t|");
+
+
+                    if (length($route->url) < 5)
+                        $output->write("  $url\t\t\t\t\t|");
+                    elseif(length($route->url) < 12)
+                        $output->write("  $url\t\t\t\t|");
+                    elseif(length($route->url)> 18 )
+                        $output->write("  $url\t\t|");
                         else
-                            $output->write("|\t$name\t\t|");
-
-
-                        if (length($url) < 8)
-                            $output->write("\t$url\t\t\t|");
-                        elseif(length($name) > 15)
-                            $output->write("\t$url\t|");
-                        else
-                            $output->write("\t$url\t\t|");
+                            $output->write("  $url\t\t\t|");
 
 
 
-                        if (length($controller) < 8)
-                            $output->write("\t$controller\t\t\t|");
-                        else if(length($controller)> 15)
-                            $output->write("\t$controller\t|");
-                        else
-                            $output->write("\t$controller\t\t|");
+                    if (length($route->controller) < 8)
+                        $output->write("  $controller\t\t\t|");
+                    elseif (length($route->controller) > 8 && length($route->controller) < 15)
+                        $output->write("  $controller\t\t|");
+                    else if(length($route->controller)> 15)
+                        $output->write("  $controller\t\t|");
+                    else
+                        $output->write("  $controller\t\t|");
 
-                        if (length($action) < 8)
-                            $output->write("\t$action\t\t|\n");
-                        else
-                            $output->write("\t$action\t|\n");
-
-                        $output->write("+-----------------------+-------------------------------+-------------------------------+-------------------------------+-----------------------+\n");       }
-                }else{
-                    $output->write("<error>No routes was found</error>\n");
+                    if (length($route->action) < 8)
+                        $output->write("  $action\t\t\t|\n");
+                    else
+                        $output->write("  $action\t\t|\n");
+                    $output->write("+-------+-------------------------------+---------------------------------------+-------------------------------+-----------------------+\n");
                 }
+            }else{
+                $output->write("<error>No routes was found</error>\n");
+            }
 
-           }else{
-               $output->write("<error>The routes table was not fond</error>\n");
-           }
+        }else{
+            $output->write("<error>The routes table was not fond</error>\n");
         }
     }
+}
+
 if (not_exist('simply_view'))
 {
 

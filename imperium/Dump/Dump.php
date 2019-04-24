@@ -114,7 +114,7 @@ namespace Imperium\Dump {
 
             Dir::clear($dump_path);
 
-            $filename =  "$dump_path/$database.sql";
+            $filename =  equal($driver,SQLITE) ? $dump_path . DIRECTORY_SEPARATOR . \collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,$database))->last()))->begin() .'.sql' :"$dump_path/$database.sql";
 
             switch ($driver)
             {

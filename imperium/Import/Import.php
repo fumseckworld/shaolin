@@ -59,15 +59,13 @@ namespace Imperium\Import {
         /**
          * Import constructor.
          *
-         * @param string $base
-         *
          * @throws Exception
          */
-        public function __construct(string $base = '')
+        public function __construct()
         {
             $this->connexion = app()->connect();
             $this->driver    = $this->connexion->driver();
-            $this->base      = def($base) ? $base : $this->connexion->base();
+            $this->base      = $this->connexion->base();
             $this->sql_file  = sql_file();
         }
 
@@ -100,6 +98,7 @@ namespace Imperium\Import {
                     return  is_not_false(system(" psql  -h $host  -U $username $base < $sql"));
                 break;
                 case Connect::SQLITE:
+
                     return is_not_false(system("sqlite3 $base < $sql"));
                 break;
                 default:

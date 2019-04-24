@@ -1,6 +1,7 @@
 <?php
-                        
-$file = 'db';
+
+$x = app()->connect();
+
 return [
     "paths" => [
         "migrations" => "db/migrations",
@@ -12,12 +13,12 @@ return [
             'default_database' => 'development',
             'development' =>
                 [
-                    "adapter" => config($file,'driver'),
-                    "host" => config($file,'host'),
-                    "name" => config($file,'base'),
-                    "user" => config($file,'username'),
-                    "pass" => config($file,'password'),
-                    "port" => config($file,'port'),
+                    "adapter" =>    $x->driver(),
+                    "host" =>       $x->host(),
+                    "name" =>       $x->base(),
+                    "user" =>       $x->user(),
+                    "pass" =>       $x->password(),
+                    "port" =>       config('db','port'),
                 ]
         ]
 ];

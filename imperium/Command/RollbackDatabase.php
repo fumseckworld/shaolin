@@ -13,6 +13,7 @@ namespace Imperium\Command {
         protected function configure()
         {
 
+            $this->setAliases(['rollback']);
             $this->setDescription('Rollback the latest migration');
         }
 

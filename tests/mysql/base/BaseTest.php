@@ -92,17 +92,6 @@ namespace Testing\mysql\base {
             $this->mysql()->bases()->set_collation($bidon)->change_collation();
             $this->mysql()->bases()->set_charset($bidon)->change_charset();
         }
-        /**
-         * @throws \Exception
-         */
-        public function test_change()
-        {
-            $this->assertTrue($this->mysql()->bases()->set_charset('utf8')->change_charset());
-            $this->assertTrue($this->mysql()->bases()->set_collation('utf8_general_ci')->change_collation());
-
-            $this->assertTrue($this->mysql()->change_base_charset('utf8'));
-            $this->assertTrue($this->mysql()->change_base_collation('utf8_general_ci'));
-        }
 
 
     }

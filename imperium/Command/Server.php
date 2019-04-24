@@ -11,6 +11,7 @@ namespace Imperium\Command {
         protected static $defaultName = 'app:run';
         protected function configure()
         {
+            $this->setAliases(['serve']);
             $this->setDescription('Run a development server');
         }
 

@@ -2,7 +2,7 @@ driver: sqlite
 base: zen.sqlite3
 username:
 password:
-dump: 'db/dump'
+dump: 'dump'
 host: 'localhost'
 hidden_tables: ['migrations','sqlite_sequence']
 hidden_bases: []

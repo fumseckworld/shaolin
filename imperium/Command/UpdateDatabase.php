@@ -17,7 +17,7 @@ namespace Imperium\Command {
 
             $this->base = config('db','base');
 
-            $this->setDescription("Update the $this->base database");
+            $this->setDescription("Update the $this->base database")->setAliases(['update']);
         }
 
         public function execute(InputInterface $input, OutputInterface $output)

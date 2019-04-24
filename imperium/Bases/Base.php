@@ -586,7 +586,7 @@ use Imperium\Tables\Table;
             if (not_def($this->charset))
                 throw new Exception("We have not found required charset");
 
-            return equal(Connect::MYSQL,$this->driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET = {$this->charset}") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
+            return equal(MYSQL,$this->driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET $this->charset;") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
         }
 
         /**

@@ -29,8 +29,9 @@ endif
 
 all: vendor mysql pgsql sqlite router form  dir config session flash app trans csrf hash collection
 
-mysql: seed
+mysql:
 	@install -D $@.yaml config/db.yaml
+	@php shaolin db:seed
 	@$(UNIT) tests/$@ $(COVERAGE) coverage/$@
 pgsql: seed
 	@install -D $@.yaml config/db.yaml

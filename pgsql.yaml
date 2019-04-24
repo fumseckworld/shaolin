@@ -2,7 +2,7 @@ driver: pgsql
 base: zen
 username: postgres
 password: postgres
-dump: 'db/dump'
+dump: 'dump'
 host: 'localhost'
 hidden_tables: ['migrations']
 hidden_bases: []

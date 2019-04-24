@@ -20,7 +20,7 @@ namespace Imperium\Command {
 
         protected function configure()
         {
-            $this->setDescription('List all routes created');
+            $this->setDescription('List all routes created')->setAliases(['routes']);
         }
 
         /**
