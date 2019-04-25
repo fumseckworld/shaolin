@@ -131,8 +131,6 @@ return [
             File::put("$app/Helpers/web.php","<?php\n");
             File::put("$app/Helpers/admin.php","<?php\n");
 
-            Dir::copy('assets_demo',"assets");
-
             Dir::copy('assets',"$app/Assets");
 
             Dir::remove('assets');
