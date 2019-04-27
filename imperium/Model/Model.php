@@ -714,6 +714,22 @@ namespace Imperium\Model {
 
         /**
          *
+         * Return a result by a column or fail
+         *
+         * @param string $column
+         * @param $expected
+         *
+         * @return array
+         *
+         * @throws Exception
+         */
+        public function by_or_fail(string $column,$expected): array
+        {
+            return exist($this->by($column,$expected),true,"Record was not found");
+        }
+
+        /**
+         *
          * Select a record by this id
          *
          * @param int $id

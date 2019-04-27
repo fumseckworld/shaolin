@@ -123,6 +123,14 @@ namespace Imperium\Routing {
          *
          */
         const AFTER_ACTION = 'after_action';
+
+        /**
+         *
+         * Table to store routes
+         *
+         * @var string
+         *
+         */
         const ROUTES = 'routes';
 
 
@@ -137,12 +145,12 @@ namespace Imperium\Routing {
 
         /***
          *
-         * Matches routes
+         * arguments
          *
          * @var array
          *
          */
-        private $matches = [];
+        private $args = [];
 
         /**
          *
@@ -225,6 +233,64 @@ namespace Imperium\Routing {
 
         /**
          *
+         * Call the callable
+         *
+         * @return mixed
+         *
+         * @throws Exception
+         *
+         */
+        public function run()
+        {
+            is_true(app()->table_not_exist(self::ROUTES),true,"The routes table was not found");
+
+            foreach(app()->model()->from(self::ROUTES)->where('method',EQUAL,$this->method)->get() as $route)
+            {
+                if ($this->match($route->url))
+                    return $this->call($route);
+            }
+            return to(name('404'));
+        }
+
+        /**
+         * @param $param
+         * @param $regex
+         *
+         * @return Router
+         *
+         */
+        public function with($param, $regex): Router
+        {
+            $this->regex[$param] = str_replace('(', '(?:', $regex);
+
+            return $this;
+        }
+
+        /**
+         *
+         * Display a route url by this name
+         *
+         * @param $name
+         *
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
+        public function url(string $name): string
+        {
+            $x = app()->model()->query()->from(self::ROUTES)->where('name',EQUAL,$name)->use_fetch()->get();
+
+            is_true(not_def($x),true,'Route was not found');
+
+            $host = request()->getHost();
+
+            return https() ? "https://$host$x->url" : "http://$host$x->url";
+
+        }
+
+        /**
+         *
          * @param ServerRequestInterface $request
          *
          * @throws Exception
@@ -259,60 +325,21 @@ namespace Imperium\Routing {
                 call_user_func_array(new $class(), [$request]);
             }
         }
-
         /**
          *
-         * Call the callable
+         * @param $match
          *
-         * @return mixed
-         *
-         * @throws Exception
+         * @return string
          *
          */
-        public function run()
+        private function paramMatch($match):string
         {
-            is_true(app()->table_not_exist(self::ROUTES),true,"The routes table was not found");
-
-            foreach(app()->model()->from(self::ROUTES)->all() as $route)
+            if(isset($this->regex[$match[1]]))
             {
-                if ($this->match($route->url))
-                    return $this->call($route);
+                return '(' . $this->regex[$match[1]] . ')';
             }
-            return to(name('404'));
+            return '([^/]+)';
         }
-
-        /**
-         * @param $param
-         * @param $regex
-         *
-         * @return Router
-         *
-         */
-        public function with($param, $regex): Router
-        {
-            $this->regex[$param] = str_replace('(', '(?:', $regex);
-
-            return $this;
-        }
-
-        /**
-         *
-         * Check if a route matches
-         *
-         * @param string $url
-         *
-         * @return bool
-         *
-         */
-        private function match(string $url): bool
-        {
-            $path = preg_replace_callback('#:([\w]+)#', [$this, 'paramMatch'], $url);
-
-            $regex = "#^$path$#";
-
-            return preg_match($regex,$this->url,$this->matches) === 1;
-        }
-
         /**
          *
          * @param $route
@@ -323,10 +350,10 @@ namespace Imperium\Routing {
          */
         private function call($route)
         {
-            array_shift($this->matches);
+            array_shift($this->args);
 
             $params = collection();
-            foreach ($this->matches as $match)
+            foreach ($this->args as $match)
             {
                 if (is_string($match))
                     $params->add($match);
@@ -336,7 +363,7 @@ namespace Imperium\Routing {
                     $params->add($match);
             }
 
-            $this->matches = $params->collection();
+            $this->args = $params->collection();
 
             $controller = $route->controller;
 
@@ -355,50 +382,31 @@ namespace Imperium\Routing {
 
             if (method_exists($controller, self::AFTER_ACTION))
             {
-                $x =  call_user_func_array([$controller, $action], $this->matches);
+                $x =  call_user_func_array([$controller, $action], $this->args);
                 call_user_func_array( [$controller, self::AFTER_ACTION],[]);
                 return $x;
-            }else{
-                return call_user_func_array([$controller, $action], $this->matches);
             }
-
+            return call_user_func_array([$controller, $action], $this->args);
         }
+
 
         /**
          *
-         * @param $match
+         * Check if a route matches
          *
-         * @return string
+         * @param string $url
+         *
+         * @return bool
          *
          */
-        private function paramMatch($match):string
+        private function match(string $url): bool
         {
-            if(isset($this->regex[$match[1]]))
-            {
-                return '(' . $this->regex[$match[1]] . ')';
-            }
-            return '([^/]+)';
+            $path = preg_replace_callback('#:([\w]+)#', [$this, 'paramMatch'], $url);
+
+            $regex = "#^$path$#";
+
+            return preg_match($regex,$this->url,$this->args) === 1;
         }
-
-        /**
-         * @param $name
-         * @return string
-         * @throws Exception
-         */
-        private static function route($name): string
-        {
-            $x = app()->model()->from('tables')->by('name',$name);
-
-            is_true(not_def($x),true,'Route was not found');
-
-            $host = \request()->getHost();
-
-            foreach ($x as $route)
-                return https() ? "https://$host$route->url" : "http://$host$route->url";
-
-            return '';
-        }
-
 
     }
 }

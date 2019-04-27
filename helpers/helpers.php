@@ -158,6 +158,28 @@ if (not_exist('route'))
         return name($name,$method);
     }
 }
+
+if (not_exist('exist'))
+{
+    /**
+     *
+     * Return data if exist and define
+     *
+     * @param $data
+     * @param bool $run_exception
+     * @param string $message
+     *
+     * @return mixed
+     *
+     * @throws Exception
+     *
+     */
+    function exist($data,bool $run_exception = false,string $message ='')
+    {
+        is_true(not_def($data),$run_exception,$message);
+        return $data;
+    }
+}
 if (not_exist('article'))
 {
     /**
