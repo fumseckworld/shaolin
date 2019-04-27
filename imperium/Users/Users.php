@@ -206,6 +206,22 @@ namespace Imperium\Users {
         }
 
         /**
+         *
+         * Check if the user exist
+         *
+         * @param string $user
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function not_exist(string $user): bool
+        {
+            return collection($this->show())->not_exist($user);
+        }
+
+        /**
          * update user password
          *
          * @param string $user

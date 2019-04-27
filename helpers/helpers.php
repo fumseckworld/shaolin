@@ -195,7 +195,7 @@ if (not_exist('article'))
         {
             $values = $data->current();
 
-            append($code,'<div class="col-lg-4 col-sm-6"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->$title.'</h4><a href="'.config($file,'prefix').'/'.$values->$slug.'"><img src="'.$values->$img.'" alt="'.$values->$title.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</div><p class="card-text mt-2"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div></div></div>');
+            append($code,'<div class="col-lg-6 col-sm-6"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->$title.'</h4><a href="'.config($file,'prefix').'/'.$values->$slug.'"><img src="'.$values->$img.'" alt="'.$values->$title.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</div><p class="card-text mt-2"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div></div></div>');
             $data->next();
         }
         append($code,'</div>');
@@ -207,6 +207,17 @@ if (not_exist('article'))
     }
 }
 
+if (not_exist('not_pdo_instance'))
+{
+    /**
+     * @param $variable
+     * @return bool
+     */
+    function not_pdo_instance(&$variable): bool
+    {
+        return  $variable instanceof  PDO !== true;
+    }
+}
 if (not_exist('login_page'))
 {
     /**
@@ -1234,7 +1245,14 @@ if (not_exist('edit'))
 
 if(not_exist('navbar'))
 {
-    function navbar(string $app_name,string $classes,array $routes =[])
+    /**
+     * @param string $app_name
+     * @param string $classes
+     * @param array $routes
+     * @return string
+     * @throws Exception
+     */
+    function navbar(string $app_name,string $classes,array $routes =[]): string
     {
         $html = '<nav class="'.$classes.'">
         <div class="container-fluid">
@@ -1320,7 +1338,7 @@ if (not_exist('display_article'))
     function display_article(string $slug,string $others_articles_text,string $previous,string $next,string $table ='articles'): string
     {
         $article = app()->model()->from($table)->by('slug',$slug);
-        $others  = app()->model()->from($table)->display(DISPLAY_ARTICLE,'/article',$previous,$next,'slug',$slug);
+        $others  = app()->model()->from($table)->display(DISPLAY_ARTICLE,$previous,$next,'slug',$slug);
         $html = '';
         foreach ($article as $item)
         {
@@ -2172,7 +2190,6 @@ if (not_exist('get_records'))
      * @param string $current_table_name The current table name
      * @param int $current_page The current page
      * @param int $limit_per_page The limit
-     * @param string $order_column
      * @param string $column
      * @param string $expected
      * @param string $condition
@@ -2182,7 +2199,7 @@ if (not_exist('get_records'))
      *
      * @throws Exception
      */
-    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $order_column,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array
+    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array
     {
 
 
@@ -2196,6 +2213,8 @@ if (not_exist('get_records'))
 
         $like = get('q');
         $session = app()->session();
+
+        $order_column = \app()->model()->from($current_table_name)->primary();
 
         if (not_def($column))
         {

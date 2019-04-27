@@ -224,15 +224,13 @@ namespace Imperium\Model {
          *
          * @method import
          *
-         * @param  string $base The base name
-         *
          * @return bool
          *
          * @throws Exception
          */
-        public function import(string $base = ''): bool
+        public function import(): bool
         {
-            return (new Import($base))->import();
+            return (new Import())->import();
         }
 
         /**
@@ -313,7 +311,6 @@ namespace Imperium\Model {
          * Display records without action
          *
          * @param int $mode
-         * @param string $url_prefix
          * @param string $start_pagination_text
          * @param string $end_pagination_text
          * @param string $column
@@ -322,7 +319,7 @@ namespace Imperium\Model {
          *
          * @throws Exception
          */
-        public function display(int $mode,string $url_prefix,string $start_pagination_text,string $end_pagination_text,string $column ='',string $expected = ''):string
+        public function display(int $mode,string $start_pagination_text,string $end_pagination_text,string $column ='',string $expected = ''):string
         {
 
             is_true(not_in(App::DISPLAY_MODE,$mode),true,"The mode is not valid");
@@ -333,11 +330,9 @@ namespace Imperium\Model {
 
             $limit_records_per_page = different($mode,DISPLAY_ARTICLE)  ? get('limit',10) : 12;
 
-            $records = different($mode,DISPLAY_ARTICLE) ? get_records($table,$current_page,$limit_records_per_page,\app()->model()->from($table)->primary(),$column,$expected) : get_records($table,$current_page,$limit_records_per_page,'created_at',$column,$expected);
+            $records = get_records($table,$current_page,$limit_records_per_page,$column,$expected);
 
-            $pagination = different($url_prefix,'/') ?
-                pagination($limit_records_per_page,"$url_prefix?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text)
-            : pagination($limit_records_per_page,"?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
+            $pagination = pagination($limit_records_per_page,"?current=",$current_page,$this->count($table),$start_pagination_text,$end_pagination_text);
 
 
             switch ($mode)

@@ -291,9 +291,10 @@ namespace Imperium\View {
 
              $functions->add(new TwigFunction('navbar',
 
+
                 function (string $app_name,string $class,string ...$names)
                 {
-                    return navbar($app_name,$class,$names);
+                    return  navbar($app_name,$class,$names);
                 }
                 ,['is_safe' => ['html']]
             ));

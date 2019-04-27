@@ -4,6 +4,7 @@
 namespace Imperium\Command {
 
 
+    use Exception;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Symfony\Component\Console\Command\Command;
@@ -23,6 +24,15 @@ namespace Imperium\Command {
         private $cache;
         private $web;
         private $database_dir;
+        private $driver;
+        private $base;
+        private $username;
+        private $password;
+        private $instance;
+        /**
+         * @var int
+         */
+        private $port;
 
         protected function configure()
         {
@@ -33,44 +43,114 @@ namespace Imperium\Command {
         {
             $helper = $this->getHelper('question');
 
-            $question = new Question("<info>Set the application directory</info> <comment>[app]</comment> : ",'app');
+            $question = new Question("<info>Set the application directory</info> <comment>[ app ]</comment> : ",'app');
 
             $this->app_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the controllers directory</info> <comment>[Controllers]</comment> : ",'Controllers');
+            $question = new Question("<info>Set the controllers directory</info> <comment>[ Controllers ]</comment> : ",'Controllers');
 
             $this->controller_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the commands directory</info> <comment>[Command]</comment> : ",'Command');
+            $question = new Question("<info>Set the commands directory</info> <comment>[ Command ]</comment> : ",'Command');
 
             $this->command_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the middleware directory</info> <comment>[Middleware]</comment> : ",'Middleware');
+            $question = new Question("<info>Set the middleware directory</info> <comment>[ Middleware ]</comment> : ",'Middleware');
 
             $this->middleware_dir =  $helper->ask($input,$output,$question);
 
 
-            $question = new Question("<info>Set the views directory</info> <comment>[Views]</comment> : ",'Views');
+            $question = new Question("<info>Set the views directory</info> <comment>[ Views ]</comment> : ",'Views');
 
             $this->views_dir =  $helper->ask($input,$output,$question);
 
-            $question = new Question("<info>Set the application namespace </info> <comment>[App]</comment> : ",'App');
+            $question = new Question("<info>Set the application namespace </info> <comment>[ App ]</comment> : ",'App');
 
             $this->namespace =  $helper->ask($input,$output,$question);
 
             $this->web = 'web';
 
-            $question = new Question("<info>Cache directory </info> <comment>[cache]</comment> : ",'cache');
+            $question = new Question("<info>Cache directory </info> <comment>[ cache ]</comment> : ",'cache');
 
             $this->cache =  $helper->ask($input,$output,$question);
+
+            while (not_pdo_instance($this->instance))
+            {
+                do
+                {
+                    $question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ",$this->driver);
+
+                    $this->driver =  $helper->ask($input,$output,$question);
+
+                    while (not_in([MYSQL,POSTGRESQL,SQLITE],$this->driver))
+                    {
+                        $output->write("<error>The driver was not currently supported use mysql, pgsql, or sqlite</error>\n");
+                        $question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ",$this->driver);
+
+                        $this->driver =  $helper->ask($input,$output,$question);
+                    }
+                }while(is_null($this->driver));
+
+
+                $question = new Question("<info>Set the database name </info> <comment>[ $this->base ]</comment> : ",$this->base);
+
+                $this->base =  $helper->ask($input,$output,$question);
+
+                assign(is_null($this->base),$this->base,'');
+
+
+                if (different($this->driver,SQLITE))
+                {
+                    do
+                    {
+                        $question = new Question("<info>Set the database username </info> <comment>[ $this->username ]</comment> : ",$this->username);
+
+                        $this->username =  $helper->ask($input,$output,$question);
+
+
+                    }while(is_null($this->username));
+
+                    do
+                    {
+                        $question = new Question("<info>Set the password </info> <comment>[ $this->password ]</comment> : ",$this->password);
+
+                        $this->password=  $helper->ask($input,$output,$question);
+
+                    }while(is_null($this->password));
+
+                }
+                try{
+                    if (different($this->driver,SQLITE))
+                        $this->instance = connect($this->driver,$this->base,$this->username,$this->password,LOCALHOST,'')->instance();
+                    else
+                        $this->instance = connect($this->driver,$this->base,'','',LOCALHOST,'')->instance();
+                }catch (Exception $exception)
+                {
+                    $this->instance = null;
+                }
+            }
 
             $question = new Question("<info>Set the migrations, seeding, dump directory name </info> <comment>[db]</comment> : ",'db');
 
             $this->database_dir =  $helper->ask($input,$output,$question);
+            $this->port = equal($this->driver,MYSQL) ? 3306 : 5432;
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
+
+            $file = 'config/db.yaml';
+
+            File::remove_if_exist($file);
+
+            File::create($file);
+
+            if (different($this->driver,SQLITE))
+                File::put($file,"driver: $this->driver\nbase: '$this->base'\nusername: '$this->username'\npassword: '$this->password'\ndump: 'dump'\nhost: 'localhost'\nhidden_tables: ['migrations']\nhidden_bases: []\nhidden_users: []\ndebug: true\nport: $this->port\n");
+            else
+                File::put($file,"driver: $this->driver\nbase: '$this->base'\nusername: ''\npassword: ''\ndump: 'dump'\nhost: 'localhost'\nhidden_tables: ['migrations']\nhidden_bases: []\nhidden_users: []\ndebug: true\nport: \n");
+
+
             $file = 'config/app.yaml';
 
             File::remove_if_exist($file);

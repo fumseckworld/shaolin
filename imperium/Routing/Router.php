@@ -325,6 +325,19 @@ namespace Imperium\Routing {
         {
             array_shift($this->matches);
 
+            $params = collection();
+            foreach ($this->matches as $match)
+            {
+                if (is_string($match))
+                    $params->add($match);
+                elseif (is_numeric($match))
+                    $params->add(intval($match));
+                else
+                    $params->add($match);
+            }
+
+            $this->matches = $params->collection();
+
             $controller = $route->controller;
 
             $action     = $route->action;
