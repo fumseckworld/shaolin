@@ -656,14 +656,16 @@ if (not_exist('send_mail'))
      *
      * @param string $subject
      * @param string $from
+     * @param string $reply_to
      * @param string $to
      * @param string $message
      *
      * @return bool
      *
      * @throws Exception
+     *
      */
-    function send_mail(string $subject,string $from,string $to,string $message): bool
+    function send_mail(string $subject,string $from,string $reply_to,string $to,string $message): bool
     {
         $file = 'mail';
 
@@ -678,12 +680,14 @@ if (not_exist('send_mail'))
         {
             $message = (new Swift_Message($subject))
                 ->setFrom($from)
+                ->setReplyTo($reply_to)
                 ->setTo($to)
                 ->setBody(message($message),'text/html');
         }else
         {
             $message = (new Swift_Message($subject))
                 ->setFrom($from)
+                ->setReplyTo($reply_to)
                 ->setTo($to)
                 ->setBody($message);
         }
