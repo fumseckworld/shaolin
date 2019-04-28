@@ -406,7 +406,7 @@ namespace Imperium\View {
             if (File::not_exist($file))
             {
                 File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title %}\n\n{% endblock %}\n\n\n\n{% block css %}\n\n{% endblock %}\n\n{% block description %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
+                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);
