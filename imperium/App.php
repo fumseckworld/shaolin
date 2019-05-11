@@ -10,6 +10,7 @@ namespace Imperium {
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Dump\Dump;
+    use Imperium\Writing\Write;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
@@ -1131,6 +1132,23 @@ namespace Imperium {
         public function to(string $url, string $message='', bool $success = true): RedirectResponse
         {
             return to($url,$message,$success);
+        }
+
+        /**
+         *
+         * @param string $subject
+         * @param string $message
+         * @param string $author_email
+         * @param string $to
+         *
+         * @return Write
+         *
+         * @throws Exception
+         *
+         */
+        public function write(string $subject, string $message, string $author_email, string $to): Write
+        {
+            return new Write($subject,$message,$author_email,$to);
         }
     }
 }

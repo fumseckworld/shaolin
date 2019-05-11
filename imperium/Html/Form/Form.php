@@ -419,19 +419,19 @@ namespace Imperium\Html\Form {
 
         /**
          *
-         * The button size class 
+         * The button size class
          *
          * @var string
-         * 
+         *
          */
         private $btn_size;
 
         /**
-         * 
+         *
          * The input size class
-         * 
+         *
          * @var string
-         * 
+         *
          */
         private $input_size;
 
@@ -564,11 +564,10 @@ namespace Imperium\Html\Form {
          * @method start
          *
          * @param  string $action  The form action
-         * @param  string $id      The form id
+         * @param  string $method  The form method
          * @param  string $confirm  The confirm text
          * @param  string $class   The form class
          * @param  bool   $enctype Configuration to support upload
-         * @param  string $method  The form method
          * @param  string $charset The form charset
          *
          * @return Form
@@ -576,10 +575,12 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function start(string $action, string $id,string $confirm ='', string $class = '',  bool $enctype = false, string $method = POST,string $charset = 'utf-8'): Form
+        public function start(string $action,string $method,string $confirm ='', $id = '',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
         {
 
             $this->method = $method;
+
+            $method = POST;
 
             if($this->validate)
             {
@@ -628,7 +629,11 @@ namespace Imperium\Html\Form {
             if (config($this->file,'space'))
                 $this->margin()->padding();
 
+            append($this->form , '<input type="hidden" value="'.$this->method.'" name="method">');
+
             return $this->csrf(csrf_field());
+
+
         }
 
         /**
@@ -998,7 +1003,6 @@ namespace Imperium\Html\Form {
          * @method submit
          *
          * @param  string $text The submit button text
-         * @param  string $id The submit button id
          * @param  string $icon The submit button id
          *
          * @return Form
@@ -1006,11 +1010,11 @@ namespace Imperium\Html\Form {
          * @throws Exception
          *
          */
-        public function submit(string $text, string $id, string $icon = ''): Form
+        public function submit(string $text, string $icon = ''): Form
         {
             $class  = collection(config($this->file,'class'))->get('submit');
 
-            append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'" id="' . $id . '">' . $icon . ' ' . $text . '</button></div></div>');
+            append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'">' . $icon . ' ' . $text . '</button></div></div>');
 
             return $this;
         }

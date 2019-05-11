@@ -61,8 +61,8 @@ namespace Imperium\Command {
                 new GenerateMigrations(),
                 new FindRoute(),
                 new MaintenanceMode(),
-                new RunMode()
-
+                new RunMode(),
+                new Dkim()
 
 
             ];

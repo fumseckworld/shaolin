@@ -124,6 +124,9 @@ namespace Imperium\Routing {
          */
         const AFTER_ACTION = 'after_action';
 
+
+        const METHOD = 'method';
+
         /**
          *
          * Table to store routes
@@ -222,7 +225,12 @@ namespace Imperium\Routing {
 
             is_false(Dir::is($this->controller_dir),true,"The directory $controller_dir was not found at {$this->core_path}");
 
-            $this->method        = $request->getMethod();
+            if (different($request->getMethod(),GET))
+                $this->method = strtoupper(collection($request->getParsedBody())->get(self::METHOD));
+            else
+                $this->method = $request->getMethod();
+
+
 
             $this->url           = $request->getUri()->getPath();
 

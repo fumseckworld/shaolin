@@ -160,11 +160,8 @@ namespace Imperium\Command {
             File::put($file,"dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\n  db: '$this->database_dir'\n\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: '$this->cache'\n  charset: 'utf-8'");
 
             Dir::create('locales');
-            
+
             Dir::create('po');
-
-            Dir::structure($this->database_dir,'seeds','migrations','dump');
-
 
             File::remove_if_exist('phinx.php');
             File::create('phinx.php');
@@ -198,7 +195,7 @@ return [
             $views = $app .DIRECTORY_SEPARATOR . $this->views_dir;
 
 
-            Dir::structure($app,$this->controller_dir,$this->middleware_dir,$this->views_dir,$this->command_dir,'Helpers');
+            Dir::structure($app,$this->controller_dir,$this->middleware_dir,$this->views_dir,$this->command_dir,'Helpers','Mailers','Mailers' .DIRECTORY_SEPARATOR . 'Templates','Mailers' .DIRECTORY_SEPARATOR . 'Emails');
 
             Dir::structure("$app/Assets",'js','sass');
 
@@ -212,6 +209,10 @@ return [
             File::put("$app/Helpers/admin.php","<?php\n");
 
             Dir::copy('assets',"$app/Assets");
+
+            Dir::copy('database',$this->database_dir);
+
+            Dir::remove('database');
 
             Dir::remove('assets');
 

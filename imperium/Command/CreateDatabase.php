@@ -41,7 +41,7 @@ namespace Imperium\Command {
                 }
                 return 0;
             }
-            $db = dirname(core_path(collection(config('app','dir'))->get('app'))) .DIRECTORY_SEPARATOR .'db'. $db;
+            $db = dirname(core_path(collection(config('app','dir'))->get('app'))) . DIRECTORY_SEPARATOR .'web'.DIRECTORY_SEPARATOR .  $db;
 
             if(File::create($db))
                 $output->write("<bg=green;fg=white>The $db base was created successfully\n");
