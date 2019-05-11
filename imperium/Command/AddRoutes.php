@@ -42,14 +42,16 @@ namespace Imperium\Command {
 
                 do {
                     $this->clean();
+
                     $question = new Question("<info>Set the route method : </info>");
 
                     $this->method = strtoupper($helper->ask($input, $output, $question));
 
-                    while (not_in([POST,GET],$this->method))
+                    while (not_in(Router::METHOD_SUPPORTED,$this->method))
                     {
                         $this->clean();
-                        $output->write("<error>The method must be are get or post </error>\n");
+                        $verbs = collection(Router::METHOD_SUPPORTED)->each('strtolower')->join(', ');
+                        $output->write("<error>The method must be $verbs </error>\n");
                         $question = new Question("<info>Set the route method : </info>");
                         $this->method = strtoupper($helper->ask($input, $output, $question));
                     }

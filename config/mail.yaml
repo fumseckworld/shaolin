@@ -1,7 +1,12 @@
-smtp: 'smtp.orange.fr'
+smtp: ''
 port: 25
 username: ''
 password: ''
-from: 'fumseckworld@gmail.com'
-dir: 'core/Emails'
-html: true
+dir: 'Emails'
+domain: ''
+selector: ''
+from: ''
+passphrase: ''
+bcc: ''
+cc: ''
+html: false

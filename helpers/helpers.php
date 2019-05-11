@@ -278,9 +278,9 @@ if (not_exist('login_page'))
                                 <div class="container">
                                     <div class="row">
                                         <div class="col-md-9 col-lg-8 mx-auto">
-                                            <header class="text-center">          
-                                                '.$logo.'                  
-                                                <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>  
+                                            <header class="text-center">
+                                                '.$logo.'
+                                                <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>
                                             </header>';
 
                     if ($username)
@@ -300,16 +300,16 @@ if (not_exist('login_page'))
                         </div>';
 
                     }
-                    $html .=' 
+                    $html .='
                     <div class="form-label-group">
                       <input type="password" id="inputPassword" name="password" class="form-control" placeholder="'.$password_text.'" required>
                       <label for="inputPassword">'.$password_text.'</label>
                     </div>
                     <button class="'.$class.'" type="submit">'.$sign_in_text.'</button>
                 </form>
-                <form action="'.route($send_reset_email_action_name,POST).'" method="post">'.csrf_field().'       
+                <form action="'.route($send_reset_email_action_name,POST).'" method="post">'.csrf_field().'
                      <div class="form-label-group">
-                      <input type="text" id="inputEmail" name="g di 
+                      <input type="text" id="inputEmail" name="g di
                       email" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
                       <label for="inputEmail">'.$forgot_password_email_text.'</label>
                     </div>
@@ -359,9 +359,9 @@ if (not_exist('register_page'))
             <div class="login d-flex align-items-center py-5">
                 <div class="container">
                 <div class="col-md-9 col-lg-8 mx-auto">
-                    <header class="text-center">          
-                        '.$logo.'                  
-                        <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>  
+                    <header class="text-center">
+                        '.$logo.'
+                        <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>
                     </header>
                     <form action="'.route($register_route_name,POST).'" method="post">
                     '.csrf_field().'
@@ -386,8 +386,8 @@ if (not_exist('register_page'))
                         <div class="form-label-group">
                             <input type="password" id="inputConfirmPassword" name="confirmation" class="form-control" placeholder="'.$confirm_password_text.'" required>
                             <label for="inputConfirmPassword">'.$confirm_password_text.'</label>
-                        </div>                        
-                        <button class="'.$class.'" type="submit">'.$create_account_text.'</button>            
+                        </div>
+                        <button class="'.$class.'" type="submit">'.$create_account_text.'</button>
                     </form>
                 </div>
             </div>
@@ -648,55 +648,6 @@ if (not_exist('view'))
     }
 }
 
-if (not_exist('send_mail'))
-{
-    /**
-     *
-     * Send and email
-     *
-     * @param string $subject
-     * @param string $from
-     * @param string $reply_to
-     * @param string $to
-     * @param string $message
-     *
-     * @return bool
-     *
-     * @throws Exception
-     *
-     */
-    function send_mail(string $subject,string $from,string $reply_to,string $to,string $message): bool
-    {
-        $file = 'mail';
-
-        $transport = (new Swift_SmtpTransport(config($file,'smtp') ,config($file,'port')))
-            ->setUsername(config($file,'username'))
-            ->setPassword(config($file,'password'))
-        ;
-
-        $mailer = new Swift_Mailer($transport);
-
-        if (config($file,'html'))
-        {
-            $message = (new Swift_Message($subject))
-                ->setFrom($from)
-                ->setReplyTo($reply_to)
-                ->setTo($to)
-                ->setBody(message($message),'text/html');
-        }else
-        {
-            $message = (new Swift_Message($subject))
-                ->setFrom($from)
-                ->setReplyTo($reply_to)
-                ->setTo($to)
-                ->setBody($message);
-        }
-
-        return different($mailer->send($message),0);
-
-    }
-}
-
 if (not_exist('current_table'))
 {
     /**
@@ -760,7 +711,7 @@ if (not_exist('message'))
      */
     function message(string $filename): string
     {
-        return File::content(realpath(config('mail','dir')) . DIRECTORY_SEPARATOR . $filename);
+        return File::content(realpath(core_path(collection(config('app', 'dir'))->get('app'))) .DIRECTORY_SEPARATOR . 'Mailers' . DIRECTORY_SEPARATOR .'Emails' .DIRECTORY_SEPARATOR .  $filename);
     }
 }
 
@@ -1287,8 +1238,8 @@ if(not_exist('navbar'))
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            
-            
+
+
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">';
                 if (def($routes))
@@ -1321,7 +1272,7 @@ if(not_exist('navbar'))
                         $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
 
                     }else{
-                        
+
                         $html.=' <li class="nav-item"><a class="nav-link" href="'.route($home_route).'">'.strtoupper($home_text).'</a></li>';
                         $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
                         }
@@ -2103,7 +2054,7 @@ if(not_exist('routes'))
         {
             if (def($routes))
             {
-                $output->write("+-------+-------------------------------+---------------------------------------+-------------------------------+---------------------+\n");
+                $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
 
                 foreach ($routes as $route)
                 {
@@ -2116,7 +2067,11 @@ if(not_exist('routes'))
                     $method =  "<fg=cyan;options=bold>$route->method</>";
 
 
-                    $output->write("|  $method\t");
+
+                    if (length($route->method) >4 )
+                      $output->write("|  $method\t");
+                    else
+                      $output->write("|  $method\t\t");
 
                     if (length($route->name) < 5)
                         $output->write("|  $name\t\t\t\t|");
@@ -2136,23 +2091,28 @@ if(not_exist('routes'))
                         else
                             $output->write("  $url\t\t\t|");
 
-
-
-                    if (length($route->controller) < 8)
-                        $output->write("  $controller\t\t\t|");
+                    if (length($route->controller) < 5)
+                        $output->write("  $controller\t\t\t\t\t|");
+                    elseif (length($route->controller) < 8)
+                        $output->write("  $controller\t\t\t\t|");
                     elseif (length($route->controller) > 8 && length($route->controller) < 15)
-                        $output->write("  $controller\t\t|");
-                    else if(length($route->controller)> 15)
-                        $output->write("  $controller\t\t|");
+                        $output->write("  $controller\t\t\t|");
+                    elseif (length($route->controller)> 15)
+                        $output->write("  $controller\t\t\t|");
                     else
-                        $output->write("  $controller\t\t|");
+                        $output->write("  $controller\t\t\t|");
 
-                    if (length($route->action) < 8)
+                    if (length($route->action) < 5)
+                        $output->write("  $action\t\t\t\t|\n");
+                    elseif(length($route->action) < 10)
                         $output->write("  $action\t\t\t|\n");
+                    elseif(length($route->action) > 12)
+                      $output->write("  $action\t\t|\n");
                     else
-                        $output->write("  $action\t\t|\n");
-                    $output->write("+-------+-------------------------------+---------------------------------------+-------------------------------+---------------------+\n");
-                }
+                      $output->write("  $action\t\t\t|\n");
+
+                    $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
+    }
             }else{
                 $output->write("<error>No routes was found</error>\n");
             }
@@ -3462,7 +3422,7 @@ if (not_exist('change'))
         $lines = File::lines($filename);
 
         $keys = File::keys($filename,$delimiter);
-    
+
         $file = File::open($filename,File::EMPTY_AND_WRITE);
 
         if ($file)

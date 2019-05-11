@@ -9,6 +9,7 @@ namespace Imperium {
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Writing\Write;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
@@ -568,6 +569,23 @@ namespace Imperium {
          *
          */
         public function router(ServerRequestInterface $serverRequest): Router;
+
+
+        /**
+         *
+         * @param string $subject
+         * @param string $message
+         * @param string $author_email
+         * @param string $to
+         *
+         * @return Write
+         *
+         * @throws Exception
+         *
+         *
+         */
+        public function write(string $subject, string $message, string $author_email, string $to): Write;
+
 
         /**
          *

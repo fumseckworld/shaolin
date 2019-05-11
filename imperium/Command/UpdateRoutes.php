@@ -46,17 +46,19 @@ namespace Imperium\Command {
 
                 do {
                     $this->clean();
-                    $question = new Question("<info>Please enter the route name : </info>");
+                    $question = new Question("<info>Please enter the route name : </info>",'__________');
 
                     $this->name = $helper->ask($input, $output, $question);
+
                     while (not_def($this->get($this->name)))
                     {
                         $this->clean();
-                        $question = new Question("<info>Please enter the route name : </info>");
+                        $question = new Question("<info>Please enter the route name : </info>",'__________');
 
                         $this->name = $helper->ask($input, $output, $question);
-
                     }
+
+
 
                 }while (is_null($this->name));
 
@@ -70,9 +72,10 @@ namespace Imperium\Command {
 
                         $this->method = strtoupper($helper->ask($input, $output, $question));
 
-                        while (not_in([POST,GET],$this->method))
+                        while (not_in(Router::METHOD_SUPPORTED,$this->method))
                         {
-                            $output->write("<error>The method must be are get or post </error>\n");
+                            $verbs = collection(Router::METHOD_SUPPORTED)->each('strtolower')->join(', ');
+                            $output->write("<error>The method must be are $verbs  </error>\n");
                             $question = new Question("<info>Change the method</info> <comment>[$route->method]</comment> : ",$route->method);
                             $this->method = strtoupper($helper->ask($input, $output, $question));
                         }
