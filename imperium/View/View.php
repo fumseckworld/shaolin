@@ -10,13 +10,16 @@ namespace Imperium\View {
     use Imperium\Html\Form\Form;
     use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Os;
+    use Symfony\Bridge\Twig\Extension\TranslationExtension;
     use Twig\Environment;
     use Twig\Error\LoaderError as LoaderErrorAlias;
     use Twig\Error\RuntimeError;
     use Twig\Error\SyntaxError;
+    use Twig\Extensions\ArrayExtension;
     use Twig\Loader\FilesystemLoader;
     use Twig\TwigFunction;
     use Twig_Extensions_Extension_I18n;
+    use Twig_Extensions_Extension_Text;
 
 
     /**
@@ -79,6 +82,11 @@ namespace Imperium\View {
 
             $this->twig = new Environment($this->loader,$config);
 
+
+            $this->twig->addExtension(new Twig_Extensions_Extension_Text());
+            $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
+            $this->twig->addExtension(new ArrayExtension());
+            $this->twig->addExtension(new TranslationExtension());
             $namespace = config('twig','namespaces');
 
             is_true(!is_array($namespace),true,'The twig namespace config must be an array');
@@ -317,7 +325,6 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 
             $this->add_functions($functions->collection());
 
