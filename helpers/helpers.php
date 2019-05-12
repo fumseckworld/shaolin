@@ -305,12 +305,12 @@ if (not_exist('login_page'))
                       <input type="password" id="inputPassword" name="password" class="form-control" placeholder="'.$password_text.'" required>
                       <label for="inputPassword">'.$password_text.'</label>
                     </div>
+                    <input type="hidden" name="method" value="post">
                     <button class="'.$class.'" type="submit">'.$sign_in_text.'</button>
                 </form>
                 <form action="'.route($send_reset_email_action_name,POST).'" method="post">'.csrf_field().'
                      <div class="form-label-group">
-                      <input type="text" id="inputEmail" name="g di
-                      email" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
+                      <input type="text" id="inputEmail" name="email" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
                       <label for="inputEmail">'.$forgot_password_email_text.'</label>
                     </div>
                     <button class="'.$class.'" type="submit">'.$forgot_password_send_email_text.'</button>
@@ -366,6 +366,7 @@ if (not_exist('register_page'))
                     <form action="'.route($register_route_name,POST).'" method="post">
                     '.csrf_field().'
                         <input type="hidden" name="created_at" value="'.now()->format('Y-m-d').'">
+                        <input type="hidden" name="method" value="post">
                         <input type="hidden" name="updated_at" value="'.now()->format('Y-m-d').'">
                         <div class="form-label-group">
                             <input type="text" id="username" name="username" class="form-control" placeholder="'.$username_text.'" required autofocus="autofocus                    ">
