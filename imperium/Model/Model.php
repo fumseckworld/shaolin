@@ -257,16 +257,15 @@ namespace Imperium\Model {
          * @param string $table
          * @param int $id The record id
          * @param string $action The form action
-         * @param string $form_id The form id
          * @param string $submit_text The submit text
          * @param string $submit_icon
          * @return string
          *
          * @throws Exception
          */
-        public function edit_form(string $table,int $id,string $action,string $form_id,string $submit_text,string $submit_icon): string
+        public function edit_form(string $table,int $id,string $action,string $submit_text,string $submit_icon): string
         {
-            return form($action,id())->generate(2,$table,$submit_text,$form_id,$submit_icon,Form::EDIT,$id);
+            return form($action,id())->generate(2,$table,$submit_text,$submit_icon,Form::EDIT,$id);
         }
 
         /**
@@ -277,16 +276,16 @@ namespace Imperium\Model {
          *
          * @param string $table
          * @param  string $action The form action
-         * @param  string $form_id The form id
+
          * @param  string $submit_text The submit text
          * @param string $submit_icon
          * @return string
          *
          * @throws Exception
          */
-        public function create_form(string $table,string $action,string $form_id,string $submit_text,string $submit_icon): string
+        public function create_form(string $table,string $action, string $submit_text,string $submit_icon): string
         {
-            return form($action,'')->generate(2,$table,$submit_text,$form_id,$submit_icon);
+            return form($action,'')->generate(2,$table,$submit_text,$submit_icon);
         }
 
         /**
@@ -1053,7 +1052,7 @@ namespace Imperium\Model {
                     $i++;
                 }
             }
-           return $form->end_row_and_new()->submit($submit_text,id())->get();
+           return $form->end_row_and_new()->submit($submit_text)->get();
         }
     }
 }

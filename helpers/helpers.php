@@ -1106,7 +1106,6 @@ if (not_exist('secure_register_form'))
      * @param  string $password_invalid_text
      * @param  string $confirm_password_placeholder
      * @param  string $submit_text
-     * @param  string $submit_id
      * @param  bool $multiple_languages
      * @param  array $supported_languages
      * @param  string $choose_language_text
@@ -1131,7 +1130,7 @@ if (not_exist('secure_register_form'))
                                     string $username_success_text,string $username_error_text,string $email_placeholder,
                                     string $email_success_text,string $email_error_text,string $password_placeholder,
                                     string $password_valid_text,string $password_invalid_text,string $confirm_password_placeholder,
-                                    string $submit_text,string $submit_id,bool $multiple_languages = false,
+                                    string $submit_text,bool $multiple_languages = false,
                                     array $supported_languages =[],string $choose_language_text = '', string $choose_language_valid_text ='',
                                     string $choose_language_invalid_text = '',string $select_time_zone_text ='',string $valid_time_zone_text= '',
                                     string $time_zone_invalid_text = '',
@@ -1153,7 +1152,7 @@ if (not_exist('secure_register_form'))
 
             return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_icon,$username_success_text,$username_error_text,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_icon,$email_success_text,$email_error_text,post('email'),true)->end_row_and_new()
                 ->input(Form::PASSWORD,'password',$password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password_confirmation'),true)->end_row_and_new()
-                ->submit($submit_text,$submit_id,$submit_icon)->end_row()->get();
+                ->submit($submit_text,$submit_icon)->end_row()->get();
 
         }
         return '';
@@ -1208,7 +1207,6 @@ if (not_exist('edit'))
      * @param string $table
      * @param int $id
      * @param string $action
-     * @param string $form_id
      * @param string $submit_text
      * @param string $icon
      *
@@ -1216,9 +1214,9 @@ if (not_exist('edit'))
      *
      * @throws Exception
      */
-    function edit(string $table, int $id, string $action, string $form_id,string $submit_text, string $icon): string
+    function edit(string $table, int $id, string $action,string $submit_text, string $icon): string
     {
-        return app()->model()->edit_form($table,$id,$action,$form_id,$submit_text,$icon);
+        return app()->model()->edit_form($table,$id,$action,$submit_text,$icon);
     }
 }
 
@@ -1323,7 +1321,7 @@ if (not_exist('display_article'))
         {
             $html .= '<section>
             <header>
-                <div class="img-thumbnail mt-3 mb-3">
+                <div class="mt-3 mb-3">
                     <img src="'.$item->img.'" alt="'.$item->title.'"  width="100%">
                 </div>
                 <h1 class="subheading text-center">'.$item->title.'</h1>
@@ -1364,6 +1362,10 @@ if (not_exist('back'))
 
 if (not_exist('url'))
 {
+    /**
+     * @return string
+     * @throws Exception
+     */
     function url()
     {
         return '<a href="javascript:history.go(-1)" class="'.config('back','class').'">'.config('back','message').'</a>';
@@ -1378,7 +1380,6 @@ if(not_exist('create'))
      *
      * @param $table
      * @param $action
-     * @param $form_id
      * @param $submit_text
      * @param $icon
      *
@@ -1386,9 +1387,9 @@ if(not_exist('create'))
      *
      * @throws Exception
      */
-    function create($table, $action, $form_id, $submit_text, $icon)
+    function create($table, $action, $submit_text, $icon)
     {
-        return app()->model()->create_form($table,$action,$form_id,$submit_text,$icon);
+        return app()->model()->create_form($table,$action,$submit_text,$icon);
     }
 }
 
@@ -2790,7 +2791,6 @@ if (not_exist('generate'))
      * @param  string $table
      * @param  string $submitText
      * @param  string $submitIcon
-     * @param  string $submitId
      * @param  int $mode
      * @param  int $id
      *
@@ -2799,9 +2799,9 @@ if (not_exist('generate'))
      * @throws Exception
      *
      */
-    function generate(string $formId,string $class,string $action,string $table,string $submitText,string $submitIcon,string $submitId,int $mode = Form::CREATE,int $id = 0): string
+    function generate(string $formId,string $class,string $action,string $table,string $submitText,string $submitIcon,int $mode = Form::CREATE,int $id = 0): string
     {
-        return form($action,$formId,$class)->generate(2,$table,$submitText,$submitId,$submitIcon,$mode,$id);
+        return form($action,$formId,$class)->generate(2,$table,$submitText,$submitIcon,$mode,$id);
     }
 }
 
@@ -3399,7 +3399,7 @@ if (not_exist('form'))
      */
     function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf-8'): Form
     {
-        return def($confirm) ? (new Form())->validate()->start($action,$id,$confirm,$class,$enctype,strtolower($method),$charset) : (new Form())->start($action,$id,$confirm,$class,$enctype,strtolower($method),$charset);
+        return def($confirm) ? (new Form())->validate()->start($action,$method,$confirm,$id,$class,$enctype,$charset) : (new Form())->start($action,$method,$confirm,$id,$class,$enctype,$charset);
     }
 }
 
@@ -3858,7 +3858,7 @@ if (not_exist('iconic'))
                 break;
             default:
                 return '';
-                break;
+            break;
         }
     }
 }

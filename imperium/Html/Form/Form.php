@@ -563,17 +563,17 @@ namespace Imperium\Html\Form {
          *
          * @method start
          *
-         * @param  string $action  The form action
-         * @param  string $method  The form method
-         * @param  string $confirm  The confirm text
-         * @param  string $class   The form class
-         * @param  bool   $enctype Configuration to support upload
-         * @param  string $charset The form charset
+         * @param string $action The form action
+         * @param string $method The form method
+         * @param string $confirm The confirm text
+         * @param string $id
+         * @param string $class The form class
+         * @param bool $enctype Configuration to support upload
+         * @param string $charset The form charset
          *
          * @return Form
          *
          * @throws Exception
-         *
          */
         public function start(string $action,string $method,string $confirm ='', $id = '',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
         {
@@ -1359,7 +1359,6 @@ namespace Imperium\Html\Form {
          * @param int $form_grid The number to modify the form generation output
          * @param string $table The current table
          * @param string $submit_text The submit button text
-         * @param string $submit_id The submit button id
          * @param string $submit_icon The submit icon
          * @param int $mode Define the mode edit or create
          * @param int $id The record id
@@ -1368,7 +1367,7 @@ namespace Imperium\Html\Form {
          *
          * @throws Exception
          */
-        public function generate(int $form_grid,string $table, string $submit_text, string $submit_id, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
+        public function generate(int $form_grid,string $table, string $submit_text, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
             $instance   = \app()->table()->column()->for($table);
 
@@ -1483,7 +1482,7 @@ namespace Imperium\Html\Form {
                     }
                 }
 
-                return $this->end_row_and_new()->primary($primary,$id,$table)->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
+                return $this->end_row_and_new()->primary($primary,$id,$table)->submit($submit_text, $submit_icon)->end_row()->get();
 
             }else
             {
@@ -1565,7 +1564,7 @@ namespace Imperium\Html\Form {
 
                 $id = app()->connect()->postgresql() ? 'DEFAULT' : 'NULL';
 
-               return $this->primary($primary,$id,$table)->submit($submit_text, $submit_id, $submit_icon)->end_row()->get();
+               return $this->primary($primary,$id,$table)->submit($submit_text,  $submit_icon)->end_row()->get();
 
             }
         }

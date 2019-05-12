@@ -159,8 +159,6 @@ namespace Imperium\Command {
 
             File::put($file,"dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\n  db: '$this->database_dir'\n\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: '$this->cache'\n  charset: 'utf-8'");
 
-            Dir::create('locales');
-
             Dir::create('po');
 
             File::remove_if_exist('phinx.php');
