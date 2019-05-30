@@ -771,14 +771,15 @@ namespace Imperium\Collection {
             return $this;
         }
 
-        
 
         /**
-         * 
+         *
          * Remove a value in the array
-         * 
+         *
+         * @param mixed $value
+         *
          * @return Collection
-         * 
+         *
          */
         public function remove_value($value): Collection
         {

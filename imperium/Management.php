@@ -9,6 +9,7 @@ namespace Imperium {
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
@@ -94,7 +95,6 @@ namespace Imperium {
          * @param string $order
          *
          * @return array
-         *
          */
         public function all(string $table,string $column,string $order = DESC): array;
 
@@ -540,6 +540,17 @@ namespace Imperium {
          * @return Flash
          */
         public function flash(): Flash;
+
+        /**
+         *
+         * Management of git
+         *
+         * @param string $repository_path
+         *
+         * @return Git
+         *
+         */
+        public function git(string $repository_path): Git;
 
         /**
          * @return SessionInterface

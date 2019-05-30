@@ -64,6 +64,21 @@ namespace Imperium\Versioning\Git {
             Carbon::setLocale($locale);
         }
 
+
+        /**
+         *
+         * List repository files
+         *
+         * @return array
+         *
+         */
+        public function files(): array
+        {
+            $this->execute('git ls-files');
+
+            return $this->data;
+        }
+
         /**
          *
          * @param string $author
@@ -217,6 +232,8 @@ namespace Imperium\Versioning\Git {
             return Dir::is($project) && Dir::is(self::GIT_DIR);
         }
 
+
+
         /**
          *
          * Get a collection of all branches
@@ -294,21 +311,25 @@ namespace Imperium\Versioning\Git {
             foreach ($this->data as $x)
             {
                $a = collection( explode(':',$x));
-
                if ($authors->not_exist(trim($a->get(0))))
-                    $authors->add(trim($a->get(1)),trim($a->get(0)));
+                    $authors->add(trim($a->get(0)),trim($a->get(1)));
             }
             return $authors;
         }
 
+        /**
+         * @return string
+         *
+         * @throws Exception
+         *
+         */
         public function contributors_view():string
         {
 
-            $format ='<div class="col-4"><div class="card ml-4 mr-4 mt-4 mb-4"><div class="card-body"><h5 class="card-title text-center text-uppercase">%an</h5> </div><div class="card-footer">
-      <small class="text-muted"><a href="mailto:%ae">Send an email</a></small></div></div></div></div>';
+            $format ='<li class="col-md-4 col-lg-4 col-sm-12 col-xl-4 contributor"><a href="mailto:%ae">%an</a><a href="#" onclick="contributions()" class="'. collection(config('git','class'))->get('contributions').'"> '.config('git','contribution_text').'</a></li>';
             $command = '';
             append($command,"git log --pretty=format:'$format' " );
-
+            $html = '<input type="search" id="search" onkeyup="find()" placeholder="'.collection(config('git','placeholders'))->get('search').'" class="'.collection(config('git','class'))->get('search').'" autofocus="autofocus"><ul class="list-unstyled row" id="contributors">';
 
             $authors = collection();
 
@@ -321,7 +342,56 @@ namespace Imperium\Versioning\Git {
                     $authors->add($x);
             }
 
-            return $authors->join('');
+            return $html . $authors->join('') . '</ul>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+                <script>
+                    function contributions() 
+                    {
+                      document.getElementById("contributors").style.display = "none";
+                    }
+                    function find() 
+                    {
+                        let input, filter, ul, li, a, i, txtValue;
+                        input = document.getElementById("search");
+                        filter = input.value.toUpperCase();
+                        ul = document.getElementById("contributors");
+                        li = ul.getElementsByTagName("li");i
+                        for (i = 0; i < li.length; i++) 
+                        {
+                            a = li[i].getElementsByTagName("a")[0];
+                            txtValue = a.textContent || a.innerText;
+                            if (txtValue.toUpperCase().indexOf(filter) > -1) 
+                            {
+                                li[i].style.display = "";
+                            } else {
+                                li[i].style.display = "none";
+                            }
+                        }
+                    }
+                </script>';
+        }
+
+        /**
+         *
+         * Clone a repository
+         *
+         * @param string $url
+         * @param string $path
+         *
+         * @return bool
+         *
+         * @throws Exception
+         *
+         */
+        public function clone(string $url,string $path): bool
+        {
+            is_true(equal($path,'.'),true,'The path is not valid');
+
+            is_true(equal($path,'..'),true,'The path is not valid');
+
+            is_true(Dir::is($path),true,'The repository already exist');
+
+            return $this->shell("git clone $url $path");
         }
 
         /**
@@ -372,7 +442,7 @@ namespace Imperium\Versioning\Git {
 
             $this->execute("git diff $first $second --stat");
 
-            return \collection($this->data);
+            return collection($this->data);
 
         }
 
@@ -414,7 +484,7 @@ namespace Imperium\Versioning\Git {
             foreach ($this->data as $x)
             {
 
-                $commit = \collection(explode('<p>',$x));
+                $commit = collection(explode('<p>',$x));
 
                 $commit =  str_replace('</p>','',$commit->get(1));
 

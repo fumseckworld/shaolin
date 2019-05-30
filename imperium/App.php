@@ -10,6 +10,7 @@ namespace Imperium {
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Dump\Dump;
+    use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
@@ -1149,6 +1150,22 @@ namespace Imperium {
         public function write(string $subject, string $message, string $author_email, string $to): Write
         {
             return new Write($subject,$message,$author_email,$to);
+        }
+
+        /**
+         *
+         * Management of git
+         *
+         * @param string $repository_path
+         *
+         * @return Git
+         *
+         * @throws Exception
+         *
+         */
+        public function git(string $repository_path): Git
+        {
+           return new Git($repository_path,config('locales','locale'));
         }
     }
 }

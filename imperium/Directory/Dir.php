@@ -216,5 +216,25 @@ namespace Imperium\Directory {
         {
             return is_dir($directory);
         }
+
+        /**
+         *
+         * Check if a dir has a subdirectory
+         *
+         * @param string $path
+         * @param string[] $dirs
+         *
+         * @return bool
+         *
+         */
+        public static function contains(string $path,string ...$dirs)
+        {
+            $result = collection();
+
+            foreach ($dirs as $dir)
+                $result->add(is_dir($path .DIRECTORY_SEPARATOR . $dir));
+
+            return $result->not_exist(false);
+        }
     }
 }

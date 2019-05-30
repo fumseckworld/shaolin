@@ -1,0 +1,6 @@
+contribution_text: 'contributions'
+class:
+  contributions: 'text-success'
+  search: 'form-control-lg form-control mt-5 mb-5'
+placeholders:
+  search: 'search'
