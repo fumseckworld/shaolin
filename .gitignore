@@ -1,4 +1,5 @@
 .idea
+dkim*
 vendor
 composer.lock
 node_modules

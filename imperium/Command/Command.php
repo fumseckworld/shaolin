@@ -64,7 +64,6 @@ namespace Imperium\Command {
                 new RunMode(),
                 new Dkim()
 
-
             ];
 
              $this->add($commands)->add(commands());

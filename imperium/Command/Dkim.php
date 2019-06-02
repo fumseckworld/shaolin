@@ -2,6 +2,7 @@
 
 namespace Imperium\Command {
 
+    use Imperium\File\File;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +17,11 @@ namespace Imperium\Command {
         
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            return shell_exec("openssl genrsa -out dkim.private.key 1024") && shell_exec('openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM');
+
+            shell_exec("openssl genrsa -out dkim.private.key 1024");
+            shell_exec('openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM');
+
+            return File::exist('dkim.private.key') && File::exist('dkim.public.key');
         }
     }
 }

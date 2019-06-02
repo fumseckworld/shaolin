@@ -68,7 +68,6 @@ namespace Imperium\Directory {
          * @param string ...$dirs
          *
          * @throws Exception
-         *
          */
         public static function structure(string $source,string ...$dirs): void
         {
@@ -79,6 +78,7 @@ namespace Imperium\Directory {
             foreach ($dirs as $dir)
                 self::create("$source/$dir");
         }
+
         /**
          *
          * Remove all files in the directory expect ignore files
@@ -106,6 +106,20 @@ namespace Imperium\Directory {
                 }
             }
             return true;
+        }
+
+        /**
+         *
+         * Check if a directory exist
+         *
+         * @param string $directory
+         *
+         * @return bool
+         *
+         */
+        public static function exist(string $directory): bool
+        {
+            return File::exist($directory);
         }
 
         /**

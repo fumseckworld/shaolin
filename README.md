@@ -33,6 +33,7 @@
 * [**Discord**](https://discord.gg/fUPyd9K)
 * [**Trello**](https://trello.com/b/28tMSSDG/imperium)
 * [**Diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=8.3.3&id2=8.3.2&dt=2)
+* [**Bugs Report**](mailto:bugzilla@laposte.net)
 
 # What it's ?
 

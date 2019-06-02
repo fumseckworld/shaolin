@@ -1165,7 +1165,7 @@ namespace Imperium {
          */
         public function git(string $repository_path): Git
         {
-           return new Git($repository_path,config('locales','locale'));
+           return new Git($repository_path);
         }
     }
 }

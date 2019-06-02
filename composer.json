@@ -4,7 +4,7 @@
     "description": "A library to manage databases and to build websites more simply",
     "license": "GPL-3.0-or-later",
     "support": {
-       "source": "https://git.fumseck.eu/cgit/imperium/"
+        "source": "https://git.fumseck.eu/cgit/imperium/"
     },
     "authors": [
         {
@@ -19,7 +19,7 @@
         "sinergi/browser-detector": "^6.1",
         "intervention/image": "^2.4",
         "guzzlehttp/guzzle": "^6.3",
-        "nesbot/carbon": "^1.22",
+        "nesbot/carbon": "^2.0.0",
         "robmorgan/phinx": "^0.9.0",
         "ralouphie/mimey": "^1.0",
         "maximebf/debugbar": "^1.15",
@@ -36,8 +36,8 @@
         "symfony/console": "^4.2",
         "ext-gettext": "*"
     },
-    "autoload-dev":{
-        "psr-4":{
+    "autoload-dev": {
+        "psr-4": {
             "Testing\\": "tests/"
         }
     },
@@ -59,11 +59,9 @@
         "symfony/var-dumper": "^4.1"
     },
     "scripts": {
-
         "post-install-cmd": [
             "cp config/app.example.yaml  config/app.yaml",
             "mkdir tmp && mkdir tmp/Command"
         ]
-
     }
 }

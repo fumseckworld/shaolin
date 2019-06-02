@@ -4,6 +4,7 @@ namespace Imperium\Security\Auth {
 
     use Exception;
     use Imperium\Collection\Collection;
+    use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Request\Request;
     use Imperium\Security\Csrf\Csrf;
@@ -77,6 +78,72 @@ namespace Imperium\Security\Auth {
         }
 
         /**
+         *
+         * Generate a form to update account
+         *
+         * @param string $route_name
+         * @param string $username_placeholder
+         * @param string $last_name_placeholder
+         * @param string $email_placeholder
+         * @param string $password_placeholder
+         * @param string $submit_text
+         *
+         * @return string
+         *
+         * @throws Exception
+         */
+        public function account(string $route_name,string $username_placeholder,string $last_name_placeholder,string $email_placeholder,string $password_placeholder,string $submit_text): string
+        {
+            if($this->connected())
+            {
+                $form = new Form();
+                $form->start(route($route_name,POST),POST);
+                $user = $this->model->find($this->session->get(self::ID));
+                $columns = $this->model->columns();
+                foreach ($columns as $column)
+                {
+                    if (!is_null($user->$column))
+                    {
+
+                       switch ($column)
+                        {
+                            case 'id':
+                                $form->hide()->input(Form::HIDDEN,$column,$column,'','','',$user->$column)->end_hide();
+                            break;
+                            case 'email':
+                                $form->input(Form::EMAIL,$column,$email_placeholder,'','','',$user->$column);
+                            break;
+                            case 'password':
+                                $form->input(Form::PASSWORD,$column,$password_placeholder,'','','','',false);
+                            break;
+                            case 'created_at':
+                            case 'updated_at':
+                                $form->hide()->input(Form::HIDDEN,$column,$column,'','','',$user->$column)->end_hide();
+                            break;
+                           case 'username':
+                               $form->input(Form::TEXT,$column,$username_placeholder,'','','',$user->$column);
+                            break;
+                           case 'lastname':
+                               $form->input(Form::TEXT,$column,$last_name_placeholder,'','','',$user->$column);
+                           break;
+                            default:
+                                $form->input(Form::TEXT,$column,$column,'','','',$user->$column);
+                            break;
+                        }
+                    }else{
+                        $form->hide()->input(Form::HIDDEN,$column,$column)->end_hide();
+                    }
+                }
+                return $form->submit($submit_text)->get();
+
+            }
+        $this->session->set(self::ID,1);
+            $this->session->set(self::CONNECTED,true);
+    $this->session->set(self::USERNAME,'will');
+            return '';
+        }
+
+        /**
          * 
          * Send an email to reset password
          * 
@@ -108,7 +175,6 @@ namespace Imperium\Security\Auth {
             $this->clean_session();
 
             return to('/',$this->messages()->get('bye'));
-
         }
 
 
