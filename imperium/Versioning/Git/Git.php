@@ -734,9 +734,17 @@ namespace Imperium\Versioning\Git {
             return numfmt_format(numfmt_create($this->locale,\NumberFormatter::DEFAULT_STYLE),$x);
         }
 
-        public function status()
+        /**
+         *
+         * Show the repositories status
+         *
+         * @return Collection
+         *
+         */
+        public function status(): Collection
         {
             $this->execute('git status');
+
             return $this->data();
         }
 
