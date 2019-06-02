@@ -137,9 +137,6 @@ namespace Imperium\Security\Auth {
                 return $form->submit($submit_text)->get();
 
             }
-        $this->session->set(self::ID,1);
-            $this->session->set(self::CONNECTED,true);
-    $this->session->set(self::USERNAME,'will');
             return '';
         }
 
