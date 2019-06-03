@@ -24,25 +24,12 @@ namespace Imperium\Security\Auth {
 
             if (app()->auth()->connected())
             {
-                if (current_user()->id != "1" && is_admin())
+                if (current_user()->id != 1 && is_admin())
                     return to($home);
 
-                if(strpos($request->getUri()->getPath(),'/login') === 0 || equal($request->getUri()->getPath(),"/login"))
+                if(strpos($request->getUri()->getPath(),'/login') === 0 || equal($request->getUri()->getPath(),"/register"))
                 {
-                    return current_user()->id == "1" ? to($admin) :  to($home);
-                }
-            }else
-            {
-                if(strpos($request->getUri()->getPath(),$admin) === 0)
-                {
-                    if (different($request->getUri()->getPath(),'/login'))
-                        return to('/login');
-                }
-                if(strpos($request->getUri()->getPath(),$home) === 0)
-                {
-                    if (different($request->getUri()->getPath(),'/login'))
-                        return to('/login');
-
+                    return current_user()->id == 1 ? to($admin) :  to($home);
                 }
             }
         }
