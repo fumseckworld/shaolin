@@ -80,13 +80,17 @@ namespace Imperium\Command {
                 {
                     $question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ",$this->driver);
 
+                    $drivers = [MYSQL,POSTGRESQL,SQLITE];
+
+                    $question->setAutocompleterValues($drivers);
+
                     $this->driver =  $helper->ask($input,$output,$question);
 
                     while (not_in([MYSQL,POSTGRESQL,SQLITE],$this->driver))
                     {
                         $output->write("<error>The driver was not currently supported use mysql, pgsql, or sqlite</error>\n");
                         $question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ",$this->driver);
-
+                        $question->setAutocompleterValues($drivers);
                         $this->driver =  $helper->ask($input,$output,$question);
                     }
                 }while(is_null($this->driver));
@@ -101,10 +105,11 @@ namespace Imperium\Command {
 
                 if (different($this->driver,SQLITE))
                 {
+                    $names = ['root','postgres'];
                     do
                     {
                         $question = new Question("<info>Set the database username </info> <comment>[ $this->username ]</comment> : ",$this->username);
-
+                        $question->setAutocompleterValues($names);
                         $this->username =  $helper->ask($input,$output,$question);
 
 
@@ -113,7 +118,7 @@ namespace Imperium\Command {
                     do
                     {
                         $question = new Question("<info>Set the password </info> <comment>[ $this->password ]</comment> : ",$this->password);
-
+                        $question->setHidden(true)->setHiddenFallback(false);
                         $this->password=  $helper->ask($input,$output,$question);
 
                     }while(is_null($this->password));
