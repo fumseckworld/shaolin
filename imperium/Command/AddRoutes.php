@@ -3,6 +3,7 @@
 namespace Imperium\Command {
 
 
+    use Imperium\File\File;
     use Imperium\Routing\Router;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -33,6 +34,26 @@ namespace Imperium\Command {
             $this->setDescription('Create a new route');
         }
 
+        private function controllers(): array
+        {
+            $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('controller');
+
+            $controllers  = collection(File::search("$dir" .DIRECTORY_SEPARATOR. '*.php'));
+
+            $data = collection();
+
+            if ($controllers)
+            {
+                foreach ($controllers as $controller)
+                    $data->add(collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,$controller))->last()))->begin());
+            }
+            return $data->collection();
+
+        }
+        public function methods():array
+        {
+            return collection(Router::METHOD_SUPPORTED)->each('strtolower')->collection();
+        }
         public function interact(InputInterface $input, OutputInterface $output)
         {
 
@@ -44,7 +65,7 @@ namespace Imperium\Command {
                     $this->clean();
 
                     $question = new Question("<info>Set the route method : </info>");
-
+                    $question->setAutocompleterValues($this->methods());
                     $this->method = strtoupper($helper->ask($input, $output, $question));
 
                     while (not_in(Router::METHOD_SUPPORTED,$this->method))
@@ -53,6 +74,7 @@ namespace Imperium\Command {
                         $verbs = collection(Router::METHOD_SUPPORTED)->each('strtolower')->join(', ');
                         $output->write("<error>The method must be $verbs </error>\n");
                         $question = new Question("<info>Set the route method : </info>");
+                        $question->setAutocompleterValues($this->methods());
                         $this->method = strtoupper($helper->ask($input, $output, $question));
                     }
                 }while (is_null($this->method));
@@ -91,6 +113,7 @@ namespace Imperium\Command {
                 do {
                     $this->clean();
                     $question = new Question("<info>Set the controller to call : </info>");
+                    $question->setAutocompleterValues($this->controllers());
                     $this->controller = $helper->ask($input, $output, $question);
                 }while (is_null($this->controller));
 
@@ -124,6 +147,7 @@ namespace Imperium\Command {
                 $output->write("<error>The routes generation has failed</error>\n");
 
         }
+
 
     }
 }

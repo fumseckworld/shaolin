@@ -26,7 +26,14 @@ namespace Imperium\Command {
         {
             $this->setDescription('Remove a route');
         }
+        public function names(): array
+        {
+            $data = collection();
+            foreach (app()->model()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
+                $data->add($x->name);
 
+            return $data->collection();
+        }
 
         public function interact(InputInterface $input, OutputInterface $output)
         {
@@ -35,7 +42,7 @@ namespace Imperium\Command {
             do {
                 $this->clean();
                 $question = new Question("<info>Please enter the route name : </info>");
-
+                $question->setAutocompleterValues($this->names());
                 $this->name = $helper->ask($input, $output, $question);
 
             }while (is_null($this->name));
@@ -45,7 +52,7 @@ namespace Imperium\Command {
                 do {
                     $this->clean();
                     $question = new Question("<info>Please enter the route name : </info>");
-
+                    $question->setAutocompleterValues($this->names());
                     $this->name = $helper->ask($input, $output, $question);
 
 

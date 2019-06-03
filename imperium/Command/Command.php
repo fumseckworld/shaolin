@@ -62,7 +62,8 @@ namespace Imperium\Command {
                 new FindRoute(),
                 new MaintenanceMode(),
                 new RunMode(),
-                new Dkim()
+                new Dkim(),
+                new RouteInfo()
 
             ];
 

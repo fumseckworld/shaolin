@@ -4,6 +4,7 @@
 namespace Imperium\Command {
 
 
+    use Imperium\File\File;
     use Imperium\Routing\Router;
     use Sinergi\BrowserDetector\Os;
     use Symfony\Component\Console\Command\Command;
@@ -31,14 +32,45 @@ namespace Imperium\Command {
         {
            clear_terminal();
         }
+
         protected function configure()
         {
           $this->setDescription('Update the routes');
         }
 
+        private function controllers(): array
+        {
+            $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('controller');
+
+            $controllers  = collection(File::search("$dir" .DIRECTORY_SEPARATOR. '*.php'));
+
+            $data = collection();
+
+            if ($controllers)
+            {
+                foreach ($controllers as $controller)
+                    $data->add(collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,$controller))->last()))->begin());
+            }
+            return $data->collection();
+
+        }
+        private function methods():array
+        {
+            return collection(Router::METHOD_SUPPORTED)->each('strtolower')->collection();
+        }
+
+        private function names(): array
+        {
+            $data = collection();
+            foreach (app()->model()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
+                $data->add($x->name);
+
+            return $data->collection();
+        }
 
         public function interact(InputInterface $input, OutputInterface $output)
         {
+
 
             $helper = $this->getHelper('question');
 
@@ -47,14 +79,14 @@ namespace Imperium\Command {
                 do {
                     $this->clean();
                     $question = new Question("<info>Please enter the route name : </info>",'__________');
-
+                    $question->setAutocompleterValues($this->names());
                     $this->name = $helper->ask($input, $output, $question);
 
                     while (not_def($this->get($this->name)))
                     {
                         $this->clean();
                         $question = new Question("<info>Please enter the route name : </info>",'__________');
-
+                        $question->setAutocompleterValues($this->names());
                         $this->name = $helper->ask($input, $output, $question);
                     }
 
@@ -69,7 +101,7 @@ namespace Imperium\Command {
                     $this->id = $route->id;
                     do {
                         $question = new Question("<info>Change the method</info> <comment>[$route->method]</comment> : ",$route->method);
-
+                        $question->setAutocompleterValues($this->methods());
                         $this->method = strtoupper($helper->ask($input, $output, $question));
 
                         while (not_in(Router::METHOD_SUPPORTED,$this->method))
@@ -77,6 +109,8 @@ namespace Imperium\Command {
                             $verbs = collection(Router::METHOD_SUPPORTED)->each('strtolower')->join(', ');
                             $output->write("<error>The method must be are $verbs  </error>\n");
                             $question = new Question("<info>Change the method</info> <comment>[$route->method]</comment> : ",$route->method);
+
+                            $question->setAutocompleterValues($this->methods());
                             $this->method = strtoupper($helper->ask($input, $output, $question));
                         }
                     }while (is_null($this->method));
@@ -112,12 +146,13 @@ namespace Imperium\Command {
 
                     do {
                         $question = new Question("<info>Change the controller</info> <comment>[$route->controller]</comment> : ",$route->controller);
+                        $question->setAutocompleterValues($this->controllers());
                         $this->controller = $helper->ask($input, $output, $question);
                     }while (is_null($this->controller));
 
                     do {
 
-                        $question = new Question("<info>Change the controller</info> <comment>[$route->action]</comment> : ",$route->action);
+                        $question = new Question("<info>Change the action</info> <comment>[$route->action]</comment> : ",$route->action);
                         $this->action = $helper->ask($input, $output, $question);
                     }while (is_null($this->action));
                 }
