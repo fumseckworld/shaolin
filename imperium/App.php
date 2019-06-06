@@ -10,6 +10,8 @@ namespace Imperium {
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Dump\Dump;
+    use Imperium\Routing\Route;
+    use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
     use Imperium\File\File;
@@ -47,6 +49,7 @@ namespace Imperium {
     class App extends Zen implements Management
     {
 
+        use Route;
         /**
          *
          * Connexion
@@ -100,10 +103,7 @@ namespace Imperium {
          * @var array
          */
         private $hidden_tables;
-        /**
-         * @var array
-         */
-        private $hidden_bases;
+
 
         /**
          * @var Table
@@ -113,6 +113,19 @@ namespace Imperium {
          * @var Dotenv
          */
         private $env;
+        /**
+         * @var string
+         */
+        private $username;
+        /**
+         * @var string
+         */
+        private $password;
+
+        /**
+         * @var bool
+         */
+        private $debug;
 
 
         /**
@@ -702,34 +715,46 @@ namespace Imperium {
          */
         public function __construct()
         {
+            $this->driver           =  db(DB_DRIVER);
+            $this->base             =  db(DB_NAME);
+            $this->username         =  db(DB_USERNAME);
+            $this->password         =  db(DB_PASSWORD);
+            $this->hidden_tables    =  db(DB_HIDDEN_TABLES);
+            $this->debug            =  db(DISPLAY_BUGS);
 
-            $file = 'db';
-            $this->hidden_tables    = config($file,'hidden_tables');
-            $this->hidden_bases     = config($file,'hidden_bases');
 
-            if (equal(\config($file,'driver'),SQLITE))
-                $this->connect = connect(SQLITE,config($file,'base'),'','','',\config($file,'dump'));
+            if (equal($this->driver,SQLITE))
+                $this->connect = connect(SQLITE,$this->base,'','','','dump');
             else
-                $this->connect          = connect(config($file,'driver'),config($file,'base'),config($file,'username'),config($file,'password'),config($file,'host'),config($file,'dump'));
-            $this->driver           = $this->connect->driver();
+                $this->connect  = connect($this->driver,$this->base,$this->username,$this->password,LOCALHOST,'dump');
+
 
             $this->table            = new Table($this->connect);
+
             $this->query            = new Query($this->table,$this->connect);
+
             $this->base             = new Base($this->connect,$this->table);
+
             $this->users            = new Users($this->connect);
+
             $this->model            = new Model($this->connect,$this->table);
+
             $this->json             = new Json('app.json');
+
             $this->form             = new Form();
 
             if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
-               $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
+                $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
             else
                 $path = dirname(request()->server->get('DOCUMENT_ROOT'));
 
             if (def($this->request()->server->get('PWD')))
                 $path = $this->request()->server->get('PWD');
 
+            is_true(File::not_exist("$path" .DIRECTORY_SEPARATOR .".env"),true,".env file was not found");
+
             $this->env              = Dotenv::create($path);
+
             $this->env->load();
         }
 
@@ -738,18 +763,17 @@ namespace Imperium {
          *
          * Run the application
          *
-         * @return string
+         * @return Response
          *
          * @throws Exception
          *
          */
-        public function run():string
+        public function run():Response
         {
-            if(config('db','debug'))
-            {
+            if ($this->debug)
                 whoops();
-            }
-            return $this->router(ServerRequest::fromGlobals())->run();
+
+            return $this->router(ServerRequest::fromGlobals())->run()->send();
         }
 
         /**
@@ -1166,6 +1190,44 @@ namespace Imperium {
         public function git(string $repository_path): Git
         {
            return new Git($repository_path);
+        }
+
+        /**
+         *
+         * Check the request
+         *
+         * @return RedirectResponse|Validator
+         *
+         */
+        public function validator()
+        {
+           return new Validator($this->request());
+        }
+
+        /**
+         * @return Model
+         * @throws Exception
+         */
+        public function route(): Model
+        {
+           return $this->routes();
+        }
+
+
+        /**
+         *
+         * Generate url string
+         *
+         * @param string $route
+         *
+         * @param array $args
+         * @return string
+         *
+         * @throws Exception
+         */
+        public function url(string $route,...$args): string
+        {
+            return Router::url($route,$args);
         }
     }
 }

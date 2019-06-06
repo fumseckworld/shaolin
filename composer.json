@@ -34,7 +34,8 @@
         "swiftmailer/swiftmailer": "^6.1",
         "psr/http-server-middleware": "^1.0",
         "symfony/console": "^4.2",
-        "ext-gettext": "*"
+        "ext-gettext": "*",
+        "ext-PDO": "*"
     },
     "autoload-dev": {
         "psr-4": {
@@ -44,7 +45,7 @@
     "autoload": {
         "psr-4": {
             "Imperium\\": "imperium/",
-            "App\\": "app/"
+            "________________________________________________________\\": "app/"
         },
         "files": [
             "helpers/helpers.php"

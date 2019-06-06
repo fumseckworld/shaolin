@@ -6,6 +6,7 @@ namespace Imperium\Model {
     use Exception;
     use Imperium\App;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
     use Imperium\Query\Query;
     use Imperium\Request\Request;
     use Imperium\Security\Csrf\Csrf;
@@ -137,9 +138,11 @@ namespace Imperium\Model {
          * @method dump
          *
          * @param string ...$tables
+         *
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function dump(string ...$tables): bool
         {
@@ -157,7 +160,7 @@ namespace Imperium\Model {
          */
         public function dump_base(): bool
         {
-            return dumper(true,[]);
+            return dumper(true);
         }
 
         /**
@@ -182,7 +185,7 @@ namespace Imperium\Model {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function current(): string
@@ -363,7 +366,7 @@ namespace Imperium\Model {
          */
         public function search(string $value,bool $json_output = false)
         {
-            return $json_output ? collection($this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
+            return $json_output ? collection($this->query()->from($this->current())->mode(SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
         }
 
         /**
@@ -569,7 +572,7 @@ namespace Imperium\Model {
         {
             is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
 
-            return def($this->only) ? $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
+            return def($this->only) ? $this->query()->from($this->current())->mode(SELECT)->where($this->column,$this->condition,$this->expected)->only($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column,$this->condition,$this->expected)->get();
         }
 
 
@@ -675,7 +678,7 @@ namespace Imperium\Model {
          */
         public function news(string $order_column,int $limit,int $offset = 0): array
         {
-            return $this->query()->from($this->current())->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column)->get();
+            return $this->query()->from($this->current())->mode(SELECT)->limit($limit,$offset)->order_by($order_column)->get();
         }
 
         /**
@@ -692,7 +695,7 @@ namespace Imperium\Model {
          */
         public function last(string $order_column,int $limit,int $offset = 0): array
         {
-            return $this->query()->from($this->current())->mode(Query::SELECT)->limit($limit,$offset)->order_by($order_column,ASC)->get();
+            return $this->query()->from($this->current())->mode(SELECT)->limit($limit,$offset)->order_by($order_column,ASC)->get();
         }
 
         /**
@@ -801,7 +804,7 @@ namespace Imperium\Model {
          */
         public function remove(int $id): bool
         {
-            return $this->query()->from($this->current())->mode(Query::DELETE)->where($this->primary(),Query::EQUAL,$id)->delete();
+            return $this->query()->from($this->current())->mode(Query::DELETE)->where($this->primary(),EQUAL,$id)->delete();
         }
 
         /**
@@ -813,6 +816,7 @@ namespace Imperium\Model {
          * @return bool
          *
          * @throws Exception
+         *
          */
         public function insert_new_record(array $data): bool
         {
@@ -975,27 +979,29 @@ namespace Imperium\Model {
          *
          * @param string $query
          *
+         * @param array $data
          * @return array
          *
          * @throws Exception
-         *
          */
-        public function request(string $query): array
+        public function request(string $query,array $data): array
         {
-            return $this->connexion->request($query);
+            return $this->connexion->request($query,$data);
         }
 
         /**
          * @param string $request
          *
+         * @param array $data
          * @return object
          *
          * @throws Exception
          */
-        public function fetch(string $request)
+        public function fetch(string $request,array $data)
         {
-            return $this->connexion->fetch($request);
+            return $this->connexion->fetch($request,$data);
         }
+
         /**
          *
          * Execute a custom query
@@ -1005,7 +1011,6 @@ namespace Imperium\Model {
          * @return bool
          *
          * @throws Exception
-         *
          */
         public function execute(string $query): bool
         {

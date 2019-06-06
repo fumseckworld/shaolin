@@ -86,6 +86,31 @@ use Imperium\Tables\Table;
          */
         private $all;
 
+
+        /**
+         *
+         * Base Constructor
+         *
+         * @method __construct
+         *
+         * @param  Connect $connect
+         * @param  Table $table
+         *
+         * @throws Exception
+         *
+         */
+        public function __construct(Connect $connect,Table $table )
+        {
+            $this->connexion        = $connect;
+            $this->driver           = $connect->driver();
+            $this->tables           = $table->show();
+            $this->table            = $table;
+
+            if(different($this->driver,SQLITE))
+                $this->all   = $this->show();
+        }
+
+
         /**
          *
          * Create records in all tables not hidden
@@ -173,7 +198,7 @@ use Imperium\Tables\Table;
 
             $this->create($new_base);
 
-            return (new Import($new_base))->import();
+            return (new Import())->import();
         }
 
         /**
@@ -328,10 +353,10 @@ use Imperium\Tables\Table;
                 switch ($this->driver)
                 {
                     case Connect::MYSQL:
-                         $not_define ? $data->add($this->connexion->execute("CREATE DATABASE $name;")) :  $data->add($this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '{$this->charset}'   COLLATE =  '{$this->collation}';"));
+                         $not_define ? $data->add($this->connexion->execute("CREATE DATABASE ?;",$name)) :  $data->add($this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '?'   COLLATE =  '?';",$this->charset,$this->collation));
                     break;
                     case Connect::POSTGRESQL:
-                        $not_define ? $data->add($this->connexion->execute("CREATE DATABASE $name  TEMPLATE template0;")):  $data->add($this->connexion->execute("CREATE DATABASE  $name ENCODING '{$this->charset}' LC_COLLATE='{$this->collation}' LC_CTYPE='{$this->collation}' TEMPLATE template0;"));
+                        $not_define ? $data->add($this->connexion->execute("CREATE DATABASE ?  TEMPLATE template0;",$name)):  $data->add($this->connexion->execute("CREATE DATABASE $name ENCODING '?' LC_COLLATE='?' LC_CTYPE='?' TEMPLATE template0;",$this->charset,$this->collation,$this->collation));
                     break;
                 }
             }
@@ -470,28 +495,6 @@ use Imperium\Tables\Table;
 
         }
 
-        /**
-         *
-         * Base Constructor
-         *
-         * @method __construct
-         *
-         * @param  Connect $connect
-         * @param  Table $table
-         *
-         * @throws Exception
-         *
-         */
-        public function __construct(Connect $connect,Table $table )
-        {
-            $this->connexion        = $connect;
-            $this->driver           = $connect->driver();
-            $this->tables           = $table->show();
-            $this->table            = $table;
-
-            if(different($this->driver,Connect::SQLITE))
-                $this->all   = $this->show();
-        }
 
 
 
@@ -525,10 +528,9 @@ use Imperium\Tables\Table;
 
             $this->check();
 
-            if (not_def($this->collation))
-                throw new Exception("We have not found required collation");
+            is_true(not_def($this->collation),true,"We have not found required collation");
 
-            return equal(Connect::MYSQL,$this->driver) ? $this->connexion->execute("ALTER DATABASE $base COLLATE = '{$this->collation}'") : $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '$base'");
+            return $this->connexion->mysql() ? $this->connexion->execute("ALTER DATABASE $base COLLATE = '?'",$this->collation) : $this->connexion->execute("update pg_database set datcollate='?', datctype='?' where datname = '$base'",$this->collation,$this->collation);
 
         }
 
@@ -583,10 +585,9 @@ use Imperium\Tables\Table;
 
             $this->check();
 
-            if (not_def($this->charset))
-                throw new Exception("We have not found required charset");
+            is_true(not_def($this->charset),true,"We have not found required charset");
 
-            return equal(MYSQL,$this->driver) ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET $this->charset;") : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '$base'");
+            return $this->connexion->mysql() ? $this->connexion->execute("ALTER DATABASE $base CHARACTER SET ?;",$this->charset) : $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('?') where datname = '$base'",$this->charset);
         }
 
         /**
@@ -600,7 +601,7 @@ use Imperium\Tables\Table;
          */
         public function check(): Base
         {
-            not_in([Connect::MYSQL, Connect::POSTGRESQL], $this->driver, true, "The current driver is not supported");
+            not_in([MYSQL, POSTGRESQL], $this->driver, true, "The current driver is not supported");
 
             return $this;
         }

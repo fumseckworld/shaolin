@@ -5,7 +5,7 @@ namespace Imperium\Command {
 
 
     use Exception;
-    use Imperium\Routing\Router;
+    use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -13,6 +13,7 @@ namespace Imperium\Command {
 
     class RouteInfo extends Command
     {
+        use Route;
         protected static $defaultName = 'routes:info';
 
         private $search;
@@ -24,14 +25,14 @@ namespace Imperium\Command {
 
         protected function configure()
         {
-            $this->setDescription('Find a route');
+            $this->setDescription('Display route info');
         }
 
 
         public function names(): array
         {
             $data = collection();
-            foreach (app()->model()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
+            foreach ($this->routes()->query()->from('routes')->mode(SELECT)->only('name')->get() as $x)
                 $data->add($x->name);
 
             return $data->collection();
@@ -46,7 +47,8 @@ namespace Imperium\Command {
         public function interact(InputInterface $input, OutputInterface $output)
         {
             $helper = $this->getHelper('question');
-            if (app()->table_exist(Router::ROUTES))
+
+            if (def($this->names()))
             {
                 do {
 
@@ -57,7 +59,7 @@ namespace Imperium\Command {
                         $this->search = $helper->ask($input, $output, $question);
                     }while (is_null($this->search));
 
-                    $routes = app()->model()->from(Router::ROUTES)->by('name',$this->search);
+                    $routes = $this->routes()->by('name',$this->search);
 
                     routes($output,$routes);
                     $question = new Question("<info>Continue ? [Y/n] : </info>",'Y');
@@ -66,15 +68,20 @@ namespace Imperium\Command {
 
                 }while ($continue);
 
-            }else{
-                $output->write("<error>The table routes was not found</error>\n");
-                return 1;
             }
+
+
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $output->write("<info>Bye</info>\n");
+            $this->clean();
+            if (def($this->names()))
+            {
+                $output->write("<info>Bye</info>\n");
+            }else {
+               $output->write("<error>We have not found routes</error>\n");
+            }
         }
 
     }

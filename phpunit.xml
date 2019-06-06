@@ -18,7 +18,7 @@
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">imperium/</directory>
-            <directory suffix=".php">app/</directory>
+            <directory suffix=".php">helpers/</directory>
         </whitelist>
     </filter>
 </phpunit>

@@ -8,6 +8,7 @@ use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
+use Imperium\Exception\Kedavra;
 use Imperium\Flash\Flash;
 use Imperium\Routing\Router;
 use Imperium\Security\Csrf\Csrf;
@@ -82,6 +83,9 @@ define('DELETE',22);
 define('UPDATE',23);
 define('INSERT',24);
 
+define('MYSQL_PORT',3306);
+define('POSTGRESQL_PORT',5432);
+
 define('DISPLAY_TABLE',25);
 define('DISPLAY_ARTICLE',26);
 define('DISPLAY_CONTRIBUTORS',27);
@@ -96,7 +100,35 @@ define('QUERY_SECOND_TABLE','second_table');
 define('QUERY_SECOND_PARAM','second_param');
 define('QUERY_ORDER_KEY','key');
 define('QUERY_ORDER','order');
+define('METHOD_SUPPORTED',['GET','POST','PUT','DELETE']);
 
+
+define('DB_DRIVER','driver');
+define('DB_NAME','base');
+define('DB_USERNAME','username');
+define('DB_PASSWORD','password');
+define('DB_HIDDEN_TABLES','hidden_tables');
+define('DISPLAY_BUGS','debug');
+
+if (not_exist('db'))
+{
+
+
+    /**
+     *
+     * get db config value
+     *
+     * @param string $key
+     *
+     * @return mixed
+     *
+     * @throws Kedavra
+     */
+    function db(string $key)
+    {
+        return config('db',$key);
+    }
+}
 if (not_exist('redirect'))
 {
     /**
@@ -111,7 +143,7 @@ if (not_exist('redirect'))
      * @throws Exception
      *
      */
-    function redirect(string $route_name,string $message ='',bool $success = true)
+    function redirect(string $route_name,string $message ='',bool $success = true): RedirectResponse
     {
         if (def($message))
         {
@@ -121,6 +153,7 @@ if (not_exist('redirect'))
         return (new RedirectResponse(name($route_name)))->send();
     }
 }
+
 
 if (not_exist('current_user'))
 {
@@ -146,16 +179,29 @@ if (not_exist('route'))
      * Get a route name
      *
      * @param string $name
-     * @param string $method
-     *
+     * @param array $args
      * @return string
      *
      * @throws Exception
-     *
      */
-    function route(string $name,string $method = GET): string
+    function route(string $name,array $args = []): string
     {
-        return name($name,$method);
+        $x = app()->route()->query()->mode(SELECT)->from('routes')->where('name',EQUAL,$name)->use_fetch()->get();
+        if (def($args))
+        {
+           $url = rtrim(str_replace(stristr($x->url,':'),'',$x->url),'/');
+
+            foreach ($args as  $v)
+            {
+                if (is_string($v))
+                append($url,"/$v");
+                else
+                    append($url,'/'.$v);
+            }
+               return $url;
+
+        }
+        return $x->url;
     }
 }
 
@@ -449,7 +495,7 @@ if (not_exist('config'))
      *
      * @return mixed
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function config(string $file,$key)
@@ -765,14 +811,14 @@ if (not_exist('true_or_false'))
         {
             case MYSQL:
                 return rand(0,1);
-                break;
+            break;
             case POSTGRESQL:
             case SQLITE:
                 return rand(0,1) === 1 ? 'TRUE' : 'FALSE';
-                break;
+            break;
             default:
                 return '';
-                break;
+            break;
         }
 
     }
@@ -798,6 +844,36 @@ if (not_exist('quote'))
     }
 }
 
+if (! function_exists('decrypt')) {
+    /**
+     * Decrypt the given value.
+     *
+     * @param string $value
+     * @param bool $unserialize
+     * @return mixed
+     * @throws Exception
+     */
+    function decrypt($value, $unserialize = true)
+    {
+        return app()->decrypt($value, $unserialize);
+    }
+}
+
+if (! not_exist('encrypt')) {
+    /**
+     * Encrypt the given value.
+     *
+     * @param mixed $value
+     * @param bool $serialize
+     * @return string
+     * @throws Exception
+     */
+    function encrypt($value, $serialize = true)
+    {
+        return app()->encrypt($value, $serialize);
+    }
+}
+
 if (not_exist('app'))
 {
     /**
@@ -812,7 +888,8 @@ if (not_exist('app'))
      */
     function app(): App
     {
-        return new App();
+       return new App();
+
     }
 }
 
@@ -910,7 +987,7 @@ if (not_exist('equal'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function equal($parameter, $expected,$run_exception = false,string $message = ''): bool
@@ -993,7 +1070,7 @@ if (not_exist('is_false'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function is_false($data,bool $run_exception = false,string $message =''): bool
@@ -1020,7 +1097,7 @@ if (not_exist('is_true'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function is_true($data,bool $run_exception = false,string $message =''): bool
@@ -1029,7 +1106,7 @@ if (not_exist('is_true'))
         $x =  $data === true;
 
         if ($run_exception && $x)
-            throw new Exception($message);
+            throw new Kedavra($message);
 
         return $x;
 
@@ -1051,7 +1128,7 @@ if (not_exist('different'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws
      *
      */
     function different($parameter,$expected,$run_exception = false,string $message = ''): bool
@@ -1220,6 +1297,27 @@ if (not_exist('edit'))
     }
 }
 
+if (not_exist('route_name'))
+{
+    /**
+     *
+     * Display a route name
+     *
+     * @param string $name
+     * @param string $method
+     *
+     * @return string
+     *
+     * @throws Exception
+     *
+     */
+    function route_name(string $name,string $method = GET): string
+    {
+        $x = route($name,$method);
+        return $x->name;
+
+    }
+}
 if(not_exist('navbar'))
 {
     /**
@@ -1276,7 +1374,7 @@ if(not_exist('navbar'))
                         $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
                         }
 
-                    }else{
+                }else{
 
                         $x = collection(explode('@',$file->get('login')));
 
@@ -2051,9 +2149,74 @@ if(not_exist('routes'))
     function routes(OutputInterface $output,array $routes): void
     {
 
-
-        if (app()->table_exist(Router::ROUTES))
+        if ( def(request()->server->get('TMUX')))
         {
+            if (def($routes))
+            {
+                $output->write("+----------+--------------------+-----------------------+-----------------------+-----------------------+\n");
+
+                foreach ($routes as $route)
+                {
+
+                    $name =  "<fg=blue;options=bold>$route->name</>";
+
+                    $url =  "<fg=magenta;options=bold>$route->url</>";
+                    $controller =  "<fg=green;options=bold>$route->controller</>";
+                    $action =  "<fg=yellow;options=bold>$route->action</>";
+                    $method =  "<fg=cyan;options=bold>$route->method</>";
+
+                    if (length($route->method) == 6)
+                        $output->write("|  $method  ");
+                    elseif(length($route->method) == 4)
+                        $output->write("|  $method    ");
+                    elseif(length($route->method) == 3)
+                        $output->write("|  $method     ");
+
+
+                    if (length($route->name) < 5)
+                        $output->write("|  $name\t\t|");
+
+                    elseif(length($route->name) > 10)
+                        $output->write("|  $name\t|");
+                    else
+                        $output->write("|  $name\t\t|");
+
+
+                    if (length($route->url) < 5)
+                        $output->write("  $url\t\t\t|");
+                    elseif(length($route->url) < 12)
+                        $output->write("  $url\t\t|");
+                    elseif(length($route->url)> 18 )
+                        $output->write("  $url\t|");
+                    else
+                        $output->write("  $url\t|");
+
+
+                    if (length($route->controller) < 7)
+                        $output->write("  $controller\t\t|");
+                    elseif (length($route->controller) < 10)
+                        $output->write("  $controller\t|");
+                    elseif (length($route->controller) > 10 && length($route->controller) < 15)
+                        $output->write("  $controller\t|");
+                    elseif (length($route->controller)> 15)
+                        $output->write("  $controller\t|");
+                    else
+                        $output->write("  $controller\t|");
+
+                    if (length($route->action) < 5)
+                        $output->write("  $action\t\t\t|\n");
+                    elseif(length($route->action) < 10)
+                        $output->write("  $action\t\t|\n");
+                    elseif(length($route->action) > 12)
+                        $output->write("  $action\t|\n");
+                    else
+                        $output->write("  $action\t|\n");
+                    $output->write("+----------+--------------------+-----------------------+-----------------------+-----------------------+\n");
+                }
+            }else{
+                $output->write("<error>We have not found routes</error>\n");
+            }
+        }else{
             if (def($routes))
             {
                 $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
@@ -2071,9 +2234,9 @@ if(not_exist('routes'))
 
 
                     if (length($route->method) >4 )
-                      $output->write("|  $method\t");
+                        $output->write("|  $method\t");
                     else
-                      $output->write("|  $method\t\t");
+                        $output->write("|  $method\t\t");
 
                     if (length($route->name) < 5)
                         $output->write("|  $name\t\t\t\t|");
@@ -2090,8 +2253,8 @@ if(not_exist('routes'))
                         $output->write("  $url\t\t\t\t|");
                     elseif(length($route->url)> 18 )
                         $output->write("  $url\t\t|");
-                        else
-                            $output->write("  $url\t\t\t|");
+                    else
+                        $output->write("  $url\t\t\t|");
 
                     if (length($route->controller) < 5)
                         $output->write("  $controller\t\t\t\t\t|");
@@ -2109,19 +2272,17 @@ if(not_exist('routes'))
                     elseif(length($route->action) < 10)
                         $output->write("  $action\t\t\t|\n");
                     elseif(length($route->action) > 12)
-                      $output->write("  $action\t\t|\n");
+                        $output->write("  $action\t\t|\n");
                     else
-                      $output->write("  $action\t\t\t|\n");
+                        $output->write("  $action\t\t\t|\n");
 
                     $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
-    }
+                }
             }else{
-                $output->write("<error>No routes was found</error>\n");
+                $output->write("<error>We have not found routes</error>\n");
             }
-
-        }else{
-            $output->write("<error>The routes table was not fond</error>\n");
         }
+
     }
 }
 
@@ -2616,60 +2777,6 @@ if (not_exist('is_admin'))
         return false;
     }
 }
-if (not_exist('name'))
-{
-    /**
-     *
-     * Return a route url by use it's name
-     *
-     * @param string $name The route name
-     * @param string $method The route method
-     *
-     * @return string
-     *
-     * @throws Exception
-     */
-    function name(string $name,string $method = GET): string
-    {
-        $x = app()->model()->query()->from(Router::ROUTES)->mode(SELECT)->where('name',EQUAL,$name)->and('method',EQUAL,$method)->get();
-        $host = \request()->getHost();
-        foreach ($x as $route)
-        {
-            if (https())
-            {
-                return equal($route->url,'/')  ?  "https://$host" : "https://$host$route->url";
-            }else{
-                return equal($route->url,'/')  ?  "http://$host" : "http://$host$route->url";
-            }
-        }
-        throw new Exception("The $name route was not found");
-    }
-}
-
-if (not_exist('route_name'))
-{
-    /**
-     *
-     * Display a route name
-     *
-     * @param string $name
-     * @param string $method
-     *
-     * @return string
-     *
-     * @throws Exception
-     *
-     */
-    function route_name(string $name,string $method = GET): string
-    {
-        $x = app()->model()->query()->from(Router::ROUTES)->mode(SELECT)->where('name',EQUAL,$name)->and('method',EQUAL,$method)->get();
-        foreach ($x as $route)
-            return $route->name;
-
-        throw new Exception("The $name route name was not found");
-    }
-}
-
 
 if (not_exist('css'))
 {
@@ -2759,6 +2866,14 @@ if (not_exist('server'))
     }
 }
 
+if (not_exist('phinx'))
+{
+    function phinx()
+    {
+
+        d(\request()->server->all());
+    }
+}
 if (not_exist('post'))
 {
     /**
@@ -2824,7 +2939,6 @@ if (not_exist('collation'))
         $collation = collection();
 
         $connexion = $connect;
-
 
         if($connexion->sqlite())
             return $collation->collection();
@@ -3496,14 +3610,14 @@ if (not_exist('not_in'))
      *
      * @method not_in
      *
-     * @param  array  $array         The array
-     * @param  mixed  $value         The value
-     * @param  bool   $run_exception To run exception
-     * @param  string $message       The exception message
+     * @param array $array The array
+     * @param mixed $value The value
+     * @param bool $run_exception To run exception
+     * @param string $message The exception message
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function not_in(array $array, $value, bool $run_exception = false, string $message = ''): bool
@@ -3534,7 +3648,7 @@ if (not_exist('dumper'))
      * @throws Exception
      *
      */
-    function dumper(bool $base, array $tables): bool
+    function dumper(bool $base, array $tables=[]): bool
     {
         return (new Dump($base,$tables))->dump();
     }
@@ -3891,9 +4005,9 @@ if (not_exist('insert_into'))
             if(different($v,$primary))
             {
                 if (is_numeric($v))
-                    append($data,quote($v). ', ');
+                    append($data, '? ,');
                 else
-                    append($data,$instance->quote($v) .', ') ;
+                    append($data,"'?' ," ) ;
             }
             else
             {
@@ -3911,6 +4025,75 @@ if (not_exist('insert_into'))
 
         return $data;
 
+    }
+}
+
+if (not_exist('routes_add'))
+{
+    /**
+     *
+     * @param Model $model
+     * @param mixed ...$values
+     *
+     * @return bool
+     *
+     * @throws Exception
+     */
+    function routes_add(Model $model,array  $values): bool
+    {
+        $instance = $model;
+
+
+        $x = collection($instance->columns())->join(',');
+
+        $data = "INSERT INTO routes ($x) VALUES (";
+
+        $primary = $instance->primary();
+
+        foreach ($values as $k=> $v)
+        {
+            if(different($v,$primary))
+            {
+                if (is_numeric($v))
+                    append($data,quote($v). ', ');
+                else
+                    append($data,$instance->quote($v) .', ') ;
+            }
+            else
+            {
+                if ($instance->is_mysql() ||  $instance->is_sqlite())
+                    append($data,'NULL, ');
+                else
+                    append($data,"DEFAULT, ");
+
+            }
+        }
+
+        $data = trim($data,', ');
+
+        append($data, ')');
+
+
+         return $instance->execute($data,'');
+
+    }
+}
+if (not_exist('controllers'))
+{
+    function controllers(): array
+    {
+        $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('controller');
+
+        $controllers  = collection(File::search("$dir" .DIRECTORY_SEPARATOR. '*.php'));
+
+        $data = collection();
+
+        if ($controllers)
+        {
+            foreach ($controllers as $controller)
+                $data->add(collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,$controller))->last()))->begin());
+        }
+        return $data->collection();
     }
 }
 if (not_exist('glyph'))

@@ -9,6 +9,7 @@ namespace Imperium {
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
     use Imperium\Flash\Flash;
@@ -677,6 +678,32 @@ namespace Imperium {
          *
          */
         public function response(): Response;
+
+
+        /**
+         * @return Model
+         */
+        public function route() : Model;
+
+        /**
+         *
+         * Check the request
+         *
+         * @return RedirectResponse|Validator
+         *
+         */
+        public function validator();
+
+        /**
+         *
+         * Generate url string
+         *
+         * @param string $route
+         * @param mixed $args
+         *
+         * @return string
+         */
+        public function url(string $route,...$args): string ;
 
         // GETTER
 

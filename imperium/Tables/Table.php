@@ -191,10 +191,10 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case MYSQL :
-                    return $this->connexion->execute("ALTER TABLE {$this->current()} COLLATE {$this->collation};");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} COLLATE ?;",$this->collation);
                 break;
                 case POSTGRESQL :
-                    return $this->connexion->execute("update pg_database set datcollate='{$this->collation}', datctype='{$this->collation}' where datname = '{$this->connexion->base()}'");
+                    return $this->connexion->execute("update pg_database set datcollate='?', datctype='?' where datname = '{$this->connexion->base()}'",$this->collation,$this->collation);
                 break;
                 default :
                     return false;
@@ -218,10 +218,10 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case MYSQL :
-                    return $this->connexion->execute("ALTER TABLE {$this->current()} CHARACTER SET = {$this->charset};");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} CHARACTER SET = ?;",$this->charset);
                 break;
                 case POSTGRESQL :
-                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('{$this->charset}') where datname = '{$this->connexion->base()}'");
+                    return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('?') where datname = '{$this->connexion->base()}'",$this->charset);
                 break;
                 default :
                     return false;
@@ -270,7 +270,7 @@ namespace Imperium\Tables {
                     return $this->connexion->execute("TRUNCATE TABLE $table");
                 break;
                 case POSTGRESQL :
-                    return $this->connexion->execute("TRUNCATE TABLE $table  RESTART IDENTITY");
+                    return $this->connexion->execute("TRUNCATE TABLE $table RESTART IDENTITY");
                 break;
                 case SQLITE :
                     return $this->connexion->execute("DELETE  FROM $table") && $this->connexion->execute('VACUUM');
@@ -300,10 +300,10 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case MYSQL;
-                    return  $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT $constraint;");
+                    return  $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT ?;",$constraint);
                 break;
                 case SQLITE:
-                    return $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN $column DROP $constraint;");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN ? DROP ?;",$column,$constraint);
                 break;
                 default:
                     return false;
@@ -364,14 +364,14 @@ namespace Imperium\Tables {
          *
          * @method import
          *
-         * @param string $base
          * @return bool
          *
          * @throws Exception
+         *
          */
-        public function import(string $base = ''): bool
+        public function import(): bool
         {
-            return (new Import($base))->import();
+            return (new Import())->import();
         }
 
         /**
@@ -587,16 +587,14 @@ namespace Imperium\Tables {
          *
          * @method dump
          *
-         * @param string $table The table name
-         *
+         * @param string[] $tables
          * @return bool
          *
          * @throws Exception
-         *
          */
-        public function dump(string $table = ''): bool
+        public function dump(string ...$tables): bool
         {
-            return def($table) ? dumper(false,[$table]) : dumper(false,[$this->current()]);
+            return def($tables) ? dumper(false,$tables) : dumper(false,[$this->current()]);
         }
 
 
@@ -631,7 +629,7 @@ namespace Imperium\Tables {
          */
         public function select(int $id): array
         {
-            return $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = $id" );
+            return $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = ?",$id );
         }
 
 
@@ -673,7 +671,7 @@ namespace Imperium\Tables {
          */
         public function remove(int $id): bool
         {
-            return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = $id");
+            return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = ?",$id);
         }
 
 
@@ -703,7 +701,7 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case MYSQL:
-                    return $this->connexion->execute("ALTER TABLE {$this->current()} CONVERT TO CHARACTER SET $charset COLLATE $collate");
+                    return $this->connexion->execute("ALTER TABLE {$this->current()} CONVERT TO CHARACTER SET ? COLLATE ? ",$charset,$collate);
                 break;
                 case POSTGRESQL:
                     return $this->set_charset($charset)->change_charset() && $this->set_collation($collate)->change_collation();
@@ -926,7 +924,10 @@ namespace Imperium\Tables {
                 {
                     if ($ignoreValues->empty())
                     {
-                        $columns->push("$k =" .quote($value));
+                        if ($columns->numeric($value))
+                            $columns->push("$k = $value");
+                        else
+                            $columns->push("$k = {$this->connexion->instance()->quote($value)}");
                     }else
                     {
 
@@ -935,7 +936,7 @@ namespace Imperium\Tables {
                             if ($columns->numeric($value))
                                 $columns->push("$k = $value");
                             else
-                                $columns->push("$k = ".quote($value));
+                                $columns->push("$k = {$this->connexion->instance()->quote($value)}");
                         }
                     }
                 }
@@ -944,10 +945,10 @@ namespace Imperium\Tables {
 
             $columns =  $columns->join(', ');
 
-            $command = "UPDATE  {$this->current()} SET $columns WHERE $primary = $id";
+            $sql = "UPDATE  {$this->current()} SET $columns WHERE $primary = $id";
 
 
-            return $this->connexion->execute($command);
+            return $this->connexion->execute($sql);
         }
 
         /**
@@ -971,13 +972,13 @@ namespace Imperium\Tables {
             switch ($this->driver)
             {
                 case MYSQL :
-                    $data =  $this->connexion->execute("RENAME TABLE {$this->current()} TO $new_name");
+                    $data =  $this->connexion->execute("RENAME TABLE {$this->current()} TO ?",$new_name);
                     assign($data,$this->table,$new_name);
                     return $data;
                 break;
                 case POSTGRESQL :
                 case SQLITE :
-                    $data =   $this->connexion->execute("ALTER TABLE {$this->current()} RENAME TO $new_name");
+                    $data =   $this->connexion->execute("ALTER TABLE {$this->current()} RENAME TO ?",$new_name);
                     assign($data,$this->table,$new_name);
                     return $data;
                 break;

@@ -7,6 +7,7 @@ namespace Imperium\Command {
     use Exception;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
+    use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -14,6 +15,7 @@ namespace Imperium\Command {
 
     class App extends Command
     {
+        use Route;
         protected static $defaultName = 'app:create';
         private $app_dir;
         private $controller_dir;
@@ -143,7 +145,6 @@ namespace Imperium\Command {
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
             $file = 'config/db.yaml';
 
             File::remove_if_exist($file);
@@ -188,7 +189,7 @@ return [
                     \"name\" =>       \$x->base(),
                     \"user\" =>       \$x->user(),
                     \"pass\" =>       \$x->password(),
-                    \"port\" =>       config('db','port'),
+                    \"port\" =>      $this->port,
                 ]
         ]
 ];");
@@ -290,7 +291,17 @@ return [
             Dir::remove('tmp');
 
 
-            return 0;
+          return  $this->create_route_table();
+
+        }
+
+        /**
+         * all drivers supported to  autocomplete driver
+         * @return array
+         */
+        private function drivers(): array
+        {
+            return  [ MYSQL,POSTGRESQL,SQLITE];
         }
 
     }

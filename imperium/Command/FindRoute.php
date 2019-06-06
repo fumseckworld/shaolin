@@ -5,7 +5,7 @@ namespace Imperium\Command {
 
 
     use Exception;
-    use Imperium\Routing\Router;
+    use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -13,8 +13,13 @@ namespace Imperium\Command {
 
     class FindRoute extends Command
     {
+        use Route;
+
         protected static $defaultName = 'routes:search';
 
+        /**
+         * @var string
+         */
         private $search;
 
         private function clean()
@@ -36,9 +41,10 @@ namespace Imperium\Command {
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {
-            $helper = $this->getHelper('question');
-            if (app()->table_exist(Router::ROUTES))
+            if (def($this->routes()->all()))
             {
+                $helper = $this->getHelper('question');
+
                 do {
 
                     do {
@@ -48,7 +54,7 @@ namespace Imperium\Command {
                         $this->search = $helper->ask($input, $output, $question);
                     }while (is_null($this->search));
 
-                    $routes = app()->model()->from(Router::ROUTES)->search($this->search);
+                    $routes = $this->routes()->search($this->search);
 
                     routes($output,$routes);
                     $question = new Question("<info>Continue searching ? [Y/n] : </info>",'Y');
@@ -57,15 +63,19 @@ namespace Imperium\Command {
 
                 }while ($continue);
 
-            }else{
-                $output->write("<error>The table routes was not found</error>\n");
-                return 1;
             }
+
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $output->write("<info>Bye</info>\n");
+            $this->clean();
+            if (def($this->routes()->all()))
+            {
+                $output->write("<info>Bye</info>\n");
+            }else{
+                $output->write("<error>We have not found routes</error>\n");
+            }
         }
 
     }

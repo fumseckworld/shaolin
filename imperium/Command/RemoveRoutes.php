@@ -4,7 +4,7 @@
 namespace Imperium\Command {
 
 
-    use Imperium\Routing\Router;
+    use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -14,8 +14,10 @@ namespace Imperium\Command {
     {
         protected static $defaultName = 'routes:destroy';
 
+        use Route;
+
         private $name;
-        private $id;
+
 
         private function clean()
         {
@@ -29,7 +31,7 @@ namespace Imperium\Command {
         public function names(): array
         {
             $data = collection();
-            foreach (app()->model()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
+            foreach ($this->routes()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
                 $data->add($x->name);
 
             return $data->collection();
@@ -37,17 +39,9 @@ namespace Imperium\Command {
 
         public function interact(InputInterface $input, OutputInterface $output)
         {
-            $helper = $this->getHelper('question');
-
-            do {
-                $this->clean();
-                $question = new Question("<info>Please enter the route name : </info>");
-                $question->setAutocompleterValues($this->names());
-                $this->name = $helper->ask($input, $output, $question);
-
-            }while (is_null($this->name));
-            while (not_def($this->get($this->name)))
+            if (def($this->names()))
             {
+                $helper = $this->getHelper('question');
 
                 do {
                     $this->clean();
@@ -55,24 +49,42 @@ namespace Imperium\Command {
                     $question->setAutocompleterValues($this->names());
                     $this->name = $helper->ask($input, $output, $question);
 
-
                 }while (is_null($this->name));
+                while (not_def($this->name($this->name)))
+                {
+
+                    do {
+                        $this->clean();
+                        $question = new Question("<info>Please enter the route name : </info>");
+                        $question->setAutocompleterValues($this->names());
+                        $this->name = $helper->ask($input, $output, $question);
+
+
+                    }while (is_null($this->name));
+                }
+
             }
 
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            if (app()->model()->query()->from(Router::ROUTES)->mode(DELETE)->where('name',EQUAL,$this->name)->delete())
-                $output->write("<info>The route has been deleted successfully</info>\n");
-            else
-                $output->write("<error>The route deletion has failed</error>\n");
+            $this->clean();
+            if (def($this->names()))
+            {
+                if ($this->routes()->query()->from('routes')->mode(DELETE)->where('name',EQUAL,$this->name)->delete())
+                    $output->write("<info>The route has been deleted successfully</info>\n");
+                else
+                    $output->write("<error>The route deletion has failed</error>\n");
+            }else{
+                $output->write("<error>We have not found routes</error>\n");
+            }
         }
 
 
-        private function get(string $name): array
+        private function name(string $name): array
         {
-            return app()->model()->from(Router::ROUTES)->by('name',$name);
+            return $this->routes()->by('name',$name);
         }
     }
 }

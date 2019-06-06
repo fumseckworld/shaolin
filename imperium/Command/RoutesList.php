@@ -7,6 +7,7 @@ namespace Imperium\Command {
     use Exception;
     use Imperium\Connexion\Connect;
     use Imperium\File\File;
+    use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -17,6 +18,7 @@ namespace Imperium\Command {
         protected static $defaultName = 'routes:list';
 
 
+        use Route;
 
         protected function configure()
         {
@@ -31,7 +33,7 @@ namespace Imperium\Command {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            routes($output, app()->model()->from('routes')->all('id',ASC));
+            routes($output, $this->routes()->all('id',ASC));
 
         }
 

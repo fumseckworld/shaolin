@@ -186,7 +186,7 @@ namespace Imperium\Users {
 
             $this->check($driver);
 
-            return $this->connexion->mysql() ? $this->connexion->execute("CREATE USER '$this->username'@'localhost' IDENTIFIED BY '$this->password'") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password'");
+            return $this->connexion->mysql() ? $this->connexion->execute("CREATE USER '{$this->username}'@'localhost' IDENTIFIED BY '$this->password'") : $this->connexion->execute("CREATE ROLE $this->username PASSWORD '$this->password'");
         }
 
         /**
@@ -267,7 +267,7 @@ namespace Imperium\Users {
          */
         public function check(string $driver): Users
         {
-            not_in([Connect::MYSQL, Connect::POSTGRESQL], $driver, true, "The $driver driver has not users");
+            not_in([MYSQL, POSTGRESQL], $driver, true, "The $driver driver has not users");
 
             return $this;
         }
@@ -284,7 +284,7 @@ namespace Imperium\Users {
          */
         public function hidden_users():array
         {
-            return config('db','hidden_users');
+            return db('hidden_users');
         }
     }
 }

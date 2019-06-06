@@ -2,8 +2,8 @@
 
 namespace Imperium\Config {
 
-    use Exception;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Symfony\Component\Yaml\Yaml;
 
@@ -43,7 +43,8 @@ namespace Imperium\Config {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public function get(string $file,$key)
         {
@@ -57,8 +58,9 @@ namespace Imperium\Config {
 
             $data =  collection(self::parseFile($x));
 
+
             if (!$data->has_key($key))
-                throw new Exception("The $key key was not found in the file $file at {$this->path()}");
+                throw new Kedavra("The $key key was not found in the file $file at {$this->path()}");
             else
                 return $data->get($key);
         }
@@ -67,7 +69,7 @@ namespace Imperium\Config {
         /**
          * @param string $file
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private static function check(string $file)
@@ -77,7 +79,7 @@ namespace Imperium\Config {
         }
 
         /**
-         * @throws Exception
+         * @throws Kedavra
          */
         public static function init()
         {

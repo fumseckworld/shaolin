@@ -5,8 +5,6 @@ namespace Imperium\Connexion {
     use Exception;
     use PDO;
     use PDOException;
-    use Imperium\Directory\Dir;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
     /**
     *
@@ -141,10 +139,6 @@ namespace Imperium\Connexion {
          */
         private $host;
 
-        /**
-         * @var string
-         */
-        private $queries;
 
         /**
          *
@@ -345,27 +339,28 @@ namespace Imperium\Connexion {
         }
 
         /**
-         * @param string $request
          *
+         * @param string $sql
+         * @param string[] $vars
          * @return object
          *
          * @throws Exception
-         *
          */
-        public function fetch(string $request)
+        public function fetch(string $sql,string ...$vars)
         {
-            $query = $this->instance()->prepare($request);
+            $query = $this->instance()->prepare($sql);
 
-            is_true(is_bool($query),true,$request);
+            is_true(is_bool($query),true,$sql);
 
-            $query->execute();
+            $query->execute($vars);
 
-            $data = $query->fetch($this->fetch_mode());
+            $x = $query->fetch($this->fetch_mode());
 
             is_false($query->closeCursor(),true,"Fail to close the connection");
 
             $query = null;
-            return $data;
+
+            return $x;
         }
 
         /**
@@ -391,54 +386,57 @@ namespace Imperium\Connexion {
          *
          * @method request
          *
-         * @param  string  $request The sql query
-         *
+         * @param string $sql
+         * @param string[] $vars
          * @return array
+         *
+         * @throws Exception
+         */
+        public function request(string $sql,string ...$vars): array
+        {
+            $query = $this->instance()->prepare($sql);
+
+            $query->execute($vars);
+
+            is_true(is_bool($query),true,$sql);
+
+            $x = $query->fetchAll($this->fetch_mode());
+
+            is_false($query->closeCursor(),true,"Fail to close the connection");
+
+            $query = null;
+
+            return $x;
+        }
+
+        /**
+         *
+         * Execute a query and return true on success or false on failure
+         *
+         * @method execute
+         *
+         * @param string $sql
+         * @param string[] $vars
+         *
+         * @return bool
          *
          * @throws Exception
          *
          */
-        public function request(string $request): array
+        public function execute(string $sql,string ...$vars): bool
         {
-            $query = $this->instance()->prepare($request);
+            $query = $this->instance()->prepare($sql);
 
-            $query->execute();
 
-            is_true(is_bool($query),true,$request);
+            is_true(is_bool($query),true,$sql);
 
-            $data = $query->fetchAll($this->fetch_mode());
+            $x = $query->execute($vars);
 
             is_false($query->closeCursor(),true,"Fail to close the connection");
 
             $query = null;
 
-            return $data;
-        }
-
-       /**
-        *
-        * Execute a query and return true on success or false on failure
-        *
-        * @method execute
-        *
-        * @param  string  $request The sql query
-        *
-        * @return bool
-        *
-        * @throws Exception
-        *
-        */
-        public function execute(string $request): bool
-        {
-            $query = $this->instance()->prepare($request);
-
-            is_true(is_bool($query),true,$request);
-
-            $data = $query->execute();
-
-            is_false($query->closeCursor(),true,"Fail to close the connection");
-            $query = null;
-            return $data;
+            return $x;
 
         }
 
@@ -472,25 +470,7 @@ namespace Imperium\Connexion {
             return $this->instance()->commit();
         }
 
-        /**
-         *
-         * Execute the queries
-         *
-         * @param string[] $queries
-         *
-         * @return Connect
-         *
-         * @throws Exception
-         */
-        public function queries(string ...$queries): Connect
-        {
-            $this->queries = $queries;
-            foreach ($queries as $query)
-                is_false($this->execute($query),true,$query);
 
-            return $this;
-
-        }
         /**
          *
          * Abort the current transaction

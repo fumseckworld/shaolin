@@ -4,8 +4,8 @@ $x = app()->connect();
 
 return [
     "paths" => [
-        "migrations" => "dbs/migrations",
-        "seeds" => "dbs/seeds"
+        "migrations" => "db/migrations",
+        "seeds" => "db/seeds"
     ],
     "environments" =>
         [
@@ -18,7 +18,7 @@ return [
                     "name" =>       $x->base(),
                     "user" =>       $x->user(),
                     "pass" =>       $x->password(),
-                    "port" =>       config('db','port'),
+                    "port" =>      3306,
                 ]
         ]
 ];

@@ -9,6 +9,7 @@ namespace Imperium\Routing {
     use Imperium\Security\Auth\AuthMiddleware;
     use Imperium\Security\Csrf\CsrfMiddleware;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\HttpFoundation\Response;
 
 
     /**
@@ -26,31 +27,8 @@ namespace Imperium\Routing {
      **/
     class Router
     {
-        /**
-         *
-         * The post method key
-         *
-         * @var string
-         *
-         */
-        const METHOD_POST = 'POST';
 
-        /**
-         *
-         * The get method key
-         *
-         * @var string
-         */
-        const METHOD_GET = 'GET';
-
-        /**
-         *
-         * All methods supported
-         *
-         * @var array
-         *
-         */
-        const METHOD_SUPPORTED =  ['DELETE', 'PATCH', 'POST', 'PUT', 'GET'];
+        use Route;
 
         /**
          *
@@ -126,16 +104,6 @@ namespace Imperium\Routing {
 
 
         const METHOD = 'method';
-
-        /**
-         *
-         * Table to store routes
-         *
-         * @var string
-         *
-         */
-        const ROUTES = 'routes';
-
 
         /**
          *
@@ -231,6 +199,7 @@ namespace Imperium\Routing {
                 $this->method = $request->getMethod();
 
 
+            $this->create_route_table(); // to be sure
 
             $this->url           = $request->getUri()->getPath();
 
@@ -238,26 +207,26 @@ namespace Imperium\Routing {
 
         }
 
-
         /**
          *
          * Call the callable
          *
-         * @return mixed
+         * @return Response
          *
          * @throws Exception
          *
          */
-        public function run()
+        public function run():Response
         {
-            is_true(app()->table_not_exist(self::ROUTES),true,"The routes table was not found");
 
-            foreach(app()->model()->from(self::ROUTES)->where('method',EQUAL,$this->method)->get() as $route)
+            is_true(equal($this->routes()->count('routes'),0),true,"The routes table is empty");
+
+            foreach($this->routes()->by('method',$this->method) as $route)
             {
                 if ($this->match($route->url))
                     return $this->call($route);
             }
-            return to(name('404'));
+            return to(route('404'));
         }
 
         /**
@@ -278,22 +247,24 @@ namespace Imperium\Routing {
          *
          * Display a route url by this name
          *
-         * @param $name
+         * @param string $name
          *
+         * @param array $args
          * @return string
          *
          * @throws Exception
-         *
          */
-        public function url(string $name): string
+        public static function url(string $name,array $args=[]): string
         {
-            $x = app()->model()->query()->from(self::ROUTES)->where('name',EQUAL,$name)->use_fetch()->get();
+            $x = route($name,$args);
 
-            is_true(not_def($x),true,'Route was not found');
+            if (php_sapi_name() != 'cli')
+            {
+                $host = request()->getHost();
 
-            $host = request()->getHost();
-
-            return https() ? "https://$host$x->url" : "http://$host$x->url";
+                return https() ? "https://$host/$x" : "http://$host/$x";
+            }
+           return $x;
 
         }
 
@@ -352,11 +323,11 @@ namespace Imperium\Routing {
          *
          * @param $route
          *
-         * @return mixed
+         * @return Response
          *
          * @throws Exception
          */
-        private function call($route)
+        private function call($route): Response
         {
             array_shift($this->args);
 
@@ -392,9 +363,14 @@ namespace Imperium\Routing {
             {
                 $x =  call_user_func_array([$controller, $action], $this->args);
                 call_user_func_array( [$controller, self::AFTER_ACTION],[]);
-                return $x;
+
+                return (new Response())->setContent($x);
+
             }
-            return call_user_func_array([$controller, $action], $this->args);
+
+            $x =  call_user_func_array([$controller, $action], $this->args);
+
+            return (new Response())->setContent($x);
         }
 
 

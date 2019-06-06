@@ -318,7 +318,7 @@ namespace Imperium\View {
 
             $functions->add(new TwigFunction('user',
 
-                function (): Collection
+                function ()
                 {
                     return current_user();
                 }

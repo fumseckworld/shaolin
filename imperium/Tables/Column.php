@@ -751,14 +751,14 @@ namespace Imperium\Tables {
 
             $command = "ALTER TABLE {$this->current()} ADD COLUMN ";
 
-            different($size,0) ?  append($command,"$name $type($size) ") :  append($command,"$name $type ");
+            def($size) ?  append($command,"? ?(?) ") :  append($command,"? ? ");
 
             if(is_false($nullable))
             {
                 $this->connexion->postgresql() ?  append($command,' NOT NULL DEFAULT 0') :  append($command,' NOT NULL');
             }
 
-            return $this->connexion->execute($command);
+            return def($size) ? $this->connexion->execute($command,$name,$type,$size) : $this->connexion->execute($command,$name,$type);
 
         }
 
@@ -916,11 +916,11 @@ namespace Imperium\Tables {
 
                     $x =  $length  ?  "($length)" : '';
 
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->current()} CHANGE COLUMN  $old $new_name $type$x ;");
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute("ALTER TABLE {$this->current()} CHANGE COLUMN  ? ? ??;",$old,$new_name,$type,$x);
                 break;
                 case POSTGRESQL :
                 case SQLITE :
-                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->current()} RENAME COLUMN $old TO $new_name;");
+                    return equal($old,$this->primary_key()) ? false : $this->connexion->execute( "ALTER TABLE {$this->current()} RENAME COLUMN ? TO ?;",$old,$new_name);
                 break;
                 default:
                     return false;
@@ -954,7 +954,7 @@ namespace Imperium\Tables {
                 break;
 
                 case POSTGRESQL :
-                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='{$this->current()}';") as $type)
+                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name =' {$this->current()}'") as $type)
                     {
                         $x = collection(explode('(', trim($type->data_type,')')));
                         $types->push($x->get(0));
@@ -1232,7 +1232,7 @@ namespace Imperium\Tables {
 
                 case POSTGRESQL :
 
-                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name =' {$this->current()}';") as $type)
+                    foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='{$this->current()}';") as $type)
                     {
                         $x = collection(explode('(', trim($type->data_type,')')));
                         $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
@@ -1275,11 +1275,9 @@ namespace Imperium\Tables {
                     case MYSQL :
                         equal($column,$primary) ? $data->add(false) :  $data->add($this->connexion->execute("ALTER TABLE $table DROP $column"),$column);
                     break;
-
                     case POSTGRESQL :
                          equal($column,$primary) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT"),$column);
                     break;
-
                     default :
                         return false;
                     break;
