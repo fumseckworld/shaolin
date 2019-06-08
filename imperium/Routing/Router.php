@@ -226,7 +226,6 @@ namespace Imperium\Routing {
          */
         public function run():Response
         {
-
             is_true(equal($this->routes()->count('routes'),0),true,"The routes table is empty");
 
             foreach($this->routes()->by('method',$this->method) as $route)
@@ -265,7 +264,7 @@ namespace Imperium\Routing {
         public static function url(string $name,array $args=[]): string
         {
             $x = route($name,$args);
-            
+
             if (php_sapi_name() != 'cli')
             {
                 $host = request()->getHost();
@@ -337,7 +336,7 @@ namespace Imperium\Routing {
 
             $params = collection();
 
-            foreach ($this->args as $k => $match)
+            foreach ($this->args as $match)
             {
                 is_numeric($match) ? $this->with($match,self::NUMERIC) : $this->with($match,self::STRING);
 
