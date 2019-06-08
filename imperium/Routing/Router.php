@@ -68,6 +68,13 @@ namespace Imperium\Routing {
 
         /**
          *
+         * @var string
+         *
+         */
+        const STRING = '([a-zA-Z\-]+)';
+
+        /**
+         *
          * The regex for a slug
          *
          * @var string
@@ -104,6 +111,7 @@ namespace Imperium\Routing {
 
 
         const METHOD = 'method';
+
 
         /**
          *
@@ -257,7 +265,7 @@ namespace Imperium\Routing {
         public static function url(string $name,array $args=[]): string
         {
             $x = route($name,$args);
-
+            
             if (php_sapi_name() != 'cli')
             {
                 $host = request()->getHost();
@@ -313,11 +321,7 @@ namespace Imperium\Routing {
          */
         private function paramMatch($match):string
         {
-            if(isset($this->regex[$match[1]]))
-            {
-                return '(' . $this->regex[$match[1]] . ')';
-            }
-            return '([^/]+)';
+           return def($this->regex[$match[1]]) ?  '(' . $this->regex[$match[1]] . ')' :  '([^/]+)';
         }
         /**
          *
@@ -332,14 +336,12 @@ namespace Imperium\Routing {
             array_shift($this->args);
 
             $params = collection();
-            foreach ($this->args as $match)
+
+            foreach ($this->args as $k => $match)
             {
-                if (is_string($match))
-                    $params->add($match);
-                elseif (is_numeric($match))
-                    $params->add(intval($match));
-                else
-                    $params->add($match);
+                is_numeric($match) ? $this->with($match,self::NUMERIC) : $this->with($match,self::STRING);
+
+                is_numeric($match) ? $params->add(intval($match)): $params->add($match);
             }
 
             $this->args = $params->collection();

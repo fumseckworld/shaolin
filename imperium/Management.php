@@ -604,14 +604,12 @@ namespace Imperium {
          * Return a view
          *
          * @param string $name
-         * @param array $args
+         * @param string[] $vars
          *
          * @return string
          *
-         * @throws Exception
-         *
          */
-        public function view(string $name,array $args = []): string;
+        public function view(string $name,string ...$vars): string;
 
         /**
          *

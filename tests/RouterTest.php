@@ -62,5 +62,10 @@ namespace Testing {
             $this->assertStringContainsString('<h1>welcome</h1>',$this->router('/',GET)->getContent());
         }
 
+        public function test_args()
+        {
+            $this->assertTrue($this->router('/edit/willy/20',GET)->isOk());
+        }
+
     }
 }
