@@ -682,7 +682,7 @@ if (not_exist('view'))
             else
             {
                 $file = collection(explode('.',$name))->begin();
-                append($file,'.twig');
+                append($file,'.twig'); 
             }
 
             $file = $dir .DIRECTORY_SEPARATOR . $file;
