@@ -41,6 +41,10 @@ use Imperium\Html\Pagination\Pagination;
 define('GET','GET');
 define('POST','POST');
 
+define('GIT_PERIOD',['minute','minutes','day','days','week','weeks','month','months','year','years']);
+define('GIT_SIZE',[1,2,3,4,5,6,7,8,9,10,11,12]);
+define('GIT_ARCHIVE_EXT',['tar','tgz','tar.gz','zip']);
+
 
 define('LOCALHOST','localhost');
 define('ASC','ASC');
@@ -188,6 +192,7 @@ if (not_exist('route'))
     function route(string $name,array $args = []): string
     {
         $x = app()->route()->query()->mode(SELECT)->from('routes')->where('name',EQUAL,$name)->use_fetch()->get();
+        is_true(not_def($x),true,"The route with the $name name was not found");
         if (def($args))
         {
            $url = rtrim(str_replace(stristr($x->url,':'),'',$x->url),'/');

@@ -99,6 +99,12 @@ Its objectives are to supports all [types of databases](http://php.net/manual/en
 
 `composer require imperium/imperium`
 
+# Git 
+
+[aha](https://github.com/theZiz/aha) is required to use git 
+
+
+
 * Supported
     * MariaDB
     * MySQL

@@ -3,6 +3,7 @@
 namespace Imperium\Directory {
 
     use Exception;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
 
    /**
@@ -194,7 +195,7 @@ namespace Imperium\Directory {
          * @param int $permissions
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public static function create(string $directory,int $permissions = 0755): bool
         {

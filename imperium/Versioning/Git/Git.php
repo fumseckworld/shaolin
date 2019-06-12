@@ -6,8 +6,8 @@ namespace Imperium\Versioning\Git {
     use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
-    use NumberFormatter;
 
     class Git
     {
@@ -21,11 +21,6 @@ namespace Imperium\Versioning\Git {
          */
         private $data;
 
-        /**
-         * @var string
-         */
-        private $locale;
-
         const GIT_DIR = '.git';
 
         const DESCRIPTION =  'description';
@@ -38,50 +33,80 @@ namespace Imperium\Versioning\Git {
         /**
          * @var string
          */
-        private $users_table;
-
-        /**
-         * @var string
-         */
         private $contributor;
 
         /**
          * @var string
          */
-        private $authors_order_by;
+        private $contributor_email;
+        /**
+         * @var bool
+         */
+        private $dark_mode;
+
+        /**
+         * @var string
+         */
+        private $releases_directory;
+
+
+        /**
+         * @var array
+         */
+        private $contributors;
+
+        /**
+         * @var array
+         */
+        private $releases;
+
+        /**
+         *
+         * @var array
+         *
+         */
+        private $archives_ext;
+
 
         /**
          *
          * Git constructor.
          *
          * @param string $repository
+         * @param string $locale
          *
-         * @throws Exception
-         *
+         * @param bool $dark_mode
+         * @throws Kedavra
          */
-        public function __construct(string $repository)
+        public function __construct(string $repository,string $locale = 'en',bool $dark_mode = false)
         {
+            $this->archives_ext = config('git','archives_extensions');
+
             is_false(Dir::is($repository),true,"The $repository repository not exist");
 
             $this->repository = realpath($repository);
 
             Dir::checkout($this->repository);
 
-            $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
-
-            $this->data = [];
-
-            $this->users_table = collection(config('git','tables'))->get('users');
-
-            $this->contributor = collection(config('git','tables'))->get('contributors');
-
-            $this->authors_order_by = config('git','authors_order_by');
-
             is_false(Dir::is('.git'),true,"The current repository is not a git project");
 
-            $this->locale = config('locales','locale');
+            $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
 
-            Carbon::setLocale($this->locale);
+            $this->contributors = $this->save_contributors();
+
+            $this->releases = $this->save_releases();
+
+            foreach ($this->archives_ext as $x)
+            {
+                not_in(GIT_ARCHIVE_EXT,$x,true,'The used archives extension is not valid');
+                $this->create_archives($x);
+
+            }
+
+            Carbon::setLocale($locale);
+
+            $this->dark_mode = $dark_mode;
+
         }
 
 
@@ -95,9 +120,9 @@ namespace Imperium\Versioning\Git {
         public function commits_size(): int
         {
 
-            $current = $this->current_branch();
+            $this->clean();
 
-            $this->execute("git rev-list --count {$current}");
+            $this->execute("git rev-list --count {$this->current_branch()}");
 
             return intval($this->data()->last());
 
@@ -114,6 +139,9 @@ namespace Imperium\Versioning\Git {
          */
         public function commits_by_year(string $author): Collection
         {
+
+            $this->clean();
+
             $today = now()->format('Y-m-d');
 
             $after = now()->addYears(-1)->format('Y-m-d');
@@ -135,36 +163,50 @@ namespace Imperium\Versioning\Git {
         public function commits_by_month(string $author): Collection
         {
 
-            if (not_def($this->commits_by_year($author)->collection()))
-                return new Collection();
-
-            $data = collection();
+            $date = collection();
 
             $contributions = collection();
 
             $today = now()->addMonth()->format('Y-m-d');
 
             for ($i=0;$i!=14;$i++)
-                $data->add(now()->addMonths(-$i)->format('Y-m-d'));
+                $date->add(now()->addMonths(-$i)->format('Y-m-d'));
 
-            $months = collection($data->reverse());
+            $date = collection($date->reverse());
+
+
 
             $i = 1;
             $x = 2;
             do{
-                $this->data = [];
+                $this->clean();
                 if ($i == 13)
-                    $this->execute("git log --after={$months->get($i)} --before=$today --pretty=format:'%s' --author='$author'");
+                    $this->execute("git log --after={$date->get($i)} --before=$today --pretty=format:'%s' --author='$author'");
                 else
-                    $this->execute("git log --after={$months->get($i)} --before={$months->get($x)} --pretty=format:'%s' --author='$author'");
+                    $this->execute("git log --after={$date->get($i)} --before={$date->get($x)} --pretty=format:'%s' --author='$author'");
 
-                $contributions->add($this->data()->length(),$months->get($i));
+                $contributions->add($this->data()->length(),$date->get($i));
                 $i++;
                 $x++;
             }while($i!=14);
 
             return $contributions;
 
+        }
+
+        /**
+         *
+         * @return Collection
+         *
+         */
+        public function months(): Collection
+        {
+            $months= collection();
+
+            for ($i=0;$i!=14;$i++)
+                $months->add(now()->addMonths(-$i)->format('F'));
+
+            return collection($months->reverse());
         }
 
         /**
@@ -178,7 +220,7 @@ namespace Imperium\Versioning\Git {
          */
         public function checkout(string $data): bool
         {
-            return $this->shell("git checkout $data");
+            return ! $this->shell("git checkout $data");
         }
 
         /**
@@ -194,7 +236,8 @@ namespace Imperium\Versioning\Git {
         {
 
             $branches =  $this->branches()->length();
-            $this->data = [];
+
+            $this->clean();
 
             def($directory) ? $this->execute("git ls-tree -d {$this->current_branch()} --name-only -r  $directory") : $this->execute("git ls-tree -d {$this->current_branch()} --name-only -r");
 
@@ -220,19 +263,8 @@ namespace Imperium\Versioning\Git {
             return $this->data();
         }
 
-        /**
-         *
-         * Display all contributors
-         *
-         * @return array
-         *
-         * @throws Exception
-         *
-         */
-        public function contributors(): array
-        {
-            return app()->model()->from($this->contributor)->all();
-        }
+
+
 
         /**
          *
@@ -260,12 +292,12 @@ namespace Imperium\Versioning\Git {
          *
          * Display all branches found
          *
-         * @return string
+         * @return int
          *
          */
-        public function branches_found(): string
+        public function branches_found(): int
         {
-            return $this->format($this->branches()->length());
+            return $this->branches()->length();
         }
 
         /**
@@ -277,12 +309,7 @@ namespace Imperium\Versioning\Git {
          */
         public function current_branch(): string
         {
-            foreach ($this->get_branch() as $branch)
-            {
-                if (strpos($branch,'*') === 0)
-                    return trim(str_replace('* ','',$branch));
-            }
-            return 'master';
+            return str_replace('* ','',collection($this->get_branch())->get(0));
         }
 
 
@@ -305,147 +332,80 @@ namespace Imperium\Versioning\Git {
             return $branches;
         }
 
-        /**
-         *
-         * Display all releases
-         *
-         * @return Collection
-         *
-         */
-        public function releases(): Collection
-        {
-            $versions = collection();
-
-            $this->execute('git tag --sort=version:refname');
-            foreach ($this->data as $x)
-                    $versions->stack($x);
-
-            return $versions;
-        }
 
         /**
          *
          * Display all release size
          *
-         * @return string
+         * @return int
          *
          */
-        public function release_size(): string
+        public function release_size(): int
         {
-            return $this->format(collection($this->releases())->length());
+            return collection($this->releases())->length();
         }
 
         /**
          *
          * Display the equip size
          *
-         * @return string
+         * @return int
          *
          * @throws Exception
          *
          */
-        public function equip_size(): string
+        public function contributors_size(): int
         {
-            return numfmt_format(numfmt_create($this->locale, NumberFormatter::DEFAULT_STYLE),collection($this->contributors())->length());
+            return collection($this->contributors())->length();
         }
 
 
+        public function commit_view()
+        {
+            return form(route('commit'),'')->row()->textarea('message','message')->end_row_and_new()->submit('commit')->end_row()->get();
+        }
         /**
+         * @param string $search_placeholder
+         * @param string $contribution_text
          * @return string
          *
          * @throws Exception
-         *
          */
-        public function contributors_view():string
+        public function contributors_view(string $search_placeholder = 'Search a contributor',string $contribution_text ='Contributions'):string
         {
 
-            $format ='<li class="col-md-4 col-lg-4 col-sm-12 col-xl-4 contributor"><a href="mailto:%ae">%an</a><a href="#" onclick="contributions()" class="'. collection(config('git','class'))->get('contributions').'"> '.config('git','contribution_text').'</a></li>';
-            $command = '';
-            append($command,"git log --pretty=format:'$format' " );
-            $html = '<input type="search" id="search" onkeyup="find()" placeholder="'.collection(config('git','placeholders'))->get('search').'" class="'.collection(config('git','class'))->get('search').'" autofocus="autofocus"><ul class="list-unstyled row" id="contributors">';
+            $html = '<input type="search" id="search_contributor" onkeyup="find_contributor()" placeholder="'.$search_placeholder.'" class="form-control mt-5 mb-5 form-control-lg" autofocus="autofocus"><ul class=" list-unstyled row" id="contributors">';
 
-            $authors = collection();
-
-            $this->execute($command);
-
-            foreach ($this->data as $x)
-            {
-
-                if ($authors->not_exist($x))
-                    $authors->add($x);
-            }
+            foreach($this->contributors() as $name => $email)
+                append($html,'<li class="col-md-4 col-lg-4 col-sm-12 col-xl-4 "><a href="mailto:'.$email.'">'.$name.'</a></li>');
 
 
-            return $html . $authors->join('') . '</ul><<canvas id="contrib"></canvas>   
-                <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
-                
-                
-                <script>
-                    var ctx = document.getElementById("contrib");
-                    var myChart = new Chart(ctx, {
-                        type: \'bar\',
-                        data: {
-                        labels: [\'Red\', \'Blue\', \'Yellow\', \'Green\', \'Purple\', \'Orange\'],
-                        datasets: [{
-            label: \'# of Votes\',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                \'rgba(255, 99, 132, 0.2)\',
-                \'rgba(54, 162, 235, 0.2)\',
-                \'rgba(255, 206, 86, 0.2)\',
-                \'rgba(75, 192, 192, 0.2)\',
-                \'rgba(153, 102, 255, 0.2)\',
-                \'rgba(255, 159, 64, 0.2)\'
-            ],
-            borderColor: [
-                \'rgba(255, 99, 132, 1)\',
-                \'rgba(54, 162, 235, 1)\',
-                \'rgba(255, 206, 86, 1)\',
-                \'rgba(75, 192, 192, 1)\',
-                \'rgba(153, 102, 255, 1)\',
-                \'rgba(255, 159, 64, 1)\'
-            ],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
-    }
-});
-</script>
-                
-                <script>
-                    function contributions() 
+            append($html,'</ul><canvas id="contrib"></canvas>   
+            <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+            <script>
+               
+                function find_contributor() 
+                {
+                    let input, filter, ul, li, a, i, txtValue;
+                    input = document.getElementById("search_contributor");
+                    filter = input.value.toUpperCase();
+                    ul = document.getElementById("contributors");
+                    li = ul.getElementsByTagName("li");
+                    for (i = 0; i < li.length; i++) 
                     {
-                      document.getElementById("contributors").style.display = "none";
-                      const contrib = document.getElementById("contrib");
-                    }
-                    function find() 
-                    {
-                        let input, filter, ul, li, a, i, txtValue;
-                        input = document.getElementById("search");
-                        filter = input.value.toUpperCase();
-                        ul = document.getElementById("contributors");
-                        li = ul.getElementsByTagName("li");i
-                        for (i = 0; i < li.length; i++) 
+                        a = li[i].getElementsByTagName("a")[0];
+                        txtValue = a.textContent || a.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) 
                         {
-                            a = li[i].getElementsByTagName("a")[0];
-                            txtValue = a.textContent || a.innerText;
-                            if (txtValue.toUpperCase().indexOf(filter) > -1) 
-                            {
-                                li[i].style.display = "";
-                            } else {
-                                li[i].style.display = "none";
-                            }
+                            li[i].style.display = "";
+                        } else {
+                            li[i].style.display = "none";
                         }
                     }
-                </script>';
+                }
+            </script>');
+
+            return $html;
         }
 
         /**
@@ -457,7 +417,7 @@ namespace Imperium\Versioning\Git {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws kedavra
          *
          */
         public static function clone(string $url,string $path): bool
@@ -468,7 +428,7 @@ namespace Imperium\Versioning\Git {
 
             is_true(Dir::is($path),true,'The repository already exist');
             
-            return ! is_null(shell_exec("git clone $url $path"));
+            return is_null(shell_exec("git clone $url $path"));
            
         }
 
@@ -482,7 +442,7 @@ namespace Imperium\Versioning\Git {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public static function create(string $project_name,bool $remote = false,string $description = ''): bool
@@ -518,6 +478,7 @@ namespace Imperium\Versioning\Git {
 
             return File::content(self::DESCRIPTION);
         }
+
         /**
          *
          * Execute git add
@@ -552,68 +513,170 @@ namespace Imperium\Versioning\Git {
             return $this;
         }
 
-
-        public function between(string $first,string $second)
+        /**
+         *
+         * @param string $new_release
+         * @param string $ancient_release
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         */
+        public function news(string $new_release,string $ancient_release): string
         {
-            $this->execute("git diff $first $second --stat");
+            $file = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . 'diff.html';
 
-            return collection($this->data);
+            $tags = $this->releases();
 
+            not_in($tags,$ancient_release,true,"The release $ancient_release was not found in the {$this->repository()} repository");
+
+            not_in($tags,$new_release,true,"The release $new_release was not found in the {$this->repository()} repository");
+
+            $this->clean();
+
+            if ($this->dark_mode)
+                $this->shell("git diff --word-diff --color-words $ancient_release $new_release  --patch-with-stat | aha  --black --title $this->name > $file");
+            else
+                $this->shell("git diff --word-diff --color-words $ancient_release $new_release  --patch-with-stat | aha  --title $this->name > $file");
+
+            return File::content($file);
+
+        }
+
+
+        /**
+         *
+         * Create repository archive
+         *
+         * @param string $ext
+         * @throws Kedavra
+         */
+        private function create_archives(string $ext): void
+        {
+
+            $path = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' ;
+
+            Dir::create("$path" .DIRECTORY_SEPARATOR . $this->repository()) ;
+            Dir::create("$path" .DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases') ;
+
+            $this->releases_directory =  $path   .DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases';
+
+
+
+                foreach ($this->releases() as $tag)
+                {
+                    $file = $this->releases_directory  .DIRECTORY_SEPARATOR . $this->repository() .'-'. "$tag.$ext";
+
+                    if (File::not_exist($file))
+                    {
+                        switch ($ext)
+                        {
+                            case 'zip':
+                                $this->shell("git archive --format=$ext --prefix=$this->name-$tag/ $tag  > $file");
+                            break;
+                            default:
+                                $this->shell("git archive --format=$ext --prefix=$this->name-$tag/ $tag |  gzip > $file");
+                            break;
+                        }
+                    }
+
+                }
+
+
+        }
+
+        public function release_view(string $search_placeholder = 'Find a version')
+        {
+            $html = '<input type="search" id="search_release" onkeyup="find_releases()" placeholder="'.$search_placeholder.'" class="form-control mt-5 mb-5 form-control-lg" autofocus="autofocus"><ul class=" list-unstyled row" id="releases">';
+
+
+            foreach ($this->archives_ext as $ext)
+            {
+                foreach ($this->releases() as $tag)
+                {
+
+                    $archive = $this->repository() .DIRECTORY_SEPARATOR .'releases'.DIRECTORY_SEPARATOR.  $this->repository() . '-' . "$tag." . $ext;
+
+                    if (php_sapi_name() != 'cli')
+                        $x = https() ? 'https://' . request()->getHost() .'/' . $archive : 'http://' . request()->getHost() .'/'. $archive;
+                    else
+                        $x = "/$archive";
+                    append($html,'<li class="col-md-3 col-lg-3 col-sm-12 col-xl-3"><a href="'.$x.'">'.collection(explode(DIRECTORY_SEPARATOR,$archive))->last().'</a></li>');
+
+                }
+            }
+
+
+            append($html,'</ul>  <script>
+               
+                function find_releases() 
+                {
+                    let input, filter, ul, li, a, i, txtValue;
+                    input = document.getElementById("search_release");
+                    filter = input.value.toUpperCase();
+                    ul = document.getElementById("releases");
+                    li = ul.getElementsByTagName("li");
+                    for (i = 0; i < li.length; i++) 
+                    {
+                        a = li[i].getElementsByTagName("a")[0];
+                        txtValue = a.textContent || a.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) 
+                        {
+                            li[i].style.display = "";
+                        } else {
+                            li[i].style.display = "none";
+                        }
+                    }
+                }
+            </script>');
+            return $html;
+        }
+        public function git(): string
+        {
+          $html = "<div class='row'><div class='col-lg-6 col-sm-12 col-md-6 col-xl-6'>{$this->contributors_view()}</div><div class='col-lg-6 col-sm-12 col-md-6 col-xl-6'>{$this->release_view()}</div></dov>";
+
+            return $html;
         }
 
         /**
          *
          * Display log
          *
+         * @param int $size
+         * @param string $period
+         * @param bool $after
+         *
          * @return string
-         * 
+         *
+         * @throws Kedavra
+         *
          */
-        public function log(): string
+        public function log(int $size = 1,string $period  ='month',bool $after = true): string
         {
-            $command = 'git log ';
 
-            $limit = get('limit',10);
+            not_in(GIT_PERIOD,$period,true,"The current period is not valid please choose one of this values :  {$this->valid_period()}");
 
-            append($command, " --max-count=$limit");
+            not_in(GIT_SIZE,$size,true,"The current size is not valid please choose one of this values : {$this->valid_size()}");
 
-            if (def(get('author')))
+
+            $file = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . 'log.html';
+
+            if ($after)
             {
-                $author = $_GET['author'] ;
-
-                append($command," --author=$author ");
+                if ($this->dark_mode)
+                    $command = "git log  -p  --graph --abbrev-commit --stat  --color=always	--after=$size.$period	 | aha    --black --title $this->name > $file";
+                else
+                    $command = "git log  -p  --graph --abbrev-commit --stat  --color=always	--after=$size.$period	 | aha   --title $this->name > $file";
+            }else
+            {
+                if ($this->dark_mode)
+                    $command = "git log  --word-diff --color-words  --color=always --graph  --oneline  --decorate  --stat | aha  --black  --title $this->name > $file";
+                else
+                    $command = "git log  -p  --graph --abbrev-commit --stat  --color=always	--before=$size.$period	 | aha   --title $this->name > $file";
             }
 
-            $html = '<table class="table table-bordered"><thead><tr><th>author</th><th>commit</th><th>date</th><th>lines</th><th>diff</th></tr></thead><tbody>';
-
-            $format = '<tr><td><a href="mailto:%ae">%an</a></td><td>%s</td><td>%ar</td><p>%H</p>';
-
-            append($command," --pretty=format:'$format'" );
-
-            $this->execute($command);
-
-
-
-
-            foreach ($this->data as $x)
-            {
-
-                $commit = collection(explode('<p>',$x));
-
-                $commit =  str_replace('</p>','',$commit->get(1));
-
-
-                $x = str_replace("<p>$commit</p>",'',$x);
-
-                $repo = $this->name;
-
-                append($x,"<td>",$this->removed_added($commit),'</td><td>','<a href="/'.$repo .'/commit/'.$commit.'">show diff</a></td></tr>');
-
-                append($html, $x);
-            }
-
-            append($html,'</tbody></table>');
-
-            return $html;
+            $this->shell($command);
+            return File::content($file);
         }
 
         /**
@@ -626,6 +689,7 @@ namespace Imperium\Versioning\Git {
          */
         public function removed_added(string $sha1):string
         {
+            $this->clean();
             return $this->lines($sha1)->last();
         }
 
@@ -638,6 +702,7 @@ namespace Imperium\Versioning\Git {
          */
         public function lines(string $sha1): Collection
         {
+            $this->clean();
             $this->execute("git show $sha1 --stat ");
 
             return collection($this->data);
@@ -653,6 +718,7 @@ namespace Imperium\Versioning\Git {
          */
         public function remote(): Collection
         {
+            $this->clean();
             $this->execute('git remote');
 
             return $this->data();
@@ -690,7 +756,7 @@ namespace Imperium\Versioning\Git {
          */
         public function shell(string $command): bool
         {
-            return ! is_null(shell_exec($command));
+            return is_null(shell_exec($command));
         }
 
         /**
@@ -713,7 +779,7 @@ namespace Imperium\Versioning\Git {
          */
         private function get_branch(): array
         {
-            $this->data = [];
+            $this->clean();
             $this->execute('git branch --all');
             $branches = collection();
 
@@ -725,19 +791,6 @@ namespace Imperium\Versioning\Git {
             return $branches->collection();
         }
 
-        /**
-         *
-         * Format a number to string
-         *
-         * @param int $x
-         *
-         * @return string
-         *
-         */
-        private function format(int $x): string
-        {
-            return numfmt_format(numfmt_create($this->locale, NumberFormatter::DEFAULT_STYLE),$x);
-        }
 
         /**
          *
@@ -748,22 +801,119 @@ namespace Imperium\Versioning\Git {
          */
         public function status(): Collection
         {
+            $this->clean();
+
             $this->execute('git status');
 
             return $this->data();
+
+        }
+
+        public function contributors(): array
+        {
+            return $this->contributors;
+        }
+
+        public function releases(): array
+        {
+            return $this->releases;
         }
 
         /**
          *
-         * Display git diff
+         * List valid period
          *
-         * @return Collection
+         * @return string
          *
          */
-        public function diff(): Collection
+        private function valid_period(): string
         {
-            return collection()->add(shell_exec("git diff --color=always --stat" ))->add(shell_exec('git diff --color=always'));
-
+            return collection(GIT_PERIOD)->join(', ');
         }
+        /**
+         *
+         * clean data
+         *
+         * @return void
+         *
+         */
+        private function clean():void
+        {
+            $this->data = [];
+        }
+
+        private function valid_size()
+        {
+            return collection(GIT_SIZE)->join(' ');
+        }
+
+
+        private function save_releases(): array
+        {
+            $this->clean();
+            $versions = collection();
+
+            $this->execute('git tag --sort=version:refname');
+            foreach ($this->data as $x)
+                $versions->stack($x);
+
+            $this->clean();
+
+            return $versions->collection();
+        }
+        /**
+         *
+         * Display all contributors
+         *
+         * @return array
+         *
+         *
+         */
+        private function save_contributors(): array
+        {
+            $x =  collection();
+
+            $this->clean();
+
+            $this->execute("git shortlog -sne --all");
+
+            foreach ($this->data()->collection() as $k => $v)
+            {
+                $parts = collection(preg_split('/\s+/', $v));
+
+                $this->contributor = $parts->get(2) .' ' . $parts->get(3);
+
+                foreach ($parts as $key => $value)
+                {
+                    if (def($value))
+                    {
+
+                        if (!is_numeric($value))
+                        {
+                            if (strpos($value,'<') === 0)
+                            {
+                                $this->contributor_email = str_replace('<','',str_replace('>','',$value));
+
+                                if (strrchr($this->contributor,'<'))
+                                {
+                                    $tmp = collection(explode('<',$this->contributor));
+
+                                    $this->contributor = trim($tmp->get(0));
+
+                                }
+                            }
+                        }
+                    }
+
+                }
+                if ($x->not_exist($this->contributor))
+                    $x->add($this->contributor_email,$this->contributor);
+            }
+            $this->contributor = null;
+            $this->contributor_email = null;
+            return $x->collection();
+        }
+
+
     }
 }

@@ -859,10 +859,14 @@ namespace Imperium\Collection {
         {
             $code = implode($glue,$this->data);
 
-            if ($replace)
-                $code = str_replace($value,$new_value,$code);
+            return $replace ? str_replace($value,$new_value,$code): $code;
+        }
 
-            return $code;
+        public function join_keys(string $glue,bool $replace = false,string $value= '',string $new_value ='')
+        {
+            $code = implode($glue,$this->keys());
+
+            return $replace ? str_replace($value,$new_value,$code): $code;
         }
 
 

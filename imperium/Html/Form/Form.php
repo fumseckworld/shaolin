@@ -4,8 +4,9 @@ namespace Imperium\Html\Form {
 
     use Exception;
     use Imperium\App;
+    use Imperium\Exception\Kedavra;
 
-   /**
+    /**
     *
     * Form management
     *
@@ -1028,7 +1029,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function group(array $text,string ...$href): Form
         {
