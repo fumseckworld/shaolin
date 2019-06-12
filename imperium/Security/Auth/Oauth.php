@@ -9,6 +9,7 @@ namespace Imperium\Security\Auth {
     use Imperium\Request\Request;
     use Imperium\Security\Csrf\Csrf;
     use Imperium\Session\SessionInterface;
+    use Imperium\Writing\Write;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
     class Oauth
@@ -97,7 +98,7 @@ namespace Imperium\Security\Auth {
             if($this->connected())
             {
                 $form = new Form();
-                $form->start(route($route_name,POST),POST);
+                $form->start(route($route_name),POST);
                 $user = $this->model->find($this->session->get(self::ID));
                 $columns = $this->model->columns();
                 foreach ($columns as $column)
@@ -155,7 +156,7 @@ namespace Imperium\Security\Auth {
          */
         public function send_reset_email(string $subject,string $to,string $message): bool
         {
-            return send_mail($subject,$to,$message);
+            return  Write::email($subject,$message,config('mail','from'),$to)->send();
         }
 
         /**

@@ -80,6 +80,24 @@ namespace Imperium\Writing {
 
         /**
          *
+         *
+         * @param string $subject
+         * @param string $message
+         * @param string $author_email
+         * @param string $to
+         *
+         * @return Write
+         *
+         * @throws Exception
+         *
+         */
+        public static function email(string $subject,string $message,string $author_email,string $to):Write
+        {
+            return new static($subject,$message,$author_email,$to);
+        }
+
+        /**
+         *
          * @return Write
          *
          *
