@@ -17,7 +17,7 @@ namespace Imperium\Security\Csrf {
          * @var array
          *
          */
-        const METHOD = ['DELETE', 'PATCH', 'POST', 'PUT'];
+        const METHOD = ['POST', 'PUT', 'DELETE'];
 
         /**
          *
@@ -26,7 +26,7 @@ namespace Imperium\Security\Csrf {
          * @var string
          *
          */
-        const KEY = 'csrf_token';
+        const KEY = CSRF_TOKEN;
 
 
         /**
@@ -59,11 +59,20 @@ namespace Imperium\Security\Csrf {
          */
         public function token()
         {
-            if ($this->session->has(self::KEY))
-                return $this->session->get(self::KEY);
+            return def($this->session->has(self::KEY)) ? $this->session->get(self::KEY) : $this->generate();
+        }
 
+        /**
+         *
+         * Set the token in the session
+         *
+         * @return string
+         *
+         * @throws Exception
+         */
+        private function generate():string
+        {
             $this->session->set(self::KEY,bin2hex(random_bytes(16)));
-
             return $this->session->get(self::KEY);
         }
 

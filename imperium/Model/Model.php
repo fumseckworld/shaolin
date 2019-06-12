@@ -142,7 +142,6 @@ namespace Imperium\Model {
          * @return bool
          *
          * @throws Exception
-         *
          */
         public function dump(string ...$tables): bool
         {

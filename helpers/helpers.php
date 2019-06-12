@@ -103,6 +103,8 @@ define('QUERY_ORDER','order');
 define('METHOD_SUPPORTED',['GET','POST','PUT','DELETE']);
 
 
+define('CSRF_TOKEN','csrf_token');
+
 define('DB_DRIVER','driver');
 define('DB_NAME','base');
 define('DB_USERNAME','username');
@@ -2173,8 +2175,9 @@ if(not_exist('routes'))
                         $output->write("|  $method     ");
 
 
-                    if (length($route->name) < 5)
-                        $output->write("|  $name\t\t|");
+
+                    if (length($route->name) < 3)
+                        $output->write("|  $name\t\t\t|");
 
                     elseif(length($route->name) > 10)
                         $output->write("|  $name\t|");
@@ -2184,7 +2187,7 @@ if(not_exist('routes'))
 
                     if (length($route->url) < 5)
                         $output->write("  $url\t\t\t|");
-                    elseif(length($route->url) < 12)
+                    elseif(length($route->url) < 13)
                         $output->write("  $url\t\t|");
                     elseif(length($route->url)> 18 )
                         $output->write("  $url\t|");
