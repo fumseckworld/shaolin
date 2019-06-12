@@ -2252,7 +2252,7 @@ if(not_exist('routes'))
 
                     if (length($route->url) < 5)
                         $output->write("  $url\t\t\t\t\t|");
-                    elseif(length($route->url) < 12)
+                    elseif(length($route->url) < 13)
                         $output->write("  $url\t\t\t\t|");
                     elseif(length($route->url)> 18 )
                         $output->write("  $url\t\t|");
