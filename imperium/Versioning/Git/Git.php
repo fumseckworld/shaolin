@@ -7,6 +7,7 @@ namespace Imperium\Versioning\Git {
     use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
+    use NumberFormatter;
 
     class Git
     {
@@ -93,15 +94,13 @@ namespace Imperium\Versioning\Git {
          */
         public function commits_size(): int
         {
-            $commits = collection();
 
             $current = $this->current_branch();
 
             $this->execute("git rev-list --count {$current}");
 
-            $commits->add($this->data()->get(0),$current);
+            return intval($this->data()->last());
 
-            return $commits->get($current);
         }
 
         /**
@@ -135,6 +134,10 @@ namespace Imperium\Versioning\Git {
          */
         public function commits_by_month(string $author): Collection
         {
+
+            if (not_def($this->commits_by_year($author)->collection()))
+                return new Collection();
+
             $data = collection();
 
             $contributions = collection();
@@ -335,7 +338,7 @@ namespace Imperium\Versioning\Git {
          */
         public function equip_size(): string
         {
-            return numfmt_format(numfmt_create($this->locale,\NumberFormatter::DEFAULT_STYLE),collection($this->contributors())->length());
+            return numfmt_format(numfmt_create($this->locale, NumberFormatter::DEFAULT_STYLE),collection($this->contributors())->length());
         }
 
 
@@ -561,8 +564,6 @@ namespace Imperium\Versioning\Git {
         {
             $command = 'git log ';
 
-            $current = get('current',0);
-
             $limit = get('limit',10);
 
             append($command, " --max-count=$limit");
@@ -603,11 +604,6 @@ namespace Imperium\Versioning\Git {
             }
 
             append($html,'</tbody></table>');
-
-            exec("git log",$logs);
-
-
-            append($html,pagination($limit,'?current=',$current,count($logs),'previous','next'));
 
             return $html;
         }
@@ -731,7 +727,7 @@ namespace Imperium\Versioning\Git {
          */
         private function format(int $x): string
         {
-            return numfmt_format(numfmt_create($this->locale,\NumberFormatter::DEFAULT_STYLE),$x);
+            return numfmt_format(numfmt_create($this->locale, NumberFormatter::DEFAULT_STYLE),$x);
         }
 
         /**

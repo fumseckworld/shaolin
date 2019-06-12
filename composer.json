@@ -35,7 +35,8 @@
         "psr/http-server-middleware": "^1.0",
         "symfony/console": "^4.2",
         "ext-gettext": "*",
-        "ext-PDO": "*"
+        "ext-PDO": "*",
+        "ext-intl": "*"
     },
     "autoload-dev": {
         "psr-4": {

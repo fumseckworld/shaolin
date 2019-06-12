@@ -10,7 +10,6 @@ use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
 use Imperium\Exception\Kedavra;
 use Imperium\Flash\Flash;
-use Imperium\Routing\Router;
 use Imperium\Security\Csrf\Csrf;
 use Imperium\Security\Hashing\Hash;
 use Imperium\Trans\Trans;
@@ -152,7 +151,7 @@ if (not_exist('redirect'))
             $flash = new Flash();
             $success ? $flash->success($message) : $flash->failure($message);
         }
-        return (new RedirectResponse(name($route_name)))->send();
+        return (new RedirectResponse(route($route_name)))->send();
     }
 }
 
@@ -333,7 +332,7 @@ if (not_exist('login_page'))
 
                     if ($username)
                     {
-                        $html .= ' <form action="'.route($login_route_name,POST).'" method="post">'.csrf_field().'
+                        $html .= ' <form action="'.route($login_route_name).'" method="post">'.csrf_field().'
                         <div class="form-label-group">
                           <input type="text" id="'.$column.'" name="'.$column.'" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
                           <label for="'.$column.'">'.$identifier_text.'</label>
@@ -341,7 +340,7 @@ if (not_exist('login_page'))
 
                     }else
                         {
-                            $html .= ' <form action="'.route($login_route_name,POST).'" method="post">'.csrf_field().'
+                            $html .= ' <form action="'.route($login_route_name).'" method="post">'.csrf_field().'
                         <div class="form-label-group">
                           <input type="email" id="'.$column.'" name="'.$column.'" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
                           <label for="'.$column.'">'.$identifier_text.'</label>
@@ -356,7 +355,7 @@ if (not_exist('login_page'))
                     <input type="hidden" name="method" value="post">
                     <button class="'.$class.'" type="submit">'.$sign_in_text.'</button>
                 </form>
-                <form action="'.route($send_reset_email_action_name,POST).'" method="post">'.csrf_field().'
+                <form action="'.route($send_reset_email_action_name).'" method="post">'.csrf_field().'
                      <div class="form-label-group">
                       <input type="text" id="inputEmail" name="email" class="form-control" placeholder="'.$identifier_text.'" required autofocus>
                       <label for="inputEmail">'.$forgot_password_email_text.'</label>
@@ -411,7 +410,7 @@ if (not_exist('register_page'))
                         '.$logo.'
                         <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>
                     </header>
-                    <form action="'.route($register_route_name,POST).'" method="post">
+                    <form action="'.route($register_route_name).'" method="post">
                     '.csrf_field().'
                         <input type="hidden" name="created_at" value="'.now()->format('Y-m-d').'">
                         <input type="hidden" name="method" value="post">
@@ -1306,18 +1305,17 @@ if (not_exist('route_name'))
      * Display a route name
      *
      * @param string $name
-     * @param string $method
      *
      * @return string
      *
      * @throws Exception
      *
      */
-    function route_name(string $name,string $method = GET): string
+    function route_name(string $name): string
     {
-        $x = route($name,$method);
-        return $x->name;
+        $x = app()->route()->query()->mode(SELECT)->from('routes')->where('name',EQUAL,$name)->use_fetch()->get();
 
+        return $x->name;
     }
 }
 if(not_exist('navbar'))
@@ -4185,55 +4183,55 @@ if (not_exist('future'))
         {
             case 'second':
                 return Carbon::now($tz)->addSecond($time)->toDateString();
-                break;
+            break;
             case 'seconds':
                 return Carbon::now($tz)->addSeconds($time)->toDateString();
-                break;
+            break;
             case 'minute':
                 return Carbon::now($tz)->addMinute($time)->toDateString();
-                break;
+            break;
             case 'minutes':
                 return Carbon::now($tz)->addMinutes($time)->toDateString();
-                break;
+            break;
             case 'hour':
                 return Carbon::now($tz)->addHour($time)->toDateString();
-                break;
+            break;
             case 'hours':
                 return Carbon::now($tz)->addHours($time)->toDateString();
-                break;
+            break;
             case 'day':
                 return Carbon::now($tz)->addDay($time)->toDateString();
-                break;
+            break;
             case 'days':
                 return Carbon::now($tz)->addDays($time)->toDateString();
-                break;
+            break;
             case 'week':
                 return Carbon::now($tz)->addWeek($time)->toDateString();
-                break;
+            break;
             case 'weeks':
                 return Carbon::now($tz)->addWeeks($time)->toDateString();
-                break;
+            break;
             case 'month':
                 return Carbon::now($tz)->addMonth($time)->toDateString();
-                break;
+            break;
             case 'months':
                 return Carbon::now($tz)->addMonths($time)->toDateString();
-                break;
+            break;
             case 'year':
                 return Carbon::now($tz)->addYear($time)->toDateString();
-                break;
+            break;
             case 'years':
                 return Carbon::now($tz)->addYears($time)->toDateString();
-                break;
+            break;
             case 'century':
                 return Carbon::now($tz)->addCentury($time)->toDateString();
-                break;
+            break;
             case 'centuries':
                 return Carbon::now($tz)->addCenturies($time)->toDateString();
-                break;
+            break;
             default:
                 return Carbon::now($tz)->addHour($time)->toDateString();
-                break;
+            break;
         }
 
     }
