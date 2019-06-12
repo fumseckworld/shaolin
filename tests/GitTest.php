@@ -56,5 +56,31 @@ namespace Testing {
             $this->assertEmpty($this->git->commits_by_year('Bob Lenon')->collection());
             $this->assertEmpty($this->git->commits_by_month('Bob Lenon')->collection());
         }
+
+        public function test_files()
+        {
+            $this->assertNotEmpty($this->git->files()->collection());
+
+            $this->assertNotEmpty($this->git->files('tests')->collection());
+
+            $this->assertTrue($this->git->files('tests')->exist('tests/GitTest.php'));
+
+        }
+
+        public function test_directories()
+        {
+            $this->assertNotEmpty($this->git->directories()->collection());
+
+
+            $this->assertNotEmpty($this->git->directories('tests')->collection());
+
+            $this->assertFalse($this->git->directories('imperium')->exist('imperium/Write'));
+            $this->assertTrue($this->git->directories('imperium')->exist('imperium/Writing'));
+
+        }
+        public function test_checkout()
+        {
+            $this->assertTrue($this->git->checkout($this->git->current_branch()));
+        }
     }
 }

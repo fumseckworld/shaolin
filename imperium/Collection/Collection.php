@@ -999,5 +999,31 @@ namespace Imperium\Collection {
         {
             $this->position++;
         }
+
+        /**
+         *
+         *
+         *
+         * @return Collection
+         *
+         */
+        public function shift(): Collection
+        {
+            array_shift($this->data);
+
+            return $this;
+        }
+
+        /**
+         *
+         * @return Collection
+         *
+         */
+        public function pop(): Collection
+        {
+            array_pop($this->data);
+
+            return $this;
+        }
     }
 }

@@ -192,7 +192,14 @@ namespace Imperium\Versioning\Git {
          */
         public function directories(string $directory = ''): Collection
         {
-            def($directory) ? $this->execute("git ls-tree -d {$this->current_branch()} -r $directory -t") : $this->execute("git ls-tree -d {$this->current_branch()} -t -r  ");
+
+            $branches =  $this->branches()->length();
+            $this->data = [];
+
+            def($directory) ? $this->execute("git ls-tree -d {$this->current_branch()} --name-only -r  $directory") : $this->execute("git ls-tree -d {$this->current_branch()} --name-only -r");
+
+            for ($i=$branches;$i!=0;$i--)
+                $this->data =  $this->data()->shift();
 
             return $this->data();
         }
@@ -208,7 +215,7 @@ namespace Imperium\Versioning\Git {
          */
         public function files(string $directory = ''): Collection
         {
-            def($directory) ? $this->execute("git ls-file -d {$this->current_branch()} -r $directory -t") : $this->execute("git ls-tree -d {$this->current_branch()} -t -r  ");
+            def($directory) ? $this->execute("git ls-files --directory $directory") : $this->execute("git ls-files");
 
             return $this->data();
         }
@@ -289,6 +296,7 @@ namespace Imperium\Versioning\Git {
          */
         public function branches(): Collection
         {
+
             $branches = collection();
 
             foreach ($this->get_branch() as $branch)
@@ -705,6 +713,7 @@ namespace Imperium\Versioning\Git {
          */
         private function get_branch(): array
         {
+            $this->data = [];
             $this->execute('git branch --all');
             $branches = collection();
 
