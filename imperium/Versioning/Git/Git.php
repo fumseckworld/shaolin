@@ -96,16 +96,10 @@ namespace Imperium\Versioning\Git {
 
             $this->releases = $this->save_releases();
 
-            foreach ($this->archives_ext as $x)
-            {
-                not_in(GIT_ARCHIVE_EXT,$x,true,'The used archives extension is not valid');
-                $this->create_archives($x);
-
-            }
-
             Carbon::setLocale($locale);
 
             $this->dark_mode = $dark_mode;
+
 
         }
 
@@ -128,6 +122,26 @@ namespace Imperium\Versioning\Git {
 
         }
 
+
+        /**
+         *
+         * Generate archives
+         *
+         * @return Git
+         *
+         * @throws Kedavra
+         *
+         */
+        public function generate_archives(): Git
+        {
+            foreach ($this->archives_ext as $x)
+            {
+                not_in(GIT_ARCHIVE_EXT,$x,true,'The used archives extension is not valid');
+                $this->create_archives($x);
+
+            }
+            return $this;
+        }
         /**
          *
          * Get all commits by the author between today and the 12 last months

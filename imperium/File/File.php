@@ -27,6 +27,7 @@ namespace Imperium\File {
     use Mimey\MimeTypes;
     use RecursiveDirectoryIterator;
     use RecursiveIteratorIterator;
+    use SplFileObject;
 
     /**
      * Class File
@@ -1107,9 +1108,20 @@ namespace Imperium\File {
          */
         public static function content(string $filename): string
         {
-            self::quitIfEmpty([$filename],__FUNCTION__);
 
-            return self::verify($filename) ? file_get_contents($filename) :  '';
+            d(new SplFileObject($filename, 'r'));
+            self::quitIfEmpty([$filename],__FUNCTION__);
+            $data = '';
+            $file = fopen($filename,'r');
+            if ($file)
+            {
+                while (!feof($file))
+                {
+                    append($data,fgets($file));
+                }
+            }
+            fclose($file);
+            return $data;
         }
 
         /**
