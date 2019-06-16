@@ -8,7 +8,6 @@ namespace Imperium\Routing {
     use Imperium\Connexion\Connect;
     use Imperium\Model\Model;
     use Imperium\Tables\Table;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 
     trait Route
     {

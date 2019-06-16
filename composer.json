@@ -43,6 +43,7 @@
             "Testing\\": "tests/"
         }
     },
+
     "autoload": {
         "psr-4": {
             "Imperium\\": "imperium/",

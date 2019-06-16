@@ -2,7 +2,6 @@
 
 namespace Imperium\Versioning\Git {
 
-    use Carbon\Carbon;
     use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
@@ -44,43 +43,46 @@ namespace Imperium\Versioning\Git {
          */
         private $dark_mode;
 
-        /**
-         * @var string
-         */
-        private $releases_directory;
-
 
         /**
          * @var array
          */
         private $contributors;
-
-        /**
-         * @var array
-         */
-        private $releases;
-
         /**
          *
          * @var array
          *
          */
         private $archives_ext;
+        /**
+         * @var string
+         */
+        private $owner;
 
 
         /**
          *
          * Git constructor.
          *
+         * @param string $path
          * @param string $repository
-         * @param string $locale
-         *
-         * @param bool $dark_mode
+         * @param string $owner
+         * @param string[] $archives_ext
          * @throws Kedavra
          */
-        public function __construct(string $repository,string $locale = 'en',bool $dark_mode = false)
+        public function __construct(string $path,string $repository, string $owner,string ...$archives_ext)
         {
-            $this->archives_ext = config('git','archives_extensions');
+            $this->owner =  $owner;
+
+            $owner_dir = $path .DIRECTORY_SEPARATOR . $owner;
+
+            Dir::create($owner_dir);
+
+            $repository = $owner_dir . DIRECTORY_SEPARATOR . $repository;
+
+            is_false(Dir::is($repository),true,"Repository not found");
+
+            $this->archives_ext = $archives_ext;
 
             is_false(Dir::is($repository),true,"The $repository repository not exist");
 
@@ -88,21 +90,25 @@ namespace Imperium\Versioning\Git {
 
             Dir::checkout($this->repository);
 
-            is_false(Dir::is('.git'),true,"The current repository is not a git project");
-
             $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
 
             $this->contributors = $this->save_contributors();
 
-            $this->releases = $this->save_releases();
-
-            Carbon::setLocale($locale);
-
-            $this->dark_mode = $dark_mode;
-
-
+            $this->generate_archives();
         }
 
+
+        /**
+         *
+         * Check if the dir is a remote
+         *
+         * @return bool
+         *
+         */
+        public function is_remote(): bool
+        {
+            return Dir::is('hooks') && Dir::is('refs');
+        }
 
         /**
          *
@@ -113,9 +119,6 @@ namespace Imperium\Versioning\Git {
          */
         public function commits_size(): int
         {
-
-            $this->clean();
-
             $this->execute("git rev-list --count {$this->current_branch()}");
 
             return intval($this->data()->last());
@@ -142,6 +145,7 @@ namespace Imperium\Versioning\Git {
             }
             return $this;
         }
+
         /**
          *
          * Get all commits by the author between today and the 12 last months
@@ -153,8 +157,6 @@ namespace Imperium\Versioning\Git {
          */
         public function commits_by_year(string $author): Collection
         {
-
-            $this->clean();
 
             $today = now()->format('Y-m-d');
 
@@ -187,8 +189,6 @@ namespace Imperium\Versioning\Git {
                 $date->add(now()->addMonths(-$i)->format('Y-m-d'));
 
             $date = collection($date->reverse());
-
-
 
             $i = 1;
             $x = 2;
@@ -249,7 +249,7 @@ namespace Imperium\Versioning\Git {
         public function directories(string $directory = ''): Collection
         {
 
-            $branches =  $this->branches()->length();
+            $branches =  $this->branches_found();
 
             $this->clean();
 
@@ -277,9 +277,6 @@ namespace Imperium\Versioning\Git {
             return $this->data();
         }
 
-
-
-
         /**
          *
          * Get the name of the repository
@@ -293,6 +290,20 @@ namespace Imperium\Versioning\Git {
         }
 
         /**
+         *
+         * Repository path
+         *
+         * @return string
+         *
+         */
+        public function path(): string
+        {
+            return $this->repository;
+        }
+
+        /**
+         *
+         * Result of command
          *
          * @return Collection
          *
@@ -311,8 +322,9 @@ namespace Imperium\Versioning\Git {
          */
         public function branches_found(): int
         {
-            return $this->branches()->length();
+            return $this->is_remote() ? collection(Dir::scan('refs/heads'))->length() : collection($this->branches())->length();
         }
+
 
         /**
          *
@@ -323,27 +335,31 @@ namespace Imperium\Versioning\Git {
          */
         public function current_branch(): string
         {
-            return str_replace('* ','',collection($this->get_branch())->get(0));
+            foreach ($this->get_branch() as $branch)
+            {
+                if (strpos($branch,'*') === 0)
+                    return trim(str_replace('* ','',$branch));
+            }
+            return '';
         }
 
 
 
         /**
          *
-         * Get a collection of all branches
+         * Get all branches
          *
-         * @return Collection
+         * @return array
          *
          */
-        public function branches(): Collection
+        public function branches(): array
         {
-
             $branches = collection();
 
             foreach ($this->get_branch() as $branch)
                 $branches->add(trim(str_replace('* ','',$branch)));
 
-            return $branches;
+            return $branches->collection();
         }
 
 
@@ -378,14 +394,13 @@ namespace Imperium\Versioning\Git {
         {
             return form(route('commit'),'')->row()->textarea('message','message')->end_row_and_new()->submit('commit')->end_row()->get();
         }
+
+
         /**
          * @param string $search_placeholder
-         * @param string $contribution_text
          * @return string
-         *
-         * @throws Exception
          */
-        public function contributors_view(string $search_placeholder = 'Search a contributor',string $contribution_text ='Contributions'):string
+        public function contributors_view(string $search_placeholder = 'Search a contributor'):string
         {
 
             $html = '<input type="search" id="search_contributor" onkeyup="find_contributor()" placeholder="'.$search_placeholder.'" class="form-control mt-5 mb-5 form-control-lg" autofocus="autofocus"><ul class=" list-unstyled row" id="contributors">';
@@ -395,7 +410,7 @@ namespace Imperium\Versioning\Git {
 
 
             append($html,'</ul><canvas id="contrib"></canvas>   
-            <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js" integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" crossorigin="anonymous"></script>
+          
             <script>
                
                 function find_contributor() 
@@ -448,19 +463,24 @@ namespace Imperium\Versioning\Git {
 
         /**
          *
-         * Initialize a new project
+         * Create a remote repository
          *
          * @param string $project_name
-         * @param bool $remote
+         * @param string $owner
          * @param string $description
+         * @param bool $remote
          *
          * @return bool
          *
          * @throws Kedavra
          *
          */
-        public static function create(string $project_name,bool $remote = false,string $description = ''): bool
+        public static function create(string $project_name,string $owner,string $description,bool $remote = true): bool
         {
+            Dir::create($owner);
+
+            $project_name = $owner . DIRECTORY_SEPARATOR . $project_name;
+
             is_true(Dir::is($project_name),true,"The $project_name directory already exist");
 
             Dir::create($project_name);
@@ -471,7 +491,7 @@ namespace Imperium\Versioning\Git {
 
             if ($remote)
             {
-               is_false(File::write(self::DESCRIPTION,$description,File::EMPTY_AND_WRITE),true,"Failed to write description");
+                is_false((new File(self::DESCRIPTION,EMPTY_AND_WRITE_FILE_MODE))->write($description,length($description)),true,'Failed to write description');
             }
 
             return $remote ? Dir::exist('hooks') : Dir::exist(self::GIT_DIR);
@@ -485,12 +505,14 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
+         * @throws Kedavra
+         *
          */
         public static function description(string $project): string
         {
             Dir::checkout($project);
 
-            return File::content(self::DESCRIPTION);
+            return (new File(self::DESCRIPTION,READ_FILE_MODE))->read();
         }
 
         /**
@@ -529,14 +551,33 @@ namespace Imperium\Versioning\Git {
 
         /**
          *
+         * Display all last release change
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function news(): string
+        {
+            is_true(not_def($this->releases()),true,"No releases found");
+
+            return $this->change(collection($this->releases())->get(0),collection($this->releases())->get(1));
+        }
+
+        /**
+         *
+         *Display all changes between two version
+         *
          * @param string $new_release
          * @param string $ancient_release
          *
          * @return string
          *
          * @throws Kedavra
+         *
          */
-        public function news(string $new_release,string $ancient_release): string
+        public function change(string $new_release,string $ancient_release): string
         {
             $file = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . 'diff.html';
 
@@ -553,53 +594,59 @@ namespace Imperium\Versioning\Git {
             else
                 $this->shell("git diff --word-diff --color-words $ancient_release $new_release  --patch-with-stat | aha  --title $this->name > $file");
 
-            return File::content($file);
+            return (new File($file,READ_FILE_MODE))->read();
 
         }
 
 
         /**
          *
-         * Create repository archive
+         * Create repository archives
          *
          * @param string $ext
+         *
          * @throws Kedavra
+         *
          */
         private function create_archives(string $ext): void
         {
 
-            $path = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' ;
+            $dir = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner . DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases';
 
-            Dir::create("$path" .DIRECTORY_SEPARATOR . $this->repository()) ;
-            Dir::create("$path" .DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases') ;
+            Dir::create($dir) ;
 
-            $this->releases_directory =  $path   .DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases';
+            foreach ($this->releases() as $tag)
+            {
+                $file = $dir  .DIRECTORY_SEPARATOR . $this->repository() .'-'. "$tag.$ext";
 
-
-
-                foreach ($this->releases() as $tag)
+                if (!file_exists($file))
                 {
-                    $file = $this->releases_directory  .DIRECTORY_SEPARATOR . $this->repository() .'-'. "$tag.$ext";
-
-                    if (File::not_exist($file))
+                    switch ($ext)
                     {
-                        switch ($ext)
-                        {
-                            case 'zip':
-                                $this->shell("git archive --format=$ext --prefix=$this->name-$tag/ $tag  > $file");
-                            break;
-                            default:
-                                $this->shell("git archive --format=$ext --prefix=$this->name-$tag/ $tag |  gzip > $file");
-                            break;
-                        }
+                        case 'zip':
+                            $this->shell("git archive --format=$ext --prefix=$this->name-$tag/ $tag  > $file");
+                        break;
+                        default:
+                            $this->shell("git archive --format=$ext --prefix=$this->name-$tag/ $tag |  gzip > $file");
+                        break;
                     }
-
                 }
+
+            }
 
 
         }
 
-        public function release_view(string $search_placeholder = 'Find a version')
+        /**
+         *
+         * Display all releases
+         *
+         * @param string $search_placeholder
+         *
+         * @return string
+         *
+         */
+        public function release_view(string $search_placeholder = 'Find a version'): string
         {
             $html = '<input type="search" id="search_release" onkeyup="find_releases()" placeholder="'.$search_placeholder.'" class="form-control mt-5 mb-5 form-control-lg" autofocus="autofocus"><ul class=" list-unstyled row" id="releases">';
 
@@ -608,7 +655,6 @@ namespace Imperium\Versioning\Git {
             {
                 foreach ($this->releases() as $tag)
                 {
-
                     $archive = $this->repository() .DIRECTORY_SEPARATOR .'releases'.DIRECTORY_SEPARATOR.  $this->repository() . '-' . "$tag." . $ext;
 
                     if (php_sapi_name() != 'cli')
@@ -645,9 +691,30 @@ namespace Imperium\Versioning\Git {
             </script>');
             return $html;
         }
+
+        /**
+         *
+         * Show git clone urls
+         *
+         * @return string
+         *
+         */
+        public function clone_url(): string
+        {
+            $host = request()->getHost();
+            return "git://$host{$this->path()} git@$host:{$this->path()}";
+        }
+
+        /**
+         *
+         *
+         * @return string
+         *
+         *
+         */
         public function git(): string
         {
-          $html = "<div class='row'><div class='col-lg-6 col-sm-12 col-md-6 col-xl-6'>{$this->contributors_view()}</div><div class='col-lg-6 col-sm-12 col-md-6 col-xl-6'>{$this->release_view()}</div></dov>";
+            $html = '<div class="mt-5 mb-5"><div class="row"><div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">'.$this->clone_url().' </div><div></div></div></div><div class="row"><div class="col-lg-6 col-sm-12 col-md-6 col-xl-6">'.$this->contributors_view().'</div><div class="col-lg-6 col-sm-12 col-md-6 col-xl-6">'.$this->release_view().'</div></div>';
 
             return $html;
         }
@@ -664,15 +731,10 @@ namespace Imperium\Versioning\Git {
          *
          * @throws Kedavra
          *
+         *
          */
         public function log(int $size = 1,string $period  ='month',bool $after = true): string
         {
-
-            not_in(GIT_PERIOD,$period,true,"The current period is not valid please choose one of this values :  {$this->valid_period()}");
-
-            not_in(GIT_SIZE,$size,true,"The current size is not valid please choose one of this values : {$this->valid_size()}");
-
-
             $file = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . 'log.html';
 
             if ($after)
@@ -680,7 +742,7 @@ namespace Imperium\Versioning\Git {
                 if ($this->dark_mode)
                     $command = "git log  -p  --graph --abbrev-commit --stat  --color=always	--after=$size.$period	 | aha    --black --title $this->name > $file";
                 else
-                    $command = "git log  -p  --graph --abbrev-commit --stat  --color=always	--after=$size.$period	 | aha   --title $this->name > $file";
+                    $command = "git log --graph -p  --oneline --color=always  --stat --after=$size.$period | aha   --title $this->name > $file";
             }else
             {
                 if ($this->dark_mode)
@@ -690,7 +752,7 @@ namespace Imperium\Versioning\Git {
             }
 
             $this->shell($command);
-            return File::content($file);
+            return (new File($file,READ_FILE_MODE))->read();
         }
 
         /**
@@ -703,7 +765,6 @@ namespace Imperium\Versioning\Git {
          */
         public function removed_added(string $sha1):string
         {
-            $this->clean();
             return $this->lines($sha1)->last();
         }
 
@@ -716,7 +777,6 @@ namespace Imperium\Versioning\Git {
          */
         public function lines(string $sha1): Collection
         {
-            $this->clean();
             $this->execute("git show $sha1 --stat ");
 
             return collection($this->data);
@@ -732,7 +792,6 @@ namespace Imperium\Versioning\Git {
          */
         public function remote(): Collection
         {
-            $this->clean();
             $this->execute('git remote');
 
             return $this->data();
@@ -744,7 +803,7 @@ namespace Imperium\Versioning\Git {
          *
          * @return  bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function push(): bool
@@ -782,6 +841,7 @@ namespace Imperium\Versioning\Git {
          */
         public function execute(string $command): string
         {
+            $this->clean();
             return exec($command,$this->data);
         }
 
@@ -793,11 +853,14 @@ namespace Imperium\Versioning\Git {
          */
         private function get_branch(): array
         {
-            $this->clean();
-            $this->execute('git branch --all');
             $branches = collection();
 
-            foreach ($this->data as $x)
+            if ($this->is_remote())
+                $this->data = Dir::scan('refs/heads');
+            else
+                $this->execute('git branch --all');
+
+            foreach ($this->data()->collection() as $x)
             {
                 $x = collection(explode('/',$x))->last();
                 $branches->add($x);
@@ -815,22 +878,39 @@ namespace Imperium\Versioning\Git {
          */
         public function status(): Collection
         {
-            $this->clean();
-
             $this->execute('git status');
 
             return $this->data();
 
         }
 
+        /**
+         *
+         *
+         * @return array
+         *
+         */
         public function contributors(): array
         {
             return $this->contributors;
         }
 
+        /**
+         *
+         * List all versions
+         *
+         * @return array
+         *
+         */
         public function releases(): array
         {
-            return $this->releases;
+            if ($this->is_remote())
+                return collection(Dir::scan('refs/tags'))->reverse();
+
+            $this->execute('git tag --sort=version:refname');
+
+            return $this->data()->reverse();
+
         }
 
         /**
@@ -861,20 +941,6 @@ namespace Imperium\Versioning\Git {
             return collection(GIT_SIZE)->join(' ');
         }
 
-
-        private function save_releases(): array
-        {
-            $this->clean();
-            $versions = collection();
-
-            $this->execute('git tag --sort=version:refname');
-            foreach ($this->data as $x)
-                $versions->stack($x);
-
-            $this->clean();
-
-            return $versions->collection();
-        }
         /**
          *
          * Display all contributors

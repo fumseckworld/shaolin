@@ -3,7 +3,6 @@
 namespace Imperium\View {
 
     use Exception;
-    use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
@@ -261,14 +260,6 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('name',
-
-                function (string $name,string $method = GET)
-                {
-                    return name($name,$method);
-                }
-                ,['is_safe' => ['html']]
-            ));
 
             $functions->add(new TwigFunction('print',
 
@@ -290,9 +281,9 @@ namespace Imperium\View {
 
             $functions->add(new TwigFunction('route',
 
-                function (string $name,string $method = GET)
+                function (string $name,...$args)
                 {
-                    return route($name,$method);
+                    return route($name,$args);
                 }
                 ,['is_safe' => ['html']]
             ));
@@ -410,10 +401,10 @@ namespace Imperium\View {
 
             $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
 
-            if (File::not_exist($file))
+            if (!file_exists($file))
             {
-                File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
+                touch($file);
+                (new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);

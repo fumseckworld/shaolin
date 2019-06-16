@@ -4,7 +4,6 @@ namespace Imperium\Directory {
 
     use Exception;
     use Imperium\Exception\Kedavra;
-    use Imperium\File\File;
 
    /**
     *
@@ -103,7 +102,7 @@ namespace Imperium\Directory {
             {
                 if(not_in(self::IGNORE,$file))
                 {
-                    (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::remove("$directory/$file");
+                    (self::is("$directory/$file")) ? self::clear("$directory/$file") : unlink("$directory/$file");
                 }
             }
             return true;
@@ -120,7 +119,7 @@ namespace Imperium\Directory {
          */
         public static function exist(string $directory): bool
         {
-            return File::exist($directory);
+            return file_exists($directory);
         }
 
         /**

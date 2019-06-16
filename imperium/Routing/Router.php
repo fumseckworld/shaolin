@@ -4,7 +4,6 @@ namespace Imperium\Routing {
 
     use Exception;
     use Imperium\Directory\Dir;
-    use Imperium\File\File;
     use Imperium\Middleware\TrailingSlashMiddleware;
     use Imperium\Security\Auth\AuthMiddleware;
     use Imperium\Security\Csrf\CsrfMiddleware;
@@ -226,7 +225,7 @@ namespace Imperium\Routing {
          */
         public function run():Response
         {
-            is_true(equal($this->routes()->count('routes'),0),true,"The routes table is empty");
+            is_true(not_def($this->routes()->all()),true,"The routes table is empty");
 
             foreach($this->routes()->by('method',$this->method) as $route)
             {
@@ -292,7 +291,7 @@ namespace Imperium\Routing {
 
             is_false(Dir::is($dir),true,"The $dir directory was not found");
 
-            $middle = File::search("$dir/*php");
+            $middle = glob("$dir/*php");
 
             call_user_func_array(new CsrfMiddleware(), [$request]);
 

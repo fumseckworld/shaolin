@@ -751,7 +751,7 @@ namespace Imperium {
             if (def($this->request()->server->get('PWD')))
                 $path = $this->request()->server->get('PWD');
 
-            is_true(File::not_exist("$path" .DIRECTORY_SEPARATOR .".env"),true,".env file was not found");
+            is_false(file_exists("$path" .DIRECTORY_SEPARATOR .".env"),true,".env file was not found");
 
             $this->env              = Dotenv::create($path);
 
@@ -1187,7 +1187,7 @@ namespace Imperium {
          */
         public function git(string $repository_path): Git
         {
-           return new Git($repository_path);
+           return new Git($repository_path,);
         }
 
         /**

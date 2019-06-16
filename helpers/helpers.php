@@ -46,6 +46,19 @@ define('GIT_SIZE',[1,2,3,4,5,6,7,8,9,10,11,12]);
 define('GIT_ARCHIVE_EXT',['tar','tgz','tar.gz','zip']);
 
 
+define('READ_FILE_MODE','r');
+define('READ_AND_WRITE_FILE_MODE','r+');
+define('EMPTY_AND_WRITE_FILE_MODE','w');
+define('EMPTY_READ_AND_WRITE_FILE_MODE','w+');
+define('WRITE_TO_END_FILE_MODE','a');
+define('WRITE_AND_READ_TO_END_FILE_MODE','a+');
+define('CREATE_TO_WRITE_MODE','x');
+define('CREATE_TO_WRITE_AND_READ_MODE','x+');
+define('CREATE_WITHOUT_TRUNCATE_ON_WRITE_MODE','c');
+define('CREATE_WITHOUT_TRUNCATE_ON_READ_AND_WRITE_MODE','c+');
+define('FILES_OPEN_MODE',[READ_FILE_MODE,READ_AND_WRITE_FILE_MODE,EMPTY_AND_WRITE_FILE_MODE,EMPTY_READ_AND_WRITE_FILE_MODE,WRITE_TO_END_FILE_MODE,WRITE_AND_READ_TO_END_FILE_MODE,CREATE_TO_WRITE_MODE,CREATE_TO_WRITE_AND_READ_MODE,CREATE_WITHOUT_TRUNCATE_ON_WRITE_MODE,CREATE_WITHOUT_TRUNCATE_ON_READ_AND_WRITE_MODE]);
+
+
 define('LOCALHOST','localhost');
 define('ASC','ASC');
 define('DESC','DESC');
@@ -637,7 +650,7 @@ if (not_exist('config_path'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function config_path(): string
@@ -1646,7 +1659,7 @@ if (not_exist('length'))
      *
      * @return int
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function length($data): int
@@ -1656,7 +1669,7 @@ if (not_exist('length'))
         elseif(is_string($data))
             return strlen($data);
 
-        throw new Exception('The parameter must be a string or an array');
+        throw new Kedavra('The parameter must be a string or an array');
     }
 }
 
