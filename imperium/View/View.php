@@ -2,8 +2,8 @@
 
 namespace Imperium\View {
 
-    use Exception;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
@@ -60,14 +60,15 @@ namespace Imperium\View {
         /**
          * View constructor.
          *
-         * @throws Exception
+         * @throws Kedavra
+         * @throws LoaderErrorAlias
          *
          */
         public function __construct()
         {
             $file = 'app';
 
-            Dir::create(core_path(\collection(config('app','dir'))->get('app')));
+            Dir::create(core_path(collection(config('app','dir'))->get('app')));
 
             $view_dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('view');
 
@@ -347,7 +348,7 @@ namespace Imperium\View {
          */
         public function registered_path(): array
         {
-            $data = \collection();
+            $data = collection();
 
             foreach ($this->registered_path as $k => $v)
                 $data->add($this->loader()->getPaths($k),$k);
@@ -385,7 +386,7 @@ namespace Imperium\View {
          * @throws LoaderErrorAlias
          * @throws RuntimeError
          * @throws SyntaxError
-         * @throws Exception
+         * @throws Kedavra
          */
         public function load(string $view,array $args=[])
         {
@@ -458,7 +459,7 @@ namespace Imperium\View {
          * @return View
          *
          * @throws LoaderErrorAlias
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_path(string $path, string $namespace): View
@@ -505,7 +506,7 @@ namespace Imperium\View {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function domain()
@@ -516,7 +517,7 @@ namespace Imperium\View {
         /**
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function locale()
@@ -528,7 +529,7 @@ namespace Imperium\View {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function locale_path(): string

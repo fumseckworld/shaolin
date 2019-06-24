@@ -2,8 +2,8 @@
 
 namespace Imperium\Query {
 
-    use Exception;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
     use Imperium\Tables\Table;
     use Imperium\Zen;
 
@@ -240,7 +240,7 @@ namespace Imperium\Query {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function sql(): string
@@ -276,7 +276,7 @@ namespace Imperium\Query {
                 break;
 
                 default:
-                      throw new Exception('The query mode is not define');
+                      throw new Kedavra('The query mode is not define');
                 break;
             }
         }
@@ -294,7 +294,7 @@ namespace Imperium\Query {
          *
          * @return Query
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          **/
         public function where(string $column, string $condition, $expected): Query
@@ -380,7 +380,7 @@ namespace Imperium\Query {
          * 
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function get()
@@ -430,7 +430,7 @@ namespace Imperium\Query {
          *
          * @return Query
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function mode(int $mode): Query
@@ -439,7 +439,7 @@ namespace Imperium\Query {
             if (collection(Table::MODE)->has_key($mode))
                 $this->mode = $mode;
             else
-               throw new Exception("The current mode is not valid");
+               throw new Kedavra("The current mode is not valid");
 
             return $this;
         }
@@ -453,7 +453,7 @@ namespace Imperium\Query {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function delete(): bool
@@ -478,7 +478,7 @@ namespace Imperium\Query {
          *
          * @return Query
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function join(string $condition,string $first_table,string $second_table,string $first_param ,string $second_param,string ...$columns) : Query
@@ -574,7 +574,7 @@ namespace Imperium\Query {
          *
          * @return Query
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function like(string  $value): Query
@@ -629,7 +629,7 @@ namespace Imperium\Query {
          *
          * @return Query
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function and(string $column, string $condition, string $expected): Query
         {
@@ -651,7 +651,7 @@ namespace Imperium\Query {
          *
          * @return Query
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function or(string $value, string $condition, string $expected): Query

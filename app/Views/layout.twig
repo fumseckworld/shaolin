@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="{{ lang() }}">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        {{ css('app') }}
+        {% block css %} {% endblock %}
+        <title>{% block title %}{% endblock %}</title>
+
+        <meta name="description" content="{% block description %} {% endblock %}">
+
+    </head>
+    <body>
+
+        <main class="container mt-5">
+            {{ display('success') }}
+            {{ display('failure') }}
+            {% block content %} {% endblock %}
+        </main>
+
+        {{ js('app.js') }}
+        {% block js %} {% endblock %}
+    </body>
+</html>

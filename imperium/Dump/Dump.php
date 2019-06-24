@@ -2,9 +2,9 @@
 
 namespace Imperium\Dump {
 
-    use Exception;
     use Imperium\Connexion\Connect;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Collection\Collection;
 
@@ -79,7 +79,7 @@ namespace Imperium\Dump {
          * @param  bool $base The option to dump the base
          * @param  array $tables The names of the tables
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function __construct(bool $base,array $tables)
@@ -99,7 +99,7 @@ namespace Imperium\Dump {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function dump(): bool

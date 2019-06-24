@@ -67,24 +67,22 @@ namespace Imperium\Versioning\Git {
          * @param string $path
          * @param string $repository
          * @param string $owner
-         * @param string[] $archives_ext
+         *
          * @throws Kedavra
+         *
          */
-        public function __construct(string $path,string $repository, string $owner,string ...$archives_ext)
+        public function __construct(string $path,string $repository, string $owner)
         {
             $this->owner =  $owner;
 
-            $owner_dir = $path .DIRECTORY_SEPARATOR . $owner;
-
+            $owner_dir = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner() ;
             Dir::create($owner_dir);
 
             $repository = $owner_dir . DIRECTORY_SEPARATOR . $repository;
 
             is_false(Dir::is($repository),true,"Repository not found");
 
-            $this->archives_ext = $archives_ext;
-
-            is_false(Dir::is($repository),true,"The $repository repository not exist");
+            $this->archives_ext = config('git','archives_extension');
 
             $this->repository = realpath($repository);
 
@@ -97,6 +95,18 @@ namespace Imperium\Versioning\Git {
             $this->generate_archives();
         }
 
+
+        /***
+         *
+         * Get the repository owner
+         *
+         * @return string
+         *
+         */
+        public function owner(): string
+        {
+            return $this->owner;
+        }
 
         /**
          *
@@ -125,6 +135,11 @@ namespace Imperium\Versioning\Git {
 
         }
 
+
+        public function generate_changes_log()
+        {
+
+        }
 
         /**
          *
@@ -389,13 +404,6 @@ namespace Imperium\Versioning\Git {
             return collection($this->contributors())->length();
         }
 
-
-        public function commit_view()
-        {
-            return form(route('commit'),'')->row()->textarea('message','message')->end_row_and_new()->submit('commit')->end_row()->get();
-        }
-
-
         /**
          * @param string $search_placeholder
          * @return string
@@ -611,9 +619,10 @@ namespace Imperium\Versioning\Git {
         private function create_archives(string $ext): void
         {
 
-            $dir = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner . DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases';
+            $dir = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner() . DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases';
 
             Dir::create($dir) ;
+
 
             foreach ($this->releases() as $tag)
             {
@@ -737,12 +746,16 @@ namespace Imperium\Versioning\Git {
         {
             $file = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . 'log.html';
 
+            $host = request()->getHost();
+            $diff_url  =https() ? "https://$host/$this->owner/{$this->repository()}/diff/%H" : "http://$host/$this->owner/{$this->repository()}/diff/%H" ;
+
+            $format = '<a href="'.$diff_url.'" class="text-success mr-3">Show diff</a><a href="mailto:%ae">%an</a>   <a class="text-xl-right">%s</a>';
             if ($after)
             {
                 if ($this->dark_mode)
                     $command = "git log  -p  --graph --abbrev-commit --stat  --color=always	--after=$size.$period	 | aha    --black --title $this->name > $file";
                 else
-                    $command = "git log --graph -p  --oneline --color=always  --stat --after=$size.$period | aha   --title $this->name > $file";
+                    $command = "git log  --oneline --color=always --after=$size.$period  --pretty=format:'$format' | aha   --title $this->name > $file";
             }else
             {
                 if ($this->dark_mode)
@@ -752,7 +765,7 @@ namespace Imperium\Versioning\Git {
             }
 
             $this->shell($command);
-            return (new File($file,READ_FILE_MODE))->read();
+            return html_entity_decode((new File($file,READ_FILE_MODE))->read());
         }
 
         /**
@@ -915,17 +928,6 @@ namespace Imperium\Versioning\Git {
 
         /**
          *
-         * List valid period
-         *
-         * @return string
-         *
-         */
-        private function valid_period(): string
-        {
-            return collection(GIT_PERIOD)->join(', ');
-        }
-        /**
-         *
          * clean data
          *
          * @return void
@@ -934,11 +936,6 @@ namespace Imperium\Versioning\Git {
         private function clean():void
         {
             $this->data = [];
-        }
-
-        private function valid_size()
-        {
-            return collection(GIT_SIZE)->join(' ');
         }
 
         /**

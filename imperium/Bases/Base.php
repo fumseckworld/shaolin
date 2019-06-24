@@ -2,12 +2,12 @@
 
 namespace Imperium\Bases {
 
-use PDO;
-use Exception;
-use Imperium\Connexion\Connect;
-use Imperium\File\File;
-use Imperium\Import\Import;
-use Imperium\Tables\Table;
+    use Imperium\Exception\Kedavra;
+    use PDO;
+    use Imperium\Connexion\Connect;
+    use Imperium\File\File;
+    use Imperium\Import\Import;
+    use Imperium\Tables\Table;
 
     /**
     *
@@ -96,7 +96,7 @@ use Imperium\Tables\Table;
          * @param  Connect $connect
          * @param  Table $table
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function __construct(Connect $connect,Table $table )
@@ -121,7 +121,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function seed(int $records = 100): bool
@@ -140,7 +140,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function remove(string ...$bases): bool
         {
@@ -165,7 +165,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function rename(string $base,string $new_name): bool
@@ -189,7 +189,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function copy(string $new_base): bool
@@ -209,7 +209,7 @@ use Imperium\Tables\Table;
         *
         * @return array
         *
-        * @throws Exception
+        * @throws Kedavra
         *
         */
         public function show(): array
@@ -251,7 +251,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function drop_multiples(string ...$names): bool
@@ -272,7 +272,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function create_multiples(string ...$names): bool
@@ -308,8 +308,6 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
-         *
          */
         public function not_exist(string $name): bool
         {
@@ -325,7 +323,7 @@ use Imperium\Tables\Table;
          * @param string[] $names
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function create(string ...$names): bool
         {
@@ -374,7 +372,7 @@ use Imperium\Tables\Table;
          *
          * @return Base
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function set_charset(string $charset): Base
@@ -398,7 +396,7 @@ use Imperium\Tables\Table;
          *
          * @return Base
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function set_collation(string $collation): Base
@@ -420,13 +418,13 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function drop(string $name): bool
         {
             if ($this->connexion->sqlite())
-                return File::exist($name) ? File::remove($name): false;
+                return File::remove_if_exist($name);
 
             return $this->exist($name) ? $this->connexion->execute("DROP DATABASE $name") : false;
         }
@@ -437,7 +435,7 @@ use Imperium\Tables\Table;
          *
          * @return  bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function dump(): bool
@@ -453,7 +451,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function exist(string $base): bool
@@ -468,7 +466,7 @@ use Imperium\Tables\Table;
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function charsets(): array
@@ -484,7 +482,7 @@ use Imperium\Tables\Table;
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function collations(): array
@@ -504,7 +502,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function has(): bool
         {
@@ -519,7 +517,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_collation(): bool
@@ -548,7 +546,7 @@ use Imperium\Tables\Table;
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function hidden_bases(): array
@@ -562,7 +560,7 @@ use Imperium\Tables\Table;
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function hidden_tables(): array
@@ -576,7 +574,7 @@ use Imperium\Tables\Table;
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_charset(): bool
@@ -596,7 +594,7 @@ use Imperium\Tables\Table;
          *
          * @return Base
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function check(): Base

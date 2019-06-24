@@ -3,6 +3,7 @@
 namespace Imperium\Connexion {
 
     use Exception;
+    use Imperium\Exception\Kedavra;
     use PDO;
     use PDOException;
 
@@ -153,7 +154,7 @@ namespace Imperium\Connexion {
          * @param string $host The base's host
          * @param string $dump_path The path to dump directory
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
@@ -276,7 +277,7 @@ namespace Imperium\Connexion {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function mysql(): bool
@@ -292,7 +293,7 @@ namespace Imperium\Connexion {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function postgresql(): bool
@@ -308,7 +309,7 @@ namespace Imperium\Connexion {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function sqlite(): bool
@@ -324,7 +325,7 @@ namespace Imperium\Connexion {
         *
         * @return PDO  the instance
         *
-        * @throws Exception
+        * @throws Kedavra
         *
         **/
         public function instance(): PDO
@@ -332,7 +333,7 @@ namespace Imperium\Connexion {
             $instance = $this->getInstance();
 
             if(is_string($instance))
-                throw new Exception($instance);
+                throw new Kedavra($instance);
 
             return $instance;
 
@@ -344,7 +345,7 @@ namespace Imperium\Connexion {
          * @param string[] $vars
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function fetch(string $sql,string ...$vars)
         {
@@ -373,7 +374,7 @@ namespace Imperium\Connexion {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function not(string  $driver): bool
         {
@@ -390,7 +391,8 @@ namespace Imperium\Connexion {
          * @param string[] $vars
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public function request(string $sql,string ...$vars): array
         {
@@ -420,7 +422,7 @@ namespace Imperium\Connexion {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function execute(string $sql,string ...$vars): bool
@@ -491,7 +493,7 @@ namespace Imperium\Connexion {
          *
          * @return string|PDO
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         private function getInstance()
         {

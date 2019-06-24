@@ -2,10 +2,9 @@
 
 namespace Imperium\Tables {
 
-
-    use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
 
     class Column
     {
@@ -410,7 +409,7 @@ namespace Imperium\Tables {
          *
          * @return Column
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function end_column(): Column
@@ -467,7 +466,7 @@ namespace Imperium\Tables {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function columns_to_string(string $glue = ', '): string
@@ -484,7 +483,7 @@ namespace Imperium\Tables {
          *
          * @return Column
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function check(string $condition,$expected): Column
@@ -601,7 +600,7 @@ namespace Imperium\Tables {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function primary_key(): string
@@ -629,8 +628,7 @@ namespace Imperium\Tables {
                     }
                 break;
             }
-
-            throw  new Exception('We have not found a primary key');
+            throw  new Kedavra('We have not found a primary key');
         }
 
 
@@ -724,7 +722,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function exist(string $column): bool
@@ -743,7 +741,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add(string $name, string $type, int $size,bool $nullable): bool
@@ -768,7 +766,7 @@ namespace Imperium\Tables {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function last(): string
@@ -783,7 +781,7 @@ namespace Imperium\Tables {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function begin():string
@@ -799,7 +797,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function not_exist(string $column): bool
@@ -813,7 +811,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function show(): array
@@ -851,7 +849,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has(): bool
@@ -865,7 +863,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function info(): array
@@ -901,7 +899,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function rename(string $old,string $new_name): bool
@@ -935,7 +933,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function types():array
@@ -982,7 +980,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has_type(string $type): bool
@@ -998,7 +996,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has_types(string ...$types): bool
@@ -1020,7 +1018,7 @@ namespace Imperium\Tables {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function column_type(string $column)
@@ -1036,7 +1034,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function columns_with_types():array
@@ -1093,7 +1091,7 @@ namespace Imperium\Tables {
          *
          * @return int
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function found(): int
@@ -1139,7 +1137,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove(): bool
@@ -1198,7 +1196,7 @@ namespace Imperium\Tables {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function length(string $column)
@@ -1209,7 +1207,7 @@ namespace Imperium\Tables {
         /**
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function columns_length():array
@@ -1260,13 +1258,13 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function drop(string ...$columns): bool
         {
             $primary = $this->primary_key();
             $table = $this->current();
-            $data = \collection();
+            $data =  collection();
             foreach ($columns as $column)
             {
 

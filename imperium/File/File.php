@@ -3,8 +3,11 @@
 namespace Imperium\File {
 
     use Imperium\Collection\Collection;
+    use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use SplFileObject;
+    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
+    use Symfony\Component\HttpFoundation\Response;
 
     /**
      * Class File
@@ -22,6 +25,7 @@ namespace Imperium\File {
          */
         private $mode;
 
+
         /**
          *
          * File constructor.
@@ -32,14 +36,125 @@ namespace Imperium\File {
          * @throws Kedavra
          *
          */
-        public function __construct(string $filename, string $mode)
+        public function __construct(string $filename, string $mode = READ_FILE_MODE)
         {
             not_in(FILES_OPEN_MODE,$mode,true,"The open mode is not a valid mode");
 
+            if (is_false(file_exists($filename)))
+                self::create($filename);
+
             $this->mode = $mode;
+
             $this->filename = new SplFileObject($filename,$mode);
         }
 
+        /**
+         *
+         * Check if a file exist
+         *
+         * @param string $file
+         *
+         * @return bool
+         *
+         */
+        public static function exist(string $file): bool
+        {
+            return file_exists($file);
+        }
+
+        /**
+         *
+         * Create a new file
+         *
+         * @param string $filename
+         *
+         * @return bool
+         *
+         */
+        public static function create(string $filename)
+        {
+            return self::exist($filename) ? false: touch($filename);
+        }
+
+        /**
+         *
+         * Search file like a pattern
+         *
+         * @param string $pattern
+         *
+         * @return array
+         *
+         */
+        public static function search(string $pattern): array
+        {
+            return glob($pattern);
+        }
+
+        /**
+         *
+         * Remove a file
+         *
+         * @param string $filename
+         *
+         * @return bool
+         *
+         */
+        public static function delete(string $filename): bool
+        {
+            return self::exist($filename) ? unlink($filename): false;
+        }
+
+        /***
+         *
+         *
+         * @param array $data
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function to_json(array $data): bool
+        {
+            self::remove_if_exist($this->name());
+            return is_not_false(file_put_contents($this->name(),json_encode($data,JSON_FORCE_OBJECT)));
+        }
+
+        /**
+         *
+         * Remove a file if exist
+         *
+         * @param string $filename
+         *
+         * @return bool
+         *
+         */
+        public static function remove_if_exist(string $filename): bool
+        {
+            return self::exist($filename) ? self::delete($filename): false;
+        }
+
+        /**
+         *
+         * Get all lines
+         *
+         * @return array
+         *
+         */
+        public function lines(): array
+        {
+            $data = collection();
+
+            $this->rewind();
+
+            while ($this->valid())
+            {
+                $data->add($this->line());
+                $this->next();
+            }
+
+            return $data->collection();
+
+        }
         /**
          *
          * Check if is not the end of the file
@@ -50,6 +165,30 @@ namespace Imperium\File {
         public function valid(): bool
         {
             return $this->instance()->valid();
+        }
+
+        /**
+         *
+         * Flushes the output to the file
+         *
+         * @return bool
+         *
+         */
+        public function flush()
+        {
+            return $this->filename->fflush();
+        }
+
+        /**
+         *
+         * Count all lines in a file
+         *
+         * @return int
+         *
+         */
+        public function count_lines(): int
+        {
+            return $this->to(PHP_INT_MAX)->current_line() + 1 ;
         }
 
         /**
@@ -103,6 +242,18 @@ namespace Imperium\File {
 
         /**
          *
+         * Return current file position
+         *
+         * @return int
+         *
+         */
+        public function tell(): int
+        {
+            return $this->filename->ftell();
+        }
+
+        /**
+         *
          * Gets information about the file
          *
          * @return Collection
@@ -134,10 +285,12 @@ namespace Imperium\File {
          *
          * @return string
          *
+         * @throws Kedavra
+         *
          */
         public function read(): string
         {
-            return $this->instance()->fread($this->size());
+            return superior($this->size(),0) ?  $this->instance()->fread($this->size()) : '';
         }
 
         /**
@@ -169,14 +322,32 @@ namespace Imperium\File {
          * Write in the  file
          *
          * @param string $text
-         * @param int $length
+         * @return File
          *
-         * @return bool
+         * @throws Kedavra
          *
          */
-        public function write(string $text,int $length = 0): bool
+        public function write(string $text): File
         {
-            return $this->instance()->fwrite($text,$length) !== 0;
+           if ($this->writable())
+           {
+               is_true(equal($this->instance()->fwrite($text,length($text)),0,true,"Fail to write data"));
+           }
+            return $this;
+        }
+
+        /**
+         *
+         * @param string $line_content
+         *
+         * @return File
+         *
+         * @throws Kedavra
+         *
+         */
+        public function write_line(string $line_content): File
+        {
+            return $this->write("$line_content\n");
         }
 
         /**
@@ -261,7 +432,7 @@ namespace Imperium\File {
          * @return bool
          *
          */
-        public function dir(): bool
+        public function is_dir(): bool
         {
             return $this->instance()->isDir();
         }
@@ -273,7 +444,7 @@ namespace Imperium\File {
          * @return bool
          *
          */
-        public function file(): bool
+        public function is_file(): bool
         {
             return $this->instance()->isFile();
         }
@@ -305,6 +476,18 @@ namespace Imperium\File {
 
         /**
          *
+         * Check if the filename is a dir
+         *
+         * @return bool
+         *
+         */
+        public function executable(): bool
+        {
+            return $this->instance()->isExecutable();
+        }
+
+        /**
+         *
          * Get the file type
          *
          * @return string
@@ -325,30 +508,6 @@ namespace Imperium\File {
         public function perms(): int
         {
             return $this->instance()->getPerms();
-        }
-
-        /**
-         *
-         * Check if the filename is a dir
-         *
-         * @return bool
-         *
-         */
-        public function exec(): bool
-        {
-            return $this->instance()->isExecutable();
-        }
-
-        /**
-         *
-         *
-         *
-         * @return SplFileObject
-         *
-         */
-        public function open(): SplFileObject
-        {
-            return $this->instance()->openFile($this->mode);
         }
 
         /**
@@ -447,11 +606,33 @@ namespace Imperium\File {
             return $this->filename;
         }
 
-        public function download()
+        /**
+         *
+         * Download a file
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function download(): Response
         {
+            $response = new Response();
 
+            $x = $this->name();
+            // Set headers
+            $response->headers->set('Cache-Control', 'private');
+            $response->headers->set('Content-type', mime_content_type($x));
+            $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($x) . '";');
+            $response->headers->set('Content-length', filesize($x));
+
+            // Send headers before outputting anything
+            $response->sendHeaders();
+
+            $response->setContent($this->read());
+
+            return $response->send();
         }
-
 
         /**
          *
@@ -464,6 +645,60 @@ namespace Imperium\File {
         {
             return $this->instance()->getFlags();
         }
+
+        /***
+         *
+         * Copy current file to dest
+         * @param string $dest
+         *
+         * @return bool
+         *
+         */
+        public function copy(string $dest): bool
+        {
+            return Dir::is($dest) ? copy($this->absolute_path(),"$dest".DIRECTORY_SEPARATOR . $this->name()) : copy($this->absolute_path(),$dest);
+        }
+
+        /**
+         *
+         * Remove the file
+         *
+         * @return bool
+         *
+         */
+        public function remove(): bool
+        {
+            return unlink($this->absolute_path());
+        }
+
+        /**
+         *
+         * Move the file to dest and remove origin
+         *
+         * @param string $dest
+         *
+         * @return bool
+         *
+         */
+        public function move(string $dest)
+        {
+            return Dir::is($dest) ? copy($this->absolute_path(),"$dest".DIRECTORY_SEPARATOR . $this->name())  && $this->remove(): copy($this->absolute_path(),$dest) && $this->remove();
+        }
+
+        /**
+         *
+         * Rename a file
+         *
+         * @param $new_name
+         *
+         * @return bool
+         *
+         */
+        public function rename(string $new_name): bool
+        {
+            return rename($this->name(),$new_name);
+        }
+
 
         /**
          *
@@ -489,6 +724,81 @@ namespace Imperium\File {
 
             return $this;
         }
+
+        /**
+         *
+         * Get file keys
+         *
+         * @param string $delimiter
+         *
+         * @return array
+         *
+         */
+        public function keys(string $delimiter= ':')
+        {
+            $data = collection();
+            foreach ($this->lines() as $line)
+            {
+                if (def($line))
+                    $data->add(collection(explode($delimiter,$line))->begin());
+            }
+
+           return $data->collection();
+        }
+
+
+        /**
+         *
+         * Get file values
+         *
+         * @param string $delimiter
+         *
+         * @return array
+         *
+         */
+        public function values(string $delimiter): array
+        {
+            $data = collection();
+
+            foreach ($this->lines() as $line)
+            {
+               $data->add(collection(explode($delimiter,$line))->last());
+            }
+           return $data->collection();
+        }
+
+        /**
+         * @param array $keys
+         * @param array $values
+         *
+         * @param string $delimiter
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function change_values(array $keys, array $values,string $delimiter =':'): bool
+        {
+
+            different(length($keys),length($values),true,'The keys and values size are different');
+
+            $keys = collection($keys);
+
+            $values = collection($values);
+
+            foreach ($keys->collection() as $k => $v)
+            {
+                $key = $keys->get($k);
+
+                $value = $values->get($k);
+
+                $line =  is_numeric($value) || is_bool($value) ? "$key$delimiter $value" : "$key$delimiter '$value'";
+
+                $this->write_line($line);
+            }
+            return $this->flush();
+        }
+
 
     }
 }

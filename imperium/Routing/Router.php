@@ -4,6 +4,7 @@ namespace Imperium\Routing {
 
     use Exception;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\Middleware\TrailingSlashMiddleware;
     use Imperium\Security\Auth\AuthMiddleware;
     use Imperium\Security\Csrf\CsrfMiddleware;
@@ -182,7 +183,7 @@ namespace Imperium\Routing {
          *
          * @param ServerRequestInterface $request
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function __construct(ServerRequestInterface $request)
@@ -205,7 +206,6 @@ namespace Imperium\Routing {
             else
                 $this->method = $request->getMethod();
 
-
             $this->create_route_table(); // to be sure
 
             $this->url           = $request->getUri()->getPath();
@@ -220,14 +220,14 @@ namespace Imperium\Routing {
          *
          * @return Response
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function run():Response
         {
             is_true(not_def($this->routes()->all()),true,"The routes table is empty");
 
-            foreach($this->routes()->by('method',$this->method) as $route)
+            foreach($this->routes()->where('method',EQUAL,$this->method)->get()as $route)
             {
                 if ($this->match($route->url))
                     return $this->call($route);
@@ -264,13 +264,9 @@ namespace Imperium\Routing {
         {
             $x = route($name,$args);
 
-            if (php_sapi_name() != 'cli')
-            {
-                $host = request()->getHost();
+            $host = request()->getHost();
 
-                return https() ? "https://$host/$x" : "http://$host/$x";
-            }
-           return $x;
+            return php_sapi_name() !== 'cli' ? https() ?  "https://$host/$x" : "http://$host/$x" : $x;
 
         }
 
@@ -278,7 +274,7 @@ namespace Imperium\Routing {
          *
          * @param ServerRequestInterface $request
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function call_middleware(ServerRequestInterface $request): void
@@ -327,7 +323,7 @@ namespace Imperium\Routing {
          *
          * @return Response
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         private function call($route): Response
         {

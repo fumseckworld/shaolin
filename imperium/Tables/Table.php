@@ -3,9 +3,9 @@
 
 namespace Imperium\Tables {
 
-    use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
     use Imperium\Import\Import;
     use Imperium\Zen;
     use Imperium\App;
@@ -106,7 +106,6 @@ namespace Imperium\Tables {
          *
          * @return Table
          *
-         * @throws Exception
          *
          */
         public function from(string $table): Table
@@ -122,7 +121,7 @@ namespace Imperium\Tables {
          *
          * @param  Connect $connect The connection to the base
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function __construct(Connect $connect)
@@ -167,7 +166,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has(): bool
@@ -181,7 +180,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_collation(): bool
@@ -208,7 +207,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_charset(): bool
@@ -240,7 +239,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function drop(string $table): bool
@@ -258,7 +257,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function truncate(string $table): bool
@@ -292,7 +291,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_constraint(string $column,string $constraint)
@@ -322,7 +321,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          **/
         public function create(string $table): bool
@@ -366,7 +365,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function import(): bool
@@ -402,7 +401,7 @@ namespace Imperium\Tables {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function updateCreateCommand(array $field,bool $end) : string
@@ -467,7 +466,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function seed(int $records): bool
         {
@@ -590,7 +589,7 @@ namespace Imperium\Tables {
          * @param string[] $tables
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function dump(string ...$tables): bool
         {
@@ -606,7 +605,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function is_empty(): bool
@@ -624,7 +623,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function select(int $id): array
@@ -643,7 +642,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function select_or_fail(int $id): array
@@ -667,7 +666,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function remove(int $id): bool
         {
@@ -689,7 +688,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          **/
         public function convert(string $charset,string $collate): bool
@@ -724,7 +723,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function not_exist(string $table): bool
@@ -742,7 +741,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function exist(string $table): bool
@@ -760,7 +759,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function save(array $values): bool
@@ -777,7 +776,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function show(): array
@@ -844,7 +843,7 @@ namespace Imperium\Tables {
          *
          * @return int
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function count(string $table =  ''): int
         {
@@ -869,7 +868,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function all(string $column ='',string $order = DESC): array
         {
@@ -887,7 +886,7 @@ namespace Imperium\Tables {
          * @return int
          *
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function found(): int
@@ -907,7 +906,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function update(int $id,array $values,array $ignore= []): bool
@@ -961,7 +960,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function rename(string $new_name): bool
@@ -999,7 +998,7 @@ namespace Imperium\Tables {
          *
          * @return Table
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function set_collation(string $new_collation): Table
@@ -1025,7 +1024,7 @@ namespace Imperium\Tables {
          *
          * @return Table
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function set_charset(string $new_charset): Table
@@ -1075,7 +1074,7 @@ namespace Imperium\Tables {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function insert_multiples(array $collection,array $ignore = []): bool
@@ -1144,7 +1143,7 @@ namespace Imperium\Tables {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function hidden_tables(): array

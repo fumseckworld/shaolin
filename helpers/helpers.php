@@ -17,6 +17,9 @@ use Imperium\View\View;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 use Whoops\Run;
 use Carbon\Carbon;
 use Imperium\App;
@@ -46,6 +49,11 @@ define('GIT_SIZE',[1,2,3,4,5,6,7,8,9,10,11,12]);
 define('GIT_ARCHIVE_EXT',['tar','tgz','tar.gz','zip']);
 
 
+
+define('DROP_NEW_LINE',1);
+define('READ_AHEAD',2);
+define('SKIP_EMPTY',4);
+define('READ_CSV',8);
 define('READ_FILE_MODE','r');
 define('READ_AND_WRITE_FILE_MODE','r+');
 define('EMPTY_AND_WRITE_FILE_MODE','w');
@@ -158,7 +166,7 @@ if (not_exist('redirect'))
      * @param bool $success
      * @return RedirectResponse
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function redirect(string $route_name,string $message ='',bool $success = true): RedirectResponse
@@ -181,7 +189,7 @@ if (not_exist('current_user'))
      *
      * @return  object
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function current_user()
@@ -200,7 +208,8 @@ if (not_exist('route'))
      * @param array $args
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
+     *
      */
     function route(string $name,array $args = []): string
     {
@@ -236,7 +245,7 @@ if (not_exist('exist'))
      *
      * @return mixed
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function exist($data,bool $run_exception = false,string $message ='')
@@ -257,7 +266,7 @@ if (not_exist('article'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function article(array $records,string  $pagination,$icon =  '<i class="fas fa-newspaper"></i>'): string
@@ -323,7 +332,7 @@ if (not_exist('login_page'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function login_page(string $welcome_text,string $login_route_name,string $send_reset_email_action_name,string $password_text,string $identifier_text,string $forgot_password_email_text,string $forgot_password_send_email_text,string $sign_in_text,string $logo_path =''): string
@@ -410,7 +419,7 @@ if (not_exist('register_page'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function register_page(string $welcome_text,string $register_route_name,string $username_text,string $lastname_text,string $email_address_text,string $password_text,string $confirm_password_text,string $create_account_text,string $logo_path =''): string
     {
@@ -470,7 +479,7 @@ if(not_exist('copyright'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function copyright(): string
@@ -533,7 +542,7 @@ if (not_exist('core_path'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function core_path(string $dir): string
@@ -559,7 +568,7 @@ if (not_exist('dump_path'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function dump_path(string $dir): string
@@ -580,7 +589,7 @@ if (not_exist('locales'))
      *
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function locales(): array
@@ -601,7 +610,7 @@ if (not_exist('trans'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function trans(string $message,...$args): string
@@ -681,9 +690,10 @@ if (not_exist('view'))
      * @param array $args
      *
      * @return string
-     *
-     * @throws Exception
-     *
+     * @throws Kedavra
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     function view(string $class,string $name,array $args =[]) : string
     {
@@ -722,7 +732,7 @@ if (not_exist('current_table'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function current_table():string
@@ -753,7 +763,7 @@ if (not_exist('csrf_field'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function csrf_field(): string
     {
@@ -773,11 +783,11 @@ if (not_exist('message'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function message(string $filename): string
     {
-        return File::content(realpath(core_path(collection(config('app', 'dir'))->get('app'))) .DIRECTORY_SEPARATOR . 'Mailers' . DIRECTORY_SEPARATOR .'Emails' .DIRECTORY_SEPARATOR .  $filename);
+        return (new File(realpath(core_path(collection(config('app', 'dir'))->get('app'))) .DIRECTORY_SEPARATOR . 'Mailers' . DIRECTORY_SEPARATOR .'Emails' .DIRECTORY_SEPARATOR .  $filename))->read();
     }
 }
 
@@ -792,7 +802,7 @@ if (not_exist('sql_file'))
      * @param string $table
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function sql_file(string $table  = ''): string
@@ -854,7 +864,7 @@ if (not_exist('quote'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function quote(string $value): string
@@ -870,7 +880,7 @@ if (! function_exists('decrypt')) {
      * @param string $value
      * @param bool $unserialize
      * @return mixed
-     * @throws Exception
+     * @throws Kedavra
      */
     function decrypt($value, $unserialize = true)
     {
@@ -885,7 +895,7 @@ if (! not_exist('encrypt')) {
      * @param mixed $value
      * @param bool $serialize
      * @return string
-     * @throws Exception
+     * @throws Kedavra
      */
     function encrypt($value, $serialize = true)
     {
@@ -903,7 +913,8 @@ if (not_exist('app'))
      *
      * @return App
      *
-     * @throws Exception
+     * @throws Kedavra
+     *
      */
     function app(): App
     {
@@ -1034,7 +1045,7 @@ if (not_exist('is_not_false'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function is_not_false($data,bool $run_exception = false,string $message =''): bool
@@ -1062,7 +1073,7 @@ if (not_exist('is_not_true'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function is_not_true($data,bool $run_exception = false,string $message =''): bool
@@ -1147,7 +1158,7 @@ if (not_exist('different'))
      *
      * @return bool
      *
-     * @throws
+     * @throws Kedavra
      *
      */
     function different($parameter,$expected,$run_exception = false,string $message = ''): bool
@@ -1219,7 +1230,7 @@ if (not_exist('secure_register_form'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function secure_register_form(  string $action,string $valid_ip,string $current_ip,string $username_placeholder,
@@ -1266,12 +1277,12 @@ if (not_exist('bcrypt'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function bcrypt(string $value): string
     {
-        return Hash::make($value);
+        return (new Hash($value))->generate();
     }
 }
 
@@ -1281,15 +1292,17 @@ if (not_exist('check'))
      *
      * Check the password
      *
+     * @param string $valid
      * @param string $value
-     * @param string $bcrypt_value
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function check(string $value,string $bcrypt_value): bool
+    function check(string $valid,string $value): bool
     {
-        return Hash::verify($value,$bcrypt_value);
+        return (new Hash($valid))->valid($value);
     }
 }
 
@@ -1308,7 +1321,7 @@ if (not_exist('edit'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function edit(string $table, int $id, string $action,string $submit_text, string $icon): string
     {
@@ -1326,7 +1339,7 @@ if (not_exist('route_name'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function route_name(string $name): string
@@ -1343,7 +1356,7 @@ if(not_exist('navbar'))
      * @param string $classes
      * @param array $routes
      * @return string
-     * @throws Exception
+     * @throws Kedavra
      */
     function navbar(string $app_name,string $classes,array $routes =[]): string
     {
@@ -1426,7 +1439,7 @@ if (not_exist('display_article'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function display_article(string $slug,string $others_articles_text,string $previous,string $next,string $table ='articles'): string
     {
@@ -1480,7 +1493,7 @@ if (not_exist('url'))
 {
     /**
      * @return string
-     * @throws Exception
+     * @throws Kedavra
      */
     function url()
     {
@@ -1501,7 +1514,7 @@ if(not_exist('create'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function create($table, $action, $submit_text, $icon)
     {
@@ -1523,7 +1536,7 @@ if (not_exist('bases_to_json'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function bases_to_json(string $filename,string $key ='bases'): bool
@@ -1546,7 +1559,7 @@ if (not_exist('users_to_json'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function users_to_json($filename,string $key = 'users') : bool
@@ -1569,7 +1582,7 @@ if (not_exist('tables_to_json'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function tables_to_json(string $filename,string $key = 'tables') : bool
@@ -1589,7 +1602,7 @@ if (not_exist('sql_to_json'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function sql_to_json(string $filename,array $query, array $key) : bool
@@ -1623,7 +1636,7 @@ if (not_exist('query_result'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function query_result(string $table,int $mode,$data,string $success_text,string $result_empty_text,string $table_empty_text,string $sql): string
     {
@@ -1686,7 +1699,7 @@ if (not_exist('execute_query'))
      *
      * @return mixed
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function execute_query(&$sql_variable)
     {
@@ -1748,7 +1761,7 @@ if (not_exist('query_view'))
      * @param string $validation_error_text
      * @param string $icon
      * @return string
-     * @throws Exception
+     * @throws Kedavra
      */
     function query_view(string $confirm_message, string $query_action, string $create_record_action,  string $create_record_submit_text,  string $current_table_name, string $expected_placeholder, string $submit_query_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
     {
@@ -1812,7 +1825,7 @@ if (not_exist('connect'))
      *
      * @return Connect
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function connect(string $driver,string $base,string $user,string $password,string $host,string $dump_path): Connect
     {
@@ -1829,9 +1842,11 @@ if (not_exist('json'))
      *
      * @method json
      *
-     * @param  string $filename The json filename
+     * @param string $filename The json filename
      *
      * @return Json
+     *
+     * @throws Kedavra
      *
      */
     function json(string $filename): Json
@@ -1910,7 +1925,6 @@ if(not_exist('not_def'))
      */
     function not_def(...$values): bool
     {
-
         foreach ($values as $value)
             if (def($value))
                 return false;
@@ -1956,14 +1970,14 @@ if (not_exist('https_or_fail'))
      *
      * Check if the protocol is https or run exception if not found
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function https_or_fail()
     {
         if (!https())
         {
-            throw new Exception('The https protocol was not found');
+            throw new Kedavra('The https protocol was not found');
         }
     }
 }
@@ -1981,7 +1995,7 @@ if (not_exist('tables_select'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function tables_select(string $current, string $url_prefix,string $separator): string
     {
@@ -2013,7 +2027,7 @@ if (not_exist('users_select'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function users_select(string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = ''): string
@@ -2045,7 +2059,7 @@ if (not_exist('bases_select'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function bases_select(string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
     {
@@ -2070,7 +2084,7 @@ if (not_exist('commands'))
      *
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function commands(): array
@@ -2118,7 +2132,7 @@ if (not_exist('extensions'))
      * @param string $expected
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function extensions(string $expected): array
     {
@@ -2161,7 +2175,7 @@ if(not_exist('routes'))
      * @param OutputInterface $output
      * @param array $routes
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function routes(OutputInterface $output,array $routes): void
@@ -2326,7 +2340,7 @@ if (not_exist('simply_view'))
      * @param string $pagination
      * @param bool $pagination_to_right
      * @return string
-     * @throws Exception
+     * @throws Kedavra
      */
     function simply_view(string $before_all_class,string $thead_class,string $current_table_name, array $records  ,string $html_table_class,string $action_remove_text,string $before_remove_text,string $remove_button_class,string $remove_url_prefix,string $remove_icon,string $action_edit_text,string $action_edit_url_prefix,string $edit_button_class,string $edit_icon,string $pagination,bool $pagination_to_right = true): string
     {
@@ -2366,12 +2380,10 @@ if (not_exist('get_records'))
      *
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array
     {
-
-
         $base = app()->connect()->base();
 
         is_false(app()->table()->has(),true,"We have not found a table in the $base base");
@@ -2478,7 +2490,7 @@ if (not_exist('html'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function html(string $element, string $content ,string $class = '',string $id= ''): string
@@ -2532,8 +2544,8 @@ if (not_exist('html'))
 
                 break;
             default:
-                throw new Exception('Element are not in supported list');
-                break;
+                throw new Kedavra('Element are not in supported list');
+            break;
         }
     }
 }
@@ -2587,7 +2599,7 @@ if (not_exist('bootswatch'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function bootswatch(string $theme = 'bootstrap',string $version = '4.0.0'): string
     {
@@ -2778,7 +2790,7 @@ if (not_exist('is_admin'))
     /**
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function is_admin(): bool
@@ -2930,7 +2942,7 @@ if (not_exist('generate'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function generate(string $formId,string $class,string $action,string $table,string $submitText,string $submitIcon,int $mode = Form::CREATE,int $id = 0): string
@@ -2951,7 +2963,7 @@ if (not_exist('collation'))
      * @param Connect $connect
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function collation(Connect $connect): array
     {
@@ -2985,7 +2997,8 @@ if (not_exist('charset'))
      * @param Connect $connect
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
+     *
      */
     function charset(Connect $connect): array
     {
@@ -3022,7 +3035,7 @@ if (not_exist('base'))
      *
      * @return Base
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function base(Connect $connect,Table $table): Base
@@ -3042,8 +3055,6 @@ if (not_exist('user'))
      * @param  Connect $connect
      *
      * @return Users
-     *
-     * @throws Exception
      *
      */
     function user(Connect $connect) : Users
@@ -3065,7 +3076,7 @@ if (not_exist('pass'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      */
     function pass(string $username ,string $new_password) : bool
     {
@@ -3183,7 +3194,7 @@ if (not_exist('superior'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function superior($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
@@ -3213,7 +3224,7 @@ if (not_exist('superior_or_equal'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
 
      */
     function superior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
@@ -3242,7 +3253,7 @@ if (not_exist('inferior'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function inferior($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
@@ -3271,7 +3282,7 @@ if (not_exist('inferior_or_equal'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function inferior_or_equal($parameter,int $expected,bool $run_exception = false,string $message ='') : bool
@@ -3310,7 +3321,7 @@ if(not_exist('before_key'))
      *
      * @return mixed
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function before_key(array $array, $key)
@@ -3331,7 +3342,7 @@ if(not_exist('req'))
      *
      * @return array
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function req(string ...$queries): array
@@ -3360,7 +3371,7 @@ if(not_exist('execute'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function execute(string ...$queries): bool
@@ -3390,8 +3401,6 @@ if (not_exist('model'))
      *
      * @return Model
      *
-     * @throws Exception
-     *
      */
     function model(Connect $connect,Table $table): Model
     {
@@ -3412,7 +3421,7 @@ if (not_exist('table'))
      *
      * @return Table
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function table(Connect $connect): Table
@@ -3447,7 +3456,7 @@ if (not_exist('remove_users'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function remove_users(string ...$users): bool
@@ -3473,7 +3482,7 @@ if (not_exist('remove_tables'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function remove_tables(string ...$tables): bool
@@ -3500,7 +3509,7 @@ if (not_exist('remove_bases'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function remove_bases(string ...$bases): bool
@@ -3527,7 +3536,7 @@ if (not_exist('form'))
      *
      * @return Form
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf-8'): Form
@@ -3536,7 +3545,7 @@ if (not_exist('form'))
     }
 }
 
-if (not_exist('change'))
+if (not_exist('update_file_values'))
 {
 
     /**
@@ -3545,38 +3554,17 @@ if (not_exist('change'))
      *
      * @param string $filename
      * @param string $delimiter
-     * @param string $key
-     * @param string $value
-     *
+     * @param string[] $values
      * @return bool
+     *
+     * @throws Kedavra
+     *
      */
-    function change(string $filename,string $delimiter,string $key,string $value): bool
+    function update_file_values(string $filename,string $delimiter,string ...$values): bool
     {
+        $keys = (new File($filename))->keys($delimiter);
 
-        $lines = File::lines($filename);
-
-        $keys = File::keys($filename,$delimiter);
-
-        $file = File::open($filename,File::EMPTY_AND_WRITE);
-
-        if ($file)
-        {
-            foreach ($keys as $k => $v)
-            {
-                switch ($v)
-                {
-                    case $key:
-                        $x = "$key= \"$value\"";
-                        fputs($file,"$x\n");
-                    break;
-                    default:
-                        fputs($file,$lines[$k]);
-                    break;
-                }
-            }
-            return File::close($file);
-        }
-        return false;
+        return (new File($filename,EMPTY_AND_WRITE_FILE_MODE))->change_values($keys,$values,$delimiter);
     }
 }
 if(not_exist('slug'))
@@ -3664,7 +3652,7 @@ if (not_exist('dumper'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function dumper(bool $base, array $tables=[]): bool
@@ -3686,7 +3674,7 @@ if (not_exist('sql'))
      *
      * @return Query
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function sql(string $table): Query
@@ -3804,7 +3792,7 @@ if (not_exist('add_user'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function add_user(string $user,string $password): bool
@@ -3828,45 +3816,6 @@ if (not_exist('awesome'))
     function awesome(string $version = 'v5.0.8')
     {
         return '<link rel="stylesheet" href="https://use.fontawesome.com/releases/'.$version.'/css/fontawesome.css"><link rel="stylesheet" href="https://use.fontawesome.com/releases/'.$version.'/css/solid.css">';
-    }
-}
-
-
-
-if (not_exist('retry'))
-{
-    /**
-     * Retry an operation a given number of times.
-     *
-     * @param  int  $times
-     * @param  callable  $callback
-     * @param  int  $sleep
-     * @return mixed
-     *
-     * @throws Exception
-     *
-     */
-    function retry(int $times, callable $callback, int $sleep = 0)
-    {
-        $times--;
-        beginning:
-
-        try {
-            return $callback();
-        } catch (Exception $e)
-        {
-            if (! $times)
-            {
-
-                throw $e;
-            }
-            $times--;
-            if ($sleep)
-            {
-                usleep($sleep * 1000);
-            }
-            goto beginning;
-        }
     }
 }
 
@@ -4006,7 +3955,7 @@ if (not_exist('insert_into'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function insert_into(string $table,array  $values): string
@@ -4056,7 +4005,8 @@ if (not_exist('routes_add'))
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws Kedavra
+     *
      */
     function routes_add(Model $model,array  $values): bool
     {
@@ -4093,12 +4043,18 @@ if (not_exist('routes_add'))
         append($data, ')');
 
 
-         return $instance->execute($data,'');
+         return $instance->execute($data);
 
     }
 }
 if (not_exist('controllers'))
 {
+    /**
+     * @return array
+     *
+     * @throws Kedavra
+     *
+     */
     function controllers(): array
     {
         $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('controller');
@@ -4126,7 +4082,7 @@ if (not_exist('glyph'))
      *
      * @return string
      *
-     * @throws Exception
+     * @throws Kedavra
      *
      */
     function glyph(string $icon,$type = 'svg'): string
@@ -4197,6 +4153,81 @@ if (not_exist('future'))
      */
     function future(string $mode,int $time,$tz = null): string
     {
+        switch ($mode)
+        {
+            case 'second':
+                return Carbon::now($tz)->addSecond($time)->toDateString();
+            break;
+            case 'seconds':
+                return Carbon::now($tz)->addSeconds($time)->toDateString();
+            break;
+            case 'minute':
+                return Carbon::now($tz)->addMinute($time)->toDateString();
+            break;
+            case 'minutes':
+                return Carbon::now($tz)->addMinutes($time)->toDateString();
+            break;
+            case 'hour':
+                return Carbon::now($tz)->addHour($time)->toDateString();
+            break;
+            case 'hours':
+                return Carbon::now($tz)->addHours($time)->toDateString();
+            break;
+            case 'day':
+                return Carbon::now($tz)->addDay($time)->toDateString();
+            break;
+            case 'days':
+                return Carbon::now($tz)->addDays($time)->toDateString();
+            break;
+            case 'week':
+                return Carbon::now($tz)->addWeek($time)->toDateString();
+            break;
+            case 'weeks':
+                return Carbon::now($tz)->addWeeks($time)->toDateString();
+            break;
+            case 'month':
+                return Carbon::now($tz)->addMonth($time)->toDateString();
+            break;
+            case 'months':
+                return Carbon::now($tz)->addMonths($time)->toDateString();
+            break;
+            case 'year':
+                return Carbon::now($tz)->addYear($time)->toDateString();
+            break;
+            case 'years':
+                return Carbon::now($tz)->addYears($time)->toDateString();
+            break;
+            case 'century':
+                return Carbon::now($tz)->addCentury($time)->toDateString();
+            break;
+            case 'centuries':
+                return Carbon::now($tz)->addCenturies($time)->toDateString();
+            break;
+            default:
+                return Carbon::now($tz)->addHour($time)->toDateString();
+            break;
+        }
+
+    }
+}
+
+
+if (not_exist('past'))
+{
+
+    /**
+     * Create a new future date.
+     *
+     * @param DateTimeZone|string|null $tz
+     * @param string                     $mode
+     * @param int                        $time
+     *
+     * @return string
+     */
+    function past(string $mode,int $time,$tz = null): string
+    {
+        $time = - $time;
+
         switch ($mode)
         {
             case 'second':

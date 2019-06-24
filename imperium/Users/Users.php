@@ -3,8 +3,8 @@
 
 namespace Imperium\Users {
 
-    use Exception;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
 
     /**
      *
@@ -66,7 +66,7 @@ namespace Imperium\Users {
          * @param string[] $users
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function drop(string ...$users): bool
         {
@@ -90,7 +90,7 @@ namespace Imperium\Users {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has(): bool
@@ -104,7 +104,7 @@ namespace Imperium\Users {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function show(): array
@@ -175,7 +175,7 @@ namespace Imperium\Users {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function create(): bool
@@ -197,7 +197,7 @@ namespace Imperium\Users {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function exist(string $user): bool
@@ -213,7 +213,7 @@ namespace Imperium\Users {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function not_exist(string $user): bool
@@ -229,7 +229,7 @@ namespace Imperium\Users {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function update_password(string $user, string $password): bool
         {
@@ -263,7 +263,7 @@ namespace Imperium\Users {
          *
          * @return Users
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function check(string $driver): Users
         {
@@ -279,7 +279,7 @@ namespace Imperium\Users {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function hidden_users():array

@@ -1,15 +1,14 @@
-.PHONY: migrate seed router coverage
+.PHONY: coverage
 
-P=./vendor/bin/phinx
-UNIT=./vendor/bin/phpunit
+OLD=7.2.19
+MEDIUM=7.3.6
+LAST=7.3.6
+
+TEST=./impero
 C=--coverage-html coverage
 
-all: migrate router
-migrate:
-	$(P) $@ -e development
 
+all:
+	./vendor/bin/phpunit $(C)
 coverage:
 	php -S localhost:8000 -t $@
-
-router:
-	$(UNIT) $(C)

@@ -13,7 +13,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "pragmarx/google2fa": "^2.0",
         "czproject/git-php": "^3.10",
         "sinergi/browser-detector": "^6.1",
@@ -36,7 +36,10 @@
         "symfony/console": "^4.2",
         "ext-gettext": "*",
         "ext-PDO": "*",
-        "ext-intl": "*"
+        "ext-intl": "*",
+        "ext-fileinfo": "*",
+        "ext-json": "*",
+        "spomky-labs/jose": "^7.1"
     },
     "autoload-dev": {
         "psr-4": {
