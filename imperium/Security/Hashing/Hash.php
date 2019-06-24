@@ -3,7 +3,7 @@
 
 namespace Imperium\Security\Hashing {
 
-    use Exception;
+    use Imperium\Exception\Kedavra;
 
     /**
      *
@@ -23,69 +23,83 @@ namespace Imperium\Security\Hashing {
 
         /**
          *
-         * The cost
+         * The valid hash
          *
-         * @var int
+         * @var string
          *
          */
-        const COST = 10;
-
+        private $valid;
 
         /**
-         * Hash the given value.
          *
-         * @param  string $value
-         * @return string
+         * The secret key
          *
-         * @throws Exception
+         * @var string
          *
          */
-        public static function make($value)
+        private $secret;
+
+        /**
+         *
+         * The hash algorithm
+         *
+         * @var string
+         *
+         */
+        private $algorithm;
+
+        /**
+         * @var string
+         */
+        private $data;
+
+        /**
+         *
+         * Hash constructor.
+         *
+         * @param string $data
+         *
+         * @throws Kedavra
+         */
+        public function __construct(string $data)
         {
-            $hash = password_hash($value, PASSWORD_BCRYPT, self::cost());
+            $this->algorithm = config('hash','algorithm');
 
-            is_false($hash,true,'Bcrypt hashing not supported.');
+            $this->secret = config('hash','secret');
 
-            return $hash;
+            $this->data = $data;
+
+            not_in(hash_algos(),$this->algorithm,true,"The current algorithm is not supported");
+
+            $this->valid = $this->generate();
+
         }
 
         /**
          *
-         * Check if the given hash has been hashed using the given options.
-         *
-         * @param string $hashedValue
-         *
-         * @return bool
-         */
-        public static function need_rehash(string $hashedValue): bool
-        {
-            return password_needs_rehash($hashedValue, PASSWORD_BCRYPT, self::cost());
-        }
-
-        /**
-         *
-         * Check if the password is correct
+         * Check if the hash is valid
          *
          * @param string $value
-         * @param string $hash
          *
          * @return bool
          *
-         **/
-        public static function verify(string $value,string $hash): bool
+         */
+        public function valid(string $value): bool
         {
-            return strlen($value) === 0 ? false : password_verify($value,$hash);
+            return hash_equals($this->valid,$value);
         }
 
         /**
-         * Extract the cost value from the options array.
          *
-         * @return array
+         * Generate the hash
+         *
+         * @return string
          *
          */
-        private static function cost(): array
+        public function generate(): string
         {
-            return ['cost' => self::COST];
+            return hash_hmac($this->algorithm,$this->data,$this->secret);
         }
+
     }
 }

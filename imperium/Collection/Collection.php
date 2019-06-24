@@ -3,7 +3,7 @@
 namespace Imperium\Collection {
 
     use ArrayAccess;
-    use Exception;
+    use Imperium\Exception\Kedavra;
     use Iterator;
 
    /**
@@ -84,7 +84,7 @@ namespace Imperium\Collection {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function convert_to_json(string $filename): bool
         {
@@ -414,7 +414,6 @@ namespace Imperium\Collection {
         /**
          * @param $expected
          * @return array
-         * @throws Exception
          */
         public function data(array $expected): array
         {
@@ -563,7 +562,7 @@ namespace Imperium\Collection {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function value_before_key($key)
@@ -823,7 +822,7 @@ namespace Imperium\Collection {
          *
          * @return Collection
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_value($old,$new): Collection

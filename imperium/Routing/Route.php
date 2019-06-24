@@ -4,11 +4,10 @@
 namespace Imperium\Routing {
 
 
-    use Exception;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
     use Imperium\Model\Model;
     use Imperium\Tables\Table;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\E;
 
     trait Route
     {
@@ -30,7 +29,7 @@ namespace Imperium\Routing {
          *
          * @return Model
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function routes(): Model
@@ -45,7 +44,7 @@ namespace Imperium\Routing {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         protected function create_route_table(): bool
@@ -62,7 +61,7 @@ namespace Imperium\Routing {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function save_route(array $data): bool
@@ -70,22 +69,36 @@ namespace Imperium\Routing {
             return routes_add($this->routes(),$data);
         }
 
+        /**
+         *
+         *
+         * @param string $name
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function remove_route(string $name): bool
+        {
+            return $this->routes()->query()->from('routes')->mode(DELETE)->where('name',EQUAL, $name)->delete();
+        }
 
         /**
          *
          * Update a route
          *
-         * @param int $id
+         * @param string $name
          * @param array $data
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
-        public function update_route(int $id,array $data): bool
+        public function update_route(string $name,array $data): bool
         {
-            return $this->routes()->update_record($id,$data);
+            return $this->routes()->update_record(($this->routes()->by('name',$name))->id,$data);
         }
 
         /**
@@ -94,7 +107,7 @@ namespace Imperium\Routing {
          *
          * @return Table
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function routes_table(): Table
@@ -108,7 +121,7 @@ namespace Imperium\Routing {
          *
          * @return Connect
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function routes_connect():Connect

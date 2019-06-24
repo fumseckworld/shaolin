@@ -5,7 +5,7 @@ namespace Imperium\Writing {
 
     use Egulias\EmailValidator\EmailValidator;
     use Egulias\EmailValidator\Validation\RFCValidation;
-    use Exception;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Swift_Attachment;
     use Swift_Mailer;
@@ -49,7 +49,8 @@ namespace Imperium\Writing {
          * @param string $author_email
          * @param string $to
          *
-         * @throws Exception
+         * @throws Kedavra
+         * 
          *
          */
         public function __construct(string $subject,string $message,string $author_email,string $to)
@@ -73,7 +74,7 @@ namespace Imperium\Writing {
 
             config($file,'html') ?    $this->message->setBody(message($message),'text/html','utf-8') : $this->message->setBody($message,'text/plain','utf-8');
 
-            $this->private_key =   File::content(dirname(config_path()) .DIRECTORY_SEPARATOR . 'dkim.private.key');
+            $this->private_key =  (new File(dirname(config_path()) .DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
 
         }
 
@@ -88,7 +89,7 @@ namespace Imperium\Writing {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public static function email(string $subject,string $message,string $author_email,string $to):Write
@@ -101,7 +102,7 @@ namespace Imperium\Writing {
          * @return Write
          *
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function sign(): Write
@@ -143,7 +144,7 @@ namespace Imperium\Writing {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public static function valid(string ...$emails): bool
@@ -162,7 +163,7 @@ namespace Imperium\Writing {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function cc(string $email,string $name = null): Write
@@ -181,7 +182,7 @@ namespace Imperium\Writing {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function bcc(string $email,string $name = null): Write
@@ -200,7 +201,7 @@ namespace Imperium\Writing {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_bcc(string $email,string $name = null): Write
@@ -219,7 +220,7 @@ namespace Imperium\Writing {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_cc(string $email,string $name = null): Write
@@ -238,7 +239,7 @@ namespace Imperium\Writing {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_to(string $email,string $name = null): Write
@@ -250,12 +251,12 @@ namespace Imperium\Writing {
             return $this;
         }
 
-      /**
+        /**
          * @return bool
          */
         public function send(): bool
         {
-            return different($this->mailer->send($this->message),0);
+            return $this->mailer->send($this->message) !==0;
         }
     }
 }

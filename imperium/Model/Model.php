@@ -3,7 +3,6 @@
 
 namespace Imperium\Model {
 
-    use Exception;
     use Imperium\App;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
@@ -116,10 +115,8 @@ namespace Imperium\Model {
          *
          * @method __construct
          *
-         * @param  Connect     $connect            The connection to the base
-         * @param  Table       $table              The instance of table
-         *
-         * @throws Exception
+         * @param Connect $connect The connection to the base
+         * @param Table $table The instance of table
          *
          */
         public function __construct(Connect $connect,Table $table)
@@ -141,7 +138,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function dump(string ...$tables): bool
         {
@@ -154,7 +151,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function dump_base(): bool
@@ -200,7 +197,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function update(): bool
@@ -228,7 +225,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function import(): bool
         {
@@ -243,7 +240,7 @@ namespace Imperium\Model {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function primary(): string
         {
@@ -263,7 +260,7 @@ namespace Imperium\Model {
          * @param string $submit_icon
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function edit_form(string $table,int $id,string $action,string $submit_text,string $submit_icon): string
         {
@@ -283,7 +280,7 @@ namespace Imperium\Model {
          * @param string $submit_icon
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function create_form(string $table,string $action, string $submit_text,string $submit_icon): string
         {
@@ -297,14 +294,14 @@ namespace Imperium\Model {
          * @param string $column
          * @param mixed $expected
          *
-         * @return array
+         * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
-        public function by(string $column,$expected): array
+        public function by(string $column,$expected)
         {
-            return $this->from($this->current())->where($column,EQUAL,$expected)->get();
+            return $this->query()->from($this->current())->mode(SELECT)->where($column,EQUAL,$expected)->use_fetch()->get();
         }
 
         /**
@@ -318,7 +315,7 @@ namespace Imperium\Model {
          * @param string $expected
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function display(int $mode,string $start_pagination_text,string $end_pagination_text,string $column ='',string $expected = ''):string
         {
@@ -361,7 +358,7 @@ namespace Imperium\Model {
          *
          * @return array|string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function search(string $value,bool $json_output = false)
         {
@@ -377,7 +374,7 @@ namespace Imperium\Model {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function show_tables(): array
@@ -396,7 +393,7 @@ namespace Imperium\Model {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function show(   string $action_remove_text ='Remove',string $confirm_text = 'Are you sure ?',
                                  string $action_edit_text ='Edit',
@@ -499,8 +496,6 @@ namespace Imperium\Model {
          *
          * @return Model
          *
-         * @throws Exception
-         *
          */
         public function change_table(string $table): Model
         {
@@ -514,7 +509,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function is_mysql()
@@ -532,7 +527,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function seed(int $records): bool
         {
@@ -565,7 +560,8 @@ namespace Imperium\Model {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public function get(): array
         {
@@ -600,7 +596,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function save(): bool
         {
@@ -617,7 +613,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function is_postgresql()
@@ -631,7 +627,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function is_sqlite()
@@ -655,7 +651,6 @@ namespace Imperium\Model {
          *
          * @return Table
          *
-         * @throws Exception
          */
         public function table(): Table
         {
@@ -673,7 +668,7 @@ namespace Imperium\Model {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function news(string $order_column,int $limit,int $offset = 0): array
         {
@@ -690,7 +685,7 @@ namespace Imperium\Model {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function last(string $order_column,int $limit,int $offset = 0): array
         {
@@ -706,7 +701,7 @@ namespace Imperium\Model {
          * @param string $order
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function all(string $column = '',string $order = DESC): array
         {
@@ -722,7 +717,7 @@ namespace Imperium\Model {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function by_or_fail(string $column,$expected): array
         {
@@ -737,7 +732,7 @@ namespace Imperium\Model {
          *
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function find(int $id)
         {
@@ -754,7 +749,7 @@ namespace Imperium\Model {
          *
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function find_or_fail(int $id)
         {
@@ -799,7 +794,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function remove(int $id): bool
         {
@@ -814,7 +809,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function insert_new_record(array $data): bool
@@ -828,7 +823,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add(): bool
@@ -858,7 +853,7 @@ namespace Imperium\Model {
          * @param string $table
          * @return int
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function count(string $table): int
         {
@@ -874,7 +869,7 @@ namespace Imperium\Model {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function quote(string $value): string
@@ -888,7 +883,7 @@ namespace Imperium\Model {
          *
          * @return int
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function found(): int
@@ -904,7 +899,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function truncate(string $table): bool
@@ -923,7 +918,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function update_record(int $id,array $data,array $ignore =[]): bool
@@ -936,7 +931,7 @@ namespace Imperium\Model {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function columns(): array
         {
@@ -951,7 +946,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function is_empty(string $table): bool
@@ -964,7 +959,7 @@ namespace Imperium\Model {
          *
          * @return PDO
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function pdo(): PDO
@@ -981,7 +976,7 @@ namespace Imperium\Model {
          * @param array $data
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function request(string $query,array $data): array
         {
@@ -994,7 +989,7 @@ namespace Imperium\Model {
          * @param array $data
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function fetch(string $request,array $data)
         {
@@ -1009,7 +1004,7 @@ namespace Imperium\Model {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function execute(string $query): bool
         {
@@ -1029,7 +1024,7 @@ namespace Imperium\Model {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function parse($record,string $action,string $submit_text,string $table,string $primary): string

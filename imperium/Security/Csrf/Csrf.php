@@ -2,7 +2,9 @@
 
 namespace Imperium\Security\Csrf {
 
-    use Exception;
+
+    use Imperium\Exception\Kedavra;
+    use Imperium\Security\Hashing\Hash;
     use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
     use Psr\Http\Message\ServerRequestInterface;
@@ -29,6 +31,9 @@ namespace Imperium\Security\Csrf {
         const KEY = CSRF_TOKEN;
 
 
+        const SERVER = 'VALID_SERVER';
+
+
         /**
          * @var Session
          */
@@ -40,7 +45,6 @@ namespace Imperium\Security\Csrf {
          *
          * @param SessionInterface $session
          *
-         * @throws Exception
          *
          */
         public function __construct(SessionInterface $session)
@@ -54,12 +58,12 @@ namespace Imperium\Security\Csrf {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function token()
         {
-            return def($this->session->has(self::KEY)) ? $this->session->get(self::KEY) : $this->generate();
+            return $this->session->has(self::KEY) ? $this->session->get(self::KEY) : $this->generate();
         }
 
         /**
@@ -68,12 +72,18 @@ namespace Imperium\Security\Csrf {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         private function generate():string
         {
-            $this->session->set(self::KEY,bin2hex(random_bytes(16)));
-            return $this->session->get(self::KEY);
+            $this->session->set(self::SERVER,base64_encode((new Hash(request()->getHost()))->generate()));
+
+            $token = base64_encode($this->session->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
+
+            $this->session->set(self::KEY,$token);
+
+            return $token;
+
         }
 
         /**
@@ -82,7 +92,7 @@ namespace Imperium\Security\Csrf {
          *
          * @param ServerRequestInterface $request
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function check(ServerRequestInterface $request)
@@ -90,14 +100,18 @@ namespace Imperium\Security\Csrf {
 
             if (has($request->getMethod(),self::METHOD, true))
             {
+
                 $params = $request->getParsedBody() ?: [];
 
                 $token = collection($params)->get(self::KEY);
 
                 is_true(not_def($token),true,'We have not found the csrf token');
 
-                is_true(different($token,$this->session->get(self::KEY)),true,"The token is invalid");
+                different($this->session->get(self::SERVER) ,base64_decode(collection(explode('==',$token))->get(0)),true,"The Server is not valid");
 
+                is_true(different($token,$this->session->get(self::KEY),true,"The token is invalid"));
+
+                $this->session->remove(self::KEY);
             }
         }
     }

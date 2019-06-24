@@ -4,6 +4,7 @@ namespace Imperium\Security\Auth {
 
     use Exception;
     use Imperium\Collection\Collection;
+    use Imperium\Exception\Kedavra;
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Request\Request;
@@ -64,7 +65,7 @@ namespace Imperium\Security\Auth {
          *
          * @param SessionInterface $session
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function __construct(SessionInterface $session)
@@ -91,7 +92,7 @@ namespace Imperium\Security\Auth {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function account(string $route_name,string $username_placeholder,string $last_name_placeholder,string $email_placeholder,string $password_placeholder,string $submit_text): string
         {
@@ -151,7 +152,7 @@ namespace Imperium\Security\Auth {
          * 
          * @return bool
          * 
-         * @throws Exception
+         * @throws Kedavra
          * 
          */
         public function send_reset_email(string $subject,string $to,string $message): bool
@@ -165,7 +166,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function logout(): RedirectResponse
@@ -182,7 +183,7 @@ namespace Imperium\Security\Auth {
          *
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function current()
@@ -200,7 +201,7 @@ namespace Imperium\Security\Auth {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function create(): bool
@@ -245,7 +246,7 @@ namespace Imperium\Security\Auth {
          *
          * @return int
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function count(): int
@@ -260,7 +261,7 @@ namespace Imperium\Security\Auth {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function find(string $expected): array
@@ -278,7 +279,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function reset(string $expected,string $new_password): RedirectResponse
@@ -315,7 +316,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function login(string $username,string $password): RedirectResponse
@@ -353,7 +354,7 @@ namespace Imperium\Security\Auth {
 
         /**
          * @return RedirectResponse
-         * @throws Exception
+         * @throws Kedavra
          */
         private function user_not_found(): RedirectResponse
         {
@@ -382,7 +383,7 @@ namespace Imperium\Security\Auth {
          * 
          * @return string
          * 
-         * @throws Exception
+         * @throws Kedavra
          * 
          */
         private function column(): string 
@@ -398,7 +399,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function redirect(string $id): RedirectResponse
         {
@@ -411,7 +412,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_account()
@@ -436,7 +437,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_user(int $id)
@@ -456,7 +457,7 @@ namespace Imperium\Security\Auth {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function update_account(array $data): RedirectResponse
@@ -472,7 +473,7 @@ namespace Imperium\Security\Auth {
         /**
          * @return Collection
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function messages(): Collection
@@ -483,7 +484,7 @@ namespace Imperium\Security\Auth {
         /**
          * @return Collection
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function columns(): Collection

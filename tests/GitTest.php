@@ -10,6 +10,10 @@ namespace Testing {
     use Imperium\Versioning\Git\Git;
     use PHPUnit\Framework\TestCase;
 
+    /**
+     * Class GitTest
+     * @package Testing
+     */
     class GitTest extends TestCase
     {
         /**
@@ -17,85 +21,121 @@ namespace Testing {
          */
         private $git;
 
+        /**
+         * @throws Kedavra
+         */
         public function setUp(): void
         {
-            $this->git = new Git('.');
+            $this->git = new Git('web','symfony', 'sebastien');
         }
 
+        /**
+         *
+         */
+        public function test_owner()
+        {
+            $this->assertIsString($this->git->owner());
+            $this->assertEquals('sebastien',$this->git->owner());
+        }
+
+        /**
+         *
+         */
         public function test_current_branch()
         {
-            $this->assertEquals('develop',$this->git->current_branch());
+            $this->assertEquals('4.4',$this->git->current_branch());
         }
 
+        /**
+         * @throws Kedavra
+         */
         public function test_git_log()
         {
             $this->assertNotEmpty($this->git->log());
         }
 
+        /**
+         *
+         */
         public function test_count_branch()
         {
-            $this->assertEquals(5,$this->git->branches_found());
+            $this->assertEquals(22,$this->git->branches_found());
         }
 
+        /**
+         *
+         */
         public function test_commits()
         {
             $this->assertNotNull($this->git->commits_size());
         }
 
 
+        /**
+         *
+         */
         public function test()
         {
-            $this->assertNotEmpty($this->git->commits_by_year('Willy Micieli')->collection());
-            $this->assertNotEmpty($this->git->commits_by_month('Willy Micieli')->collection());
+            $this->assertNotEmpty($this->git->commits_by_year('Fabien Potencier')->collection());
+            $this->assertNotEmpty($this->git->commits_by_month('Fabien Potencier')->collection());
 
             $this->assertEmpty($this->git->commits_by_year('Bob Lenon')->collection());
         }
 
+        /**
+         *
+         */
         public function test_files()
         {
+
             $this->assertNotEmpty($this->git->files()->collection());
 
-            $this->assertNotEmpty($this->git->files('tests')->collection());
-
-            $this->assertTrue($this->git->files('tests')->exist('tests/GitTest.php'));
+            $this->assertNotEmpty($this->git->files('src')->collection());
 
         }
 
+        /**
+         *
+         */
         public function test_directories()
         {
             $this->assertNotEmpty($this->git->directories()->collection());
-
-
-            $this->assertNotEmpty($this->git->directories('tests')->collection());
-
-            $this->assertFalse($this->git->directories('imperium')->exist('imperium/Write'));
-            $this->assertTrue($this->git->directories('imperium')->exist('imperium/Writing'));
-
+            $this->assertNotEmpty($this->git->directories('src')->collection());
         }
+
+        /**
+         *
+         */
         public function test_checkout()
         {
+
             $this->assertTrue($this->git->checkout($this->git->current_branch()));
         }
 
+        /**
+         * @throws Kedavra
+         */
         public function test_create()
         {
-            $this->assertTrue(Git::create('mario'));
-            $this->assertTrue( Dir::checkout('..'));
-            $this->assertTrue(Dir::remove('mario'));
 
-            $this->assertTrue(Git::create('mario',true,'supermario'));
-            $this->assertEquals('supermario',Git::description('mario'));
-            $this->assertTrue( Dir::checkout('..'));
-            $this->assertTrue(Dir::remove('mario'));
+            $this->assertTrue(Git::create('mario','alexandra','a super mario game'));
+            $this->assertTrue( Dir::checkout('../..'));
+            $this->assertTrue(Dir::remove('alexandra'));
         }
 
 
+        /**
+         *
+         */
         public function test_remote()
         {
             $this->assertNotEmpty($this->git->remote()->collection());
             $this->assertContains('origin',$this->git->remote()->collection());
         }
 
+        /**
+         *
+         */
         public function test_contributors()
         {
             $this->assertNotEmpty($this->git->contributors());
@@ -106,68 +146,68 @@ namespace Testing {
          */
         public function test_equip()
         {
-            $this->assertEquals(1,$this->git->contributors_size());
+            $this->assertEquals(2385,$this->git->contributors_size());
         }
 
+        /**
+         *
+         */
         public function test_tag()
         {
             $tags = $this->git->releases();
 
             $this->assertNotEmpty($tags);
-            $this->assertContains('8.3',$tags);
-            $this->assertContains('6.5',$tags);
-            $this->assertContains('5.0',$tags);
+            $this->assertContains('v2.4.4',$tags);
+            $this->assertContains('v2.5.6',$tags);
         }
 
+        /**
+         * @throws Kedavra
+         */
         public function test_news()
         {
-            $this->assertNotEmpty($this->git->news('8.2.3','8.2.2'));
-
-            $this->assertNotEmpty($this->git->news('8.2.3','8.2.2',false));
-
+            $this->assertNotEmpty($this->git->news());
+            $this->assertNotEmpty($this->git->change('v2.4.9','v2.4.8'));
             $this->expectException(Kedavra::class);
 
-            $this->git->news('3.2.3','3.2.2');
+            $this->git->change('3.2.3','3.2.2');
 
         }
 
-        public function test_clone()
-        {
-
-            $dir  = dirname(config_path()). DIRECTORY_SEPARATOR .'legend';
-
-            $this->assertTrue(Git::clone('git://git.fumseck.eu/library/legend',$dir));
-
-            $this->expectException(Kedavra::class);
-
-            Git::clone('git://git.fumseck.eu/library/legend',$dir);
-
-        }
-
-        public function test_suppress()
-        {
-
-            $dir  = dirname(config_path()). DIRECTORY_SEPARATOR .'legend';
-            $this->assertTrue(Dir::remove($dir));
-        }
-        public function test_contributor_view()
+        /**
+         *
+         */
+        public function test_views()
         {
 
             $this->assertNotEmpty($this->git->contributors_view());
+            $this->assertNotEmpty($this->git->git());
+            $this->assertNotEmpty($this->git->release_view());
 
         }
+
+        /**
+         *
+         */
         public function test_tag_size()
         {
             $size = $this->git->release_size();
              $this->assertNotEmpty($size);
-             $this->assertEquals(64,$size);
+             $this->assertEquals(439,$size);
         }
 
+        /**
+         *
+         */
         public function test_repo_name()
         {
-            $this->assertEquals('imperium',$this->git->repository());
+            $this->assertEquals('symfony',$this->git->repository());
+            $this->assertNotEmpty($this->git->path());
         }
 
+        /**
+         *
+         */
         public function test_month()
         {
             $this->assertEquals(14,$this->git->months()->length());

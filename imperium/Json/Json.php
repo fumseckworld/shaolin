@@ -3,9 +3,9 @@
 namespace Imperium\Json {
 
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Collection\Collection;
-    use Exception;
 
     class Json
     {
@@ -26,26 +26,16 @@ namespace Imperium\Json {
          * Json constructor.
          *
          * @param string $filename
+         * @param string $mode
+         *
+         * @throws Kedavra
          */
-        public function __construct(string $filename)
+        public function __construct(string $filename,string $mode = EMPTY_AND_WRITE_FILE_MODE)
         {
             $this->data = collection();
-            $this->set_name($filename);
 
-        }
+            $this->filename = new File($filename,$mode);
 
-        /**
-         *
-         * @param string $filename
-         *
-         * @return Json
-         *
-         */
-        public function set_name(string $filename): Json
-        {
-            $this->filename = $filename;
-
-            return $this;
         }
 
         /**
@@ -56,15 +46,12 @@ namespace Imperium\Json {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function create(array $data): bool
         {
-            File::remove_if_exist($this->filename);
-
-            return is_not_false(file_put_contents($this->filename,json_encode($data,JSON_FORCE_OBJECT)));
-
+            return  $this->filename->to_json($data);
         }
 
         /**
@@ -94,7 +81,7 @@ namespace Imperium\Json {
          *
          * @return Json
          *
-         * @throws \Exception
+         * @throws Kedavra
          *
          */
         public function sql(Connect $connect,string $query,string $key = ''): Json
@@ -110,7 +97,7 @@ namespace Imperium\Json {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function generate(): bool
@@ -127,7 +114,7 @@ namespace Imperium\Json {
          *
          * @return false|string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function encode(int $option = 0,int $depth = 512)
@@ -145,11 +132,11 @@ namespace Imperium\Json {
          *
          * @return mixed
          *
-         * @throws \Exception
+         * @throws Kedavra
          */
         public function decode(bool $assoc = false)
         {
-            return File::exist($this->filename) && File::json($this->filename) ? json_decode(utf8_encode(File::content($this->filename)),$assoc) :  json_decode(utf8_encode($this->filename),$assoc);
+            return json_decode(utf8_encode($this->filename->read()),$assoc);
         }
     }
 }

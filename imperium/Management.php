@@ -546,12 +546,12 @@ namespace Imperium {
          *
          * Management of git
          *
-         * @param string $repository_path
-         *
+         * @param string $path
+         * @param string $repository
+         * @param string $owner
          * @return Git
-         *
          */
-        public function git(string $repository_path): Git;
+        public function git(string $path,string $repository, string $owner): Git;
 
         /**
          * @return SessionInterface
@@ -604,12 +604,12 @@ namespace Imperium {
          * Return a view
          *
          * @param string $name
-         * @param string[] $vars
+         * @param array $args
          *
          * @return string
          *
          */
-        public function view(string $name,string ...$vars): string;
+        public function view(string $name,array $args = []): string;
 
         /**
          *
@@ -682,6 +682,18 @@ namespace Imperium {
          * @return Model
          */
         public function route() : Model;
+
+        /**
+         *
+         * Download a file
+         *
+         * @param string $filename
+         *
+         * @return Response
+         *
+         */
+        public function download(string $filename) : Response;
+
 
         /**
          *

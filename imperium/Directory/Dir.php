@@ -2,9 +2,7 @@
 
 namespace Imperium\Directory {
 
-    use Exception;
     use Imperium\Exception\Kedavra;
-    use Imperium\File\File;
 
    /**
     *
@@ -29,9 +27,13 @@ namespace Imperium\Directory {
 
 
         /**
+         *
+         *
          * @param string $directory
          * @return bool
-         * @throws Exception
+         *
+         * @throws Kedavra
+         *
          */
         public static function remove(string $directory): bool
         {
@@ -68,7 +70,8 @@ namespace Imperium\Directory {
          * @param string $source
          * @param string ...$dirs
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public static function structure(string $source,string ...$dirs): void
         {
@@ -90,7 +93,7 @@ namespace Imperium\Directory {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          * 
          */
         public static function clear(string $directory): bool
@@ -103,7 +106,7 @@ namespace Imperium\Directory {
             {
                 if(not_in(self::IGNORE,$file))
                 {
-                    (self::is("$directory/$file")) ? self::clear("$directory/$file") : File::remove("$directory/$file");
+                    (self::is("$directory/$file")) ? self::clear("$directory/$file") : unlink("$directory/$file");
                 }
             }
             return true;
@@ -120,7 +123,7 @@ namespace Imperium\Directory {
          */
         public static function exist(string $directory): bool
         {
-            return File::exist($directory);
+            return file_exists($directory);
         }
 
         /**
@@ -133,7 +136,7 @@ namespace Imperium\Directory {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public static function copy(string $source,string $dest,int $permissions = 0755): bool
         {

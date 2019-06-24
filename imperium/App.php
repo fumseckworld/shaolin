@@ -3,13 +3,14 @@
 namespace Imperium {
 
     use Dotenv\Dotenv;
-    use Exception;
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Dump\Dump;
+    use Imperium\Exception\Kedavra;
+    use Imperium\File\Download;
     use Imperium\Routing\Route;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
@@ -31,6 +32,9 @@ namespace Imperium {
     use Symfony\Component\HttpFoundation\RedirectResponse;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\Response;
+    use Twig\Error\LoaderError;
+    use Twig\Error\RuntimeError;
+    use Twig\Error\SyntaxError;
 
 
     /**
@@ -135,7 +139,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function show_tables(): array
         {
@@ -149,7 +153,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function show_users(): array
@@ -161,10 +165,7 @@ namespace Imperium {
          *
          * Display all bases
          *
-         *
          * @return array
-         *
-         * @throws Exception
          *
          */
         public function show_databases(): array
@@ -178,7 +179,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function charsets(): array
@@ -192,7 +193,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function collations(): array
@@ -211,7 +212,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function all(string $table,string $column,string $order = DESC): array
@@ -227,7 +228,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function table_exist(string $table): bool
         {
@@ -242,7 +243,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function  table_not_exist(string $table): bool
@@ -258,7 +259,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function base_exist(string $base): bool
@@ -274,7 +275,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_base_collation(string $new_collation): bool
@@ -291,7 +292,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_table_collation(string $table, string $new_collation): bool
@@ -307,7 +308,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function change_base_charset(string $new_charset): bool
         {
@@ -323,7 +324,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_table_charset(string $table, string $new_charset): bool
@@ -338,7 +339,7 @@ namespace Imperium {
          * @param string $user
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function user_exist(string $user): bool
         {
@@ -353,7 +354,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_table(string $table): bool
@@ -369,7 +370,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function empty_table(string $table): bool
@@ -389,7 +390,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function append_column(string $table,string $column, string $type, int $size, bool $nullable): bool
         {
@@ -403,7 +404,7 @@ namespace Imperium {
          * @param string $table
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function show_columns(string $table): array
         {
@@ -418,7 +419,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function show_columns_types(string $table): array
@@ -435,7 +436,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has_column(string $table,string $column): bool
@@ -449,7 +450,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has_tables(): bool
@@ -463,7 +464,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function has_bases(): bool
         {
@@ -476,7 +477,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function has_users(): bool
@@ -495,7 +496,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_database(string $name, string $charset = '', string $collation = ''): bool
@@ -511,7 +512,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_database(string $name): bool
@@ -528,7 +529,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_user(string $name, string $password): bool
@@ -545,7 +546,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function change_user_password(string $name, string $password): bool
@@ -561,7 +562,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_user(string $name): bool
@@ -578,7 +579,7 @@ namespace Imperium {
          *
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function find(string $table,int $id)
         {
@@ -594,7 +595,7 @@ namespace Imperium {
          *
          * @return object
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function find_or_fail(string $table,int $id)
@@ -611,7 +612,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function save(string $table,array $data): bool
         {
@@ -627,7 +628,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_record(string $table,int $id): bool
@@ -647,7 +648,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function update_record(int $id, array $data, string $table,array $ignore = []): bool
         {
@@ -664,7 +665,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function rename_column(string $table,string $column, string $new_name): bool
         {
@@ -680,7 +681,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function remove_column(string $table,string $column): bool
@@ -699,7 +700,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function dump(bool $base,string ...$tables): bool
@@ -711,7 +712,7 @@ namespace Imperium {
          *
          * @method __construct
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function __construct()
         {
@@ -751,7 +752,7 @@ namespace Imperium {
             if (def($this->request()->server->get('PWD')))
                 $path = $this->request()->server->get('PWD');
 
-            is_true(File::not_exist("$path" .DIRECTORY_SEPARATOR .".env"),true,".env file was not found");
+            is_false(file_exists("$path" .DIRECTORY_SEPARATOR .".env"),true,".env file was not found");
 
             $this->env              = Dotenv::create($path);
 
@@ -765,7 +766,7 @@ namespace Imperium {
          *
          * @return Response
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function run():Response
@@ -806,7 +807,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function bases_users_tables_to_json(string $filename): bool
@@ -823,7 +824,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function create_json(string $filename,array $data): bool
@@ -841,7 +842,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function sql_to_json(string $filename,string $query,string $key = ''): bool
         {
@@ -871,7 +872,7 @@ namespace Imperium {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function json_decode(string $data,bool $assoc = false)
@@ -886,7 +887,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function seed_database(int $records = 100): bool
         {
@@ -902,7 +903,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function rename_base(string $base, string $new_name): bool
@@ -934,7 +935,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function rename_table(string $table, string $new_name): bool
@@ -1003,7 +1004,8 @@ namespace Imperium {
          *
          * @return Router
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public function router( ServerRequestInterface $serverRequest): Router
         {
@@ -1047,7 +1049,7 @@ namespace Imperium {
          *
          * @return Oauth
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function auth(): Oauth
@@ -1077,7 +1079,7 @@ namespace Imperium {
         /**
          * @return Config
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function config():Config
@@ -1098,14 +1100,18 @@ namespace Imperium {
          * Return a view
          *
          * @param string $name
-         * @param string[] $vars
+         * @param array $args
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
+         * @throws LoaderError
+         * @throws RuntimeError
+         * @throws SyntaxError
          */
-        public function view(string $name,string ...$vars): string
+        public function view(string $name,array $args = []): string
         {
-            return view(get_called_class(),$name,$vars);
+
+            return view(get_called_class(),$name,$args);
         }
 
         /**
@@ -1118,7 +1124,7 @@ namespace Imperium {
          *
          * @return RedirectResponse
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function redirect(string $route, string $message ='', bool $success = true): RedirectResponse
@@ -1166,7 +1172,8 @@ namespace Imperium {
          *
          * @return Write
          *
-         * @throws Exception
+         * @throws Kedavra
+         * @throws \Exception
          *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
@@ -1178,16 +1185,16 @@ namespace Imperium {
          *
          * Management of git
          *
-         * @param string $repository_path
-         *
+         * @param string $path
+         * @param string $repository
+         * @param string $owner
          * @return Git
          *
-         * @throws Exception
-         *
+         * @throws Kedavra
          */
-        public function git(string $repository_path): Git
+        public function git(string $path,string $repository, string $owner): Git
         {
-           return new Git($repository_path);
+           return new Git($path,$repository,$owner);
         }
 
         /**
@@ -1203,8 +1210,11 @@ namespace Imperium {
         }
 
         /**
+         *
          * @return Model
-         * @throws Exception
+         *
+         * @throws Kedavra
+         *
          */
         public function route(): Model
         {
@@ -1221,11 +1231,27 @@ namespace Imperium {
          * @param array $args
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function url(string $route,...$args): string
         {
             return Router::url($route,$args);
+        }
+
+        /**
+         *
+         * Download a file
+         *
+         * @param string $filename
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function download(string $filename): Response
+        {
+           return (new Download($filename))->download();
         }
     }
 }

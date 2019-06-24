@@ -2,7 +2,6 @@
 
 namespace Imperium\Html\Form {
 
-    use Exception;
     use Imperium\App;
     use Imperium\Exception\Kedavra;
 
@@ -480,7 +479,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function padding(): Form
         {
@@ -502,7 +501,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function margin(): Form
@@ -574,7 +573,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function start(string $action,string $method,string $confirm ='', $id = '',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
         {
@@ -690,7 +689,7 @@ namespace Imperium\Html\Form {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         private function get_input_complete_class(): string
@@ -753,7 +752,7 @@ namespace Imperium\Html\Form {
         *
         * @return string
         *
-        * @throws Exception
+        * @throws Kedavra
         */
         private function generateInput(string $start, string $end, string $input, string $name, string $placeholder, string $value, bool $required, bool $autofocus, bool $autoComplete,string $success_text = '',string $error_text = '')
         {
@@ -763,7 +762,7 @@ namespace Imperium\Html\Form {
             if ($this->validate)
             {
                 if (not_def($error_text,$success_text))
-                    throw new Exception('missing validation text');
+                    throw new Kedavra('missing validation text');
                 else
                     $validation =  $this->valid($success_text,$error_text);
             }
@@ -834,7 +833,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function input(string $type, string $name, string $placeholder,string $icon= '',string $success_text = '',string $error_text ='', string $value = '', bool $required = true, bool $autofocus = false, bool $autoComplete = false): Form
@@ -870,7 +869,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function button(string $type,string $text,string $icon = ''): Form
@@ -925,7 +924,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function reset(string $text, string $icon = ''): Form
@@ -952,7 +951,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function textarea(string $name, string $placeholder,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false,string $value = ''): Form
         {
@@ -963,7 +962,7 @@ namespace Imperium\Html\Form {
             if ($this->validate)
             {
                 if (not_def($validation_success_text,$validation_error_text))
-                    throw new Exception('missing validation text');
+                    throw new Kedavra('missing validation text');
                 else
                     $validation =  $this->valid($validation_success_text,$validation_error_text);
             }else
@@ -1008,7 +1007,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function submit(string $text, string $icon = ''): Form
@@ -1058,7 +1057,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function link(string $url, string $text, string $icon = ''): Form
@@ -1103,7 +1102,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function select(bool $use_index,string $name, array $options,string $icon = '',string $success_text = '',string $error_text= '',bool $multiple = false,bool $required = true): Form
         {
@@ -1187,7 +1186,7 @@ namespace Imperium\Html\Form {
          * @return Form
          *
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function checkbox(string $name, string $text,bool $checked = false): Form
         {
@@ -1213,7 +1212,7 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function search($search_placeholder,string $icon, $id = 'search'): Form
         {
@@ -1238,7 +1237,7 @@ namespace Imperium\Html\Form {
          * @param string $url
          * @return Form
          *
-         * @throws Exception
+         * @throws Kedavra
          */
         public function pagination(string $icon,string $url): Form
         {
@@ -1366,7 +1365,8 @@ namespace Imperium\Html\Form {
          *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public function generate(int $form_grid,string $table, string $submit_text, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {

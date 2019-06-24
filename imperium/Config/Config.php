@@ -74,7 +74,7 @@ namespace Imperium\Config {
          */
         private static function check(string $file)
         {
-            is_false(File::exist($file),true,"$file was not found at : " .self::$config );
+            is_false(file_exists($file),true,"$file was not found at : " .self::$config );
 
         }
 
@@ -92,9 +92,8 @@ namespace Imperium\Config {
 
                 return new static();
             }
-
             if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
-                self::$config = dirname(request()->server->get('SCRIPT_FILENAME'),3) .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
+                self::$config = request()->server->get('PWD') .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
             else
                 self::$config = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
 

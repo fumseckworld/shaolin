@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "assets/gulpfile.js",
-  "dependencies": {},
+  "dependencies": {
+    "diff2html": "^2.9.0"
+  },
   "devDependencies": {
     "gulp": "^4.0.0",
     "gulp-concat": "^2.6.1",

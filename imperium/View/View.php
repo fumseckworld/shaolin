@@ -2,9 +2,8 @@
 
 namespace Imperium\View {
 
-    use Exception;
-    use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
     use Imperium\Html\Form\Form;
@@ -61,14 +60,15 @@ namespace Imperium\View {
         /**
          * View constructor.
          *
-         * @throws Exception
+         * @throws Kedavra
+         * @throws LoaderErrorAlias
          *
          */
         public function __construct()
         {
             $file = 'app';
 
-            Dir::create(core_path(\collection(config('app','dir'))->get('app')));
+            Dir::create(core_path(collection(config('app','dir'))->get('app')));
 
             $view_dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('view');
 
@@ -261,14 +261,6 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('name',
-
-                function (string $name,string $method = GET)
-                {
-                    return name($name,$method);
-                }
-                ,['is_safe' => ['html']]
-            ));
 
             $functions->add(new TwigFunction('print',
 
@@ -290,9 +282,9 @@ namespace Imperium\View {
 
             $functions->add(new TwigFunction('route',
 
-                function (string $name,string $method = GET)
+                function (string $name,...$args)
                 {
-                    return route($name,$method);
+                    return route($name,$args);
                 }
                 ,['is_safe' => ['html']]
             ));
@@ -356,7 +348,7 @@ namespace Imperium\View {
          */
         public function registered_path(): array
         {
-            $data = \collection();
+            $data = collection();
 
             foreach ($this->registered_path as $k => $v)
                 $data->add($this->loader()->getPaths($k),$k);
@@ -394,7 +386,7 @@ namespace Imperium\View {
          * @throws LoaderErrorAlias
          * @throws RuntimeError
          * @throws SyntaxError
-         * @throws Exception
+         * @throws Kedavra
          */
         public function load(string $view,array $args=[])
         {
@@ -410,10 +402,10 @@ namespace Imperium\View {
 
             $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
 
-            if (File::not_exist($file))
+            if (!file_exists($file))
             {
-                File::create($file);
-                File::put($file,"{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
+                touch($file);
+                (new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
             }
 
             return $this->twig->render($view,$args);
@@ -467,7 +459,7 @@ namespace Imperium\View {
          * @return View
          *
          * @throws LoaderErrorAlias
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function add_path(string $path, string $namespace): View
@@ -514,7 +506,7 @@ namespace Imperium\View {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function domain()
@@ -525,7 +517,7 @@ namespace Imperium\View {
         /**
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function locale()
@@ -537,7 +529,7 @@ namespace Imperium\View {
          *
          * @return mixed
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function locale_path(): string

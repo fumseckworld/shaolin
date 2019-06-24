@@ -4,6 +4,7 @@ namespace Imperium\Import {
 
     use Exception;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
 
     /**
     *
@@ -77,7 +78,7 @@ namespace Imperium\Import {
          *
          * @return bool
          *
-         * @throws Exception
+         * @throws Kedavra
          *
          */
         public function import(): bool
