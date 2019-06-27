@@ -5,6 +5,7 @@ namespace Imperium\Routing {
 
 
     use Imperium\Connexion\Connect;
+    use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Model\Model;
     use Imperium\Tables\Table;
@@ -126,7 +127,11 @@ namespace Imperium\Routing {
          */
         private function routes_connect():Connect
         {
-            $base = dirname(config_path()) . DIRECTORY_SEPARATOR .collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . 'routes' . DIRECTORY_SEPARATOR .'routes.sqlite3';
+            $base = dirname(config_path()) . DIRECTORY_SEPARATOR .collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . 'routes' ;
+
+            Dir::create($base);
+            
+            $base .= DIRECTORY_SEPARATOR .'routes.sqlite3';
 
             return connect(SQLITE,$base,'','','','dump');
         }
