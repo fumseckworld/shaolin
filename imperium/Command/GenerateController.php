@@ -39,19 +39,18 @@ namespace Imperium\Command {
 
 
             $file =  $core .DIRECTORY_SEPARATOR . $controllers  .DIRECTORY_SEPARATOR. $controller .'.php';
-            if (File::not_exist($file))
+
+            if (File::exist($file))
             {
-                File::create($file);
+                $output->write("<bg=red;fg=white>The $controller controller already exist\n");
+                return 1;
+            }
 
-                File::put($file,"<?php\n\nnamespace $namespace { \n\n\tuse Imperium\Controller\Controller;\n\n\tClass $controller extends Controller\n\t{\n\n\t\tpublic function before_action()\n\t\t{\n\n\t\t}\n\n\t\tpublic function after_action()\n\t\t{\n\n\t\t}\n\n\t}\n\n}\n");
 
-                if (File::exist($file))
+                if((new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace { \n\n\tuse Imperium\Controller\Controller;\n\n\tClass $controller extends Controller\n\t{\n\n\t\tpublic function before_action()\n\t\t{\n\n\t\t}\n\n\t\tpublic function after_action()\n\t\t{\n\n\t\t}\n\n\t}\n\n}\n")->flush())
                     $output->write("<bg=green;fg=white>The $controller controller was generated successfully\n");
 
                 return 0;
             }
-            $output->write("<bg=red;fg=white>The $controller controller already exist\n");
-            return 1;
-         }
+        }
     }
-}

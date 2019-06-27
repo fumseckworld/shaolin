@@ -222,11 +222,11 @@ if (not_exist('route'))
             foreach ($args as  $v)
             {
                 if (is_string($v))
-                append($url,"/$v");
+                    append($url,"/$v");
                 else
                     append($url,'/'.$v);
             }
-               return $url;
+           return $url;
 
         }
         return $x->url;

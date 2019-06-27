@@ -3,8 +3,9 @@
 namespace ________________________________________________________\Controllers { 
 
 	use Imperium\Controller\Controller;
+    use Imperium\Directory\Dir;
 
-	Class UsersController extends Controller
+    Class GitController extends Controller
 	{
 
 		public function before_action()
@@ -17,11 +18,18 @@ namespace ________________________________________________________\Controllers {
 
 		}
 
-		public function edit(string $user,int $id)
+		public function repositories()
         {
 
-            return $this->view('edit',compact('user','id'));
+            $data = $this->scan_repositories();
+
+
+
+
+            return $this->view('repositories',compact('data'));
+
         }
+
 	}
 
 }

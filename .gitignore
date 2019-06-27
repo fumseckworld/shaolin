@@ -5,3 +5,4 @@ coverage
 node_modules
 dkim*
 .phpunit.result.cache
+web/repositories

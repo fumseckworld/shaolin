@@ -1,0 +1,26 @@
+{% extends 'layout.twig' %}
+
+{% block title '' %}
+
+{% block description '' %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block content %}
+    <ul>
+        {% for  owner  in data.keys() %}
+            <li>{{ owner }}</li>
+            {% for repository in data.get(owner) %}
+                <ol>{{ repository }}</ol>
+            {% endfor %}
+        {% endfor %}
+    </ul>
+{% endblock %}
+
+{% block js %}
+
+
+
+{% endblock %}

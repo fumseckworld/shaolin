@@ -165,7 +165,7 @@ namespace Imperium\Command {
             {
                 $data = collection();
                 foreach ($this->routes as $route)
-                    $data->add($this->update_route($route['id'],$route));
+                    $data->add($this->update_route($route['name'],$route));
 
                 $this->clean();
                 if ($data->not_exist(false))
@@ -184,7 +184,7 @@ namespace Imperium\Command {
         }
         private function name(string $name): array
         {
-            return $this->routes()->by('name',$name);
+            return $this->routes()->where('name',EQUAL,$name)->get();
         }
     }
 }

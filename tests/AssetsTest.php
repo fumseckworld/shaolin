@@ -27,7 +27,7 @@ class AssetsTest extends TestCase
      */
     public function test_js()
     {
-        $this->assertEquals('<script src="/js/app.js"></script>',Asset::js('app.js'));
+        $this->assertEquals('<script src="/js/app.js" ></script>',Asset::js('app.js'));
         $this->assertEquals('<script src="/js/app.tsx" type="text/babel"></script>',Asset::js('app.tsx','text/babel'));
     }
 

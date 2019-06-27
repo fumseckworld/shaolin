@@ -8,6 +8,7 @@ namespace Imperium {
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Directory\Dir;
     use Imperium\Dump\Dump;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
@@ -1224,6 +1225,41 @@ namespace Imperium {
 
         /**
          *
+         * List repositories into the subdirectory repositories inside the web directory
+         *
+         * @return Collection
+         *
+         * @throws Kedavra
+         *
+         */
+        public function scan_repositories(): Collection
+        {
+            $directory = 'repositories';
+
+            is_false(Dir::exist($directory),true,"Repositories dir was not found in web directory");
+
+            $data = collection();
+
+            $repositories = collection();
+
+            foreach (Dir::scan($directory) as $owner)
+            {
+                foreach(Dir::scan("$directory/$owner") as $repository)
+                {
+                    $repositories->push($repository);
+                }
+
+                $data->add($repositories->collection(),$owner);
+
+                $repositories->clear();
+            }
+
+            return $data;
+
+        }
+
+        /**
+         *
          * Generate url string
          *
          * @param string $route
@@ -1235,7 +1271,7 @@ namespace Imperium {
          */
         public function url(string $route,...$args): string
         {
-            return Router::url($route,$args);
+            return route($route,$args);
         }
 
         /**

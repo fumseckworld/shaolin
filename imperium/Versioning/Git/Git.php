@@ -59,32 +59,32 @@ namespace Imperium\Versioning\Git {
          */
         private $owner;
 
+        /**
+         * @var string
+         */
+        private $base_path;
+
 
         /**
          *
          * Git constructor.
          *
-         * @param string $path
          * @param string $repository
          * @param string $owner
          *
          * @throws Kedavra
          */
-        public function __construct(string $path,string $repository, string $owner)
+        public function __construct(string $repository, string $owner)
         {
-            $this->owner =  $owner;
-
-            $owner_dir = dirname($path) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner();
-
-            Dir::create($owner_dir);
-
-            $repository = $owner_dir . DIRECTORY_SEPARATOR . $repository;
-
-            is_false(Dir::is($repository),true,"Repository not found");
-
             $this->archives_ext = config('git','archives_extension');
 
-            $this->repository = realpath($repository);
+            $this->owner = $owner;
+
+            $this->base_path =  'web' . DIRECTORY_SEPARATOR. 'repositories';
+
+            $this->repository = realpath($this->base_path) . DIRECTORY_SEPARATOR . $this->owner . DIRECTORY_SEPARATOR .   $repository;
+
+            is_false(Dir::is($this->repository),true,"The repository was not found");
 
             Dir::checkout($this->repository);
 
@@ -105,7 +105,7 @@ namespace Imperium\Versioning\Git {
          */
         public function owner(): string
         {
-            return $this->owner;
+            return str_replace($this->base_path,'',$this->owner);
         }
 
         /**
@@ -619,7 +619,7 @@ namespace Imperium\Versioning\Git {
         private function create_archives(string $ext): void
         {
 
-            $dir = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner() . DIRECTORY_SEPARATOR . $this->repository() .DIRECTORY_SEPARATOR . 'releases';
+            $dir =  $this->repository .DIRECTORY_SEPARATOR . 'releases';
 
             Dir::create($dir) ;
 

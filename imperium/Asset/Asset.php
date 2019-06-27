@@ -22,12 +22,7 @@ namespace Imperium\Asset {
 
             append($filename,'.css');
 
-            if (php_sapi_name() !== 'cli')
-                return  https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'css' .DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR. 'css'. DIRECTORY_SEPARATOR . $filename;
-
-
-            return '<link href="/css/'.$filename.'"  rel="stylesheet" type="text/css">';
-
+            return php_sapi_name() != 'cli' ? https() ? '<link href="https://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'css' .DIRECTORY_SEPARATOR . $filename .'"  rel="stylesheet" type="text/css">': '<link href="http://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'css' .DIRECTORY_SEPARATOR . $filename .'"  rel="stylesheet" type="text/css">': '<link href="/css/'.$filename.'"  rel="stylesheet" type="text/css">';
         }
 
         /**
@@ -42,10 +37,10 @@ namespace Imperium\Asset {
          */
         public static function js(string $filename,string $type =''): string
         {
-            if (php_sapi_name() !== 'cli')
-                return  https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR .'js' . DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' . DIRECTORY_SEPARATOR . $filename;
 
-            return def($type) ? '<script src="/js/'.$filename.'" type="'.$type.'"></script>' : '<script src="/js/'.$filename.'"></script>';
+            $type = def($type) ? 'type="'.$type.'"' : '';
+            return php_sapi_name() != 'cli' ? https() ? '<script src="https://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' .DIRECTORY_SEPARATOR . $filename .'" '.$type.'>': '<script src="http://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' .DIRECTORY_SEPARATOR . $filename .'"  '.$type.'>': '<script src="/js' .DIRECTORY_SEPARATOR . $filename .'" '.$type.'></script>';
+
         }
 
         /**
@@ -60,12 +55,8 @@ namespace Imperium\Asset {
          */
         public static function img(string $filename,string $alt): string
         {
-            if (php_sapi_name() !== 'cli')
-                return  https() ?  'https://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'img' .DIRECTORY_SEPARATOR . $filename : 'http://' . Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR. 'img'. DIRECTORY_SEPARATOR . $filename;
-
-           return '<img src="/img/'.$filename.'" alt="'.$alt.'">';
+            return php_sapi_name() != 'cli' ? https() ? '<img src="https://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'img' .DIRECTORY_SEPARATOR . $filename .'" alt="'.$alt.'">': '<img src="http://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'img' .DIRECTORY_SEPARATOR . $filename .'" alt="'.$alt.'">': '<img src="/img' .DIRECTORY_SEPARATOR . $filename .'" alt="'.$alt.'">';
         }
-
 
     }
 }

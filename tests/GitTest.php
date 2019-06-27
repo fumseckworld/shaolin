@@ -26,7 +26,7 @@ namespace Testing {
          */
         public function setUp(): void
         {
-            $this->git = new Git('web','symfony', 'sebastien');
+            $this->git = new Git('symfony', 'sebastien');
         }
 
         /**
