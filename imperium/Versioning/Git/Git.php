@@ -69,13 +69,13 @@ namespace Imperium\Versioning\Git {
          * @param string $owner
          *
          * @throws Kedavra
-         *
          */
         public function __construct(string $path,string $repository, string $owner)
         {
             $this->owner =  $owner;
 
-            $owner_dir = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner() ;
+            $owner_dir = dirname($path) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . $this->owner();
+
             Dir::create($owner_dir);
 
             $repository = $owner_dir . DIRECTORY_SEPARATOR . $repository;
@@ -499,7 +499,7 @@ namespace Imperium\Versioning\Git {
 
             if ($remote)
             {
-                is_false((new File(self::DESCRIPTION,EMPTY_AND_WRITE_FILE_MODE))->write($description,length($description)),true,'Failed to write description');
+                is_false((new File(self::DESCRIPTION,EMPTY_AND_WRITE_FILE_MODE))->write($description),true,'Failed to write description');
             }
 
             return $remote ? Dir::exist('hooks') : Dir::exist(self::GIT_DIR);
