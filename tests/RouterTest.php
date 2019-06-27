@@ -6,25 +6,28 @@ namespace Testing {
 
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Exception\Kedavra;
-    use PHPUnit\Framework\TestCase;
+    use Imperium\Testing\Unit;
     use Symfony\Component\HttpFoundation\Response;
 
     /**
      * Class RouterTest
      * @package Testing
      */
-    class RouterTest extends TestCase
+    class RouterTest extends Unit
     {
 
         /**
          * @param string $url
          * @param string $method
+         *
          * @return Response
+         *
          * @throws Kedavra
+         *
          */
         private function router(string $url,string $method): Response
         {
-            return app()->router(new ServerRequest($method,$url))->run();
+            return $this->visit($url,$method);
         }
 
 
