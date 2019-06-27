@@ -163,7 +163,7 @@ namespace Imperium\Connexion {
 
             $this->driver       = $driver;
 
-            $this->database     = equal($driver,SQLITE)  ? realpath(dirname(config_path())) .DIRECTORY_SEPARATOR  . 'web'  .DIRECTORY_SEPARATOR . $base : $base;
+            $this->database     = $base;
 
             $this->username     = $username;
 
