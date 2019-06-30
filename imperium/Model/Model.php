@@ -244,7 +244,7 @@ namespace Imperium\Model {
          */
         public function primary(): string
         {
-            return $this->table()->column()->for($this->current())->primary_key();
+            return $this->table()->from($this->current())->primary();
         }
 
         /**
@@ -855,9 +855,9 @@ namespace Imperium\Model {
          *
          * @throws Kedavra
          */
-        public function count(string $table): int
+        public function count(string $table = ''): int
         {
-            return $this->table()->from($table)->count();
+            return def($table) ? $this->table()->from($table)->count() : $this->table()->from($this->current())->count();
         }
 
 

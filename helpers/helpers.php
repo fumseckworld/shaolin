@@ -44,6 +44,9 @@ use Imperium\Html\Pagination\Pagination;
 define('GET','GET');
 define('POST','POST');
 
+define('BEFORE_ACTION','before_action');
+define('AFTER_ACTION','after_action');
+
 define('GIT_PERIOD',['minute','minutes','day','days','week','weeks','month','months','year','years']);
 define('GIT_SIZE',[1,2,3,4,5,6,7,8,9,10,11,12]);
 define('GIT_ARCHIVE_EXT',['tar','tgz','tar.gz','zip']);
@@ -68,6 +71,10 @@ define('FILES_OPEN_MODE',[READ_FILE_MODE,READ_AND_WRITE_FILE_MODE,EMPTY_AND_WRIT
 
 
 define('LOCALHOST','localhost');
+
+define('ROOT',dirname(__DIR__));
+define('WEB_ROOT',dirname(__DIR__) . DIRECTORY_SEPARATOR  . 'web');
+
 define('ASC','ASC');
 define('DESC','DESC');
 
@@ -134,8 +141,49 @@ define('DB_NAME','base');
 define('DB_USERNAME','username');
 define('DB_PASSWORD','password');
 define('DB_HIDDEN_TABLES','hidden_tables');
-define('DISPLAY_BUGS','debug');
 
+
+define('DISPLAY_BUGS','debug');
+define('ENV','env');
+
+
+
+if (not_exist('memory'))
+{
+    /**
+     *
+     * Display memory used
+     *
+     * @return string
+     *
+     */
+    function memory():string
+    {
+        $size = memory_get_usage(true);
+
+        $unit=array('B','KB','MB','GB','TB','PB');
+
+        return @round($size/pow(1024,($i=floor(log($size,1024)))),2).$unit[$i];
+
+    }
+
+}
+if (not_exist('admin'))
+{
+    /**
+     *
+     * Get the saved admin route
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function admin()
+    {
+        return route('admin');
+    }
+}
 if (not_exist('db'))
 {
 
@@ -153,6 +201,15 @@ if (not_exist('db'))
     function db(string $key)
     {
         return config('db',$key);
+    }
+}
+if (not_exist('infos'))
+{
+    function infos(...$vars)
+    {
+
+        foreach ($vars as $var)
+            (new Dumper())->dump($var);
     }
 }
 if (not_exist('redirect'))
@@ -214,7 +271,9 @@ if (not_exist('route'))
     function route(string $name,array $args = []): string
     {
         $x = app()->route()->query()->mode(SELECT)->from('routes')->where('name',EQUAL,$name)->use_fetch()->get();
+
         is_true(not_def($x),true,"The route with the $name name was not found");
+
         if (def($args))
         {
            $url = rtrim(str_replace(stristr($x->url,':'),'',$x->url),'/');
@@ -252,6 +311,53 @@ if (not_exist('exist'))
     {
         is_true(not_def($data),$run_exception,$message);
         return $data;
+    }
+}
+
+
+if (not_exist('display_repositories'))
+{
+    /**
+     *
+     * Display repositories
+     *
+     * @param string $table
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function display_repositories(string $table = 'repositories'): string
+    {
+        $session = app()->session();
+        $session->def('limit',99);
+        $limit_per_page = $session->has('limit') ? $session->get('limit') : $session->def('limit',100);
+        $pagination = pagination($limit_per_page,"?current=",get('current',1),app()->model()->from($table)->count(),'>>','<<');
+
+        $data = collection(app()->records($table));
+
+
+        $code = '';
+
+
+        append($code,'<div class="row mt-5 mb-5">');
+
+        $data->rewind();
+
+        while ($data->valid())
+        {
+            $values = $data->current();
+
+            append($code,'<div class="col-lg-4 col-xl-4 col-lg-4 col-sm-12"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->name.'</h4><a href="/repo/'.$values->owner.'/'.$values->name.'"><img src="'.$values->img.'" alt="'.$values->name.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->description,0,\config('article','limit')).'</div><p class="card-text mt-2"><a href="/repo/'.$values->owner.'/'.$values->name.'" class="btn btn-primary"> '.$values->name.'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->updated_at).'</small></div></div></div>');
+            $data->next();
+        }
+        append($code,'</div>');
+        append($code,'<div class="row ml-0 mb-5">');
+        append($code,$pagination);
+        append($code,'</div>');
+        return $code;
+
     }
 }
 if (not_exist('article'))
@@ -679,6 +785,23 @@ if (not_exist('request'))
     }
 }
 
+if (not_exist('views_path'))
+{
+    /**
+     *
+     * Get the views dir path
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function views_path(): string
+    {
+        return  ROOT .DIRECTORY_SEPARATOR .  collection(config('app','dir'))->get('app') . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('view');
+    }
+}
+
 if (not_exist('view'))
 {
 
@@ -701,20 +824,11 @@ if (not_exist('view'))
         {
             $dir = str_replace('Controller','',collection(explode("\\",$class))->last());
 
+            $file = collection(explode('.',$name))->begin();
 
-            if (strstr($name,'@'))
-            {
-                $file = collection(explode('/',$name));
-                $file = collection(explode('.',$file->last()))->begin();
-                append($file,'.twig');
-            }
-            else
-            {
-                $file = collection(explode('.',$name))->begin();
-                append($file,'.twig'); 
-            }
+            append($file,'.twig');
 
-            $file = $dir .DIRECTORY_SEPARATOR . $file;
+            $file = $dir .DIRECTORY_SEPARATOR .$file;
 
             return (new View())->load($file,$args);
         }
@@ -918,7 +1032,7 @@ if (not_exist('app'))
      */
     function app(): App
     {
-       return new App();
+       return App::instance();
 
     }
 }
@@ -2371,8 +2485,6 @@ if (not_exist('get_records'))
      * @method get_records
      *
      * @param string $current_table_name The current table name
-     * @param int $current_page The current page
-     * @param int $limit_per_page The limit
      * @param string $column
      * @param string $expected
      * @param string $condition
@@ -2382,33 +2494,40 @@ if (not_exist('get_records'))
      *
      * @throws Kedavra
      */
-    function get_records(string $current_table_name,int $current_page,int $limit_per_page,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array
+    function get_records(string $current_table_name,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array
     {
         $base = app()->connect()->base();
 
+        $session = app()->session();
+
         is_false(app()->table()->has(),true,"We have not found a table in the $base base");
 
-        $offset = ($limit_per_page * $current_page) - $limit_per_page;
+        is_false(app()->table()->exist($current_table_name),true,"We have not found the $current_table_name table in the $base base");
+
+        $limit_per_page = $session->has('limit') ? $session->get('limit') : $session->def('limit',100);
+
+        $offset = ($limit_per_page * get('current',1)) -  $limit_per_page;
 
         $sql = sql($current_table_name)->mode(SELECT);
 
         $like = get('q');
-        $session = app()->session();
 
-        $order_column = \app()->model()->from($current_table_name)->primary();
+        $order_column = app()->model()->from($current_table_name)->primary();
 
         if (not_def($column))
         {
-            if (def($session->get('limit') && def($like)))
-                return $sql->like($like)->limit($session->get('limit'),0)->order_by($order_column,$order_by)->get();
-
-            return def($like) ? $sql->like($like)->order_by($order_column,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($order_column,$order_by)->get();
+            if (def($limit_per_page && def($like)))
+                $records =  $sql->like($like)->limit($limit_per_page,0)->order_by($order_column,$order_by)->get();
+            else
+                $records = def($like) ? $sql->like($like)->order_by($order_column,$order_by)->get() : $sql->limit($limit_per_page, $offset)->order_by($order_column,$order_by)->get();
+        }else
+        {
+            if (def($limit_per_page && def($like)))
+                $records = $sql->like($like)->limit($limit_per_page,0)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get();
+            else
+                $records =  def($like) ? $sql->like($like)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get() : $sql->limit($limit_per_page, $offset)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get();
         }
-
-        if (def($session->get('limit') && def($like)))
-            return $sql->like($like)->limit($session->get('limit'),0)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get();
-
-        return def($like) ? $sql->like($like)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get() : $sql->limit($limit_per_page, $offset)->where($column,$condition,$expected)->order_by($order_column,$order_by)->get();
+        return $records;
     }
 }
 
@@ -2599,14 +2718,10 @@ if (not_exist('bootswatch'))
      *
      * @return string
      *
-     * @throws Kedavra
      */
-    function bootswatch(string $theme = 'bootstrap',string $version = '4.0.0'): string
+    function bootswatch(string $theme = 'bootstrap',string $version = '4.3.1'): string
     {
-        if (equal($theme,"bootstrap"))
-            return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/'.$version.'/css/bootstrap.min.css">';
-
-        return '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/'.$version.'/'.$theme.'/bootstrap.min.css">';
+        return '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootswatch/'.$version.'/'.$theme.'/bootstrap.min.css">';
 
     }
 }
@@ -2886,14 +3001,14 @@ if (not_exist('server'))
      *
      * @method server
      *
-     * @param  string $key The server key
+     * @param string $key The server key
      *
+     * @param string $value
      * @return string
-     *
      */
-    function server(string $key): string
+    function server(string $key,string $value = ''): string
     {
-        return isset($_SERVER[$key]) && !empty($_SERVER[$key]) ?  $_SERVER[$key] : '';
+        return isset($_SERVER[$key]) && !empty($_SERVER[$key]) ?  $_SERVER[$key] : $value;
     }
 }
 

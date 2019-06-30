@@ -9,6 +9,7 @@ namespace Imperium\Routing {
     use Imperium\Security\Auth\AuthMiddleware;
     use Imperium\Security\Csrf\CsrfMiddleware;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\HttpFoundation\RedirectResponse;
     use Symfony\Component\HttpFoundation\Response;
 
 
@@ -176,6 +177,11 @@ namespace Imperium\Routing {
          */
         private $regex;
 
+        /**
+         * @var
+         */
+        private $route;
+
 
         /**
          *
@@ -218,19 +224,23 @@ namespace Imperium\Routing {
          *
          * Call the callable
          *
-         * @return Response
+         * @return RouteResult| RedirectResponse
          *
          * @throws Kedavra
          *
          */
-        public function run():Response
+        public function search()
         {
             is_true(not_def($this->routes()->all()),true,"The routes table is empty");
 
-            foreach($this->routes()->where('method',EQUAL,$this->method)->get()as $route)
+            foreach($this->routes()->where('method',EQUAL,$this->method)->get() as $route)
             {
                 if ($this->match($route->url))
-                    return $this->call($route);
+                {
+                    $this->route = $route;
+                    return $this->result();
+                }
+
             }
             return to(route('404'));
         }
@@ -256,9 +266,11 @@ namespace Imperium\Routing {
          * @param string $name
          *
          * @param array $args
+         *
          * @return string
          *
-         * @throws Exception
+         * @throws Kedavra
+         *
          */
         public static function url(string $name,array $args=[]): string
         {
@@ -317,15 +329,15 @@ namespace Imperium\Routing {
         {
            return def($this->regex[$match[1]]) ?  '(' . $this->regex[$match[1]] . ')' :  '([^/]+)';
         }
+
         /**
          *
-         * @param $route
-         *
-         * @return Response
+         * @return RouteResult
          *
          * @throws Kedavra
+         *
          */
-        private function call($route): Response
+        public function result(): RouteResult
         {
             array_shift($this->args);
 
@@ -333,40 +345,13 @@ namespace Imperium\Routing {
 
             foreach ($this->args as $match)
             {
-                is_numeric($match) ? $this->with($match,self::NUMERIC) : $this->with($match,self::STRING);
+                is_numeric($match) ? $this->with($match,NUMERIC) : $this->with($match,STRING);
 
                 is_numeric($match) ? $params->add(intval($match)): $params->add($match);
             }
 
-            $this->args = $params->collection();
 
-            $controller = $route->controller;
-
-            $action     = $route->action;
-
-            $controller = $this->namespace  . $controller;
-
-            is_false(class_exists($controller),true,"The class {$route->controller} not exist at {$this->controller_dir}");
-
-            $controller = new $controller();
-
-            is_false(method_exists($controller,$action),true,"The  $action method  was not found inside the controller named {$route->controller} at {$this->controller_dir}");
-
-            if (method_exists($controller, self::BEFORE_ACTION))
-                call_user_func_array( [$controller,self::BEFORE_ACTION],[]);
-
-            if (method_exists($controller, self::AFTER_ACTION))
-            {
-                $x =  call_user_func_array([$controller, $action], $this->args);
-                call_user_func_array( [$controller, self::AFTER_ACTION],[]);
-
-                return (new Response())->setContent($x);
-
-            }
-
-            $x =  call_user_func_array([$controller, $action], $this->args);
-
-            return (new Response())->setContent($x);
+           return  new RouteResult($this->namespace,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->collection());
         }
 
 

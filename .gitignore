@@ -6,3 +6,7 @@ node_modules
 dkim*
 .phpunit.result.cache
 web/repositories
+cache
+web/*.html
+app.json
+composer.lock

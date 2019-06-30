@@ -6,8 +6,10 @@ namespace Testing {
 
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Exception\Kedavra;
+    use Imperium\Routing\Router;
+    use Imperium\Routing\RouteResult;
     use Imperium\Testing\Unit;
-    use Symfony\Component\HttpFoundation\Response;
+    use Symfony\Component\HttpFoundation\RedirectResponse;
 
     /**
      * Class RouterTest
@@ -20,17 +22,28 @@ namespace Testing {
          * @param string $url
          * @param string $method
          *
-         * @return Response
+         * @return RedirectResponse|RouteResult
          *
          * @throws Kedavra
          *
          */
-        private function router(string $url,string $method): Response
+        private function router(string $url,string $method)
         {
             return $this->visit($url,$method);
         }
 
 
+        /**
+         * @throws Kedavra
+         */
+        public function test_route_result()
+        {
+            $request = $this->visit('/');
+            $this->assertEquals('repositories',$request->action());
+            $this->assertEquals('GitController',$request->controller());
+            $this->assertEquals('/',$request->url());
+            $this->assertEquals('root',$request->name());
+        }
         /**
          * @throws Kedavra
          */
@@ -47,7 +60,7 @@ namespace Testing {
          */
         public function test_get()
         {
-            $this->assertTrue($this->router('/',GET)->isSuccessful());
+            $this->assertTrue($this->router('/',GET)->call()->send()->isSuccessful());
         }
 
         /**
@@ -57,7 +70,7 @@ namespace Testing {
         {
             $this->expectException(Kedavra::class);
 
-            $this->assertFalse($this->router('/u/willy/p',POST)->isSuccessful());
+            $this->assertFalse($this->router('/u/willy/p',POST)->call()->send()->isSuccessful());
         }
 
         /**
@@ -65,11 +78,23 @@ namespace Testing {
          */
         public function test_redirect()
         {
-            $response = $this->router('/alex/',GET)->send();
+            $response = $this->router('/alex/',GET);
             $this->assertEquals(302,$response->getStatusCode());
             $this->assertTrue($response->isRedirection());
             $this->assertTrue($response->isRedirect('/error'));
             $this->assertTrue($response->isRedirect(route('404')));
+        }
+
+        /**
+         * @throws Kedavra
+         */
+        public function test_url()
+        {
+            $this->assertEquals('/',Router::url('root'));
+            $this->assertEquals('/app',Router::url('app'));
+
+            $this->assertEquals('/',app()->url('root'));
+            $this->assertEquals('/app',app()->url('app'));
         }
 
         /**
@@ -84,17 +109,9 @@ namespace Testing {
         /**
          * @throws Kedavra
          */
-        public function test_url()
-        {
-            $this->assertEquals("/",app()->url('root'));
-        }
-
-        /**
-         * @throws Kedavra
-         */
         public function test_root()
         {
-            $this->assertTrue($this->router('/',GET)->isOk());
+            $this->assertTrue($this->router('/',GET)->call()->send()->isOk());
         }
 
         /**
@@ -102,7 +119,7 @@ namespace Testing {
          */
         public function test_content()
         {
-            $this->assertNotEmpty($this->router('/',GET)->getContent());
+            $this->assertNotEmpty($this->router('/app',GET)->call()->send()->getContent());
         }
 
         /**
@@ -110,7 +127,7 @@ namespace Testing {
          */
         public function test_args()
         {
-            $this->assertTrue($this->router('/edit/willy/20',GET)->isOk());
+            $this->assertTrue($this->router('/edit/willy/20',GET)->call()->send()->isOk());
         }
 
     }

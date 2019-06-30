@@ -23,12 +23,14 @@ namespace Imperium\Json {
         const VALID = [ 0,JSON_HEX_QUOT, JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS, JSON_NUMERIC_CHECK, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES, JSON_FORCE_OBJECT, JSON_PRESERVE_ZERO_FRACTION, JSON_UNESCAPED_UNICODE];
 
         /**
+         *
          * Json constructor.
          *
          * @param string $filename
          * @param string $mode
          *
          * @throws Kedavra
+         *
          */
         public function __construct(string $filename,string $mode = EMPTY_AND_WRITE_FILE_MODE)
         {

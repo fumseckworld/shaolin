@@ -396,6 +396,7 @@ namespace Imperium\Connexion {
          */
         public function request(string $sql,string ...$vars): array
         {
+
             $query = $this->instance()->prepare($sql);
 
             $query->execute($vars);
@@ -407,6 +408,9 @@ namespace Imperium\Connexion {
             is_false($query->closeCursor(),true,"Fail to close the connection");
 
             $query = null;
+
+            $sql = null;
+
 
             return $x;
         }
@@ -552,8 +556,11 @@ namespace Imperium\Connexion {
             }else{
                 return $this->instance;
             }
+
             $this->instance->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+
             $this->instance->setAttribute(PDO::ATTR_EMULATE_PREPARES,false);
+
            return $this->instance;
 
         }

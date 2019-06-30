@@ -3,7 +3,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class Imperiumtable extends AbstractMigration
+class Repository extends AbstractMigration
 {
     /**
      * Change Method.
@@ -28,14 +28,7 @@ class Imperiumtable extends AbstractMigration
      */
     public function change()
     {
-        $this->table('imperium')
-            ->addColumn('name', 'string')
-            ->addColumn('age', 'integer')
-            ->addColumn('phone', 'integer')
-            ->addColumn('sex', 'string')
-            ->addColumn('status','string')
-            ->addColumn('days','datetime')
-            ->addColumn('date','datetime')
-            ->create();
+
+        $this->table('repositories')->addColumn('img','string')->addColumn('name','string')->addColumn('owner','string')->addColumn('description','string')->addTimestamps()->addIndex(['owner'],['unique' => true])->create();
     }
 }

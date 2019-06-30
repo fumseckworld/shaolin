@@ -3,10 +3,12 @@
 namespace Imperium\Session {
 
 
+    use Imperium\Collection\Collection;
+
     class ArraySession implements SessionInterface
     {
         /**
-         * @var \Imperium\Collection\Collection
+         * @var Collection
          */
         private $session;
 
@@ -84,6 +86,22 @@ namespace Imperium\Session {
         public function __construct()
         {
             $this->session = collection();
+        }
+
+        /**
+         *
+         * Set and return value
+         *
+         * @param $key
+         * @param $value
+         *
+         * @return mixed
+         *
+         */
+        public function def($key, $value)
+        {
+           $this->set($key,$value);
+           return $this->get($key);
         }
     }
 }

@@ -1,2 +1,7 @@
 namespaces:
   admin: 'admin'
+config:
+  cache: false
+  charset: 'utf-8'
+  auto_reload: false
+development: true

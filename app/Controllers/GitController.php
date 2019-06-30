@@ -1,19 +1,20 @@
 <?php
 
-namespace ________________________________________________________\Controllers { 
+namespace ________________________________________________________\Controllers {
 
-	use Imperium\Controller\Controller;
-    use Imperium\Directory\Dir;
+
+    use Imperium\Controller\Controller;
 
     Class GitController extends Controller
 	{
+        public function before_action()
 
-		public function before_action()
-		{
+        {
+
+
 
 		}
-
-		public function after_action()
+        public function after_action()
 		{
 
 		}
@@ -21,12 +22,7 @@ namespace ________________________________________________________\Controllers {
 		public function repositories()
         {
 
-            $data = $this->scan_repositories();
-
-
-
-
-            return $this->view('repositories',compact('data'));
+            return $this->view('repositories');
 
         }
 

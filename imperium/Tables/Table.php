@@ -96,6 +96,11 @@ namespace Imperium\Tables {
          */
         private $column;
 
+        /**
+         * @var string
+         */
+        private $primary;
+
 
         /**
          * Select a table
@@ -673,10 +678,6 @@ namespace Imperium\Tables {
             return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = ?",$id);
         }
 
-
-
-
-
         /**
          *
          * Convert a table
@@ -737,16 +738,15 @@ namespace Imperium\Tables {
          *
          * @method exist
          *
-         * @param  string $table The table name
+         * @param string ...$tables
          *
          * @return bool
          *
          * @throws Kedavra
-         *
          */
-        public function exist(string $table): bool
+        public function exist(string ...$tables): bool
         {
-            return collection($this->show())->exist($table);
+            return collection($this->show())->inside($tables);
         }
 
         /**
@@ -849,12 +849,28 @@ namespace Imperium\Tables {
         {
             $table = def($table) ? $table : $this->current();
 
-            foreach ($this->connexion->request("SELECT COUNT(*) FROM $table") as $number)
+            foreach ($this->connexion->request("SELECT COUNT({$this->primary()}) FROM $table") as $number)
                 return current($number);
 
 
             return 0;
 
+        }
+
+        /**
+         *
+         * Get the primary key
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function primary():string
+        {
+            assign(not_def($this->primary),$this->primary,$this->column()->for($this->current())->primary_key());
+
+            return $this->primary;
         }
 
         /**
@@ -872,7 +888,7 @@ namespace Imperium\Tables {
          */
         public function all(string $column ='',string $order = DESC): array
         {
-            $column = def($column) ? $column : $this->column->for($this->current())->primary_key();
+            $column = def($column) ? $column : $this->primary();
 
             return $this->connexion->request("SELECT * FROM {$this->current()} ORDER BY $column $order");
         }
@@ -911,7 +927,7 @@ namespace Imperium\Tables {
          */
         public function update(int $id,array $values,array $ignore= []): bool
         {
-            $primary = $this->column->for($this->current())->primary_key();
+            $primary = $this->primary();
 
             $columns = collection();
 
@@ -1081,6 +1097,7 @@ namespace Imperium\Tables {
         {
 
             $rec = $this->column->for($this->current());
+
             $query = "INSERT INTO {$this->current()} ({$rec->columns_to_string()}) VALUES ";
 
             $primary = $rec->primary_key();

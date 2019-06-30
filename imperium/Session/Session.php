@@ -96,5 +96,20 @@ namespace Imperium\Session {
         }
 
 
+        /**
+         *
+         * Set and return value
+         *
+         * @param $key
+         * @param $value
+         *
+         * @return mixed
+         *
+         */
+        public function def($key, $value)
+        {
+            $this->set($key,$value);
+            return $this->get($key);
+        }
     }
 }

@@ -2,12 +2,11 @@
 
 namespace Imperium\View {
 
+    use Imperium\Debug\Bar;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
-    use Imperium\Html\Form\Form;
-    use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Os;
     use Symfony\Bridge\Twig\Extension\TranslationExtension;
     use Twig\Environment;
@@ -36,6 +35,7 @@ namespace Imperium\View {
      **/
     class  View
     {
+
         /**
          * @var string
          */
@@ -56,6 +56,12 @@ namespace Imperium\View {
          * @var array
          */
         private $registered_path;
+        /**
+         * @var array
+         */
+        private $config;
+
+
 
         /**
          * View constructor.
@@ -66,57 +72,50 @@ namespace Imperium\View {
          */
         public function __construct()
         {
-            $file = 'app';
 
-            Dir::create(core_path(collection(config('app','dir'))->get('app')));
+            $this->view_dir = views_path();
 
-            $view_dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('view');
+            $this->config = config('twig','config');
 
-            $config = config($file,'config');
+            if (!app()->cache()->has('twig'))
+            {
 
-            Dir::create($view_dir);
+                $this->loader = new  FilesystemLoader($this->view_dir);
 
-            $this->view_dir = realpath($view_dir);
+                $namespace = config('twig','namespaces');
 
-            $this->loader = new  FilesystemLoader($this->view_dir);
+                is_true(!is_array($namespace),true,'The twig namespace config must be an array');
 
-            $this->twig = new Environment($this->loader,$config);
+                $this->registered_path = $namespace;
+
+                foreach ($namespace as $k => $v)
+                    $this->loader->addPath(views_path() .DIRECTORY_SEPARATOR . $k ,$v);
+
+                app()->cache()->set('twig_loader',$this->loader);
 
 
-            $this->twig->addExtension(new Twig_Extensions_Extension_Text());
-            $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
-            $this->twig->addExtension(new ArrayExtension());
-            $this->twig->addExtension(new TranslationExtension());
-            $namespace = config('twig','namespaces');
+                $this->twig()->addExtension(new Twig_Extensions_Extension_Text());
+                $this->twig()->addExtension(new Twig_Extensions_Extension_I18n());
+                $this->twig()->addExtension(new ArrayExtension());
+                $this->twig()->addExtension(new TranslationExtension());
 
-            is_true(!is_array($namespace),true,'The twig namespace config must be an array');
+                $this->add_extensions(extensions('Extensions'));
 
-            $this->registered_path = $namespace;
+                $this->add_filters(extensions('Filters'));
 
-            foreach ($namespace as $k => $v)
-               $this->add_path($k,$v);
+                $this->add_functions(extensions('Functions'));
+
+                $this->add_globals(extensions('Globals'));
+
+                $this->add_tags(extensions('Tags'));
+
+                $this->add_test(extensions('Tests'));
+
+                app()->cache()->set('twig', $this->twig);
+            }
+
 
             $functions = collection();
-
-            $functions->add(new TwigFunction('app',
-
-                function ()
-                {
-                   return app();
-
-                },
-                ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('form',
-
-                function ()
-                {
-                    return new Form();
-
-                },
-                ['is_safe' => ['html']]
-            ));
 
             $functions->add(new TwigFunction('display',
 
@@ -130,14 +129,23 @@ namespace Imperium\View {
                 ['is_safe' => ['html']]
             ));
 
-           $functions->add(new TwigFunction('css',
+            $functions->add(new TwigFunction('css',
 
-               function (string $name)
-               {
-                   return css($name);
-               },
-               ['is_safe' => ['html']]
-           ));
+                function (string $name)
+                {
+                    return css($name);
+                },
+                ['is_safe' => ['html']]
+            ));
+
+            $functions->add(new TwigFunction('debug',
+
+                function ()
+                {
+                    return (new Bar())->render(app());
+                },
+                ['is_safe' => ['html']]
+            ));
 
             $functions->add(new TwigFunction('copyright',
 
@@ -166,17 +174,6 @@ namespace Imperium\View {
                 ['is_safe' => ['html']]
             ));
 
-
-            $functions->add(new TwigFunction('device',
-
-                function ()
-                {
-                    return new Device();
-                },
-                ['is_safe' => ['html']]
-            ));
-
-
             $functions->add(new TwigFunction('bootswatch',
 
                 function (string $theme)
@@ -185,8 +182,6 @@ namespace Imperium\View {
                 },
                 ['is_safe' => ['html']]
             ));
-
-
 
             $functions->add(new TwigFunction('back',
 
@@ -197,32 +192,24 @@ namespace Imperium\View {
                 ['is_safe' => ['html']]
             ));
 
-            $functions->add(new TwigFunction('auth',
+
+            $functions->add(new TwigFunction('csrf_field',
 
                 function ()
                 {
-                    return app()->auth();
+                    return csrf_field();
                 },
                 ['is_safe' => ['html']]
             ));
 
-           $functions->add(new TwigFunction('csrf_field',
+            $functions->add(new TwigFunction('js',
 
-            function ()
-            {
-                return csrf_field();
-            },
-            ['is_safe' => ['html']]
-        ));
-
-           $functions->add(new TwigFunction('js',
-
-               function (string $name,string $type = '')
-               {
-                   return js($name,$type);
-               }
-               ,['is_safe' => ['html']]
-           ));
+                function (string $name,string $type = '')
+                {
+                    return js($name,$type);
+                }
+                ,['is_safe' => ['html']]
+            ));
 
             $functions->add(new TwigFunction('img',
 
@@ -237,20 +224,10 @@ namespace Imperium\View {
 
                 function ()
                 {
-                    return $this->locale();
+                    return app()->lang();
                 }
                 ,['is_safe' => ['html']]
             ));
-
-            $functions->add(new TwigFunction('t',
-
-                function (string $message,array $args = [])
-                {
-                    return trans($message,$args);
-                }
-                ,['is_safe' => ['html']]
-            ));
-
 
             $functions->add(new TwigFunction('_',
 
@@ -289,7 +266,7 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-             $functions->add(new TwigFunction('navbar',
+            $functions->add(new TwigFunction('navbar',
 
 
                 function (string $app_name,string $class,string ...$names)
@@ -317,20 +294,16 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
+            $functions->add(new TwigFunction('development',
+
+                function ()
+                {
+                    return config('twig','development') === true;
+                }
+                ,['is_safe' => ['html']]
+            ));
 
             $this->add_functions($functions->collection());
-
-            $this->add_extensions(extensions('Extensions'));
-
-            $this->add_filters(extensions('Filters'));
-
-            $this->add_functions(extensions('Functions'));
-
-            $this->add_globals(extensions('Globals'));
-
-            $this->add_tags(extensions('Tags'));
-
-            $this->add_test(extensions('Tests'));
 
             putenv("LC_ALL={$this->locale()}");
 
@@ -344,7 +317,22 @@ namespace Imperium\View {
         }
 
         /**
+         * @return Environment
+         * @throws Kedavra
+         */
+        public function twig()
+        {
+            if (is_null($this->twig))
+                $this->twig = new Environment($this->loader(),$this->config);
+
+            return $this->twig;
+        }
+
+        /**
          * @return array
+         *
+         * @throws Kedavra
+         *
          */
         public function registered_path(): array
         {
@@ -364,6 +352,8 @@ namespace Imperium\View {
          *
          * @return View
          *
+         * @throws Kedavra
+         *
          */
         public function add_functions(array $functions): View
         {
@@ -372,7 +362,6 @@ namespace Imperium\View {
 
             return $this;
         }
-
 
         /**
          *
@@ -387,14 +376,17 @@ namespace Imperium\View {
          * @throws RuntimeError
          * @throws SyntaxError
          * @throws Kedavra
+         *
          */
         public function load(string $view,array $args=[])
         {
             $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
 
+
             $dir = ucfirst(strtolower(str_replace('Controller','',$parts->get(0))));
 
             $view = $dir .DIRECTORY_SEPARATOR . $parts->get(1);
+
 
             $dir = $this->view_dir . DIRECTORY_SEPARATOR . $dir;
 
@@ -402,15 +394,13 @@ namespace Imperium\View {
 
             $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
 
-            if (!file_exists($file))
+            if (!File::exist($file))
             {
-                touch($file);
                 (new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
             }
 
-            return $this->twig->render($view,$args);
+            return $this->twig()->render($view,$args);
         }
-
 
 
         /**
@@ -420,9 +410,11 @@ namespace Imperium\View {
          * @method add_global
          *
          * @param string $name The variable name
-         * @param mixed  $value  The variable value
+         * @param mixed $value The variable value
          *
          * @return View
+         *
+         * @throws Kedavra
          *
          */
         public function add_global(string $name, $value): View
@@ -440,6 +432,8 @@ namespace Imperium\View {
          * @method paths
          *
          * @return array
+         *
+         * @throws Kedavra
          *
          */
         public function paths(): array
@@ -459,6 +453,7 @@ namespace Imperium\View {
          * @return View
          *
          * @throws LoaderErrorAlias
+         *
          * @throws Kedavra
          *
          */
@@ -467,26 +462,12 @@ namespace Imperium\View {
 
             $dir = $this->view_dir .DIRECTORY_SEPARATOR .$path;
 
-            Dir::create($dir);
 
             $this->loader()->addPath($dir,$namespace);
 
             return $this;
         }
 
-        /**
-         *
-         * Return an instance of twig
-         *
-         * @method twig
-         *
-         * @return Environment
-         *
-         */
-        public function twig(): Environment
-        {
-            return $this->twig;
-        }
 
         /**
          *
@@ -496,10 +477,12 @@ namespace Imperium\View {
          *
          * @return FilesystemLoader
          *
+         * @throws Kedavra
+         *
          */
         public function loader(): FilesystemLoader
         {
-            return $this->loader;
+            return  app()->cache()->has('twig_loader') ? app()->cache()->get('twig_loader') : $this->loader ;
         }
 
         /**
@@ -534,7 +517,7 @@ namespace Imperium\View {
          */
         public function locale_path(): string
         {
-            $dir = dirname(core_path(collection(config('app','dir'))->get('app'))) . DIRECTORY_SEPARATOR . 'po';
+            $dir =  ROOT . DIRECTORY_SEPARATOR . 'po';
 
             Dir::create($dir);
 
@@ -547,11 +530,13 @@ namespace Imperium\View {
          *
          * @param array $filters
          *
+         * @throws Kedavra
+         *
          */
         public function add_filters(array $filters): void
         {
             foreach ($filters as $filter)
-                $this->twig->addFilter($filter);
+                $this->twig()->addFilter($filter);
 
         }
 
@@ -561,11 +546,13 @@ namespace Imperium\View {
          *
          * @param array $tests
          *
+         * @throws Kedavra
+         *
          */
         public function add_test(array $tests): void
         {
             foreach ($tests as $test)
-                $this->twig->addTest($test);
+                $this->twig()->addTest($test);
         }
 
         /**
@@ -574,11 +561,13 @@ namespace Imperium\View {
          *
          * @param array $globals
          *
+         * @throws Kedavra
+         *
          */
         public function add_globals(array $globals): void
         {
             foreach ($globals as $k => $v)
-                $this->twig->addGlobal($k,$v);
+                $this->twig()->addGlobal($k,$v);
         }
 
         /**
@@ -586,20 +575,26 @@ namespace Imperium\View {
          *
          * @param array $extensions
          *
+         * @throws Kedavra
+         *
          */
         public function add_extensions(array $extensions): void
         {
             foreach ($extensions as $extension)
-                $this->twig->addExtension($extension);
+                $this->twig()->addExtension($extension);
         }
 
         /**
+         *
          * @param array $extensions
+         *
+         * @throws Kedavra
+         *
          */
         public function add_tags(array $extensions): void
         {
             foreach ($extensions as $extension)
-                $this->twig->addTokenParser($extension);
+                $this->twig()->addTokenParser($extension);
         }
     }
 }

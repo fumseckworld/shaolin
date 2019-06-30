@@ -2,7 +2,6 @@
 
 namespace Imperium\Security\Auth {
 
-    use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Exception\Kedavra;
     use Imperium\Html\Form\Form;
@@ -176,23 +175,32 @@ namespace Imperium\Security\Auth {
             return to('/',$this->messages()->get('bye'));
         }
 
-
         /**
          *
-         * Return the current logged user
-         *
-         * @return object
+         * @return object|string
          *
          * @throws Kedavra
          *
          */
-        public function current()
+         public function current()
         {
-            if ($this->connected())
-            {
-                return $this->model->find($this->session->get(self::ID));
-            }
-            throw new Exception('No user connected');
+            return $this->connected() ?  $this->model->find($this->session->get(self::ID)) : '';
+        }
+
+        /**
+         *
+         * Display the connected username
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function connected_username():string
+        {
+            $x = $this->current();
+
+            return is_object($x) ? $x->username : '';
         }
 
         /**

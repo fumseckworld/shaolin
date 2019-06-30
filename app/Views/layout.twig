@@ -6,8 +6,69 @@
 
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+
+        {% if development() %}
+            <meta http-equiv="refresh" content="30"/>
+        {% endif %}
+
         <!-- Bootstrap CSS -->
-        {{ css('app') }}
+        {{ bootswatch('materia') }}
+
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <style>
+            .material-icons, .icon-text {
+                vertical-align: middle;
+            }
+
+            .icon-bar{
+                color: #3db9ec;
+            }
+
+            .sidenav {
+                height: 100%;
+                width: 0;
+                position: fixed;
+                z-index: 1;
+                top: 0;
+                right: 0;
+                background-color: #111;
+                overflow-x: hidden;
+                transition: 0.5s;
+                padding-top: 60px;
+            }
+
+            .sidenav a {
+                padding: 8px 8px 8px 32px;
+                text-decoration: none;
+                font-size: 25px;
+                color: #818181;
+                display: block;
+                transition: 0.3s;
+            }
+
+            .sidenav a:hover {
+                color: #f1f1f1;
+            }
+
+            .sidenav .closebtn {
+                position: absolute;
+                top: 0;
+                right: 25px;
+                font-size: 36px;
+                margin-left: 50px;
+            }
+
+            #main {
+                transition: margin-left .5s;
+                padding: 16px;
+            }
+
+            @media screen and (max-height: 450px) {
+                .sidenav {padding-top: 15px;}
+                .sidenav a {font-size: 18px;}
+            }
+
+        </style>
         {% block css %} {% endblock %}
         <title>{% block title %}{% endblock %}</title>
 
@@ -16,13 +77,39 @@
     </head>
     <body>
 
-        <main class="container mt-5">
+        <main class="container mt-5" id="main">
             {{ display('success') }}
             {{ display('failure') }}
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Alias aut, consequuntur dignissimos eaque earum error est eveniet ex fugit impedit laborum magnam natus nobis officiis perferendis perspiciatis quam quasi quisquam quos repellat repellendus reprehenderit saepe sapiente ullam voluptas! Facere, molestiae, quas. Deserunt earum fuga illo ipsam itaque laboriosam laborum provident quae veritatis voluptatum. Architecto minima molestiae nam vitae. Ab aspernatur deleniti dolorum minus voluptas. Illo iste maiores quisquam? Aliquam aut culpa, doloribus ducimus est in maiores molestiae perferendis! Ad beatae, consequatur deleniti error eveniet fugiat incidunt iste natus nisi nobis quam quisquam soluta sunt velit veritatis. Delectus quibusdam, unde. A ab alias aliquam amet assumenda commodi, consectetur, corporis culpa cumque dolorum ducimus enim error est exercitationem facilis id iure maiores minima natus necessitatibus nesciunt odit omnis placeat qui quis quisquam quo quos recusandae reiciendis sapiente similique tenetur voluptatem voluptates. Accusantium architecto cupiditate ea eligendi eum facere ipsam magni maiores nesciunt nulla praesentium quas ut, vitae? Amet asperiores beatae cupiditate debitis, dolores dolorum eos est et eveniet harum ipsam laboriosam laborum maxime molestiae nihil non odio optio possimus provident quod rem rerum ullam velit voluptate voluptatem. Assumenda commodi cupiditate, dolores eaque magnam quasi ratione ut. Cupiditate deleniti dolore exercitationem in vero.
             {% block content %} {% endblock %}
         </main>
+        <script>
+            let color ='';
+            let div = document.getElementsByTagName('main');
+            document.addEventListener("keypress",function (e) {
+                switch (e.key)
+                {
+                    case 'r':
+                        color = 'red';
+                    break;
+                    case 'g':
+                        color = 'green';
+                    break;
+                    case 'y':
+                        color = 'yellow';
+                    break;
+                    case 'b':
+                        color = 'blue';
+                    break;
+                }
+                for (let i=0;i<div.length;i++)
+                    div[i].style.backgroundColor = color;
+            })
 
-        {{ js('app.js') }}
-        {% block js %} {% endblock %}
+        </script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        {{ debug() }}
     </body>
 </html>

@@ -80,9 +80,7 @@ namespace Imperium\Versioning\Git {
 
             $this->owner = $owner;
 
-            $this->base_path =  'web' . DIRECTORY_SEPARATOR. 'repositories';
-
-            $this->repository = realpath($this->base_path) . DIRECTORY_SEPARATOR . $this->owner . DIRECTORY_SEPARATOR .   $repository;
+            $this->repository =  $repository;
 
             is_false(Dir::is($this->repository),true,"The repository was not found");
 
@@ -92,7 +90,6 @@ namespace Imperium\Versioning\Git {
 
             $this->contributors = $this->save_contributors();
 
-            $this->generate_archives();
         }
 
 
@@ -485,6 +482,7 @@ namespace Imperium\Versioning\Git {
          */
         public static function create(string $project_name,string $owner,string $description,bool $remote = true): bool
         {
+
             Dir::create($owner);
 
             $project_name = $owner . DIRECTORY_SEPARATOR . $project_name;

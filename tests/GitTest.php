@@ -9,6 +9,7 @@ namespace Testing {
     use Imperium\Exception\Kedavra;
     use Imperium\Versioning\Git\Git;
     use PHPUnit\Framework\TestCase;
+    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
     /**
      * Class GitTest
@@ -26,7 +27,7 @@ namespace Testing {
          */
         public function setUp(): void
         {
-            $this->git = new Git('symfony', 'sebastien');
+            $this->git = new Git('.', 'willy');
         }
 
         /**
@@ -35,7 +36,7 @@ namespace Testing {
         public function test_owner()
         {
             $this->assertIsString($this->git->owner());
-            $this->assertEquals('sebastien',$this->git->owner());
+            $this->assertEquals('willy',$this->git->owner());
         }
 
         /**
@@ -43,7 +44,7 @@ namespace Testing {
          */
         public function test_current_branch()
         {
-            $this->assertEquals('4.4',$this->git->current_branch());
+            $this->assertEquals('develop',$this->git->current_branch());
         }
 
         /**
@@ -59,7 +60,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals(22,$this->git->branches_found());
+            $this->assertEquals(4,$this->git->branches_found());
         }
 
         /**
@@ -76,8 +77,8 @@ namespace Testing {
          */
         public function test()
         {
-            $this->assertNotEmpty($this->git->commits_by_year('Fabien Potencier')->collection());
-            $this->assertNotEmpty($this->git->commits_by_month('Fabien Potencier')->collection());
+            $this->assertNotEmpty($this->git->commits_by_year('Willy Micieli')->collection());
+            $this->assertNotEmpty($this->git->commits_by_month('Willy Micieli')->collection());
 
             $this->assertEmpty($this->git->commits_by_year('Bob Lenon')->collection());
         }
@@ -90,7 +91,7 @@ namespace Testing {
 
             $this->assertNotEmpty($this->git->files()->collection());
 
-            $this->assertNotEmpty($this->git->files('src')->collection());
+            $this->assertNotEmpty($this->git->files('imperium')->collection());
 
         }
 
@@ -100,7 +101,7 @@ namespace Testing {
         public function test_directories()
         {
             $this->assertNotEmpty($this->git->directories()->collection());
-            $this->assertNotEmpty($this->git->directories('src')->collection());
+            $this->assertNotEmpty($this->git->directories('imperium')->collection());
         }
 
         /**
@@ -119,8 +120,8 @@ namespace Testing {
         {
 
             $this->assertTrue(Git::create('mario','alexandra','a super mario game'));
-            $this->assertTrue( Dir::checkout('../..'));
-            $this->assertTrue(Dir::remove('alexandra'));
+            Dir::checkout(ROOT);
+            $this->assertTrue( Dir::remove('alexandra'));
         }
 
 
@@ -146,7 +147,7 @@ namespace Testing {
          */
         public function test_equip()
         {
-            $this->assertEquals(2385,$this->git->contributors_size());
+            $this->assertEquals(1,$this->git->contributors_size());
         }
 
         /**
@@ -157,8 +158,8 @@ namespace Testing {
             $tags = $this->git->releases();
 
             $this->assertNotEmpty($tags);
-            $this->assertContains('v2.4.4',$tags);
-            $this->assertContains('v2.5.6',$tags);
+            $this->assertContains('6.7',$tags);
+            $this->assertContains('6.3',$tags);
         }
 
         /**
@@ -167,7 +168,7 @@ namespace Testing {
         public function test_news()
         {
             $this->assertNotEmpty($this->git->news());
-            $this->assertNotEmpty($this->git->change('v2.4.9','v2.4.8'));
+            $this->assertNotEmpty($this->git->change('6.3','6.2'));
             $this->expectException(Kedavra::class);
 
             $this->git->change('3.2.3','3.2.2');
@@ -193,7 +194,7 @@ namespace Testing {
         {
             $size = $this->git->release_size();
              $this->assertNotEmpty($size);
-             $this->assertEquals(439,$size);
+             $this->assertEquals(64,$size);
         }
 
         /**
@@ -201,7 +202,7 @@ namespace Testing {
          */
         public function test_repo_name()
         {
-            $this->assertEquals('symfony',$this->git->repository());
+            $this->assertEquals('imperium',$this->git->repository());
             $this->assertNotEmpty($this->git->path());
         }
 
@@ -211,19 +212,6 @@ namespace Testing {
         public function test_month()
         {
             $this->assertEquals(14,$this->git->months()->length());
-            $this->assertTrue($this->git->months()->exist('January'));
-            $this->assertTrue($this->git->months()->exist('February'));
-            $this->assertTrue($this->git->months()->exist('March'));
-            $this->assertTrue($this->git->months()->exist('April'));
-            $this->assertTrue($this->git->months()->exist('May'));
-            $this->assertTrue($this->git->months()->exist('June'));
-            $this->assertTrue($this->git->months()->exist('July'));
-            $this->assertTrue($this->git->months()->exist('August'));
-            $this->assertTrue($this->git->months()->exist('October'));
-            $this->assertTrue($this->git->months()->exist('November'));
-            $this->assertTrue($this->git->months()->exist('September'));
-            $this->assertTrue($this->git->months()->exist('December'));
-
         }
     }
 }

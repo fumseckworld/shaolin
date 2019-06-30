@@ -40,6 +40,18 @@ namespace Imperium\Session {
 
         /**
          *
+         * Set and return value
+         *
+         * @param $key
+         * @param $value
+         *
+         * @return mixed
+         *
+         */
+        public function def($key,$value);
+
+        /**
+         *
          * Remove a key
          *
          * @param $key

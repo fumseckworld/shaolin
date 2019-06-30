@@ -2,17 +2,19 @@
 
 namespace Imperium {
 
+    use Carbon\Carbon;
     use Dotenv\Dotenv;
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
+    use Imperium\Cache\Cache;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
-    use Imperium\Directory\Dir;
     use Imperium\Dump\Dump;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
     use Imperium\Routing\Route;
+    use Imperium\Routing\RouteResult;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
@@ -30,6 +32,7 @@ namespace Imperium {
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\HttpFoundation\JsonResponse;
     use Symfony\Component\HttpFoundation\RedirectResponse;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\Response;
@@ -54,15 +57,66 @@ namespace Imperium {
     class App extends Zen implements Management
     {
 
-        use Route;
         /**
-         *
-         * Connexion
-         *
-         * @var Connect
-         *
+         * @var App
          */
-        private $connect;
+        private static $instance;
+        
+        /**
+         * @var Dotenv
+         */
+        private static $env;
+
+        /**
+         * @var string
+         */
+        private static $debug;
+
+        /**
+         * @var Cache
+         */
+        private static $cache;
+
+        /**
+         * @var Connect
+         */
+        private static $connect;
+
+        /**
+         * @var Table
+         */
+        private static $table;
+        /**
+         * @var Query
+         */
+        private static $query;
+        /**
+         * @var Base
+         */
+        private static $base;
+        /**
+         * @var Users
+         */
+        private static $users;
+        /**
+         * @var Model
+         */
+        private static $model;
+        /**
+         * @var Form
+         */
+        private static $form;
+
+        private static $start_request_time;
+
+        /**
+         * @var string
+         */
+        private static $mode;
+
+
+        use Route;
+
 
         /**
          *
@@ -72,52 +126,7 @@ namespace Imperium {
          */
         private $driver;
 
-        /**
-         * @var Base
-         */
-        private $base;
 
-        /**
-         * @var Users
-         */
-        private $users;
-
-        /**
-         * @var Query
-         */
-        private $query;
-
-        /**
-         * @var Model
-         */
-        private $model;
-
-        /**
-         * @var Json
-         */
-        private $json;
-
-
-        /**
-         * @var Form
-         */
-        private $form;
-
-
-        /**
-         * @var array
-         */
-        private $hidden_tables;
-
-
-        /**
-         * @var Table
-         */
-        private $table;
-        /**
-         * @var Dotenv
-         */
-        private $env;
         /**
          * @var string
          */
@@ -126,12 +135,6 @@ namespace Imperium {
          * @var string
          */
         private $password;
-
-        /**
-         * @var bool
-         */
-        private $debug;
-
 
         /**
          *
@@ -167,6 +170,8 @@ namespace Imperium {
          * Display all bases
          *
          * @return array
+         *
+         * @throws Kedavra
          *
          */
         public function show_databases(): array
@@ -216,9 +221,9 @@ namespace Imperium {
          * @throws Kedavra
          *
          */
-        public function all(string $table,string $column,string $order = DESC): array
+        public function all(string $table,string $column= '',string $order = DESC): array
         {
-            return $this->model()->from($table)->all($column,$order);
+            return def($column) ? $this->model()->from($table)->all($column,$order) : $this->model()->from($table)->all($this->model()->from($table)->primary(),$order);
         }
 
         /**
@@ -711,53 +716,83 @@ namespace Imperium {
 
         /**
          *
-         * @method __construct
+         * Get current lang
+         *
+         * @return mixed
          *
          * @throws Kedavra
+         *
          */
-        public function __construct()
+        public function lang()
         {
-            $this->driver           =  db(DB_DRIVER);
-            $this->base             =  db(DB_NAME);
-            $this->username         =  db(DB_USERNAME);
-            $this->password         =  db(DB_PASSWORD);
-            $this->hidden_tables    =  db(DB_HIDDEN_TABLES);
-            $this->debug            =  db(DISPLAY_BUGS);
+            return trim(config('locales','locale'));
+        }
 
 
-            if (equal($this->driver,SQLITE))
-                $this->connect = connect(SQLITE,$this->base,'','','','dump');
-            else
-                $this->connect  = connect($this->driver,$this->base,$this->username,$this->password,LOCALHOST,'dump');
+        /**
+         * Empêche la copie externe de l'instance.
+         */
+        private function __clone () {}
 
+        /**
+         * App constructor
+         * .
+         * @throws Kedavra
+         *
+         */
+        private static function get (): App
+        {
 
-            $this->table            = new Table($this->connect);
+            $driver           =  db(DB_DRIVER);
+            $base             =  db(DB_NAME);
+            $username         =  db(DB_USERNAME);
+            $password         =  db(DB_PASSWORD);
 
-            $this->query            = new Query($this->table,$this->connect);
+            self::$debug      =  server(DISPLAY_BUGS,false);
 
-            $this->base             = new Base($this->connect,$this->table);
+            self::$mode       =  server(ENV,'production');
 
-            $this->users            = new Users($this->connect);
+            self::$cache = new Cache();
 
-            $this->model            = new Model($this->connect,$this->table);
+            self::$connect   = connect($driver,$base,$username,$password,LOCALHOST,'dump');
 
-            $this->json             = new Json('app.json');
+            self::$table            = new Table(self::$connect);
 
-            $this->form             = new Form();
+            self::$query            = new Query(self::$table,self::$connect);
 
-            if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
-                $path = dirname(request()->server->get('SCRIPT_FILENAME'),3);
-            else
-                $path = dirname(request()->server->get('DOCUMENT_ROOT'));
+            self::$base             = new Base(self::$connect,self::$table);
 
-            if (def($this->request()->server->get('PWD')))
-                $path = $this->request()->server->get('PWD');
+            self::$users            = new Users(self::$connect);
 
-            is_false(file_exists("$path" .DIRECTORY_SEPARATOR .".env"),true,".env file was not found");
+            self::$model            = new Model(self::$connect,self::$table);
 
-            $this->env              = Dotenv::create($path);
+            self::$form             = new Form();
 
-            $this->env->load();
+            $file = ROOT . DIRECTORY_SEPARATOR;
+
+            self::$env             = Dotenv::create($file,'.env');
+
+            self::$env->load();
+
+            return new static();
+        }
+
+        /**
+         *
+         * @return App
+         *
+         *
+         * @throws Kedavra
+         *
+         */
+        public static function instance(): App
+        {
+            if (is_null(self::$instance))
+            {
+                self::$start_request_time = now();
+                self::$instance = self::get();
+            }
+            return self::$instance;
         }
 
 
@@ -772,10 +807,45 @@ namespace Imperium {
          */
         public function run():Response
         {
-            if ($this->debug)
+            if ($this->debug())
                 whoops();
 
-            return $this->router(ServerRequest::fromGlobals())->run()->send();
+           return  $this->router(ServerRequest::fromGlobals())->search()->call()->send();
+
+        }
+
+        /**
+         *
+         * @return RouteResult
+         *
+         * @throws Kedavra
+         *
+         */
+        public function route_result(): RouteResult
+        {
+            return $this->router(ServerRequest::fromGlobals())->search();
+        }
+
+        /**
+         *
+         * Display request time
+         *
+         * @return int
+         *
+         */
+        public function request_time(): int
+        {
+            return Carbon::now()->diffInRealMilliseconds(self::$start_request_time);
+        }
+
+        /**
+         *
+         * @return bool
+         *
+         */
+        public function debug(): bool
+        {
+            return self::$debug;
         }
 
         /**
@@ -783,21 +853,26 @@ namespace Imperium {
          * @return Dotenv
          *
          */
-        public function env()
+        public function env(): Dotenv
         {
-            return $this->env;
+            return self::$env;
         }
 
         /**
          *
          * Management of json
          *
+         * @param string $filename
+         * @param string $mode
+         *
          * @return Json
          *
+         * @throws Kedavra
+         *
          */
-        public function json(): Json
+        public function json(string $filename,string $mode = EMPTY_AND_WRITE_FILE_MODE): Json
         {
-            return $this->json;
+            return new Json($filename,$mode);
         }
 
         /**
@@ -811,9 +886,9 @@ namespace Imperium {
          * @throws Kedavra
          *
          */
-        public function bases_users_tables_to_json(string $filename): bool
+        public function bases_users_tables_to_json(string $filename = 'all.json'): bool
         {
-            return $this->json()->set_name($filename)->add($this->show_databases(),'bases')->add($this->show_users(),'users')->add($this->show_tables(),'tables')->generate();
+            return $this->json($filename)->add($this->show_databases(),'bases')->add($this->show_users(),'users')->add($this->show_tables(),'tables')->generate();
         }
 
         /**
@@ -830,7 +905,7 @@ namespace Imperium {
          */
         public function create_json(string $filename,array $data): bool
         {
-            return $this->set_json_name($filename)->create($data);
+            return $this->json($filename)->create($data);
         }
 
         /**
@@ -838,48 +913,19 @@ namespace Imperium {
          * Generate json with a query
          *
          * @param string $filename
-         * @param string $query
-         * @param string $key
-         *
+         * @param string[] $queries
          * @return bool
          *
          * @throws Kedavra
          */
-        public function sql_to_json(string $filename,string $query,string $key = ''): bool
+        public function sql_to_json(string $filename,string ...$queries): bool
         {
-            return $this->set_json_name($filename)->sql($this->connect(),$query,$key)->generate();
-        }
+            $json = $this->json($filename);
 
-        /**
-         *
-         * Define the name of the json file
-         *
-         * @param string $name
-         *
-         * @return Json
-         */
-        public function set_json_name(string $name): Json
-        {
-            return $this->json()->set_name($name);
-        }
+            foreach ($queries as $k =>$v)
+                $json->add($json->sql($this->connect(),$v,$k));
 
-
-        /**
-         *
-         * Decode a json file or a json string
-         *
-         * @param string $data
-         * @param bool $assoc
-         *
-         * @return mixed
-         *
-         * @throws Kedavra
-         *
-         */
-        public function json_decode(string $data,bool $assoc = false)
-        {
-            return $this->json()->set_name($data)->decode($assoc);
-
+            return $json->generate();
         }
 
         /**
@@ -915,10 +961,10 @@ namespace Imperium {
                     return $this->bases()->rename($base,$new_name);
                 break;
                 case POSTGRESQL :
-                    return $this->connect->execute("ALTER DATABASE $base RENAME TO $new_name");
+                    return self::$connect->execute("ALTER DATABASE $base RENAME TO $new_name");
                 break;
                 case SQLITE :
-                    return File::rename($base,$new_name);
+                    return (new File($base))->rename($new_name);
                 break;
                 default :
                     return false;
@@ -952,7 +998,7 @@ namespace Imperium {
          */
         public function model(): Model
         {
-           return $this->model;
+           return self::$model;
         }
 
         /**
@@ -960,7 +1006,7 @@ namespace Imperium {
          */
         public function query(): Query
         {
-           return $this->query;
+           return self::$query;
         }
 
         /**
@@ -969,7 +1015,7 @@ namespace Imperium {
          */
         public function users(): Users
         {
-            return $this->users;
+            return self::$users;
         }
 
         /**
@@ -977,7 +1023,7 @@ namespace Imperium {
          */
         public function bases(): Base
         {
-            return $this->base;
+            return self::$base;
         }
 
         /**
@@ -985,7 +1031,7 @@ namespace Imperium {
          */
         public function table(): Table
         {
-            return $this->table;
+            return self::$table;
         }
 
         /**
@@ -994,7 +1040,7 @@ namespace Imperium {
          */
         public function connect(): Connect
         {
-           return $this->connect;
+           return self::$connect;
         }
 
         /**
@@ -1035,7 +1081,7 @@ namespace Imperium {
          */
         public function form(bool $validate = false): Form
         {
-            return $validate ? $this->form->validate() : $this->form;
+            return $validate ? self::$form->validate() : self::$form;
         }
 
         /**
@@ -1063,7 +1109,7 @@ namespace Imperium {
          */
         public function session():SessionInterface
         {
-            if ($this->request()->getScriptName() === './vendor/bin/phpunit')
+            if (request()->getScriptName() === './vendor/bin/phpunit')
                 return new ArraySession();
 
             return new Session();
@@ -1111,7 +1157,7 @@ namespace Imperium {
          */
         public function view(string $name,array $args = []): string
         {
-
+            $this->session()->set('view',$name);
             return view(get_called_class(),$name,$args);
         }
 
@@ -1174,7 +1220,7 @@ namespace Imperium {
          * @return Write
          *
          * @throws Kedavra
-         * @throws \Exception
+         *
          *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
@@ -1186,16 +1232,15 @@ namespace Imperium {
          *
          * Management of git
          *
-         * @param string $path
          * @param string $repository
          * @param string $owner
          * @return Git
          *
          * @throws Kedavra
          */
-        public function git(string $path,string $repository, string $owner): Git
+        public function git(string $repository, string $owner): Git
         {
-           return new Git($path,$repository,$owner);
+           return new Git($repository,$owner);
         }
 
         /**
@@ -1220,42 +1265,6 @@ namespace Imperium {
         public function route(): Model
         {
            return $this->routes();
-        }
-
-
-        /**
-         *
-         * List repositories into the subdirectory repositories inside the web directory
-         *
-         * @return Collection
-         *
-         * @throws Kedavra
-         *
-         */
-        public function scan_repositories(): Collection
-        {
-            $directory = 'repositories';
-
-            is_false(Dir::exist($directory),true,"Repositories dir was not found in web directory");
-
-            $data = collection();
-
-            $repositories = collection();
-
-            foreach (Dir::scan($directory) as $owner)
-            {
-                foreach(Dir::scan("$directory/$owner") as $repository)
-                {
-                    $repositories->push($repository);
-                }
-
-                $data->add($repositories->collection(),$owner);
-
-                $repositories->clear();
-            }
-
-            return $data;
-
         }
 
         /**
@@ -1288,6 +1297,98 @@ namespace Imperium {
         public function download(string $filename): Response
         {
            return (new Download($filename))->download();
+        }
+
+        /**
+         *
+         * Get records
+         *
+         * @param string $table
+         * @param string $column
+         * @param string $expected
+         * @param string $condition
+         * @param string $order_by
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function display(string $table, string $column = '', string $expected = '', string $condition = DIFFERENT, string $order_by = DESC): string
+        {
+
+
+        }
+
+        /**
+         *
+         * Get records
+         *
+         * @param string $table
+         * @param string $column
+         * @param string $expected
+         * @param string $condition
+         * @param string $order_by
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function records(string $table, string $column = '', string $expected = '', string $condition = DIFFERENT, string $order_by = DESC): array
+        {
+            return get_records($table,$column,$expected,$condition,$order_by);
+        }
+
+        /**
+         *
+         * Encode data to json
+         *
+         * @param array $data
+         *
+         * @return string
+         *
+         */
+        public function encode(array $data): string
+        {
+           return json_encode($data,JSON_FORCE_OBJECT);
+        }
+
+        /**
+         *
+         *
+         * @param array $data
+         *
+         * @return JsonResponse
+         *
+         */
+        public function json_response(array $data): JsonResponse
+        {
+            return new JsonResponse($data);
+        }
+
+        /**
+         *
+         * Get cache instance
+         *
+         * @return Cache
+         *
+         */
+        public function cache(): Cache
+        {
+            return self::$cache;
+        }
+
+        /**
+         *
+         * Check if mode is enabled in production
+         *
+         * @return bool
+         *
+         */
+        public function production(): bool
+        {
+            return self::$mode === 'production';
         }
     }
 }

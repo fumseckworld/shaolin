@@ -886,6 +886,26 @@ namespace Imperium\Collection {
         }
 
         /**
+         *
+         * Check if values was inside the array
+         *
+         * @param array $data
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function inside(array $data): bool
+        {
+            foreach ($data as $datum)
+                if (is_true($this->not_exist($datum)))
+                    return false;
+
+
+            return true;
+        }
+
+        /**
         * Whether a offset exists
         * @link https://php.net/manual/en/arrayaccess.offsetexists.php
         * @param mixed $offset <p>

@@ -12,7 +12,6 @@ class HtmlDumper extends SymfonyHtmlDumper
             'default' => 'background:none; color:#222; line-height:1.2em; font:12px  Monaco, Consolas, monospace; word-wrap: break-word; white-space: pre-wrap; position:relative; z-index:99999; word-break: break-all',
             'ellipsis' => 'color:#CC7832',
             'ns' => 'user-select:none;',
-
             'num' => 'color:#a71d5d',
             'const' => 'color:#795da3',
             'str' => 'color:#df5000',

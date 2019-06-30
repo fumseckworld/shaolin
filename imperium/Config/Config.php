@@ -4,7 +4,6 @@ namespace Imperium\Config {
 
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
-    use Imperium\File\File;
     use Symfony\Component\Yaml\Yaml;
 
     class Config extends Yaml

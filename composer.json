@@ -39,7 +39,8 @@
         "ext-intl": "*",
         "ext-fileinfo": "*",
         "ext-json": "*",
-        "spomky-labs/jose": "^7.1"
+        "ext-memcached": "*",
+        "ext-apcu": "*"
     },
     "autoload-dev": {
         "psr-4": {
@@ -62,7 +63,10 @@
         "fzaninotto/faker": "^1.7",
         "codedungeon/phpunit-result-printer": "^0.26.0",
         "filp/whoops": "^2.2",
-        "symfony/var-dumper": "^4.1"
+        "symfony/var-dumper": "^4.1",
+        "symfony/profiler-pack": "^1.0",
+        "symfony/debug-pack": "^1.0",
+        "symfony/debug": "^4.3"
     },
     "scripts": {
         "post-install-cmd": [

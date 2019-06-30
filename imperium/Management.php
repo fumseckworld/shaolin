@@ -6,9 +6,12 @@ namespace Imperium {
 
 
     use Imperium\Bases\Base;
+    use Imperium\Cache\Cache;
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Exception\Kedavra;
+    use Imperium\Json\Json;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
@@ -22,6 +25,7 @@ namespace Imperium {
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\HttpFoundation\JsonResponse;
     use Symfony\Component\HttpFoundation\RedirectResponse;
     use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\Response;
@@ -546,12 +550,13 @@ namespace Imperium {
          *
          * Management of git
          *
-         * @param string $path
          * @param string $repository
          * @param string $owner
+         *
          * @return Git
+         *
          */
-        public function git(string $path,string $repository, string $owner): Git;
+        public function git(string $repository, string $owner): Git;
 
         /**
          * @return SessionInterface
@@ -653,6 +658,31 @@ namespace Imperium {
 
         /**
          *
+         * Json management
+         *
+         * @param string $filename
+         * @param string $mode
+         *
+         * @return Json
+         *
+         * @throws Kedavra
+         *
+         */
+        public function json(string $filename,string $mode = EMPTY_AND_WRITE_FILE_MODE): Json;
+
+
+        /**
+         *
+         *
+         * @param array $data
+         *
+         * @return JsonResponse
+         *
+         */
+        public function json_response(array $data):JsonResponse;
+
+        /**
+         *
          * Redirect user to an url
          *
          * @param string $url
@@ -666,9 +696,12 @@ namespace Imperium {
 
         /**
          *
-         * @method __construct
+         * Check if mode is enabled in production
+         *
+         * @return bool
+         *
          */
-        public function __construct();
+        public function production(): bool ;
 
         /**
          *
@@ -682,6 +715,54 @@ namespace Imperium {
          * @return Model
          */
         public function route() : Model;
+
+
+        /**
+         *
+         * Get cache instance
+         *
+         * @return Cache
+         *
+         */
+        public function cache() : Cache;
+
+        /**
+         *
+         * Get records
+         *
+         * @param string $table
+         * @param string $column
+         * @param string $expected
+         * @param string $condition
+         * @param string $order_by
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function records(string $table,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): array ;
+
+        /**
+         *
+         * Encode data to json
+         *
+         * @param array $data
+         *
+         * @return string
+         *
+         */
+        public function encode(array $data): string ;
+
+        /**
+         * @param string $table
+         * @param string $column
+         * @param string $expected
+         * @param string $condition
+         * @param string $order_by
+         * @return string
+         */
+        public function display(string $table,string $column ='',string $expected = '',string $condition = DIFFERENT,string $order_by = DESC): string ;
 
         /**
          *

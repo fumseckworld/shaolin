@@ -6,7 +6,6 @@ namespace Imperium\File {
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use SplFileObject;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
     use Symfony\Component\HttpFoundation\Response;
 
     /**
