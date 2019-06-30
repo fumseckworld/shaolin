@@ -2,7 +2,7 @@
 
 namespace Imperium\Routing {
 
-    use Exception;
+
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Middleware\TrailingSlashMiddleware;
@@ -10,7 +10,6 @@ namespace Imperium\Routing {
     use Imperium\Security\Csrf\CsrfMiddleware;
     use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\RedirectResponse;
-    use Symfony\Component\HttpFoundation\Response;
 
 
     /**

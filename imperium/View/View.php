@@ -142,7 +142,7 @@ namespace Imperium\View {
 
                 function ()
                 {
-                    return (new Bar())->render(app());
+                    return  app()->debug_bar();
                 },
                 ['is_safe' => ['html']]
             ));

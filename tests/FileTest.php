@@ -6,14 +6,14 @@ namespace Testing;
 
 use Imperium\Exception\Kedavra;
 use Imperium\File\File;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 use SplFileObject;
 
 /**
  * Class FileTest
  * @package Testing
  */
-class FileTest extends TestCase
+class FileTest extends Unit
 {
 
 
@@ -270,14 +270,5 @@ class FileTest extends TestCase
        $this->assertEquals(4,$this->file('app.php')->count_lines());
        $this->assertTrue($this->file('app.php')->remove());
    }
-    /**
-     * @param string $filename
-     * @param string $mode
-     * @return File
-     * @throws Kedavra
-     */
-   private function file(string $filename,string $mode = READ_FILE_MODE): File
-   {
-       return new File($filename,$mode);
-   }
+
 }

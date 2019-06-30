@@ -10,6 +10,7 @@ namespace Imperium {
     use Imperium\Collection\Collection;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Debug\Bar;
     use Imperium\Dump\Dump;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
@@ -725,7 +726,7 @@ namespace Imperium {
          */
         public function lang()
         {
-            return trim(config('locales','locale'));
+            return config('locales','locale');
         }
 
 
@@ -742,7 +743,6 @@ namespace Imperium {
          */
         private static function get (): App
         {
-
             $driver           =  db(DB_DRIVER);
             $base             =  db(DB_NAME);
             $username         =  db(DB_USERNAME);
@@ -845,7 +845,7 @@ namespace Imperium {
          */
         public function debug(): bool
         {
-            return self::$debug;
+            return self::$debug === "true";
         }
 
         /**
@@ -1389,6 +1389,20 @@ namespace Imperium {
         public function production(): bool
         {
             return self::$mode === 'production';
+        }
+
+        /**
+         *
+         * Get the debug bar
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function debug_bar(): string
+        {
+            return (new Bar())->render($this);
         }
     }
 }

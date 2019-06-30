@@ -705,6 +705,15 @@ namespace Imperium {
 
         /**
          *
+         * Get the debug bar
+         *
+         * @return string
+         *
+         */
+        public function debug_bar(): string ;
+
+        /**
+         *
          * @return Response
          *
          */

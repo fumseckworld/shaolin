@@ -64,6 +64,21 @@ namespace Imperium\Cache {
 
         /**
          *
+         * Save a value only if are not already defined
+         *
+         * @param string $key
+         * @param $value
+         *
+         * @return bool
+         *
+         */
+        public function def(string $key,$value): bool
+        {
+            return $this->has($key) ? false : $this->set($key,$value);
+        }
+
+        /**
+         *
          * @param string $key
          *
          * @return mixed
