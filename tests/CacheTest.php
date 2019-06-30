@@ -1,0 +1,21 @@
+<?php
+
+
+namespace Testing;
+
+
+use Imperium\Testing\Unit;
+
+class CacheTest extends Unit
+{
+
+    public function test_has()
+    {
+        $key = 'alexandra';
+        $this->assertTrue($this->cache()->clear());
+        $this->assertFalse($this->cache()->has($key));
+        $this->assertTrue($this->cache()->set($key, $key));
+        $this->assertEquals($key,$this->cache()->get($key));
+        $this->assertTrue($this->cache()->remove($key));
+    }
+}

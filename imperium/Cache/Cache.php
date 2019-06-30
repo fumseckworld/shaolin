@@ -62,35 +62,6 @@ namespace Imperium\Cache {
             return apcu_clear_cache();
         }
 
-
-        /**
-         *
-         *
-         * @param string $key
-         * @param int $step
-         *
-         * @return bool|int
-         *
-         */
-        public function inc(string $key,int $step = 1)
-        {
-            return apcu_inc($key,$step);
-        }
-
-        /**
-         *
-         *
-         * @param string $key
-         * @param int $step
-         *
-         * @return bool|int
-         *
-         */
-        public function dec(string $key,int $step = 1)
-        {
-            return apcu_dec($key,$step);
-        }
-
         /**
          *
          * @param string $key

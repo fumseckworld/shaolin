@@ -5,6 +5,7 @@ namespace Imperium\Testing {
 
 
     use GuzzleHttp\Psr7\ServerRequest;
+    use Imperium\Cache\Cache;
     use Imperium\Exception\Kedavra;
     use Imperium\Routing\RouteResult;
     use PHPUnit\Framework\TestCase;
@@ -30,5 +31,17 @@ namespace Imperium\Testing {
            return  app()->router(new ServerRequest($method,$url))->search();
         }
 
+
+        /**
+         *
+         * Get the cache instance
+         *
+         * @return Cache
+         *
+         */
+        public function cache(): Cache
+        {
+            return new Cache();
+        }
     }
 }
