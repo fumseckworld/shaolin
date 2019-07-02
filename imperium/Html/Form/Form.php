@@ -563,8 +563,7 @@ namespace Imperium\Html\Form {
          *
          * @method start
          *
-         * @param string $action The form action
-         * @param string $method The form method
+         * @param string $route
          * @param string $confirm The confirm text
          * @param string $id
          * @param string $class The form class
@@ -575,11 +574,9 @@ namespace Imperium\Html\Form {
          *
          * @throws Kedavra
          */
-        public function start(string $action,string $method,string $confirm ='', $id = '',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
+        public function start(string $route,string $confirm ='', $id = '',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
         {
-
-            $this->method = $method;
-
+            $this->method = detect_method($route);
             $method = POST;
 
             if($this->validate)
@@ -589,30 +586,30 @@ namespace Imperium\Html\Form {
                 if ($enctype)
                 {
                     if (not_def($class))
-                        append($this->form ,'<form action="' . $action . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')" >');
+                        append($this->form ,'<form action="' . route($route) . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')" >');
                     else
-                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')">');
+                        append($this->form,'<form action="'. route($route) .'" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" enctype="multipart/form-data" onsubmit="return confirm('."'".$confirm."'".')">');
                 }else
                 {
                     if (not_def($class))
-                        append($this->form,'<form action="' . $action . '" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')">');
+                        append($this->form,'<form action="' . route($route) .'" method="' . $method . '" class="'.self::VALIDATE.'" accept-charset="' . $charset . '" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')">');
                     else
-                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')" >');
+                        append($this->form,'<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class . ' '. self::VALIDATE.'" id="' . $id . '" onsubmit="return confirm('."'".$confirm."'".')" >');
                 }
             }else
             {
                 if ($enctype)
                 {
                     if (not_def($class))
-                        append($this->form ,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">');
+                        append($this->form ,'<form action="'  . route($route) .  '" method="' . $method . '" accept-charset="' . $charset . '"  id="' . $id . '" enctype="multipart/form-data">');
                     else
-                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">');
+                        append($this->form,'<form action="'  . route($route) .  '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '" enctype="multipart/form-data">');
                 } else
                 {
                     if (not_def($class))
-                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">');
+                        append($this->form,'<form action="'  . route($route) .  '" method="' . $method . '" accept-charset="' . $charset . '" id="' . $id . '">');
                     else
-                        append($this->form,'<form action="' . $action . '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">');
+                        append($this->form,'<form action="'  . route($route) .  '" method="' . $method . '" accept-charset="' . $charset . '" class="'. $class .'" id="' . $id . '">');
                 }
 
             }

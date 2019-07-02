@@ -25,7 +25,7 @@ class Bar
 
         $time = $app->request_time();
 
-        return  '<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-bottom">
+        return  '<nav class="navbar navbar-expand-lg fixed-bottom mt-5" id="debug_bar">
 
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>

@@ -63,7 +63,8 @@ namespace Imperium\Command {
                 new MaintenanceMode(),
                 new RunMode(),
                 new Dkim(),
-                new RouteInfo()
+                new RouteInfo(),
+                new CacheClear()
 
             ];
 

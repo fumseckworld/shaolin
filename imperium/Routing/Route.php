@@ -21,7 +21,7 @@ namespace Imperium\Routing {
          * @var string
          *
          */
-        protected $sql = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
+        protected $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
 
 
         /**
@@ -50,7 +50,7 @@ namespace Imperium\Routing {
          */
         protected function create_route_table(): bool
         {
-            return $this->routes_table()->not_exist('routes') ?  $this->routes_connect()->execute($this->sql) : true;
+            return $this->routes_table()->not_exist('routes') ?  $this->routes_connect()->execute($this->create_route_table_query) : true;
         }
 
 
@@ -89,17 +89,16 @@ namespace Imperium\Routing {
          *
          * Update a route
          *
-         * @param string $name
+         * @param string $id
          * @param array $data
          *
          * @return bool
          *
          * @throws Kedavra
-         *
          */
-        public function update_route(string $name,array $data): bool
+        public function update_route(string $id,array $data): bool
         {
-            return $this->routes()->update_record(($this->routes()->by('name',$name))->id,$data);
+            return $this->routes()->update_record($id,$data);
         }
 
         /**

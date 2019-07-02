@@ -1,5 +1,5 @@
 class:
-  submit: 'btn btn-lg btn-outline-primary btn-login text-uppercase font-weight-bold mb-2'
+  submit: 'btn btn-lg btn-primary btn-login text-uppercase font-weight-bold mb-2'
   reset:  'btn-danger'
   remove: 'btn-danger'
   button: 'btn-secondary'

@@ -40,7 +40,8 @@
         "ext-fileinfo": "*",
         "ext-json": "*",
         "ext-memcached": "*",
-        "ext-apcu": "*"
+        "ext-apcu": "*",
+        "erusev/parsedown": "^1.7"
     },
     "autoload-dev": {
         "psr-4": {
@@ -68,10 +69,4 @@
         "symfony/debug-pack": "^1.0",
         "symfony/debug": "^4.3"
     },
-    "scripts": {
-        "post-install-cmd": [
-            "cp config/app.example.yaml  config/app.yaml",
-            "mkdir tmp && mkdir tmp/Command"
-        ]
-    }
 }

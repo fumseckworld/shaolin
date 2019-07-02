@@ -4,6 +4,7 @@
 namespace Imperium\Command {
 
 
+    use Imperium\Exception\Kedavra;
     use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -28,6 +29,11 @@ namespace Imperium\Command {
         {
             $this->setDescription('Remove a route');
         }
+
+        /**
+         * @return array
+         * @throws Kedavra
+         */
         public function names(): array
         {
             $data = collection();
@@ -81,10 +87,10 @@ namespace Imperium\Command {
             }
         }
 
-
-        private function name(string $name): array
+        private function name($name)
         {
-            return $this->routes()->by('name',$name);
+           return $this->routes()->from('routes')->by('name',$name);
         }
+
     }
 }

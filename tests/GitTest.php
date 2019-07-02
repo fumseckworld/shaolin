@@ -44,7 +44,7 @@ namespace Testing {
          */
         public function test_current_branch()
         {
-            $this->assertEquals('develop',$this->git->current_branch());
+            $this->assertEquals('git',$this->git->current_branch());
         }
 
         /**
@@ -60,7 +60,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals(4,$this->git->branches_found());
+            $this->assertEquals(8,$this->git->branches_found());
         }
 
         /**
@@ -89,7 +89,7 @@ namespace Testing {
         public function test_files()
         {
 
-            $this->assertNotEmpty($this->git->files()->collection());
+            $this->assertNotEmpty($this->git->files('')->collection());
 
             $this->assertNotEmpty($this->git->files('imperium')->collection());
 
@@ -194,7 +194,7 @@ namespace Testing {
         {
             $size = $this->git->release_size();
              $this->assertNotEmpty($size);
-             $this->assertEquals(64,$size);
+             $this->assertEquals(68,$size);
         }
 
         /**

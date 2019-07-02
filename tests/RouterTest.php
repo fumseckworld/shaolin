@@ -4,7 +4,6 @@
 namespace Testing {
 
 
-    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Exception\Kedavra;
     use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
@@ -49,10 +48,10 @@ namespace Testing {
          */
         public function test_add_route()
         {
-            $request = new ServerRequest(GET,'/');
-            $this->assertTrue(app()->router($request)->save_route( ['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
-            $this->assertTrue(app()->router($request)->update_route( 'imperium',['id' => 'id','name' =>'imperium', 'url' => '/imperiums','controller' => 'IMperiumController' ,'action' => 'define','method' => GET]));
-            $this->assertTrue(app()->router($request)->remove_route( 'imperium'));
+
+            $this->assertTrue($this->route()->save_route(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
+            $this->assertTrue($this->route()->update_route(app()->routes()->by_or_fail('name','imperium')->id,['name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
+            $this->assertTrue($this->route()->remove_route( 'imperium'));
         }
 
         /**
@@ -102,7 +101,8 @@ namespace Testing {
          */
         public function test_params()
         {
-            $this->assertEquals('/edit/willy/20',app()->url('u','willy',20));
+            $this->assertEquals('/imperium/diff/fff',app()->url('commit','imperium','fff'));
+            $this->assertTrue($this->visit(app()->url('commit','imperium','fff'))->call()->send()->isOk());
         }
 
 
@@ -122,13 +122,6 @@ namespace Testing {
             $this->assertNotEmpty($this->router('/app',GET)->call()->send()->getContent());
         }
 
-        /**
-         * @throws Kedavra
-         */
-        public function test_args()
-        {
-            $this->assertTrue($this->router('/edit/willy/20',GET)->call()->send()->isOk());
-        }
 
     }
 }

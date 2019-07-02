@@ -21,7 +21,7 @@ namespace Imperium\Command {
             shell_exec("openssl genrsa -out dkim.private.key 1024");
             shell_exec('openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM');
 
-            return File::exist('dkim.private.key') && File::exist('dkim.public.key');
+            return File::exist('dkim.private.key','dkim.public.key');
         }
     }
 }

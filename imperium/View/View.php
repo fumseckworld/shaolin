@@ -2,7 +2,6 @@
 
 namespace Imperium\View {
 
-    use Imperium\Debug\Bar;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;

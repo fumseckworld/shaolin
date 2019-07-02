@@ -39,7 +39,7 @@ namespace Imperium\Asset {
         {
 
             $type = def($type) ? 'type="'.$type.'"' : '';
-            return php_sapi_name() != 'cli' ? https() ? '<script src="https://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' .DIRECTORY_SEPARATOR . $filename .'" '.$type.'>': '<script src="http://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' .DIRECTORY_SEPARATOR . $filename .'"  '.$type.'>': '<script src="/js' .DIRECTORY_SEPARATOR . $filename .'" '.$type.'></script>';
+            return php_sapi_name() != 'cli' ? https() ? '<script src="https://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' .DIRECTORY_SEPARATOR . $filename .'" '.$type.'></script>': '<script src="http://'. Request::request()->server->get('HTTP_HOST') . DIRECTORY_SEPARATOR . 'js' .DIRECTORY_SEPARATOR . $filename .'"  '.$type.'></script>': '<script src="/js' .DIRECTORY_SEPARATOR . $filename .'" '.$type.'></script>';
 
         }
 

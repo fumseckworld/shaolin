@@ -4,6 +4,7 @@ namespace Imperium\Collection {
 
     use ArrayAccess;
     use Imperium\Exception\Kedavra;
+    use Imperium\File\File;
     use Iterator;
 
    /**
@@ -384,6 +385,13 @@ namespace Imperium\Collection {
             return $this->data;
         }
 
+        public function find(string $pattern)
+        {
+             $x =  array_search($pattern,$this->data);
+
+             return is_bool($x) ? $x : $this->get($x);
+        }
+
         /**
         *
         * Add values to the end of the array
@@ -751,6 +759,10 @@ namespace Imperium\Collection {
             return $this->has_key($key) ? $this->data[$key] : '';
         }
 
+        public function get_key()
+        {
+            return collection($this->keys())->get(0);
+        }
         /**
         *
         * Remove a data by a key
@@ -1047,6 +1059,17 @@ namespace Imperium\Collection {
             array_pop($this->data);
 
             return $this;
+        }
+
+        public function file()
+        {
+            $f = new File('README.md',EMPTY_AND_WRITE_FILE_MODE);
+            foreach ($this->data as $datum)
+                $f->write_line($datum);
+
+
+            return $f;
+
         }
     }
 }

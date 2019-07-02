@@ -8,6 +8,7 @@ namespace Imperium\Testing {
     use Imperium\Cache\Cache;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
+    use Imperium\Model\Model;
     use Imperium\Routing\RouteResult;
     use PHPUnit\Framework\TestCase;
     use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -47,6 +48,21 @@ namespace Imperium\Testing {
         public function file(string $filename,string $mode = READ_FILE_MODE): File
         {
             return new File($filename,$mode);
+        }
+
+
+        /**
+         *
+         * Get an instance of route model
+         *
+         * @return Model
+         *
+         * @throws Kedavra
+         *
+         */
+        public function route(): Model
+        {
+            return app()->routes();
         }
 
         /**

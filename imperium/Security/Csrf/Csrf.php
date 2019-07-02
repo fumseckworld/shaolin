@@ -3,10 +3,9 @@
 namespace Imperium\Security\Csrf {
 
 
+    use Imperium\Cache\Cache;
     use Imperium\Exception\Kedavra;
     use Imperium\Security\Hashing\Hash;
-    use Imperium\Session\Session;
-    use Imperium\Session\SessionInterface;
     use Psr\Http\Message\ServerRequestInterface;
 
     class Csrf
@@ -35,7 +34,7 @@ namespace Imperium\Security\Csrf {
 
 
         /**
-         * @var Session
+         * @var Cache
          */
         private $session;
 
@@ -43,13 +42,11 @@ namespace Imperium\Security\Csrf {
          *
          * Csrf constructor.
          *
-         * @param SessionInterface $session
-         *
-         *
+         * @throws Kedavra
          */
-        public function __construct(SessionInterface $session)
+        public function __construct()
         {
-            $this->session = $session;
+            $this->session = app()->cache();
         }
 
         /**
@@ -76,9 +73,10 @@ namespace Imperium\Security\Csrf {
          */
         private function generate():string
         {
+
             $this->session->set(self::SERVER,base64_encode((new Hash(request()->getHost()))->generate()));
 
-            $token = base64_encode($this->session->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
+            $token = base64_encode(app()->cache()->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
 
             $this->session->set(self::KEY,$token);
 
@@ -112,6 +110,7 @@ namespace Imperium\Security\Csrf {
                 is_true(different($token,$this->session->get(self::KEY),true,"The token is invalid"));
 
                 $this->session->remove(self::KEY);
+
             }
         }
     }

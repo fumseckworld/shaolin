@@ -11,6 +11,7 @@ namespace Imperium {
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
+    use Imperium\File\File;
     use Imperium\Json\Json;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
@@ -54,6 +55,20 @@ namespace Imperium {
          *
          */
         public function show_users() : array;
+
+        /**
+         *
+         * File management
+         *
+         * @param string $filename
+         * @param string $mode
+         *
+         * @return File
+         *
+         * @throws Kedavra
+         *
+         */
+        public function file(string $filename,string $mode = READ_FILE_MODE): File;
 
         /**
          *

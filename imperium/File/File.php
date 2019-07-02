@@ -5,6 +5,7 @@ namespace Imperium\File {
     use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
+    use Parsedown;
     use SplFileObject;
     use Symfony\Component\HttpFoundation\Response;
 
@@ -47,18 +48,39 @@ namespace Imperium\File {
             $this->filename = new SplFileObject($filename,$mode);
         }
 
+
+        /***
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function markdown(): string
+        {
+
+            return (new Parsedown())->text($this->read());
+
+
+        }
+
         /**
          *
          * Check if a file exist
          *
-         * @param string $file
+         * @param string[] $files
          *
          * @return bool
          *
          */
-        public static function exist(string $file): bool
+        public static function exist(string ...$files): bool
         {
-            return file_exists($file);
+            foreach ($files as $file)
+            {
+                if (!file_exists($file))
+                    return false;
+            }
+            return true;
         }
 
         /**

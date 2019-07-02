@@ -165,7 +165,7 @@ namespace Imperium\Command {
             {
                 $data = collection();
                 foreach ($this->routes as $route)
-                    $data->add($this->update_route($route['name'],$route));
+                    $data->add($this->update_route($route['id'],$route));
 
                 $this->clean();
                 if ($data->not_exist(false))

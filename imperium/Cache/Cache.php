@@ -4,6 +4,8 @@
 namespace Imperium\Cache {
 
 
+    use Imperium\Collection\Collection;
+
     class Cache
     {
 
@@ -23,17 +25,44 @@ namespace Imperium\Cache {
 
         /**
          *
-         * Add a value inside cache
+         * Get cache infos
+         *
+         * @return Collection
+         *
+         */
+        public function infos(): Collection
+        {
+            return collection(apcu_cache_info());
+        }
+
+        /**
+         *
+         * Check if the key has not value
          *
          * @param string $key
-         * @param $value
          *
          * @return bool
          *
          */
-        public function set(string $key,$value): bool
+        public function not(string $key): bool
         {
-             return apcu_add($key,$value);
+            return ! $this->has($key);
+        }
+
+        /**
+         *
+         * Add a value inside cache
+         *
+         * @param string $key
+         * @param $value
+         * @param int $ttl
+         *
+         * @return bool
+         *
+         */
+        public function set(string $key,$value,int $ttl=0): bool
+        {
+             return apcu_add($key,$value,$ttl);
         }
 
         /**
@@ -68,14 +97,16 @@ namespace Imperium\Cache {
          *
          * @param string $key
          * @param $value
+         * @param int $ttl
          *
          * @return bool
          *
          */
-        public function def(string $key,$value): bool
+        public function def(string $key,$value,int $ttl=0): bool
         {
-            return $this->has($key) ? false : $this->set($key,$value);
+            return $this->not($key) ? $this->set($key,$value,$ttl) : false;
         }
+
 
         /**
          *
@@ -88,7 +119,6 @@ namespace Imperium\Cache {
         {
             return apcu_fetch($key);
         }
-
 
     }
 }

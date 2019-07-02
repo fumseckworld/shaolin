@@ -8,6 +8,7 @@ namespace Imperium\Model {
     use Imperium\Exception\Kedavra;
     use Imperium\Query\Query;
     use Imperium\Request\Request;
+    use Imperium\Routing\Route;
     use Imperium\Security\Csrf\Csrf;
     use Imperium\Tables\Table;
     use Imperium\Collection\Collection;
@@ -30,6 +31,9 @@ namespace Imperium\Model {
     **/
     class Model
     {
+
+        use Route;
+
         /**
          *
          * The connection to the base
@@ -715,11 +719,12 @@ namespace Imperium\Model {
          * @param string $column
          * @param $expected
          *
-         * @return array
+         * @return object
          *
          * @throws Kedavra
+         *
          */
-        public function by_or_fail(string $column,$expected): array
+        public function by_or_fail(string $column,$expected): object
         {
             return exist($this->by($column,$expected),true,"Record was not found");
         }

@@ -845,7 +845,7 @@ namespace Imperium {
          */
         public function debug(): bool
         {
-            return self::$debug === "true";
+            return self::$debug;
         }
 
         /**
@@ -1403,6 +1403,23 @@ namespace Imperium {
         public function debug_bar(): string
         {
             return (new Bar())->render($this);
+        }
+
+        /**
+         *
+         * File management
+         *
+         * @param string $filename
+         * @param string $mode
+         *
+         * @return File
+         *
+         * @throws Kedavra
+         *
+         */
+        public function file(string $filename, string $mode = READ_FILE_MODE): File
+        {
+            return new File($filename,$mode);
         }
     }
 }

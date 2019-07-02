@@ -18,7 +18,7 @@ return [
                     "name" =>       $x->base(),
                     "user" =>       $x->user(),
                     "pass" =>       $x->password(),
-                    "port" =>      3306,
+                    "port" =>      db('port'),
                 ]
         ]
 ];

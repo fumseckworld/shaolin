@@ -238,6 +238,25 @@ if (not_exist('redirect'))
 }
 
 
+if (not_exist('detect_method'))
+{
+    /**
+     *
+     * Detect a route method by this name
+     *
+     * @param string $route_name
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function detect_method(string $route_name): string
+    {
+        return (app()->routes()->by_or_fail('name',$route_name))->method;
+    }
+}
+
 if (not_exist('current_user'))
 {
     /**
@@ -276,17 +295,26 @@ if (not_exist('route'))
 
         if (def($args))
         {
-           $url = rtrim(str_replace(stristr($x->url,':'),'',$x->url),'/');
+            $url = collection(explode('/',$x->url));
 
-            foreach ($args as  $v)
+            $data = '';
+            $i =0;
+            foreach ($url->collection() as  $v)
             {
-                if (is_string($v))
-                    append($url,"/$v");
-                else
-                    append($url,'/'.$v);
+                if (empty($v))
+                {
+                    $data .= '/';
+                }
+                elseif(strpos($v,':') === 0)
+                {
+                    $data .= $args[$i] . '/';
+                    $i++;
+                } else
+                {
+                    $data .= "$v/";
+                }
             }
-           return $url;
-
+            return rtrim($data,'/');
         }
         return $x->url;
     }
@@ -2250,7 +2278,8 @@ if (not_exist('extensions'))
      */
     function extensions(string $expected): array
     {
-        $core_path =  core_path(collection(config('app','dir'))->get('app'));
+        $core_path =  ROOT .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('app');
+
 
         $dir  =  $core_path . DIRECTORY_SEPARATOR . 'Twig' . DIRECTORY_SEPARATOR. $expected;
 
@@ -2897,6 +2926,25 @@ if (not_exist('get'))
     function get(string $key,string $value = ''): string
     {
         return isset($_GET[$key]) && !empty($_GET[$key]) ? htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true) : $value;
+    }
+}
+
+
+if (not_exist('base_url'))
+{
+    /**
+     * @param mixed ...$params
+     *
+     * @return string
+     *
+     */
+    function base_url(...$params): string
+    {
+        $url = https() ? 'https://'.request()->getHost() : 'http://' . \request()->getHost();
+        foreach ($params as $param)
+            append($url,"/$param");
+
+        return $url;
     }
 }
 
