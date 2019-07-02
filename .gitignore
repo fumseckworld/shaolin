@@ -11,3 +11,4 @@ web/*.html
 app.json
 *.lock
 *-lock.json
+depots
