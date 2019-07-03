@@ -119,7 +119,7 @@ namespace Testing {
          */
         public function test_content()
         {
-            $this->assertNotEmpty($this->router('/app',GET)->call()->send()->getContent());
+            $this->assertNotEmpty($this->router('/alex',GET)->call()->send()->getContent());
         }
 
 

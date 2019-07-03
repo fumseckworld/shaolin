@@ -4,6 +4,8 @@
 namespace Imperium\Testing {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Cache\Cache;
     use Imperium\Exception\Kedavra;
@@ -24,7 +26,8 @@ namespace Imperium\Testing {
          * @return RouteResult|RedirectResponse
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
 
         public function visit(string $url,string $method = GET)
@@ -57,8 +60,9 @@ namespace Imperium\Testing {
          *
          * @return Model
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function route(): Model
         {

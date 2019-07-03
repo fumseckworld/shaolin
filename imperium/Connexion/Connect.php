@@ -139,11 +139,17 @@ namespace Imperium\Connexion {
          *
          */
         private $host;
+        /**
+         * @var string
+         */
+        private $id;
 
 
         /**
          *
          * Create a PDO connection
+         *
+         * @Inject({"db.driver","db.name","db.username", "db.password","db.host", "db.dump"})
          *
          * @method __construct
          *
@@ -155,9 +161,12 @@ namespace Imperium\Connexion {
          * @param string $dump_path The path to dump directory
          *
          * @throws Kedavra
+         *
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
+
+            $this->id = uniqid();
 
             $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . $dump_path;
 

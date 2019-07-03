@@ -2,6 +2,8 @@
 
 namespace Imperium\Security\Auth {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Collection\Collection;
     use Imperium\Exception\Kedavra;
     use Imperium\Html\Form\Form;
@@ -62,10 +64,13 @@ namespace Imperium\Security\Auth {
          *
          * Oauth constructor.
          *
+         * @Inject("session")
+         *
          * @param SessionInterface $session
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function __construct(SessionInterface $session)
         {

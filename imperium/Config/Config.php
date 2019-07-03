@@ -2,8 +2,9 @@
 
 namespace Imperium\Config {
 
-    use Imperium\Directory\Dir;
+    use Imperium\Collection\Collection;
     use Imperium\Exception\Kedavra;
+    use Imperium\File\File;
     use Symfony\Component\Yaml\Yaml;
 
     class Config extends Yaml
@@ -27,78 +28,55 @@ namespace Imperium\Config {
          */
         const DELIMITER = ':';
 
-
         /**
+         *
+         * The config file
+         *
          * @var string
+         *
          */
-        private static $config;
+        private $file;
 
         /**
          *
-         * Get a config value
+         * The config key
+         *
+         * @var mixed
+         *
+         */
+        private $key;
+        /**
+         * @var Collection
+         */
+        private $values;
+
+
+        /**
+         *
+         * Config constructor.
+         *
          *
          * @param string $file
          * @param $key
          *
-         * @return mixed
-         *
          * @throws Kedavra
          *
          */
-        public function get(string $file,$key)
+        public function __construct(string $file,$key)
         {
             $file = collection(explode('.',$file))->begin();
 
-            self::init();
+            $file = CONFIG . DIRECTORY_SEPARATOR . $file . self::EXT;
 
-            $x = self::$config . DIRECTORY_SEPARATOR . $file .self::EXT;
+            is_false(File::exist($file),true,"The $file file  was not found at ". $this->path());
 
-            self::check($x);
+            $this->values = collection(self::parseFile($file));
 
-            $data =  collection(self::parseFile($x));
+            is_false($this->values->has_key($key),true,"The key was not found in the  $file at ". $this->path());
 
+            $this->file = $file;
 
-            if (!$data->has_key($key))
-                throw new Kedavra("The $key key was not found in the file $file at {$this->path()}");
-            else
-                return $data->get($key);
-        }
-
-
-        /**
-         * @param string $file
-         *
-         * @throws Kedavra
-         *
-         */
-        private static function check(string $file)
-        {
-            is_false(file_exists($file),true,"$file was not found at : " .self::$config );
-
-        }
-
-        /**
-         * @throws Kedavra
-         */
-        public static function init()
-        {
-
-            if (def(request()->server->get('PWD')) && Dir::is('vendor'))
-            {
-                self::$config = request()->server->get('PWD') . DIRECTORY_SEPARATOR .self::CONFIG_DIR;
-
-                is_false(Dir::is(self::$config),true,'We have not fond the config dir');
-
-                return new static();
-            }
-            if (equal(request()->getScriptName(),'./vendor/bin/phpunit'))
-                self::$config = request()->server->get('PWD') .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
-            else
-                self::$config = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .self::CONFIG_DIR;
-
-            is_false(Dir::is(self::$config),true,'We have not fond the config dir');
-
-            return new static();
+            $this->key = $key;
 
         }
 
@@ -107,7 +85,12 @@ namespace Imperium\Config {
          */
         public function path(): string
         {
-            return self::$config;
+            return CONFIG;
+        }
+
+        public function value()
+        {
+            return $this->values->get($this->key);
         }
     }
 }

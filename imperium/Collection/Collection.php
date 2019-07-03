@@ -763,39 +763,67 @@ namespace Imperium\Collection {
         {
             return collection($this->keys())->get(0);
         }
+
         /**
-        *
-        * Remove a data by a key
-        *
-        * @method remove
-        *
-        * @param mixed $key The data key
-        *
-        * @return Collection
-        *
-        */
-        public function remove($key): Collection
+         * @param $key
+         *
+         * @return bool
+         *
+         */
+        public function key_not_exist($key): bool
         {
-            if ($this->has_key($key))
-                unset($this->data[$key]);
+            return  ! $this->has_key($key);
+        }
+
+        /**
+         *
+         * Remove a data by a key
+         *
+         * @method remove
+         *
+         * @param array $keys
+         * @return Collection
+         */
+        public function remove(...$keys): Collection
+        {
+            foreach ($keys as $key)
+            {
+                if ($this->has_key($key))
+                    unset($this->data[$key]);
+            }
+
 
             return $this;
         }
 
+        /**
+         * @param $key
+         * @param $value
+         *
+         * @return Collection
+         *
+         */
+        public function set($key,$value)
+        {
+            $this->data[$key] = $value;
+            return $this;
+        }
 
         /**
          *
          * Remove a value in the array
          *
-         * @param mixed $value
-         *
+         * @param array $values
          * @return Collection
-         *
          */
-        public function remove_value($value): Collection
+        public function remove_value(...$values): Collection
         {
-            if (($key = array_search($value, $this->data)) !== false) 
-                unset($this->data[$key]);
+            foreach ($values as $value)
+            {
+                if (($key = array_search($value, $this->data)) !== false)
+                    unset($this->data[$key]);
+            }
+
           
             return $this;
         }

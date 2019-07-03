@@ -5,6 +5,7 @@ namespace ________________________________________________________\Controllers {
 
     use Imperium\Controller\Controller;
     use Imperium\Exception\Kedavra;
+    use Imperium\Patronus\Patronum;
     use Imperium\Request\Request;
     use Imperium\Versioning\Git\Git;
     use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +23,7 @@ namespace ________________________________________________________\Controllers {
         public function before_action()
         {
 
-            $this->git = $this->git('repositories/imperium','');
+            $this->git = $this->git('depots/willy/imperium','willy');
 
 
 		}
@@ -31,6 +32,11 @@ namespace ________________________________________________________\Controllers {
 
 		}
 
+		public function show(string $owner,string $repo)
+        {
+            $repository = $this->git("depots/$owner/$repo",$owner)->git();
+            return $this->view('repository',compact('repository'));
+        }
 		public function display_dirs(string $repo,string $dir)
         {
             $tree = $this->git->tree($dir);
@@ -46,7 +52,6 @@ namespace ________________________________________________________\Controllers {
         public function download_archive(string $repo, string $archive)
         {
 
-            d($archive);
             return $this->git->download($archive);
         }
 
@@ -74,7 +79,7 @@ namespace ________________________________________________________\Controllers {
 		public function repositories()
         {
 
-            $repo = $this->git->git();
+            $repo = display_repositories();
 
             return $this->view('repositories',compact('repo'));
 

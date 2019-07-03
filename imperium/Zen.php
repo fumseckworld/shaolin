@@ -2,6 +2,9 @@
 
 namespace Imperium {
 
+    use DI\ContainerBuilder;
+    use DI\DependencyException;
+    use DI\NotFoundException as NotFoundExceptionAlias;
 
     /**
     *
@@ -1559,6 +1562,45 @@ namespace Imperium {
             self::NUMERIC,
             self::NONE
         ];
+        /**
+         * @var ContainerBuilder
+         */
+        private $container;
 
+        /**
+         * @param string $key
+         * @return object
+         * @throws NotFoundExceptionAlias
+         * @throws DependencyException
+         * @throws Exception\Kedavra
+         */
+        public function app(string $key)
+        {
+            if (is_null($this->container))
+            {
+                $c = new ContainerBuilder();
+                $c->addDefinitions(CONFIG .DIRECTORY_SEPARATOR . 'app.php');
+                $c->enableCompilation(ROOT . DIRECTORY_SEPARATOR .'tmp');
+                $c->useAnnotations(true);
+                $c =  $c->build();
+                $c->set('db.driver',db('driver'));
+                $c->set('db.name',db('base'));
+                $c->set('db.username',db('username'));
+                $c->set('db.password',db('password'));
+                $c->set('db.host',db('host'));
+                $c->set('db.dump',db('dump'));
+                $c->set("views.path",views_path());
+                $c->set("views.config",config('twig','config'));
+
+
+
+
+
+                $this->container = $c;
+
+            }
+
+            return $this->container->get($key);
+        }
     }
 }

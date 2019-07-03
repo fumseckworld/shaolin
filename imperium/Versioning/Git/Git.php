@@ -2,6 +2,8 @@
 
 namespace Imperium\Versioning\Git {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Exception;
     use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
@@ -127,7 +129,9 @@ namespace Imperium\Versioning\Git {
          * @param string $repository
          * @param string $owner
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function __construct(string $repository, string $owner)
         {
@@ -718,7 +722,8 @@ namespace Imperium\Versioning\Git {
          */
         public function news(): string
         {
-            is_true(not_def($this->releases()),true,"No releases found");
+            if (not_def($this->releases()))
+                return 'No releases found';
 
             return $this->change(collection($this->releases())->get(0),collection($this->releases())->get(1));
         }
@@ -890,7 +895,9 @@ namespace Imperium\Versioning\Git {
          * @return string
          *
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function git(): string
         {
@@ -1161,8 +1168,9 @@ send
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function contributors(): array
         {
@@ -1176,7 +1184,8 @@ send
          * @return array
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         private function save_releases(): array
         {
@@ -1422,25 +1431,16 @@ send
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function licence(): string
         {
 
-            foreach ($this->files('') as $file)
-            {
+            return '';
 
-                if (has($file,$this->licences))
-                {
-                    $x = app()->file($file);
 
-                    $this->licence = equal($x->ext(),'md') ? $x->markdown() : nl2br($x->read());
-
-                }
-
-            }
-             return $this->licence;
 
         }
 

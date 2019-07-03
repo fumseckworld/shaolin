@@ -41,7 +41,9 @@
         "ext-json": "*",
         "ext-memcached": "*",
         "ext-apcu": "*",
-        "erusev/parsedown": "^1.7"
+        "erusev/parsedown": "^1.7",
+        "php-di/php-di": "^6.0",
+        "doctrine/annotations": "^1.6"
     },
     "autoload-dev": {
         "psr-4": {
@@ -68,5 +70,5 @@
         "symfony/profiler-pack": "^1.0",
         "symfony/debug-pack": "^1.0",
         "symfony/debug": "^4.3"
-    },
+    }
 }

@@ -3,9 +3,12 @@
 namespace Imperium\Security\Csrf {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Cache\Cache;
     use Imperium\Exception\Kedavra;
     use Imperium\Security\Hashing\Hash;
+    use Imperium\Session\SessionInterface;
     use Psr\Http\Message\ServerRequestInterface;
 
     class Csrf
@@ -42,11 +45,11 @@ namespace Imperium\Security\Csrf {
          *
          * Csrf constructor.
          *
-         * @throws Kedavra
+         * @param SessionInterface $session
          */
-        public function __construct()
+        public function __construct(SessionInterface $session)
         {
-            $this->session = app()->cache();
+            $this->session = $session;
         }
 
         /**
@@ -55,8 +58,9 @@ namespace Imperium\Security\Csrf {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function token()
         {
@@ -70,6 +74,8 @@ namespace Imperium\Security\Csrf {
          * @return string
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         private function generate():string
         {

@@ -1,6 +1,8 @@
 <?php
 
+
 namespace Imperium\View {
+
 
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
@@ -9,7 +11,7 @@ namespace Imperium\View {
     use Sinergi\BrowserDetector\Os;
     use Symfony\Bridge\Twig\Extension\TranslationExtension;
     use Twig\Environment;
-    use Twig\Error\LoaderError as LoaderErrorAlias;
+    use Twig\Error\LoaderError;
     use Twig\Error\RuntimeError;
     use Twig\Error\SyntaxError;
     use Twig\Extensions\ArrayExtension;
@@ -18,33 +20,25 @@ namespace Imperium\View {
     use Twig_Extensions_Extension_I18n;
     use Twig_Extensions_Extension_Text;
 
-
-    /**
-     *
-     * View management
-     *
-     * @author Willy Micieli <micieli@laposte.net>
-     *
-     * @package imperium
-     *
-     * @version 4
-     *
-     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
-     *
-     **/
-    class  View
+    class View
     {
-
         /**
          * @var string
          */
-        private $view_dir;
-
-
+        private $views_path;
         /**
          * @var FilesystemLoader
          */
         private $loader;
+        /**
+         * @var array
+         */
+        private $namespaces;
+
+        /**
+         * @var array
+         */
+        private $config;
 
         /**
          * @var Environment
@@ -52,66 +46,50 @@ namespace Imperium\View {
         private $twig;
 
         /**
-         * @var array
-         */
-        private $registered_path;
-        /**
-         * @var array
-         */
-        private $config;
-
-
-
-        /**
-         * View constructor.
+         * Twig constructor.
          *
+         * @Inject({"views.path", "views.config"})
+         *
+         * @param string $views_path
+         *
+         * @param array $config
          * @throws Kedavra
-         * @throws LoaderErrorAlias
-         *
+         * @throws LoaderError
          */
-        public function __construct()
+        public function __construct(string $views_path,array $config)
         {
+            $this->views_path = $views_path;
 
-            $this->view_dir = views_path();
+            $this->config = $config;
 
-            $this->config = config('twig','config');
+            $this->namespaces = config('twig','namespaces');
 
-            if (!app()->cache()->has('twig'))
-            {
+            $this->loader = new  FilesystemLoader($this->views_path);
 
-                $this->loader = new  FilesystemLoader($this->view_dir);
+            $this->twig = new Environment($this->loader(),$this->config);
 
-                $namespace = config('twig','namespaces');
+            $this->twig->addExtension(new Twig_Extensions_Extension_Text());
 
-                is_true(!is_array($namespace),true,'The twig namespace config must be an array');
+            $this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 
-                $this->registered_path = $namespace;
+            $this->twig->addExtension(new ArrayExtension());
 
-                foreach ($namespace as $k => $v)
-                    $this->loader->addPath(views_path() .DIRECTORY_SEPARATOR . $k ,$v);
+            $this->twig->addExtension(new TranslationExtension());
 
-                app()->cache()->set('twig_loader',$this->loader);
+            $this->add_extensions(extensions('Extensions'));
 
+            $this->add_filters(extensions('Filters'));
 
-                $this->twig()->addExtension(new Twig_Extensions_Extension_Text());
-                $this->twig()->addExtension(new Twig_Extensions_Extension_I18n());
-                $this->twig()->addExtension(new ArrayExtension());
-                $this->twig()->addExtension(new TranslationExtension());
+            $this->add_functions(extensions('Functions'));
 
-                $this->add_extensions(extensions('Extensions'));
+            $this->add_globals(extensions('Globals'));
 
-                $this->add_filters(extensions('Filters'));
+            $this->add_tags(extensions('Tags'));
 
-                $this->add_functions(extensions('Functions'));
+            $this->add_test(extensions('Tests'));
 
-                $this->add_globals(extensions('Globals'));
-
-                $this->add_tags(extensions('Tags'));
-
-                $this->add_test(extensions('Tests'));
-
-                app()->cache()->set('twig', $this->twig);
-            }
+            foreach ($this->namespaces as $k => $v)
+                $this->loader()->addPath(views_path() .DIRECTORY_SEPARATOR . $k ,$v);
 
 
             $functions = collection();
@@ -302,11 +280,10 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            $this->add_functions($functions->collection());
+            foreach ($functions->collection() as $function)
+                $this->twig()->addFunction($function);
 
-            putenv("LC_ALL={$this->locale()}");
-
-            setlocale(LC_ALL, $this->locale());
+            putenv("LANG={$this->locale()}");
 
             bindtextdomain($this->domain(),$this->locale_path());
 
@@ -317,171 +294,63 @@ namespace Imperium\View {
 
         /**
          * @return Environment
-         * @throws Kedavra
          */
-        public function twig()
+        public function twig(): Environment
         {
-            if (is_null($this->twig))
-                $this->twig = new Environment($this->loader(),$this->config);
-
             return $this->twig;
         }
 
         /**
-         * @return array
-         *
-         * @throws Kedavra
-         *
-         */
-        public function registered_path(): array
-        {
-            $data = collection();
-
-            foreach ($this->registered_path as $k => $v)
-                $data->add($this->loader()->getPaths($k),$k);
-
-            return $data->collection();
-        }
-
-        /**
-         *
-         * Add twig functions
-         *
-         * @param array $functions
-         *
-         * @return View
-         *
-         * @throws Kedavra
-         *
-         */
-        public function add_functions(array $functions): View
-        {
-            foreach ($functions as $function)
-                $this->twig()->addFunction($function);
-
-            return $this;
-        }
-
-        /**
-         *
-         * Load a view
-         *
+         * @param string $class
          * @param string $view
          * @param array $args
          *
          * @return string
          *
-         * @throws LoaderErrorAlias
+         * @throws Kedavra
+         * @throws LoaderError
          * @throws RuntimeError
          * @throws SyntaxError
-         * @throws Kedavra
          *
          */
-        public function load(string $view,array $args=[])
+        public function load(string $class,string $view,array $args=[]): string
         {
-            $parts = collection(explode(DIRECTORY_SEPARATOR,$view));
-
-
-            $dir = ucfirst(strtolower(str_replace('Controller','',$parts->get(0))));
-
-            $view = $dir .DIRECTORY_SEPARATOR . $parts->get(1);
-
-
-            $dir = $this->view_dir . DIRECTORY_SEPARATOR . $dir;
+            $dir = ucfirst(strtolower(str_replace('Controller','',collection(explode("\\",$class))->last())));
 
             Dir::create($dir);
 
-            $file = $dir . DIRECTORY_SEPARATOR . $parts->get(1);
+            $view = collection(explode('.',$view))->begin();
 
-            if (!File::exist($file))
-            {
+            append($view,'.twig');
+            $data = $dir .DIRECTORY_SEPARATOR . $view;
+
+            $file = $this->views_path . DIRECTORY_SEPARATOR .$dir  .DIRECTORY_SEPARATOR .$view;
+
+            if(!file_exists($file))
                 (new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
-            }
-
-            return $this->twig()->render($view,$args);
-        }
 
 
-        /**
-         *
-         * Add a new global variable
-         *
-         * @method add_global
-         *
-         * @param string $name The variable name
-         * @param mixed $value The variable value
-         *
-         * @return View
-         *
-         * @throws Kedavra
-         *
-         */
-        public function add_global(string $name, $value): View
-        {
-            $this->twig()->addGlobal($name,$value);
 
-            return $this;
-        }
-
-
-        /**
-         *
-         * Return all view paths
-         *
-         * @method paths
-         *
-         * @return array
-         *
-         * @throws Kedavra
-         *
-         */
-        public function paths(): array
-        {
-            return $this->loader()->getPaths();
+            return $this->twig()->render($data,$args);
         }
 
         /**
-         *
-         * Add a new views dir
-         *
-         * @method add_path
-         *
-         * @param string $path
-         * @param string $namespace
-         *
-         * @return View
-         *
-         * @throws LoaderErrorAlias
-         *
-         * @throws Kedavra
-         *
-         */
-        public function add_path(string $path, string $namespace): View
-        {
-
-            $dir = $this->view_dir .DIRECTORY_SEPARATOR .$path;
-
-
-            $this->loader()->addPath($dir,$namespace);
-
-            return $this;
-        }
-
-
-        /**
-         *
-         * Return an instance of the loader
-         *
-         * @method loader
-         *
          * @return FilesystemLoader
-         *
-         * @throws Kedavra
-         *
          */
         public function loader(): FilesystemLoader
         {
-            return  app()->cache()->has('twig_loader') ? app()->cache()->get('twig_loader') : $this->loader ;
+            return $this->loader;
+        }
+
+        /**
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function locale():string
+        {
+            return config('locales','locale');
         }
 
         /**
@@ -494,17 +363,6 @@ namespace Imperium\View {
         public function domain()
         {
             return config('locales', 'domain');
-        }
-
-        /**
-         * @return mixed
-         *
-         * @throws Kedavra
-         *
-         */
-        public function locale()
-        {
-            return config('locales', 'locale');
         }
 
         /**
@@ -529,7 +387,6 @@ namespace Imperium\View {
          *
          * @param array $filters
          *
-         * @throws Kedavra
          *
          */
         public function add_filters(array $filters): void
@@ -545,7 +402,6 @@ namespace Imperium\View {
          *
          * @param array $tests
          *
-         * @throws Kedavra
          *
          */
         public function add_test(array $tests): void
@@ -560,7 +416,6 @@ namespace Imperium\View {
          *
          * @param array $globals
          *
-         * @throws Kedavra
          *
          */
         public function add_globals(array $globals): void
@@ -574,7 +429,6 @@ namespace Imperium\View {
          *
          * @param array $extensions
          *
-         * @throws Kedavra
          *
          */
         public function add_extensions(array $extensions): void
@@ -587,7 +441,6 @@ namespace Imperium\View {
          *
          * @param array $extensions
          *
-         * @throws Kedavra
          *
          */
         public function add_tags(array $extensions): void
@@ -595,5 +448,16 @@ namespace Imperium\View {
             foreach ($extensions as $extension)
                 $this->twig()->addTokenParser($extension);
         }
+
+        /**
+         * @param array $functions
+         */
+        public function add_functions(array $functions)
+        {
+            foreach ($functions as $function)
+                $this->twig()->addFunction($function);
+        }
+
+
     }
 }

@@ -12,3 +12,4 @@ app.json
 *.lock
 *-lock.json
 depots
+tmp

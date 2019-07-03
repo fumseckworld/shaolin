@@ -17,18 +17,10 @@ namespace ________________________________________________________\Controllers {
 		}
 
 
-        /**
-         * @return string
-         * @throws Kedavra
-         * @throws LoaderError
-         * @throws RuntimeError
-         * @throws SyntaxError
-         */
-		public function app()
+        public function alex()
         {
-            return $this->view('app');
+            return $this->view('alex');
         }
-
 		public function logout()
         {
             return $this->auth()->logout();

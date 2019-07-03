@@ -3,6 +3,8 @@
 namespace Imperium {
 
     use Carbon\Carbon;
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Dotenv\Dotenv;
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Bases\Base;
@@ -18,6 +20,7 @@ namespace Imperium {
     use Imperium\Routing\RouteResult;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
+    use Imperium\View\View;
     use Imperium\Writing\Write;
     use Imperium\File\File;
     use Imperium\Flash\Flash;
@@ -58,62 +61,6 @@ namespace Imperium {
     class App extends Zen implements Management
     {
 
-        /**
-         * @var App
-         */
-        private static $instance;
-        
-        /**
-         * @var Dotenv
-         */
-        private static $env;
-
-        /**
-         * @var string
-         */
-        private static $debug;
-
-        /**
-         * @var Cache
-         */
-        private static $cache;
-
-        /**
-         * @var Connect
-         */
-        private static $connect;
-
-        /**
-         * @var Table
-         */
-        private static $table;
-        /**
-         * @var Query
-         */
-        private static $query;
-        /**
-         * @var Base
-         */
-        private static $base;
-        /**
-         * @var Users
-         */
-        private static $users;
-        /**
-         * @var Model
-         */
-        private static $model;
-        /**
-         * @var Form
-         */
-        private static $form;
-
-        private static $start_request_time;
-
-        /**
-         * @var string
-         */
-        private static $mode;
 
 
         use Route;
@@ -136,6 +83,102 @@ namespace Imperium {
          * @var string
          */
         private $password;
+
+        /**
+         * @var Connect
+         */
+        private $connect;
+
+        /**
+         * @var Table
+         */
+        private $table;
+
+        /**
+         * @var Query
+         */
+        private $query;
+
+        /**
+         * @var Base
+         */
+        private $base;
+        /**
+         * @var Users
+         */
+        private $users;
+
+        /**
+         * @var Model
+         */
+        private $model;
+        /**
+         * @var Form
+         */
+        private $form;
+
+        /**
+         * @var bool
+         */
+        private $debug;
+
+        /**
+         * @var string
+         */
+        private $mode;
+
+        /**
+         * @var Dotenv
+         */
+        private $env;
+
+        /**
+         *
+         * @var Cache
+         *
+         */
+        private $cache;
+
+        /**
+         * @var
+         */
+        private $start_request_time;
+
+        /**
+         * @var Oauth
+         */
+        private $auth;
+
+
+        /**
+         * @var Request
+         */
+        private $request;
+
+        /**
+         *
+         * @var Oauth
+         *
+         */
+        private $oauth;
+
+        /**
+         *
+         * @var View
+         *
+         */
+        private $view;
+
+        /**
+         * @var Session
+         */
+        private $session;
+
+        /**
+         * @var ArraySession
+         */
+        private $array_session;
+
 
         /**
          *
@@ -729,70 +772,34 @@ namespace Imperium {
             return config('locales','locale');
         }
 
-
         /**
-         * Empêche la copie externe de l'instance.
-         */
-        private function __clone () {}
-
-        /**
-         * App constructor
-         * .
-         * @throws Kedavra
-         *
-         */
-        private static function get (): App
-        {
-            $driver           =  db(DB_DRIVER);
-            $base             =  db(DB_NAME);
-            $username         =  db(DB_USERNAME);
-            $password         =  db(DB_PASSWORD);
-
-            self::$debug      =  server(DISPLAY_BUGS,false);
-
-            self::$mode       =  server(ENV,'production');
-
-            self::$cache = new Cache();
-
-            self::$connect   = connect($driver,$base,$username,$password,LOCALHOST,'dump');
-
-            self::$table            = new Table(self::$connect);
-
-            self::$query            = new Query(self::$table,self::$connect);
-
-            self::$base             = new Base(self::$connect,self::$table);
-
-            self::$users            = new Users(self::$connect);
-
-            self::$model            = new Model(self::$connect,self::$table);
-
-            self::$form             = new Form();
-
-            $file = ROOT . DIRECTORY_SEPARATOR;
-
-            self::$env             = Dotenv::create($file,'.env');
-
-            self::$env->load();
-
-            return new static();
-        }
-
-        /**
-         *
-         * @return App
-         *
+         * App constructor.
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
-        public static function instance(): App
+        public function __construct()
         {
-            if (is_null(self::$instance))
-            {
-                self::$start_request_time = now();
-                self::$instance = self::get();
-            }
-            return self::$instance;
+
+           $this->view = $this->app(View::class);
+
+            $this->start_request_time = now();
+            $this->connect = $this->app(Connect::class);
+            $this->table = $this->app(Table::class);
+            $this->query = $this->app(Query::class);
+            $this->base = $this->app(Base::class);
+            $this->users = $this->app(Users::class);
+            $this->model = $this->app(Model::class);
+            $this->form = $this->app(Form::class);
+            $this->cache = $this->app(Cache::class);
+            $this->session = $this->app(Session::class);
+            $this->array_session = $this->app(ArraySession::class);
+            $this->debug = server(DISPLAY_BUGS,false);
+            $this->mode  = server(ENV,'production');
+
+            $this->env            = Dotenv::create(ROOT . DIRECTORY_SEPARATOR,'.env');
+            $this->env->load();
         }
 
 
@@ -835,7 +842,7 @@ namespace Imperium {
          */
         public function request_time(): int
         {
-            return Carbon::now()->diffInRealMilliseconds(self::$start_request_time);
+            return Carbon::now()->diffInRealMilliseconds($this->start_request_time);
         }
 
         /**
@@ -845,7 +852,7 @@ namespace Imperium {
          */
         public function debug(): bool
         {
-            return self::$debug;
+            return $this->debug;
         }
 
         /**
@@ -855,7 +862,7 @@ namespace Imperium {
          */
         public function env(): Dotenv
         {
-            return self::$env;
+            return $this->env;
         }
 
         /**
@@ -961,7 +968,7 @@ namespace Imperium {
                     return $this->bases()->rename($base,$new_name);
                 break;
                 case POSTGRESQL :
-                    return self::$connect->execute("ALTER DATABASE $base RENAME TO $new_name");
+                    return $this->connect->execute("ALTER DATABASE $base RENAME TO $new_name");
                 break;
                 case SQLITE :
                     return (new File($base))->rename($new_name);
@@ -998,7 +1005,7 @@ namespace Imperium {
          */
         public function model(): Model
         {
-           return self::$model;
+           return $this->model;
         }
 
         /**
@@ -1006,7 +1013,7 @@ namespace Imperium {
          */
         public function query(): Query
         {
-           return self::$query;
+           return $this->query;
         }
 
         /**
@@ -1015,7 +1022,7 @@ namespace Imperium {
          */
         public function users(): Users
         {
-            return self::$users;
+            return $this->users;
         }
 
         /**
@@ -1023,7 +1030,7 @@ namespace Imperium {
          */
         public function bases(): Base
         {
-            return self::$base;
+            return $this->base;
         }
 
         /**
@@ -1031,7 +1038,7 @@ namespace Imperium {
          */
         public function table(): Table
         {
-            return self::$table;
+            return $this->table;
         }
 
         /**
@@ -1040,7 +1047,7 @@ namespace Imperium {
          */
         public function connect(): Connect
         {
-           return self::$connect;
+           return $this->connect;
         }
 
         /**
@@ -1081,7 +1088,7 @@ namespace Imperium {
          */
         public function form(bool $validate = false): Form
         {
-            return $validate ? self::$form->validate() : self::$form;
+            return $validate ? $this->form->validate() : $this->form;
         }
 
         /**
@@ -1096,8 +1103,9 @@ namespace Imperium {
          *
          * @return Oauth
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function auth(): Oauth
         {
@@ -1105,14 +1113,16 @@ namespace Imperium {
         }
 
         /**
+         *
          * @return SessionInterface
+         *
+         * @throws Kedavra
+         *
          */
-        public function session():SessionInterface
+        public function session(): SessionInterface
         {
-            if (request()->getScriptName() === './vendor/bin/phpunit')
-                return new ArraySession();
+            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? $this->array_session : $this->session;
 
-            return new Session();
         }
 
         /**
@@ -1124,14 +1134,16 @@ namespace Imperium {
         }
 
         /**
-         * @return Config
+         * @param string $filename
+         * @param $key
+         *
+         * @return mixed
          *
          * @throws Kedavra
-         *
          */
-        public function config():Config
+        public function config(string $filename,$key)
         {
-            return Config::init();
+            return (new Config($filename,$key))->get();
         }
 
         /**
@@ -1158,7 +1170,8 @@ namespace Imperium {
         public function view(string $name,array $args = []): string
         {
             $this->session()->set('view',$name);
-            return view(get_called_class(),$name,$args);
+
+            return $this->view->load(get_called_class(),$name,$args);
         }
 
         /**
@@ -1236,7 +1249,9 @@ namespace Imperium {
          * @param string $owner
          * @return Git
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function git(string $repository, string $owner): Git
         {
@@ -1311,12 +1326,11 @@ namespace Imperium {
          *
          * @return string
          *
-         * @throws Kedavra
          *
          */
         public function display(string $table, string $column = '', string $expected = '', string $condition = DIFFERENT, string $order_by = DESC): string
         {
-
+return '';
 
         }
 
@@ -1376,7 +1390,7 @@ namespace Imperium {
          */
         public function cache(): Cache
         {
-            return self::$cache;
+            return $this->cache;
         }
 
         /**
@@ -1388,7 +1402,7 @@ namespace Imperium {
          */
         public function production(): bool
         {
-            return self::$mode === 'production';
+            return $this->mode === 'production';
         }
 
         /**

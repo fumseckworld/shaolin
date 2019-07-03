@@ -122,6 +122,7 @@ namespace Imperium\Tables {
 
         /**
          *
+         *
          * @method __construct
          *
          * @param  Connect $connect The connection to the base

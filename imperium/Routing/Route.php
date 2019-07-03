@@ -126,11 +126,7 @@ namespace Imperium\Routing {
          */
         private function routes_connect():Connect
         {
-            $base = dirname(config_path()) . DIRECTORY_SEPARATOR .collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . 'routes' ;
-
-            Dir::create($base);
-
-            $base .= DIRECTORY_SEPARATOR .'routes.sqlite3';
+            $base =   DB .  DIRECTORY_SEPARATOR  .'routes' .DIRECTORY_SEPARATOR .'routes.sqlite3';
 
             return connect(SQLITE,$base,'','','','dump');
         }

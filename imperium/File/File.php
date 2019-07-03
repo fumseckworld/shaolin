@@ -75,12 +75,12 @@ namespace Imperium\File {
          */
         public static function exist(string ...$files): bool
         {
+            $data = collection();
+
             foreach ($files as $file)
-            {
-                if (!file_exists($file))
-                    return false;
-            }
-            return true;
+                file_exists($file) ?  $data->add(true,$file) :  $data->add(false,$file);
+
+            return $data->not_exist(false);
         }
 
         /**
@@ -92,9 +92,9 @@ namespace Imperium\File {
          * @return bool
          *
          */
-        public static function create(string $filename)
+        public static function create(string $filename): bool
         {
-            return self::exist($filename) ? false: touch($filename);
+            return self::exist($filename) ? false : touch($filename);
         }
 
         /**

@@ -10,6 +10,8 @@ namespace Imperium\Session {
      *
      * @author Willy Micieli <micieli@laposte.net>
      *
+     * @Injectable
+     *
      * @package imperium
      *
      * @version 4
@@ -20,11 +22,12 @@ namespace Imperium\Session {
     class Session implements SessionInterface
     {
 
-        public function __construct()
+        private function start()
         {
             if (session_status() === PHP_SESSION_NONE)
                 session_start();
         }
+
 
         /**
          *
@@ -37,6 +40,7 @@ namespace Imperium\Session {
          */
         public function get($key)
         {
+            $this->start();
             return $this->has($key) ? $_SESSION[$key] : '';
         }
 
@@ -51,6 +55,8 @@ namespace Imperium\Session {
          */
         public function has($key): bool
         {
+
+            $this->start();
             return array_key_exists($key,$_SESSION);
         }
 
@@ -65,6 +71,8 @@ namespace Imperium\Session {
          */
         public function set($key,$value): void
         {
+
+            $this->start();
             $_SESSION[$key] = $value;
         }
 
@@ -79,6 +87,8 @@ namespace Imperium\Session {
          */
         public function remove($key): bool
         {
+
+            $this->start();
             if ($this->has($key))
             {
                 unset($_SESSION[$key]);
@@ -108,8 +118,16 @@ namespace Imperium\Session {
          */
         public function def($key, $value)
         {
+
             $this->set($key,$value);
             return $this->get($key);
+        }
+
+        /**
+         * SessionInterface constructor.
+         */
+        public function __construct()
+        {
         }
     }
 }

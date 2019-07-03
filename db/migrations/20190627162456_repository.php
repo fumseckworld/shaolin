@@ -29,6 +29,6 @@ class Repository extends AbstractMigration
     public function change()
     {
 
-        $this->table('repositories')->addColumn('img','string')->addColumn('name','string')->addColumn('owner','string')->addColumn('description','string')->addTimestamps()->addIndex(['owner'],['unique' => true])->create();
+        $this->table('repositories')->addColumn('img','string')->addColumn('name','string')->addColumn('owner','string')->addColumn('description','string')->addTimestamps()->create();
     }
 }

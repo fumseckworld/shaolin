@@ -1,10 +1,16 @@
 <?php
 
 
+use Imperium\Directory\Dir;
 use Phinx\Seed\AbstractSeed;
 
 class RepositorySeed extends AbstractSeed
 {
+    /**
+     * @var array
+     */
+    private $author;
+
     /**
      * Run Method.
      *
@@ -15,23 +21,31 @@ class RepositorySeed extends AbstractSeed
      */
     public function run()
     {
-        $repository = collection();
 
+        $authors = collection(scandir('depots'))->remove_values('.','..')->collection();
 
-
-        for ($i=0;$i!=10;$i++)
+          foreach ($authors as $author)
         {
-            $x = 0;
-            $y = 1;
-            do
+
+            $this->author[$author] =  [];
+
+            foreach (Dir::scan("depots/$author") as $depot)
             {
-                $y++;
-                $x++;
-                $repository->push(['img'=> 'http://lorempixel.com/400/200','name' => faker()->name(),'owner' => "$y-".faker()->name(),'description' => faker()->text(),'created_at' => faker()->dateTimeInInterval()->format('Y-m-d'),'updated_at'=> faker()->dateTimeInInterval()->format('Y-m-d') ]);
-            }while ($x !== 10000);
-            $this->insert('repositories',$repository->collection());
-            $repository->clear();
+                $repo = collection()->add($depot,'name')->add('a sublime app','description')->add($author,'owner')->add(now()->toDateTime()->format('Y-m-d'),'created_at')->add(now()->toDateTime()->format('Y-m-d'),'updated_at')->add('http://lorempixel.com/g/400/200','img');
+
+                $this->author[$author][] = $repo->collection();
+
+                $repo->clear();
+            }
+
         }
+
+
+
+        foreach ($this->author as $k=> $value)
+            foreach ($value as $x)
+                $this->insert('repositories',$x);
+
 
 
 

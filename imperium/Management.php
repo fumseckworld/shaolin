@@ -8,7 +8,6 @@ namespace Imperium {
     use Imperium\Bases\Base;
     use Imperium\Cache\Cache;
     use Imperium\Collection\Collection;
-    use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
@@ -56,6 +55,19 @@ namespace Imperium {
          */
         public function show_users() : array;
 
+        /**
+         *
+         * Get a config value
+         *
+         * @param string $file
+         * @param $key
+         *
+         * @return mixed
+         *
+         * @throws Kedavra
+         *
+         */
+        public function config(string $file,$key);
         /**
          *
          * File management
@@ -583,10 +595,6 @@ namespace Imperium {
          */
         public function request(): Request;
 
-        /**
-         * @return Config
-         */
-        public function config(): Config;
 
         /**
          * @return Oauth

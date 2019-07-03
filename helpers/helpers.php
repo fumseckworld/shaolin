@@ -1,5 +1,7 @@
 <?php
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Faker\Factory;
 use Faker\Generator;
 use GuzzleHttp\Psr7\ServerRequest;
@@ -74,6 +76,8 @@ define('LOCALHOST','localhost');
 
 define('ROOT',dirname(__DIR__));
 define('WEB_ROOT',dirname(__DIR__) . DIRECTORY_SEPARATOR  . 'web');
+define('CONFIG',dirname(__DIR__) . DIRECTORY_SEPARATOR  . 'config');
+define('DB',ROOT. DIRECTORY_SEPARATOR .'db');
 
 define('ASC','ASC');
 define('DESC','DESC');
@@ -662,7 +666,7 @@ if (not_exist('config'))
      */
     function config(string $file,$key)
     {
-        return Config::init()->get($file,$key);
+        return (new Config($file,$key))->value();
     }
 }
 
@@ -793,12 +797,11 @@ if (not_exist('config_path'))
      *
      * @return string
      *
-     * @throws Kedavra
      *
      */
     function config_path(): string
     {
-        return Config::init()->path();
+        return CONFIG;
     }
 }
 
@@ -944,8 +947,9 @@ if (not_exist('sql_file'))
      * @param string $table
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function sql_file(string $table  = ''): string
     {
@@ -1056,11 +1060,12 @@ if (not_exist('app'))
      * @return App
      *
      * @throws Kedavra
-     *
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function app(): App
     {
-       return App::instance();
+       return new App();
 
     }
 }
@@ -1102,6 +1107,51 @@ if (not_exist('assign'))
         {
             $variable = $value;
         }
+    }
+}
+
+if (not_exist('display_repositories'))
+{
+    /**
+     * @param string $table
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function display_repositories(string $table = 'repositories'): string
+    {
+        $session = app()->session();
+
+        $session->def('limit',99);
+
+        $limit_per_page = $session->has('limit') ? $session->get('limit') : $session->def('limit',100);
+
+        $pagination = pagination($limit_per_page,"?current=",get('current',1),app()->model()->from($table)->count(),'>>','<<');
+
+        $data = collection(app()->records($table));
+
+        $code = '<div class="row mt-5 mb-5">';
+
+        $data->rewind();
+
+        while ($data->valid())
+        {
+            $values = $data->current();
+
+            append($code,'<div class="col-lg-4 col-xl-4 col-lg-4 col-sm-12"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->name.'</h4><a href="/repo/'.$values->owner.'/'.$values->name.'"><img src="'.$values->img.'" alt="'.$values->name.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->description,0,\config('article','limit')).'</div><p class="card-text mt-2"><a href="/repo/'.$values->owner.'/'.$values->name.'" class="btn btn-primary"> '.$values->name.'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->updated_at).'</small></div></div></div>');
+
+            $data->next();
+        }
+
+        append($code,'</div>');
+        append($code,'<div class="row ml-0 mb-5">');
+        append($code,$pagination);
+        append($code,'</div>');
+
+        return $code;
+
     }
 }
 

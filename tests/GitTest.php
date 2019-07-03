@@ -4,12 +4,13 @@
 namespace Testing {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Exception;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Versioning\Git\Git;
     use PHPUnit\Framework\TestCase;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
     /**
      * Class GitTest
@@ -24,6 +25,8 @@ namespace Testing {
 
         /**
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function setUp(): void
         {
@@ -60,7 +63,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals(8,$this->git->branches_found());
+            $this->assertEquals(9,$this->git->branches_found());
         }
 
         /**
