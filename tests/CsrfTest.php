@@ -6,6 +6,7 @@ namespace Testing;
 
 use GuzzleHttp\Psr7\ServerRequest;
 use Imperium\Exception\Kedavra;
+use Imperium\Routing\Router;
 use Imperium\Security\Csrf\Csrf;
 use Imperium\Session\ArraySession;
 use PHPUnit\Framework\TestCase;
@@ -31,17 +32,18 @@ class CsrfTest extends TestCase
 
     /**
      * @throws Kedavra
+     * @throws \DI\DependencyException
+     * @throws \DI\NotFoundException
      */
     public function test_token()
     {
         $first = $this->csrf->token();
         $second = $this->csrf->token();
-        $this->assertFalse(different($first,$second));
+        $this->assertEquals($first,$second);
 
         $this->expectException(Kedavra::class);
-        app()->router(new ServerRequest(POST,'/commit'))->run();
-
-        $this->assertTrue(different($first,$this->csrf->token()));
+        $router = new Router(new ServerRequest(POST,'/commit'));
+        $router->search()->send();
     }
 
     /**
@@ -50,6 +52,6 @@ class CsrfTest extends TestCase
     public function test_exception()
     {
         $this->expectException(Kedavra::class);
-        app()->router((new ServerRequest(POST,'/commit')))->run();
+        (new Router(new ServerRequest(POST,'/commit')))->search()->call()->send();
     }
 }

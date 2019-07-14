@@ -22,7 +22,8 @@ namespace Imperium\Security\Csrf {
          */
         public function __construct()
         {
-            $this->csrf = new Csrf(app()->session());
+           $this->csrf = new Csrf(app()->session());
+
         }
 
         /**

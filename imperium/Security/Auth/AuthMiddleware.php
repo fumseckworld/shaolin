@@ -20,7 +20,14 @@ namespace Imperium\Security\Auth {
         public function __invoke(ServerRequestInterface $request)
         {
             $admin = config('auth','admin_prefix');
+
             $home   = config('auth','user_home');
+
+            if(strpos($request->getUri()->getPath(),$admin) === 0 || strpos($request->getUri()->getPath(),$home))
+            {
+                if (is_false(app()->auth()->connected()))
+                    return back();
+            }
 
             if (app()->auth()->connected())
             {

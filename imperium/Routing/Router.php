@@ -3,6 +3,8 @@
 namespace Imperium\Routing {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Middleware\TrailingSlashMiddleware;
@@ -31,192 +33,42 @@ namespace Imperium\Routing {
         use Route;
 
         /**
-         *
-         * The regex for numeric match
-         *
          * @var string
-         *
-         */
-        const NUMERIC = '([0-9]+)';
-
-        /**
-         *
-         * The regex for not numeric match
-         *
-         * @var string
-         *
-         */
-        const NOT_NUMERIC = '([^0-9]+)';
-
-        /**
-         *
-         * The regex for alpha numeric math
-         *
-         * @var string
-         *
-         */
-        const ALPHANUMERIC = '([0-9A-Za-z]+)';
-
-        /**
-         *
-         * The regex for not string match
-         *
-         * @var string
-         *
-         */
-        const NOT_STRING = '([^a-zA-Z]+)';
-
-        /**
-         *
-         * @var string
-         *
-         */
-        const STRING = '([a-zA-Z\-]+)';
-
-        /**
-         *
-         * The regex for a slug
-         *
-         * @var string
-         *
-         */
-        const SLUG  = '([a-zA-Z\-0-9]+)';
-
-        /**
-         *
-         * The separator used to determine the controller and the action
-         *
-         * @var string
-         *
-         */
-        const MVC_SEPARATOR = '@';
-
-        /**
-         *
-         * The controller method to execute before the action
-         *
-         * @var string
-         *
-         */
-        const BEFORE_ACTION = 'before_action';
-
-        /**
-         *
-         * The controller method to execute after the action
-         *
-         * @var string
-         *
-         */
-        const AFTER_ACTION = 'after_action';
-
-
-        const METHOD = 'method';
-
-
-        /**
-         *
-         * The url
-         *
-         * @var string
-         *
-         */
-        private  $url;
-
-        /***
-         *
-         * arguments
-         *
-         * @var array
-         *
-         */
-        private $args = [];
-
-        /**
-         *
-         * The controllers namespace
-         *
-         * @var string
-         *
-         */
-        private $namespace;
-
-        /**
-         *
-         * The current method used
-         *
-         * @var string
-         *
          */
         private $method;
 
         /**
-         *
-         * The application core directory
-         *
          * @var string
-         *
          */
-        private $core_path;
+        private $url;
 
         /**
          *
-         * The controllers directory name
-         *
-         * @var string
-         *
          */
-        private $controller_dir;
+        private $route;
 
         /**
-         *
-         * All regex
-         *
          * @var array
-         *
+         */
+        private $args;
+        /**
+         * @var array
          */
         private $regex;
 
         /**
-         * @var
-         */
-        private $route;
-
-
-        /**
-         *
          * Router constructor.
-         *
          * @param ServerRequestInterface $request
-         *
          * @throws Kedavra
-         *
          */
         public function __construct(ServerRequestInterface $request)
         {
 
-            $controller_dir = collection(config('app','dir'))->get('controller');
-
-            $this->core_path = core_path(collection(config('app','dir'))->get('app'));
-
-            $this->namespace = config('app','namespace'). '\\' . $controller_dir. '\\';
-
-            $this->controller_dir  = $this->core_path . DIRECTORY_SEPARATOR . $controller_dir ;
-
-            is_false(Dir::is($this->core_path),true,"The directory {$this->core_path} was not found");
-
-            is_false(Dir::is($this->controller_dir),true,"The directory $controller_dir was not found at {$this->core_path}");
-
-            if (different($request->getMethod(),GET))
-                $this->method = strtoupper(collection($request->getParsedBody())->get(self::METHOD));
-            else
-                $this->method = $request->getMethod();
-
-            $this->create_route_table(); // to be sure
+            $this->method = $request->getMethod() !== GET ?  strtoupper(collection($request->getParsedBody())->get('method')) : GET;
 
             $this->url           = $request->getUri()->getPath();
 
             $this->call_middleware($request);
-
         }
 
         /**
@@ -226,11 +78,11 @@ namespace Imperium\Routing {
          * @return RouteResult| RedirectResponse
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function search()
         {
-            is_true(not_def($this->routes()->all()),true,"The routes table is empty");
 
             foreach($this->routes()->where('method',EQUAL,$this->method)->get() as $route)
             {
@@ -268,8 +120,9 @@ namespace Imperium\Routing {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function url(string $name,array $args=[]): string
         {
@@ -290,11 +143,11 @@ namespace Imperium\Routing {
          */
         private function call_middleware(ServerRequestInterface $request): void
         {
-            $middleware_dir = collection(config('app','dir'))->get('middleware');
+            $middleware_dir = 'Middleware';
 
             $namespace = config('app','namespace') . '\\' . $middleware_dir. '\\';
 
-            $dir = $this->core_path .DIRECTORY_SEPARATOR . $middleware_dir;
+            $dir = CORE .DIRECTORY_SEPARATOR . $middleware_dir;
 
             is_false(Dir::is($dir),true,"The $dir directory was not found");
 
@@ -333,7 +186,6 @@ namespace Imperium\Routing {
          *
          * @return RouteResult
          *
-         * @throws Kedavra
          *
          */
         public function result(): RouteResult
@@ -350,7 +202,7 @@ namespace Imperium\Routing {
             }
 
 
-           return  new RouteResult($this->namespace,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->collection());
+           return  new RouteResult(APP,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->collection());
         }
 
 

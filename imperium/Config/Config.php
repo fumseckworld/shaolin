@@ -72,7 +72,7 @@ namespace Imperium\Config {
 
             $this->values = collection(self::parseFile($file));
 
-            is_false($this->values->has_key($key),true,"The key was not found in the  $file at ". $this->path());
+            is_false($this->values->has_key($key),true,"The $key key was not found in the  $file at ". $this->path());
 
             $this->file = $file;
 

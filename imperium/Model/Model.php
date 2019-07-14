@@ -3,6 +3,8 @@
 
 namespace Imperium\Model {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\App;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
@@ -13,6 +15,7 @@ namespace Imperium\Model {
     use Imperium\Tables\Table;
     use Imperium\Collection\Collection;
     use Imperium\Html\Form\Form;
+    use Imperium\Zen;
     use PDO;
     use Imperium\Import\Import;
 
@@ -29,7 +32,7 @@ namespace Imperium\Model {
     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
     *
     **/
-    class Model
+    class Model extends Zen
     {
 
         use Route;
@@ -119,16 +122,15 @@ namespace Imperium\Model {
          *
          * @method __construct
          *
-         * @param Connect $connect The connection to the base
-         * @param Table $table The instance of table
-         *
+         * @param Connect $connect
+         * @param Table $table
          */
         public function __construct(Connect $connect,Table $table)
         {
             $this->connexion = $connect;
             $this->table = $table;
             $this->data = collection();
-            $this->sql = query($table,$connect);
+            $this->sql =  \query($table,$connect);
 
         }
 
@@ -398,6 +400,8 @@ namespace Imperium\Model {
          * @return string
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function show(   string $action_remove_text ='Remove',string $confirm_text = 'Are you sure ?',
                                  string $action_edit_text ='Edit',

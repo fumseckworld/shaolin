@@ -5,12 +5,15 @@ namespace Imperium\Versioning\Git {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Highlight\Highlighter;
     use Imperium\Collection\Collection;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
     use Imperium\File\File;
     use Imperium\Html\Form\Form;
+    use Imperium\Markdown\Markdown;
+    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
     use Symfony\Component\HttpFoundation\Response;
 
     class Git
@@ -43,10 +46,6 @@ namespace Imperium\Versioning\Git {
          * @var string
          */
         private $contributor_email;
-        /**
-         * @var bool
-         */
-        private $dark_mode;
 
         /**
          *
@@ -63,29 +62,6 @@ namespace Imperium\Versioning\Git {
          * @var string
          */
         private $base_path;
-
-        /**
-         * @var string
-         */
-        private $contributors_key;
-        /**
-         * @var string
-         */
-        private $releases_key;
-        /**
-         * @var string
-         */
-        private $contributions_key;
-
-        /**
-         * @var string
-         */
-        private $directories_key;
-
-        /**
-         * @var string
-         */
-        private $files_key;
 
         /**
          *
@@ -123,6 +99,36 @@ namespace Imperium\Versioning\Git {
         private $licence;
 
         /**
+         * @var array
+         */
+        private $releases;
+
+        /**
+         * @var array
+         */
+        private $contributors;
+        /**
+         * @var string
+         */
+        private $changelog;
+
+        /**
+         * @var array
+         */
+        private $all_changelog;
+
+        private $all_contributing;
+        /**
+         * @var string
+         */
+        private $contribute;
+        /**
+         * @var string
+         */
+        private $image;
+
+
+        /**
          *
          * Git constructor.
          *
@@ -138,53 +144,158 @@ namespace Imperium\Versioning\Git {
 
             $this->archives_ext = config('git','archives_extension');
             $this->all_readme = config('git','readme');
+            $this->all_contributing = config('git','contributing');
             $this->licences = config('git','licences');
+            $this->all_changelog = config('git','changelog');
 
             $this->owner = $owner;
+
+
+            if (different(app()->session()->get('repo'),realpath($repository)))
+            {
+                app()->cache()->clear();
+            }
+
+            app()->session()->set('repo',realpath($repository));
 
             $this->repository =  realpath($repository);
 
             is_false(Dir::is($this->repository),true,"The repository was not found");
 
-            if (app()->session()->has('repo'))
+            Dir::checkout($this->repository);
+            $this->image = (new File('img'))->read();
+
+            $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
+        }
+
+        /**
+         *
+         * Download the latest version
+         *
+         * @return Response
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        public function download(): Response
+        {
+
+            $x = intval((new File("download"))->read());
+
+            if (def($x))
+                $x++;
+            else
+                $x = 1;
+
+            (new File('download',EMPTY_AND_WRITE_FILE_MODE))->write("$x")->flush();
+
+
+            $version = collection($this->releases())->begin();
+
+            if (equal(os(true),'Windows'))
+                return (new Download($this->create_archives('zip',$version)))->download();
+
+            return (new Download($this->create_archives('tar.gz',$version)))->download();
+
+        }
+
+
+        /**
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function stars(): Response
+        {
+
+            $x = intval((new File("stars"))->read());
+
+            if (def($x))
+                $x++;
+            else
+                $x = 1;
+
+            (new File('stars',EMPTY_AND_WRITE_FILE_MODE))->write("$x")->flush();
+
+            return back();
+        }
+
+        public function search_files()
+        {
+
+        }
+        /**
+         *
+         * List only file in a directory
+         *
+         * @param string $directory
+         *
+         * @param string $branch
+         *
+         * @return array
+         *
+         */
+        public function files(string $directory,string $branch ='master'): array
+        {
+            def($directory) ?  $this->execute("git ls-tree  $branch -r $directory") : $this->execute("git ls-tree  $branch ");
+
+            $x =  collection();
+
+            foreach ($this->data as $datum)
             {
-
-                if (different(app()->session()->get('repo'),$this->repository))
+                if (def($directory))
                 {
+                    if (strstr($datum,'blob'))
+                    {
+                         $t =  collection(string_parse($datum))->last();
 
-                    $repo = app()->session()->get('repo');
-                    app()->cache()->remove("contributors_$repo");
-                    app()->cache()->remove("releases_$repo");
-                    app()->cache()->remove("contributions_$repo");
-                    app()->cache()->remove("directories_$repo");
-                    app()->cache()->remove("files_$repo");
+                         $t = str_replace("$directory/",'',$t);
+
+                         if (!strstr($t,'/'))
+                            $x->add($t);
+                    }
+                }else{
+                    if (strstr($datum,'blob'))
+                        $x->add(\collection(string_parse($datum))->last());
                 }
             }
 
-            app()->session()->def('repo',$this->repository);
+            return $x->collection();
+        }
 
+        /**
+         *
+         * Display contribution content
+         *
+         * @param string $branch
+         * @return string
+         * @throws Kedavra
+         */
+        public function contribute(string $branch ='master'):string
+        {
 
-            $this->contributors_key = "contributors_{$this->repository}";
+            if (not_def($this->contribute))
+            {
+                $files = $this->files('',$branch);
+                foreach ($this->all_contributing as $contribute)
+                {
+                    if (has($contribute,$files))
+                    {
+                        if ((new File($contribute))->ext() == 'md')
+                        {
+                            $this->contribute = (new Markdown($this->show($contribute)))->markdown();
+                        }else{
+                            $this->contribute =  $this->show($contribute);
+                        }
+                    }
+                }
+                assign(is_null($this->contribute),$this->contribute, 'We have not found a contribute file');
+            }
 
-            $this->releases_key = "releases_{$this->repository}";
-
-            $this->contributions_key = "contributions_{$this->repository}";
-
-            $this->directories_key = "directories_{$this->repository}";
-
-            $this->files_key = "files_{$this->repository}";
-
-            Dir::checkout($this->repository);
-
-            $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
-
-            foreach (File::search("{$this->repository()}-*.*") as $archive)
-                $this->remove_archive($archive);
-
-            $this->save_contributors();
-            $this->save_releases();
-
-
+            return $this->contribute;
         }
 
         /**
@@ -194,27 +305,23 @@ namespace Imperium\Versioning\Git {
          * @return string
          *
          * @throws Kedavra
-         *
          */
-        public function contribute():string
+        public function changelog():string
         {
-            return (new File('CONTRIBUTING.md'))->markdown();
-        }
 
-        /**
-         *
-         * Display contribution content
-         *
-         * @return string
-         *
-         * @throws Kedavra
-         *
-         */
-        public function change_log():string
-        {
-            $releases = collection($this->releases());
+            if (is_null($this->changelog))
+            {
+                foreach ($this->all_changelog as $change)
+                {
+                    if (has($change,$this->all_changelog))
+                        $this->changelog = (new Markdown($this->show($change)))->markdown();
+                }
 
-            return (new File("CHANGELOG-{$releases->get(0)}-{$releases->get(1)}.md"))->markdown();
+                assign(is_null($this->changelog),$this->changelog, 'We have not found a changelog');
+
+            }
+            return $this->changelog;
+
         }
 
 
@@ -222,20 +329,24 @@ namespace Imperium\Versioning\Git {
          *
          * Display readme content
          *
+         * @param string $branch
          * @return string
          *
          * @throws Kedavra
-         *
          */
-        public function readme()
+        public function readme(string $branch = 'master')
         {
+
             if (is_null($this->readme))
             {
-                foreach ($this->files('') as $file)
+                $files = $this->files('',$branch);
+
+                foreach ($this->all_readme as $readme)
                 {
-                    if(has($file,$this->all_readme))
-                        $this->readme = (new File($file))->markdown();
+                    if (has($readme,$files))
+                        $this->readme = (new Markdown($this->show($readme)))->markdown();
                 }
+                assign(is_null($this->readme),$this->readme, 'We have not found a readme');
             }
             return $this->readme;
 
@@ -404,31 +515,147 @@ namespace Imperium\Versioning\Git {
          *
          * @param string $directory
          *
-         * @return Collection
+         * @param string $branch
+         * @return array
          *
          */
-        public function directories(string $directory = ''): Collection
+        public function directories(string $directory = '',string $branch = 'master'): array
         {
 
-            def($directory) ? $this->execute("git ls-tree --name-only -d  {$this->current_branch()} -r  $directory") : $this->execute("git ls-tree --name-only -d  {$this->current_branch()} ");
+            if (def($directory))
+                $this->execute("git ls-tree --name-only -d $branch  -r $directory");
+            else
+                $this->execute("git ls-tree --name-only -d $branch ");
 
-            return $this->data();
+
+            $directories = collection();
+
+            foreach ($this->data as $dir)
+            {
+                if ($dir !== $directory)
+                {
+                    if (strpos($directory,$dir) !== 0)
+                    {
+                        $directories->add(\collection(explode('/',$dir))->last());
+                    }
+
+                }
+            }
+
+            return $directories->collection();
         }
 
         /**
          *
-         * List repository files
+         * List repository
          *
          * @param string $directory
          *
-         * @return Collection
-         *
+         * @param string $file
+         * @param string $branch
+         * @return string
+         * @throws Exception
          */
-        public function files(string $directory ): Collection
+        public function tree(string $directory,string $file ='',string $branch = 'master'): string
         {
-            $this->execute("git ls-tree --name-only -r  {$this->current_branch()} ");
+            $files = $this->files($directory,$branch);
 
-            return $this->data();
+            $complete = request()->getRequestUri();
+
+            $parts = collection(explode('/tree',$complete));
+
+
+            $current_directory = trim($parts->get(1),'/');
+
+            $directories = $this->directories($directory,$branch);
+
+
+            $data = '
+                    <nav aria-label="breadcrumb">
+                         <ol class="breadcrumb">
+                            <li class="breadcrumb-item">
+                                <a href="'.base_url('repo',$this->owner(),$this->repository()).'">'.$this->repository().'</a>
+                            </li>';
+
+
+
+                $x = collection(explode('/',$current_directory));
+
+
+                if (not_def($file))
+                {
+                    $ancient ='';
+
+                    foreach ($x->collection() as $k=> $v)
+                    {
+                        append($ancient,"$v/");
+                        if ($k ==0)
+                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v).'">'.$v.'</a></li>');
+                        else
+                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+                    }
+
+                }else
+                {
+
+
+                    $parts = collection(explode('/file',$complete));
+                    $dir = trim($parts->get(1),'/');
+                    $x = collection(explode('/',$dir));
+                    $ancient ='';
+
+                    foreach ($x->collection() as $k=> $v)
+                    {
+                        append($ancient,"$v/");
+                        if ($k ==0)
+                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v).'">'.$v.'</a></li>');
+                        else
+                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+                    }
+                }
+            append($data,'</ol></nav><table  class="table table-bordered" id="files"><tbody>');
+
+            if (not_def($file))
+            {
+
+                foreach ($directories as $k => $v )
+                {
+
+                    if (def($current_directory))
+                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$current_directory,$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
+                    else
+                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
+
+
+                }
+
+                foreach ($files as  $file)
+
+                    if (def($current_directory))
+                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'file',$current_directory,$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
+                    else
+
+                    append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'file',$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
+
+
+            }else
+            {
+                $x = new Highlighter();
+
+                $x->setAutodetectLanguages(LANGUAGES);
+
+                $code = $x->highlightAuto($this->show($file,$branch));
+
+                $class = 'hljs ' . $code->language;
+
+                $content = '<pre class="'.$class.'">' . $code->value . '</pre>';
+
+                append($data,$content);
+            }
+
+            append($data,'</tbody></table>');
+
+            return $data;
         }
 
         /**
@@ -479,7 +706,6 @@ namespace Imperium\Versioning\Git {
             return $this->is_remote() ? collection(Dir::scan('refs/heads'))->length() : collection($this->branches())->length();
         }
 
-
         /**
          *
          * Return the current branch
@@ -524,12 +750,30 @@ namespace Imperium\Versioning\Git {
          *
          * @return int
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function release_size(): int
         {
             return collection($this->releases())->length();
+        }
+
+
+        /**
+         *
+         * Change the repository image
+         *
+         * @param string $url
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function change_image(string $url)
+        {
+            return (new File('img',EMPTY_AND_WRITE_FILE_MODE))->write($url)->flush();
         }
 
         /**
@@ -549,12 +793,14 @@ namespace Imperium\Versioning\Git {
         /**
          * @param string $search_placeholder
          * @return string
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function contributors_view(string $search_placeholder = 'Search a contributor'):string
         {
 
-            $html = ' <div class="input-group mb-5">
+            $html = ' <div class="input-group mb-3">
                   <div class="input-group-prepend">
                         <span class="input-group-text">
                             <i class="material-icons">
@@ -634,7 +880,6 @@ namespace Imperium\Versioning\Git {
          * @return bool
          *
          * @throws Kedavra
-         *
          */
         public static function create(string $project_name,string $owner,string $description,bool $remote = true): bool
         {
@@ -648,6 +893,7 @@ namespace Imperium\Versioning\Git {
             Dir::create($project_name);
 
             Dir::checkout($project_name);
+
 
             $remote ?  shell_exec('git init --bare') : shell_exec('git init');
 
@@ -663,18 +909,13 @@ namespace Imperium\Versioning\Git {
          *
          * Display the repository description
          *
-         * @param string $project
-         *
          * @return string
          *
          * @throws Kedavra
-         *
          */
-        public static function description(string $project): string
+        public static function description(): string
         {
-            Dir::checkout($project);
-
-            return (new File(self::DESCRIPTION,READ_FILE_MODE))->read();
+            return substr((new File(self::DESCRIPTION))->read(),0,50);
         }
 
         /**
@@ -717,8 +958,9 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function news(): string
         {
@@ -737,12 +979,12 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function change(string $new_release,string $ancient_release): string
         {
-            $file = dirname(config_path()) .DIRECTORY_SEPARATOR . 'web' .DIRECTORY_SEPARATOR . 'diff.html';
 
             $tags = $this->releases();
 
@@ -752,12 +994,7 @@ namespace Imperium\Versioning\Git {
 
             $this->clean();
 
-            if ($this->dark_mode)
-                $this->shell("git diff --word-diff --color-words $ancient_release $new_release  --patch-with-stat | aha  --black --title $this->name > $file");
-            else
-                $this->shell("git diff --word-diff --color-words $ancient_release $new_release  --patch-with-stat | aha  --title $this->name > $file");
-
-            return (new File($file,READ_FILE_MODE))->read();
+             return shell_exec("git diff --word-diff --color-words $ancient_release $new_release  --patch-with-stat | aha");
 
         }
 
@@ -770,11 +1007,15 @@ namespace Imperium\Versioning\Git {
          *
          * @param string $version
          * @return string
+         * @throws Kedavra
          */
-        private function create_archives(string $ext,string $version): string
+        public function create_archives(string $ext,string $version): string
         {
 
-                $file =  $this->repository() .'-'. "$version.$ext";
+            Dir::checkout($this->repository);
+            Dir::create('releases');
+            Dir::checkout('releases');
+            $file =  $this->repository() .'-'. "$version.$ext";
 
                 if (!file_exists($file))
                 {
@@ -800,12 +1041,14 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
+         * 
          */
         public function release_view(string $search_placeholder = 'Find a version'): string
         {
-            $html = '<div class="mt-5 mb-2">'.$this->compare_form().'</div> 
+            $html = '<div class="mt-3 mb-2">'.$this->compare_form().'</div> 
             <div class="input-group mb-3">
                   <div class="input-group-prepend">
                         <span class="input-group-text">
@@ -872,45 +1115,79 @@ namespace Imperium\Versioning\Git {
 
         /**
          *
-         * Download a tag
          *
-         * @param $archive
-         * @return Response
-         *
-         * @throws Kedavra
-         */
-        public function download($archive): Response
-        {
-            $x = \collection(explode('-',$archive));
-            $version = $x->begin();
-            $ext = $x->last();
-
-
-            return (new Download( $this->generate_archives($ext,$version)))->download();
-        }
-
-        /**
-         *
-         *
+         * @param string $tree
+         * @param string $file
+         * @param string $branch
          * @return string
          *
          *
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
+         * @throws Exception
          */
-        public function git(): string
+        public function git(string $tree,string $file='',string $branch= 'master'): string
         {
-            $html = '<nav>
-  <div class="nav nav-tabs" id="git" role="tablist">
-    <a class="nav-item nav-link active" id="nav-readme-tab" data-toggle="tab" href="#nav-readme" role="tab" aria-controls="nav-readme" aria-selected="true">Readme</a>
+
+            $html = '
+                        <a href="'.root().'" class="btn btn-secondary"><i class="material-icons">apps</i>Apps</a> 
+                          
+                            <div class="text-center mt-3">
+                                <div class="input-group mb-3">
+                                     <div class="input-group-prepend">
+                                        <button class="btn btn-secondary" type="button" onclick="copy_public_clone_url()"><i class="material-icons">link</i></button>
+                                     </div>
+                                    <input type="text" class="form-control form-control-lg " id="clone" value="git://'.request()->getHost().'/'.$this->owner().'/'.$this->repository().'">
+                                     
+                                    <input type="text" class="form-control form-control-lg ml-3" id="contributor_clone" value="git@'.request()->getHost().':'.$this->owner().'/'.$this->repository().'">
+                                     <div class="input-group-prepend">
+                                        <button class="btn btn-secondary" type="button" onclick="copy_contributor_clone_url()"><i class="material-icons">link</i></button>
+                                     </div>
+                                    <div class="input-group-prepend ml-3 mr-3">
+                                        <a href="'.route('download',[$this->repository(),$this->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
+                                    </div>  
+                                    <div class="input-group-prepend">
+                                        <a href="'.route('stars',[$this->repository(),$this->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <script>
+                                function copy_public_clone_url() 
+                                {
+                                    /* Get the text field */
+                                    let copyText = document.getElementById("clone");
+                        
+                                    /* Select the text field */
+                                    copyText.select();
+                        
+                                    /* Copy the text inside the text field */
+                                    document.execCommand("copy");
+                                }  
+                                function copy_contributor_clone_url() 
+                                {
+                                    /* Get the text field */
+                                    let copyText = document.getElementById("contributor_clone");
+                        
+                                    /* Select the text field */
+                                    copyText.select();
+                        
+                                    /* Copy the text inside the text field */
+                                    document.execCommand("copy");
+                                }
+                            </script>
+                            <section>
+                       
+                            <article>
+                             <div class="nav nav-tabs" id="git" role="tablist">
+     <a class="nav-item nav-link active" id="nav-code-tab" data-toggle="tab" href="#nav-code" role="tab" aria-controls="nav-code" aria-selected="true">Code</a>
+    <a class="nav-item nav-link" id="nav-readme-tab" data-toggle="tab" href="#nav-readme" role="tab" aria-controls="nav-readme" aria-selected="true">Readme</a>
     <a class="nav-item nav-link " id="nav-licence-tab" data-toggle="tab" href="#nav-licence" role="tab" aria-controls="nav-licence" aria-selected="false">Licence</a>
-    <a class="nav-item nav-link" id="nav-code-tab" data-toggle="tab" href="#nav-code" role="tab" aria-controls="nav-code" aria-selected="true">Code</a>
     <a class="nav-item nav-link" id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab" aria-controls="nav-news" aria-selected="false">News</a>
     <a class="nav-item nav-link" id="nav-change-logs-tab" data-toggle="tab" href="#nav-change-logs" role="tab" aria-controls="nav-change-logs" aria-selected="false">Changelog</a>
     <a class="nav-item nav-link" id="nav-logs-tab" data-toggle="tab" href="#nav-logs" role="tab" aria-controls="nav-logs" aria-selected="false">Logs</a>
-    <a class="nav-item nav-link" id="nav-releases-tab" data-toggle="tab" href="#nav-releases" role="tab" aria-controls="nav-releases" aria-selected="false">Tags</a>
-    <a class="nav-item nav-link" id="nav-branches-tab" data-toggle="tab" href="#nav-branches" role="tab" aria-controls="nav-branches" aria-selected="false">Branches</a>
+    <a class="nav-item nav-link" id="nav-releases-tab" data-toggle="tab" href="#nav-releases" role="tab" aria-controls="nav-releases" aria-selected="false">Versions</a>
+    <a class="nav-item nav-link" id="nav-hooks-tab" data-toggle="tab" href="#nav-hooks" role="tab" aria-controls="nav-hooks" aria-selected="false">Hook</a>
     <a class="nav-item nav-link" id="nav-contributors-tab" data-toggle="tab" href="#nav-contributors" role="tab" aria-controls="nav-contributors" aria-selected="false">Contributors</a>
     <a class="nav-item nav-link" id="nav-contributions-tab" data-toggle="tab" href="#nav-contributions" role="tab" aria-controls="nav-contributions" aria-selected="false">Contributions</a>
     <a class="nav-item nav-link " id="nav-contribute-tab" data-toggle="tab" href="#nav-contribute" role="tab" aria-controls="nav-contribute" aria-selected="false">Contribute</a>
@@ -920,21 +1197,24 @@ namespace Imperium\Versioning\Git {
   </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
-  <div class="tab-pane fade show active" id="nav-readme" role="tabpanel" aria-labelledby="nav-readme-tab"><div class="mt-5 mb-5">'.$this->readme().'</div></div>
-  <div class="tab-pane fade show"  id="nav-code" role="tabpanel" aria-labelledby="nav-code-tab"><div class="mt-5 mb-5">'.$this->tree().'</div></div>
-  <div class="tab-pane fade show " id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab"><div class="mt-5 mb-5">'.$this->news().'</div></div>
-  <div class="tab-pane fade show " id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab"><div class="mt-5 mb-5">'.$this->log().'</div></div>
-  <div class="tab-pane fade show " id="nav-change-logs" role="tabpanel" aria-labelledby="nav-change-logs-tab"><div class="mt-5 mb-5">'.$this->change_log().'</div></div>
-  <div class="tab-pane fade show " id="nav-releases" role="tabpanel" aria-labelledby="nav-releases-tab"><div class="mt-5 mb-5">'.$this->release_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-branches" role="tabpanel" aria-labelledby="nav-branches-tab"><div class="mt-5 mb-5">'.$this->branches_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contributors" role="tabpanel" aria-labelledby="nav-contributors-tab"><div class="mt-5 mb-5">'.$this->contributors_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contributions" role="tabpanel" aria-labelledby="nav-contributions-tab"><div class="mt-5 mb-5">'.$this->contributions_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contribute" role="tabpanel" aria-labelledby="nav-contribute-tab"><div class="mt-5 mb-5">'.$this->contribute().'</div></div>
-  <div class="tab-pane fade show " id="nav-todo" role="tabpanel" aria-labelledby="nav-todo-tab"><div class="mt-5 mb-5">'.$this->todo().'</div></div>
-  <div class="tab-pane fade show " id="nav-wiki" role="tabpanel" aria-labelledby="nav-wiki-tab"><div class="mt-5 mb-5">'.$this->wiki().'</div></div>
-  <div class="tab-pane fade show " id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab"><div class="mt-5 mb-5">'.$this->report_bugs_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-licence" role="tabpanel" aria-labelledby="nav-licence-tab"><div class="mt-5 mb-5">'.$this->licence().'</div></div>
-</div>';
+  <div class="tab-pane fade show" id="nav-readme" role="tabpanel" aria-labelledby="nav-readme-tab"><div class="mt-3 mb-3">'.$this->readme().'</div></div>
+  <div class="tab-pane fade show active"  id="nav-code" role="tabpanel" aria-labelledby="nav-code-tab"><div class="mt-3 mb-3">'.$this->tree($tree,$file,$branch).'</div></div>
+  <div class="tab-pane fade show " id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab"><div class="mt-3 mb-3">'.$this->news().'</div></div>
+  <div class="tab-pane fade show " id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab"><div class="mt-3 mb-3">'.$this->log().'</div></div>
+  <div class="tab-pane fade show " id="nav-change-logs" role="tabpanel" aria-labelledby="nav-change-logs-tab"><div class="mt-3 mb-3">'.$this->changelog().'</div></div>
+  <div class="tab-pane fade show " id="nav-releases" role="tabpanel" aria-labelledby="nav-releases-tab"><div class="mt-3 mb-3">'.$this->release_view().'</div></div>
+  <div class="tab-pane fade show " id="nav-hooks" role="tabpanel" aria-labelledby="nav-hooks-tab"><div class="mt-3 mb-3">'.$this->hooks_view().'</div></div>
+  <div class="tab-pane fade show " id="nav-contributors" role="tabpanel" aria-labelledby="nav-contributors-tab"><div class="mt-3 mb-3">'.$this->contributors_view().'</div></div>
+  <div class="tab-pane fade show " id="nav-contributions" role="tabpanel" aria-labelledby="nav-contributions-tab"><div class="mt-3 mb-3">'.$this->contributions_view().'</div></div>
+  <div class="tab-pane fade show " id="nav-contribute" role="tabpanel" aria-labelledby="nav-contribute-tab"><div class="mt-3 mb-3">'.$this->contribute().'</div></div>
+  <div class="tab-pane fade show " id="nav-todo" role="tabpanel" aria-labelledby="nav-todo-tab"><div class="mt-3 mb-3">'.$this->todo().'</div></div>
+  <div class="tab-pane fade show " id="nav-wiki" role="tabpanel" aria-labelledby="nav-wiki-tab"><div class="mt-3 mb-3">'.$this->wiki().'</div></div>
+  <div class="tab-pane fade show " id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab"><div class="mt-3 mb-3">'.$this->report_bugs_view().'</div></div>
+  <div class="tab-pane fade show " id="nav-licence" role="tabpanel" aria-labelledby="nav-licence-tab"><div class="mt-3 mb-3">'.$this->licence().'</div></div>
+</div>
+                        </article>
+</section>
+ ';
             return $html;
         }
 
@@ -945,8 +1225,9 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function compare_form(): string
         {
@@ -968,8 +1249,9 @@ send
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function compare(string $first,string $second): string
         {
@@ -1021,11 +1303,11 @@ send
 
             append($command," --pretty=format:'$format'");
 
-            append($command," | aha > {$this->log_file()} ");
+            append($command," | aha ");
 
-            $this->shell($command);
 
-            return html_entity_decode((new File($this->log_file(),READ_FILE_MODE))->read());
+
+            return html_entity_decode(shell_exec($command));
         }
 
         /**
@@ -1114,6 +1396,7 @@ send
          */
         public function execute(string $command): array
         {
+            $this->data = [];
 
             exec($command,$this->data);
 
@@ -1163,34 +1446,24 @@ send
 
         }
 
-        /**
-         *
-         *
-         * @return array
-         *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         */
-        public function contributors(): array
-        {
-            return app()->cache()->get($this->contributors_key);
-        }
 
         /**
          *
          * List all versions
          *
          * @return array
-         *
-         * @throws Kedavra
          * @throws DependencyException
+         * @throws Kedavra
          * @throws NotFoundException
          */
-        private function save_releases(): array
+        public function releases(): array
         {
-            if (app()->cache()->not($this->releases_key))
-            {
+
+            if (app()->cache()->has(__FUNCTION__))
+                return app()->cache()->get(__FUNCTION__);
+
+           if (is_null($this->releases))
+           {
                 if ($this->is_remote())
                 {
                     $releases =  collection(Dir::scan('refs/tags'))->reverse();
@@ -1200,9 +1473,10 @@ send
                     $this->execute('git tag --sort=version:refname');
                     $releases =  $this->data()->reverse();
                 }
-                app()->cache()->set($this->releases_key,$releases,3600);
+                app()->cache()->set(__FUNCTION__,$releases);
+               $this->releases = $releases;
             }
-            return app()->cache()->get($this->releases_key);
+            return $this->releases;
         }
 
         /**
@@ -1223,12 +1497,17 @@ send
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
-        private function save_contributors(): array
+        public function contributors(): array
         {
-            if (app()->cache()->not($this->contributors_key))
+            if (app()->cache()->has(__FUNCTION__))
+                return app()->cache()->get(__FUNCTION__);
+
+
+            if (is_null($this->contributors))
             {
 
                 $x =  collection();
@@ -1271,9 +1550,10 @@ send
                 }
                 $this->contributor = null;
                 $this->contributor_email = null;
-                app()->cache()->set($this->contributors_key,$x->collection(),3600);
+                app()->cache()->set(__FUNCTION__,$x->collection());
+              $this->contributors = $x->collection();
             }
-          return  app()->cache()->get($this->contributors_key);
+          return  $this->contributors;
         }
 
         /**
@@ -1282,69 +1562,14 @@ send
          * @param string $sha1
          * @return string
          *
-         * @throws Kedavra
          *
          */
         public function modified(string $sha1)
         {
-
-            $command = "git diff  -p  $sha1 --stat  --color=always | aha > {$this->log_file()}";
-
-            $this->shell($command);
-
-            return (new File($this->log_file()))->read();
-
+            return shell_exec( "git diff  -p  $sha1 --stat  --color=always | aha");
         }
 
-        public function tree(string $dir ='')
-        {
 
-            $data = '<div class="mt-5 mb-3">
-                        <input type="search" class="form-control form-control-lg" id="search-file" onkeyup="search_files()">
-                    </div>
-                    <nav aria-label="breadcrumb">
-                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="/">'.$this->repository().'</a>
-                            </li>';
-
-                            if (def($dir))
-                            {
-                                $dirs = explode(DIRECTORY_SEPARATOR,$dir);
-                                $i = 0;
-                                foreach ($dirs as $k => $v)
-                                {
-                                    if ($k === 0)
-                                        append($data, ' <li class="breadcrumb-item"><a href="/'.$this->repository().'/'.$v.'">'.$v.'</a></li>');
-                                    else
-                                        append($data, ' <li class="breadcrumb-item"><a href="/'.$this->repository().'/'.$v[$i].'/'.$v[$k].'">'.$v[$k].'</a></li>');
-                                }
-                            }
-            append($data,'</ol></nav><table  class="table table-bordered" id="files"><tbody>');
-
-
-            foreach ($this->directories($dir) as $directory)
-            {
-
-                $x = collection(explode(DIRECTORY_SEPARATOR,$directory))->begin();
-
-                append($data,'<tr><td> <a href="/'.$this->repository().'/tree/' . $x.'"><i class="material-icons">folder</i> ' .$x.'</a></td></tr>');
-
-            }
-
-
-
-
-
-
-            append($data,'</tbody></table>');
-            return $data;
-        }
-
-        private function log_file()
-        {
-            return WEB_ROOT .DIRECTORY_SEPARATOR .'log.html';
-        }
 
         /**
          *
@@ -1399,11 +1624,12 @@ send
          *
          * Display contribution view
          *
-         * @param string $search_placeholder
          * @return string
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
-        public function contributions_view(string $search_placeholder =  'Search a contributor'): string
+        public function contributions_view(): string
         {
 
             $form = '<select class=" form-control-lg form-control" data-repository="'.$this->name.'" id="contributors_select"  data-months="'.$this->months()->join(',').'"><option value="Select a contributor">Select a contributor</option>                 
@@ -1412,7 +1638,7 @@ send
                 append($form,'<option value="'.$k.'" > '.$k.'</option>');
 
             append($form,'</select>');
-            return '<div class="input-group mb-5">
+            return '<div class="input-group mb-3">
                       <div class="input-group-prepend">
                             <span class="input-group-text">
                                 <i class="material-icons">
@@ -1429,19 +1655,25 @@ send
          *
          * Display the  licence
          *
+         * @param string $branch
          * @return string
-         *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
-        public function licence(): string
+        public function licence($branch= 'master'): string
         {
+            
+            if (is_null($this->licence))
+            {
 
-            return '';
+                $files = $this->files('',$branch);
+                foreach ($this->licences as $licence)
+                {
+                    if (has($licence,$files))
+                        $this->licence = nl2br($this->show($licence));
+                }
+                assign(is_null($this->licence),$this->licence, 'We have not found a licence');
 
-
-
+            }
+            return $this->licence;
         }
 
         /**
@@ -1458,30 +1690,47 @@ send
             return File::exist($archive) ? File::delete($archive) : false;
         }
 
+
         /**
          *
-         * Get release
+         * Show file content
          *
-         * @return array
+         * @param string $file
          *
-         * @throws Kedavra
-         *
+         * @param string $branch
+         * @return string
          */
-        public function releases(): array
+        public function show(string $file,string $branch ='master'): string
         {
-            return app()->cache()->get($this->releases_key);
+            $x  = shell_exec("git show --color-words $branch:$file");
+
+            return is_null($x) ? '' : $x;
+
+        }
+
+        public function hooks_view()
+        {
+            return '';
         }
 
         /**
-         * @return array
          *
-         * @throws Kedavra
+         * Display last update date
+         *
+         * @return string|null
          *
          */
-        public function contributors_contributions(): array
+        public function last_update(): string
         {
-            return [];
+            $x =  shell_exec('git log -1 --format=%ar');
+            return is_null($x) ? 'No commits found' : $x;
         }
+
+        public function tags()
+        {
+            return '';
+        }
+
 
     }
 }

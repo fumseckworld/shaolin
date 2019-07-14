@@ -2,11 +2,11 @@
 
 namespace Imperium {
 
-    use Carbon\Carbon;
     use DI\DependencyException;
     use DI\NotFoundException;
     use Dotenv\Dotenv;
     use GuzzleHttp\Psr7\ServerRequest;
+    use Imperium\Asset\Asset;
     use Imperium\Bases\Base;
     use Imperium\Cache\Cache;
     use Imperium\Collection\Collection;
@@ -16,6 +16,7 @@ namespace Imperium {
     use Imperium\Dump\Dump;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
+    use Imperium\Request\Request;
     use Imperium\Routing\Route;
     use Imperium\Routing\RouteResult;
     use Imperium\Validator\Validator;
@@ -38,11 +39,8 @@ namespace Imperium {
     use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\JsonResponse;
     use Symfony\Component\HttpFoundation\RedirectResponse;
-    use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\Response;
-    use Twig\Error\LoaderError;
-    use Twig\Error\RuntimeError;
-    use Twig\Error\SyntaxError;
+
 
 
     /**
@@ -64,7 +62,6 @@ namespace Imperium {
 
 
         use Route;
-
 
         /**
          *
@@ -164,6 +161,8 @@ namespace Imperium {
 
         /**
          *
+         * @Inject
+         *
          * @var View
          *
          */
@@ -179,6 +178,20 @@ namespace Imperium {
          */
         private $array_session;
 
+        /**
+         * @var RouteResult
+         */
+        private $router;
+
+
+        /**
+         * App constructor.
+         * @throws Kedavra
+         */
+        public function __construct()
+        {
+            $this->route()->create_route_table();
+        }
 
         /**
          *
@@ -187,7 +200,10 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
+         *
          */
         public function show_tables(): array
         {
@@ -201,8 +217,9 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function show_users(): array
         {
@@ -215,8 +232,9 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function show_databases(): array
         {
@@ -229,8 +247,9 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function charsets(): array
         {
@@ -243,8 +262,9 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function collations(): array
         {
@@ -262,8 +282,9 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function all(string $table,string $column= '',string $order = DESC): array
         {
@@ -278,7 +299,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function table_exist(string $table): bool
         {
@@ -293,8 +316,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function  table_not_exist(string $table): bool
         {
@@ -309,8 +333,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function base_exist(string $base): bool
         {
@@ -325,8 +350,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function change_base_collation(string $new_collation): bool
         {
@@ -342,8 +368,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function change_table_collation(string $table, string $new_collation): bool
         {
@@ -358,7 +385,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function change_base_charset(string $new_charset): bool
         {
@@ -374,8 +403,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function change_table_charset(string $table, string $new_charset): bool
         {
@@ -389,7 +419,9 @@ namespace Imperium {
          * @param string $user
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function user_exist(string $user): bool
         {
@@ -404,8 +436,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function remove_table(string $table): bool
         {
@@ -420,8 +453,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function empty_table(string $table): bool
         {
@@ -440,7 +474,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function append_column(string $table,string $column, string $type, int $size, bool $nullable): bool
         {
@@ -454,7 +490,9 @@ namespace Imperium {
          * @param string $table
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function show_columns(string $table): array
         {
@@ -469,8 +507,9 @@ namespace Imperium {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function show_columns_types(string $table): array
         {
@@ -486,8 +525,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function has_column(string $table,string $column): bool
         {
@@ -500,8 +540,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function has_tables(): bool
         {
@@ -514,7 +555,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function has_bases(): bool
         {
@@ -527,8 +570,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function has_users(): bool
         {
@@ -546,8 +590,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function add_database(string $name, string $charset = '', string $collation = ''): bool
         {
@@ -562,8 +607,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function remove_database(string $name): bool
         {
@@ -579,8 +625,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function add_user(string $name, string $password): bool
         {
@@ -596,8 +643,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function change_user_password(string $name, string $password): bool
         {
@@ -612,8 +660,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function remove_user(string $name): bool
         {
@@ -629,7 +678,9 @@ namespace Imperium {
          *
          * @return object
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function find(string $table,int $id)
         {
@@ -645,8 +696,9 @@ namespace Imperium {
          *
          * @return object
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function find_or_fail(string $table,int $id)
         {
@@ -662,7 +714,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function save(string $table,array $data): bool
         {
@@ -678,8 +732,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function remove_record(string $table,int $id): bool
         {
@@ -698,7 +753,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function update_record(int $id, array $data, string $table,array $ignore = []): bool
         {
@@ -715,7 +772,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function rename_column(string $table,string $column, string $new_name): bool
         {
@@ -731,8 +790,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function remove_column(string $table,string $column): bool
         {
@@ -772,36 +832,6 @@ namespace Imperium {
             return config('locales','locale');
         }
 
-        /**
-         * App constructor.
-         *
-         * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
-         */
-        public function __construct()
-        {
-
-           $this->view = $this->app(View::class);
-
-            $this->start_request_time = now();
-            $this->connect = $this->app(Connect::class);
-            $this->table = $this->app(Table::class);
-            $this->query = $this->app(Query::class);
-            $this->base = $this->app(Base::class);
-            $this->users = $this->app(Users::class);
-            $this->model = $this->app(Model::class);
-            $this->form = $this->app(Form::class);
-            $this->cache = $this->app(Cache::class);
-            $this->session = $this->app(Session::class);
-            $this->array_session = $this->app(ArraySession::class);
-            $this->debug = server(DISPLAY_BUGS,false);
-            $this->mode  = server(ENV,'production');
-
-            $this->env            = Dotenv::create(ROOT . DIRECTORY_SEPARATOR,'.env');
-            $this->env->load();
-        }
-
 
         /**
          *
@@ -809,15 +839,14 @@ namespace Imperium {
          *
          * @return Response
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function run():Response
         {
-            if ($this->debug())
-                whoops();
-
-           return  $this->router(ServerRequest::fromGlobals())->search()->call()->send();
+            whoops();
+           return $this->route_result()->call()->send();
 
         }
 
@@ -825,8 +854,9 @@ namespace Imperium {
          *
          * @return RouteResult
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function route_result(): RouteResult
         {
@@ -842,7 +872,7 @@ namespace Imperium {
          */
         public function request_time(): int
         {
-            return Carbon::now()->diffInRealMilliseconds($this->start_request_time);
+            return now()->diffInRealMilliseconds($this->start_request_time);
         }
 
         /**
@@ -852,7 +882,7 @@ namespace Imperium {
          */
         public function debug(): bool
         {
-            return $this->debug;
+            return server(DISPLAY_BUGS,false);
         }
 
         /**
@@ -890,8 +920,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function bases_users_tables_to_json(string $filename = 'all.json'): bool
         {
@@ -923,7 +954,9 @@ namespace Imperium {
          * @param string[] $queries
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function sql_to_json(string $filename,string ...$queries): bool
         {
@@ -941,7 +974,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function seed_database(int $records = 100): bool
         {
@@ -957,8 +992,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function rename_base(string $base, string $new_name): bool
         {
@@ -978,7 +1014,7 @@ namespace Imperium {
                 break;
             }
         }
-        
+
 
         /**
          *
@@ -989,8 +1025,9 @@ namespace Imperium {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function rename_table(string $table, string $new_name): bool
         {
@@ -1001,53 +1038,70 @@ namespace Imperium {
         /**
          *
          * @return Model
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function model(): Model
         {
-           return $this->model;
+           return $this->app(Model::class);
         }
 
         /**
          * @return Query
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function query(): Query
         {
-           return $this->query;
+           return $this->app(Query::class);
         }
 
         /**
          *
          * @return Users
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function users(): Users
         {
-            return $this->users;
+            return $this->app(Users::class);
         }
 
         /**
          * @return Base
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function bases(): Base
         {
-            return $this->base;
+            return $this->app(Base::class);
         }
 
         /**
          * @return Table
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function table(): Table
         {
-            return $this->table;
+            return $this->app(Table::class);
         }
 
         /**
          *
          * @return Connect
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function connect(): Connect
         {
-           return $this->connect;
+           return $this->app(Connect::class);
         }
 
         /**
@@ -1059,7 +1113,6 @@ namespace Imperium {
          * @return Router
          *
          * @throws Kedavra
-         *
          */
         public function router( ServerRequestInterface $serverRequest): Router
         {
@@ -1109,7 +1162,7 @@ namespace Imperium {
          */
         public function auth(): Oauth
         {
-            return new Oauth($this->session());
+            return new Oauth();
         }
 
         /**
@@ -1117,11 +1170,10 @@ namespace Imperium {
          * @return SessionInterface
          *
          * @throws Kedavra
-         *
          */
         public function session(): SessionInterface
         {
-            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? $this->array_session : $this->session;
+            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? new ArraySession(): new Session();
 
         }
 
@@ -1130,7 +1182,7 @@ namespace Imperium {
          */
         public function request(): Request
         {
-            return Request::createFromGlobals();
+            return new Request();
         }
 
         /**
@@ -1140,18 +1192,22 @@ namespace Imperium {
          * @return mixed
          *
          * @throws Kedavra
+         *
          */
         public function config(string $filename,$key)
         {
-            return (new Config($filename,$key))->get();
+            return (new Config($filename,$key))->value();
         }
 
         /**
+         * @param string $content
+         * @param int $status
+         * @param array $headers
          * @return Response
          */
-        public function response(): Response
+        public function response(string $content,int $status = 200,array $headers =[]): Response
         {
-            return new Response();
+            return new Response($content,$status ,$headers);
         }
 
         /**
@@ -1162,16 +1218,15 @@ namespace Imperium {
          * @param array $args
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         * @throws LoaderError
-         * @throws RuntimeError
-         * @throws SyntaxError
+         * @throws NotFoundException
          */
         public function view(string $name,array $args = []): string
         {
             $this->session()->set('view',$name);
 
-            return $this->view->load(get_called_class(),$name,$args);
+            return $this->app(View::class)->load(get_called_class(),$name,$args);
         }
 
         /**
@@ -1267,7 +1322,7 @@ namespace Imperium {
          */
         public function validator()
         {
-           return new Validator($this->request());
+           return new Validator($this->request()->request());
         }
 
         /**
@@ -1291,7 +1346,9 @@ namespace Imperium {
          * @param array $args
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function url(string $route,...$args): string
         {
@@ -1386,11 +1443,13 @@ return '';
          * Get cache instance
          *
          * @return Cache
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function cache(): Cache
         {
-            return $this->cache;
+            return $this->app(Cache::class);
         }
 
         /**
@@ -1402,7 +1461,7 @@ return '';
          */
         public function production(): bool
         {
-            return $this->mode === 'production';
+            return  server(ENV) === 'production';
         }
 
         /**
@@ -1411,8 +1470,9 @@ return '';
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function debug_bar(): string
         {
@@ -1434,6 +1494,18 @@ return '';
         public function file(string $filename, string $mode = READ_FILE_MODE): File
         {
             return new File($filename,$mode);
+        }
+
+        /**
+         *
+         * @param string $filename
+         *
+         * @return Asset
+         *
+         */
+        public function assets(string $filename): Asset
+        {
+            return new Asset($filename);
         }
     }
 }

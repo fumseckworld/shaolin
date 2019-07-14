@@ -43,7 +43,8 @@
         "ext-apcu": "*",
         "erusev/parsedown": "^1.7",
         "php-di/php-di": "^6.0",
-        "doctrine/annotations": "^1.6"
+        "doctrine/annotations": "^1.6",
+        "dan-da/highlight.php": "v9.15.6.2"
     },
     "autoload-dev": {
         "psr-4": {
@@ -54,7 +55,7 @@
     "autoload": {
         "psr-4": {
             "Imperium\\": "imperium/",
-            "________________________________________________________\\": "app/"
+            "App\\": "core/"
         },
         "files": [
             "helpers/helpers.php"

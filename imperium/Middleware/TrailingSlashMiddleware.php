@@ -15,11 +15,13 @@ namespace Imperium\Middleware {
          */
         public function __invoke(ServerRequestInterface $request)
         {
-            $url = (string)$request->getUri();
+            $url = $request->getUri()->getPath();
 
-            if (different($request->getUri()->getPath(),'/'))
+            if (different($url,'/'))
             {
-                if ($url[-1] === '/' )
+                $end = collection(explode('/',$url))->last();
+                
+                if (equal($end,'/'))
                     return to(trim($url,'/'));
             }
 

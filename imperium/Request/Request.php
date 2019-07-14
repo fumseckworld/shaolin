@@ -3,18 +3,53 @@
 
 namespace Imperium\Request {
 
+    use Symfony\Component\HttpFoundation\FileBag;
+    use Symfony\Component\HttpFoundation\ServerBag;
 
     class Request
     {
+
+
+        /**
+         * @var \Symfony\Component\HttpFoundation\Request
+         */
+        private $request;
+
+        public function __construct()
+        {
+            $this->request = request();
+        }
+
+        /**
+         * @return \Symfony\Component\HttpFoundation\Request
+         */
+        public function request()
+        {
+            return $this->request;
+        }
+
         /**
          *
          * Get all params
          *
          * @return array
+         *
          */
-        public static function all(): array
+        public function all(): array
         {
-            return \Symfony\Component\HttpFoundation\Request::createFromGlobals()->request->all();
+            return collection($this->request()->request->all())->each('htmlspecialchars')->collection();
+        }
+
+        /**
+         *
+         * Get client ip
+         *
+         * @return string
+         *
+         */
+        public function ip(): string
+        {
+            return $this->request()->server->get('REMOTE_ADDR');
         }
 
         /**
@@ -26,36 +61,37 @@ namespace Imperium\Request {
          * @return mixed
          *
          */
-        public static function get($key)
+        public function get($key)
         {
-            return collection(self::all())->get($key);
+            return collection($this->all())->get($key);
         }
 
         /**
          * @return array
          */
-        public static function server(): array
+        public function server(): array
         {
-            return \Symfony\Component\HttpFoundation\Request::createFromGlobals()->server->all();
+            return $this->request()->server->all();
         }
 
         /**
          *
-         * @return \Symfony\Component\HttpFoundation\Request
+         * Get files
+         *
+         * @return FileBag
          *
          */
-        public static function request()
+        public function files():FileBag
         {
-            return \Symfony\Component\HttpFoundation\Request::createFromGlobals();
+            return $this->request()->files;
         }
-
         /**
          *
-         * @return \Symfony\Component\HttpFoundation\ServerBag
+         * @return ServerBag
          */
-        public static  function serve()
+        public function serve(): ServerBag
         {
-            return \Symfony\Component\HttpFoundation\Request::createFromGlobals()->server;
+            return $this->request()->server;
         }
     }
 }

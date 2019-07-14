@@ -48,7 +48,7 @@ namespace Imperium\Routing {
          * @throws Kedavra
          *
          */
-        protected function create_route_table(): bool
+        public function create_route_table(): bool
         {
             return $this->routes_table()->not_exist('routes') ?  $this->routes_connect()->execute($this->create_route_table_query) : true;
         }
@@ -126,7 +126,7 @@ namespace Imperium\Routing {
          */
         private function routes_connect():Connect
         {
-            $base =   DB .  DIRECTORY_SEPARATOR  .'routes' .DIRECTORY_SEPARATOR .'routes.sqlite3';
+            $base =   CORE .  DIRECTORY_SEPARATOR  .'Routes' .DIRECTORY_SEPARATOR .'routes.sqlite3';
 
             return connect(SQLITE,$base,'','','','dump');
         }

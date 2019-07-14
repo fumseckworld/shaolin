@@ -6,6 +6,8 @@ namespace Imperium\Debug;
 
 
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Imperium\App;
 use Imperium\Exception\Kedavra;
 
@@ -17,6 +19,8 @@ class Bar
      * @param App $app
      * @return string
      * @throws Kedavra
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function render(App $app):string
     {
@@ -35,10 +39,6 @@ class Bar
                 <i class="material-icons">laptop</i> 
                 <span class="icon-text">'.os(true).'</span>
             </li>
-            <li class="icon-bar font-weight-bold ml-2 mr-2">
-                <i class="material-icons">check</i> 
-                <span class="icon-text">'.$app->response()->getStatusCode().'</span>
-            </li> 
              <li class="icon-bar font-weight-bold ml-2 mr-2">
                 <i class="material-icons">timer</i> 
                 <span class="icon-text">'.$time.' ms</span>

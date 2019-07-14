@@ -102,6 +102,7 @@ namespace Imperium\Session {
          */
         public function all(): array
         {
+            $this->start();
             return $_SESSION;
         }
 
@@ -128,6 +129,7 @@ namespace Imperium\Session {
          */
         public function __construct()
         {
+
         }
     }
 }

@@ -92,9 +92,10 @@ namespace Testing {
         public function test_files()
         {
 
-            $this->assertNotEmpty($this->git->files('')->collection());
+            $this->assertNotEmpty($this->git->files(''));
+            $this->assertContains('README.md',$this->git->files(''));
 
-            $this->assertNotEmpty($this->git->files('imperium')->collection());
+            $this->assertNotEmpty($this->git->files('imperium'));
 
         }
 
@@ -103,8 +104,9 @@ namespace Testing {
          */
         public function test_directories()
         {
-            $this->assertNotEmpty($this->git->directories()->collection());
-            $this->assertNotEmpty($this->git->directories('imperium')->collection());
+            $this->assertNotEmpty($this->git->directories());
+            $this->assertNotEmpty($this->git->directories('imperium'));
+            $this->assertContains('Routing',$this->git->directories('imperium'));
         }
 
         /**
@@ -185,7 +187,7 @@ namespace Testing {
         {
 
             $this->assertNotEmpty($this->git->contributors_view());
-            $this->assertNotEmpty($this->git->git());
+            $this->assertNotEmpty($this->git->git(''));
             $this->assertNotEmpty($this->git->release_view());
 
         }
@@ -197,7 +199,7 @@ namespace Testing {
         {
             $size = $this->git->release_size();
              $this->assertNotEmpty($size);
-             $this->assertEquals(68,$size);
+             $this->assertEquals(64,$size);
         }
 
         /**

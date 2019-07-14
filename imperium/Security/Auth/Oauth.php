@@ -10,11 +10,14 @@ namespace Imperium\Security\Auth {
     use Imperium\Model\Model;
     use Imperium\Request\Request;
     use Imperium\Security\Csrf\Csrf;
+    use Imperium\Session\ArraySession;
+    use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
     use Imperium\Writing\Write;
+    use Imperium\Zen;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
-    class Oauth
+    class Oauth extends Zen
     {
 
         /**
@@ -66,21 +69,22 @@ namespace Imperium\Security\Auth {
          *
          * @Inject("session")
          *
-         * @param SessionInterface $session
-         *
-         * @throws Kedavra
          * @throws DependencyException
+         * @throws Kedavra
          * @throws NotFoundException
          */
-        public function __construct(SessionInterface $session)
+        public function __construct()
         {
-            $this->table = config('auth','table');
+            if (request()->getScriptName() === './vendor/bin/phpunit')
+                $this->session = new ArraySession();
+            else
+                $this->session  = $this->app(Session::class);
 
-            is_true(app()->table_not_exist($this->table),true,"The {$this->table}'s table was not found on your system");
+            $this->model  = $this->app(Model::class);
 
-            $this->session = $session;
 
-            $this->model = app()->model()->from($this->table);
+
+
         }
 
         /**
@@ -96,7 +100,9 @@ namespace Imperium\Security\Auth {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function account(string $route_name,string $username_placeholder,string $last_name_placeholder,string $email_placeholder,string $password_placeholder,string $submit_text): string
         {

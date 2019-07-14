@@ -76,20 +76,9 @@ namespace Imperium\View {
 
             $this->twig->addExtension(new TranslationExtension());
 
-            $this->add_extensions(extensions('Extensions'));
-
-            $this->add_filters(extensions('Filters'));
-
-            $this->add_functions(extensions('Functions'));
-
-            $this->add_globals(extensions('Globals'));
-
-            $this->add_tags(extensions('Tags'));
-
-            $this->add_test(extensions('Tests'));
 
             foreach ($this->namespaces as $k => $v)
-                $this->loader()->addPath(views_path() .DIRECTORY_SEPARATOR . $k ,$v);
+                $this->loader()->addPath(VIEWS .DIRECTORY_SEPARATOR . $k ,$v);
 
 
             $functions = collection();
@@ -322,14 +311,13 @@ namespace Imperium\View {
             $view = collection(explode('.',$view))->begin();
 
             append($view,'.twig');
+            
             $data = $dir .DIRECTORY_SEPARATOR . $view;
 
             $file = $this->views_path . DIRECTORY_SEPARATOR .$dir  .DIRECTORY_SEPARATOR .$view;
 
             if(!file_exists($file))
                 (new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
-
-
 
             return $this->twig()->render($data,$args);
         }

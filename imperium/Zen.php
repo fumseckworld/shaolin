@@ -5,6 +5,9 @@ namespace Imperium {
     use DI\ContainerBuilder;
     use DI\DependencyException;
     use DI\NotFoundException as NotFoundExceptionAlias;
+    use GuzzleHttp\Psr7\ServerRequest;
+    use Imperium\Routing\Router;
+    use Imperium\Session\Session;
 
     /**
     *
@@ -1569,17 +1572,18 @@ namespace Imperium {
 
         /**
          * @param string $key
-         * @return object
+         * @return mixed
          * @throws NotFoundExceptionAlias
          * @throws DependencyException
          * @throws Exception\Kedavra
+         *
          */
         public function app(string $key)
         {
             if (is_null($this->container))
             {
                 $c = new ContainerBuilder();
-                $c->addDefinitions(CONFIG .DIRECTORY_SEPARATOR . 'app.php');
+                $c->addDefinitions(CONFIG .DIRECTORY_SEPARATOR . 'container.php');
                 $c->enableCompilation(ROOT . DIRECTORY_SEPARATOR .'tmp');
                 $c->useAnnotations(true);
                 $c =  $c->build();
@@ -1589,8 +1593,10 @@ namespace Imperium {
                 $c->set('db.password',db('password'));
                 $c->set('db.host',db('host'));
                 $c->set('db.dump',db('dump'));
-                $c->set("views.path",views_path());
+                $c->set("views.path",VIEWS);
                 $c->set("views.config",config('twig','config'));
+                $c->set(Session::class,new Session());
+
 
 
 

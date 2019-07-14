@@ -58,10 +58,7 @@ namespace Imperium\File {
          */
         public function markdown(): string
         {
-
             return (new Parsedown())->text($this->read());
-
-
         }
 
         /**

@@ -139,10 +139,6 @@ namespace Imperium\Connexion {
          *
          */
         private $host;
-        /**
-         * @var string
-         */
-        private $id;
 
 
         /**
@@ -166,7 +162,6 @@ namespace Imperium\Connexion {
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
 
-            $this->id = uniqid();
 
             $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . $dump_path;
 
@@ -179,6 +174,7 @@ namespace Imperium\Connexion {
             $this->password     = $password;
 
             $this->host         = $host;
+            $this->instance     = $this->instance();
         }
 
 

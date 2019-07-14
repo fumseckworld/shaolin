@@ -5,6 +5,7 @@ namespace Imperium\Routing {
 
 
     use Imperium\Exception\Kedavra;
+    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
     use Symfony\Component\HttpFoundation\Response;
 
     class RouteResult
@@ -54,7 +55,6 @@ namespace Imperium\Routing {
          * @param string $action
          * @param array $args
          *
-         * @throws Kedavra
          *
          */
         public function __construct(string $namespace,string $name, string $url, string $controller, string $action,array $args = [])
@@ -66,8 +66,10 @@ namespace Imperium\Routing {
             $this->args = $args;
             $this->namespace = $namespace;
             $this->class = $this->controller_class();
-            $this->controller_dir = ROOT  . DIRECTORY_SEPARATOR. collection(config('app','dir'))->get('app') .DIRECTORY_SEPARATOR .collection(config('app','dir'))->get('controller');
-        }
+            $this->controller_dir = CONTROLLERS;
+
+
+     }
 
         /**
          *
@@ -163,6 +165,7 @@ namespace Imperium\Routing {
         {
 
             $class = new $this->class();
+
 
             is_false(class_exists($this->controller_class()),true,"The class {$this->controller()} not exist at {$this->controller_dir()}");
 

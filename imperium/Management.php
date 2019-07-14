@@ -5,6 +5,7 @@ namespace Imperium {
     use Exception;
 
 
+    use Imperium\Asset\Asset;
     use Imperium\Bases\Base;
     use Imperium\Cache\Cache;
     use Imperium\Collection\Collection;
@@ -12,6 +13,7 @@ namespace Imperium {
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Json\Json;
+    use Imperium\Request\Request;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
     use Imperium\Writing\Write;
@@ -27,7 +29,6 @@ namespace Imperium {
     use Psr\Http\Message\ServerRequestInterface;
     use Symfony\Component\HttpFoundation\JsonResponse;
     use Symfony\Component\HttpFoundation\RedirectResponse;
-    use Symfony\Component\HttpFoundation\Request;
     use Symfony\Component\HttpFoundation\Response;
 
     interface Management
@@ -610,6 +611,14 @@ namespace Imperium {
          */
         public function router(ServerRequestInterface $serverRequest): Router;
 
+        /**
+         * @param string $filename
+         *
+         * @return Asset
+         *
+         */
+        public function assets(string $filename): Asset;
+
 
         /**
          *
@@ -737,10 +746,12 @@ namespace Imperium {
 
         /**
          *
+         * @param string $content
+         * @param int $status
+         * @param array $headers
          * @return Response
-         *
          */
-        public function response(): Response;
+        public function response(string $content,int $status = 200,array $headers =[]): Response;
 
 
         /**

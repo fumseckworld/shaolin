@@ -15,6 +15,7 @@ use Imperium\Flash\Flash;
 use Imperium\Security\Csrf\Csrf;
 use Imperium\Security\Hashing\Hash;
 use Imperium\Trans\Trans;
+use Imperium\Versioning\Git\Git;
 use Imperium\View\View;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -52,6 +53,20 @@ define('AFTER_ACTION','after_action');
 define('GIT_PERIOD',['minute','minutes','day','days','week','weeks','month','months','year','years']);
 define('GIT_SIZE',[1,2,3,4,5,6,7,8,9,10,11,12]);
 define('GIT_ARCHIVE_EXT',['tar','tgz','tar.gz','zip']);
+define('LANGUAGES',['1c','abnf','accesslog','actionscript','ada','angelscript','apache','applescript','arcade','arduino',
+                    'armasm','asciidoc','aspectj','autohotkey','autoit','avrasm','awk','axapta','bash','basic','bnf','brainfuck',
+                    'cal','capnproto','ceylon','clean','clojure-repl','clojure','cmake','coffeescript','coq','cos','cpp','crmsh','c',
+                    'crystal','cs','csp','css','d','dart','delphi','diff','django','dns','dockerfile','dos','dsconfig','dts','dust',
+                    'ebnf','elixir','elm','erb','erlang-repl','erlang','excel','fix','flix','fortran','fsharp','gams','gauss','gcode',
+                    'gherkin','glsl','gml','go','golo','gradle','groovy','haml','handlebars','haskell','haxe','hsp','htmlbars','http',
+                    'hy','inform7','ini','irpf90','isbl','java','javascript','jboss-cli','json','julia-repl','julia','kotlin','lasso',
+                    'ldif','leaf','less','lisp','list','livecodeserver','livescript','llvm','lsl','lua','makefile','markdown','mathematica','matlab',
+                    'maxima','mel','mercury','mipsasm','mizar','mojolicious','monkey','moonscript','n1ql','nginx','nimrod','nix','nsis','objectivec',
+                    'ocaml','openscad','oxygene','parser3','perl','pf','pgsql','php','plaintext','pony','powershell','processing','profile',
+                    'prolog','properties','protobuf','puppet','purebasic','python','q','qml','r','reasonml','rib','roboconf','routeros','rsl',
+                    'ruby','ruleslanguage','rust','sas','scala','scheme','scilab','scss','shell','smali','smalltalk','sml','sqf','sql','stan',
+                    'stata','step21','stylus','subunit','swift','taggerscript','tap','tcl','tex','thrift','tp','twig','typescript','vala','vbnet',
+                    'vbscript-html','vbscript','verilog','vhdl','vim','x86asm','xl','xml','xquery','yaml','zephir']);
 
 
 
@@ -74,15 +89,24 @@ define('FILES_OPEN_MODE',[READ_FILE_MODE,READ_AND_WRITE_FILE_MODE,EMPTY_AND_WRIT
 
 define('LOCALHOST','localhost');
 
-define('ROOT',dirname(__DIR__));
-define('WEB_ROOT',dirname(__DIR__) . DIRECTORY_SEPARATOR  . 'web');
-define('CONFIG',dirname(__DIR__) . DIRECTORY_SEPARATOR  . 'config');
-define('DB',ROOT. DIRECTORY_SEPARATOR .'db');
 
 define('ASC','ASC');
 define('DESC','DESC');
 
+define('ROOT',dirname(__DIR__));
+define('WEB',ROOT . DIRECTORY_SEPARATOR  . 'web');
+define('DB',ROOT. DIRECTORY_SEPARATOR .'db');
+define('APP','App\\Controllers\\');
+define('CORE',ROOT . DIRECTORY_SEPARATOR . 'core');
+define('CONTROLLERS',CORE . DIRECTORY_SEPARATOR . 'Controllers');
+define('VIEWS',CORE . DIRECTORY_SEPARATOR . 'Views');
+define('MODELS',CORE . DIRECTORY_SEPARATOR . 'Models');
+define('MIDDLEWARE',CORE . DIRECTORY_SEPARATOR . 'Middleware');
+define('CONFIG',CORE. DIRECTORY_SEPARATOR  . 'Config');
+define('COMMAND',CORE. DIRECTORY_SEPARATOR  . 'Commands');
+
 define('NUMERIC','([0-9]+)');
+
 define('NOT_NUMERIC','([^0-9]+)');
 
 define('STRING','([a-zA-Z]+)');
@@ -288,8 +312,9 @@ if (not_exist('route'))
      * @param array $args
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function route(string $name,array $args = []): string
     {
@@ -347,6 +372,49 @@ if (not_exist('exist'))
 }
 
 
+if (not_exist('numb'))
+{
+    #    Output easy-to-read numbers
+    #    by james at bandit.co.nz
+    function numb(int $x)
+    {
+        // first strip any formatting;
+        $n = (0+str_replace(",","",$x));
+
+        // is this a number?
+        if(!is_numeric($n))
+            return false;
+
+        // now filter it;
+        if($n>1000000000000)
+            return round(($n/1000000000000),2).' T';
+        else if($n>1000000000)
+            return round(($n/1000000000),2).' B';
+        else if($n>1000000)
+            return round(($n/1000000),2).' M';
+        else if($n>1000)
+            return round(($n/1000),2).' K';
+
+        return number_format($n);
+    }
+}
+if (not_exist('string_parse'))
+{
+    /**
+     *
+     * Split a sing to array
+     *
+     * @param string $data
+     *
+     * @return array
+     *
+     */
+    function string_parse(string $data): array
+    {
+        return preg_split('/\s+/', $data);
+    }
+
+}
 if (not_exist('display_repositories'))
 {
     /**
@@ -357,37 +425,151 @@ if (not_exist('display_repositories'))
      *
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function display_repositories(string $table = 'repositories'): string
     {
-        $session = app()->session();
-        $session->def('limit',99);
-        $limit_per_page = $session->has('limit') ? $session->get('limit') : $session->def('limit',100);
-        $pagination = pagination($limit_per_page,"?current=",get('current',1),app()->model()->from($table)->count(),'>>','<<');
 
-        $data = collection(app()->records($table));
-
-
-        $code = '';
-
-
-        append($code,'<div class="row mt-5 mb-5">');
-
-        $data->rewind();
-
-        while ($data->valid())
+        $data = [];
+        $owners = \collection();
+        if (def(get('owner')))
         {
-            $values = $data->current();
 
-            append($code,'<div class="col-lg-4 col-xl-4 col-lg-4 col-sm-12"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->name.'</h4><a href="/repo/'.$values->owner.'/'.$values->name.'"><img src="'.$values->img.'" alt="'.$values->name.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->description,0,\config('article','limit')).'</div><p class="card-text mt-2"><a href="/repo/'.$values->owner.'/'.$values->name.'" class="btn btn-primary"> '.$values->name.'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->updated_at).'</small></div></div></div>');
-            $data->next();
+            foreach (Dir::scan('depots') as $owner)
+            {
+                if ($owner == get('owner'))
+                {
+                    foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
+                    {
+                        $data[$owner][] = realpath("depots/$owner/$repository");
+                    }
+                }else{
+                    if ($owners->not_exist($owner))
+                        $owners->add($owner);
+                }
+            }
+        }else{
+
+            foreach (Dir::scan('depots') as $owner)
+            {
+                if ($owners->not_exist($owner))
+                    $owners->add($owner);
+                
+                foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
+                {
+
+                    $data[$owner][] = realpath("depots/$owner/$repository");
+                }
+            }
         }
-        append($code,'</div>');
-        append($code,'<div class="row ml-0 mb-5">');
-        append($code,$pagination);
-        append($code,'</div>');
+
+
+        $data = collection($data);
+
+
+        $code = '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">group</i></span></div> <select class="form-control form-control-lg" onchange="location = this.options[this.selectedIndex].value"><option value="Choose an user">Choose an user</option>';
+
+        foreach ($owners->collection() as $owner)
+            append($code,'<option value="?owner='.$owner.'">'.$owner.'</option>');
+
+        append($code,'</select></div><div class="mt-5 mb-5"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">search</i></span></div><input type="search" onkeyup="search_project()" id="search_project"  autofocus="autofocus" class="form-control-lg form-control" placeholder="Search a project"></div></div><ul class="list-unstyled row" id="projects">');
+
+        if (def(get('owner')))
+        {
+            foreach ($data->get(get('owner')) as $repository)
+            {
+                $g = new Git($repository,get('owner'));
+
+                append($code,'
+                <li class="col-lg-6 mb-5 col-md-6 col-xl-6 col-sm-12">
+                    <div class="card-deck">
+                        <div class="card">
+                            <div class="card-header text-center">
+                                '.$g->repository().'
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text text-center">
+                                    '.$g->description().'
+                                </p>
+                                <div class="text-center">
+                                    <div class="btn-group " role="group">
+                                        <a href="'.route('repository',[$g->owner(),$g->repository()]).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('stars',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
+                                        <a href="'.route('download',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
+                                    </div>
+                                </div>
+                            </div>                                      
+                            <div class="card-footer">
+                              <small class="text-muted">'.$g->last_update().'</small>
+                            </div>
+                        </div>
+                    </div>
+                </li>');
+            }
+        }else {
+            foreach ($owners->collection() as $owner)
+            {
+                foreach ($data->get($owner) as $x)
+                {
+
+                    $g = new Git($x,$owner);
+
+                    append($code,'
+                <li class="col-lg-6 mb-5 col-md-6 col-xl-6 col-sm-12">
+                    <div class="card-deck">
+                        <div class="card ">
+                            <div class="card-header text-center">
+                                '.$g->repository().'
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text text-center">
+                                    '.$g->description().'
+                                </p>
+                                <div class="text-center">
+                                    <div class="btn-group " role="group">
+                                        <a href="'.route('repository',[$g->owner(),$g->repository()]).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('stars',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.(new File('stars'))->read().'</span></a>
+                                        <a href="'.route('download',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.(new File('download'))->read().'</span></a>
+                                    </div>
+                                </div>
+                            </div>                                      
+                            <div class="card-footer">
+                              <small class="text-muted">'.$g->last_update().'</small>
+                            </div>
+                        </div>
+                    </div>
+                </li>');
+                }
+
+            }
+        }
+
+
+        append($code,'</ul></div><script> function search_project()
+        { 
+            let input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById("search_project");
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("projects");
+            li = ul.getElementsByTagName("li");
+            for (i = 0; i < li.length; i++)
+            {
+                
+                a = li[i].getElementsByClassName("card-header")[0];
+                txtValue = a.textContent || a.innerText;
+                
+                if (txtValue.toUpperCase().indexOf(filter) > -1)
+                {
+                    li[i].style.display = "";
+                } else {
+                    li[i].style.display = "none";
+                }
+            }
+        }
+</script>');
+
         return $code;
 
     }
@@ -1110,50 +1292,6 @@ if (not_exist('assign'))
     }
 }
 
-if (not_exist('display_repositories'))
-{
-    /**
-     * @param string $table
-     *
-     * @return string
-     *
-     * @throws Kedavra
-     *
-     */
-    function display_repositories(string $table = 'repositories'): string
-    {
-        $session = app()->session();
-
-        $session->def('limit',99);
-
-        $limit_per_page = $session->has('limit') ? $session->get('limit') : $session->def('limit',100);
-
-        $pagination = pagination($limit_per_page,"?current=",get('current',1),app()->model()->from($table)->count(),'>>','<<');
-
-        $data = collection(app()->records($table));
-
-        $code = '<div class="row mt-5 mb-5">';
-
-        $data->rewind();
-
-        while ($data->valid())
-        {
-            $values = $data->current();
-
-            append($code,'<div class="col-lg-4 col-xl-4 col-lg-4 col-sm-12"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->name.'</h4><a href="/repo/'.$values->owner.'/'.$values->name.'"><img src="'.$values->img.'" alt="'.$values->name.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->description,0,\config('article','limit')).'</div><p class="card-text mt-2"><a href="/repo/'.$values->owner.'/'.$values->name.'" class="btn btn-primary"> '.$values->name.'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->updated_at).'</small></div></div></div>');
-
-            $data->next();
-        }
-
-        append($code,'</div>');
-        append($code,'<div class="row ml-0 mb-5">');
-        append($code,$pagination);
-        append($code,'</div>');
-
-        return $code;
-
-    }
-}
 
 if (not_exist('query'))
 {
@@ -2182,12 +2320,14 @@ if (not_exist('tables_select'))
      * @method tables_select
      *
      * @param string $current
-     * @param  string $url_prefix The url prefix
-     * @param  string $separator The url separator
+     * @param string $url_prefix The url prefix
+     * @param string $separator The url separator
      *
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
+     * @throws NotFoundException
      */
     function tables_select(string $current, string $url_prefix,string $separator): string
     {
@@ -2276,26 +2416,15 @@ if (not_exist('commands'))
      *
      * @return array
      *
-     * @throws Kedavra
-     *
      */
     function commands(): array
     {
-        $core_path =  core_path(collection(config('app','dir'))->get('app'));
 
-        $command_dir = collection(config('app','dir'))->get('command');
+        $commands  = COMMAND;
 
-        $commands = $core_path .DIRECTORY_SEPARATOR . $command_dir;
+        $namespace =  'App\\'.  'Commands';
 
-        is_false(Dir::is($core_path),true,"The directory $core_path was not found");
-
-        is_false(Dir::is($commands),true,"The directory $command_dir was not found at $core_path");
-
-        $namespace =  config('app','namespace') . '\\' . $command_dir;
-
-        $path = realpath($commands);
-
-        $data =   glob($path .DIRECTORY_SEPARATOR . '*.php');
+        $data =   glob($commands.DIRECTORY_SEPARATOR . '*.php');
 
         $commands = collection();
 
@@ -3003,8 +3132,9 @@ if (not_exist('is_admin'))
     /**
      * @return bool
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function is_admin(): bool
     {
@@ -3031,11 +3161,13 @@ if (not_exist('css'))
      * @param string $filename
      *
      * @return string
-     *
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
      */
     function css(string $filename): string
     {
-        return Asset::css($filename);
+        return app()->assets($filename)->css();
     }
 }
 
@@ -3049,10 +3181,14 @@ if (not_exist('img'))
      * @param string $alt
      *
      * @return string
+     *
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
      */
     function img(string $filename,string $alt): string
     {
-        return Asset::img($filename,$alt);
+        return app()->assets($filename)->img($alt);
     }
 }
 
@@ -3066,10 +3202,14 @@ if (not_exist('js'))
      *
      * @param string $type
      * @return string
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
      */
     function js(string  $filename,string $type= ''): string
     {
-        return Asset::js($filename,$type);
+        return app()->assets($filename)->js($type);
+
     }
 }
 
@@ -4265,12 +4405,10 @@ if (not_exist('controllers'))
     /**
      * @return array
      *
-     * @throws Kedavra
-     *
      */
     function controllers(): array
     {
-        $dir = core_path(collection(config('app','dir'))->get('app')) . DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('controller');
+        $dir = CONTROLLERS;
 
         $controllers  = collection(File::search("$dir" .DIRECTORY_SEPARATOR. '*.php'));
 
@@ -4369,55 +4507,55 @@ if (not_exist('future'))
         switch ($mode)
         {
             case 'second':
-                return Carbon::now($tz)->addSecond($time)->toDateString();
+                return Carbon::now($tz)->addSeconds($time)->toDateString();
             break;
             case 'seconds':
                 return Carbon::now($tz)->addSeconds($time)->toDateString();
             break;
             case 'minute':
-                return Carbon::now($tz)->addMinute($time)->toDateString();
+                return Carbon::now($tz)->addMinutes($time)->toDateString();
             break;
             case 'minutes':
                 return Carbon::now($tz)->addMinutes($time)->toDateString();
             break;
             case 'hour':
-                return Carbon::now($tz)->addHour($time)->toDateString();
+                return Carbon::now($tz)->addHours($time)->toDateString();
             break;
             case 'hours':
                 return Carbon::now($tz)->addHours($time)->toDateString();
             break;
             case 'day':
-                return Carbon::now($tz)->addDay($time)->toDateString();
+                return Carbon::now($tz)->addDays($time)->toDateString();
             break;
             case 'days':
                 return Carbon::now($tz)->addDays($time)->toDateString();
             break;
             case 'week':
-                return Carbon::now($tz)->addWeek($time)->toDateString();
+                return Carbon::now($tz)->addWeeks($time)->toDateString();
             break;
             case 'weeks':
                 return Carbon::now($tz)->addWeeks($time)->toDateString();
             break;
             case 'month':
-                return Carbon::now($tz)->addMonth($time)->toDateString();
+                return Carbon::now($tz)->addMonths($time)->toDateString();
             break;
             case 'months':
                 return Carbon::now($tz)->addMonths($time)->toDateString();
             break;
             case 'year':
-                return Carbon::now($tz)->addYear($time)->toDateString();
+                return Carbon::now($tz)->addYears($time)->toDateString();
             break;
             case 'years':
                 return Carbon::now($tz)->addYears($time)->toDateString();
             break;
             case 'century':
-                return Carbon::now($tz)->addCentury($time)->toDateString();
+                return Carbon::now($tz)->addCenturies($time)->toDateString();
             break;
             case 'centuries':
                 return Carbon::now($tz)->addCenturies($time)->toDateString();
             break;
             default:
-                return Carbon::now($tz)->addHour($time)->toDateString();
+                return Carbon::now($tz)->addHours($time)->toDateString();
             break;
         }
 
@@ -4444,55 +4582,55 @@ if (not_exist('past'))
         switch ($mode)
         {
             case 'second':
-                return Carbon::now($tz)->addSecond($time)->toDateString();
+                return Carbon::now($tz)->addSeconds($time)->toDateString();
             break;
             case 'seconds':
                 return Carbon::now($tz)->addSeconds($time)->toDateString();
             break;
             case 'minute':
-                return Carbon::now($tz)->addMinute($time)->toDateString();
+                return Carbon::now($tz)->addMinutes($time)->toDateString();
             break;
             case 'minutes':
                 return Carbon::now($tz)->addMinutes($time)->toDateString();
             break;
             case 'hour':
-                return Carbon::now($tz)->addHour($time)->toDateString();
+                return Carbon::now($tz)->addHours($time)->toDateString();
             break;
             case 'hours':
                 return Carbon::now($tz)->addHours($time)->toDateString();
             break;
             case 'day':
-                return Carbon::now($tz)->addDay($time)->toDateString();
+                return Carbon::now($tz)->addDays($time)->toDateString();
             break;
             case 'days':
                 return Carbon::now($tz)->addDays($time)->toDateString();
             break;
             case 'week':
-                return Carbon::now($tz)->addWeek($time)->toDateString();
+                return Carbon::now($tz)->addWeeks($time)->toDateString();
             break;
             case 'weeks':
                 return Carbon::now($tz)->addWeeks($time)->toDateString();
             break;
             case 'month':
-                return Carbon::now($tz)->addMonth($time)->toDateString();
+                return Carbon::now($tz)->addMonths($time)->toDateString();
             break;
             case 'months':
                 return Carbon::now($tz)->addMonths($time)->toDateString();
             break;
             case 'year':
-                return Carbon::now($tz)->addYear($time)->toDateString();
+                return Carbon::now($tz)->addYears($time)->toDateString();
             break;
             case 'years':
                 return Carbon::now($tz)->addYears($time)->toDateString();
             break;
             case 'century':
-                return Carbon::now($tz)->addCentury($time)->toDateString();
+                return Carbon::now($tz)->addCenturies($time)->toDateString();
             break;
             case 'centuries':
                 return Carbon::now($tz)->addCenturies($time)->toDateString();
             break;
             default:
-                return Carbon::now($tz)->addHour($time)->toDateString();
+                return Carbon::now($tz)->addHours($time)->toDateString();
             break;
         }
 
