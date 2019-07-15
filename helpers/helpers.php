@@ -322,30 +322,7 @@ if (not_exist('route'))
 
         is_true(not_def($x),true,"The route with the $name name was not found");
 
-        if (def($args))
-        {
-            $url = collection(explode('/',$x->url));
-
-            $data = '';
-            $i =0;
-            foreach ($url->collection() as  $v)
-            {
-                if (empty($v))
-                {
-                    $data .= '/';
-                }
-                elseif(strpos($v,':') === 0)
-                {
-                    $data .= $args[$i] . '/';
-                    $i++;
-                } else
-                {
-                    $data .= "$v/";
-                }
-            }
-            return rtrim($data,'/');
-        }
-        return $x->url;
+        return  def($args) ? base_url($args) : $x->url;
     }
 }
 
@@ -421,15 +398,13 @@ if (not_exist('display_repositories'))
      *
      * Display repositories
      *
-     * @param string $table
-     *
      * @return string
      *
      * @throws DependencyException
      * @throws Kedavra
      * @throws NotFoundException
      */
-    function display_repositories(string $table = 'repositories'): string
+    function display_repositories(): string
     {
 
         $data = [];
@@ -474,7 +449,7 @@ if (not_exist('display_repositories'))
         foreach ($owners->collection() as $owner)
             append($code,'<option value="?owner='.$owner.'">'.$owner.'</option>');
 
-        append($code,'</select></div><div class="mt-5 mb-5"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">search</i></span></div><input type="search" onkeyup="search_project()" id="search_project"  autofocus="autofocus" class="form-control-lg form-control" placeholder="Search a project"></div></div><ul class="list-unstyled row" id="projects">');
+        append($code,'</select></div><div class="mt-3 mb-3"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">search</i></span></div><input type="search" onkeyup="search_project()" id="search_project"  autofocus="autofocus" class="form-control-lg form-control" placeholder="Search a project"></div></div><ul class="list-unstyled row" id="projects">');
 
         if (def(get('owner')))
         {
@@ -483,7 +458,7 @@ if (not_exist('display_repositories'))
                 $g = new Git($repository,get('owner'));
 
                 append($code,'
-                <li class="col-lg-6 mb-5 col-md-6 col-xl-6 col-sm-12">
+                <li class="col-lg-6 mt-3 col-md-6 col-xl-6 col-sm-12">
                     <div class="card-deck">
                         <div class="card">
                             <div class="card-header text-center">
@@ -495,7 +470,7 @@ if (not_exist('display_repositories'))
                                 </p>
                                 <div class="text-center">
                                     <div class="btn-group " role="group">
-                                        <a href="'.route('repository',[$g->owner(),$g->repository()]).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('repository',['repo',$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
                                         <a href="'.route('stars',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
                                         <a href="'.route('download',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
                                     </div>
@@ -529,7 +504,7 @@ if (not_exist('display_repositories'))
                                 </p>
                                 <div class="text-center">
                                     <div class="btn-group " role="group">
-                                        <a href="'.route('repository',[$g->owner(),$g->repository()]).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('repository',[$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
                                         <a href="'.route('stars',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.(new File('stars'))->read().'</span></a>
                                         <a href="'.route('download',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.(new File('download'))->read().'</span></a>
                                     </div>
@@ -3117,13 +3092,20 @@ if (not_exist('base_url'))
      * @return string
      *
      */
-    function base_url(...$params): string
-    {
-        $url = https() ? 'https://'.request()->getHost() : 'http://' . \request()->getHost();
-        foreach ($params as $param)
-            append($url,"/$param");
+function base_url(array  $params): string
+{
 
-        return $url;
+    if (php_sapi_name() !=='cli')
+    {
+        $url = https() ? 'https://'.request()->getHost() : 'http://' . \request()->getHost() .'/' ;
+
+
+        append($url,collection($params)->join('/'));
+
+        return  $url;
+    }
+    return '/'. collection($params)->join('/');
+
     }
 }
 

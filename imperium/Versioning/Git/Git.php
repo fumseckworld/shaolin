@@ -574,7 +574,7 @@ namespace Imperium\Versioning\Git {
                     <nav aria-label="breadcrumb">
                          <ol class="breadcrumb">
                             <li class="breadcrumb-item">
-                                <a href="'.base_url('repo',$this->owner(),$this->repository()).'">'.$this->repository().'</a>
+                                <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch]).'">'.$this->repository().'</a>
                             </li>';
 
 
@@ -590,9 +590,9 @@ namespace Imperium\Versioning\Git {
                     {
                         append($ancient,"$v/");
                         if ($k ==0)
-                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v).'">'.$v.'</a></li>');
+                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'tree',$v]).'">'.$v.'</a></li>');
                         else
-                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')]) .'">' .$v.'</a></li>');
                     }
 
                 }else
@@ -608,9 +608,9 @@ namespace Imperium\Versioning\Git {
                     {
                         append($ancient,"$v/");
                         if ($k ==0)
-                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v).'">'.$v.'</a></li>');
+                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'tree',$v]).'">'.$v.'</a></li>');
                         else
-                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')]) .'">' .$v.'</a></li>');
                     }
                 }
             append($data,'</ol></nav><table  class="table table-bordered" id="files"><tbody>');
@@ -622,9 +622,9 @@ namespace Imperium\Versioning\Git {
                 {
 
                     if (def($current_directory))
-                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$current_directory,$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
+                        append($data,'<tr><td> <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'tree',$current_directory,$v]) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
                     else
-                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
+                        append($data,'<tr><td> <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'tree',$v]) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
 
 
                 }
@@ -632,10 +632,10 @@ namespace Imperium\Versioning\Git {
                 foreach ($files as  $file)
 
                     if (def($current_directory))
-                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'file',$current_directory,$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
+                        append($data,'<tr><td> <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'file',$current_directory,$file]).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
                     else
 
-                    append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'file',$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
+                    append($data,'<tr><td> <a href="'.base_url(['repo',$this->owner(),$this->repository(),$branch,'file',$file]).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
 
 
             }else
@@ -1129,29 +1129,38 @@ namespace Imperium\Versioning\Git {
          */
         public function git(string $tree,string $file='',string $branch= 'master'): string
         {
-
+            $this->checkout($branch);
             $html = '
                         <a href="'.root().'" class="btn btn-secondary"><i class="material-icons">apps</i>Apps</a> 
-                          
-                            <div class="text-center mt-3">
-                                <div class="input-group mb-3">
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
+                                <div class="input-group">
                                      <div class="input-group-prepend">
                                         <button class="btn btn-secondary" type="button" onclick="copy_public_clone_url()"><i class="material-icons">link</i></button>
                                      </div>
                                     <input type="text" class="form-control form-control-lg " id="clone" value="git://'.request()->getHost().'/'.$this->owner().'/'.$this->repository().'">
-                                     
-                                    <input type="text" class="form-control form-control-lg ml-3" id="contributor_clone" value="git@'.request()->getHost().':'.$this->owner().'/'.$this->repository().'">
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">
+                                <div class="input-group mt-3">
                                      <div class="input-group-prepend">
                                         <button class="btn btn-secondary" type="button" onclick="copy_contributor_clone_url()"><i class="material-icons">link</i></button>
                                      </div>
-                                    <div class="input-group-prepend ml-3 mr-3">
-                                        <a href="'.route('download',[$this->repository(),$this->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
-                                    </div>  
-                                    <div class="input-group-prepend">
-                                        <a href="'.route('stars',[$this->repository(),$this->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
-                                    </div>
+                                     <input type="text" class="form-control form-control-lg" id="contributor_clone" value="git@'.request()->getHost().':'.$this->owner().'/'.$this->repository().'">
+                                </div>
+                            </div> 
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
+                                <div class="btn-group" role="group" aria-label="Basic example">
+                                    <a href="'.route('download',[$this->repository(),$this->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
+                                   <a href="'.route('stars',[$this->repository(),$this->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
                                 </div>
                             </div>
+                        </div>
+                            
+                      
+                            '.$this->branches_view().'
+                      
+                           
                             <script>
                                 function copy_public_clone_url() 
                                 {
@@ -1200,7 +1209,7 @@ namespace Imperium\Versioning\Git {
   <div class="tab-pane fade show" id="nav-readme" role="tabpanel" aria-labelledby="nav-readme-tab"><div class="mt-3 mb-3">'.$this->readme().'</div></div>
   <div class="tab-pane fade show active"  id="nav-code" role="tabpanel" aria-labelledby="nav-code-tab"><div class="mt-3 mb-3">'.$this->tree($tree,$file,$branch).'</div></div>
   <div class="tab-pane fade show " id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab"><div class="mt-3 mb-3">'.$this->news().'</div></div>
-  <div class="tab-pane fade show " id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab"><div class="mt-3 mb-3">'.$this->log().'</div></div>
+  <div class="tab-pane fade show " id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab"><div class="mt-3 mb-3">'.$this->log($branch).'</div></div>
   <div class="tab-pane fade show " id="nav-change-logs" role="tabpanel" aria-labelledby="nav-change-logs-tab"><div class="mt-3 mb-3">'.$this->changelog().'</div></div>
   <div class="tab-pane fade show " id="nav-releases" role="tabpanel" aria-labelledby="nav-releases-tab"><div class="mt-3 mb-3">'.$this->release_view().'</div></div>
   <div class="tab-pane fade show " id="nav-hooks" role="tabpanel" aria-labelledby="nav-hooks-tab"><div class="mt-3 mb-3">'.$this->hooks_view().'</div></div>
@@ -1274,11 +1283,12 @@ send
          *
          * Display log
          *
+         * @param string $branch
          * @return string
          *
          * @throws Kedavra
          */
-        public function log(): string
+        public function log(string $branch = 'master'): string
         {
 
             $size = intval(get('size',1));
@@ -1288,14 +1298,15 @@ send
 
             $author = get('author','');
 
+
             not_in(GIT_PERIOD,$period,true,"Current period not valid");
 
             not_in(GIT_SIZE,$size,true,"Current size not valid");
 
 
-            $format = '<a href="'.base_url($this->repository(),'diff',"%h").'"> %h</a> <a href="'.base_url().'?author=%an">%an</a> %s  %ar';
+            $format = '<a href="'.base_url([$this->owner(),$this->repository(),$branch,'diff',"%h"]).'"> %h</a> <a href="'.'?author=%an">%an</a> %s  %ar';
 
-            $command = "git log --graph --oneline --color=always --after=$size.$period";
+            $command = "git log  --stat --graph --oneline --color=always --after=$size.$period $branch";
 
             if (def($author))
                 append($command," --author='$author'");
@@ -1306,8 +1317,7 @@ send
             append($command," | aha ");
 
 
-
-            return html_entity_decode(shell_exec($command));
+               return  html_entity_decode(shell_exec($command));
         }
 
         /**
@@ -1474,7 +1484,7 @@ send
                     $releases =  $this->data()->reverse();
                 }
                 app()->cache()->set(__FUNCTION__,$releases);
-               $this->releases = $releases;
+                $this->releases = $releases;
             }
             return $this->releases;
         }
@@ -1613,11 +1623,79 @@ send
          * Display branches view
          *
          * @return string
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function branches_view(): string
         {
-            return '';
+            $html = '<div class="row">';
+            $x = collection(['#'=> 'Select a branch']);
+            foreach ($this->branches() as $branch)
+                $x->add($branch,route('repository',['repo',$this->owner(),$this->repository(),$branch]));
+
+            $branches = (new Form())
+                ->start('checkout_branch')
+                    ->row()
+                        ->redirect('branch',$x->collection(),'<i class="material-icons">track_changes</i>')
+                    ->end_row()
+                ->get();
+
+            append($html,'<div class="col-lg-12 col-md-12 col-sm-12 mt-3 col-xl-12>'.$branches.'</div>');
+
+            $x = collection(['#'=> 'Select a period']);
+
+            foreach (GIT_PERIOD as $period)
+            {
+                $z = '?period='.$period .'&size=' .get('size','') .'&author='.get('author','');
+
+                $x->add($period,$z);
+            }
+
+            $time = (new Form())
+                ->start('checkout_branch')
+                ->row()
+                ->redirect('period',$x->collection(),'<i class="material-icons">access_time</i>')
+                ->end_row()
+                ->get();
+            append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$time.'</div>');
+
+            $x = collection(['#'=> 'Select a size']);
+
+            foreach (GIT_SIZE as $size)
+            {
+                $z = '?size='.$size .'&period=' .get('period','months') .'&author='.get('author','');
+
+                $x->add($size,$z);
+            }
+
+            $size = (new Form())
+                ->start('checkout_branch')
+                ->row()
+                ->redirect('size',$x->collection(),'<i class="material-icons">access_time</i>')
+                ->end_row()
+                ->get();
+
+            append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$size.'</div>');
+            $x = collection(['#'=> 'Select a contributor']);
+
+            foreach (collection($this->contributors())->keys() as $contributor)
+            {
+                $z = '?author='.$contributor .'&period=' .get('period','') .'&size='.get('size','');
+
+                $x->add($contributor,$z);
+            }
+
+            $author = (new Form())
+                ->start('checkout_branch')
+                ->row()
+                ->redirect('author',$x->collection(),'<i class="material-icons">group</i>')
+                ->end_row()
+                ->get();
+            append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$author.'</div>');
+            append($html,'</div>');
+
+            return $html;
         }
 
         /**

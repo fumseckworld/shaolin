@@ -33,9 +33,10 @@ namespace App\Controllers {
             return $this->git("{$this->prefix}/$owner/$repository",$owner)->download();
         }
 
-		public function show(string $owner,string $repo)
+		public function show(string $owner,string $repo,string $branch)
         {
-            $repository = $this->git("{$this->prefix}/$owner/$repo",$owner)->git('');
+
+            $repository = $this->git("{$this->prefix}/$owner/$repo",$owner)->git('','',$branch);
             return $this->view('repository',compact('repository'));
         }
 

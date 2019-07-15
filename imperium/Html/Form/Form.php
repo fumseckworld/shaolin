@@ -2,6 +2,8 @@
 
 namespace Imperium\Html\Form {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\App;
     use Imperium\Exception\Kedavra;
 
@@ -554,7 +556,7 @@ namespace Imperium\Html\Form {
          */
         private function separator(): string
         {
-            return self::FORM_SEPARATOR .' ' . $this->get_margin() .' '. $this->get_padding();
+            return self::FORM_SEPARATOR ;
         }
 
         /**
@@ -573,6 +575,8 @@ namespace Imperium\Html\Form {
          * @return Form
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function start(string $route,string $confirm ='', $id = '',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
         {

@@ -5,8 +5,8 @@ namespace Imperium {
     use DI\ContainerBuilder;
     use DI\DependencyException;
     use DI\NotFoundException as NotFoundExceptionAlias;
-    use GuzzleHttp\Psr7\ServerRequest;
-    use Imperium\Routing\Router;
+    use Exception;
+    use Imperium\Exception\Kedavra;
     use Imperium\Session\Session;
 
     /**
@@ -1575,35 +1575,46 @@ namespace Imperium {
          * @return mixed
          * @throws NotFoundExceptionAlias
          * @throws DependencyException
-         * @throws Exception\Kedavra
-         *
+         * @throws Kedavra
+         * @throws Exception
          */
         public function app(string $key)
         {
             if (is_null($this->container))
             {
                 $c = new ContainerBuilder();
-                $c->addDefinitions(CONFIG .DIRECTORY_SEPARATOR . 'container.php');
+
+                $c->addDefinitions(CORE .DIRECTORY_SEPARATOR  .'Container'.DIRECTORY_SEPARATOR .'admin.php');
+
+                $c->addDefinitions(CORE .DIRECTORY_SEPARATOR  .'Container'.DIRECTORY_SEPARATOR .'site.php');
+
                 $c->enableCompilation(ROOT . DIRECTORY_SEPARATOR .'tmp');
+
                 $c->useAnnotations(true);
+
+                $c->useAutowiring(true);
+
                 $c =  $c->build();
+
                 $c->set('db.driver',db('driver'));
+
                 $c->set('db.name',db('base'));
+
                 $c->set('db.username',db('username'));
+
                 $c->set('db.password',db('password'));
+
                 $c->set('db.host',db('host'));
+
                 $c->set('db.dump',db('dump'));
+
                 $c->set("views.path",VIEWS);
+
                 $c->set("views.config",config('twig','config'));
+
                 $c->set(Session::class,new Session());
 
-
-
-
-
-
                 $this->container = $c;
-
             }
 
             return $this->container->get($key);

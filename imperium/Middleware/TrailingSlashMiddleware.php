@@ -3,6 +3,7 @@
 namespace Imperium\Middleware {
 
 
+    use Exception;
     use Psr\Http\Message\ServerRequestInterface;
 
     class TrailingSlashMiddleware implements Middleware
@@ -11,7 +12,7 @@ namespace Imperium\Middleware {
         /**
          * @param ServerRequestInterface $request
          * @return mixed
-         * @throws \Exception
+         * @throws Exception
          */
         public function __invoke(ServerRequestInterface $request)
         {

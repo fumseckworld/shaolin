@@ -4,6 +4,8 @@
 namespace Testing {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Exception\Kedavra;
     use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
@@ -24,7 +26,8 @@ namespace Testing {
          * @return RedirectResponse|RouteResult
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         private function router(string $url,string $method)
         {
@@ -33,7 +36,9 @@ namespace Testing {
 
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_route_result()
         {
@@ -43,8 +48,11 @@ namespace Testing {
             $this->assertEquals('/',$request->url());
             $this->assertEquals('root',$request->name());
         }
+
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_add_route()
         {
@@ -55,7 +63,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_get()
         {
@@ -63,7 +73,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_post()
         {
@@ -73,7 +85,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_redirect()
         {
@@ -85,7 +99,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_url()
         {
@@ -97,17 +113,21 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_params()
         {
-            $this->assertEquals('/imperium/diff/fff',app()->url('commit','imperium','fff'));
-            $this->assertTrue($this->visit(app()->url('commit','imperium','fff'))->call()->send()->isOk());
+            $this->assertEquals('/imperium/diff/fff',app()->url('commit','imperium','diff','fff'));
+            $this->assertTrue($this->visit(app()->url('repository','repo','willy','imperium','master'))->call()->send()->isOk());
         }
 
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_root()
         {
@@ -115,7 +135,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_content()
         {
