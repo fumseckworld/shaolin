@@ -1586,7 +1586,7 @@ namespace Imperium {
 
                 $c->addDefinitions(CORE .DIRECTORY_SEPARATOR  .'Container'.DIRECTORY_SEPARATOR .'admin.php');
 
-                $c->addDefinitions(CORE .DIRECTORY_SEPARATOR  .'Container'.DIRECTORY_SEPARATOR .'site.php');
+                $c->addDefinitions(CORE .DIRECTORY_SEPARATOR  .'Container'.DIRECTORY_SEPARATOR .'web.php');
 
                 $c->enableCompilation(ROOT . DIRECTORY_SEPARATOR .'tmp');
 
