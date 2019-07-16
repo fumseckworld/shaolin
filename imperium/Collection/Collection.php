@@ -713,6 +713,38 @@ namespace Imperium\Collection {
         }
 
         /**
+         *
+         * Check if a value is in an array in data
+         *
+         * @param string $value
+         *
+         * @return bool
+         *
+         */
+        public function contains(string $value): bool
+        {
+            foreach ($this->data as $datum)
+                if (in_array($value,$datum))
+                    return true;
+
+            return false;
+        }
+
+        /**
+         *
+         * Check if value not exist in an array of data
+         *
+         * @param string $value
+         *
+         * @return bool
+         *
+         */
+        public function not_contains(string $value): bool
+        {
+           return ! $this->contains($value);
+        }
+
+        /**
         *
         * Check if the value is numeric
         *
@@ -786,6 +818,7 @@ namespace Imperium\Collection {
          */
         public function remove(...$keys): Collection
         {
+
             foreach ($keys as $key)
             {
                 if ($this->has_key($key))

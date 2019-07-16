@@ -1,11 +1,11 @@
-smtp: ''
+smtp: 'smtp.orange.fr'
 port: 25
 username: ''
 password: ''
 dir: 'Emails'
 domain: ''
 selector: ''
-from: ''
+from: 'git@git.fumseck.eu'
 passphrase: ''
 bcc: ''
 cc: ''

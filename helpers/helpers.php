@@ -276,8 +276,9 @@ if (not_exist('detect_method'))
      *
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function detect_method(string $route_name): string
     {
@@ -293,8 +294,9 @@ if (not_exist('current_user'))
      *
      * @return  object
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function current_user()
     {
@@ -305,24 +307,29 @@ if (not_exist('current_user'))
 if (not_exist('route'))
 {
     /**
-     *
-     * Get a route name
-     *
      * @param string $name
      * @param array $args
      * @return string
-     *
      * @throws DependencyException
      * @throws Kedavra
      * @throws NotFoundException
      */
-    function route(string $name,array $args = []): string
+    function route(string $name,array $args =[]): string
     {
         $x = app()->route()->query()->mode(SELECT)->from('routes')->where('name',EQUAL,$name)->use_fetch()->get();
 
-        is_true(not_def($x),true,"The route with the $name name was not found");
+        if (def($args))
+        {
+            $url = rtrim(str_replace(stristr($x->url,':'),'',$x->url),'/');
 
-        return  def($args) ? base_url($args) : $x->url;
+            foreach ($args as  $v)
+            {
+                is_string($v) ?   append($url,"/$v") :  append($url,'/'.$v);
+            }
+            return $url;
+
+        }
+        return $x->url;
     }
 }
 
@@ -470,9 +477,9 @@ if (not_exist('display_repositories'))
                                 </p>
                                 <div class="text-center">
                                     <div class="btn-group " role="group">
-                                        <a href="'.route('repository',['repo',$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
-                                        <a href="'.route('stars',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
-                                        <a href="'.route('download',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
+                                        <a href="'.route('repository',$g->owner(),$g->repository(),'master').'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('stars',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
+                                        <a href="'.route('download',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
                                     </div>
                                 </div>
                             </div>                                      
@@ -504,9 +511,9 @@ if (not_exist('display_repositories'))
                                 </p>
                                 <div class="text-center">
                                     <div class="btn-group " role="group">
-                                        <a href="'.route('repository',[$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
-                                        <a href="'.route('stars',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.(new File('stars'))->read().'</span></a>
-                                        <a href="'.route('download',[$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.(new File('download'))->read().'</span></a>
+                                        <a href="'.route('repository',['repo',$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('stars',['stars',$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.(new File('stars'))->read().'</span></a>
+                                        <a href="'.route('download',['download',$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.(new File('download'))->read().'</span></a>
                                     </div>
                                 </div>
                             </div>                                      
@@ -3092,7 +3099,7 @@ if (not_exist('base_url'))
      * @return string
      *
      */
-function base_url(array  $params): string
+function base_url(...$params): string
 {
 
     if (php_sapi_name() !=='cli')
@@ -4285,17 +4292,17 @@ if (not_exist('insert_into'))
 {
     /**
      *
+     * @param Model $model
      * @param string $table
      * @param mixed ...$values
      *
      * @return string
      *
      * @throws Kedavra
-     *
      */
-    function insert_into(string $table,array  $values): string
+    function insert_into(Model $model,string $table,array  $values): string
     {
-        $instance = app()->model()->from($table);
+        $instance = $model->from($table);
 
         $x = collection($instance->columns())->join(',');
 
@@ -4308,9 +4315,9 @@ if (not_exist('insert_into'))
             if(different($v,$primary))
             {
                 if (is_numeric($v))
-                    append($data, '? ,');
+                    append($data, $v .' ,');
                 else
-                    append($data,"'?' ," ) ;
+                    append($data,$model->pdo()->quote($v) .', ') ;
             }
             else
             {
@@ -4597,7 +4604,7 @@ if (not_exist('past'))
                 return Carbon::now($tz)->addMonths($time)->toDateString();
             break;
             case 'months':
-                return Carbon::now($tz)->addMonths($time)->toDateString();
+                return Carbon::now($tz)->addMonths($time)->day(1)->toDateString();
             break;
             case 'year':
                 return Carbon::now($tz)->addYears($time)->toDateString();

@@ -3,10 +3,13 @@
 
 namespace Imperium\Tables {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
     use Imperium\Import\Import;
+    use Imperium\Model\Model;
     use Imperium\Zen;
     use Imperium\App;
 
@@ -756,16 +759,16 @@ namespace Imperium\Tables {
          *
          * @method save
          *
-         * @param  array $values The values
+         * @param Model $model
+         * @param array $values The values
          *
          * @return bool
          *
          * @throws Kedavra
-         *
          */
-        public function save(array $values): bool
+        public function save(Model $model,array $values): bool
         {
-            return $this->connexion->execute(insert_into($this->current(),$values));
+            return $this->connexion->execute(insert_into($model,$this->current(),$values));
         }
 
 
@@ -1096,6 +1099,7 @@ namespace Imperium\Tables {
          */
         public function insert_multiples(array $collection,array $ignore = []): bool
         {
+
 
             $rec = $this->column->for($this->current());
 

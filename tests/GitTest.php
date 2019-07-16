@@ -30,7 +30,7 @@ namespace Testing {
          */
         public function setUp(): void
         {
-            $this->git = new Git('.', 'willy');
+            $this->git = new Git('depots/willy/imperium', 'willy');
         }
 
         /**
@@ -47,7 +47,7 @@ namespace Testing {
          */
         public function test_current_branch()
         {
-            $this->assertEquals('git',$this->git->current_branch());
+            $this->assertEquals('master',$this->git->current_branch());
         }
 
         /**
@@ -63,7 +63,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals(9,$this->git->branches_found());
+            $this->assertEquals(3,$this->git->branches_found());
         }
 
         /**
@@ -109,34 +109,20 @@ namespace Testing {
             $this->assertContains('Routing',$this->git->directories('imperium'));
         }
 
-        /**
-         *
-         */
-        public function test_checkout()
-        {
-
-            $this->assertTrue($this->git->checkout($this->git->current_branch()));
-        }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_create()
         {
-
-            $this->assertTrue(Git::create('mario','alexandra','a super mario game'));
+            Dir::checkout(ROOT);
+            $this->assertTrue(Git::create('mario','alexandra','a super mario game','supermario@gmail.om'));
+            Dir::checkout(ROOT);
+            $this->assertEquals('supermario@gmail.om',(new Git('alexandra/mario',''))->email());
             Dir::checkout(ROOT);
             $this->assertTrue( Dir::remove('alexandra'));
-        }
-
-
-        /**
-         *
-         */
-        public function test_remote()
-        {
-            $this->assertNotEmpty($this->git->remote()->collection());
-            $this->assertContains('origin',$this->git->remote()->collection());
         }
 
         /**
@@ -152,7 +138,7 @@ namespace Testing {
          */
         public function test_equip()
         {
-            $this->assertEquals(1,$this->git->contributors_size());
+            $this->assertEquals('1',$this->git->contributors_size());
         }
 
         /**
@@ -199,7 +185,7 @@ namespace Testing {
         {
             $size = $this->git->release_size();
              $this->assertNotEmpty($size);
-             $this->assertEquals(64,$size);
+             $this->assertEquals('64',$size);
         }
 
         /**
@@ -216,7 +202,7 @@ namespace Testing {
          */
         public function test_month()
         {
-            $this->assertEquals(14,$this->git->months()->length());
+            $this->assertEquals(15,$this->git->months()->length());
         }
     }
 }

@@ -74,7 +74,7 @@ namespace Imperium\Writing {
 
             config($file,'html') ?    $this->message->setBody(message($message),'text/html','utf-8') : $this->message->setBody($message,'text/plain','utf-8');
 
-            $this->private_key =  (new File(dirname(config_path()) .DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
+            $this->private_key =  (new File(ROOT .DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
 
         }
 

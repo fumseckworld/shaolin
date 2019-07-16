@@ -7,6 +7,7 @@ namespace App\Controllers {
     use Imperium\Exception\Kedavra;
     use Imperium\Patronus\Patronum;
     use Imperium\Request\Request;
+    use Imperium\Versioning\Git\Git;
 
 
     Class GitController extends Controller
@@ -17,13 +18,18 @@ namespace App\Controllers {
         public function before_action()
         {
 
-		}
+        }
 
         public function after_action()
 		{
 
 		}
 
+		public function send_bugs()
+        {
+            return $this->git($this->request()->get('repository'),'')->send_bug();
+
+        }
 		public function stars(string $repository,string $owner)
         {
             return $this->git("{$this->prefix}/$owner/$repository",$owner)->stars();
@@ -36,7 +42,7 @@ namespace App\Controllers {
 		public function show(string $owner,string $repo,string $branch)
         {
 
-            $repository = $this->git("{$this->prefix}/$owner/$repo",$owner)->git('','',$branch);
+            $repository = $this->git("{$this->prefix}/$owner/$repo",$owner)->save()->git('','',$branch);
             return $this->view('repository',compact('repository'));
         }
 

@@ -10,6 +10,7 @@ namespace Imperium\Security\Csrf {
     use Imperium\Security\Hashing\Hash;
     use Imperium\Session\SessionInterface;
     use Psr\Http\Message\ServerRequestInterface;
+    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
     class Csrf
     {
@@ -50,6 +51,7 @@ namespace Imperium\Security\Csrf {
         public function __construct(SessionInterface $session)
         {
             $this->session = $session;
+
         }
 
         /**
@@ -58,9 +60,7 @@ namespace Imperium\Security\Csrf {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function token()
         {
@@ -74,15 +74,13 @@ namespace Imperium\Security\Csrf {
          * @return string
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         private function generate():string
         {
 
             $this->session->set(self::SERVER,base64_encode((new Hash(request()->getHost()))->generate()));
 
-            $token = base64_encode(app()->cache()->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
+            $token = base64_encode($this->session->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
 
             $this->session->set(self::KEY,$token);
 

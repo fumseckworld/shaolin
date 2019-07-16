@@ -34,6 +34,11 @@ class FileTest extends Unit
        $this->file("index.php",'azerty');
    }
 
+   public function test_markdown()
+   {
+       $this->assertNotEmpty($this->file('README.md')->markdown());
+   }
+
     /**
      * @throws Kedavra
      */

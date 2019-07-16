@@ -655,6 +655,24 @@ namespace Imperium\Html\Form {
 
         /**
          *
+         * Add js code
+         *
+         * @param string $code
+         *
+         * @return Form
+         *
+         */
+        public function js(string $code): Form
+        {
+            append($this->form,$code);
+
+            return $this;
+        }
+
+
+
+        /**
+         *
          * Close the div created to hide contents
          *
          * @method end_hide
@@ -1003,19 +1021,23 @@ namespace Imperium\Html\Form {
          *
          * @method submit
          *
-         * @param  string $text The submit button text
-         * @param  string $icon The submit button id
+         * @param string $text The submit button text
+         * @param string $function
+         * @param string $icon The submit button id
          *
          * @return Form
          *
          * @throws Kedavra
-         *
          */
-        public function submit(string $text, string $icon = ''): Form
+        public function submit(string $text,string $icon ='',string $function= ''): Form
         {
             $class  = collection(config($this->file,'class'))->get('submit');
 
-            append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'">' . $icon . ' ' . $text . '</button></div></div>');
+            $x = "$function()";
+            if (def($function))
+                append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button onclick="'.$x.'" type="submit" class="' . $this->get_btn_class() . ' ' .$class.'">' . $icon . ' ' . $text . '</button></div></div>');
+            else
+                append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"><button type="submit" class="' . $this->get_btn_class() . ' ' .$class.'">' . $icon . ' ' . $text . '</button></div></div>');
 
             return $this;
         }

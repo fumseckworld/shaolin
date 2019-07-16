@@ -1,14 +1,15 @@
 <?php
 
-chdir(dirname(__DIR__));
 
-require_once 'vendor/autoload.php';
+use Imperium\Versioning\Git\Git;
+
+require_once '../vendor/autoload.php';
 
 header('content-type','application/json');
 
 
 
-$repository = $_POST['repository'];
+$repository = post('repository');
 
 
-echo json_encode(app()->git("repositories/$repository",'')->commits_by_month($_POST['name'])->collection());
+echo json_encode((new Git($repository,''))->commits_by_month(post('author'))->values());

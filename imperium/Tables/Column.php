@@ -605,6 +605,7 @@ namespace Imperium\Tables {
          */
         public function primary_key(): string
         {
+
             switch ($this->driver)
             {
                 case MYSQL:
@@ -623,6 +624,7 @@ namespace Imperium\Tables {
 
                     foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $field)
                     {
+
                         if (def($field->pk))
                             return $field->name;
                     }

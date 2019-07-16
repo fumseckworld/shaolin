@@ -566,12 +566,12 @@ namespace Imperium\Model {
          *
          * @method get
          *
-         * @return array
+         * @return mixed
          *
          * @throws Kedavra
          *
          */
-        public function get(): array
+        public function get()
         {
             is_true(not_def($this->column,$this->expected,$this->condition),true,"The where clause was not found");
 
@@ -814,16 +814,17 @@ namespace Imperium\Model {
          *
          * Insert data in the table
          *
+         * @param Model $model
          * @param array $data
          *
          * @return bool
          *
          * @throws Kedavra
-         *
          */
-        public function insert_new_record(array $data): bool
+        public function insert_new_record(Model $model,array $data): bool
         {
-            return $this->table()->from($this->current())->save($data);
+
+            return $this->table()->from($this->current())->save($model,$data);
         }
 
         /**
@@ -833,7 +834,6 @@ namespace Imperium\Model {
          * @return bool
          *
          * @throws Kedavra
-         *
          */
         public function add(): bool
         {
