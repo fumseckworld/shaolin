@@ -186,9 +186,18 @@ namespace Imperium\Versioning\Git {
 
         }
 
+        /**
+         *
+         * Send the bug to the developer
+         *
+         * @return RedirectResponse
+         *
+         * @throws Kedavra
+         *
+         */
         public function send_bug(): RedirectResponse
         {
-            $data = \collection();
+            $data = collection();
             foreach ($this->model()->from('bugs')->columns() as $column)
                 $data->add(request()->request->get($column));
 
@@ -200,6 +209,7 @@ namespace Imperium\Versioning\Git {
             return  (new Write(request()->get('subject'),request()->get('content'),request()->get('email'),'bugzilla@laposte.net'))->send() && $x ? back('Bug was send') : back('Email send has fail',false);
 
         }
+
         /**
          *
          * Download the latest version
@@ -329,10 +339,11 @@ namespace Imperium\Versioning\Git {
 
             if (is_null($this->changelog))
             {
-                foreach ($this->all_changelog as $change)
+                $files = $this->files('');
+                foreach ($files as $file)
                 {
-                    if (has($change,$this->all_changelog))
-                        $this->changelog = (new Markdown($this->show($change)))->markdown();
+                    if (has($file,$this->all_changelog))
+                        $this->changelog = (new Markdown($this->show($file)))->markdown();
                 }
 
                 assign(is_null($this->changelog),$this->changelog, 'We have not found a changelog');
@@ -1097,7 +1108,6 @@ namespace Imperium\Versioning\Git {
         public function git(string $tree,string $file='',string $branch= 'master'): string
         {
 
-            $this->checkout($branch);
             $html = '
                         <a href="'.root().'" class="btn btn-secondary"><i class="material-icons">apps</i>Apps</a> 
                         <div class="row">

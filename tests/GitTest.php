@@ -125,8 +125,8 @@ namespace Testing {
             $this->assertTrue( Dir::remove('alexandra'));
         }
 
-        /**
-         *
+        /***
+         * @throws Kedavra
          */
         public function test_contributors()
         {
@@ -154,7 +154,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_news()
         {
@@ -167,7 +169,9 @@ namespace Testing {
         }
 
         /**
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_views()
         {
@@ -179,7 +183,9 @@ namespace Testing {
         }
 
         /**
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_tag_size()
         {

@@ -627,8 +627,6 @@ namespace Imperium\Html\Form {
             if (config($this->file,'save'))
                 $this->save();
 
-            if (config($this->file,'space'))
-                $this->margin()->padding();
 
             append($this->form , '<input type="hidden" value="'.$this->method.'" name="method">');
 

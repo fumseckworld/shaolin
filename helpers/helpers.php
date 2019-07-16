@@ -477,9 +477,9 @@ if (not_exist('display_repositories'))
                                 </p>
                                 <div class="text-center">
                                     <div class="btn-group " role="group">
-                                        <a href="'.route('repository',$g->owner(),$g->repository(),'master').'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
-                                        <a href="'.route('stars',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
-                                        <a href="'.route('download',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
+                                        <a href="'.app()->url('repository',$g->owner(),$g->repository(),'master').'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.\app()->url('stars',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
+                                        <a href="'.\app()->url('download',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
                                     </div>
                                 </div>
                             </div>                                      
