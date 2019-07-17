@@ -63,7 +63,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals(3,$this->git->branches_found());
+            $this->assertEquals('3',$this->git->branches_found());
         }
 
         /**
@@ -71,7 +71,7 @@ namespace Testing {
          */
         public function test_commits()
         {
-            $this->assertNotNull($this->git->commits_size());
+            $this->assertNotEmpty($this->git->commits_size('master'));
         }
 
 
@@ -138,11 +138,13 @@ namespace Testing {
          */
         public function test_equip()
         {
-            $this->assertEquals('1',$this->git->contributors_size());
+            $this->assertNotEmpty($this->git->contributors_size());
         }
 
         /**
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_tag()
         {
@@ -191,7 +193,6 @@ namespace Testing {
         {
             $size = $this->git->release_size();
              $this->assertNotEmpty($size);
-             $this->assertEquals('64',$size);
         }
 
         /**

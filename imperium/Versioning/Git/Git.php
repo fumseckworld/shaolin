@@ -409,14 +409,16 @@ namespace Imperium\Versioning\Git {
          *
          * Return the numbers of commits on the current branch
          *
-         * @return int
+         * @param string $branch
+         *
+         * @return string
          *
          */
-        public function commits_size(): int
+        public function commits_size(string $branch): string
         {
-            $this->execute("git rev-list --count {$this->current_branch()}");
+            $this->execute("git rev-list --count $branch");
 
-            return intval($this->data()->last());
+            return '<button type="button" class="btn btn-secondary"><i class="material-icons">history</i> <span class="badge badge-light">'.numb(intval($this->data()->last())) . ' Commits</span></button>';
 
         }
 
@@ -725,12 +727,12 @@ namespace Imperium\Versioning\Git {
          *
          * Display all branches found
          *
-         * @return int
+         * @return string
          *
          */
-        public function branches_found(): int
+        public function branches_found(): string
         {
-            return $this->is_remote() ? collection(Dir::scan('refs/heads'))->length() : collection($this->branches())->length();
+            return $this->is_remote() ? numb(collection(Dir::scan('refs/heads'))->length()) : numb(collection($this->branches())->length());
         }
 
         /**
@@ -784,7 +786,8 @@ namespace Imperium\Versioning\Git {
          */
         public function release_size(): string
         {
-            return numb(collection($this->releases())->length());
+            return '<button type="button" class="btn btn-secondary"><i class="material-icons">all_out</i> <span class="badge badge-light">'.numb(collection($this->releases())->length()).' Releases</span></button>';
+
         }
 
 
@@ -799,7 +802,7 @@ namespace Imperium\Versioning\Git {
          */
         public function contributors_size(): string
         {
-            return numb(collection($this->contributors())->length());
+           return '<button type="button" class="btn btn-secondary"><i class="material-icons">group</i> <span class="badge badge-light">'.numb(\collection($this->contributors())->length()).' Contributors</span></button>';
         }
 
         /**
@@ -1109,7 +1112,16 @@ namespace Imperium\Versioning\Git {
         {
 
             $html = '
+                       <div class="mb-3">
                         <a href="'.root().'" class="btn btn-secondary"><i class="material-icons">apps</i>Apps</a> 
+</div>
+                           <div class="btn-group" role="group" aria-label="Basic example">
+                        
+                    
+                        '.$this->commits_size($branch).'
+                        '.$this->contributors_size().'
+                        '.$this->release_size().'
+                                                   </div>
                         <div class="row">
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
                                 <div class="input-group">
@@ -1134,9 +1146,7 @@ namespace Imperium\Versioning\Git {
                                 </div>
                             </div>
                         </div>
-                        
-                        '.$this->branches_view().'
-                                               
+                    ' .$this->branches_view().'
                         <script>
                             function copy_public_clone_url() 
                             {
@@ -1697,6 +1707,8 @@ namespace Imperium\Versioning\Git {
                 ->get();
             append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$author.'</div>');
             append($html,'</div>');
+
+
 
             return $html;
         }
