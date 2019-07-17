@@ -2,7 +2,11 @@
 
 namespace Imperium\Html\Table {
 
+    use Carbon\Carbon;
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Collection\Collection;
+    use Imperium\Exception\Kedavra;
 
     /**
      *
@@ -179,6 +183,15 @@ namespace Imperium\Html\Table {
          *
          */
         private $limit;
+        /**
+         * @var bool
+         */
+        private $edit;
+
+        /**
+         * @var bool
+         */
+        private $use_ago = false;
 
         /**
          *
@@ -266,7 +279,7 @@ namespace Imperium\Html\Table {
         public function set_action(string $edit_text,string $remove_text,string $confirm_text,string $edit_url_prefix, string $edit_class, string $edit_icon, string $remove_url_prefix, string $remove_class, string $remove_icon,string $primary_key): Table
         {
             $this->actions = true;
-
+            $this->edit = true;
             $this->confirm_text = $confirm_text;
             $this->edit_text = $edit_text;
             $this->remove_text = $remove_text;
@@ -274,6 +287,33 @@ namespace Imperium\Html\Table {
             $this->edit_class = $edit_class;
             $this->edit_icon = $edit_icon;
             $this->remove_url_prefix = $remove_url_prefix;
+            $this->remove_class = $remove_class;
+            $this->remove_icon = $remove_icon;
+            $this->primary = $primary_key;
+
+            return $this;
+        }
+
+        /**
+         * @param string $remove_text
+         * @param string $confirm_text
+         * @param string $remove_url
+         * @param string $remove_class
+         * @param string $remove_icon
+         * @param string $primary_key
+         *
+         * @return Table
+         */
+        public function remove_action(string $remove_text,string $confirm_text, string $remove_url,string $remove_class = 'btn btn-danger', string $remove_icon ='<i class="material-icons">close</i>',string $primary_key = 'id'): Table
+        {
+            $this->actions = true;
+
+            $this->edit = false;
+
+            $this->confirm_text = $confirm_text;
+            $this->remove_text = $remove_text;
+            $this->remove_url_prefix = $remove_url;
+
             $this->remove_class = $remove_class;
             $this->remove_icon = $remove_icon;
             $this->primary = $primary_key;
@@ -298,65 +338,125 @@ namespace Imperium\Html\Table {
 
         }
 
+        public function use_ago()
+        {
+            $this->use_ago = true;
+            return $this;
+        }
+
         /**
          *
          * Generate the table
          *
          * @param string $class
          *
-
          * @return string
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
          */
         public function generate(string $class = ''): string
         {
-            $this->before_content($this->before_content)->start($class)->start_thead()->start_row();
+            $connected = app()->auth()->connected();
+                $this->before_content($this->before_content)->start($class)->start_thead()->start_row();
 
-            foreach ($this->columns->collection() as $column)
-                $this->th($column);
+                foreach ($this->columns->collection() as $column)
+                    $this->th($column);
 
-            if ($this->actions)
-                $this->th($this->edit_text)->th($this->remove_text);
-
-            $this->end_row()->end_thead()->start_tbody();
-
-            foreach ($this->data->collection() as $v)
-            {
-                $this->start_row();
-
-                if (is_object($v))
+                if ($this->actions)
                 {
-                    foreach ($this->columns->collection() as $column)
-                        $this->td($v->$column);
-
-
-                    if ($this->actions)
+                    if ($this->edit)
                     {
-                        $primary = $this->primary;
+                        $this->th($this->edit_text)->th($this->remove_text);
 
-                        $edit = '<a href="'.$this->edit_url_prefix.'/'.$v->$primary.'" class="'.$this->edit_class.'">'.$this->edit_icon.'</a>';
-                        $remove = '<a href="'.$this->remove_url_prefix.'/'.$v->$primary.'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
-
-                        $this->action($edit)->action($remove);
+                    }else{
+                        if ($connected)
+                            $this->th($this->remove_text);
                     }
-                }else {
 
-                    $this->td($v);
-
-                    if ($this->actions)
-                    {
-                        $primary = $this->primary;
-
-                        $edit = '<a href="'.$this->edit_url_prefix.'/'.$v[$primary].'" class="'.$this->edit_class.'">'.$this->edit_icon.'</a>';
-                        $remove = '<a href="'.$this->remove_url_prefix.'/'.$v[$primary].'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
-
-                        $this->action($edit)->action($remove);
-                    }
                 }
 
-                $this->end_row();
-            }
 
-            return $this->end_tbody()->end()->after_content($this->after_content)->get();
+
+                $this->end_row()->end_thead()->start_tbody();
+
+                foreach ($this->data->collection() as $v)
+                {
+                    $this->start_row();
+
+                    if (is_object($v))
+                    {
+                        foreach ($this->columns->collection() as $column)
+                        {
+                            if ($this->use_ago)
+                            {
+                                if (has($column,['created_at','update_at']))
+                                    $this->td(ago(app()->lang(),$v->$column));
+                                elseif (has($column,['finish_at']))
+                                {
+                                    Carbon::setLocale(app()->lang());
+                                    $this->td(Carbon::parse($v->$column)->diffForHumans(null,Carbon::DIFF_RELATIVE_TO_NOW));
+
+                                }else{
+                                    $this->td($v->$column);
+                                }
+                            }
+                            else
+                            {
+                              $this->td($v->$column);
+                            }
+                        }
+
+
+
+                        if ($this->actions && $connected)
+                        {
+                            $primary = $this->primary;
+
+                            if ($this->edit)
+                            {
+                                $edit = '<a href="'.$this->edit_url_prefix.'/'.$v->$primary.'" class="'.$this->edit_class.'">'.$this->edit_icon.'</a>';
+                                $remove = '<a href="'.$this->remove_url_prefix.'/'.$v->$primary.'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
+
+                                $this->action($edit)->action($remove);
+                            }else{
+
+                                $remove = '<a href="'.$this->remove_url_prefix.'/'.$v->$primary.'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
+
+                                $this->action($remove);
+                            }
+
+                        }
+                    }else {
+
+                        $this->td($v);
+
+                        if ($this->actions && $connected)
+                        {
+
+                            if ($this->edit)
+                            {
+                                $primary = $this->primary;
+
+                                $edit = '<a href="'.$this->edit_url_prefix.'/'.$v[$primary].'" class="'.$this->edit_class.'">'.$this->edit_icon.'</a>';
+                                $remove = '<a href="'.$this->remove_url_prefix.'/'.$v[$primary].'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
+
+                                $this->action($edit)->action($remove);
+                            }else{
+
+                                $primary = $this->primary;
+                                $remove = '<a href="'.$this->remove_url_prefix.'/'.$v[$primary].'" class="'.$this->remove_class.'" data-confirm="'.$this->confirm_text.'" onclick="sure(event,this.attributes[2].value)">'.$this->remove_icon.' </a>';
+
+                                $this->action($remove);
+                            }
+                        }
+                    }
+
+                    $this->end_row();
+                }
+
+                return $this->end_tbody()->end()->after_content($this->after_content)->get();
+
         }
 
         /**
@@ -505,7 +605,6 @@ namespace Imperium\Html\Table {
          */
         public function th($value): Table
         {
-
             $x = '<th>'.$value.'</th>';
             append($this->html,$x);
 

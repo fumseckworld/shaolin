@@ -328,7 +328,7 @@ namespace Imperium\Model {
 
             is_true(not_in(App::DISPLAY_MODE,$mode),true,"The mode is not valid");
 
-            $table = equal($mode,DISPLAY_CONTRIBUTORS) ? $this->current : current_table();
+            $table =  $this->current();
 
             $current_page =  get('current',1);
 

@@ -320,15 +320,26 @@ if (not_exist('route'))
 
         if (def($args))
         {
-            $url = rtrim(str_replace(stristr($x->url,':'),'',$x->url),'/');
-
-            foreach ($args as  $v)
+            $url = '';
+            $data = explode('/',$x->url);
+            $i = 0;
+            foreach ($data as $k =>$v)
             {
-                is_string($v) ?   append($url,"/$v") :  append($url,'/'.$v);
+                if (def($v))
+                {
+                    if (strpos($v,':') === 0)
+                    {
+                        append($url,'/'.$args[$i]);
+                        $i++;
+                    }
+                    else{
+                        append($url,"/$v");
+                    }
+                }
             }
             return $url;
-
         }
+
         return $x->url;
     }
 }

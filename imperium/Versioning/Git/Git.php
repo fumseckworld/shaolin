@@ -134,6 +134,8 @@ namespace Imperium\Versioning\Git {
 
         const BUGS_TABLE = 'CREATE TABLE IF NOT EXISTS bugs ( id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT(255) NOT NULL,email TEXT(255) NOT NULL,content TEXT(255) NOT NULL,created_at DATETIME NOT NULL )';
 
+        const TODO_TABLE = 'CREATE TABLE IF NOT EXISTS todo ( id INTEGER PRIMARY KEY AUTOINCREMENT, task TEXT(255) NOT NULL,contributor TEXT(255), finish_at DATETIME NOT NULL,created_at DATETIME NOT NULL )';
+
         /**
          *
          * Git constructor.
@@ -147,8 +149,6 @@ namespace Imperium\Versioning\Git {
          */
         public function __construct(string $repository, string $owner)
         {
-
-
             $this->archives_ext = config('git','archives_extension');
             $this->all_readme = config('git','readme');
             $this->all_contributing = config('git','contributing');
@@ -182,7 +182,8 @@ namespace Imperium\Versioning\Git {
                 $this->connect->execute(self::CONTRIBUTORS_TABLE);
             if ($this->model()->table()->not_exist('bugs'))
                 $this->connect->execute(self::BUGS_TABLE);
-
+            if ($this->model()->table()->not_exist('todo'))
+                $this->connect->execute(self::TODO_TABLE);
 
         }
 
@@ -206,7 +207,7 @@ namespace Imperium\Versioning\Git {
             if (is_false($x))
                 return back('Failed to insert data',false);
 
-            return  (new Write(request()->get('subject'),request()->get('content'),request()->get('email'),'bugzilla@laposte.net'))->send() && $x ? back('Bug was send') : back('Email send has fail',false);
+            return  (new Write(request()->get('subject'),request()->get('content'),request()->get('email'),$this->email()))->send() && $x ? back('Bug was send') : back('Email send has fail',false);
 
         }
 
@@ -314,7 +315,7 @@ namespace Imperium\Versioning\Git {
                     {
                         if ((new File($contribute))->ext() == 'md')
                         {
-                            $this->contribute = (new Markdown($this->show($contribute)))->markdown();
+                            $this->contribute = (new Markdown($this->show($contribute,$branch)))->markdown();
                         }else{
                             $this->contribute =  $this->show($contribute);
                         }
@@ -1007,8 +1008,7 @@ namespace Imperium\Versioning\Git {
 
             not_in($tags,$new_release,true,"The release $new_release was not found in the {$this->repository()} repository");
 
-            return shell_exec("git diff -p --stat --word-diff --color-words $ancient_release $new_release | aha");
-
+            return shell_exec("git diff -p --stat --word-diff --color-words $ancient_release $new_release|  aha");
         }
 
 
@@ -1064,7 +1064,7 @@ namespace Imperium\Versioning\Git {
          */
         public function release_view(string $search_placeholder = 'Find a version'): string
         {
-            $html = '<div class="mt-3 mb-2">'.$this->compare_form().'</div> <div class="d-none" id="releases">
+            $html = $this->compare_form().'<div class="d-none" id="releases">
 
             <div class="input-group mb-3">
                   <div class="input-group-prepend">
@@ -1084,7 +1084,7 @@ namespace Imperium\Versioning\Git {
             {
                 foreach ($this->releases() as $tag)
                 {
-                    $x = php_sapi_name() !== 'cli' ? base_url($this->repository(),  '/refs/' , $tag,$ext) : "/{$this->repository()}/refs/$tag.$ext";
+                    $x = php_sapi_name() !== 'cli' ? app()->url('archive',$this->repository(),$this->owner(),  "$tag",$ext) : "/{$this->repository()}/refs/$tag.$ext";
 
                     append($html,'<li class="col-md-3 col-lg-3 col-sm-12 col-xl-3"><a href="'.$x.'">'.$this->repository() ."-$tag.$ext".'</a></li>');
 
@@ -1177,18 +1177,19 @@ namespace Imperium\Versioning\Git {
                              <div class="nav nav-tabs" id="git" role="tablist">
      <a class="nav-item nav-link active" id="nav-code-tab" data-toggle="tab" href="#nav-code" role="tab" aria-controls="nav-code" aria-selected="true">Code</a>
     <a class="nav-item nav-link" id="nav-readme-tab" data-toggle="tab" href="#nav-readme" role="tab" aria-controls="nav-readme" aria-selected="true">Readme</a>
-    <a class="nav-item nav-link " id="nav-licence-tab" data-toggle="tab" href="#nav-licence" role="tab" aria-controls="nav-licence" aria-selected="false">Licence</a>
+    <a class="nav-item nav-link " id="nav-wiki-tab" data-toggle="tab" href="#nav-wiki" role="tab" aria-controls="nav-wiki" aria-selected="false">Wiki</a>
+    <a class="nav-item nav-link " id="nav-issues-tab" data-toggle="tab" href="#nav-issues" role="tab" aria-controls="nav-issues" aria-selected="false">Issues</a>
+      <a class="nav-item nav-link " id="nav-todo-tab" data-toggle="tab" href="#nav-todo" role="tab" aria-controls="nav-todo" aria-selected="false">Todo</a>
     <a class="nav-item nav-link" id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab" aria-controls="nav-news" aria-selected="false">News</a>
-    <a class="nav-item nav-link" id="nav-change-logs-tab" data-toggle="tab" href="#nav-change-logs" role="tab" aria-controls="nav-change-logs" aria-selected="false">Changelog</a>
-    <a class="nav-item nav-link" id="nav-logs-tab" data-toggle="tab" href="#nav-logs" role="tab" aria-controls="nav-logs" aria-selected="false">Logs</a>
     <a class="nav-item nav-link" id="nav-releases-tab" data-toggle="tab" href="#nav-releases" role="tab" aria-controls="nav-releases" aria-selected="false">Versions</a>
-    <a class="nav-item nav-link" id="nav-hooks-tab" data-toggle="tab" href="#nav-hooks" role="tab" aria-controls="nav-hooks" aria-selected="false">Hook</a>
+    <a class="nav-item nav-link" id="nav-logs-tab" data-toggle="tab" href="#nav-logs" role="tab" aria-controls="nav-logs" aria-selected="false">Logs</a>
     <a class="nav-item nav-link" id="nav-contributors-tab" data-toggle="tab" href="#nav-contributors" role="tab" aria-controls="nav-contributors" aria-selected="false">Contributors</a>
     <a class="nav-item nav-link" id="nav-contributions-tab" data-toggle="tab" href="#nav-contributions" role="tab" aria-controls="nav-contributions" aria-selected="false">Contributions</a>
     <a class="nav-item nav-link " id="nav-contribute-tab" data-toggle="tab" href="#nav-contribute" role="tab" aria-controls="nav-contribute" aria-selected="false">Contribute</a>
-    <a class="nav-item nav-link " id="nav-todo-tab" data-toggle="tab" href="#nav-todo" role="tab" aria-controls="nav-todo" aria-selected="false">Todo</a>
-    <a class="nav-item nav-link " id="nav-wiki-tab" data-toggle="tab" href="#nav-wiki" role="tab" aria-controls="nav-wiki" aria-selected="false">Wiki</a>
-    <a class="nav-item nav-link " id="nav-issues-tab" data-toggle="tab" href="#nav-issues" role="tab" aria-controls="nav-issues" aria-selected="false">Issues</a>
+    <a class="nav-item nav-link" id="nav-change-logs-tab" data-toggle="tab" href="#nav-change-logs" role="tab" aria-controls="nav-change-logs" aria-selected="false">Changelog</a>
+    <a class="nav-item nav-link" id="nav-hooks-tab" data-toggle="tab" href="#nav-hooks" role="tab" aria-controls="nav-hooks" aria-selected="false">Hook</a>
+    <a class="nav-item nav-link " id="nav-licence-tab" data-toggle="tab" href="#nav-licence" role="tab" aria-controls="nav-licence" aria-selected="false">Licence</a>
+  
   </div>
 </nav>
 <div class="tab-content" id="nav-tabContent">
@@ -1197,11 +1198,11 @@ namespace Imperium\Versioning\Git {
   <div class="tab-pane fade show " id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab"><div class="mt-3 mb-3">'.$this->news().'</div></div>
   <div class="tab-pane fade show " id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab"><div class="mt-3 mb-3">'.$this->log($branch).'</div></div>
   <div class="tab-pane fade show " id="nav-change-logs" role="tabpanel" aria-labelledby="nav-change-logs-tab"><div class="mt-3 mb-3">'.$this->changelog().'</div></div>
-  <div class="tab-pane fade show " id="nav-releases" role="tabpanel" aria-labelledby="nav-releases-tab"><div class="mt-3 mb-3">'.$this->release_view().'</div></div>
+  <div class="tab-pane fade show " id="nav-releases" role="tabpanel" aria-labelledby="nav-releases-tab">'.$this->release_view().'</div>
   <div class="tab-pane fade show " id="nav-hooks" role="tabpanel" aria-labelledby="nav-hooks-tab"><div class="mt-3 mb-3">'.$this->hooks_view().'</div></div>
   <div class="tab-pane fade show " id="nav-contributors" role="tabpanel" aria-labelledby="nav-contributors-tab"><div class="mt-3 mb-3">'.$this->contributors_view().'</div></div>
   <div class="tab-pane fade show " id="nav-contributions" role="tabpanel" aria-labelledby="nav-contributions-tab"><div class="mt-3 mb-3">'.$this->contributions_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contribute" role="tabpanel" aria-labelledby="nav-contribute-tab"><div class="mt-3 mb-3">'.$this->contribute().'</div></div>
+  <div class="tab-pane fade show " id="nav-contribute" role="tabpanel" aria-labelledby="nav-contribute-tab"><div class="mt-3 mb-3">'.$this->contribute($branch).'</div></div>
   <div class="tab-pane fade show " id="nav-todo" role="tabpanel" aria-labelledby="nav-todo-tab"><div class="mt-3 mb-3">'.$this->todo().'</div></div>
   <div class="tab-pane fade show " id="nav-wiki" role="tabpanel" aria-labelledby="nav-wiki-tab"><div class="mt-3 mb-3">'.$this->wiki().'</div></div>
   <div class="tab-pane fade show " id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab"><div class="mt-3 mb-3">'.$this->report_bugs_view().'</div></div>
@@ -1232,14 +1233,31 @@ namespace Imperium\Versioning\Git {
                 append($data,'<option value="'.$release.'">'.$release.'</option>');
 
 
-           $html = '<div class="mt-3"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">trip_origin</i></span></div> <select   id="first-release" class="form-control form-control-lg">'.$data.'</select></div></div><div class="mt-3"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">all_out</i></span></div> <select id="second-release" class="form-control form-control-lg">'.$data.'</select></div></div><div class="mt-3"><div class="btn-group" role="group" aria-label="Basic example">
-  <button type="button"  id="compare-version"  data-content="'.$this->repository.'" class="btn btn-secondary">compare</button>
-  <button type="button"  id="compare-version-clear" class="btn btn-secondary">clear</button>
-  <button type="button" id="search-version" class="btn btn-secondary">show</button>
-</div></div> <div id="changes_content" class="mt-3"></div>
-                ';
-
-           return $html;
+          return '<div id="compare-form"><div class="mt-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="material-icons">trip_origin</i></span>
+                            </div> 
+                            <select id="first-release" class="form-control form-control-lg">'.$data.'</select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="material-icons">all_out</i></span>
+                            </div>
+                            <select id="second-release" class="form-control form-control-lg">'.$data.'</select>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <div class="btn-group" role="group">
+                            <button type="button"  id="compare-version"  data-content="'.$this->repository.'" class="btn btn-secondary">compare</button>
+                            <button type="button"  id="compare-version-clear" class="btn btn-secondary">clear</button>
+                            <button type="button" id="search-version" class="btn btn-secondary">show</button>           
+                        </div>
+                    </div> 
+                </div>
+                <div id="changes_content" class="mt-3"></div>';
         }
 
         /**
@@ -1576,6 +1594,18 @@ namespace Imperium\Versioning\Git {
             return shell_exec( "git diff  -p  $sha1 --stat  --color=always | aha");
         }
 
+        /**
+         *
+         * @param array $data
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         */
+        public function add_todo(array $data): bool
+        {
+            return $this->model()->from('todo')->insert_new_record($this->model(),$data);
+        }
 
 
         /**
@@ -1583,11 +1613,58 @@ namespace Imperium\Versioning\Git {
          * A
          *
          * @return string
-         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         public function todo(): string
         {
-            return '';
+
+            if (app()->auth()->connected())
+            {
+
+
+                $x = '<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3"> <div class="input-group">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="material-icons">group</i></span>
+                                  </div><select class=" form-control-lg form-control"  id="todo-contributor" ><option value="Select a contributor">Select a contributor</option>';
+
+                foreach ($this->contributors() as  $contributor)
+                    append($x,'<option value="'.$contributor->name.'" > '.$contributor->name.'</option>');
+
+                append($x,'</select></div></div>');
+
+                $html ='';
+                append($html, '<div class="mt-3">  
+                        <div class="row">
+                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
+                               <div class="input-group">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="material-icons">note</i></span>
+                                  </div>
+                                  <input type="text" id="todo-task" class="form-control form-control-lg" placeholder="todo" autofocus="autofocus">
+                                </div>
+                            </div>
+                            '.$x.'
+                             <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
+                               <div class="input-group">
+                                  <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="material-icons">timer</i></span>
+                                  </div>
+                                  <input type="date" id="todo-end"  class="form-control form-control-lg"  placeholder="task">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-secondary" type="button" id="add-todo" data-repository="'.$this->path().'" data-date="'.now()->toDateTimeString().'" ><i class="material-icons">add</i></button>
+                                  </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><div class="d-none mt-3 alert" id="todo-response"></div>');
+            }else{
+                $html = '';
+            }
+            return  \Imperium\Html\Table\Table::table($this->model()->from('todo')->columns(),$this->model()->from('todo')->all(),'table-responsive mt-3','',$html,'')->remove_action('close','Are you sure ?',app()->url('close_todo',$this->owner(),$this->repository()))->use_ago()->generate('table');
+
+
         }
 
 

@@ -24,7 +24,10 @@ namespace App\Controllers {
 		{
 
 		}
-
+        public function download_archive(string $repo,string $owner,string $tag,string $ext)
+        {
+            return $this->download($this->git("{$this->prefix}/$owner/$repo",$owner)->generate_archives($ext,$tag));
+        }
 		public function send_bugs()
         {
             return $this->git($this->request()->get('repository'),'')->send_bug();

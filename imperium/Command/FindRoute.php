@@ -33,6 +33,29 @@ namespace Imperium\Command {
         }
 
 
+        private function controllers(): array
+        {
+            return controllers();
+
+        }
+        private function methods():array
+        {
+            return collection(METHOD_SUPPORTED)->each('strtolower')->collection();
+        }
+
+        private function names(): array
+        {
+            $data = collection();
+            foreach ($this->routes()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
+                $data->add($x->name);
+
+            return $data->collection();
+        }
+        public function data():array
+        {
+            return collection()->merge($this->controllers(),$this->names(),$this->methods())->collection();
+        }
+
         /**
          * @param InputInterface $input
          * @param OutputInterface $output
@@ -50,7 +73,7 @@ namespace Imperium\Command {
                     do {
                         $this->clean();
                         $question = new Question("<info>Please enter the search value : </info>");
-
+                        $question->setAutocompleterValues($this->data());
                         $this->search = $helper->ask($input, $output, $question);
                     }while (is_null($this->search));
 

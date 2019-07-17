@@ -119,7 +119,7 @@ namespace Testing {
          */
         public function test_params()
         {
-            $this->assertEquals('/imperium/diff/fff',app()->url('commit','imperium','diff','fff'));
+            $this->assertEquals('/imperium/diff/#AEA',app()->url('commit','imperium','#AEA'));
             $this->assertTrue($this->visit(app()->url('repository','willy','imperium','master'))->call()->send()->isOk());
         }
 
