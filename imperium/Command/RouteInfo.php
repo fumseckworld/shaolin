@@ -59,7 +59,7 @@ namespace Imperium\Command {
                         $this->search = $helper->ask($input, $output, $question);
                     }while (is_null($this->search));
 
-                    $routes = $this->routes()->by('name',$this->search);
+                    $routes = $this->routes()->where('name', EQUAL,$this->search)->get();
 
                     routes($output,$routes);
                     $question = new Question("<info>Continue ? [Y/n] : </info>",'Y');

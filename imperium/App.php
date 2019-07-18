@@ -1141,7 +1141,7 @@ namespace Imperium {
          */
         public function form(bool $validate = false): Form
         {
-            return $validate ? $this->form->validate() : $this->form;
+            return $validate ? (new Form())->validate() : new Form();
         }
 
         /**

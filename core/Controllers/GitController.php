@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Controllers {
+namespace Shaolin\Controllers {
 
 
     use Imperium\Controller\Controller;
+    use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Patronus\Patronum;
     use Imperium\Request\Request;
@@ -24,6 +25,18 @@ namespace App\Controllers {
 		{
 
 		}
+
+		public function close_todo(string $owner,string $reopsitory,int $id)
+        {
+            return $this->git("{$this->prefix}/$owner/$reopsitory",$owner)->close_todo($id);
+        }
+		public function add_repository()
+        {
+
+            Dir::checkout(ROOT . DIRECTORY_SEPARATOR . $this->prefix);
+
+            return Git::create($this->request()->get('repository'),logged_user(),$this->request()->get('description'),$this->request()->get('email')) ? $this->back('Repository created') : $this->back('Fail',false);
+        }
         public function download_archive(string $repo,string $owner,string $tag,string $ext)
         {
             return $this->download($this->git("{$this->prefix}/$owner/$repo",$owner)->generate_archives($ext,$tag));
@@ -87,8 +100,7 @@ namespace App\Controllers {
          */
 		public function repositories()
         {
-            if (not_def(get('owner')))
-                return to("/?owner=willy");
+
             $repo = display_repositories();
 
             return $this->view('repositories',compact('repo'));

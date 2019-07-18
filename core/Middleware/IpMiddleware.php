@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Middleware;
+namespace Shaolin\Middleware;
 
 
 use Imperium\Exception\Kedavra;

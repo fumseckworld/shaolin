@@ -96,7 +96,7 @@ define('DESC','DESC');
 define('ROOT',dirname(__DIR__));
 define('WEB',ROOT . DIRECTORY_SEPARATOR  . 'web');
 define('DB',ROOT. DIRECTORY_SEPARATOR .'db');
-define('APP','App\\Controllers\\');
+define('CONTROLLERS_NAMESPACE','Shaolin\\Controllers');
 define('CORE',ROOT . DIRECTORY_SEPARATOR . 'core');
 define('CONTROLLERS',CORE . DIRECTORY_SEPARATOR . 'Controllers');
 define('VIEWS',CORE . DIRECTORY_SEPARATOR . 'Views');
@@ -282,7 +282,7 @@ if (not_exist('detect_method'))
      */
     function detect_method(string $route_name): string
     {
-        return (app()->routes()->by_or_fail('name',$route_name))->method;
+        return (app()->routes()->by_or_fail('name',$route_name,"The $route_name route was not found"))->method;
     }
 }
 
@@ -304,6 +304,24 @@ if (not_exist('current_user'))
     }
 }
 
+if (not_exist('logged_user'))
+{
+    /**
+     *
+     * Get the user if is logged
+     *
+     * @return  string
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
+     */
+    function logged_user():string
+    {
+        $x = collection(config('auth','columns'))->get('auth');
+        return app()->auth()->current()->$x;
+    }
+}
+
 if (not_exist('route'))
 {
     /**
@@ -316,7 +334,7 @@ if (not_exist('route'))
      */
     function route(string $name,array $args =[]): string
     {
-        $x = app()->route()->query()->mode(SELECT)->from('routes')->where('name',EQUAL,$name)->use_fetch()->get();
+        $x = (app()->routes()->by_or_fail('name',$name,"The $name route  was not found"));
 
         if (def($args))
         {
@@ -329,14 +347,18 @@ if (not_exist('route'))
                 {
                     if (strpos($v,':') === 0)
                     {
-                        append($url,'/'.$args[$i]);
-                        $i++;
-                    }
-                    else{
+                        if (collection($args)->has_key($i))
+                        {
+                            append($url,'/'.$args[$i]);
+                            $i++;
+                        }
+
+                    }else{
                         append($url,"/$v");
                     }
                 }
             }
+
             return $url;
         }
 
@@ -416,13 +438,14 @@ if (not_exist('display_repositories'))
      *
      * Display repositories
      *
+     * @param string $owner
      * @return string
      *
      * @throws DependencyException
      * @throws Kedavra
      * @throws NotFoundException
      */
-    function display_repositories(): string
+    function display_repositories(string $owner = ''): string
     {
 
         $data = [];
@@ -443,13 +466,30 @@ if (not_exist('display_repositories'))
                         $owners->add($owner);
                 }
             }
-        }else{
+        }elseif(def($owner))
+        {
 
+            foreach (Dir::scan('depots') as $x)
+            {
+                if ($x == $owner)
+                {
+                    foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
+                    {
+                        $data[$owner][] = realpath("depots/$owner/$repository");
+                    }
+                }else{
+                    if ($owners->not_exist($owner))
+                        $owners->add($owner);
+                }
+            }
+        }
+        else
+        {
             foreach (Dir::scan('depots') as $owner)
             {
                 if ($owners->not_exist($owner))
                     $owners->add($owner);
-                
+
                 foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
                 {
 
@@ -457,7 +497,6 @@ if (not_exist('display_repositories'))
                 }
             }
         }
-
 
         $data = collection($data);
 
@@ -522,7 +561,7 @@ if (not_exist('display_repositories'))
                                 </p>
                                 <div class="text-center">
                                     <div class="btn-group " role="group">
-                                        <a href="'.route('repository',['repo',$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
+                                        <a href="'.route('repository',[$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
                                         <a href="'.route('stars',['stars',$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.(new File('stars'))->read().'</span></a>
                                         <a href="'.route('download',['download',$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.(new File('download'))->read().'</span></a>
                                     </div>
@@ -736,53 +775,37 @@ if (not_exist('register_page'))
      */
     function register_page(string $welcome_text,string $register_route_name,string $username_text,string $lastname_text,string $email_address_text,string $password_text,string $confirm_password_text,string $create_account_text,string $logo_path =''): string
     {
-
-        $class = collection(config('form','class'))->get('submit');
-        $logo = def($logo_path) ? '<div class="mb-3"><img src="'.$logo_path.'" alt="logo"></div>' : '';
-        return '  <div class="container-fluid">
-  <div class="row no-gutter">
-    <div class="d-none d-md-flex col-md-4 col-lg-6 bg-image"></div>
-        <div class="col-md-8 col-lg-6">
-            <div class="login d-flex align-items-center py-5">
-                <div class="container">
-                <div class="col-md-9 col-lg-8 mx-auto">
-                    <header class="text-center">
-                        '.$logo.'
-                        <h3 class="login-heading text-uppercase text-center mb-4">'.$welcome_text.'</h3>
-                    </header>
-                    <form action="'.route($register_route_name).'" method="post">
-                    '.csrf_field().'
-                        <input type="hidden" name="created_at" value="'.now()->format('Y-m-d').'">
-                        <input type="hidden" name="method" value="post">
-                        <input type="hidden" name="updated_at" value="'.now()->format('Y-m-d').'">
-                        <div class="form-label-group">
-                            <input type="text" id="username" name="username" class="form-control" placeholder="'.$username_text.'" required autofocus="autofocus                    ">
-                            <label for="username">'.$username_text.'</label>
-                        </div>
-                        <div class="form-label-group">
-                            <input type="text" id="lastname" name="lastname" class="form-control" placeholder="'.$lastname_text.'" required>
-                            <label for="lastname">'.$lastname_text.'</label>
-                        </div>
-                        <div class="form-label-group">
-                            <input type="email" id="email" name="email" class="form-control" placeholder="'.$email_address_text.'" required>
-                            <label for="email">'.$email_address_text.'</label>
-                        </div>
-                        <div class="form-label-group">
-                            <input type="password" id="inputPassword" name="password" class="form-control" placeholder="'.$password_text.'" required>
-                            <label for="inputPassword">'.$password_text.'</label>
-                        </div>
-                        <div class="form-label-group">
-                            <input type="password" id="inputConfirmPassword" name="confirmation" class="form-control" placeholder="'.$confirm_password_text.'" required>
-                            <label for="inputConfirmPassword">'.$confirm_password_text.'</label>
-                        </div>
-                        <button class="'.$class.'" type="submit">'.$create_account_text.'</button>
-                    </form>
-                </div>
-            </div>
-         ';
+        return '';
     }
 }
 
+if (not_exist('connexion'))
+{
+
+    function connexion($register_route_name,$login_route_name,$username_text,$lastname_text,$email_address_text,$password_text,$confirm_password_text,$create_account_text,$connexion_text)
+    {
+        return  ' <div class="mb-5"><div class="btn-group" role="group" aria-label="Basic example">
+  <button type="button" data-toggle="collapse" data-target="#register_form" aria-expanded="false" class="btn btn-secondary">register</button>
+  <button type="button" data-toggle="collapse" data-target="#login_form" aria-expanded="false" class="btn btn-secondary">Login</button>
+  <a href="'.root().'" class="btn btn-secondary">Home</a>
+</div>
+  <div class="row mt-5">
+    <div class="collapse" id="register_form">
+        <div class="card card-body">
+                 '.(new Form())->start($register_route_name)->row()->input(Form::TEXT,'firstname',$username_text,'<i class="material-icons">person</i>')->end_row_and_new()->input(Form::TEXT,'lastname',$lastname_text,'<i class="material-icons">person</i>')->end_row_and_new()->input(Form::EMAIL,'email',$email_address_text,'<i class="material-icons">email</i>')->end_row_and_new()
+                ->input(Form::PASSWORD,'password',$password_text,'<i class="material-icons">vpn_key</i>')->end_row_and_new()->input(Form::PASSWORD,'confirm_password',$confirm_password_text,'<i class="material-icons">vpn_key</i>')->end_row_and_new()->submit($create_account_text,'<i class="material-icons">person_add</i>')->end_row()->get().'
+        </div>
+    </div>
+    <div class="collapse" id="login_form">
+      <div class="card card-body">
+       '.(new Form())->start($login_route_name)->row()->input(Form::TEXT,'firstname',$username_text,'<i class="material-icons">person</i>')->end_row_and_new()->input(Form::PASSWORD,'password',$password_text,'<i class="material-icons">vpn_key</i>')->end_row_and_new()->submit($connexion_text,'<i class="material-icons">person</i>')->end_row()->get().'
+      </div>
+    </div>
+</div>';
+
+
+    }
+}
 if(not_exist('copyright'))
 {
     /**
@@ -1698,50 +1721,28 @@ if(not_exist('navbar'))
                     foreach ($routes as $route)
                         $html.='<li class="nav-item"><a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
                 }
-                $file = collection(config('navigation','routes'));
+
 
                 if (app()->auth()->connected())
                 {
-                    $x = collection(explode('@',$file->get('admin')));
 
-                    $admin_route = $x->begin();
-                    $admin_text = $x->last();
-
-                    $x = collection(explode('@',$file->get('home')));
-                    $home_route = $x->begin();
-                    $home_text = $x->last();
-
-                    $x = collection(explode('@',$file->get('logout')));
-                    $logout_route = $x->begin();
-                    $logout_text = $x->last();
 
                     if (equal(current_user()->id,1))
                     {
 
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($admin_route).'">'.strtoupper($admin_text).'</a></li>';
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($home_route).'">'.strtoupper($home_text).'</a></li>';
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('admin').'">'.strtoupper('admin').'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('home').'">'.strtoupper('home').'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('logout').'">'.strtoupper('logout').'</a></li>';
 
                     }else{
 
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($home_route).'">'.strtoupper($home_text).'</a></li>';
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route($logout_route).'">'.strtoupper($logout_text).'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('home').'">'.strtoupper('home').'</a></li>';
+                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('logout').'">'.strtoupper('logout').'</a></li>';
                         }
 
                 }else{
 
-                        $x = collection(explode('@',$file->get('login')));
-
-                        $login_route = $x->begin();
-                        $login_text = $x->last();
-
-                        $x = \collection(explode('@',$file->get('register')));
-
-                        $register_route = $x->begin();
-                        $register_text = $x->last();
-
-                    $html.=' <li class="nav-item"><a class="nav-link" href="'.route($login_route).'">'.strtoupper($login_text).'</a></li>';
-                    $html.=' <li class="nav-item"><a class="nav-link" href="'.route($register_route).'">'.strtoupper($register_text).'</a></li>';
+                    $html.=' <li class="nav-item"><a class="nav-link" href="'.route('connexion').'">'.strtoupper('Connexion').'</a></li>';
                 }
             $html .= '</ul></div></div></nav>';
         return $html;

@@ -145,7 +145,7 @@ namespace Imperium\Routing {
         {
             $middleware_dir = 'Middleware';
 
-            $namespace = config('app','namespace') . '\\' . $middleware_dir. '\\';
+            $namespace = 'Shaolin' . '\\' . $middleware_dir. '\\';
 
             $dir = CORE .DIRECTORY_SEPARATOR . $middleware_dir;
 
@@ -202,7 +202,7 @@ namespace Imperium\Routing {
             }
 
 
-           return  new RouteResult(APP,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->collection());
+           return  new RouteResult(CONTROLLERS_NAMESPACE,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->collection());
         }
 
 

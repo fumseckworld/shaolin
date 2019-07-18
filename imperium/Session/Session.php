@@ -131,5 +131,20 @@ namespace Imperium\Session {
         {
 
         }
+
+        /**
+         *
+         * Clear the session
+         *
+         * @return bool
+         *
+         */
+        public function clear(): bool
+        {
+            foreach ($this->all() as $k => $v)
+               $this->remove($k);
+
+            return not_def($this->all());
+        }
     }
 }

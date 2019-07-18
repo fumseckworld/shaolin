@@ -103,5 +103,20 @@ namespace Imperium\Session {
            $this->set($key,$value);
            return $this->get($key);
         }
+
+        /**
+         *
+         * Clear the session
+         *
+         * @return bool
+         *
+         */
+        public function clear(): bool
+        {
+           foreach ($this->all() as $k => $v)
+               $this->remove($k);
+
+           return not_def($this->all());
+        }
     }
 }

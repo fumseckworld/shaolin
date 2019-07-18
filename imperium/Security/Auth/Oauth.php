@@ -195,7 +195,7 @@ namespace Imperium\Security\Auth {
          */
          public function current()
         {
-            return $this->connected() ?  $this->model->find($this->session->get(self::ID)) : '';
+            return $this->connected() ?  $this->model->from('users')->find($this->session->get(self::ID)) : '';
         }
 
         /**
@@ -225,22 +225,22 @@ namespace Imperium\Security\Auth {
          */
         public function create(): bool
         {
-            
+            $request = new Request();
             $password = $this->columns()->get('password');
 
-            foreach ($this->model->columns() as $column)
+            foreach ($this->model->from('users')->columns() as $column)
             {
                 if (different($column,$this->columns()->get('confirm')))
                 {
-                    if (not_def(Request::get($column)))
+                    if (not_def($request->get($column)))
                     {
                         $this->model->set($column,$column);
                     }else
                     {
                         if (equal($column,$password))
-                            $this->model->set($column,bcrypt(Request::get($column)));
+                            $this->model->set($column,bcrypt($request->get($column)));
                         else
-                            $this->model->set($column,Request::get($column));
+                            $this->model->set($column,$request->get($column));
                     }
                 }
             }
@@ -325,47 +325,39 @@ namespace Imperium\Security\Auth {
             }
             return $this->user_not_found();
         }
-        
+
         /**
          *
          * Connect an user on success
          *
-         * @param string $username
-         * @param string $password
-         *
          * @return RedirectResponse
          *
          * @throws Kedavra
-         *
          */
-        public function login(string $username,string $password): RedirectResponse
+        public function login(): RedirectResponse
         {
-            $user = $this->model->by($this->column(), $username);
+            $request = new Request();
+            $user = $this->model->from('users')->by($this->column(), $request->get($this->column()));
 
-            $column = $this->columns()->get('password');
-
-            superior($user, 1, true,$this->messages()->get('not_unique'));
+            $password_column = $this->columns()->get('password');
 
             if (def($user))
             {
-                foreach ($user as $u)
+                if (check($request->get($password_column), $user->$password_column))
                 {
-                    if (check($password, $u->$column))
-                    {
-                        $this->session->set(self::USERNAME, $username);
+                    $this->session->set(self::USERNAME, $request->get($this->column()));
 
-                        $this->session->set(self::CONNECTED, true);
-                        $this->session->set(self::ID,$u->id);
+                    $this->session->set(self::CONNECTED, true);
+                    $this->session->set(self::ID,$user->id);
 
-                        return $this->redirect($u->id);
-                    } else 
-                    {
-                        $this->clean_session();
+                    return $this->redirect($user->id);
+                } else
+                {
+                    $this->clean_session();
 
-                        return back(collection(config('auth', 'messages'))->get('password_no_match'), false);
-                    }
-
+                    return back(collection(config('auth', 'messages'))->get('password_no_match'), false);
                 }
+
             }
             return $this->user_not_found();
             

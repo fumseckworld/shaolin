@@ -305,21 +305,21 @@ namespace Imperium\View {
         public function load(string $class,string $view,array $args=[]): string
         {
             $dir = ucfirst(strtolower(str_replace('Controller','',collection(explode("\\",$class))->last())));
-
+            $dir = $this->views_path .DIRECTORY_SEPARATOR . $dir;
             Dir::create($dir);
 
             $view = collection(explode('.',$view))->begin();
 
             append($view,'.twig');
-            
-            $data = $dir .DIRECTORY_SEPARATOR . $view;
 
-            $file = $this->views_path . DIRECTORY_SEPARATOR .$dir  .DIRECTORY_SEPARATOR .$view;
+            $file =  $dir .DIRECTORY_SEPARATOR .$view;
 
             if(!file_exists($file))
                 (new File($file,EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
 
-            return $this->twig()->render($data,$args);
+            $file = trim(str_replace($this->views_path,'',$file),'/');
+
+            return $this->twig()->render($file,$args);
         }
 
         /**

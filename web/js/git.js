@@ -138,13 +138,22 @@ $(function ()
         let todo_limit = $("#todo-end").val();
         let result = $("#todo-response");
         if (contributor === 'Select a contributor')
-            alert("Please select a contributor");
+        {
+
+            return  false;
+        }
 
         if (task === '')
-            alert("Please write a task");
+        {
+
+            return false;
+        }
 
         if (todo_limit === '')
-            alert("Please add a task limit date");
+        {
+
+            return false;
+        }
 
         $.post('/todo.php',{repository:repository,created_at:created_at,contributor:contributor,task:task,todo_limit:todo_limit},function (data)
         {
@@ -153,6 +162,23 @@ $(function ()
             else
                 result.empty().removeClass('d-none').addClass('alert-danger').removeClass('alert-success').html('Todo has not been created' + '  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>');
         });
+
+    });
+
+    $("#close-all-todo").on('click',function ()
+    {
+        let repository = $(this).attr('data-repository');
+
+        if (confirm('Close all todo ? '))
+        {
+
+            $.post('/close-all-todo.php',{repository:repository},function (data)
+            {
+                if(data)
+                    location.reload();
+            });
+
+        }
 
     });
 

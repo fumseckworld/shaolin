@@ -1,5 +1,5 @@
 class:
-  submit: 'btn-outline-dark text-uppercase'
+  submit: 'btn-outline-primary  text-uppercase'
   reset:  'btn-danger'
   remove: 'btn-danger'
   button: 'btn-secondary'

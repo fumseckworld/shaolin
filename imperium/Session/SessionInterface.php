@@ -75,5 +75,14 @@ namespace Imperium\Session {
          */
         public function __construct();
 
+        /**
+         *
+         * Clear the session
+         *
+         * @return bool
+         *
+         */
+        public function clear() :bool;
+
     }
 }

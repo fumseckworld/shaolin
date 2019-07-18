@@ -64,7 +64,7 @@ namespace Imperium\Routing {
             $this->controller = $controller;
             $this->action = $action;
             $this->args = $args;
-            $this->namespace = $namespace;
+            $this->namespace = $namespace .'\\';
             $this->class = $this->controller_class();
             $this->controller_dir = CONTROLLERS;
 

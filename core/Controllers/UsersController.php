@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controllers {
+namespace Shaolin\Controllers {
 
     
     use Imperium\Controller\Controller;

@@ -182,6 +182,7 @@ namespace Imperium\Versioning\Git {
                 $this->connect->execute(self::CONTRIBUTORS_TABLE);
             if ($this->model()->table()->not_exist('bugs'))
                 $this->connect->execute(self::BUGS_TABLE);
+
             if ($this->model()->table()->not_exist('todo'))
                 $this->connect->execute(self::TODO_TABLE);
 
@@ -419,7 +420,7 @@ namespace Imperium\Versioning\Git {
         {
             $this->execute("git rev-list --count $branch");
 
-            return '<button type="button" class="btn btn-secondary"><i class="material-icons">history</i> <span class="badge badge-light">'.numb(intval($this->data()->last())) . ' Commits</span></button>';
+            return '<button type="button" class="btn btn-primary"><i class="material-icons">history</i> <span>'.numb(intval($this->data()->last())) . ' Commits</span></button>';
 
         }
 
@@ -787,7 +788,7 @@ namespace Imperium\Versioning\Git {
          */
         public function release_size(): string
         {
-            return '<button type="button" class="btn btn-secondary"><i class="material-icons">all_out</i> <span class="badge badge-light">'.numb(collection($this->releases())->length()).' Releases</span></button>';
+            return '<button type="button" class="btn btn-primary"><i class="material-icons">all_out</i> <span>'.numb(collection($this->releases())->length()).' Releases</span></button>';
 
         }
 
@@ -803,7 +804,7 @@ namespace Imperium\Versioning\Git {
          */
         public function contributors_size(): string
         {
-           return '<button type="button" class="btn btn-secondary"><i class="material-icons">group</i> <span class="badge badge-light">'.numb(\collection($this->contributors())->length()).' Contributors</span></button>';
+           return '<button type="button" class="btn btn-primary"><i class="material-icons">group</i> <span>'.numb(\collection($this->contributors())->length()).' Contributors</span></button>';
         }
 
         /**
@@ -816,7 +817,7 @@ namespace Imperium\Versioning\Git {
 
             $html = ' <div class="input-group mb-3">
                   <div class="input-group-prepend">
-                        <span class="input-group-text">
+                        <span class="input-group-text bg-primary text-white">
                             <i class="material-icons">
                                 group
                             </i>
@@ -1113,11 +1114,11 @@ namespace Imperium\Versioning\Git {
 
             $html = '
                        <div class="mb-3">
-                        <a href="'.root().'" class="btn btn-secondary"><i class="material-icons">apps</i>Apps</a> 
+                        <a href="'.root().'" class="btn btn-primary"><i class="material-icons">apps</i>Apps</a> 
 </div>
                            <div class="btn-group" role="group" aria-label="Basic example">
                         
-                    
+                     
                         '.$this->commits_size($branch).'
                         '.$this->contributors_size().'
                         '.$this->release_size().'
@@ -1126,7 +1127,7 @@ namespace Imperium\Versioning\Git {
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
                                 <div class="input-group">
                                      <div class="input-group-prepend">
-                                        <button class="btn btn-secondary" type="button" onclick="copy_public_clone_url()"><i class="material-icons">link</i></button>
+                                        <button class="btn btn-primary" type="button" onclick="copy_public_clone_url()"><i class="material-icons">link</i></button>
                                      </div>
                                     <input type="text" class="form-control form-control-lg " id="clone" value="git://'.request()->getHost().'/'.$this->owner().'/'.$this->repository().'">
                                 </div>
@@ -1134,15 +1135,15 @@ namespace Imperium\Versioning\Git {
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">
                                 <div class="input-group mt-3">
                                      <div class="input-group-prepend">
-                                        <button class="btn btn-secondary" type="button" onclick="copy_contributor_clone_url()"><i class="material-icons">link</i></button>
+                                        <button class="btn btn-primary" type="button" onclick="copy_contributor_clone_url()"><i class="material-icons">link</i></button>
                                      </div>
                                      <input type="text" class="form-control form-control-lg" id="contributor_clone" value="git@'.request()->getHost().':'.$this->owner().'/'.$this->repository().'">
                                 </div>
                             </div> 
                             <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
                                 <div class="btn-group" role="group" aria-label="Basic example">
-                                    <a href="'.app()->url('download',$this->repository(),$this->owner()).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
-                                   <a href="'.app()->url('stars',$this->repository(),$this->owner()).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
+                                    <a href="'.app()->url('download',$this->repository(),$this->owner()).'" class="btn btn-primary"><i class="material-icons">get_app</i>'.$this->repository(). ' <span>'.numb(intval((new File('download'))->read())).'</span></a>
+                                   <a href="'.app()->url('stars',$this->repository(),$this->owner()).'" class="btn btn-primary"><i class="material-icons">star</i>Stars <span>'.numb(intval((new File('stars'))->read())).'</span></a>
                                 </div>
                             </div>
                         </div>
@@ -1620,7 +1621,9 @@ namespace Imperium\Versioning\Git {
         public function todo(): string
         {
 
-            if (app()->auth()->connected())
+            $column =  collection(config('auth','columns'))->get('auth');
+
+            if (app()->auth()->connected() && equal(current_user()->$column,$this->owner()))
             {
 
 
@@ -1653,7 +1656,10 @@ namespace Imperium\Versioning\Git {
                                   </div>
                                   <input type="date" id="todo-end"  class="form-control form-control-lg"  placeholder="task">
                                     <div class="input-group-prepend">
-                                        <button class="btn btn-secondary" type="button" id="add-todo" data-repository="'.$this->path().'" data-date="'.now()->toDateTimeString().'" ><i class="material-icons">add</i></button>
+                                        <button class="btn btn-primary" type="button" id="add-todo" data-repository="'.$this->path().'" data-date="'.now()->toDateTimeString().'" ><i class="material-icons">add</i></button>
+                                  </div>   
+                                   <div class="input-group-prepend">
+                                        <button class="btn btn-danger" type="button" id="close-all-todo" data-repository="'.$this->path().'"  ><i class="material-icons">done_all</i></button>
                                   </div>
                                 </div>
                             </div>
@@ -1909,7 +1915,34 @@ namespace Imperium\Versioning\Git {
             return $this->model;
         }
 
+        /**
+         *
+         * Remove a task
+         *
+         * @param int $id
+         *
+         * @return RedirectResponse
+         *
+         * @throws Kedavra
+         *
+         */
+        public function close_todo(int $id): RedirectResponse
+        {
+            return $this->model()->from('todo')->remove($id) ? back('Todo was deleted successfully'): back('Failed to close the todo',false);
+        }
 
-
+        /**
+         *
+         * Close all task
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function close_all_todo(): bool
+        {
+            return $this->model()->table()->drop('todo') && $this->model()->execute(self::TODO_TABLE);
+        }
     }
 }

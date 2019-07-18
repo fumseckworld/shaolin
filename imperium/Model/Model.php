@@ -613,7 +613,7 @@ namespace Imperium\Model {
             foreach ($this->columns() as  $column)
                 $data->add($this->data->get($column),$column);
 
-            return $this->insert_new_record($data->collection());
+            return $this->insert_new_record($this,$data->collection());
         }
         /**
          *
@@ -723,14 +723,14 @@ namespace Imperium\Model {
          * @param string $column
          * @param $expected
          *
+         * @param string $message
          * @return object
          *
          * @throws Kedavra
-         *
          */
-        public function by_or_fail(string $column,$expected): object
+        public function by_or_fail(string $column,$expected,string $message ='Record was not found'): object
         {
-            return exist($this->by($column,$expected),true,"Record was not found");
+            return exist($this->by($column,$expected),true,$message);
         }
 
         /**
