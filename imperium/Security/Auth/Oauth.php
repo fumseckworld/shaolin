@@ -218,12 +218,12 @@ namespace Imperium\Security\Auth {
          *
          * Create the new user from a form
          *
-         * @return bool
+         * @return RedirectResponse
          *
          * @throws Kedavra
          *
          */
-        public function create(): bool
+        public function create(): RedirectResponse
         {
             $request = new Request();
             $password = $this->columns()->get('password');
@@ -244,7 +244,7 @@ namespace Imperium\Security\Auth {
                     }
                 }
             }
-            return $this->model->save();
+            return $this->model->save() ? back($this->messages()->get('account_created_successfully')) : back($this->messages()->get('account_creation_fail'),false);
         }
 
         /**

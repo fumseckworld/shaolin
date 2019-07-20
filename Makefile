@@ -12,3 +12,5 @@ all:
 	./vendor/bin/phpunit $(C)
 coverage:
 	php -S localhost:8000 -t $@
+css:
+	npx tailwind build core/Assets/css/app.css -o web/css/app.css

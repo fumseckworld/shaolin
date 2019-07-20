@@ -19,7 +19,7 @@ namespace Shaolin\Controllers {
 
 		public function create_account()
         {
-            return $this->auth()->create() ? $this->back('Create successfully') : $this->back('Creation has failed',false);
+            return $this->auth()->create();
         }
 		public function login()
         {

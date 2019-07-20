@@ -5,7 +5,6 @@ use DI\NotFoundException;
 use Faker\Factory;
 use Faker\Generator;
 use GuzzleHttp\Psr7\ServerRequest;
-use Imperium\Asset\Asset;
 use Imperium\Config\Config;
 use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
@@ -338,6 +337,7 @@ if (not_exist('route'))
 
         if (def($args))
         {
+
             $url = '';
             $data = explode('/',$x->url);
             $i = 0;
@@ -359,10 +359,10 @@ if (not_exist('route'))
                 }
             }
 
-            return $url;
+            return base_url(trim($url,'/'));
         }
 
-        return $x->url;
+        return base_url(trim($x->url,'/'));
     }
 }
 
@@ -448,158 +448,140 @@ if (not_exist('display_repositories'))
     function display_repositories(string $owner = ''): string
     {
 
+        $username = not_def($owner) ? def(get('owner')) ? get('owner') : '*' : $owner;
+
         $data = [];
-        $owners = \collection();
-        if (def(get('owner')))
-        {
+        $owners = collection();
+        if (def($username) && different($username, '*')) {
 
-            foreach (Dir::scan('depots') as $owner)
-            {
-                if ($owner == get('owner'))
-                {
-                    foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
-                    {
+            foreach (Dir::scan('depots') as $owner) {
+                if ($owner == $username) {
+                    foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository) {
                         $data[$owner][] = realpath("depots/$owner/$repository");
                     }
-                }else{
-                    if ($owners->not_exist($owner))
-                        $owners->add($owner);
-                }
-            }
-        }elseif(def($owner))
-        {
-
-            foreach (Dir::scan('depots') as $x)
-            {
-                if ($x == $owner)
-                {
-                    foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
-                    {
-                        $data[$owner][] = realpath("depots/$owner/$repository");
-                    }
-                }else{
+                } else {
                     if ($owners->not_exist($owner))
                         $owners->add($owner);
                 }
             }
         }
-        else
-        {
-            foreach (Dir::scan('depots') as $owner)
-            {
+
+        if (equal($username, '*')) {
+            foreach (Dir::scan('depots') as $owner) {
                 if ($owners->not_exist($owner))
                     $owners->add($owner);
 
-                foreach(Dir::scan('depots'.DIRECTORY_SEPARATOR.$owner) as $repository)
-                {
+                foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository) {
 
                     $data[$owner][] = realpath("depots/$owner/$repository");
                 }
             }
         }
 
+
         $data = collection($data);
+        $request = ServerRequest::fromGlobals();
 
-
-        $code = '<div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">group</i></span></div> <select class="form-control form-control-lg" onchange="location = this.options[this.selectedIndex].value"><option value="Choose an user">Choose an user</option>';
-
-        foreach ($owners->collection() as $owner)
-            append($code,'<option value="?owner='.$owner.'">'.$owner.'</option>');
-
-        append($code,'</select></div><div class="mt-3 mb-3"><div class="input-group"><div class="input-group-prepend"><span class="input-group-text"><i class="material-icons">search</i></span></div><input type="search" onkeyup="search_project()" id="search_project"  autofocus="autofocus" class="form-control-lg form-control" placeholder="Search a project"></div></div><ul class="list-unstyled row" id="projects">');
-
-        if (def(get('owner')))
+        if (app()->auth()->connected())
         {
-            foreach ($data->get(get('owner')) as $repository)
-            {
-                $g = new Git($repository,get('owner'));
-
-                append($code,'
-                <li class="col-lg-6 mt-3 col-md-6 col-xl-6 col-sm-12">
-                    <div class="card-deck">
-                        <div class="card">
-                            <div class="card-header text-center">
-                                '.$g->repository().'
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text text-center">
-                                    '.$g->description().'
-                                </p>
-                                <div class="text-center">
-                                    <div class="btn-group " role="group">
-                                        <a href="'.app()->url('repository',$g->owner(),$g->repository(),'master').'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
-                                        <a href="'.\app()->url('stars',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.numb(intval((new File('stars'))->read())).'</span></a>
-                                        <a href="'.\app()->url('download',$g->repository(),$g->owner()).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.numb(intval((new File('download'))->read())).'</span></a>
-                                    </div>
-                                </div>
-                            </div>                                      
-                            <div class="card-footer">
-                              <small class="text-muted">'.$g->last_update().'</small>
-                            </div>
-                        </div>
-                    </div>
-                </li>');
-            }
-        }else {
-            foreach ($owners->collection() as $owner)
-            {
-                foreach ($data->get($owner) as $x)
-                {
-
-                    $g = new Git($x,$owner);
-
-                    append($code,'
-                <li class="col-lg-6 mb-5 col-md-6 col-xl-6 col-sm-12">
-                    <div class="card-deck">
-                        <div class="card ">
-                            <div class="card-header text-center">
-                                '.$g->repository().'
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text text-center">
-                                    '.$g->description().'
-                                </p>
-                                <div class="text-center">
-                                    <div class="btn-group " role="group">
-                                        <a href="'.route('repository',[$g->owner(),$g->repository(),'master']).'" class="btn btn-secondary"><i class="material-icons">code</i>Code</a> 
-                                        <a href="'.route('stars',['stars',$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">star</i>Stars <span class="badge badge-light">'.(new File('stars'))->read().'</span></a>
-                                        <a href="'.route('download',['download',$g->repository(),$g->owner()]).'" class="btn btn-secondary"><i class="material-icons">get_app</i>download <span class="badge badge-light">'.(new File('download'))->read().'</span></a>
-                                    </div>
-                                </div>
-                            </div>                                      
-                            <div class="card-footer">
-                              <small class="text-muted">'.$g->last_update().'</small>
-                            </div>
-                        </div>
-                    </div>
-                </li>');
-                }
-
-            }
+            if (equal($request->getUri()->getPath(), '/home'))
+                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow" href="' . root() . '"><i class="material-icons">group</i></a></div></div></div></div></div></div>';
+            else
+                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('home') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
+        }else{
+            $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('connexion') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
         }
 
 
-        append($code,'</ul></div><script> function search_project()
+
+        $end_code ='';
+
+
+
+
+        if ( def($request->getUri()->getQuery()) || equal($request->getUri()->getPath(),'/home'))
+        {
+            append($code,'<div class="row"><div class="column"><input class="input" type="text" placeholder="Search a project"  onkeyup="search_project()" id="search_project"  autofocus="autofocus"> </div></div><div id="projects"><div class="row">');
+
+        }
+        else
+        {
+            append($code,'<div class="row"><div class="column"><input class="input" type="text" placeholder="Search a project"  onkeyup="search_project()" id="search_project"  autofocus="autofocus"> </div><div class="column"><select onChange="location = this.options[this.selectedIndex].value"><option value="Select an user" >Select an user</option>');
+            foreach ($data->keys() as $x)
+                append($code,'<option value="?owner='.$x.'">'.$x.'</option>');
+
+            append($code,'</select></div></div><div id="projects"><div class="row">');
+        }
+
+
+
+        $k = 0;
+
+
+        foreach ($data->collection() as $user => $repositories)
+        {
+
+            foreach ($repositories as $repository)
+            {
+                $g = new Git($repository,$user);
+                append($code,'
+                    
+                    <section class="column repository" id="'.$g->repository().'">  
+                      
+                        <h2 class="title">'.$g->repository().'</h2>
+                        <hr>
+                        <article class="text-center">
+                            <h3>'.$g->description().'</h3>
+                            <div class="inline-flex mt-4 mb-4">
+                                <a class="btn-hollow mr-4" href="'.app()->url('repository',$g->owner(),$g->repository(),'master').'">
+                                    <i class="material-icons">code</i> code
+                                </a> ');
+                                if (!is_mobile())
+                                append($code,'<a class="btn-hollow mr-4" href="'.app()->url('download',$g->repository(),$g->owner()).'"> <i class="material-icons">get_app</i>download</a>');
+
+                                append($code,' 
+                                <a class="btn-hollow" href="?owner='.$g->owner().'">
+                                     <i class="material-icons">  person</i>  '.$g->owner().'
+                                </a>
+                            </div>
+                            <div class="border-t bg-teal-900 border-teal-300 p-4">
+                                '.$g->last_update().'
+                            </div>
+                        </article>             
+                    </section>');
+
+
+                    if (!is_pair($k))
+                         append($code,'</div><div class="row">');
+
+
+                        $k++;
+            }
+            append($code,'</div><div class="row">');
+
+        }
+
+
+        append($code,$end_code,'</div></div><script> function search_project()
         { 
-            let input, filter, ul, li, a, i, txtValue;
+            let input, filter, ul, li, i;
             input = document.getElementById("search_project");
-            filter = input.value.toUpperCase();
+            filter = input.value;
             ul = document.getElementById("projects");
-            li = ul.getElementsByTagName("li");
+            li = ul.getElementsByClassName("repository");
+           
             for (i = 0; i < li.length; i++)
             {
-                
-                a = li[i].getElementsByClassName("card-header")[0];
-                txtValue = a.textContent || a.innerText;
-                
-                if (txtValue.toUpperCase().indexOf(filter) > -1)
+                let x = li[i].getAttribute("id");
+             
+                if (x.indexOf(filter) > -1)
                 {
                     li[i].style.display = "";
                 } else {
                     li[i].style.display = "none";
-                }
+                }   
             }
-        }
+        }     
 </script>');
 
         return $code;
@@ -771,7 +753,6 @@ if (not_exist('register_page'))
      *
      * @return string
      *
-     * @throws Kedavra
      */
     function register_page(string $welcome_text,string $register_route_name,string $username_text,string $lastname_text,string $email_address_text,string $password_text,string $confirm_password_text,string $create_account_text,string $logo_path =''): string
     {
@@ -779,29 +760,83 @@ if (not_exist('register_page'))
     }
 }
 
+if (not_exist('create_repository'))
+{
+    function  create_repository(): string
+    {
+        return '<form action="'.route('add-repository').'" method="POST">'.csrf_field().' <input type="hidden" name="method" value="POST"><div class="row"><div class="column"><input type="text" name="repository" minlength="3" maxlength="50" autofocus="autofocus" placeholder="The project name" autocomplete="off" required="required"></div><div class="column"><input type="email"  minlength="3" maxlength="255" autocomplete="off"  name="email" placeholder="The bugs report email" required="required"></div></div><div class="row"><div class="column"><textarea name="description"  rows="10" placeholder="The repository description" autocomplete="off" required="required"></textarea></div></div><div class="row"><div class="column"><button type="submit"><i class="material-icons">add</i> Create the repository</button></div></div></form>';
+    }
+}
 if (not_exist('connexion'))
 {
 
-    function connexion($register_route_name,$login_route_name,$username_text,$lastname_text,$email_address_text,$password_text,$confirm_password_text,$create_account_text,$connexion_text)
+    function connexion($register_route_name,$login_route_name,$username_text = 'Username',$lastname_text = 'Lastname',$email_address_text= 'Your Email adrress',$password_text ='Password',$confirm_password_text='Confirm the password',$create_account_text= 'Create account',$connexion_text= 'Log in')
     {
-        return  ' <div class="mb-5"><div class="btn-group" role="group" aria-label="Basic example">
-  <button type="button" data-toggle="collapse" data-target="#register_form" aria-expanded="false" class="btn btn-secondary">register</button>
-  <button type="button" data-toggle="collapse" data-target="#login_form" aria-expanded="false" class="btn btn-secondary">Login</button>
-  <a href="'.root().'" class="btn btn-secondary">Home</a>
-</div>
-  <div class="row mt-5">
-    <div class="collapse" id="register_form">
-        <div class="card card-body">
-                 '.(new Form())->start($register_route_name)->row()->input(Form::TEXT,'firstname',$username_text,'<i class="material-icons">person</i>')->end_row_and_new()->input(Form::TEXT,'lastname',$lastname_text,'<i class="material-icons">person</i>')->end_row_and_new()->input(Form::EMAIL,'email',$email_address_text,'<i class="material-icons">email</i>')->end_row_and_new()
-                ->input(Form::PASSWORD,'password',$password_text,'<i class="material-icons">vpn_key</i>')->end_row_and_new()->input(Form::PASSWORD,'confirm_password',$confirm_password_text,'<i class="material-icons">vpn_key</i>')->end_row_and_new()->submit($create_account_text,'<i class="material-icons">person_add</i>')->end_row()->get().'
-        </div>
-    </div>
-    <div class="collapse" id="login_form">
-      <div class="card card-body">
-       '.(new Form())->start($login_route_name)->row()->input(Form::TEXT,'firstname',$username_text,'<i class="material-icons">person</i>')->end_row_and_new()->input(Form::PASSWORD,'password',$password_text,'<i class="material-icons">vpn_key</i>')->end_row_and_new()->submit($connexion_text,'<i class="material-icons">person</i>')->end_row()->get().'
-      </div>
-    </div>
-</div>';
+        return  ' 
+                        <div class="mb-10">
+               
+                    <a class="btn-hollow mr-4"  href="#" id="register">
+                        <i class="material-icons">person_add</i> '.$create_account_text.'
+                    </a>  
+                     <a href="#" class="btn-hollow mr-4" id="login">
+                        <i class="material-icons">person</i>   '.$connexion_text.'</a>
+                   
+                    <a class="btn-hollow"  href="'.root().'">
+                        <i class="material-icons">apps</i> apps
+                   </a>                            
+                </div>
+                 <div id="register-form" class="hidden">
+                    <form action="'.route($register_route_name).'" method="POST">
+                        '.csrf_field().'
+                        <input name="method" value="POST" class="hidden">
+                        <div class="row">
+                            <div class="column">
+                                <input type="text" autocomplete="off" minlength="3" maxlength="200" name="firstname" placeholder="'.$username_text.'" required="required">
+                            </div>
+                            <div class="column">
+                                <input type="text" autocomplete="off"  minlength="3" maxlength="200" name="lastname" placeholder="'.$lastname_text.'" required="required">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="column">
+                                <input type="email" autocomplete="off" name="email" placeholder="'.$email_address_text.'" required="required">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="column">
+                                <input type="password" autocomplete="off"  minlength="8" name="password" placeholder="'.$password_text.'" required="required">
+                            </div>
+                            <div class="column">
+                                <input type="password" autocomplete="off"  minlength="8" name="confirm_password" placeholder="'.$confirm_password_text.'" required="required">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="column">
+                                <button type="submit"><i class="material-icons">person_add</i> '.$create_account_text.'</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="login-form" class="hidden">
+                    <form action="'.route($login_route_name).'" method="POST">
+                        '.csrf_field().'
+                        <input name="method" value="POST" class="hidden">
+                        <div class="row">
+                            <div class="column">
+                                <input type="text" autocomplete="off" minlength="3" maxlength="200" name="firstname" placeholder="'.$username_text.'" required="required">
+                            </div>
+                            <div class="column">
+                                <input type="password" autocomplete="off" minlength="8" maxlength="200" name="password" placeholder="'.$password_text.'" required="required">
+                            </div>
+                        </div>
+                       <div class="row">
+                            <div class="column">
+                                <button type="submit"><i class="material-icons">person</i> '.$connexion_text.'</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>';
 
 
     }
@@ -1699,52 +1734,58 @@ if(not_exist('navbar'))
 {
     /**
      * @param string $app_name
-     * @param string $classes
      * @param array $routes
      * @return string
+     * @throws DependencyException
      * @throws Kedavra
+     * @throws NotFoundException
      */
-    function navbar(string $app_name,string $classes,array $routes =[]): string
+    function navbar(string $app_name,array $routes =[]): string
     {
-        $html = '<nav class="'.$classes.'">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="'.root().'">'.strtoupper($app_name).'</a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-            </button>
+        $html = '<nav class="flex items-center fixed top-0 w-full z-10 justify-between flex-wrap bg-teal-500 p-5">
+                        <div class="flex items-center flex-shrink-0 text-white mr-6">
+                            <span class="font-semibold text-xl tracking-tight"><a href="'.root().'">'.$app_name.'</a></span>
+                        </div>
+                        <div class="block lg:hidden">
+                            <button class="flex items-center px-3 py-2 border rounded text-teal-200 border-teal-400 hover:text-white hover:border-white">
+                                <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><title>Menu</title><path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z"/></svg>
+                            </button>
+                        </div>
+                        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+                            <div class="text-sm lg:flex-grow">';
+                                if (def($routes))
+                                {
+                                    foreach ($routes as $route)
+                                        $html.='<a class="block mt-4  text-teal-200 hover:text-white"  href="'.route($route).'">'.strtoupper(route_name($route)).'</a>';
+                                }
+
+                                if (app()->auth()->connected())
+                                {
 
 
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="navbar-nav ml-auto">';
-                if (def($routes))
-                {
-                    foreach ($routes as $route)
-                        $html.='<li class="nav-item"><a class="nav-link" href="'.route($route).'">'.strtoupper(route_name($route)).'</a></li>';
-                }
+                                    if (equal(current_user()->id,1))
+                                    {
 
 
-                if (app()->auth()->connected())
-                {
+                                        $html.='<a class="block mt-4 lg:inline-block lg:mt-0 mr-2 text-teal-200 hover:text-white"  href="'.route('admin').'">'.strtoupper(route_name('admin')).'</a>';
+                                        $html.='<a class="block mt-4 lg:inline-block lg:mt-0 mr-2 text-teal-200 hover:text-white"  href="'.route('home').'">'.strtoupper(route_name('home')).'</a>';
+                                        $html.='<a class="block mt-4 lg:inline-block lg:mt-0 mr-2 text-teal-200 hover:text-white"  href="'.route('logout').'">'.strtoupper(route_name('logout')).'</a>';
 
 
-                    if (equal(current_user()->id,1))
-                    {
+                                    }else{
 
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('admin').'">'.strtoupper('admin').'</a></li>';
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('home').'">'.strtoupper('home').'</a></li>';
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('logout').'">'.strtoupper('logout').'</a></li>';
+                                        $html.='<a class="block mt-4 lg:inline-block lg:mt-0 mr-2 text-teal-200 hover:text-white"  href="'.route('home').'">'.strtoupper(route_name('home')).'</a>';
+                                        $html.='<a class="block mt-4 lg:inline-block lg:mt-0 mr-2 text-teal-200 hover:text-white"  href="'.route('logout').'">'.strtoupper(route_name('logout')).'</a>';
 
-                    }else{
+                                    }
 
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('home').'">'.strtoupper('home').'</a></li>';
-                        $html.=' <li class="nav-item"><a class="nav-link" href="'.route('logout').'">'.strtoupper('logout').'</a></li>';
-                        }
+                                }else{
 
-                }else{
+                                    $html.='<a class="block mt-4 lg:inline-block lg:mt-0 mr-2 text-teal-200 hover:text-white"  href="'.route('connexion').'">'.strtoupper(route_name('connexion')).'</a>';
 
-                    $html.=' <li class="nav-item"><a class="nav-link" href="'.route('connexion').'">'.strtoupper('Connexion').'</a></li>';
-                }
-            $html .= '</ul></div></div></nav>';
+                                }
+        $html .= '</div></div></nav>';
+
         return $html;
     }
 }
@@ -3531,7 +3572,6 @@ if (not_exist('is_mobile'))
         return (new Os())->isMobile();
     }
 }
-
 
 if (not_exist('superior'))
 {

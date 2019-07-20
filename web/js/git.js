@@ -182,6 +182,14 @@ $(function ()
 
     });
 
+    $("#register").on('click',function ()
+    {
+        $("#register-form").toggleClass('hidden');
+    });
 
+    $("#login").on('click',function ()
+    {
+        $("#login-form").toggleClass('hidden');
+    });
     // END TASK
 });

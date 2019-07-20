@@ -35,7 +35,7 @@ namespace Shaolin\Controllers {
 
             Dir::checkout(ROOT . DIRECTORY_SEPARATOR . $this->prefix);
 
-            return Git::create($this->request()->get('repository'),logged_user(),$this->request()->get('description'),$this->request()->get('email')) ? $this->back('Repository created') : $this->back('Fail',false);
+            return Git::create($this->request()->get('repository'),logged_user(),$this->request()->get('description'),$this->request()->get('email')) ? $this->back('The repository was created successfully') : $this->back('The repository already exist  ',false);
         }
         public function download_archive(string $repo,string $owner,string $tag,string $ext)
         {

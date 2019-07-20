@@ -7,32 +7,15 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
         {% if development() %}
-            <meta http-equiv="refresh" content="60">
+
         {% endif %}
 
         <!-- Bootstrap CSS -->
 
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css" rel="stylesheet">
-        {{ bootswatch('lumen') }}
-        <style>
-            .material-icons, .icon-text {
-                vertical-align: middle;
-            }
+        {{ css('app.css') }}
 
-            #debug_bar{
-                border: 0;
-                padding: 1rem 1rem;
-                color: #3db9ec;
-                background-color: #000;
-            }
-
-            #main{
-                padding-top:  5%;
-
-            }
-
-        </style>
 
         {% block css %} {% endblock %}
         <title>{% block title %}{% endblock %}</title>
@@ -40,9 +23,9 @@
         <meta name="description" content="{% block description %} {% endblock %}">
 
     </head>
-    <body>
-        {{ navbar('eywa','navbar navbar-expand-lg fixed-top navbar-dark bg-primary') }}
-        <main class="container mt-3" id="main">
+    <body class="bg-black">
+        {{ navbar('eywa') }}
+        <main class="container">
             {{ display('success') }}
             {{ display('failure') }}
             {% block content %} {% endblock %}

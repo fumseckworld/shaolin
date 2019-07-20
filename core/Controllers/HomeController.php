@@ -19,18 +19,10 @@ namespace Shaolin\Controllers {
 
         public function home()
         {
-           $repositories =  display_repositories(logged_user());
-            $form = $this->form()->start('add-repository')
 
-                    ->row()
-                        ->input(Form::TEXT,'repository','The project name','<i class="material-icons">apps</i>   ','','','',true,true)
-                    ->end_row_and_new()
-                ->input(Form::EMAIL,'email','Bugs report email','<i class="material-icons">email</i>')
-                ->end_row_and_new()
-                        ->textarea('description','The repository description')
-                ->end_row_and_new()
-                        ->submit('create','<i class="material-icons">add</i>')
-                ->end_row()->get();
+           $repositories =  display_repositories(logged_user());
+           $form =  create_repository();
+
             return $this->view('home',compact('form','repositories'));
         }
 

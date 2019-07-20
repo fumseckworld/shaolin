@@ -89,10 +89,6 @@ namespace Imperium\Flash {
         public function display(string $key): string
         {
             $success  = equal($key,self::SUCCESS_KEY);
-            $file = 'flash';
-
-            $success_class = collection(config($file,'success'))->get('class');
-            $danger_class = collection(config($file,'failure'))->get('class');
 
             $message = $this->get($key);
 
@@ -100,8 +96,7 @@ namespace Imperium\Flash {
 
             if (def($message))
             {
-                return $success ?  '<div class="'.$success_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>'
-                                :  '<div class="'.$danger_class.'" role="alert">'.$message.'<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+                return $success ?  '<div class="row"><div class="column"><div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-5" role="alert"><div class="flex"><p class="font-bold">'.$message.'</p></div></div></div></div>' : '<div class="row"><div class="column"><div class="bg-red-300 border-t-4 border-red-500 rounded-b text-red-800 px-4 py-3 shadow-md mb-5" role="alert"><div class="flex"><p class="font-bold">'.$message.'</p></div></div></div></div>';
 
             }
 

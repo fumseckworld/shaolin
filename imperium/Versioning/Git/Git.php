@@ -879,11 +879,14 @@ namespace Imperium\Versioning\Git {
         public static function create(string $project_name,string $owner,string $description,string $email ,bool $remote = true): bool
         {
 
-            Dir::create($owner);
+            if (!Dir::exist($owner))
+            {
+                Dir::create($owner);
+            }
+            Dir::checkout($owner);
 
-            $project_name = $owner . DIRECTORY_SEPARATOR . $project_name;
-
-            is_true(Dir::is($project_name),true,"The $project_name directory already exist");
+            if (Dir::exist($project_name))
+                return false;
 
             Dir::create($project_name);
 
@@ -933,7 +936,7 @@ namespace Imperium\Versioning\Git {
          *
          * @throws Kedavra
          */
-        public static function description(): string
+        public  function description(): string
         {
             return substr((new File(self::DESCRIPTION))->read(),0,50);
         }
@@ -1288,7 +1291,7 @@ namespace Imperium\Versioning\Git {
          */
         public function clone_view()
         {
-            return '';
+            return '<div class="row"><div class="column"><input type="text" value="git:://'.request()->getHost().'/'.$this->owner().'/'.$this->repository().'"></div></div>';
         }
 
         /**
