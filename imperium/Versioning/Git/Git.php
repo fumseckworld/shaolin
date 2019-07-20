@@ -32,11 +32,16 @@ namespace Imperium\Versioning\Git {
          * @var bool|string
          */
         private static $repository;
+
         /**
          * @var Connect
          */
         private static $connect;
 
+        /**
+         * @var string
+         */
+        private static $name;
 
         /**
          * @var array
@@ -46,11 +51,6 @@ namespace Imperium\Versioning\Git {
         const GIT_DIR = '.git';
 
         const DESCRIPTION =  'description';
-
-        /**
-         * @var string
-         */
-        private $name;
 
         /**
          * @var string
@@ -128,7 +128,7 @@ namespace Imperium\Versioning\Git {
 
             Dir::checkout(self::$repository);
 
-            $this->name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
+            self::$name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
 
             $this->save_contributors();
 
@@ -137,9 +137,8 @@ namespace Imperium\Versioning\Git {
 
 
         /**
-         * @return Model
          *
-         * @throws Kedavra
+         * @return Model
          *
          */
         public static function model()
@@ -154,13 +153,13 @@ namespace Imperium\Versioning\Git {
          *
          * @return Connect
          *
-         * @throws Kedavra
          *
          */
         public static function connect(): Connect
         {
             if (is_null(self::$connect))
-                self::$connect =  connect(SQLITE,self::$repository .'.sqlite3','','','','dump');
+                self::$connect =  connect(SQLITE,self::$repository .DIRECTORY_SEPARATOR . self::$name.'.sqlite3','','','','dump');
+
 
             return self::$connect;
         }
@@ -246,6 +245,7 @@ namespace Imperium\Versioning\Git {
         public function send_bug(): RedirectResponse
         {
             $data = collection();
+            
             foreach ($this->model()->from('bugs')->columns() as $column)
                 $data->add(request()->request->get($column));
 
@@ -715,7 +715,7 @@ namespace Imperium\Versioning\Git {
          */
         public function repository(): string
         {
-            return $this->name;
+            return self::$name;
         }
 
         /**
@@ -1048,15 +1048,16 @@ namespace Imperium\Versioning\Git {
 
             $file =  $this->repository() .'-'. "$version.$ext";
 
+            $name = self::$name;
             if (!File::exist($file))
             {
                 switch ($ext)
                 {
                     case 'zip':
-                        $this->shell("git archive --format=$ext --prefix=$this->name-$version/ $version  > $file");
+                        $this->shell("git archive --format=$ext --prefix=$name-$version/ $version  > $file");
                     break;
                     default:
-                        $this->shell("git archive --format=$ext --prefix=$this->name-$version/ $version |  gzip > $file");
+                        $this->shell("git archive --format=$ext --prefix=$name-$version/ $version |  gzip > $file");
                     break;
                 }
             }

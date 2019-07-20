@@ -612,7 +612,7 @@ if (not_exist('display_repositories'))
             }
         }     
 </script>');
-        
+
         return $code;
 
     }
@@ -2214,7 +2214,6 @@ if (not_exist('connect'))
      *
      * @return Connect
      *
-     * @throws Kedavra
      */
     function connect(string $driver,string $base,string $user,string $password,string $host,string $dump_path): Connect
     {
