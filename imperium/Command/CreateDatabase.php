@@ -17,20 +17,20 @@ namespace Imperium\Command {
 
         protected function configure()
         {
-            $base = config('db','base');
+            $base = db('base');
             $this->setDescription("Create the $base database");
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $driver =  config('db','driver');
-            $db = config('db','base');
+            $driver =  db('driver');
+            $db = db('base');
 
             if (has($driver,[MYSQL,POSTGRESQL]))
             {
                 try
                 {
-                    $connect = new Connect($driver,'',config('db','username'),config('db','password'),config('db','host'),'');
+                    $connect = new Connect($driver,'',db('username'),db('password'),db('host'),'');
 
                     $connect->execute("CREATE DATABASE IF NOT EXISTS $db");
                     $output->write("<bg=green;fg=white>The $db base was created successfully\n");
@@ -41,7 +41,8 @@ namespace Imperium\Command {
                 }
                 return 0;
             }
-            $db = dirname(core_path(collection(config('app','dir'))->get('app'))) . DIRECTORY_SEPARATOR .'web'.DIRECTORY_SEPARATOR .  $db;
+
+            $db = DB . DIRECTORY_SEPARATOR .  $db;
 
             if(File::create($db))
                 $output->write("<bg=green;fg=white>The $db base was created successfully\n");

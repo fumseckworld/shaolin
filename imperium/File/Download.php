@@ -35,6 +35,8 @@ namespace Imperium\File {
          *
          * @return Response
          *
+         * @throws Kedavra
+         *
          */
         public function download(): Response
         {

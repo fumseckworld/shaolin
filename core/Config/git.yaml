@@ -1,4 +1,4 @@
-archives_extension:
+archives_extensions:
   - tar.gz
   - zip
 readme:

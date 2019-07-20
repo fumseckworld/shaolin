@@ -40,7 +40,9 @@ namespace Imperium {
     use Symfony\Component\HttpFoundation\JsonResponse;
     use Symfony\Component\HttpFoundation\RedirectResponse;
     use Symfony\Component\HttpFoundation\Response;
-
+    use Twig\Error\LoaderError;
+    use Twig\Error\RuntimeError;
+    use Twig\Error\SyntaxError;
 
 
     /**
@@ -64,24 +66,6 @@ namespace Imperium {
         use Route;
 
         /**
-         *
-         * Current driver
-         *
-         * @var string
-         */
-        private $driver;
-
-
-        /**
-         * @var string
-         */
-        private $username;
-        /**
-         * @var string
-         */
-        private $password;
-
-        /**
          * @var Connect
          */
         private $connect;
@@ -100,6 +84,7 @@ namespace Imperium {
          * @var Base
          */
         private $base;
+
         /**
          * @var Users
          */
@@ -120,11 +105,6 @@ namespace Imperium {
         private $debug;
 
         /**
-         * @var string
-         */
-        private $mode;
-
-        /**
          * @var Dotenv
          */
         private $env;
@@ -140,11 +120,6 @@ namespace Imperium {
          * @var
          */
         private $start_request_time;
-
-        /**
-         * @var Oauth
-         */
-        private $auth;
 
 
         /**
@@ -169,28 +144,43 @@ namespace Imperium {
         private $view;
 
         /**
-         * @var Session
+         * @var SessionInterface
          */
         private $session;
 
         /**
-         * @var ArraySession
+         * @var Flash
          */
-        private $array_session;
+        private $flash;
 
-        /**
-         * @var RouteResult
-         */
-        private $router;
 
 
         /**
          * App constructor.
+         *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
+         *
          */
         public function __construct()
         {
-            $this->route()->create_route_table();
+            if ($this->debug())
+                whoops();
+
+            $this->start_request_time = now();
+            $this->view = $this->app(View::class);
+            $this->session = $this->app(Session::class);
+            $this->flash = $this->app(Flash::class);
+            $this->cache = $this->app(Cache::class);
+            $this->model = $this->app(Model::class);
+            $this->table = $this->app(Table::class);
+            $this->connect = $this->app(Connect::class);
+
+            $this->query = $this->app(Query::class);
+
+            $this->env = Dotenv::create(ROOT,'.env');
+
         }
 
         /**
@@ -200,9 +190,7 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public function show_tables(): array
@@ -282,9 +270,8 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function all(string $table,string $column= '',string $order = DESC): array
         {
@@ -299,9 +286,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function table_exist(string $table): bool
         {
@@ -316,9 +302,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function  table_not_exist(string $table): bool
         {
@@ -368,9 +353,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function change_table_collation(string $table, string $new_collation): bool
         {
@@ -403,9 +387,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function change_table_charset(string $table, string $new_charset): bool
         {
@@ -436,9 +419,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function remove_table(string $table): bool
         {
@@ -453,9 +435,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function empty_table(string $table): bool
         {
@@ -474,9 +455,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function append_column(string $table,string $column, string $type, int $size, bool $nullable): bool
         {
@@ -490,9 +470,8 @@ namespace Imperium {
          * @param string $table
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function show_columns(string $table): array
         {
@@ -507,9 +486,8 @@ namespace Imperium {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function show_columns_types(string $table): array
         {
@@ -525,9 +503,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function has_column(string $table,string $column): bool
         {
@@ -540,9 +517,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function has_tables(): bool
         {
@@ -678,9 +654,8 @@ namespace Imperium {
          *
          * @return object
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function find(string $table,int $id)
         {
@@ -696,9 +671,7 @@ namespace Imperium {
          *
          * @return object
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function find_or_fail(string $table,int $id)
         {
@@ -714,13 +687,12 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function save(string $table,array $data): bool
         {
-            return $this->table()->from($table)->save($data);
+            return $this->table()->from($table)->save($this->model(),$data);
         }
 
         /**
@@ -732,9 +704,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function remove_record(string $table,int $id): bool
         {
@@ -753,9 +724,7 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function update_record(int $id, array $data, string $table,array $ignore = []): bool
         {
@@ -772,9 +741,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function rename_column(string $table,string $column, string $new_name): bool
         {
@@ -790,9 +758,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function remove_column(string $table,string $column): bool
         {
@@ -954,9 +921,8 @@ namespace Imperium {
          * @param string[] $queries
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function sql_to_json(string $filename,string ...$queries): bool
         {
@@ -998,7 +964,7 @@ namespace Imperium {
          */
         public function rename_base(string $base, string $new_name): bool
         {
-            switch ($this->driver)
+            switch ($this->connect->driver())
             {
                 case MYSQL :
                     return $this->bases()->rename($base,$new_name);
@@ -1025,9 +991,8 @@ namespace Imperium {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function rename_table(string $table, string $new_name): bool
         {
@@ -1038,24 +1003,18 @@ namespace Imperium {
         /**
          *
          * @return Model
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function model(): Model
         {
-           return $this->app(Model::class);
+           return $this->model;
         }
 
         /**
          * @return Query
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function query(): Query
         {
-           return $this->app(Query::class);
+           return $this->query;
         }
 
         /**
@@ -1078,30 +1037,25 @@ namespace Imperium {
          */
         public function bases(): Base
         {
-            return $this->app(Base::class);
+            return  $this->app(Base::class);
         }
 
         /**
+         *
          * @return Table
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function table(): Table
         {
-            return $this->app(Table::class);
+            return $this->table;
         }
 
         /**
          *
          * @return Connect
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function connect(): Connect
         {
-           return $this->app(Connect::class);
+           return $this->connect;
         }
 
         /**
@@ -1149,20 +1103,18 @@ namespace Imperium {
          */
         public function flash(): Flash
         {
-            return new Flash();
+            return $this->flash;
         }
 
         /**
          *
          * @return Oauth
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function auth(): Oauth
         {
-            return new Oauth();
+            return new Oauth($this->session(),$this->model());
         }
 
         /**
@@ -1173,7 +1125,7 @@ namespace Imperium {
          */
         public function session(): SessionInterface
         {
-            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? new ArraySession(): new Session();
+            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? new ArraySession(): $this->session;
 
         }
 
@@ -1182,7 +1134,7 @@ namespace Imperium {
          */
         public function request(): Request
         {
-            return new Request();
+            return $this->request;
         }
 
         /**
@@ -1218,15 +1170,16 @@ namespace Imperium {
          * @param array $args
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         * @throws LoaderError
+         * @throws RuntimeError
+         * @throws SyntaxError
          */
         public function view(string $name,array $args = []): string
         {
             $this->session()->set('view',$name);
 
-            return $this->app(View::class)->load(get_called_class(),$name,$args);
+            return $this->view->load(get_called_class(),$name,$args);
         }
 
         /**
@@ -1272,6 +1225,7 @@ namespace Imperium {
          *
          * @return RedirectResponse
          *
+         * @throws Kedavra
          */
         public function to(string $url, string $message='', bool $success = true): RedirectResponse
         {
@@ -1304,9 +1258,8 @@ namespace Imperium {
          * @param string $owner
          * @return Git
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function git(string $repository, string $owner): Git
         {
@@ -1443,13 +1396,11 @@ return '';
          * Get cache instance
          *
          * @return Cache
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function cache(): Cache
         {
-            return $this->app(Cache::class);
+            return $this->cache;
         }
 
         /**

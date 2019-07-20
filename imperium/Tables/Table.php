@@ -12,6 +12,7 @@ namespace Imperium\Tables {
     use Imperium\Model\Model;
     use Imperium\Zen;
     use Imperium\App;
+    use function PHPSTORM_META\type;
 
     /**
      *
@@ -130,17 +131,12 @@ namespace Imperium\Tables {
          *
          * @param  Connect $connect The connection to the base
          *
-         * @throws Kedavra
          *
          */
         public function __construct(Connect $connect)
         {
             $this->connexion        = $connect;
-            $this->driver           = $connect->driver();
-            $this->added_columns    = collection();
-            $this->all_types        = collection()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->collection();
-            $this->all_collation    = collation($connect);
-            $this->all_charset      = charset($connect);
+            $this->driver  = $connect->driver();
             $this->column = new Column($connect);
         }
 
@@ -734,6 +730,43 @@ namespace Imperium\Tables {
         public function not_exist(string $table): bool
         {
             return  collection($this->show())->not_exist($table);
+        }
+
+        /**
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function collation(): array
+        {
+          return  collation($this->connexion);
+        }
+
+        /**
+         *
+         * Display all charset
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function charset(): array
+        {
+            return charset($this->connexion);
+        }
+
+        /**
+         *
+         * Display all types
+         *
+         * @return array
+         *
+         */
+        public function all_types(): array
+        {
+           return  collection()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->collection();
         }
 
         /**

@@ -50,7 +50,6 @@ namespace Imperium\Config {
          */
         private $values;
 
-
         /**
          *
          * Config constructor.
@@ -64,9 +63,7 @@ namespace Imperium\Config {
          */
         public function __construct(string $file,$key)
         {
-            $file = collection(explode('.',$file))->begin();
-
-            $file = CONFIG . DIRECTORY_SEPARATOR . $file . self::EXT;
+            $file =  CONFIG . DIRECTORY_SEPARATOR . collection(explode('.',$file))->begin() .self::EXT;
 
             is_false(File::exist($file),true,"The $file file  was not found at ". $this->path());
 
@@ -78,6 +75,21 @@ namespace Imperium\Config {
 
             $this->key = $key;
 
+        }
+
+        /**
+         *
+         * @param string $file
+         * @param $key
+         *
+         * @return mixed
+         *
+         * @throws Kedavra
+         *
+         */
+        public function get(string $file,$key)
+        {
+            return (new static($file,$key))->value();
         }
 
         /**

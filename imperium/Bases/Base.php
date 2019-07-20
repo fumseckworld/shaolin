@@ -61,14 +61,6 @@ namespace Imperium\Bases {
         private $driver;
 
         /**
-         * Tables
-         *
-         * @var array
-         *
-         */
-        private $tables;
-
-        /**
          *
          * Table management
          *
@@ -96,18 +88,16 @@ namespace Imperium\Bases {
          * @param  Connect $connect
          * @param  Table $table
          *
-         * @throws Kedavra
          *
          */
         public function __construct(Connect $connect,Table $table )
         {
             $this->connexion        = $connect;
+
             $this->driver           = $connect->driver();
-            $this->tables           = $table->show();
+
             $this->table            = $table;
 
-            if(different($this->driver,SQLITE))
-                $this->all   = $this->show();
         }
 
 
@@ -126,7 +116,7 @@ namespace Imperium\Bases {
          */
         public function seed(int $records = 100): bool
         {
-            foreach ($this->tables as $x)
+            foreach ($this->table->show() as $x)
                 is_false($this->table->from($x)->seed($records),true,"Failed to seed the $x table");
 
             return true;
@@ -508,7 +498,7 @@ namespace Imperium\Bases {
         {
             $this->check();
 
-            return def($this->all);
+            return def($this->table->show());
         }
 
         /**
@@ -551,7 +541,7 @@ namespace Imperium\Bases {
          */
         public function hidden_bases(): array
         {
-            return config('db','hidden_bases');
+            return db('hidden_bases');
         }
 
         /**
@@ -565,7 +555,7 @@ namespace Imperium\Bases {
          */
         public function hidden_tables(): array
         {
-            return config('db','hidden_tables');
+            return db('hidden_tables');
         }
 
         /**

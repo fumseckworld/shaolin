@@ -13,10 +13,9 @@ namespace Imperium\Security\Auth {
     use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
     use Imperium\Writing\Write;
-    use Imperium\Zen;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
-    class Oauth extends Zen
+    class Oauth
     {
 
         /**
@@ -68,15 +67,14 @@ namespace Imperium\Security\Auth {
          *
          * @Inject("session")
          *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
+         * @param SessionInterface $session
+         * @param Model $model
          */
-        public function __construct()
+        public function __construct(SessionInterface $session,Model $model)
         {
-            $this->session = request()->getScriptName() === './vendor/bin/phpunit' ? new ArraySession() :  $this->app(Session::class);
+            $this->session = $session;
 
-            $this->model  = $this->app(Model::class);
+            $this->model  = $model;
 
         }
 

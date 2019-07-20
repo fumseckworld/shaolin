@@ -6,6 +6,7 @@ use Faker\Factory;
 use Faker\Generator;
 use GuzzleHttp\Psr7\ServerRequest;
 use Imperium\Config\Config;
+use Imperium\Container\Container;
 use Imperium\Debug\Dumper;
 use Imperium\Directory\Dir;
 use Imperium\Dump\Dump;
@@ -448,6 +449,10 @@ if (not_exist('display_repositories'))
     function display_repositories(string $owner = ''): string
     {
 
+        if (app()->cache()->has('repositories'))
+            return app()->cache()->get('repositories');
+
+
         $username = not_def($owner) ? def(get('owner')) ? get('owner') : '*' : $owner;
 
         $data = [];
@@ -609,6 +614,7 @@ if (not_exist('display_repositories'))
         }     
 </script>');
 
+        app()->cache()->set('repositories',$code,3600);
         return $code;
 
     }
@@ -894,12 +900,13 @@ if (not_exist('to'))
      * @param bool $success
      *
      * @return RedirectResponse
+     * @throws Kedavra
      */
     function to(string $url,string $message = '',bool $success =  true)
     {
         if (def($message))
         {
-            $flash = new Flash();
+            $flash = new Flash(app()->session());
 
             $success ? $flash->success($message) : $flash->failure($message);
         }
@@ -1170,9 +1177,9 @@ if (not_exist('csrf_field'))
      */
     function csrf_field(): string
     {
-        $value = (new Csrf(\app()->session()))->token();
+        $value = (new Csrf(app()->session()))->token();
 
-        return '<input type="hidden" name="'. Csrf::KEY.'" value="'.$value.'">';
+        return '<input type="hidden" name="'. CSRF_TOKEN.'" value="'.$value.'">';
     }
 }
 
@@ -1205,9 +1212,7 @@ if (not_exist('sql_file'))
      * @param string $table
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
     function sql_file(string $table  = ''): string
     {
@@ -1317,14 +1322,10 @@ if (not_exist('app'))
      *
      * @return App
      *
-     * @throws Kedavra
-     * @throws DependencyException
-     * @throws NotFoundException
      */
     function app(): App
     {
-       return new App();
-
+       return Container::get();
     }
 }
 

@@ -24,9 +24,19 @@ namespace Imperium\Versioning\Git {
     class Git
     {
         /**
+         * @var Model
+         */
+        private static $model;
+
+        /**
          * @var bool|string
          */
-        private $repository;
+        private static $repository;
+        /**
+         * @var Connect
+         */
+        private static $connect;
+
 
         /**
          * @var array
@@ -53,25 +63,9 @@ namespace Imperium\Versioning\Git {
         private $contributor_email;
 
         /**
-         *
-         * @var array
-         *
-         */
-        private $archives_ext;
-        /**
          * @var string
          */
         private $owner;
-
-
-        /**
-         *
-         * All readme possibilities
-         *
-         * @var array
-         *
-         */
-        private $all_readme;
 
         /**
          *
@@ -81,14 +75,6 @@ namespace Imperium\Versioning\Git {
          */
         private $readme;
 
-        /**
-         *
-         * All licence possibilities
-         *
-         * @var array
-         *
-         */
-        private $licences;
 
         /**
          *
@@ -107,28 +93,8 @@ namespace Imperium\Versioning\Git {
         /**
          * @var string
          */
-        private $changelog;
-
-        /**
-         * @var array
-         */
-        private $all_changelog;
-
-        private $all_contributing;
-        /**
-         * @var string
-         */
         private $contribute;
 
-        /**
-         * @var Connect
-         */
-        private $connect;
-
-        /**
-         * @var Model
-         */
-        private $model;
 
         const CONTRIBUTORS_TABLE = 'CREATE TABLE IF NOT EXISTS contributors ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,email TEXT(255) NOT NULL UNIQUE)';
 
@@ -143,17 +109,10 @@ namespace Imperium\Versioning\Git {
          * @param string $repository
          * @param string $owner
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function __construct(string $repository, string $owner)
         {
-            $this->archives_ext = config('git','archives_extension');
-            $this->all_readme = config('git','readme');
-            $this->all_contributing = config('git','contributing');
-            $this->licences = config('git','licences');
-            $this->all_changelog = config('git','changelog');
 
             $this->owner = $owner;
 
@@ -165,27 +124,114 @@ namespace Imperium\Versioning\Git {
 
             app()->session()->set('repo',realpath($repository));
 
-            $this->repository =  realpath($repository);
+            self::$repository =  realpath($repository);
 
-            is_false(Dir::is($this->repository),true,"The repository was not found");
+            Dir::checkout(self::$repository);
 
-            Dir::checkout($this->repository);
+            $this->name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
+
+            $this->save_contributors();
 
 
-            $this->name = strstr($repository,'.')  ? collection(explode(DIRECTORY_SEPARATOR,getcwd()))->last():  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
+        }
 
-            $this->connect = connect(SQLITE,"{$this->repository()}.sqlite3",'','','','dump');
 
-            $this->model = new Model($this->connect,new Table($this->connect));
+        /**
+         * @return Model
+         *
+         * @throws Kedavra
+         *
+         */
+        public static function model()
+        {
+            if (is_null(self::$model))
+                self::$model =  new Model(self::connect(),new Table(self::connect()));
 
-            if ($this->model()->table()->not_exist('contributors'))
-                $this->connect->execute(self::CONTRIBUTORS_TABLE);
-            if ($this->model()->table()->not_exist('bugs'))
-                $this->connect->execute(self::BUGS_TABLE);
+            return self::$model;
+        }
 
-            if ($this->model()->table()->not_exist('todo'))
-                $this->connect->execute(self::TODO_TABLE);
+        /**
+         *
+         * @return Connect
+         *
+         * @throws Kedavra
+         *
+         */
+        public static function connect(): Connect
+        {
+            if (is_null(self::$connect))
+                self::$connect =  connect(SQLITE,self::$repository .'.sqlite3','','','','');
 
+            return self::$connect;
+        }
+
+        /**
+         * @throws Kedavra
+         */
+        private static function create_tables(): bool
+        {
+            $data = collection();
+
+            $data->add(self::connect()->execute(self::CONTRIBUTORS_TABLE));
+            $data->add(self::connect()->execute(self::BUGS_TABLE));
+            $data->add(self::connect()->execute(self::TODO_TABLE));
+
+            return $data->not_exist(false);
+        }
+        /**
+         *
+         * Get archives extensions
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function archives_extensions(): array
+        {
+            return config('git','archives_extensions');
+        }
+
+        /**
+         *
+         * Get readme files
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function all_readme(): array
+        {
+            return config('git','readme');
+        }
+
+        /**
+         *
+         * Get readme files
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function contributing(): array
+        {
+            return config('git','contributing');
+        }
+
+        /**
+        *
+        * Get licences files
+        *
+        * @return array
+        *
+        * @throws Kedavra
+        *
+        */
+        public function licences(): array
+        {
+            return config('git','licences');
         }
 
         /**
@@ -218,9 +264,7 @@ namespace Imperium\Versioning\Git {
          *
          * @return Response
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function download(): Response
         {
@@ -310,7 +354,7 @@ namespace Imperium\Versioning\Git {
             if (not_def($this->contribute))
             {
                 $files = $this->files('',$branch);
-                foreach ($this->all_contributing as $contribute)
+                foreach ($this->contributing() as $contribute)
                 {
                     if (has($contribute,$files))
                     {
@@ -334,24 +378,11 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws Kedavra
          */
         public function changelog():string
         {
 
-            if (is_null($this->changelog))
-            {
-                $files = $this->files('');
-                foreach ($files as $file)
-                {
-                    if (has($file,$this->all_changelog))
-                        $this->changelog = (new Markdown($this->show($file)))->markdown();
-                }
-
-                assign(is_null($this->changelog),$this->changelog, 'We have not found a changelog');
-
-            }
-            return $this->changelog;
+           return '';
 
         }
 
@@ -372,7 +403,7 @@ namespace Imperium\Versioning\Git {
             {
                 $files = $this->files('',$branch);
 
-                foreach ($this->all_readme as $readme)
+                foreach ($this->all_readme() as $readme)
                 {
                     if (has($readme,$files))
                         $this->readme = (new Markdown($this->show($readme)))->markdown();
@@ -524,20 +555,6 @@ namespace Imperium\Versioning\Git {
 
 
             return collection($months->reverse());
-        }
-
-        /**
-         *
-         * Checkout on data
-         *
-         * @param string $data
-         *
-         * @return bool
-         *
-         */
-        public function checkout(string $data): bool
-        {
-            return ! $this->shell("git checkout $data");
         }
 
         /**
@@ -710,7 +727,7 @@ namespace Imperium\Versioning\Git {
          */
         public function path(): string
         {
-            return $this->repository;
+            return self::$repository;
         }
 
         /**
@@ -781,10 +798,6 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function release_size(): string
         {
@@ -870,37 +883,37 @@ namespace Imperium\Versioning\Git {
          * @param string $owner
          * @param string $description
          * @param string $email
-         * @param bool $remote
          *
          * @return bool
          *
          * @throws Kedavra
+         *
          */
-        public static function create(string $project_name,string $owner,string $description,string $email ,bool $remote = true): bool
+        public static function create(string $project_name,string $owner,string $description,string $email): bool
         {
+            if (Dir::exist($owner .DIRECTORY_SEPARATOR .$project_name))
+                return false;
 
             if (!Dir::exist($owner))
             {
                 Dir::create($owner);
             }
+
             Dir::checkout($owner);
 
-            if (Dir::exist($project_name))
-                return false;
 
             Dir::create($project_name);
 
             Dir::checkout($project_name);
 
             (new File('email',EMPTY_AND_WRITE_FILE_MODE))->write($email)->flush();
-            $remote ?  shell_exec('git init --bare') : shell_exec('git init');
 
-            if ($remote)
-            {
-                is_false((new File(self::DESCRIPTION,EMPTY_AND_WRITE_FILE_MODE))->write($description),true,'Failed to write description');
-            }
+            shell_exec('git init --bare');
 
-            return $remote ? Dir::exist('hooks') : Dir::exist(self::GIT_DIR);
+            is_false((new File(self::DESCRIPTION,EMPTY_AND_WRITE_FILE_MODE))->write($description),true,'Failed to write description');
+
+
+            return self::create_tables();
         }
 
         /**
@@ -981,9 +994,8 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function news(): string
         {
@@ -999,9 +1011,8 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function change(string $new_release,string $ancient_release): string
         {
@@ -1029,7 +1040,7 @@ namespace Imperium\Versioning\Git {
         public function create_archives(string $ext,string $version): string
         {
 
-            Dir::checkout($this->repository);
+            Dir::checkout(self::$repository);
 
             Dir::create('releases');
 
@@ -1084,7 +1095,7 @@ namespace Imperium\Versioning\Git {
             <ul class=" list-unstyled row" id="releases">';
 
 
-            foreach ($this->archives_ext as $ext)
+            foreach ($this->archives_extensions() as $ext)
             {
                 foreach ($this->releases() as $tag)
                 {
@@ -1225,9 +1236,6 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function compare_form(): string
         {
@@ -1255,7 +1263,7 @@ namespace Imperium\Versioning\Git {
                     </div>
                     <div class="mt-3">
                         <div class="btn-group" role="group">
-                            <button type="button"  id="compare-version"  data-content="'.$this->repository.'" class="btn btn-secondary">compare</button>
+                            <button type="button"  id="compare-version"  data-content="'.self::$repository.'" class="btn btn-secondary">compare</button>
                             <button type="button"  id="compare-version-clear" class="btn btn-secondary">clear</button>
                             <button type="button" id="search-version" class="btn btn-secondary">show</button>           
                         </div>
@@ -1273,9 +1281,8 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function compare(string $first,string $second): string
         {
@@ -1472,9 +1479,7 @@ namespace Imperium\Versioning\Git {
          * List all versions
          *
          * @return array
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function releases(): array
         {
@@ -1809,7 +1814,7 @@ namespace Imperium\Versioning\Git {
         public function contributions_view(): string
         {
 
-            $form = '<select class=" form-control-lg form-control" data-repository="'.$this->repository.'" id="contributors_select"  data-months="'.$this->months()->join(',').'"><option value="Select a contributor">Select a contributor</option>';
+            $form = '<select class=" form-control-lg form-control" data-repository="'.self::$repository.'" id="contributors_select"  data-months="'.$this->months()->join(',').'"><option value="Select a contributor">Select a contributor</option>';
 
             foreach ($this->contributors() as  $contributor)
                 append($form,'<option value="'.$contributor->name.'" > '.$contributor->name.'</option>');
@@ -1834,6 +1839,7 @@ namespace Imperium\Versioning\Git {
          *
          * @param string $branch
          * @return string
+         * @throws Kedavra
          */
         public function licence($branch= 'master'): string
         {
@@ -1841,7 +1847,7 @@ namespace Imperium\Versioning\Git {
             if (is_null($this->licence))
             {
                 $files = $this->files('',$branch);
-                foreach ($this->licences as $licence)
+                foreach ($this->licences() as $licence)
                 {
                     if (has($licence,$files))
                         $this->licence = nl2br($this->show($licence));
@@ -1907,16 +1913,7 @@ namespace Imperium\Versioning\Git {
             return '';
         }
 
-        /**
-         *
-         *
-         * @return Model
-         *
-         */
-        public function model(): Model
-        {
-            return $this->model;
-        }
+
 
         /**
          *
@@ -1945,7 +1942,7 @@ namespace Imperium\Versioning\Git {
          */
         public function close_all_todo(): bool
         {
-            return $this->model()->table()->drop('todo') && $this->model()->execute(self::TODO_TABLE);
+            return self::model()->table()->drop('todo') && self::model()->execute(self::TODO_TABLE);
         }
     }
 }

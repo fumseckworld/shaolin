@@ -1,3 +1,6 @@
+<IfModule mod_deflate.c>
+AddOutputFilterByType DEFLATE application/font-woff text/html text/plain text/xml application/xml application/xhtml+xml text/css text/javascript application/javascript application/x-javascript
+</IfModule>
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

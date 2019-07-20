@@ -87,7 +87,7 @@ namespace Imperium\View {
 
                 function (string $key)
                 {
-                    $flash = new Flash();
+                    $flash = new Flash(app()->session());
 
                     return $flash->has($key) ? $flash->display($key) : '';
 
@@ -305,7 +305,9 @@ namespace Imperium\View {
         public function load(string $class,string $view,array $args=[]): string
         {
             $dir = ucfirst(strtolower(str_replace('Controller','',collection(explode("\\",$class))->last())));
+
             $dir = $this->views_path .DIRECTORY_SEPARATOR . $dir;
+
             Dir::create($dir);
 
             $view = collection(explode('.',$view))->begin();

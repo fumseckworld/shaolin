@@ -79,7 +79,6 @@ namespace Imperium\Dump {
          * @param  bool $base The option to dump the base
          * @param  array $tables The names of the tables
          *
-         * @throws Kedavra
          *
          */
         public function __construct(bool $base,array $tables)

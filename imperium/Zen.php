@@ -6,8 +6,12 @@ namespace Imperium {
     use DI\DependencyException;
     use DI\NotFoundException as NotFoundExceptionAlias;
     use Exception;
+    use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Exception\Kedavra;
+    use Imperium\Routing\Router;
     use Imperium\Session\Session;
+    use Imperium\Session\SessionInterface;
+    use Psr\Http\Message\ServerRequestInterface;
 
     /**
     *
@@ -1612,7 +1616,9 @@ namespace Imperium {
 
                 $c->set("views.config",config('twig','config'));
 
-                $c->set(Session::class,new Session());
+                $c->set('session',new Session());
+
+
 
                 $this->container = $c;
             }

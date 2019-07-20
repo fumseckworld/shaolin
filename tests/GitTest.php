@@ -111,9 +111,7 @@ namespace Testing {
 
 
         /**
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function test_create()
         {
@@ -142,9 +140,6 @@ namespace Testing {
         }
 
         /**
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function test_tag()
         {

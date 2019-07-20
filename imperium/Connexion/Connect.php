@@ -156,14 +156,13 @@ namespace Imperium\Connexion {
          * @param string $host The base's host
          * @param string $dump_path The path to dump directory
          *
-         * @throws Kedavra
          *
          */
         public function __construct(string $driver,string $base,string $username,string $password,string $host,string $dump_path)
         {
 
 
-            $this->dump_path = dirname(config_path()) .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('db') . DIRECTORY_SEPARATOR . $dump_path;
+            $this->dump_path = DB .DIRECTORY_SEPARATOR. $dump_path;
 
             $this->driver       = $driver;
 
@@ -174,7 +173,6 @@ namespace Imperium\Connexion {
             $this->password     = $password;
 
             $this->host         = $host;
-            $this->instance     = $this->instance();
         }
 
 

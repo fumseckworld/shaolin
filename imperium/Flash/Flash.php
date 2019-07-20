@@ -6,6 +6,7 @@ namespace Imperium\Flash {
     use Exception;
     use Imperium\Session\ArraySession;
     use Imperium\Session\Session;
+    use Imperium\Session\SessionInterface;
 
     /**
      *
@@ -40,10 +41,15 @@ namespace Imperium\Flash {
         /**
          *
          * Flash constructor
+         *
+         * @Inject({"session"})
+         *
+         * @param SessionInterface $session
+         *
          */
-        public function __construct()
+        public function __construct(SessionInterface $session)
         {
-            $this->session = request()->getScriptName() === './vendor/bin/phpunit' ? new ArraySession() : new Session();
+            $this->session = $session;
         }
 
         /**
