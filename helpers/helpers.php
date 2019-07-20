@@ -435,6 +435,7 @@ if (not_exist('string_parse'))
 }
 if (not_exist('display_repositories'))
 {
+
     /**
      *
      * Display repositories
@@ -449,8 +450,6 @@ if (not_exist('display_repositories'))
     function display_repositories(string $owner = ''): string
     {
 
-        if (app()->cache()->has('repositories'))
-            return app()->cache()->get('repositories');
 
 
         $username = not_def($owner) ? def(get('owner')) ? get('owner') : '*' : $owner;
@@ -613,8 +612,7 @@ if (not_exist('display_repositories'))
             }
         }     
 </script>');
-
-        app()->cache()->set('repositories',$code,3600);
+        
         return $code;
 
     }

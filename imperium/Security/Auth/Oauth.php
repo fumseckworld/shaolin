@@ -9,8 +9,6 @@ namespace Imperium\Security\Auth {
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Request\Request;
-    use Imperium\Session\ArraySession;
-    use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
     use Imperium\Writing\Write;
     use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -270,12 +268,12 @@ namespace Imperium\Security\Auth {
          *
          * @param string $expected
          *
-         * @return array
+         * @return object
          *
          * @throws Kedavra
          *
          */
-        public function find(string $expected): array
+        public function find(string $expected)
         {
             return $this->model->by($this->column(),$expected);
         }

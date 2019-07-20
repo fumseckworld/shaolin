@@ -160,7 +160,7 @@ namespace Imperium\Versioning\Git {
         public static function connect(): Connect
         {
             if (is_null(self::$connect))
-                self::$connect =  connect(SQLITE,self::$repository .'.sqlite3','','','','');
+                self::$connect =  connect(SQLITE,self::$repository .'.sqlite3','','','','dump');
 
             return self::$connect;
         }
@@ -1531,7 +1531,13 @@ namespace Imperium\Versioning\Git {
         {
             $x = collection();
             $z = collection();
-            if (not_def($this->model()->from('contributors')->find(1)))
+
+            if (not_def(self::model()->table()->show()))
+            {
+                self::create_tables();
+            }
+
+            if (not_def(self::model()->from('contributors')->find(1)))
             {
 
                 $this->execute("git shortlog -sne --all");
@@ -1579,10 +1585,7 @@ namespace Imperium\Versioning\Git {
 
                 foreach ($x->reverse() as $contributor)
                 {
-
-
-                    $this->model()->from('contributors')->insert_new_record($this->model(),$contributor);
-
+                    self::model()->from('contributors')->insert_new_record(self::model(),$contributor);
 
                 }
             }
