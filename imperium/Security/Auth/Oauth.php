@@ -9,7 +9,6 @@ namespace Imperium\Security\Auth {
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
     use Imperium\Request\Request;
-    use Imperium\Security\Csrf\Csrf;
     use Imperium\Session\ArraySession;
     use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
@@ -75,15 +74,9 @@ namespace Imperium\Security\Auth {
          */
         public function __construct()
         {
-            if (request()->getScriptName() === './vendor/bin/phpunit')
-                $this->session = new ArraySession();
-            else
-                $this->session  = $this->app(Session::class);
+            $this->session = request()->getScriptName() === './vendor/bin/phpunit' ? new ArraySession() :  $this->app(Session::class);
 
             $this->model  = $this->app(Model::class);
-
-
-
 
         }
 
@@ -103,6 +96,7 @@ namespace Imperium\Security\Auth {
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
+         *
          */
         public function account(string $route_name,string $username_placeholder,string $last_name_placeholder,string $email_placeholder,string $password_placeholder,string $submit_text): string
         {
@@ -320,7 +314,7 @@ namespace Imperium\Security\Auth {
 
                     $data->change_value($u->$password,bcrypt($new_password));
 
-                    return $this->model->update_record($u->$id,$data->collection()) ? $this->redirect($u->$id) : to('/',$this->messages()->get('reset_fail'));
+                    return $this->model->update_record($u->$id,$data->collection()) ? $this->redirect() : to('/',$this->messages()->get('reset_fail'));
                 }
             }
             return $this->user_not_found();
@@ -337,6 +331,7 @@ namespace Imperium\Security\Auth {
         public function login(): RedirectResponse
         {
             $request = new Request();
+
             $user = $this->model->from('users')->by($this->column(), $request->get($this->column()));
 
             $password_column = $this->columns()->get('password');
@@ -350,12 +345,12 @@ namespace Imperium\Security\Auth {
                     $this->session->set(self::CONNECTED, true);
                     $this->session->set(self::ID,$user->id);
 
-                    return $this->redirect($user->id);
+                    return $this->redirect();
                 } else
                 {
                     $this->clean_session();
 
-                    return back(collection(config('auth', 'messages'))->get('password_no_match'), false);
+                    return back($this->messages()->get('password_no_match'), false);
                 }
 
             }
@@ -406,15 +401,13 @@ namespace Imperium\Security\Auth {
          *
          * Redirect user
          *
-         * @param string $id
-         *
          * @return RedirectResponse
          *
          * @throws Kedavra
          */
-        public function redirect(string $id): RedirectResponse
+        public function redirect(): RedirectResponse
         {
-            return equal($id,'1')  ?  to(config('auth','admin_prefix'), collection(config('auth', 'messages'))->get('welcome')) : to(config('auth','user_home'), collection(config('auth', 'messages'))->get('welcome'))  ;
+            return to('/home',$this->messages()->get('welcome')) ;
         }
 
         /**
@@ -475,7 +468,7 @@ namespace Imperium\Security\Auth {
         {
             if ($this->connected())
             {
-                return $this->model->update_record($this->session->get(self::ID),$data,[Request::get(Csrf::KEY)]) ? back($this->messages()->get('account_updated_successfully')) : back($this->messages()->get('account_updated_failure'),false);
+                return $this->model->update_record($this->session->get(self::ID),$data,[\request()->request->get(CSRF_TOKEN)]) ? back($this->messages()->get('account_updated_successfully')) : back($this->messages()->get('account_updated_failure'),false);
 
             }
             return to('/');

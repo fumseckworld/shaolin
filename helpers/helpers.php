@@ -452,30 +452,58 @@ if (not_exist('display_repositories'))
 
         $data = [];
         $owners = collection();
-        if (def($username) && different($username, '*')) {
 
-            foreach (Dir::scan('depots') as $owner) {
-                if ($owner == $username) {
-                    foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository) {
+        if (different($username, '*'))
+        {
+
+            foreach (Dir::scan('depots') as $owner)
+            {
+                if ($owner == $username)
+                {
+                    foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
+                    {
                         $data[$owner][] = realpath("depots/$owner/$repository");
                     }
-                } else {
+                } else
+                {
                     if ($owners->not_exist($owner))
                         $owners->add($owner);
                 }
             }
         }
 
-        if (equal($username, '*')) {
-            foreach (Dir::scan('depots') as $owner) {
-                if ($owners->not_exist($owner))
-                    $owners->add($owner);
+        if (equal($username, '*'))
+        {
+            if (app()->auth()->connected())
+            {
+                foreach (Dir::scan('depots') as $owner)
+                {
+                    if ($owners->not_exist($owner) && different($owner,logged_user()))
+                    {
+                        $owners->add($owner);
 
-                foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository) {
+                        foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
+                        {
 
-                    $data[$owner][] = realpath("depots/$owner/$repository");
+                            $data[$owner][] = realpath("depots/$owner/$repository");
+                        }
+                    }
                 }
             }
+           else
+           {
+               foreach (Dir::scan('depots') as $owner)
+               {
+                   if ($owners->not_exist($owner))
+                       $owners->add($owner);
+
+                   foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
+                   {
+
+                       $data[$owner][] = realpath("depots/$owner/$repository");
+                   }
+               }
+           }
         }
 
 
@@ -485,19 +513,16 @@ if (not_exist('display_repositories'))
         if (app()->auth()->connected())
         {
             if (equal($request->getUri()->getPath(), '/home'))
-                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow" href="' . root() . '"><i class="material-icons">group</i></a></div></div></div></div></div></div>';
+                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4"  href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
             else
-                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('home') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
-        }else{
+                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" href="' . route('home') . '"><i class="material-icons">person</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
+        }else
+        {
             $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('connexion') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
         }
 
 
-
         $end_code ='';
-
-
-
 
         if ( def($request->getUri()->getQuery()) || equal($request->getUri()->getPath(),'/home'))
         {
