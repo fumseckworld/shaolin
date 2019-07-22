@@ -175,6 +175,25 @@ namespace Imperium\Connexion {
             $this->host         = $host;
         }
 
+        /**
+         *
+         * Execute queries
+         *
+         * @param string ...$queries
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function queries(string ...$queries): bool
+        {
+            $data = collection();
+            foreach ($queries as $query)
+                $data->add($this->execute($query));
+
+            return $data->not_exist(false);
+        }
 
         /**
          *

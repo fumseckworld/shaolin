@@ -5,6 +5,10 @@
 @tailwind utilities;
 
 
+body{
+    @apply bg-black;
+}
+
 .material-icons, .icon-text {
     vertical-align: middle;
 }
@@ -19,7 +23,7 @@
     @apply  bg-transparent text-teal-300 font-semibold  border border-teal-500  rounded p-4 ;
 }
 .btn-hollow:hover{
-    @apply bg-teal-500 text-black border-transparent;
+    @apply bg-teal-300 text-black border-transparent;
 }
 .btn-group{
     @apply bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-l;
@@ -36,7 +40,7 @@
 
 input,textarea,select{
 
-  @apply appearance-none bg-transparent border border-teal-300  w-full p-5  text-teal-200 ;
+  @apply appearance-none bg-transparent border border-teal-300  w-full p-5  outline-none text-teal-200 ;
 }
 
 option{
@@ -52,9 +56,10 @@ hr{
     @apply border-b border-teal-500;
 
 }
-.title{
-    @apply uppercase text-center font-bold  text-teal-300 pt-5;
+h1,h2,h3,h4{
+    @apply uppercase text-center font-bold  text-teal-300 pt-5 ;
 }
+
 .text{
     @apply text-white p-4;
 }
@@ -63,7 +68,7 @@ hr{
     @apply text-teal-500  p-4 mt-3;
 }
 main{
-    @apply  mx-auto mt-32 text-center;
+    @apply  mx-auto mt-16;
 }
 section,header,article{
     @apply mt-4;
@@ -111,4 +116,173 @@ section,header,article{
     .row{
         @apply flex;
     }
+}
+
+
+.tab{
+    @apply uppercase bg-teal-600 p-4 text-teal-100 font-bold w-full inline-block;
+}
+.active{
+    @apply uppercase bg-teal-300 p-4 text-black font-bold w-full inline-block   text-white  border-teal-500 ;
+}
+.tab:hover{
+    @apply bg-teal-300  text-black  border-teal-500 ;
+}
+
+
+.tree{
+    @apply bg-transparent text-teal-300 w-full;
+}
+
+.tree tr{
+    @apply w-full border-2 font-bold border-teal-300 p-4;
+}
+.tree td{
+    @apply text-justify p-4 ;
+}
+ul.breadcrumb {
+    @apply bg-teal-300  text-black  border-teal-500 text-justify p-4 font-bold;
+}
+ul.breadcrumb li {
+    @apply inline;
+}
+ul.breadcrumb li+li:before
+{
+    content: "/\00a0";
+    @apply p-2 text-black;
+}
+ul.breadcrumb li a {
+    @apply text-black  no-underline;
+}
+
+
+.input-container {
+    @apply mb-5 w-full flex;
+}
+
+.icon {
+    @apply bg-teal-300 text-black text-center p-5;
+}
+
+.input-field
+{
+    @apply w-full outline-none p-5;
+}
+/* Ocean Dark Theme */
+/* https://github.com/gavsiu */
+/* Original theme - https://github.com/chriskempson/base16 */
+
+/* Ocean Comment */
+.hljs-comment,
+.hljs-quote {
+    color: #65737e;
+}
+
+/* Ocean Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+    color: #bf616a;
+}
+
+/* Ocean Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+    color: #d08770;
+}
+
+/* Ocean Yellow */
+.hljs-attribute {
+    color: #ebcb8b;
+}
+
+/* Ocean Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+    color: #a3be8c;
+}
+
+/* Ocean Blue */
+.hljs-title,
+.hljs-section {
+    color: #8fa1b3;
+}
+
+/* Ocean Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+    color: #b48ead;
+}
+
+.hljs
+{
+    display: block;
+    overflow-x: auto;
+    background: #000;
+    color: #c0c5ce;
+    padding: 0.5em;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+
+#readme
+{
+    @apply mt-5 p-8 bg-white text-black;
+}
+#readme table
+{
+    @apply m-5;
+}
+#readme tr
+{
+    @apply border-2 border-black;
+}
+
+#readme td,#readme th
+{
+    @apply border-2 border-white p-4 bg-gray-800 text-white;
+}
+
+#readme td:hover,#readme th:hover
+{
+    @apply bg-gray-700 ;
+}
+
+#readme ul li{
+    @apply ml-10 list-disc;
+}
+
+#readme h1,#readme h2,#readme h3,#readme h4 ,#readme h5,#readme h6
+{
+
+    text-transform: none;
+    @apply text-black font-bold mt-5 mb-2 text-justify ;
+
+}
+
+#readme a{
+    @apply text-pink-700  ;
+}
+
+#readme code{
+    @apply text-red-500 mb-5 text-justify font-bold;
 }

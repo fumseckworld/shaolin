@@ -544,6 +544,24 @@ namespace Imperium\Collection {
             return $this;
         }
 
+
+        /**
+         *
+         * Add a value if not exist
+         *
+         * @param $value
+         * @param string $key
+         *
+         * @return Collection
+         *
+         */
+        public function add_if_not_exist($value,$key =''): Collection
+        {
+            if ($this->not_exist($value))
+                $this->add($value, $key);
+
+            return $this;
+        }
         /**
         *
         * Return the reverse of the array

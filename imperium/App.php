@@ -153,24 +153,31 @@ namespace Imperium {
          */
         private $flash;
 
+        /**
+         * @var RouteResult
+         */
+        private $result;
 
 
         /**
          * App constructor.
          *
          * @throws DependencyException
-         * @throws Kedavra
          * @throws NotFoundException
+         * @throws Kedavra
          *
          */
         public function __construct()
         {
+
             if ($this->debug())
                 whoops();
+
 
             $this->start_request_time = now();
             $this->view = $this->app(View::class);
             $this->session = $this->app(Session::class);
+            $this->request = $this->app(Request::class);
             $this->flash = $this->app(Flash::class);
             $this->cache = $this->app(Cache::class);
             $this->model = $this->app(Model::class);
@@ -181,6 +188,7 @@ namespace Imperium {
 
             $this->env = Dotenv::create(ROOT,'.env');
 
+            $this->route()->create_route_table();
         }
 
         /**
@@ -812,9 +820,7 @@ namespace Imperium {
          */
         public function run():Response
         {
-            whoops();
            return $this->route_result()->call()->send();
-
         }
 
         /**
@@ -1021,7 +1027,6 @@ namespace Imperium {
          *
          * @return Users
          * @throws DependencyException
-         * @throws Kedavra
          * @throws NotFoundException
          */
         public function users(): Users
@@ -1032,7 +1037,6 @@ namespace Imperium {
         /**
          * @return Base
          * @throws DependencyException
-         * @throws Kedavra
          * @throws NotFoundException
          */
         public function bases(): Base

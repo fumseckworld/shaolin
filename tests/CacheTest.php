@@ -16,6 +16,7 @@ class CacheTest extends Unit
         $this->assertFalse($this->cache()->has($key));
         $this->assertTrue($this->cache()->not($key));
         $this->assertTrue($this->cache()->set($key, $key));
+        $this->assertNotEmpty($this->cache()->infos()->collection());
         $this->assertFalse($this->cache()->def($key,$key));
         $this->assertEquals($key,$this->cache()->get($key));
         $this->assertTrue($this->cache()->remove($key));

@@ -15,7 +15,7 @@ class Container
     {
         if (is_null(self::$instance))
         {
-            self::$instance = (new Zen())->app(App::class);
+            self::$instance = Zen::container()->get(App::class);
         }
 
         return self::$instance;

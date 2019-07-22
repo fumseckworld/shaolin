@@ -53,7 +53,7 @@ define('AFTER_ACTION','after_action');
 define('GIT_PERIOD',['minute','minutes','day','days','week','weeks','month','months','year','years']);
 define('GIT_SIZE',[1,2,3,4,5,6,7,8,9,10,11,12]);
 define('GIT_ARCHIVE_EXT',['tar','tgz','tar.gz','zip']);
-define('LANGUAGES',['1c','abnf','accesslog','actionscript','ada','angelscript','apache','applescript','arcade','arduino',
+define('LANGUAGES',['php','1c','abnf','accesslog','actionscript','ada','angelscript','apache','applescript','arcade','arduino',
                     'armasm','asciidoc','aspectj','autohotkey','autoit','avrasm','awk','axapta','bash','basic','bnf','brainfuck',
                     'cal','capnproto','ceylon','clean','clojure-repl','clojure','cmake','coffeescript','coq','cos','cpp','crmsh','c',
                     'crystal','cs','csp','css','d','dart','delphi','diff','django','dns','dockerfile','dos','dsconfig','dts','dust',
@@ -322,49 +322,55 @@ if (not_exist('logged_user'))
     }
 }
 
-if (not_exist('route'))
-{
+if (not_exist('route')) {
     /**
      * @param string $name
      * @param array $args
      * @return string
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
-    function route(string $name,array $args =[]): string
+    function route(string $name, array $args = []): string
     {
-        $x = (app()->routes()->by_or_fail('name',$name,"The $name route  was not found"));
+        $x = (app()->routes()->by_or_fail('name', $name, "The $name route  was not found"));
 
         if (def($args))
         {
 
             $url = '';
-            $data = explode('/',$x->url);
+
+
+           $data = explode('/', $x->url);
             $i = 0;
-            foreach ($data as $k =>$v)
+            foreach ($data as $k => $v)
             {
+
                 if (def($v))
                 {
-                    if (strpos($v,':') === 0)
+
+                    if (strpos($v, ':') === 0)
                     {
+
+
                         if (collection($args)->has_key($i))
                         {
-                            append($url,'/'.$args[$i]);
+                            append($url, '/' . $args[$i]);
                             $i++;
                         }
 
-                    }else{
-                        append($url,"/$v");
+                    }
+                    else{
+
+                        append($url, "/$v");
                     }
                 }
-            }
+             }
 
-            return base_url(trim($url,'/'));
+            return base_url(trim($url, '/'));
+
         }
-
-        return base_url(trim($x->url,'/'));
+        return base_url(trim($x->url, '/'));
     }
+
 }
 
 if (not_exist('exist'))
@@ -517,12 +523,12 @@ if (not_exist('display_repositories'))
         if (app()->auth()->connected())
         {
             if (equal($request->getUri()->getPath(), '/home'))
-                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4"  href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
+                $code = '<div class="mt-10"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4"  href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
             else
-                $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" href="' . route('home') . '"><i class="material-icons">person</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
+                $code = '<div class="mt-10"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" href="' . route('home') . '"><i class="material-icons">person</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
         }else
         {
-            $code = '<div class="mt-5"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('connexion') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
+            $code = '<div class="mt-10"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('connexion') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
         }
 
 
@@ -560,7 +566,7 @@ if (not_exist('display_repositories'))
                         <h2 class="title">'.$g->repository().'</h2>
                         <hr>
                         <article class="text-center">
-                            <h3>'.$g->description().'</h3>
+                            <p class="text">'.$g->description().'</p>
                             <div class="inline-flex mt-4 mb-4">
                                 <a class="btn-hollow mr-4" href="'.app()->url('repository',$g->owner(),$g->repository(),'master').'">
                                     <i class="material-icons">code</i> code
@@ -801,42 +807,89 @@ if (not_exist('connexion'))
 
     function connexion($register_route_name,$login_route_name,$username_text = 'Username',$lastname_text = 'Lastname',$email_address_text= 'Your Email adrress',$password_text ='Password',$confirm_password_text='Confirm the password',$create_account_text= 'Create account',$connexion_text= 'Log in')
     {
-        return  ' 
-                        <div class="mb-10">
-               
-                    <a class="btn-hollow mr-4"  href="#" id="register">
-                        <i class="material-icons">person_add</i> '.$create_account_text.'
-                    </a>  
-                     <a href="#" class="btn-hollow mr-4" id="login">
-                        <i class="material-icons">person</i>   '.$connexion_text.'</a>
-                   
-                    <a class="btn-hollow"  href="'.root().'">
-                        <i class="material-icons">apps</i> apps
-                   </a>                            
-                </div>
+        return  '   <div class="mt-5 mb-10">
+                        <div class="row">
+                            <div class="column">
+                                <div class="flex">
+                                    <div class="flex-initial">
+                                        <div class="mb-3">
+                                           <a class="btn-hollow"  href="'.root().'">
+                                                <i class="material-icons">apps</i> apps
+                                           </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 mb-10">
+                        <div class="row">
+                            <div class="column">
+                                <div class="flex">
+                                    <div class="flex-initial">
+                                        <div class="mb-3">
+                                            <a class="btn-hollow mr-4"  href="#" id="register">
+                                                <i class="material-icons">person_add</i> '.$create_account_text.'
+                                            </a>  
+                                            <a href="#" class="btn-hollow mr-4" id="login">
+                                                <i class="material-icons">person</i>   '.$connexion_text.'
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                  <div id="register-form" class="hidden">
                     <form action="'.route($register_route_name).'" method="POST">
                         '.csrf_field().'
-                        <input name="method" value="POST" class="hidden">
-                        <div class="row">
-                            <div class="column">
-                                <input type="text" autocomplete="off" minlength="3" maxlength="200" name="firstname" placeholder="'.$username_text.'" required="required">
-                            </div>
-                            <div class="column">
-                                <input type="text" autocomplete="off"  minlength="3" maxlength="200" name="lastname" placeholder="'.$lastname_text.'" required="required">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="column">
-                                <input type="email" autocomplete="off" name="email" placeholder="'.$email_address_text.'" required="required">
+                        <input name="method" value="POST" class="hidden">' .
+            '
+                           <div class="row">
+                             <div class="column">
+                                <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">alternate_email</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="email" placeholder="'.$email_address_text.'" name="email" required="required">
+                                </div>                              
                             </div>
                         </div>
                         <div class="row">
                             <div class="column">
-                                <input type="password" autocomplete="off"  minlength="8" name="password" placeholder="'.$password_text.'" required="required">
+                                <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">person</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="text" placeholder="'.$username_text.'" name="firstname">
+                                </div>                              
+                            </div> 
+                            <div class="column">
+                                <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">person</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="text" placeholder="'.$lastname_text.'" name="lastname" required="required">
+                                </div>                              
+                            </div>
+                        </div>
+                     
+                        <div class="row">
+                            <div class="column">
+                                <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">vpn_key</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="8" maxlength="255"  type="password" placeholder="'.$password_text.'" name="password">
+                                </div>                              
                             </div>
                             <div class="column">
-                                <input type="password" autocomplete="off"  minlength="8" name="confirm_password" placeholder="'.$confirm_password_text.'" required="required">
+                                <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">vpn_key</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="8" maxlength="255" type="password" placeholder="'.$confirm_password_text.'" name="confirm">
+                                </div>                              
                             </div>
                         </div>
                         <div class="row">
@@ -853,10 +906,21 @@ if (not_exist('connexion'))
                         <input name="method" value="POST" class="hidden">
                         <div class="row">
                             <div class="column">
-                                <input type="text" autocomplete="off" minlength="3" maxlength="200" name="firstname" placeholder="'.$username_text.'" required="required">
-                            </div>
+                                 <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">person</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="255" type="text" placeholder="'.$username_text.'" name="firstname" required="required">
+                                </div>      
+                            </div>     
+                              
                             <div class="column">
-                                <input type="password" autocomplete="off" minlength="8" maxlength="200" name="password" placeholder="'.$password_text.'" required="required">
+                                 <div class="input-container">
+                                    <span class="icon">
+                                        <i class="material-icons">vpn_key</i>
+                                    </span>
+                                    <input class="input-field" autocomplete="off" minlength="8" maxlength="255" type="password" placeholder="'.$password_text.'" name="password" required="required">
+                                </div>      
                             </div>
                         </div>
                        <div class="row">
@@ -3180,8 +3244,7 @@ function base_url(...$params): string
 
     if (php_sapi_name() !=='cli')
     {
-        $url = https() ? 'https://'.request()->getHost() : 'http://' . \request()->getHost() .'/' ;
-
+        $url = https() ? 'https://'.request()->getHost() . '/' : 'http://' . \request()->getHost() .'/' ;
 
         append($url,collection($params)->join('/'));
 

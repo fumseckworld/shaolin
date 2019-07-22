@@ -191,5 +191,10 @@ $(function ()
     {
         $("#login-form").toggleClass('hidden');
     });
+
+    $("#report-bugs").on('click',function ()
+    {
+        $("#report-bugs-form").toggleClass('hidden');
+    });
     // END TASK
 });

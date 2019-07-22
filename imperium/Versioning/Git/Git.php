@@ -130,8 +130,6 @@ namespace Imperium\Versioning\Git {
 
             self::$name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
 
-            $this->save_contributors();
-
 
         }
 
@@ -157,9 +155,9 @@ namespace Imperium\Versioning\Git {
          */
         public static function connect(): Connect
         {
-            if (is_null(self::$connect))
-                self::$connect =  connect(SQLITE,self::$repository .DIRECTORY_SEPARATOR . self::$name.'.sqlite3','','','','dump');
 
+            if (is_null(self::$connect))
+                self::$connect =  connect(SQLITE,self::$repository .DIRECTORY_SEPARATOR .self::$name.'.sqlite3','','','','dump');
 
             return self::$connect;
         }
@@ -245,7 +243,7 @@ namespace Imperium\Versioning\Git {
         public function send_bug(): RedirectResponse
         {
             $data = collection();
-            
+
             foreach ($this->model()->from('bugs')->columns() as $column)
                 $data->add(request()->request->get($column));
 
@@ -398,7 +396,6 @@ namespace Imperium\Versioning\Git {
          */
         public function readme(string $branch = 'master')
         {
-
             if (is_null($this->readme))
             {
                 $files = $this->files('',$branch);
@@ -618,10 +615,10 @@ namespace Imperium\Versioning\Git {
 
 
             $data = '
-                    <nav aria-label="breadcrumb">
-                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item">
-                                <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch).'">'.$this->repository().'</a>
+                         <nav>
+                         <ul class="breadcrumb">
+                            <li>
+                                <a href="'.base_url($this->owner(),$this->repository(),$branch).'">'.$this->repository().'</a>
                             </li>';
 
                 $x = collection(explode('/',$current_directory));
@@ -632,36 +629,38 @@ namespace Imperium\Versioning\Git {
 
                     foreach ($x->collection() as $k=> $v)
                     {
-                        append($ancient,"$v/");
-                        if ($k ==0)
-                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',$v).'">'.$v.'</a></li>');
-                        else
-                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+                        if (def($v))
+                        {
+                            append($ancient,"$v/");
+
+                            append($data,'<li>  <a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+                        }
+
                     }
 
                 }else
                 {
 
 
-                    $parts = collection(explode('/file',$complete));
+                    $parts = collection(explode('/file',$complete))->get(1);
+                    $x =  collection(explode('/',$parts));
 
-                    $dir = trim($parts->get(1),'/');
-
-                    $x = collection(explode('/',$dir));
 
                     $ancient ='';
 
                     foreach ($x->collection() as $k=> $v)
                     {
-                        append($ancient,"$v/");
-                        if ($k ==0)
-                            append($data, ' <li class="breadcrumb-item"><a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',$v).'">'.$v.'</a></li>');
-                        else
-                            append($data,'<li class="breadcrumb-item">  <a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
-                    }
+                         if (def($v))
+                         {
+                              append($ancient,"$v/");
+
+                              append($data,'<li>  <a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',trim($ancient,'/')) .'">' .$v.'</a></li>');
+
+                        }
+                     }
                 }
 
-                append($data,'</ol></nav><table  class="table table-bordered" id="files"><tbody>');
+                append($data,'</ul></nav><table  class="tree" id="files"><tbody>');
 
                 if (not_def($file))
                 {
@@ -669,10 +668,11 @@ namespace Imperium\Versioning\Git {
                     foreach ($directories as $k => $v )
                     {
 
+
                         if (def($current_directory))
-                            append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$current_directory,$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
+                            append($data,'<tr><td> <a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',$current_directory,$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td><td>'.shell_exec("git log $branch --pretty=format:'%s' -n1 -- $current_directory/$v").'</td><td>'.shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $current_directory/$v").'</td></tr>');
                         else
-                            append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'tree',$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td></tr>');
+                            append($data,'<tr><td> <a href="'.base_url($this->owner(),$this->repository(),$branch,'tree',$v) .'"><i class="material-icons">folder</i> ' .$v.'</a></td><td>'.shell_exec("git log $branch --pretty=format:'%s' -n1 -- $v").'</td><td>'.shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $v").'</td></tr>');
 
 
                     }
@@ -680,21 +680,19 @@ namespace Imperium\Versioning\Git {
                     foreach ($files as  $file)
 
                         if (def($current_directory))
-                            append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'file',$current_directory,$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
+                            append($data,'<tr><td> <a href="'.base_url($this->owner(),$this->repository(),$branch,'file',$current_directory,$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td><td>'.shell_exec("git log $branch --pretty=format:'%s' -n1 -- $current_directory/$file").'</td><td>'.shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $current_directory/$file").'</td></tr>');
                         else
 
-                        append($data,'<tr><td> <a href="'.base_url('repo',$this->owner(),$this->repository(),$branch,'file',$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td></tr>');
+                        append($data,'<tr><td> <a href="'.base_url($this->owner(),$this->repository(),$branch,'file',$file).'"><i class="material-icons">insert_drive_file</i> ' .$file.'</a></td><td>'.shell_exec("git log $branch --pretty=format:'%s' -n1 -- $file").'</td><td>'.shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $file").'</td></tr>');
 
 
                 }else
                 {
                     $x = new Highlighter();
 
-                    $x->setAutodetectLanguages(LANGUAGES);
-
                     $code = $x->highlightAuto($this->show($file,$branch));
 
-                    $class = 'hljs ' . $code->language;
+                    $class = 'hljs ' . $code->language ;
 
                     $content = '<pre class="'.$class.'">' . $code->value . '</pre>';
 
@@ -836,12 +834,12 @@ namespace Imperium\Versioning\Git {
                             </i>
                         </span>
                   </div>
-                <input type="search" id="search_contributor"  placeholder="'.$search_placeholder.'" class="form-control form-control-lg" autofocus="autofocus">
+                <input type="search" id="search_contributor"  placeholder="'.$search_placeholder.'" class="form-control form-control-lg">
             </div>
             <ul class=" list-unstyled row" id="contributors">';
 
             foreach($this->contributors() as $contributor)
-                append($html,'<li class="col-md-4 col-lg-4 col-sm-12 col-xl-4 "><a href="mailto:'.$contributor->email.'">'.$contributor->name.'</a></li>');
+                append($html,'<li class="col-md-4 col-lg-4 col-sm-12 col-xl-4 "><a href="">'.$contributor.'</a></li>');
 
 
             append($html,'</ul><canvas id="contrib"></canvas>');
@@ -891,8 +889,6 @@ namespace Imperium\Versioning\Git {
          */
         public static function create(string $project_name,string $owner,string $description,string $email): bool
         {
-            if (Dir::exist($owner .DIRECTORY_SEPARATOR .$project_name))
-                return false;
 
             if (!Dir::exist($owner))
             {
@@ -901,6 +897,8 @@ namespace Imperium\Versioning\Git {
 
             Dir::checkout($owner);
 
+            if (Dir::exist($project_name))
+                return false;
 
             Dir::create($project_name);
 
@@ -912,8 +910,8 @@ namespace Imperium\Versioning\Git {
 
             is_false((new File(self::DESCRIPTION,EMPTY_AND_WRITE_FILE_MODE))->write($description),true,'Failed to write description');
 
+            return (connect(SQLITE,"$project_name.sqlite3",'','','',''))->queries(self::BUGS_TABLE,self::TODO_TABLE,self::CONTRIBUTORS_TABLE);
 
-            return self::create_tables();
         }
 
         /**
@@ -1119,50 +1117,86 @@ namespace Imperium\Versioning\Git {
          * @return string
          *
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          * @throws Exception
+         *
          */
         public function git(string $tree,string $file='',string $branch= 'master'): string
         {
 
-            $html = '
-                       <div class="mb-3">
-                        <a href="'.root().'" class="btn btn-primary"><i class="material-icons">apps</i>Apps</a> 
-</div>
-                           <div class="btn-group" role="group" aria-label="Basic example">
-                        
-                     
-                        '.$this->commits_size($branch).'
-                        '.$this->contributors_size().'
-                        '.$this->release_size().'
-                                                   </div>
-                        <div class="row">
-                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
-                                <div class="input-group">
-                                     <div class="input-group-prepend">
-                                        <button class="btn btn-primary" type="button" onclick="copy_public_clone_url()"><i class="material-icons">link</i></button>
+            if (app()->auth()->connected())
+                $code = '<div class="text-center"><div class="row"><div class="column"><div class="mb-3"><a class="btn-hollow mr-4" title="Home" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" title="Home" href="' . route('home') . '"><i class="material-icons">person</i></a><a href="'.route('logout').'" class="btn-hollow mr-4" title="Logout"><i class="material-icons">power_settings_new</i></a><a class="btn-hollow mr-4" title="Download the latest version for your system" href="' . route('download',[$this->repository(),$this->owner()]) . '"><i class="material-icons">get_app</i></a><a class="btn-hollow mr-4" title="Star the project" href="' . route('stars',[$this->repository(),$this->owner()]) . '"><i class="material-icons">star</i></a><a href="#" class="btn-hollow" id="report-bugs"><i class="material-icons">bug_report</i></a></div></div></div></div>';
+            else
+                $code = '<div class="text-center"><div class="row"><div class="column"><div class="mb-3"><a class="btn-hollow mr-4" title="Home" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" title="Connexion" href="' . route('connexion') . '"><i class="material-icons">person</i></a><a class="btn-hollow mr-4" title="Download the latest version for your system" href="' . route('download',[$this->repository(),$this->owner()]) . '"><i class="material-icons">get_app</i></a><a class="btn-hollow mr-4" title="Star the project" href="' . route('stars',[$this->repository(),$this->owner()]) . '"><i class="material-icons">star</i></a><a href="#" class="btn-hollow" id="report-bugs"><i class="material-icons">bug_report</i></a></div></div></div></div>';
+
+        $html =  $code .'
+                        <div class="hidden" id="report-bugs-form">
+                            <form action="'.route('bug_report').'" method="POST" accept-charset="utf-8">
+                                
+                                '.csrf_field().'
+                                <div class="hidden">
+                                    <input type="hidden" value="POST"   name="method">
+                                    <input type="hidden" class="hidden" name="created_at" value="'.now()->toDateTimeString().'" autocomplete="off">     
+                                    <input type="hidden" class="hidden" name="id" value="id" >
+                                    <input type="hidden" class="hidden" name="repository" value="'.self::$repository.'" autocomplete="off">
+                                </div>
+                                <div class="row">
+                                    <div class="column">
+                                        <div class="input-container">
+                                            <span class="icon">
+                                                <i class="material-icons">bug_report</i>
+                                            </span>
+                                            <input type="text" class="input-field" required="required" placeholder="The bug subject" name="subject" autocomplete="off">
+                                        </div>                           
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="column">
+                                        <div class="input-container">
+                                            <span class="icon"><i class="material-icons">alternate_email</i></span>
+                                            <input type="email" class="input-field" required="required" placeholder="Your Email address" name="email" value="" autocomplete="off">
+                                        </div>
                                      </div>
-                                    <input type="text" class="form-control form-control-lg " id="clone" value="git://'.request()->getHost().'/'.$this->owner().'/'.$this->repository().'">
                                 </div>
-                            </div>
-                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">
-                                <div class="input-group mt-3">
-                                     <div class="input-group-prepend">
-                                        <button class="btn btn-primary" type="button" onclick="copy_contributor_clone_url()"><i class="material-icons">link</i></button>
-                                     </div>
-                                     <input type="text" class="form-control form-control-lg" id="contributor_clone" value="git@'.request()->getHost().':'.$this->owner().'/'.$this->repository().'">
+                                <div class="row">
+                                    <div class="column">
+                                        <textarea  rows="10" placeholder="Explain the bug" required="required" name="content"></textarea>
+                                    </div>
                                 </div>
-                            </div> 
-                            <div class="col-lg-4 col-md-4 col-sm-12 col-xl-4 mt-3">
-                                <div class="btn-group" role="group" aria-label="Basic example">
-                                    <a href="'.app()->url('download',$this->repository(),$this->owner()).'" class="btn btn-primary"><i class="material-icons">get_app</i>'.$this->repository(). ' <span>'.numb(intval((new File('download'))->read())).'</span></a>
-                                   <a href="'.app()->url('stars',$this->repository(),$this->owner()).'" class="btn btn-primary"><i class="material-icons">star</i>Stars <span>'.numb(intval((new File('stars'))->read())).'</span></a>
+                                <div class="row">
+                                    <div class="column">
+                                        <button type="submit" class="btn"><i class="material-icons">send</i> Send the bug</button>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
-                    ' .$this->branches_view().'
+                        <article>
+                            <header>    
+                                <h1>'.$this->description()  .'</h1>
+                                <hr> 
+                            </header>        
+                            <div class="row">
+                                <div class="column">
+                                      <div class="input-container">
+                                            <span class="icon cursor-pointer" onclick="copy_public_clone_url()">
+                                                <i class="material-icons">link</i>
+                                            </span>
+                                            <input type="text" class="input-field" id="clone" value="git clone git://'.request()->getHost().'/'.$this->owner().'/'.$this->repository().'">
+                                      </div>
+                                </div> 
+                                <div class="column">
+                                     <div class="input-container">
+                                          <span class="icon cursor-pointer" onclick="copy_contributor_clone_url()">
+                                                <i class="material-icons">link</i>
+                                            </span>
+                                            <input type="text" class="form-control form-control-lg" id="contributor_clone" value="git clone git@'.request()->getHost().':'.$this->owner().'/'.$this->repository().'">
+                                      </div>
+                                </div>
+                            </div>
+                          '.$this->branches_view().'
+                                    
+                              
+                        </article>
                         <script>
                             function copy_public_clone_url() 
                             {
@@ -1187,46 +1221,16 @@ namespace Imperium\Versioning\Git {
                                 document.execCommand("copy");
                             }
                         </script>
-                        <section>
-                       
-                            <article>
-                             <div class="nav nav-tabs" id="git" role="tablist">
-     <a class="nav-item nav-link active" id="nav-code-tab" data-toggle="tab" href="#nav-code" role="tab" aria-controls="nav-code" aria-selected="true">Code</a>
-    <a class="nav-item nav-link" id="nav-readme-tab" data-toggle="tab" href="#nav-readme" role="tab" aria-controls="nav-readme" aria-selected="true">Readme</a>
-    <a class="nav-item nav-link " id="nav-wiki-tab" data-toggle="tab" href="#nav-wiki" role="tab" aria-controls="nav-wiki" aria-selected="false">Wiki</a>
-    <a class="nav-item nav-link " id="nav-issues-tab" data-toggle="tab" href="#nav-issues" role="tab" aria-controls="nav-issues" aria-selected="false">Issues</a>
-      <a class="nav-item nav-link " id="nav-todo-tab" data-toggle="tab" href="#nav-todo" role="tab" aria-controls="nav-todo" aria-selected="false">Todo</a>
-    <a class="nav-item nav-link" id="nav-news-tab" data-toggle="tab" href="#nav-news" role="tab" aria-controls="nav-news" aria-selected="false">News</a>
-    <a class="nav-item nav-link" id="nav-releases-tab" data-toggle="tab" href="#nav-releases" role="tab" aria-controls="nav-releases" aria-selected="false">Versions</a>
-    <a class="nav-item nav-link" id="nav-logs-tab" data-toggle="tab" href="#nav-logs" role="tab" aria-controls="nav-logs" aria-selected="false">Logs</a>
-    <a class="nav-item nav-link" id="nav-contributors-tab" data-toggle="tab" href="#nav-contributors" role="tab" aria-controls="nav-contributors" aria-selected="false">Contributors</a>
-    <a class="nav-item nav-link" id="nav-contributions-tab" data-toggle="tab" href="#nav-contributions" role="tab" aria-controls="nav-contributions" aria-selected="false">Contributions</a>
-    <a class="nav-item nav-link " id="nav-contribute-tab" data-toggle="tab" href="#nav-contribute" role="tab" aria-controls="nav-contribute" aria-selected="false">Contribute</a>
-    <a class="nav-item nav-link" id="nav-change-logs-tab" data-toggle="tab" href="#nav-change-logs" role="tab" aria-controls="nav-change-logs" aria-selected="false">Changelog</a>
-    <a class="nav-item nav-link" id="nav-hooks-tab" data-toggle="tab" href="#nav-hooks" role="tab" aria-controls="nav-hooks" aria-selected="false">Hook</a>
-    <a class="nav-item nav-link " id="nav-licence-tab" data-toggle="tab" href="#nav-licence" role="tab" aria-controls="nav-licence" aria-selected="false">Licence</a>
-  
-  </div>
-</nav>
-<div class="tab-content" id="nav-tabContent">
-  <div class="tab-pane fade show" id="nav-readme" role="tabpanel" aria-labelledby="nav-readme-tab"><div class="mt-3 mb-3">'.$this->readme().'</div></div>
-  <div class="tab-pane fade show active"  id="nav-code" role="tabpanel" aria-labelledby="nav-code-tab"><div class="mt-3 mb-3">'.$this->tree($tree,$file,$branch).'</div></div>
-  <div class="tab-pane fade show " id="nav-news" role="tabpanel" aria-labelledby="nav-news-tab"><div class="mt-3 mb-3">'.$this->news().'</div></div>
-  <div class="tab-pane fade show " id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab"><div class="mt-3 mb-3">'.$this->log($branch).'</div></div>
-  <div class="tab-pane fade show " id="nav-change-logs" role="tabpanel" aria-labelledby="nav-change-logs-tab"><div class="mt-3 mb-3">'.$this->changelog().'</div></div>
-  <div class="tab-pane fade show " id="nav-releases" role="tabpanel" aria-labelledby="nav-releases-tab">'.$this->release_view().'</div>
-  <div class="tab-pane fade show " id="nav-hooks" role="tabpanel" aria-labelledby="nav-hooks-tab"><div class="mt-3 mb-3">'.$this->hooks_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contributors" role="tabpanel" aria-labelledby="nav-contributors-tab"><div class="mt-3 mb-3">'.$this->contributors_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contributions" role="tabpanel" aria-labelledby="nav-contributions-tab"><div class="mt-3 mb-3">'.$this->contributions_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-contribute" role="tabpanel" aria-labelledby="nav-contribute-tab"><div class="mt-3 mb-3">'.$this->contribute($branch).'</div></div>
-  <div class="tab-pane fade show " id="nav-todo" role="tabpanel" aria-labelledby="nav-todo-tab"><div class="mt-3 mb-3">'.$this->todo().'</div></div>
-  <div class="tab-pane fade show " id="nav-wiki" role="tabpanel" aria-labelledby="nav-wiki-tab"><div class="mt-3 mb-3">'.$this->wiki().'</div></div>
-  <div class="tab-pane fade show " id="nav-issues" role="tabpanel" aria-labelledby="nav-issues-tab"><div class="mt-3 mb-3">'.$this->report_bugs_view().'</div></div>
-  <div class="tab-pane fade show " id="nav-licence" role="tabpanel" aria-labelledby="nav-licence-tab"><div class="mt-3 mb-3">'.$this->licence().'</div></div>
-</div>
-                        </article>
-</section>
- ';
+                    
+                        
+                        <div class="row">
+                            <div class="column">
+                                 '.$this->tree($tree,$file,$branch).'  
+                                 <div id="readme">'.$this->readme($branch).' </div>
+                            </div>
+                        </div>
+                     
+                   ';
             return $html;
         }
 
@@ -1484,24 +1488,10 @@ namespace Imperium\Versioning\Git {
          */
         public function releases(): array
         {
-
-            if (app()->cache()->has(__FUNCTION__))
-                return app()->cache()->get(__FUNCTION__);
-
            if (is_null($this->releases))
-           {
-                if ($this->is_remote())
-                {
-                    $releases =  collection(Dir::scan('refs/tags'))->reverse();
-                }
-                else
-                {
-                    $this->execute('git tag --sort=version:refname');
-                    $releases =  $this->data()->reverse();
-                }
-                app()->cache()->set(__FUNCTION__,$releases);
-                $this->releases = $releases;
-            }
+               $this->releases = collection(Dir::scan('refs/tags'))->reverse();
+
+
             return $this->releases;
         }
 
@@ -1512,12 +1502,17 @@ namespace Imperium\Versioning\Git {
          *
          * @return array
          *
-         * @throws Kedavra
          *
          */
         public function contributors(): array
         {
-            return $this->model()->from('contributors')->all();
+            $contributors = collection();
+
+            foreach ($this->execute("git shortlog -cs --all") as $contributor)
+                $contributors->add_if_not_exist(collection(string_parse($contributor))->remove(0,1)->join(" "));
+
+
+            return $contributors->collection();
         }
 
         /**
@@ -1541,7 +1536,7 @@ namespace Imperium\Versioning\Git {
             if (not_def(self::model()->from('contributors')->find(1)))
             {
 
-                $this->execute("git shortlog -sne --all");
+
 
                 foreach ($this->data()->collection() as $k => $v)
                 {
@@ -1731,79 +1726,17 @@ namespace Imperium\Versioning\Git {
          * Display branches view
          *
          * @return string
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function branches_view(): string
         {
-            $html = '<div class="row">';
-            $x = collection(['#'=> 'Select a branch']);
+            $html = '<div class="row"><div class="column"><div class="input-container"><span class="icon"><i class="material-icons">explore</i></span><select class="input-field" onChange="location = this.options[this.selectedIndex].value"><option value="Select a branch">Select a branch</option>';
+
             foreach ($this->branches() as $branch)
-                $x->add($branch,app()->url('repository',$this->owner(),$this->repository(),$branch));
-
-            $branches = (new Form())
-                ->start('checkout_branch')
-                    ->row()
-                        ->redirect('branch',$x->collection(),'<i class="material-icons">track_changes</i>')
-                    ->end_row()
-                ->get();
-
-            append($html,'<div class="col-lg-12 col-md-12 col-sm-12 mt-3 col-xl-12>'.$branches.'</div>');
-
-            $x = collection(['#'=> 'Select a period']);
-
-            foreach (GIT_PERIOD as $period)
-            {
-                $z = '?period='.$period .'&size=' .get('size','') .'&author='.get('author','');
-
-                $x->add($period,$z);
-            }
-
-            $time = (new Form())
-                ->start('checkout_branch')
-                ->row()
-                ->redirect('period',$x->collection(),'<i class="material-icons">access_time</i>')
-                ->end_row()
-                ->get();
-            append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$time.'</div>');
-
-            $x = collection(['#'=> 'Select a size']);
-
-            foreach (GIT_SIZE as $size)
-            {
-                $z = '?size='.$size .'&period=' .get('period','months') .'&author='.get('author','');
-
-                $x->add($size,$z);
-            }
-
-            $size = (new Form())
-                ->start('checkout_branch')
-                ->row()
-                ->redirect('size',$x->collection(),'<i class="material-icons">access_time</i>')
-                ->end_row()
-                ->get();
-
-            append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$size.'</div>');
-            $x = collection(['#'=> 'Select a contributor']);
-
-            foreach ($this->contributors() as $contributor)
-            {
-                $z = '?author='.$contributor->name .'&period=' .get('period','') .'&size='.get('size','');
-
-                $x->add($contributor->name,$z);
-            }
-
-            $author = (new Form())
-                ->start('checkout_branch')
-                ->row()
-                ->redirect('author',$x->collection(),'<i class="material-icons">group</i>')
-                ->end_row()
-                ->get();
-            append($html,'<div class="col-lg-4 col-md-4 col-sm-12 col-xl-4">'.$author.'</div>');
-            append($html,'</div>');
+                append($html,'<option value="'.route('repository',[$this->owner(),$this->repository(),$branch]).'">'.$branch.'</option>');
 
 
+            append($html,'</select></div></div></div>');
 
             return $html;
         }
@@ -1813,7 +1746,6 @@ namespace Imperium\Versioning\Git {
          * Display contribution view
          *
          * @return string
-         * @throws Kedavra
          */
         public function contributions_view(): string
         {
@@ -1821,7 +1753,7 @@ namespace Imperium\Versioning\Git {
             $form = '<select class=" form-control-lg form-control" data-repository="'.self::$repository.'" id="contributors_select"  data-months="'.$this->months()->join(',').'"><option value="Select a contributor">Select a contributor</option>';
 
             foreach ($this->contributors() as  $contributor)
-                append($form,'<option value="'.$contributor->name.'" > '.$contributor->name.'</option>');
+                append($form,'<option value="'.$contributor.'" > '.$contributor.'</option>');
 
             append($form,'</select>');
             return '<div class="input-group mb-3">

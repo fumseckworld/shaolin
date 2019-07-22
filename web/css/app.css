@@ -7551,6 +7551,10 @@ video {
   z-index: auto;
 }
 
+body{
+  background-color: #000;
+}
+
 .material-icons, .icon-text {
   vertical-align: middle;
 }
@@ -7573,7 +7577,7 @@ video {
 }
 
 .btn-hollow:hover{
-  background-color: #38b2ac;
+  background-color: #81e6d9;
   color: #000;
   border-color: transparent;
 }
@@ -7617,6 +7621,7 @@ input,textarea,select{
   border-color: #81e6d9;
   width: 100%;
   padding: 1.25rem;
+  outline: 0;
   color: #b2f5ea;
 }
 
@@ -7637,7 +7642,7 @@ hr{
   border-color: #38b2ac;
 }
 
-.title{
+h1,h2,h3,h4{
   text-transform: uppercase;
   text-align: center;
   font-weight: 700;
@@ -7660,8 +7665,7 @@ hr{
 main{
   margin-left: auto;
   margin-right: auto;
-  margin-top: 8rem;
-  text-align: center;
+  margin-top: 4rem;
 }
 
 section,header,article{
@@ -7728,6 +7732,242 @@ section,header,article{
   .row{
     display: flex;
   }
+}
+
+.tab{
+  text-transform: uppercase;
+  background-color: #319795;
+  padding: 1rem;
+  color: #e6fffa;
+  font-weight: 700;
+  width: 100%;
+  display: inline-block;
+}
+
+.active{
+  text-transform: uppercase;
+  background-color: #81e6d9;
+  padding: 1rem;
+  color: #000;
+  font-weight: 700;
+  width: 100%;
+  display: inline-block;
+  color: #fff;
+  border-color: #38b2ac;
+}
+
+.tab:hover{
+  background-color: #81e6d9;
+  color: #000;
+  border-color: #38b2ac;
+}
+
+.tree{
+  background-color: transparent;
+  color: #81e6d9;
+  width: 100%;
+}
+
+.tree tr{
+  width: 100%;
+  border-width: 2px;
+  font-weight: 700;
+  border-color: #81e6d9;
+  padding: 1rem;
+}
+
+.tree td{
+  text-align: justify;
+  padding: 1rem;
+}
+
+ul.breadcrumb {
+  background-color: #81e6d9;
+  color: #000;
+  border-color: #38b2ac;
+  text-align: justify;
+  padding: 1rem;
+  font-weight: 700;
+}
+
+ul.breadcrumb li {
+  display: inline;
+}
+
+ul.breadcrumb li+li:before
+{
+  content: "/\00a0";
+  padding: 0.5rem;
+  color: #000;
+}
+
+ul.breadcrumb li a {
+  color: #000;
+  text-decoration: none;
+}
+
+.input-container {
+  margin-bottom: 1.25rem;
+  width: 100%;
+  display: flex;
+}
+
+.icon {
+  background-color: #81e6d9;
+  color: #000;
+  text-align: center;
+  padding: 1.25rem;
+}
+
+.input-field
+{
+  width: 100%;
+  outline: 0;
+  padding: 1.25rem;
+}
+
+/* Ocean Dark Theme */
+
+/* https://github.com/gavsiu */
+
+/* Original theme - https://github.com/chriskempson/base16 */
+
+/* Ocean Comment */
+
+.hljs-comment,
+.hljs-quote {
+  color: #65737e;
+}
+
+/* Ocean Red */
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+  color: #bf616a;
+}
+
+/* Ocean Orange */
+
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: #d08770;
+}
+
+/* Ocean Yellow */
+
+.hljs-attribute {
+  color: #ebcb8b;
+}
+
+/* Ocean Green */
+
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #a3be8c;
+}
+
+/* Ocean Blue */
+
+.hljs-title,
+.hljs-section {
+  color: #8fa1b3;
+}
+
+/* Ocean Purple */
+
+.hljs-keyword,
+.hljs-selector-tag {
+  color: #b48ead;
+}
+
+.hljs
+{
+  display: block;
+  overflow-x: auto;
+  background: #000;
+  color: #c0c5ce;
+  padding: 0.5em;
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: bold;
+}
+
+#readme
+{
+  margin-top: 1.25rem;
+  padding: 2rem;
+  background-color: #fff;
+  color: #000;
+}
+
+#readme table
+{
+  margin: 1.25rem;
+}
+
+#readme tr
+{
+  border-width: 2px;
+  border-color: #000;
+}
+
+#readme td,#readme th
+{
+  border-width: 2px;
+  border-color: #fff;
+  padding: 1rem;
+  background-color: #2d3748;
+  color: #fff;
+}
+
+#readme td:hover,#readme th:hover
+{
+  background-color: #4a5568;
+}
+
+#readme ul li{
+  margin-left: 2.5rem;
+  list-style-type: disc;
+}
+
+#readme h1,#readme h2,#readme h3,#readme h4 ,#readme h5,#readme h6
+{
+  text-transform: none;
+  color: #000;
+  font-weight: 700;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  text-align: justify;
+}
+
+#readme a{
+  color: #b83280;
+}
+
+#readme code{
+  color: #f56565;
+  margin-bottom: 1.25rem;
+  text-align: justify;
+  font-weight: 700;
 }
 
 @media (min-width: 640px) {

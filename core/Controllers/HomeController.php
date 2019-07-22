@@ -23,7 +23,7 @@ namespace Shaolin\Controllers {
            $repositories =  display_repositories(logged_user());
            $form =  create_repository();
 
-            return $this->view('home',compact('form','repositories'));
+           return $this->view('home',compact('form','repositories'));
         }
 
         public function admin()

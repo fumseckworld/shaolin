@@ -77,20 +77,6 @@ namespace Imperium\Config {
 
         }
 
-        /**
-         *
-         * @param string $file
-         * @param $key
-         *
-         * @return mixed
-         *
-         * @throws Kedavra
-         *
-         */
-        public function get(string $file,$key)
-        {
-            return (new static($file,$key))->value();
-        }
 
         /**
          * @return string

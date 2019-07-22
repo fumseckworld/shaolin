@@ -1572,19 +1572,23 @@ namespace Imperium {
         /**
          * @var ContainerBuilder
          */
-        private $container;
+        private static $container;
 
         /**
          * @param string $key
          * @return mixed
          * @throws NotFoundExceptionAlias
          * @throws DependencyException
-         * @throws Kedavra
          * @throws Exception
          */
         public function app(string $key)
         {
-            if (is_null($this->container))
+            return self::container()->get($key);
+        }
+
+        public static function container()
+        {
+            if (is_null(self::$container))
             {
                 $c = new ContainerBuilder();
 
@@ -1617,13 +1621,9 @@ namespace Imperium {
                 $c->set("views.config",config('twig','config'));
 
                 $c->set('session',new Session());
-
-
-
-                $this->container = $c;
+                self::$container =  $c;
             }
-
-            return $this->container->get($key);
+            return self::$container;
         }
     }
 }

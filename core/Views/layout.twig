@@ -14,17 +14,17 @@
 
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.css" rel="stylesheet">
-        {{ css('app.css') }}
+        {{ css('app') }}
 
-
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         {% block css %} {% endblock %}
         <title>{% block title %}{% endblock %}</title>
 
         <meta name="description" content="{% block description %} {% endblock %}">
 
     </head>
-    <body class="bg-black">
-        {{ navbar('eywa') }}
+    <body >
+
         <main class="container">
             {{ display('success') }}
             {{ display('failure') }}

@@ -51,6 +51,7 @@ namespace Imperium\Routing {
          * @var array
          */
         private $args;
+
         /**
          * @var array
          */
