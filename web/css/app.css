@@ -7771,14 +7771,13 @@ section,header,article{
 .tree tr{
   width: 100%;
   border-width: 2px;
-  font-weight: 700;
   border-color: #81e6d9;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 .tree td{
   text-align: justify;
-  padding: 1rem;
+  padding: 0.5rem;
 }
 
 ul.breadcrumb {
@@ -7787,7 +7786,6 @@ ul.breadcrumb {
   border-color: #38b2ac;
   text-align: justify;
   padding: 1rem;
-  font-weight: 700;
 }
 
 ul.breadcrumb li {
@@ -7913,8 +7911,10 @@ ul.breadcrumb li a {
 
 #readme
 {
+  width: 100%;
   margin-top: 1.25rem;
-  padding: 2rem;
+  padding-left: 2rem;
+  padding-bottom: 4rem;
   background-color: #fff;
   color: #000;
 }
@@ -7945,8 +7945,13 @@ ul.breadcrumb li a {
 }
 
 #readme ul li{
-  margin-left: 2.5rem;
+  margin-left: 2rem;
+  margin-bottom: 0.5rem;
   list-style-type: disc;
+}
+
+#readme p{
+  color: #1a202c;
 }
 
 #readme h1,#readme h2,#readme h3,#readme h4 ,#readme h5,#readme h6
@@ -7960,7 +7965,7 @@ ul.breadcrumb li a {
 }
 
 #readme a{
-  color: #b83280;
+  color: #3182ce;
 }
 
 #readme code{

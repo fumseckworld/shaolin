@@ -135,13 +135,13 @@ section,header,article{
 }
 
 .tree tr{
-    @apply w-full border-2 font-bold border-teal-300 p-4;
+    @apply w-full border-2 border-teal-300 p-2;
 }
 .tree td{
-    @apply text-justify p-4 ;
+    @apply text-justify p-2 ;
 }
 ul.breadcrumb {
-    @apply bg-teal-300  text-black  border-teal-500 text-justify p-4 font-bold;
+    @apply bg-teal-300  text-black  border-teal-500 text-justify p-4;
 }
 ul.breadcrumb li {
     @apply inline;
@@ -246,7 +246,7 @@ ul.breadcrumb li a {
 
 #readme
 {
-    @apply mt-5 p-8 bg-white text-black;
+    @apply w-full  mt-5 pl-8 pb-16 bg-white text-black;
 }
 #readme table
 {
@@ -268,7 +268,10 @@ ul.breadcrumb li a {
 }
 
 #readme ul li{
-    @apply ml-10 list-disc;
+    @apply ml-8  mb-2 list-disc  ;
+}
+#readme p{
+    @apply text-gray-900  ;
 }
 
 #readme h1,#readme h2,#readme h3,#readme h4 ,#readme h5,#readme h6
@@ -280,7 +283,7 @@ ul.breadcrumb li a {
 }
 
 #readme a{
-    @apply text-pink-700  ;
+    @apply text-blue-600;
 }
 
 #readme code{
