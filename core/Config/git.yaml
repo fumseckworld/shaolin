@@ -45,3 +45,5 @@ changelog:
 
 contributing:
   - CONTRIBUTING.md
+
+private: true

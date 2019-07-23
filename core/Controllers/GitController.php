@@ -58,7 +58,9 @@ namespace Shaolin\Controllers {
 		public function show(string $owner,string $repo,string $branch)
         {
 
+
             $repository = $this->git("{$this->prefix}/$owner/$repo",$owner)->save()->git('','',$branch);
+
             return $this->view('repository',compact('repository'));
         }
 

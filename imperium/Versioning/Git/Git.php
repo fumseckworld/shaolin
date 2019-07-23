@@ -52,15 +52,6 @@ namespace Imperium\Versioning\Git {
 
         const DESCRIPTION =  'description';
 
-        /**
-         * @var string
-         */
-        private $contributor;
-
-        /**
-         * @var string
-         */
-        private $contributor_email;
 
         /**
          * @var string
@@ -96,7 +87,7 @@ namespace Imperium\Versioning\Git {
         private $contribute;
 
 
-        const CONTRIBUTORS_TABLE = 'CREATE TABLE IF NOT EXISTS contributors ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,email TEXT(255) NOT NULL UNIQUE)';
+        const CONTRIBUTORS_TABLE = 'CREATE TABLE IF NOT EXISTS contributors ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE)';
 
         const BUGS_TABLE = 'CREATE TABLE IF NOT EXISTS bugs ( id INTEGER PRIMARY KEY AUTOINCREMENT, subject TEXT(255) NOT NULL,email TEXT(255) NOT NULL,content TEXT(255) NOT NULL,created_at DATETIME NOT NULL )';
 
@@ -124,11 +115,14 @@ namespace Imperium\Versioning\Git {
 
             app()->session()->set('repo',realpath($repository));
 
+
             self::$repository =  realpath($repository);
 
+            self::model();
+            self::connect();
+            self::$name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
             Dir::checkout(self::$repository);
 
-            self::$name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
 
 
         }
@@ -143,6 +137,7 @@ namespace Imperium\Versioning\Git {
         {
             if (is_null(self::$model))
                 self::$model =  new Model(self::connect(),new Table(self::connect()));
+
 
             return self::$model;
         }
@@ -821,7 +816,6 @@ namespace Imperium\Versioning\Git {
         /**
          * @param string $search_placeholder
          * @return string
-         * @throws Kedavra
          */
         public function contributors_view(string $search_placeholder = 'Search a contributor'):string
         {
@@ -930,11 +924,10 @@ namespace Imperium\Versioning\Git {
 
         /**
          * @return Git
-         * @throws Kedavra
          */
         public function save(): Git
         {
-            $this->save_contributors();
+            $this->contributors();
 
             return $this;
         }
@@ -1434,7 +1427,15 @@ namespace Imperium\Versioning\Git {
 
              return $this->data;
         }
+        public function commits(string $directory,$branch = 'master')
+        {
+            $data = \collection();
+            foreach ($this->directories($directory,$branch) as  $v)
 
+                    $data->add(shell_exec("git log $branch -n1  --pretty=format='%s' -- $directory/$v"));
+
+            return $data;
+        }
         /**
          *
          * Return all branch
@@ -1503,91 +1504,28 @@ namespace Imperium\Versioning\Git {
          * @return array
          *
          *
+         * @throws Kedavra
          */
         public function contributors(): array
         {
+            self::create_tables();
+
             $contributors = collection();
 
-            foreach ($this->execute("git shortlog -cs --all") as $contributor)
-                $contributors->add_if_not_exist(collection(string_parse($contributor))->remove(0,1)->join(" "));
+            foreach ($this->execute("git shortlog -n --all") as $contributor)
+                $contributors->add_if_not_exist(collection(string_parse($contributor))->pop()->join(" "));
 
 
+            foreach ($contributors->reverse() as $contributor)
+            {
+                self::model()->from('contributors')->insert_new_record(self::model(),['id' => 'id' , 'name' =>$contributor]);
+
+            }
             return $contributors->collection();
         }
 
-        /**
-         *
-         * Save  all contributors
-         *
-         * @return void
-         *
-         * @throws Kedavra
-         */
-        private function save_contributors(): void
-        {
-            $x = collection();
-            $z = collection();
-
-            if (not_def(self::model()->table()->show()))
-            {
-                self::create_tables();
-            }
-
-            if (not_def(self::model()->from('contributors')->find(1)))
-            {
 
 
-
-                foreach ($this->data()->collection() as $k => $v)
-                {
-                    $parts = collection(preg_split('/\s+/', $v));
-
-
-                    $this->contributor = $parts->get(2) .' ' . $parts->get(3);
-                    if ($z->not_exist($this->contributor))
-                    {
-
-                        foreach ($parts as $key => $value)
-                        {
-                            if (def($value))
-                            {
-
-                                if (!is_numeric($value))
-                                {
-                                    if (strpos($value,'<') === 0)
-                                    {
-                                        $this->contributor_email = str_replace('<','',str_replace('>','',$value));
-
-                                        if (strrchr($this->contributor,'<'))
-                                        {
-                                            $tmp = collection(explode('<',$this->contributor));
-
-                                            $this->contributor = trim($tmp->get(0));
-
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        $z->add($this->contributor);
-
-                        $x->push(['id' => 'id','name'=> $this->contributor,'email' => $this->contributor_email]);
-                    }
-
-                    $this->contributor = null;
-                    $this->contributor_email = null;
-                }
-
-                foreach ($x->reverse() as $contributor)
-                {
-                    self::model()->from('contributors')->insert_new_record(self::model(),$contributor);
-
-                }
-            }
-
-
-        }
 
         /**
          *
