@@ -73,7 +73,6 @@ namespace Shaolin\Controllers {
         public function tree(string $owner,string $repository,string $branch,string $tree)
         {
 
-
             $tree = $this->git("{$this->prefix}/$owner/$repository",$owner)->git($tree,'',$branch);
             return $this->view('dirs',compact('tree'));
         }

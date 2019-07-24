@@ -304,6 +304,8 @@ namespace Imperium\Versioning\Git {
          *
          * @return array
          *
+         * @throws Kedavra
+         *
          */
         public function files(string $directory,string $branch ='master'): array
         {
@@ -315,18 +317,27 @@ namespace Imperium\Versioning\Git {
             {
                 if (def($directory))
                 {
+
                     if (strstr($datum,'blob'))
                     {
-                         $t =  collection(string_parse($datum))->last();
+                        $y = strstr(str_replace("$directory/",'',$datum),'/');
 
-                         $t = str_replace("$directory/",'',$t);
-
-                         if (!strstr($t,'/'))
-                            $x->add($t);
+                        if (is_false($y))
+                        {
+                            $file = str_replace("$directory/",'',collection(string_parse($datum))->last());
+                            $x->add($file);
+                        }
                     }
+
                 }else{
                     if (strstr($datum,'blob'))
-                        $x->add(collection(string_parse($datum))->last());
+                    {
+
+                        if (not_def(strstr($datum,'/')))
+                        {
+                            $x->add_if_not_exist( collection(string_parse($datum))->last());
+                        }
+                    }
                 }
             }
 
@@ -570,19 +581,31 @@ namespace Imperium\Versioning\Git {
 
             $directories = collection();
 
-            foreach ($this->data as $dir)
+
+            if (def($directory))
             {
-                if ($dir !== $directory)
+                if ($this->data()->length() === 2)
+                    return [];
+
+                foreach ($this->data as $dir)
                 {
-                    if (strpos($directory,$dir) !== 0)
+
+                    $x = str_replace("$directory/",'',$dir);
+
+                    if (strpos($directory,$dir) !==0)
                     {
-                        $directories->add(collection(explode('/',$dir))->last());
+
+                        if (!strstr($x,'/'))
+                            $directories->add_if_not_exist($x);
+                        else
+                            $directories->add_if_not_exist(collection(explode(DIRECTORY_SEPARATOR,$x))->begin());
+
                     }
-
                 }
+                return $directories->collection();
             }
+            return $this->data()->collection();
 
-            return $directories->collection();
         }
 
         /**
