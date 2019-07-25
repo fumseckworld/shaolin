@@ -32,7 +32,7 @@ namespace Imperium\Cache {
          */
         public function infos(): Collection
         {
-            return collection(apcu_cache_info());
+            return collect(apcu_cache_info());
         }
 
         /**

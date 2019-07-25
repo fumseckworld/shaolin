@@ -85,7 +85,7 @@ namespace Imperium\Dump {
         {
             $this->connexion = app()->connect();
             $this->base = $base;
-            $this->tables = collection($tables);
+            $this->tables = collect($tables);
             $this->command = '';
             $this->quote  = $this->determine_quote();
         }
@@ -113,11 +113,11 @@ namespace Imperium\Dump {
 
             Dir::clear($dump_path);
 
-            $filename =  equal($driver,SQLITE) ? $dump_path . DIRECTORY_SEPARATOR . \collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,$database))->last()))->begin() .'.sql' :"$dump_path/$database.sql";
+            $filename =  equal($driver,SQLITE) ? $dump_path . DIRECTORY_SEPARATOR . collect(explode('.',collect(explode(DIRECTORY_SEPARATOR,$database))->last()))->first() .'.sql' :"$dump_path/$database.sql";
 
             switch ($driver)
             {
-                case Connect::MYSQL:
+                case MYSQL:
                     append($this->command,$this->quote,'mysqldump',$this->quote," -u$username", " -p$password");
                     if ($this->base)
                     {
@@ -130,7 +130,7 @@ namespace Imperium\Dump {
                         system($this->command);
                     }
                 break;
-                case Connect::POSTGRESQL:
+                case POSTGRESQL:
                     append($this->command,'pg_dump', " -U $username", " -h $host"," -d $database", ' -p 5432',' --clean',' --if-exists',' --inserts',' --no-owner');
 
                     if ($this->base)
@@ -150,7 +150,7 @@ namespace Imperium\Dump {
                         system($this->command);
                     }
                 break;
-                case Connect::SQLITE:
+                case SQLITE:
                     append($this->command,"sqlite3");
                     if ($this->base)
                     {

@@ -43,7 +43,7 @@ namespace Imperium\Command {
         }
         public function methods():Collection
         {
-            return collection(METHOD_SUPPORTED)->each('strtolower');
+            return collect(METHOD_SUPPORTED)->each('strtolower');
         }
         public function interact(InputInterface $input, OutputInterface $output)
         {
@@ -56,7 +56,7 @@ namespace Imperium\Command {
                     $this->clean();
 
                     $question = new Question("<info>Set the route method : </info>");
-                    $question->setAutocompleterValues($this->methods()->collection());
+                    $question->setAutocompleterValues($this->methods()->all());
                     $this->method = strtoupper($helper->ask($input, $output, $question));
 
                     while (not_in(METHOD_SUPPORTED,$this->method))
@@ -65,7 +65,7 @@ namespace Imperium\Command {
 
                         $output->write("<error>The method must be {$this->methods()->join(', ')} </error>\n");
                         $question = new Question("<info>Set the route method : </info>");
-                        $question->setAutocompleterValues($this->methods()->collection());
+                        $question->setAutocompleterValues($this->methods()->all());
                         $this->method = strtoupper($helper->ask($input, $output, $question));
                     }
                 }while (is_null($this->method));
@@ -128,12 +128,12 @@ namespace Imperium\Command {
         public function execute(InputInterface $input, OutputInterface $output)
         {
 
-            $data = collection();
+            $data = collect();
             foreach ($this->routes as $route)
-                $data->add($this->save_route($route));
+                $data->set($this->save_route($route));
 
             $this->clean();
-            if ($data->not_exist(false))
+            if ($data->ok())
                 $output->write("<info>All routes has been successfully created</info>\n");
             else
                 $output->write("<error>The routes generation has failed</error>\n");

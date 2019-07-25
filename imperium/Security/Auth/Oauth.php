@@ -63,7 +63,6 @@ namespace Imperium\Security\Auth {
          *
          * Oauth constructor.
          *
-         * @Inject("session")
          *
          * @param SessionInterface $session
          * @param Model $model
@@ -300,17 +299,17 @@ namespace Imperium\Security\Auth {
 
             $user =  $this->model->by($this->column(), $expected);
 
-            $data = collection();
+            $data = collect();
 
             if (def($user))
             {
                 foreach ($user as $u)
                 {
-                    $data->merge(collection($u)->collection());
+                    $data->merge(collect($u)->all());
 
-                    $data->change_value($u->$password,bcrypt($new_password));
+                    $data->refresh($u->$password,bcrypt($new_password));
 
-                    return $this->model->update_record($u->$id,$data->collection()) ? $this->redirect() : to('/',$this->messages()->get('reset_fail'));
+                    return $this->model->update_record($u->$id,$data->all()) ? $this->redirect() : to('/',$this->messages()->get('reset_fail'));
                 }
             }
             return $this->user_not_found();
@@ -478,7 +477,7 @@ namespace Imperium\Security\Auth {
          */
         private function messages(): Collection
         {
-            return collection(config('auth', 'messages'));
+            return collect(config('auth', 'messages'));
         }
 
         /**
@@ -489,7 +488,7 @@ namespace Imperium\Security\Auth {
          */
         private function columns(): Collection
         {
-            return collection(config('auth','columns'));
+            return collect(config('auth','columns'));
         }
     }
 }

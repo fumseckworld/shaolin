@@ -365,7 +365,7 @@ namespace Imperium\Tables {
          */
         public function __construct(Connect $connect)
         {
-            $this->added = collection();
+            $this->added = collect();
 
             $this->connexion = $connect;
 
@@ -452,7 +452,7 @@ namespace Imperium\Tables {
 
             ];
 
-            $this->added->add($value,$column);
+            $this->added->put($column,$value);
 
             return $this;
         }
@@ -471,7 +471,7 @@ namespace Imperium\Tables {
          */
         public function columns_to_string(string $glue = ', '): string
         {
-            return collection($this->show())->join($glue);
+            return collect($this->show())->join($glue);
         }
 
         /**
@@ -729,7 +729,7 @@ namespace Imperium\Tables {
          */
         public function exist(string $column): bool
         {
-            return collection($this->show())->exist($column);
+            return collect($this->show())->exist($column);
         }
 
         /**
@@ -773,7 +773,7 @@ namespace Imperium\Tables {
          */
         public function last(): string
         {
-            return collection($this->show())->last();
+            return collect($this->show())->last();
         }
 
 
@@ -788,7 +788,7 @@ namespace Imperium\Tables {
          */
         public function begin():string
         {
-            return collection($this->show())->begin();
+            return collect($this->show())->first();
         }
 
         /**
@@ -804,7 +804,7 @@ namespace Imperium\Tables {
          */
         public function not_exist(string $column): bool
         {
-            return collection($this->show())->not_exist($column);
+            return collect($this->show())->not_exist($column);
         }
 
         /**
@@ -818,7 +818,7 @@ namespace Imperium\Tables {
          */
         public function show(): array
         {
-            $fields = collection();
+            $fields = collect();
 
             switch ($this->driver)
             {
@@ -841,7 +841,7 @@ namespace Imperium\Tables {
                 break;
             }
 
-            return $fields->collection();
+            return $fields->all();
         }
 
 
@@ -870,26 +870,26 @@ namespace Imperium\Tables {
          */
         public function info(): array
         {
-            $fields = collection();
+            $fields = collect();
 
             switch ($this->driver)
             {
                 case MYSQL :
                     foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $column)
-                        $fields->push($column);
+                        $fields->set($column);
                 break;
 
                 case POSTGRESQL :
                     foreach ($this->connexion->request("SELECT * FROM information_schema.columns WHERE table_name ='{$this->current()}'") as $column)
-                        $fields->push($column);
+                        $fields->set($column);
                 break;
 
                 case SQLITE :
                     foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $column)
-                        $fields->push($column);
+                        $fields->set($column);
                 break;
             }
-            return $fields->collection();
+            return $fields->all();
         }
 
         /**
@@ -941,14 +941,14 @@ namespace Imperium\Tables {
         public function types():array
         {
 
-            $types = collection();
+            $types = collect();
 
             switch ($this->driver)
             {
                 case MYSQL :
                     foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $type)
                     {
-                        $x = collection(explode('(', trim($type->Type,')')));
+                        $x = collect(explode('(', trim($type->Type,')')));
                         $types->push($x->get(0));
                     }
                 break;
@@ -956,7 +956,7 @@ namespace Imperium\Tables {
                 case POSTGRESQL :
                     foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name =' {$this->current()}'") as $type)
                     {
-                        $x = collection(explode('(', trim($type->data_type,')')));
+                        $x = collect(explode('(', trim($type->data_type,')')));
                         $types->push($x->get(0));
                     }
                 break;
@@ -964,13 +964,13 @@ namespace Imperium\Tables {
                 case SQLITE :
                     foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $type)
                     {
-                        $x = collection(explode('(', trim($type->type,')')));
+                        $x = collect(explode('(', trim($type->type,')')));
                         $types->push($x->get(0));
                     }
                 break;
             }
 
-            return $types->collection();
+            return $types->all();
 
         }
 
@@ -987,7 +987,7 @@ namespace Imperium\Tables {
          */
         public function has_type(string $type): bool
         {
-            return collection($this->types())->exist($type);
+            return collect($this->types())->exist($type);
         }
 
         /**
@@ -1025,7 +1025,7 @@ namespace Imperium\Tables {
          */
         public function column_type(string $column)
         {
-            return collection($this->show())->search($column)->set_new_data($this->types())->result();
+            return collect($this->show())->search($column)->set_new_data($this->types())->result();
         }
 
         /**
@@ -1041,13 +1041,13 @@ namespace Imperium\Tables {
          */
         public function columns_with_types():array
         {
-            $data = collection();
+            $data = collect();
 
             foreach ($this->show() as $k => $v)
             {
-                $data->add($this->column_type($v),$v);
+                $data->put($$v,$this->column_type($v));
             }
-            return $data->collection();
+            return $data->all();
         }
 
 
@@ -1060,9 +1060,9 @@ namespace Imperium\Tables {
          */
         public function create(): bool
         {
-            foreach ($this->added->collection() as  $column => $args )
+            foreach ($this->added->all() as  $column => $args )
             {
-                $args = collection($args);
+                $args = collect($args);
                 $check = $args->get(self::CHECK);
                 d($check);
             }
@@ -1098,7 +1098,7 @@ namespace Imperium\Tables {
          */
         public function found(): int
         {
-            return collection($this->show())->length();
+            return collect($this->show())->sum();
         }
 
         /**
@@ -1203,7 +1203,7 @@ namespace Imperium\Tables {
          */
         public function length(string $column)
         {
-            return collection($this->show())->search($column)->set_new_data($this->columns_length())->result();
+            return collect($this->show())->search($column)->set_new_data($this->columns_length())->result();
         }
 
         /**
@@ -1215,7 +1215,7 @@ namespace Imperium\Tables {
         public function columns_length():array
         {
 
-            $types = collection();
+            $types = collect();
 
             switch ($this->driver)
             {
@@ -1223,9 +1223,9 @@ namespace Imperium\Tables {
 
                     foreach ($this->connexion->request("SHOW FULL COLUMNS FROM {$this->current()}") as $type)
                     {
-                        $x = collection(explode('(', trim($type->Type,')')));
+                        $x = collect(explode('(', trim($type->Type,')')));
 
-                        $x->has_key(1) ?  $types->push($x->get(1)) : $types->push(0);
+                        $x->has(1) ?  $types->push($x->get(1)) : $types->push(0);
                     }
 
                     break;
@@ -1234,8 +1234,8 @@ namespace Imperium\Tables {
 
                     foreach ($this->connexion->request("select data_type FROM information_schema.columns WHERE table_name ='{$this->current()}';") as $type)
                     {
-                        $x = collection(explode('(', trim($type->data_type,')')));
-                        $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
+                        $x = collect(explode('(', trim($type->data_type,')')));
+                        $x->has(1) ? $types->push($x->get(1)) : $types->push(0);
                     }
 
                     break;
@@ -1243,13 +1243,13 @@ namespace Imperium\Tables {
                 case SQLITE :
                     foreach ($this->connexion->request("PRAGMA table_info({$this->current()})") as $type)
                     {
-                        $x = collection(explode('(', trim($type->type,')')));
-                        $x->has_key(1) ? $types->push($x->get(1)) : $types->push(0);
+                        $x = collect(explode('(', trim($type->type,')')));
+                        $x->has(1) ? $types->push($x->get(1)) : $types->push(0);
                     }
                     break;
             }
 
-            return $types->collection();
+            return $types->all();
         }
 
         /**
@@ -1266,17 +1266,17 @@ namespace Imperium\Tables {
         {
             $primary = $this->primary_key();
             $table = $this->current();
-            $data =  collection();
+            $data =  collect();
             foreach ($columns as $column)
             {
 
                 switch ($this->driver)
                 {
                     case MYSQL :
-                        equal($column,$primary) ? $data->add(false) :  $data->add($this->connexion->execute("ALTER TABLE $table DROP $column"),$column);
+                        equal($column,$primary) ? $data->set(false) :  $data->set($this->connexion->execute("ALTER TABLE $table DROP $column"),$column);
                     break;
                     case POSTGRESQL :
-                         equal($column,$primary) ? $data->add(false) : $data->add($this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT"),$column);
+                         equal($column,$primary) ? $data->set(false) : $data->set($this->connexion->execute("ALTER TABLE $table DROP COLUMN $column RESTRICT"),$column);
                     break;
                     default :
                         return false;
@@ -1284,7 +1284,7 @@ namespace Imperium\Tables {
 
                 }
             }
-            return $data->not_exist(false);
+            return $data->ok();
         }
     }
 }

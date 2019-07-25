@@ -45,7 +45,6 @@ namespace Imperium\Command {
                 new CreateDatabase(),
                 new CleanDatabase(),
                 new Server(),
-                new GenerateRessource(),
                 new MigrateDatabase(),
                 new RollbackDatabase(),
                 new SeedDatabase(),

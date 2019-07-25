@@ -3,8 +3,6 @@
 namespace Imperium\Html\Table {
 
     use Carbon\Carbon;
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Imperium\Collection\Collection;
     use Imperium\Exception\Kedavra;
 
@@ -204,9 +202,9 @@ namespace Imperium\Html\Table {
          */
         public function __construct(array $columns, array $data,string $before_class,string $thead_class,$after_content,$before_content )
         {
-            $this->columns = collection($columns);
+            $this->columns = collect($columns);
 
-            $this->data = collection($data);
+            $this->data = collect($data);
 
             $this->before_class = $before_class;
 
@@ -351,8 +349,6 @@ namespace Imperium\Html\Table {
          * @param string $class
          *
          * @return string
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Kedavra
          */
         public function generate(string $class = ''): string
@@ -360,7 +356,7 @@ namespace Imperium\Html\Table {
             $connected = app()->auth()->connected();
                 $this->before_content($this->before_content)->start($class)->start_thead()->start_row();
 
-                foreach ($this->columns->collection() as $column)
+                foreach ($this->columns->all() as $column)
                     $this->th($column);
 
                 if ($this->actions)
@@ -380,13 +376,13 @@ namespace Imperium\Html\Table {
 
                 $this->end_row()->end_thead()->start_tbody();
 
-                foreach ($this->data->collection() as $v)
+                foreach ($this->data->all() as $v)
                 {
                     $this->start_row();
 
                     if (is_object($v))
                     {
-                        foreach ($this->columns->collection() as $column)
+                        foreach ($this->columns->all() as $column)
                         {
                             if ($this->use_ago)
                             {

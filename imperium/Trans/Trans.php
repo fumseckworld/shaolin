@@ -4,6 +4,7 @@ namespace Imperium\Trans {
 
     use Exception;
     use Imperium\Directory\Dir;
+    use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Symfony\Component\Yaml\Yaml;
 
@@ -47,7 +48,7 @@ namespace Imperium\Trans {
          */
         public function get(string $file,$key)
         {
-            $file = collection(explode('.',$file))->begin();
+            $file = collect(explode('.',$file))->first();
 
             self::init();
 
@@ -55,7 +56,7 @@ namespace Imperium\Trans {
 
             self::check($x);
 
-            return collection(self::parseFile($x))->get($key);
+            return collect(self::parseFile($x))->get($key);
 
         }
 
@@ -73,7 +74,7 @@ namespace Imperium\Trans {
         }
 
         /**
-         * @throws \Exception
+         * @throws Kedavra
          */
         public static function init()
         {

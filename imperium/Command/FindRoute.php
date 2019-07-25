@@ -40,20 +40,20 @@ namespace Imperium\Command {
         }
         private function methods():array
         {
-            return collection(METHOD_SUPPORTED)->each('strtolower')->collection();
+            return collect(METHOD_SUPPORTED)->each('strtolower')->all();
         }
 
         private function names(): array
         {
-            $data = collection();
+            $data = collect();
             foreach ($this->routes()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
-                $data->add($x->name);
+                $data->push($x->name);
 
-            return $data->collection();
+            return $data->all();
         }
         public function data():array
         {
-            return collection()->merge($this->controllers(),$this->names(),$this->methods())->collection();
+            return collect()->merge($this->controllers(),$this->names(),$this->methods())->all();
         }
 
         /**

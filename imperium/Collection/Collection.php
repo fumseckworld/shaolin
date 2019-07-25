@@ -4,7 +4,6 @@ namespace Imperium\Collection {
 
     use ArrayAccess;
     use Imperium\Exception\Kedavra;
-    use Imperium\File\File;
     use Iterator;
 
    /**
@@ -50,14 +49,6 @@ namespace Imperium\Collection {
         */
         private $beforeValue;
 
-        /**
-        *
-        * The search result
-        *
-        * @var mixed
-        *
-        */
-        private $search;
 
         /**
         *
@@ -75,164 +66,19 @@ namespace Imperium\Collection {
             $this->position = 0;
         }
 
-        /**
-         *
-         * Convert the data in the array to a json file
-         *
-         * @method convert_to_json
-         *
-         * @param  string $filename The json filename
-         *
-         * @return bool
-         *
-         * @throws Kedavra
-         */
-        public function convert_to_json(string $filename): bool
-        {
-            return json($filename)->create($this->data);
-        }
 
         /**
          *
-         * Get a value
+         * Count all values found
          *
-         * @param mixed $prefix
-         * @param mixed $key
-         *
-         * @return mixed|null
-         *
-         */
-        public function value($prefix,$key)
-        {
-            return array_key_exists($prefix,$this->data) ? $this->data[$prefix][$key] : null;
-        }
-
-        /**
-         *
-         * Assign a value
-         *
-         * @param $prefix
-         * @param $value
-         * @param string $key
+         * @method count
          *
          * @return Collection
          *
          */
-        public function double($prefix,$value,$key): Collection
+        public function count(): Collection
         {
-            def($key) ?  $this->data[$prefix][$key] = $value : $this->data[$prefix][] = $value;
-
-           return $this;
-        }
-
-        /**
-        *
-        * Define the new data
-        *
-        * @param array $data
-        *
-        * @return Collection
-        *
-        */
-        public function set_new_data(array $data): Collection
-        {
-            $this->data = $data;
-
-            return $this;
-        }
-
-        /**
-         *
-         * Convert the array in a json string
-         *
-         * @method json
-         *
-         * @return string [description]
-         */
-        public function json(): string
-        {
-            return json_encode($this->collection(),JSON_FORCE_OBJECT);
-        }
-
-        /**
-        *
-        * Run callable function for each values in the array
-        *
-        * @param callable $callable
-        *
-        * @return Collection
-        *
-        */
-        public function each(callable $callable): Collection
-        {
-            $result = collection();
-
-            foreach ($this->data as $datum)
-                $result->push($callable($datum));
-
-            $this->set_new_data($result->collection());
-
-            return $this;
-        }
-
-        /**
-        *
-        * Search a value in the array
-        *
-        * @param $value
-        *
-        * @return Collection
-        *
-        */
-        public function search($value): Collection
-        {
-            $this->search = array_search($value,$this->data);
-
-            return $this;
-        }
-
-        /**
-        *
-        * Get the search result
-        *
-        * @return mixed
-        *
-        */
-        public function get_search()
-        {
-            return $this->search;
-        }
-
-        /**
-         *
-         * Return the result value
-         *
-         * @param bool $length
-         *
-         * @return mixed
-         */
-        public function result(bool $length = false)
-        {
-            if ($length)
-            {
-                $x = collection(explode('(',trim($this->get($this->get_search()),')')));
-                return $x->has_key(1) ? $x->get(1) : 0;
-            }
-
-            $x = collection(explode('(',trim($this->get($this->get_search()),')')));
-            return $x->has_key(0) ? $x->get(0) : '';
-        }
-
-        /**
-        *
-        * Check if array is empty
-        *
-        * @return bool
-        *
-        */
-        public function empty()
-        {
-            return empty($this->data);
+            return $this->checkout(array_count_values($this->all()));
         }
 
         /**
@@ -380,107 +226,50 @@ namespace Imperium\Collection {
         * @return array
         *
         **/
-        public function collection(): array
+        public function all(): array
         {
             return $this->data;
         }
 
-        public function find(string $pattern)
-        {
-             $x =  array_search($pattern,$this->data);
-
-             return is_bool($x) ? $x : $this->get($x);
-        }
-
         /**
-        *
-        * Add values to the end of the array
-        *
-        * @method push
-        *
-        * @param mixed[] $values The values to add
-        *
-        * @return Collection
-        *
-        */
-        public function push(...$values): Collection
-        {
-            foreach ($values as $value)
-                array_push($this->data,$value);
-
-            return $this;
-        }
-
-        /**
-         * @return array
+         *
+         * Get specifics keys
+         *
+         * @method only
+         *
+         * @param mixed ...$keys
+         *
+         * @return Collection
+         *
          */
-        public function count_values(): array
+        public function only(...$keys): Collection
         {
-            return array_count_values($this->data);
-        }
+            $x = collect();
 
-        /**
-         * @param $expected
-         * @return array
-         */
-        public function data(array $expected): array
-        {
-
-            $data = collection();
-            foreach ($this->collection() as $k => $v)
+            foreach ($this->all() as $k => $v)
             {
-
-                if (is_numeric($k))
-                {
-                    if (has($v,$expected))
-                        $data->add($v);
-                }else
-                {
-                    if (has($v,$expected))
-                        $data->add($k);
-
-                }
+                foreach ($keys as $key)
+                    is_array($v) ? $x->push([$key => $v[$key]]) :  $x->put($key,$this->get($key));
 
             }
-            return $data->collection();
+            return $this->checkout($x->all());
         }
 
         /**
-        *
-        * Add the values to the begin ot the array
-        *
-        * @method stack
-        *
-        * @param  mixed[] $values The values to add
-        *
-        * @return Collection
-        *
-        */
-        public function stack(...$values): Collection
+         *
+         *
+         * Compare two array
+         *
+         * @method diff
+         *
+         * @param array $x
+         *
+         * @return Collection
+         *
+         */
+        public function diff(array $x): Collection
         {
-            foreach ($values as $value)
-                array_unshift($this->data,$value);
-
-            return $this;
-        }
-
-        /**
-        *
-        * Merge multiples array
-        *
-        * @method merge
-        *
-        * @param array[]  The list of array to merge
-        *
-        * @return Collection
-        *
-        */
-        public function merge(array ...$array): Collection
-        {
-            foreach($array as  $x)
-                $this->data = array_merge($this->data,$x);
-
-            return $this;
+            return $this->checkout(array_diff($this->all(),$x));
         }
 
         /**
@@ -501,81 +290,27 @@ namespace Imperium\Collection {
         *
         * Return the begin of the array
         *
-        * @method begin
+        * @method first
         *
         * @return mixed
         *
         */
-        public function begin()
+        public function first()
         {
             return reset($this->data);
         }
 
         /**
-        *
-        * Return the number of elements in the array
-        *
-        * @method length
-        *
-        * @return int
-        *
-        */
-        public function length(): int
-        {
-            return count($this->data);
-        }
-
-        /**
-        *
-        * Append value to the array with optional key
-        *
-        * @method add
-        *
-        * @param  mixed $value  The value to add
-        * @param  mixed $key   The value's key
-        *
-        * @return Collection
-        *
-        */
-        public function add($value,$key = ''): Collection
-        {
-            not_def($key) ?  $this->data[] = $value :  $this->data[$key] = $value;
-
-            return $this;
-        }
-
-
-        /**
          *
-         * Add a value if not exist
+         * Return the reverse of the array
          *
-         * @param $value
-         * @param string $key
+         * @method reverse
          *
          * @return Collection
-         *
          */
-        public function add_if_not_exist($value,$key =''): Collection
+        public function reverse(): Collection
         {
-            if ($this->not_exist($value))
-                $this->add($value, $key);
-
-            return $this;
-        }
-        /**
-        *
-        * Return the reverse of the array
-        *
-        * @method reverse
-        *
-        * @param  bool    $preserveKey
-        *
-        * @return array
-        *
-        */
-        public function reverse($preserveKey = false): array
-        {
-            return array_reverse($this->data,$preserveKey);
+            return $this->checkout(array_reverse($this->data));
         }
 
         /**
@@ -593,9 +328,9 @@ namespace Imperium\Collection {
          */
         public function value_before_key($key)
         {
-            $length = $this->length();
+            $length = $this->sum();
 
-            if ($this->has_key($key) && superior($length,1))
+            if ($this->has($key) && superior($length,1))
             {
 
                 foreach ($this->data as $k => $v)
@@ -615,24 +350,8 @@ namespace Imperium\Collection {
                         return $this->beforeValue;
             }
 
-            return $this->has_key($key) ? $this->data[$key] : $key;
+            return $this->has($key) ? $this->data[$key] : $key;
 
-        }
-
-        /**
-        *
-        * Check if a key exist in the array
-        *
-        * @method has_key
-        *
-        * @param mixed $key The key to check
-        *
-        * @return bool
-        *
-        */
-        public function has_key($key): bool
-        {
-            return is_string($key) || is_numeric($key) ? key_exists($key,$this->data) : false;
         }
 
         /**
@@ -646,7 +365,7 @@ namespace Imperium\Collection {
         */
         public function values(): array
         {
-            return array_values($this->data);
+            return array_values($this->all());
         }
 
         /**
@@ -660,7 +379,7 @@ namespace Imperium\Collection {
         */
         public function keys(): array
         {
-            return array_keys($this->data);
+            return array_keys($this->all());
         }
 
         /**
@@ -697,103 +416,6 @@ namespace Imperium\Collection {
             return $this->current();
         }
 
-
-        /**
-        *
-        * Check if a value exist in the array
-        *
-        * @method exist
-        *
-        * @param mixed $value The value to check
-        *
-        * @return bool
-        *
-        **/
-        public function exist($value): bool
-        {
-            return in_array($value,$this->data);
-        }
-
-        /**
-         *
-         * Check if the value not exist in the array
-         *
-         * @method not_exist
-         *
-         * @param mixed $value The value to check
-         *
-         * @return bool
-         *
-         */
-        public function not_exist($value): bool
-        {
-            return ! $this->exist($value);
-        }
-
-        /**
-         *
-         * Check if a value is in an array in data
-         *
-         * @param string $value
-         *
-         * @return bool
-         *
-         */
-        public function contains(string $value): bool
-        {
-            foreach ($this->data as $datum)
-                if (in_array($value,$datum))
-                    return true;
-
-            return false;
-        }
-
-        /**
-         *
-         * Check if value not exist in an array of data
-         *
-         * @param string $value
-         *
-         * @return bool
-         *
-         */
-        public function not_contains(string $value): bool
-        {
-           return ! $this->contains($value);
-        }
-
-        /**
-        *
-        * Check if the value is numeric
-        *
-        * @method numeric
-        *
-        * @param  mixed  $value The value to check
-        *
-        * @return bool
-        *
-        */
-        public function numeric($value): bool
-        {
-            return is_numeric($value);
-        }
-
-        /**
-        *
-        * Check if the value is a string
-        *
-        * @method string
-        *
-        * @param mixed $value The value to check
-        *
-        * @return bool
-        *
-        */
-        public function string($value): bool
-        {
-            return is_string($value);
-        }
-
         /**
         * Get a value in the array by a key
         *
@@ -806,12 +428,7 @@ namespace Imperium\Collection {
         **/
         public function get($key)
         {
-            return $this->has_key($key) ? $this->data[$key] : '';
-        }
-
-        public function get_key()
-        {
-            return collection($this->keys())->get(0);
+            return $this->has($key) ? $this->data[$key] : '';
         }
 
         /**
@@ -822,179 +439,11 @@ namespace Imperium\Collection {
          */
         public function key_not_exist($key): bool
         {
-            return  ! $this->has_key($key);
-        }
-
-        /**
-         *
-         * Remove a data by a key
-         *
-         * @method remove
-         *
-         * @param array $keys
-         * @return Collection
-         */
-        public function remove(...$keys): Collection
-        {
-
-            foreach ($keys as $key)
-            {
-                if ($this->has_key($key))
-                    unset($this->data[$key]);
-            }
-
-
-            return $this;
-        }
-
-        /**
-         * @param $key
-         * @param $value
-         *
-         * @return Collection
-         *
-         */
-        public function set($key,$value)
-        {
-            $this->data[$key] = $value;
-            return $this;
-        }
-
-        /**
-         *
-         * Remove a value in the array
-         *
-         * @param array $values
-         * @return Collection
-         */
-        public function remove_value(...$values): Collection
-        {
-            foreach ($values as $value)
-            {
-                if (($key = array_search($value, $this->data)) !== false)
-                    unset($this->data[$key]);
-            }
-
-          
-            return $this;
-        }
-
-        /**
-        *
-        * Remove multiples values
-        *
-        *
-        * @method remove_values
-        *
-        * @param  string[]        $values The values to removes
-        *
-        * @return Collection
-        *
-        */
-        public function remove_values(string ...$values): Collection
-        {
-            foreach ($values as $value)
-            {
-                unset($this->data[array_search($value, $this->data)]);
-            }
-
-            return $this;
+            return  ! $this->has($key);
         }
 
 
-        /**
-         *
-         * Assign a new value to an existing value by a key
-         *
-         * @method change_value
-         *
-         * @param mixed $old The old value
-         * @param mixed $new The new value
-         *
-         * @return Collection
-         *
-         * @throws Kedavra
-         *
-         */
-        public function change_value($old,$new): Collection
-        {
-            if (different($old,$new))
-            {
-                foreach ($this->data as $k => $v)
-                {
-                    if (equal($v,$old) && $this->has_key($k))
-                        $this->data[$k] = $new;
-                }
-            }
 
-
-            return $this;
-        }
-
-
-        /**
-         *
-         * Join all values by a glue
-         *
-         * @method join
-         *
-         * @param string $glue The values separator
-         * @param bool $replace Set to true to replace value
-         * @param string $value The value to replace
-         * @param string $new_value The new value
-         *
-         * @return string
-         */
-        public function join(string $glue,bool $replace = false,string $value= '',string $new_value =''): string
-        {
-            $code = implode($glue,$this->data);
-
-            return $replace ? str_replace($value,$new_value,$code): $code;
-        }
-
-        public function join_keys(string $glue,bool $replace = false,string $value= '',string $new_value ='')
-        {
-            $code = implode($glue,$this->keys());
-
-            return $replace ? str_replace($value,$new_value,$code): $code;
-        }
-
-
-        /**
-        *
-        * Empty the array
-        *
-        * @method clear
-        *
-        * @return Collection
-        *
-        */
-        public function clear(): Collection
-        {
-            $this->set_new_data([]);
-
-            return $this;
-        }
-
-        /**
-         *
-         * Check if values was inside the array
-         *
-         * @param array $data
-         * @return bool
-         *
-         * @throws Kedavra
-         *
-         */
-        public function inside(array $data): bool
-        {
-            foreach ($data as $datum)
-                if (is_true($this->not_exist($datum)))
-                    return false;
-
-
-            return true;
-        }
 
         /**
         * Whether a offset exists
@@ -1010,7 +459,7 @@ namespace Imperium\Collection {
         */
         public function offsetExists($offset)
         {
-            return $this->has_key($offset);
+            return $this->has($offset);
         }
 
         /**
@@ -1041,7 +490,7 @@ namespace Imperium\Collection {
         */
         public function offsetSet($offset, $value)
         {
-            $this->add($offset,$value);
+            $this->add($value,$offset);
         }
 
         /**
@@ -1066,7 +515,7 @@ namespace Imperium\Collection {
         */
         public function current()
         {
-            return $this->data[$this->position];
+            return $this->get($this->position);
         }
 
         /**
@@ -1114,9 +563,289 @@ namespace Imperium\Collection {
             $this->position++;
         }
 
+
+
         /**
          *
+         * Check if array is empty
          *
+         * @method empty
+         *
+         * @return bool
+         *
+         */
+        public function empty()
+        {
+            return not_def($this->all());
+        }
+
+        /**
+         *
+         * Assign a new value to an existing value
+         *
+         * @method refresh
+         *
+         * @param $old_value
+         * @param $new_value
+         *
+         * @return Collection
+         *
+         *
+         */
+        public function refresh($old_value,$new_value): Collection
+        {
+            if ($old_value !== $new_value)
+            {
+                foreach ($this->all() as $k => $v)
+                {
+                    if ($v === $old_value && $this->has($k))
+                        $this->data[$k] = $new_value;
+                }
+            }
+
+            return $this;
+        }
+        /**
+         *
+         * Add values to the end of the array
+         *
+         * @method push
+         *
+         * @param mixed[] $values The values to add
+         *
+         * @return Collection
+         *
+         */
+        public function push(...$values): Collection
+        {
+            foreach ($values as $value)
+                array_push($this->data,$value);
+
+            return $this;
+        }
+
+
+
+        /**
+         *
+         * Add the values to the begin ot the array
+         *
+         * @method stack
+         *
+         * @param  mixed[] $values The values to add
+         *
+         * @return Collection
+         *
+         */
+        public function stack(...$values): Collection
+        {
+            foreach ($values as $value)
+                array_unshift($this->data,$value);
+
+            return $this;
+        }
+
+        /**
+         *
+         * Merge multiples array
+         *
+         * @method merge
+         *
+         * @param array[]
+         *
+         * @return Collection
+         *
+         */
+        public function merge(array ...$array): Collection
+        {
+            foreach($array as  $x)
+                $this->data = array_merge($this->data,$x);
+
+            return $this;
+        }
+
+        /**
+         *
+         * Defines only values
+         *
+         * @method set
+         *
+         * @param mixed ...$values
+         *
+         * @return Collection
+         *
+         */
+        public function set(...$values): Collection
+        {
+            foreach ($values as $value)
+                $this->add($value);
+
+            return $this;
+        }
+
+        /**
+         *
+         * Add the value accessible by the key
+         *
+         * @method put
+         *
+         * @param mixed $key
+         * @param mixed $value
+         *
+         * @return Collection
+         *
+         */
+        public function put($key,$value): Collection
+        {
+            return $this->add($value,$key);
+        }
+
+        /**
+         *
+         * Remove values or keys inside the array
+         *
+         * @method  del
+         *
+         * @param mixed ...$data
+         *
+         * @return Collection
+         *
+         */
+        public function del(...$data): Collection
+        {
+            foreach ($data as $datum)
+                $this->exist($datum) ? $this->remove_value($datum) : $this->remove($datum);
+
+            return $this->checkout($this->all());
+        }
+
+        /**
+         *
+         * Join all values by a glue
+         *
+         * @method join
+         *
+         * @param string $glue The values separator
+         *
+         * @return string
+         *
+         */
+        public function join(string $glue =','): string
+        {
+           return implode($glue,$this->values());
+        }
+
+        /**
+         *
+         * Join all  keys by a glue
+         *
+         * @method join_keys
+         *
+         * @param string $glue
+         *
+         * @return string
+         *
+         */
+        public function join_keys(string $glue = ','): string
+        {
+            return implode($glue,$this->keys());
+        }
+        
+        /**
+         *
+         * Check if false was not found
+         *
+         * @method ok
+         *
+         * @return bool
+         *
+         */
+        public function ok(): bool
+        {
+            return $this->not_exist(false);
+        }
+
+        /**
+         *
+         * Check if a value exist in the array
+         *
+         * @method exist
+         *
+         * @param mixed $value The value to check
+         *
+         * @return bool
+         *
+         **/
+        public function exist($value): bool
+        {
+            return in_array($value,$this->data);
+        }
+
+        /**
+         *
+         * Check if a key exist in the array
+         *
+         * @method has_key
+         *
+         * @param mixed $key The key to check
+         *
+         * @return bool
+         *
+         */
+        public function has($key): bool
+        {
+            return is_string($key) || is_numeric($key) ? key_exists($key,$this->all()) : false;
+        }
+
+        /**
+         *
+         * Check if the value not exist in the array
+         *
+         * @method not_exist
+         *
+         * @param mixed $value The value to check
+         *
+         * @return bool
+         *
+         */
+        public function not_exist($value): bool
+        {
+            return ! $this->exist($value);
+        }
+
+        /**
+         *
+         * Clear the array
+         *
+         * @method clear
+         *
+         * @return Collection
+         *
+         */
+        public function clear(): Collection
+        {
+           return $this->checkout([]);
+        }
+
+        /**
+         *
+         * Return the number of elements in the array
+         *
+         * @method sum
+         *
+         * @return int
+         *
+         */
+        public function sum(): int
+        {
+            return count($this->all());
+        }
+
+        /**
+         *
+         * Remove the first element
+         *
+         * @method shift
          *
          * @return Collection
          *
@@ -1130,6 +859,10 @@ namespace Imperium\Collection {
 
         /**
          *
+         * Remove the last element
+         *
+         * @method pop
+         *
          * @return Collection
          *
          */
@@ -1140,15 +873,182 @@ namespace Imperium\Collection {
             return $this;
         }
 
-        public function file()
+        /**
+         *
+         * Checkout on the new array
+         *
+         * @method checkout
+         *
+         * @param array $data
+         *
+         * @return Collection
+         *
+         */
+        public function checkout(array $data): Collection
         {
-            $f = new File('README.md',EMPTY_AND_WRITE_FILE_MODE);
-            foreach ($this->data as $datum)
-                $f->write_line($datum);
+            return new static($data);
+        }
 
 
-            return $f;
+        /**
+         *
+         * Convert the array in a json string
+         *
+         * @method json
+         *
+         * @return string
+         *
+         */
+        public function json(): string
+        {
+            return json_encode($this->all(),JSON_FORCE_OBJECT);
+        }
 
+        /**
+         *
+         * Check if a value is in an array in data
+         *
+         * @method contains
+         *
+         * @param mixed $values
+         *
+         * @return bool
+         */
+        public function contains(...$values): bool
+        {
+            foreach ($this->all() as $datum)
+            {
+                if (is_array($datum))
+                {
+                    foreach ($values as $value)
+                    {
+                        if (is_array($datum))
+                        {
+                            if (in_array($value,$datum))
+                                return true;
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        /**
+         *
+         * Check if value not exist in an array of data
+         *
+         * @method not_contains
+         *
+         * @param string $value
+         *
+         * @return bool
+         *
+         */
+        public function not_contains(string $value): bool
+        {
+            return ! $this->contains($value);
+        }
+
+        /**
+         *
+         * Run callable function for each values in the array
+         *
+         * @method each
+         *
+         * @param callable $callable
+         *
+         * @return Collection
+         *
+         */
+        public function each($callable): Collection
+        {
+            $result = collect();
+
+            foreach ($this->all() as $value)
+                $result->set($callable($value));
+
+            return $this->checkout($result->all());
+        }
+
+        /**
+         *
+         * Add a uniq value
+         *
+         * @method uniq
+         *
+         * @param array $values
+         * @return Collection
+         */
+        public function uniq(...$values): Collection
+        {
+            foreach ($values as $value)
+            {
+                if ($this->not_exist($value))
+                    $this->push($value);
+            }
+
+
+            return $this;
+        }
+        /**
+         *
+         * Append value to the array with optional key
+         *
+         * @method add
+         *
+         * @param  mixed $value  The value to add
+         * @param  mixed $key   The value's key
+         *
+         * @return Collection
+         *
+         */
+        private function add($value,$key = ''): Collection
+        {
+            not_def($key) ?  $this->data[] = $value :  $this->data[$key] = $value;
+
+            return $this;
+        }
+
+        /**
+         *
+         * Remove a data by a key
+         *
+         * @method remove
+         *
+         * @param array $keys
+         * @return Collection
+         */
+        private function remove(...$keys): Collection
+        {
+
+            foreach ($keys as $key)
+            {
+                if ($this->has($key))
+                    unset($this->data[$key]);
+            }
+
+
+            return $this;
+        }
+
+
+        /**
+         *
+         * Remove a value in the array
+         *
+         * @param array $values
+         * @return Collection
+         */
+        private function remove_value(...$values): Collection
+        {
+            foreach ($values as $value)
+            {
+                if (($key = array_search($value, $this->data)) !== false)
+                    unset($this->data[$key]);
+            }
+
+
+            return $this;
         }
     }
 }

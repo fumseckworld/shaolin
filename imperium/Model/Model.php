@@ -3,8 +3,6 @@
 
 namespace Imperium\Model {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Imperium\App;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
@@ -129,7 +127,7 @@ namespace Imperium\Model {
         {
             $this->connexion = $connect;
             $this->table = $table;
-            $this->data = collection();
+            $this->data = collect();
             $this->sql =  \query($table,$connect);
 
         }
@@ -212,15 +210,15 @@ namespace Imperium\Model {
 
             $id = intval(Request::get($this->from($table)->primary()));
 
-            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
+            $data = collect(Request::all())->del(Csrf::KEY,'__table__');
 
             $columns = $this->table()->column()->for($table)->show();
 
-            $x = collection();
+            $x = collect();
             foreach ($columns as $column)
-                $x->add($data->get($column),$column);
+                $x->set($data->get($column),$column);
 
-            return $this->table()->from($table)->update($id,$x->collection());
+            return $this->table()->from($table)->update($id,$x->all());
         }
 
         /**
@@ -368,7 +366,7 @@ namespace Imperium\Model {
          */
         public function search(string $value,bool $json_output = false)
         {
-            return $json_output ? collection($this->query()->from($this->current())->mode(SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
+            return $json_output ? collect($this->query()->from($this->current())->mode(SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
         }
 
         /**
@@ -400,8 +398,6 @@ namespace Imperium\Model {
          * @return string
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         public function show(   string $action_remove_text ='Remove',string $confirm_text = 'Are you sure ?',
                                  string $action_edit_text ='Edit',
@@ -421,8 +417,8 @@ namespace Imperium\Model {
                 return to($url);
 
             }
-            $remove_btn_class = \collection(config('form','class'))->get('delete');
-            $edit_btn_class = \collection(config('form','class'))->get('edit');
+            $remove_btn_class = \collect(config('form','class'))->get('delete');
+            $edit_btn_class = \collect(config('form','class'))->get('edit');
             $session = app()->session();
 
             $search_icon = fa('fas','fa-search');
@@ -455,12 +451,12 @@ namespace Imperium\Model {
 
 
 
-            $tables = collection(['/' => $table]);
+            $tables = collect(['/' => $table]);
 
 
-            $columns = collection(['/' => get('column',$primary)]);
+            $columns = collect(['/' => get('column',$primary)]);
 
-            $order = collection(['/' => get('order',ASC)]);
+            $order = collect(['/' => get('order',ASC)]);
 
             foreach ($this->show_tables() as $x)
             {
@@ -484,11 +480,11 @@ namespace Imperium\Model {
             }
 
 
-            $form =  form('',id())->row()->search($search_placeholder,$search_icon)->end_row_and_new()->redirect('table',$tables->collection(),$table_icon)->redirect('column',$columns->collection(),$pagination_icon)->redirect('order',$order->collection(),$pagination_icon)->pagination($pagination_icon,'/pagination/')->end_row()->get();
+            $form =  form('',id())->row()->search($search_placeholder,$search_icon)->end_row_and_new()->redirect('table',$tables->all(),$table_icon)->redirect('column',$columns->all(),$pagination_icon)->redirect('order',$order->all(),$pagination_icon)->pagination($pagination_icon,'/pagination/')->end_row()->get();
 
             append($html,html('div',$form,'container'));
 
-            append($html,simply_view('container','',$table,$records,\collection(config('form','class'))->get('table'),$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
+            append($html,simply_view('container','',$table,$records,collect(config('form','class'))->get('table'),$action_remove_text,$confirm_text,$remove_btn_class,$remove_url_prefix,$remove_icon,$action_edit_text,$edit_url_prefix,$edit_btn_class,$edit_icon,$pagination,$pagination_to_right));
 
 
             return $html;
@@ -555,7 +551,7 @@ namespace Imperium\Model {
          */
         public function only(string ...$columns): Model
         {
-            $this->only = collection($columns)->join(', ');
+            $this->only = collect($columns)->join();
 
             return $this;
         }
@@ -593,7 +589,7 @@ namespace Imperium\Model {
          */
         public function set(string $column_name,$value): Model
         {
-            $this->data->add($value,$column_name);
+            $this->data->put($column_name,$value);
 
             return $this;
         }
@@ -608,12 +604,12 @@ namespace Imperium\Model {
          */
         public function save(): bool
         {
-            $data = collection();
+            $data = collect();
 
             foreach ($this->columns() as  $column)
-                $data->add($this->data->get($column),$column);
+                $data->put($column,$this->data->get($column));
 
-            return $this->insert_new_record($this,$data->collection());
+            return $this->insert_new_record($this,$data->all());
         }
         /**
          *
@@ -837,22 +833,18 @@ namespace Imperium\Model {
          */
         public function add(): bool
         {
-            $data = collection(Request::all())->remove(Csrf::KEY)->remove('__table__');
+            $data = collect(Request::all())->del(Csrf::KEY,'__table__');
 
             $primary = $this->table()->column()->for(Request::get('__table__'))->primary_key();
             $columns = $this->from(Request::get('__table__'))->columns();
 
-            $x = collection();
+            $x = collect();
 
             foreach ($columns as $column)
-            {
-                if (equal($column, $primary))
-                    $x->add($column, $column);
-                else
-                    $x->add($data->get($column), $column);
-            }
+                equal($column, $primary) ? $x->put($column, $column) : $x->put($column,$data->get($column));
 
-            return  $this->table()->from(Request::get('__table__'))->save($x->collection());
+
+            return  $this->table()->from(Request::get('__table__'))->save($this,$x->all());
         }
 
         /**

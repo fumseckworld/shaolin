@@ -134,14 +134,14 @@ namespace Imperium\Bases {
          */
         public function remove(string ...$bases): bool
         {
-            $data = collection();
+            $data = collect();
 
             foreach ($bases as $base)
             {
                 if ($this->exist($base))
-                    $data->add($this->drop($base));
+                    $data->push($this->drop($base));
             }
-            return $data->not_exist(false);
+            return $data->ok();
         }
 
         /**
@@ -207,11 +207,11 @@ namespace Imperium\Bases {
 
            $this->check();
 
-            $databases = collection();
+            $databases = collect();
 
             $request = '';
 
-            $hidden =  collection($this->hidden_bases());
+            $hidden =  collect($this->hidden_bases());
 
             $this->connexion->mysql() ?  assign(true,$request,'SHOW DATABASES') : assign(true,$request,'select datname from pg_database');
 
@@ -223,12 +223,11 @@ namespace Imperium\Bases {
                     $databases->push($x);
                 } else
                 {
-                    if ($hidden->not_exist($x))
-                        $databases->push($x);
+                    $databases->uniq($x);
                 }
             }
 
-            return $databases->collection();
+            return $databases->all();
         }
 
         /**
@@ -294,14 +293,15 @@ namespace Imperium\Bases {
          *
          * @method not_exist
          *
-         * @param  string $name The base name
+         * @param string $name The base name
          *
          * @return bool
          *
+         * @throws Kedavra
          */
         public function not_exist(string $name): bool
         {
-            return collection($this->all)->not_exist($name);
+            return collect($this->show())->not_exist($name);
         }
 
         /**
@@ -319,13 +319,13 @@ namespace Imperium\Bases {
         {
             if ($this->connexion->sqlite())
             {
-                $data = collection();
+                $data = collect();
                 foreach ($names as $name)
                 {
                     File::remove_if_exist($name);
 
                     new PDO("sqlite:$name",null,null);
-                    $data->add(File::exist($name));
+                    $data->push(File::exist($name));
                 }
 
                 return $data->not_exist(false);
@@ -334,22 +334,22 @@ namespace Imperium\Bases {
 
             $not_define = not_def($this->collation,$this->charset);
 
-            $data =  collection();
+            $data =  collect();
 
             foreach ($names as $name)
             {
                 switch ($this->driver)
                 {
                     case Connect::MYSQL:
-                         $not_define ? $data->add($this->connexion->execute("CREATE DATABASE ?;",$name)) :  $data->add($this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '?'   COLLATE =  '?';",$this->charset,$this->collation));
+                         $not_define ? $data->set($this->connexion->execute("CREATE DATABASE ?;",$name)) :  $data->set($this->connexion->execute("CREATE DATABASE $name CHARACTER SET = '?'   COLLATE =  '?';",$this->charset,$this->collation));
                     break;
                     case Connect::POSTGRESQL:
-                        $not_define ? $data->add($this->connexion->execute("CREATE DATABASE ?  TEMPLATE template0;",$name)):  $data->add($this->connexion->execute("CREATE DATABASE $name ENCODING '?' LC_COLLATE='?' LC_CTYPE='?' TEMPLATE template0;",$this->charset,$this->collation,$this->collation));
+                        $not_define ? $data->set($this->connexion->execute("CREATE DATABASE ?  TEMPLATE template0;",$name)):  $data->set($this->connexion->execute("CREATE DATABASE $name ENCODING '?' LC_COLLATE='?' LC_CTYPE='?' TEMPLATE template0;",$this->charset,$this->collation,$this->collation));
                     break;
                 }
             }
 
-            return $data->not_exist(false);
+            return $data->ok();
         }
 
         /**
@@ -446,7 +446,7 @@ namespace Imperium\Bases {
          */
         public function exist(string $base): bool
         {
-            return  $this->connexion->sqlite() ? File::exist($base) : collection($this->show())->exist($base);
+            return  $this->connexion->sqlite() ? File::exist($base) : collect($this->show())->exist($base);
         }
 
 

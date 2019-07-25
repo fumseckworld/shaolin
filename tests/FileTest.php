@@ -143,7 +143,7 @@ class FileTest extends Unit
    public function test_infos()
    {
 
-       $this->assertNotEmpty($this->file('grumphp.yml')->infos()->collection());
+       $this->assertNotEmpty($this->file('grumphp.yml')->infos()->all());
    }
 
     /**

@@ -4,10 +4,9 @@
 namespace Imperium\Testing {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Cache\Cache;
+    use Imperium\Collection\Collection;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Model\Model;
@@ -26,8 +25,7 @@ namespace Imperium\Testing {
          * @return RouteResult|RedirectResponse
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
+         *
          */
 
         public function visit(string $url,string $method = GET)
@@ -35,6 +33,19 @@ namespace Imperium\Testing {
            return  app()->router(new ServerRequest($method,$url))->search();
         }
 
+        /**
+         *
+         * Get a collection instance
+         *
+         * @param array $data
+         *
+         * @return Collection
+         *
+         */
+        public function collect(array $data =[]): Collection
+        {
+            return app()->collection($data);
+        }
 
         /**
          *
@@ -60,9 +71,8 @@ namespace Imperium\Testing {
          *
          * @return Model
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function route(): Model
         {
@@ -78,7 +88,7 @@ namespace Imperium\Testing {
          */
         public function cache(): Cache
         {
-            return new Cache();
+            return app()->cache();
         }
     }
 }

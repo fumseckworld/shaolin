@@ -20,7 +20,7 @@ namespace Imperium\Middleware {
 
             if (different($url,'/'))
             {
-                $end = collection(explode('/',$url))->last();
+                $end = collect(explode('/',$url))->last();
 
                 if (equal($end,'/'))
                     return to(trim($url,'/'));

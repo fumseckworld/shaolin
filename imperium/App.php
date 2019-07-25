@@ -19,6 +19,7 @@ namespace Imperium {
     use Imperium\Request\Request;
     use Imperium\Routing\Route;
     use Imperium\Routing\RouteResult;
+    use Imperium\Session\Session;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git\Git;
     use Imperium\View\View;
@@ -32,7 +33,6 @@ namespace Imperium {
     use Imperium\Routing\Router;
     use Imperium\Security\Auth\Oauth;
     use Imperium\Session\ArraySession;
-    use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
     use Imperium\Tables\Table;
     use Imperium\Users\Users;
@@ -176,9 +176,7 @@ namespace Imperium {
 
             $this->start_request_time = now();
             $this->view = $this->app(View::class);
-            $this->session = $this->app(Session::class);
             $this->request = $this->app(Request::class);
-            $this->flash = $this->app(Flash::class);
             $this->cache = $this->app(Cache::class);
             $this->model = $this->app(Model::class);
             $this->table = $this->app(Table::class);
@@ -814,9 +812,7 @@ namespace Imperium {
          *
          * @return Response
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function run():Response
         {
@@ -827,9 +823,7 @@ namespace Imperium {
          *
          * @return RouteResult
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function route_result(): RouteResult
         {
@@ -1088,7 +1082,7 @@ namespace Imperium {
          */
         public function collection($data = []): Collection
         {
-            return collection($data);
+            return collect($data);
         }
 
         /**
@@ -1104,10 +1098,11 @@ namespace Imperium {
 
         /**
          * @return Flash
+         * @throws Kedavra
          */
         public function flash(): Flash
         {
-            return $this->flash;
+            return new Flash($this->session());
         }
 
         /**
@@ -1129,7 +1124,7 @@ namespace Imperium {
          */
         public function session(): SessionInterface
         {
-            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? new ArraySession(): $this->session;
+            return equal(request()->getScriptName() ,'./vendor/bin/phpunit') ? new ArraySession(): new Session();
 
         }
 
@@ -1181,7 +1176,7 @@ namespace Imperium {
          */
         public function view(string $name,array $args = []): string
         {
-            $this->session()->set('view',$name);
+            $this->session()->put('view',$name);
 
             return $this->view->load(get_called_class(),$name,$args);
         }
@@ -1304,9 +1299,7 @@ namespace Imperium {
          * @param array $args
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function url(string $route,...$args): string
         {
@@ -1426,9 +1419,7 @@ return '';
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function debug_bar(): string
         {

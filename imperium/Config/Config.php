@@ -63,13 +63,13 @@ namespace Imperium\Config {
          */
         public function __construct(string $file,$key)
         {
-            $file =  CONFIG . DIRECTORY_SEPARATOR . collection(explode('.',$file))->begin() .self::EXT;
+            $file =  CONFIG . DIRECTORY_SEPARATOR . collect(explode('.',$file))->first() .self::EXT;
 
             is_false(File::exist($file),true,"The $file file  was not found at ". $this->path());
 
-            $this->values = collection(self::parseFile($file));
+            $this->values = collect(self::parseFile($file));
 
-            is_false($this->values->has_key($key),true,"The $key key was not found in the  $file at ". $this->path());
+            is_false($this->values->has($key),true,"The $key key was not found in the  $file at ". $this->path());
 
             $this->file = $file;
 

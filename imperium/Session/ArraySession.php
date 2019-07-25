@@ -36,7 +36,7 @@ namespace Imperium\Session {
          */
         public function has($key): bool
         {
-            return $this->session->has_key($key);
+            return $this->session->has($key);
         }
 
         /**
@@ -46,12 +46,12 @@ namespace Imperium\Session {
          * @param $key
          * @param $value
          *
-         * @return  void
+         * @return  Collection
          *
          */
-        public function set($key, $value): void
+        public function put($key, $value): Collection
         {
-            $this->session->add($value,$key);
+            return $this->session->put($key,$value);
         }
 
         /**
@@ -65,7 +65,7 @@ namespace Imperium\Session {
          */
         public function remove($key): bool
         {
-            return $this->session->remove($key)->not_exist($key);
+            return $this->session->del($key)->key_not_exist($key);
         }
 
         /**
@@ -77,7 +77,7 @@ namespace Imperium\Session {
          */
         public function all(): array
         {
-            return $this->session->collection();
+            return $this->session->all();
         }
 
         /**
@@ -85,7 +85,7 @@ namespace Imperium\Session {
          */
         public function __construct()
         {
-            $this->session = collection();
+            $this->session = collect();
         }
 
         /**
@@ -100,8 +100,7 @@ namespace Imperium\Session {
          */
         public function def($key, $value)
         {
-           $this->set($key,$value);
-           return $this->get($key);
+            return $this->put($key,$value)->get($key);
         }
 
         /**

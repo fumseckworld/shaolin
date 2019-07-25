@@ -37,7 +37,7 @@ namespace Imperium\Request {
          */
         public function all(): array
         {
-            return collection($this->request()->request->all())->shift()->shift()->collection();
+            return collect($this->request()->request->all())->shift()->shift()->all();
         }
 
         /**
@@ -63,7 +63,7 @@ namespace Imperium\Request {
          */
         public function get($key)
         {
-            return collection($this->all())->get(htmlspecialchars($key,ENT_QUOTES));
+            return collect($this->all())->get(htmlspecialchars($key,ENT_QUOTES));
         }
 
         /**

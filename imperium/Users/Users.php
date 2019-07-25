@@ -74,13 +74,13 @@ namespace Imperium\Users {
 
             $this->check($driver);
 
-            $data = collection();
+            $data = collect();
 
             foreach ($users as $user)
-                  $this->connexion->mysql() ?  $data->add($this->connexion->execute("DROP USER '$user'@'localhost'")) :  $data->add($this->connexion->execute("DROP ROLE $user"));
+                  $this->connexion->mysql() ?  $data->set($this->connexion->execute("DROP USER '$user'@'localhost'")) :  $data->set($this->connexion->execute("DROP ROLE $user"));
 
 
-            return $data->not_exist(false);
+            return $data->ok();
         }
 
 
@@ -113,9 +113,9 @@ namespace Imperium\Users {
 
             $this->check($driver);
 
-            $users = collection();
+            $users = collect();
 
-            $hidden = collection($this->hidden_users());
+            $hidden = collect($this->hidden_users());
 
             $request = '';
 
@@ -134,7 +134,7 @@ namespace Imperium\Users {
                 }
             }
 
-            return $users->collection();
+            return $users->all();
         }
 
         /**
@@ -202,7 +202,7 @@ namespace Imperium\Users {
          */
         public function exist(string $user): bool
         {
-            return collection($this->show())->exist($user);
+            return collect($this->show())->exist($user);
         }
 
         /**
@@ -218,7 +218,7 @@ namespace Imperium\Users {
          */
         public function not_exist(string $user): bool
         {
-            return collection($this->show())->not_exist($user);
+            return collect($this->show())->not_exist($user);
         }
 
         /**

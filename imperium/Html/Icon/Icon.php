@@ -62,8 +62,8 @@ namespace Imperium\Html\Icon {
          */
         public function __construct(string $ul_class,string $li_class,string $icon_class)
         {
-            $this->data = collection();
-            $this->id = collection();
+            $this->data = collect();
+            $this->id = collect();
             $this->ul_class = $ul_class;
             $this->icon_class = $icon_class;
             $this->li_class = $li_class;
@@ -84,11 +84,11 @@ namespace Imperium\Html\Icon {
          */
         public function add(string $icon,string $url,string $id): Icon
         {
-            $this->data->add($icon,$url);
+            $this->data->put($url,$icon);
 
             is_true($this->id->exist($id),true,"The id $id is not unique");
 
-            $this->id->add($id,$icon);
+            $this->id->put($icon,$id);
 
             return $this;
         }
@@ -104,7 +104,7 @@ namespace Imperium\Html\Icon {
         {
             $this->start_ul();
 
-            foreach ($this->data->collection() as $k => $v)
+            foreach ($this->data->all() as $k => $v)
                 $this->save($v,$k,$this->id->get($v));
 
             $this->end_ul();

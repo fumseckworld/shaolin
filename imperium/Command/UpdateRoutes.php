@@ -45,16 +45,16 @@ namespace Imperium\Command {
         }
         private function methods():array
         {
-            return collection(METHOD_SUPPORTED)->each('strtolower')->collection();
+            return collect(METHOD_SUPPORTED)->each('strtolower')->all();
         }
 
         private function names(): array
         {
-            $data = collection();
+            $data = collect();
             foreach ($this->routes()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
-                $data->add($x->name);
+                $data->push($x->name);
 
-            return $data->collection();
+            return $data->all();
         }
 
         public function interact(InputInterface $input, OutputInterface $output)
@@ -98,7 +98,7 @@ namespace Imperium\Command {
 
                             while (not_in(METHOD_SUPPORTED,$this->method))
                             {
-                                $verbs = collection(METHOD_SUPPORTED)->each('strtolower')->join(', ');
+                                $verbs = contains(METHOD_SUPPORTED)->each('strtolower')->join(', ');
                                 $output->write("<error>The method must be are $verbs  </error>\n");
                                 $question = new Question("<info>Change the method</info> <comment>[$route->method]</comment> : ",$route->method);
 
@@ -163,12 +163,12 @@ namespace Imperium\Command {
 
             if (def($this->names()))
             {
-                $data = collection();
+                $data = collect();
                 foreach ($this->routes as $route)
-                    $data->add($this->update_route($route['id'],$route));
+                    $data->push($this->update_route($route['id'],$route));
 
                 $this->clean();
-                if ($data->not_exist(false))
+                if ($data->ok())
                     $output->write("<info>All routes has been successfully updated</info>\n");
                 else
                     $output->write("<error>The routes update has failed</error>\n");

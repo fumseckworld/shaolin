@@ -5,7 +5,6 @@ namespace Imperium\Routing {
 
 
     use Imperium\Exception\Kedavra;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
     use Symfony\Component\HttpFoundation\Response;
 
     class RouteResult
@@ -81,6 +80,18 @@ namespace Imperium\Routing {
         public function namespace(): string
         {
             return $this->namespace;
+        }
+
+        /**
+         *
+         * Get all routes arguments
+         *
+         * @return array
+         *
+         */
+        public function args(): array
+        {
+            return $this->args;
         }
 
         /**

@@ -3,6 +3,8 @@
 namespace Imperium\Session {
 
 
+    use Imperium\Collection\Collection;
+
     interface SessionInterface
     {
         /**
@@ -33,10 +35,10 @@ namespace Imperium\Session {
          * @param $key
          * @param $value
          *
-         * @return  void
+         * @return  Collection
          *
          */
-        public function set($key,$value): void ;
+        public function put($key,$value): Collection ;
 
         /**
          *

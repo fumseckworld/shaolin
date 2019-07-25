@@ -4,8 +4,6 @@
 namespace Testing {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
@@ -25,8 +23,6 @@ namespace Testing {
 
         /**
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         public function setUp(): void
         {
@@ -80,10 +76,10 @@ namespace Testing {
          */
         public function test()
         {
-            $this->assertNotEmpty($this->git->commits_by_year('Willy Micieli')->collection());
-            $this->assertNotEmpty($this->git->commits_by_month('Willy Micieli')->collection());
+            $this->assertNotEmpty($this->git->commits_by_year('Willy Micieli')->all());
+            $this->assertNotEmpty($this->git->commits_by_month('Willy Micieli')->all());
 
-            $this->assertEmpty($this->git->commits_by_year('Bob Lenon')->collection());
+            $this->assertEmpty($this->git->commits_by_year('Bob Lenon')->all());
         }
 
         /**
@@ -151,9 +147,7 @@ namespace Testing {
         }
 
         /**
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function test_news()
         {
@@ -166,9 +160,7 @@ namespace Testing {
         }
 
         /**
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function test_views()
         {
@@ -180,9 +172,6 @@ namespace Testing {
         }
 
         /**
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
          */
         public function test_tag_size()
         {
@@ -204,7 +193,7 @@ namespace Testing {
          */
         public function test_month()
         {
-            $this->assertEquals(15,$this->git->months()->length());
+            $this->assertEquals(15,$this->git->months()->sum());
         }
     }
 }

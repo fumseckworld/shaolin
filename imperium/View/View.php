@@ -81,9 +81,9 @@ namespace Imperium\View {
                 $this->loader()->addPath(VIEWS .DIRECTORY_SEPARATOR . $k ,$v);
 
 
-            $functions = collection();
+            $functions = collect();
 
-            $functions->add(new TwigFunction('display',
+            $functions->set(new TwigFunction('display',
 
                 function (string $key)
                 {
@@ -93,146 +93,112 @@ namespace Imperium\View {
 
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('css',
+            ),new TwigFunction('css',
 
                 function (string $name)
                 {
                     return css($name);
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('debug',
+            ),new TwigFunction('debug',
 
                 function ()
                 {
                     return  app()->debug_bar();
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('copyright',
+            ),new TwigFunction('copyright',
 
                 function ()
                 {
                     return copyright();
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('mobile',
+            ),new TwigFunction('mobile',
 
                 function ()
                 {
                     return is_mobile();
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('os',
+            ),new TwigFunction('os',
 
                 function ()
                 {
                     return new Os();
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('bootswatch',
+            ),new TwigFunction('bootswatch',
 
                 function (string $theme)
                 {
                     return bootswatch($theme);
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('back',
+            ),new TwigFunction('back',
 
                 function ()
                 {
                     return url();
                 },
                 ['is_safe' => ['html']]
-            ));
-
-
-            $functions->add(new TwigFunction('csrf_field',
+            ),new TwigFunction('csrf_field',
 
                 function ()
                 {
                     return csrf_field();
                 },
                 ['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('js',
+            ),new TwigFunction('js',
 
                 function (string $name,string $type = '')
                 {
                     return js($name,$type);
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('img',
+            ),new TwigFunction('img',
 
                 function (string $name,string $alt)
                 {
                     return img($name,$alt);
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('lang',
+            ),new TwigFunction('lang',
 
                 function ()
                 {
                     return app()->lang();
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('_',
+            ),new TwigFunction('_',
 
                 function (string $message)
                 {
                     return gettext($message);
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-
-            $functions->add(new TwigFunction('print',
+            ),new TwigFunction('print',
 
                 function (string $code)
                 {
                     return $code;
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('root',
+            ),new TwigFunction('root',
 
                 function ()
                 {
                     return root();
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('route',
+            ),new TwigFunction('route',
 
                 function (string $name,...$args)
                 {
                     return route($name,$args);
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('navbar',
+            ),new TwigFunction('navbar',
 
 
                 function (string $app_name,string ...$names)
@@ -240,27 +206,21 @@ namespace Imperium\View {
                     return  navbar($app_name,$names);
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('logged',
+            ),new TwigFunction('logged',
 
                 function ()
                 {
                     return app()->auth()->connected();
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('user',
+            ),new TwigFunction('user',
 
                 function ()
                 {
                     return current_user();
                 }
                 ,['is_safe' => ['html']]
-            ));
-
-            $functions->add(new TwigFunction('development',
+            ),new TwigFunction('development',
 
                 function ()
                 {
@@ -269,7 +229,7 @@ namespace Imperium\View {
                 ,['is_safe' => ['html']]
             ));
 
-            foreach ($functions->collection() as $function)
+            foreach ($functions->all() as $function)
                 $this->twig()->addFunction($function);
 
             putenv("LANG={$this->locale()}");
@@ -304,13 +264,13 @@ namespace Imperium\View {
          */
         public function load(string $class,string $view,array $args=[]): string
         {
-            $dir = ucfirst(strtolower(str_replace('Controller','',collection(explode("\\",$class))->last())));
+            $dir = ucfirst(strtolower(str_replace('Controller','',collect(explode("\\",$class))->last())));
 
             $dir = $this->views_path .DIRECTORY_SEPARATOR . $dir;
 
             Dir::create($dir);
 
-            $view = collection(explode('.',$view))->begin();
+            $view = collect(explode('.',$view))->first();
 
             append($view,'.twig');
 

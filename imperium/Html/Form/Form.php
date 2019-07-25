@@ -891,7 +891,7 @@ namespace Imperium\Html\Form {
         public function button(string $type,string $text,string $icon = ''): Form
         {
 
-            $class = collection(config($this->file,'class'))->get($type);
+            $class = collect(config($this->file,'class'))->get($type);
 
             switch ($type)
             {
@@ -945,7 +945,7 @@ namespace Imperium\Html\Form {
          */
         public function reset(string $text, string $icon = ''): Form
         {
-            $class = collection(config($this->file,'class'))->get('reset');
+            $class = collect(config($this->file,'class'))->get('reset');
 
             append($this->form,'<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"><button class="' . $this->get_btn_class(). ' ' .$class.'" type="reset">  ' . $icon . ' ' . ' ' . $text . '</button></div></div>');
 
@@ -971,9 +971,9 @@ namespace Imperium\Html\Form {
          */
         public function textarea(string $name, string $placeholder,string $validation_success_text = '',string $validation_error_text ='',bool $autofocus = false,string $value = ''): Form
         {
-            $row  = collection(config($this->file,'textarea'))->get('row');
+            $row  = collect(config($this->file,'textarea'))->get('row');
 
-            $col  = collection(config($this->file,'textarea'))->get('col');
+            $col  = collect(config($this->file,'textarea'))->get('col');
 
             if ($this->validate)
             {
@@ -1028,7 +1028,7 @@ namespace Imperium\Html\Form {
          */
         public function submit(string $text,string $icon ='',string $function= ''): Form
         {
-            $class  = collection(config($this->file,'class'))->get('submit');
+            $class  = collect(config($this->file,'class'))->get('submit');
 
             $x = "$function()";
             if (def($function))
@@ -1053,12 +1053,12 @@ namespace Imperium\Html\Form {
         public function group(array $text,string ...$href): Form
         {
 
-            $class  = collection(config($this->file,'class'))->get('group');
+            $class  = collect(config($this->file,'class'))->get('group');
 
             append($this->form,'<div class="'.self::AUTO_COL.'">  <div class="'. $this->separator().'"> <div class="btn-group " role="group">');
 
             foreach ($href as $k => $value)
-                append($this->form,'<a href="'.$value.'" class="'.$class.  ' ' .$this->get_btn_class().'"> '.collection($text)->get($k).'</a> ');
+                append($this->form,'<a href="'.$value.'" class="'.$class.  ' ' .$this->get_btn_class().'"> '.collect($text)->get($k).'</a> ');
 
             append($this->form,'<div></div></div>');
 
@@ -1082,7 +1082,7 @@ namespace Imperium\Html\Form {
          */
         public function link(string $url, string $text, string $icon = ''): Form
         {
-            $class  = collection(config($this->file,'class'))->get('link');
+            $class  = collect(config($this->file,'class'))->get('link');
 
             append($this->form ,'<div class="'.self::AUTO_COL.'"> <div class="'. $this->separator().'"><a href="' . $url . '" class="' . $this->get_btn_class() . ' '.$class.'">  ' . $icon . ' ' . $text . '</a></div></div>');
 
@@ -1211,7 +1211,7 @@ namespace Imperium\Html\Form {
         public function checkbox(string $name, string $text,bool $checked = false): Form
         {
 
-            $class  = collection(config($this->file,'class'))->get('checkbox');
+            $class  = collect(config($this->file,'class'))->get('checkbox');
 
             if ($checked)
                 append($this->form, '<div class="'.self::AUTO_COL.'"><div class="'. $this->separator().'"> <div class="custom-control custom-checkbox"><input type="checkbox"  checked="checked" class="custom-control-input '.$class.'" id="' . $name . '" name="'.$name.'"><label class="custom-control-label" for="' . $name . '">' . $text . '</label></div> </div></div> ');
@@ -1390,9 +1390,8 @@ namespace Imperium\Html\Form {
          */
         public function generate(int $form_grid,string $table, string $submit_text, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0): string
         {
-            $instance   = \app()->table()->column()->for($table);
+            $instance   = app()->table()->column()->for($table);
 
-            $types      = collection($instance->columns_with_types());
 
             $primary    = $instance->primary_key();
 
@@ -1403,41 +1402,41 @@ namespace Imperium\Html\Form {
             if (equal($mode,Form::EDIT))
             {
 
-                $data = \app()->table()->from($table)->select_or_fail($id);
-                $numeric = collection();
-                $date = collection();
-                $text = collection();
+                $data = app()->table()->from($table)->select_or_fail($id);
+                $numeric = collect();
+                $date = collect();
+                $text = collect();
 
-                $columns = collection($instance->columns_with_types());
+                $columns = collect($instance->columns_with_types());
 
-                $values = collection();
+                $values = collect();
 
                 foreach ($data as $x)
                 {
-                    foreach ($columns->collection() as $k => $v)
+                    foreach ($columns->all() as $k => $v)
                     {
                         $type = $v;
 
                         if (has($type,App::NUMERIC_TYPES) && different($primary,$k))
-                            $numeric->add($v,$k);
+                            $numeric->put($k,$v);
 
                         if (has($type,App::TEXT_TYPES))
-                            $text->add($v,$k);
+                            $text->put($k,$v);
 
                         if (has($type,App::DATE_TYPES))
-                            $date->add($v,$k);
+                            $date->put($k,$v);
 
-                        $values->add($x->$k,$k) ;
+                        $values->put($k,$x->$k) ;
                     }
                 }
 
-                $all_num = $numeric->length();
-                $all_date = $date->length();
-                $all_text = $text->length();
+                $all_num = $numeric->sum();
+                $all_date = $date->sum();
+                $all_text = $text->sum();
 
                 $this->row();
 
-                foreach ($text->collection() as $k =>  $t)
+                foreach ($text->all() as $k =>  $t)
                 {
                     $value = $values->get($k);
 
@@ -1459,7 +1458,7 @@ namespace Imperium\Html\Form {
 
                 $this->end_row_and_new();
 
-                foreach ($numeric->collection() as $k =>  $n)
+                foreach ($numeric->all() as $k =>  $n)
                 {
 
                     $value = $values->get($k);
@@ -1483,7 +1482,7 @@ namespace Imperium\Html\Form {
 
                 $this->end_row_and_new();
 
-                foreach ($date->collection() as $k =>  $n)
+                foreach ($date->all() as $k =>  $n)
                 {
                     $value = $values->get($k);
 
@@ -1509,14 +1508,14 @@ namespace Imperium\Html\Form {
             {
                 $current = date('Y-m-d');
 
-                $numeric = $types->data(App::NUMERIC_TYPES);
-                $date    = $types->data(App::DATE_TYPES);
-                $text    = $types->data(App::TEXT_TYPES);
+                $numeric = App::NUMERIC_TYPES;
+                $date    = App::DATE_TYPES;
+                $text    = App::TEXT_TYPES;
 
 
-                $all_num = collection($numeric)->length();
-                $all_date = collection($date)->length();
-                $all_text = collection($text)->length();
+                $all_num = collect($numeric)->sum();
+                $all_date = collect($date)->sum();
+                $all_text = collect($text)->sum();
 
 
                 $this->row();

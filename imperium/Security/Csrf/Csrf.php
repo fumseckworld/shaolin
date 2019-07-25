@@ -3,14 +3,10 @@
 namespace Imperium\Security\Csrf {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
-    use Imperium\Cache\Cache;
     use Imperium\Exception\Kedavra;
     use Imperium\Security\Hashing\Hash;
     use Imperium\Session\SessionInterface;
     use Psr\Http\Message\ServerRequestInterface;
-    use Symfony\Component\DependencyInjection\Tests\Compiler\D;
 
     class Csrf
     {
@@ -36,9 +32,8 @@ namespace Imperium\Security\Csrf {
 
         const SERVER = 'VALID_SERVER';
 
-
         /**
-         * @var Cache
+         * @var SessionInterface
          */
         private $session;
 
@@ -78,11 +73,11 @@ namespace Imperium\Security\Csrf {
         private function generate():string
         {
 
-            $this->session->set(self::SERVER,base64_encode((new Hash(request()->getHost()))->generate()));
+            $this->session->put(self::SERVER,base64_encode((new Hash(request()->getHost()))->generate()));
 
             $token = base64_encode($this->session->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
 
-            $this->session->set(self::KEY,$token);
+            $this->session->put(self::KEY,$token);
 
             return $token;
 
@@ -105,11 +100,11 @@ namespace Imperium\Security\Csrf {
 
                 $params = $request->getParsedBody() ?: [];
 
-                $token = collection($params)->get(self::KEY);
+                $token = collect($params)->get(self::KEY);
 
                 is_true(not_def($token),true,'We have not found the csrf token');
 
-                different($this->session->get(self::SERVER) ,base64_decode(collection(explode('==',$token))->get(0)),true,"The Server is not valid");
+                different($this->session->get(self::SERVER) ,base64_decode(collect(explode('==',$token))->get(0)),true,"The Server is not valid");
 
                 is_true(different($token,$this->session->get(self::KEY),true,"The token is invalid"));
 

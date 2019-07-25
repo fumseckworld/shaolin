@@ -233,9 +233,13 @@ if (not_exist('db'))
 }
 if (not_exist('infos'))
 {
+    /**
+     *
+     * @param mixed ...$vars
+     *
+     */
     function infos(...$vars)
     {
-
         foreach ($vars as $var)
             (new Dumper())->dump($var);
     }
@@ -276,9 +280,8 @@ if (not_exist('detect_method'))
      *
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
+     *
      */
     function detect_method(string $route_name): string
     {
@@ -294,9 +297,7 @@ if (not_exist('current_user'))
      *
      * @return  object
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
     function current_user()
     {
@@ -311,18 +312,17 @@ if (not_exist('logged_user'))
      * Get the user if is logged
      *
      * @return  string
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
     function logged_user():string
     {
-        $x = collection(config('auth','columns'))->get('auth');
+        $x = collect(config('auth','columns'))->get('auth');
         return app()->auth()->current()->$x;
     }
 }
 
-if (not_exist('route')) {
+if (not_exist('route'))
+{
     /**
      * @param string $name
      * @param array $args
@@ -351,7 +351,7 @@ if (not_exist('route')) {
                     {
 
 
-                        if (collection($args)->has_key($i))
+                        if (collect($args)->has($i))
                         {
                             append($url, '/' . $args[$i]);
                             $i++;
@@ -449,19 +449,15 @@ if (not_exist('display_repositories'))
      * @param string $owner
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
+     *
      */
     function display_repositories(string $owner = ''): string
     {
-
-
-
         $username = not_def($owner) ? def(get('owner')) ? get('owner') : '*' : $owner;
 
         $data = [];
-        $owners = collection();
+        $owners = collect();
 
         if (different($username, '*'))
         {
@@ -476,8 +472,7 @@ if (not_exist('display_repositories'))
                     }
                 } else
                 {
-                    if ($owners->not_exist($owner))
-                        $owners->add($owner);
+                    $owners->uniq($owner);
                 }
             }
         }
@@ -488,13 +483,12 @@ if (not_exist('display_repositories'))
             {
                 foreach (Dir::scan('depots') as $owner)
                 {
-                    if ($owners->not_exist($owner) && different($owner,logged_user()))
+                    if (different($owner,logged_user()))
                     {
-                        $owners->add($owner);
+                        $owners->uniq($owner);
 
                         foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
                         {
-
                             $data[$owner][] = realpath("depots/$owner/$repository");
                         }
                     }
@@ -504,8 +498,8 @@ if (not_exist('display_repositories'))
            {
                foreach (Dir::scan('depots') as $owner)
                {
-                   if ($owners->not_exist($owner))
-                       $owners->add($owner);
+
+                   $owners->uniq($owner);
 
                    foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
                    {
@@ -517,7 +511,7 @@ if (not_exist('display_repositories'))
         }
 
 
-        $data = collection($data);
+        $data = collect($data);
         $request = ServerRequest::fromGlobals();
 
         if (app()->auth()->connected())
@@ -553,7 +547,7 @@ if (not_exist('display_repositories'))
         $k = 0;
 
 
-        foreach ($data->collection() as $user => $repositories)
+        foreach ($data->all() as $user => $repositories)
         {
 
             foreach ($repositories as $repository)
@@ -641,10 +635,10 @@ if (not_exist('article'))
     function article(array $records,string  $pagination,$icon =  '<i class="fas fa-newspaper"></i>'): string
     {
 
-        $data = collection($records);
+        $data = collect($records);
         $file = 'article';
         $code = '';
-        $parts =  collection(config($file,'columns'));
+        $parts =  collect(config($file,'columns'));
 
         $img = $parts->get('image');
         $title = $parts->get('title');
@@ -660,7 +654,7 @@ if (not_exist('article'))
         {
             $values = $data->current();
 
-            append($code,'<div class="col-lg-6 col-sm-6"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->$title.'</h4><a href="'.config($file,'prefix').'/'.$values->$slug.'"><img src="'.$values->$img.'" alt="'.$values->$title.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->$content,0,\config($file,'limit')).'</div><p class="card-text mt-2"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.\config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(\config('locales','locale'),$values->$created).'</small></div></div></div>');
+            append($code,'<div class="col-lg-6 col-sm-6"><div class="card mb-3 mt-3"><h4 class="card-header bg-white text-uppercase text-center">'.$values->$title.'</h4><a href="'.config($file,'prefix').'/'.$values->$slug.'"><img src="'.$values->$img.'" alt="'.$values->$title.'" class="card-img-top"></a><div class="card-body"><div class="card-text">'.substr($values->$content,0,config($file,'limit')).'</div><p class="card-text mt-2"><a href="'.config($file,'prefix').'/'.$values->$slug.'" class="'.config($file,'read_class').'"> '.$icon.' '.config($file,'read').'</a></p></div><div class="card-footer"><small class="text-muted">'.ago(config('locales','locale'),$values->$created).'</small></div></div></div>');
             $data->next();
         }
         append($code,'</div>');
@@ -706,10 +700,10 @@ if (not_exist('login_page'))
      */
     function login_page(string $welcome_text,string $login_route_name,string $send_reset_email_action_name,string $password_text,string $identifier_text,string $forgot_password_email_text,string $forgot_password_send_email_text,string $sign_in_text,string $logo_path =''): string
     {
-        $column   = collection(config('auth','columns'))->get('auth');
+        $column   = collect(config('auth','columns'))->get('auth');
         $username = equal($column,'username');
 
-        $class = collection(config('form','class'))->get('submit');
+        $class = collect(config('form','class'))->get('submit');
 
         $logo = def($logo_path) ? '<div class="mb-3"><img src="'.$logo_path.'" alt="logo"></div>' : '';
 
@@ -1259,7 +1253,7 @@ if (not_exist('message'))
      */
     function message(string $filename): string
     {
-        return (new File(realpath(core_path(collection(config('app', 'dir'))->get('app'))) .DIRECTORY_SEPARATOR . 'Mailers' . DIRECTORY_SEPARATOR .'Emails' .DIRECTORY_SEPARATOR .  $filename))->read();
+        return (new File(realpath(core_path(collect(config('app', 'dir'))->get('app'))) .DIRECTORY_SEPARATOR . 'Mailers' . DIRECTORY_SEPARATOR .'Emails' .DIRECTORY_SEPARATOR .  $filename))->read();
     }
 }
 
@@ -1278,10 +1272,11 @@ if (not_exist('sql_file'))
      */
     function sql_file(string $table  = ''): string
     {
-        if (def($table) && different(\app()->connect()->driver(),SQLITE))
+        if (def($table) && different(app()->connect()->driver(),SQLITE))
             return def($table) ? app()->connect()->dump_path() .DIRECTORY_SEPARATOR ."$table.sql" : app()->connect()->dump_path() . DIRECTORY_SEPARATOR . app()->connect()->base() .'.sql';
-        else
-            return \app()->connect()->dump_path() .DIRECTORY_SEPARATOR . \collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,app()->connect()->base()))->last()))->begin() .'.sql';
+
+
+        return app()->connect()->dump_path() .DIRECTORY_SEPARATOR . collect(explode('.',collect(explode(DIRECTORY_SEPARATOR,app()->connect()->base()))->last()))->first() .'.sql';
     }
 }
 
@@ -1351,7 +1346,6 @@ if (! function_exists('decrypt')) {
      * @param string $value
      * @param bool $unserialize
      * @return mixed
-     * @throws Kedavra
      */
     function decrypt($value, $unserialize = true)
     {
@@ -1366,7 +1360,6 @@ if (! not_exist('encrypt')) {
      * @param mixed $value
      * @param bool $serialize
      * @return string
-     * @throws Kedavra
      */
     function encrypt($value, $serialize = true)
     {
@@ -1716,7 +1709,7 @@ if (not_exist('secure_register_form'))
     ): string
     {
 
-        $languages = collection(['' => $choose_language_text]);
+        $languages = collect(['' => $choose_language_text]);
         foreach ($supported_languages as $k => $v)
             $languages->merge([$k => $v]);
 
@@ -1724,7 +1717,7 @@ if (not_exist('secure_register_form'))
         {
             $form = form($action,'register-form','was-validated ')->validate() ;
             if ($multiple_languages)
-                $form->row()->select(true,'locale',$languages->collection(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select(true,'zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
+                $form->row()->select(true,'locale',$languages->all(),$choose_language_valid_text,$choose_language_invalid_text,$lang_icon)->select(true,'zone',zones($select_time_zone_text),$valid_time_zone_text,$time_zone_invalid_text,$time_zone_icon)->end_row();
 
             return   $form->row()->input(Form::TEXT,'name',$username_placeholder,$username_icon,$username_success_text,$username_error_text,post('name'),true)->input(Form::EMAIL,'email',$email_placeholder,$email_icon,$email_success_text,$email_error_text,post('email'),true)->end_row_and_new()
                 ->input(Form::PASSWORD,'password',$password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password'),true)->input(Form::PASSWORD,'password_confirmation',$confirm_password_placeholder,$password_icon,$password_valid_text,$password_invalid_text,post('password_confirmation'),true)->end_row_and_new()
@@ -1824,9 +1817,7 @@ if(not_exist('navbar'))
      * @param string $app_name
      * @param array $routes
      * @return string
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
     function navbar(string $app_name,array $routes =[]): string
     {
@@ -1930,6 +1921,8 @@ if (not_exist('back'))
      *
      * @return RedirectResponse
      *
+     * @throws Kedavra
+     *
      */
     function back(string $message = '', bool $success = true): RedirectResponse
     {
@@ -1984,13 +1977,14 @@ if (not_exist('bases_to_json'))
      *
      * @method bases_to_json
      *
-     * @param  string $filename The filename
-     * @param  string $key The optional key
+     * @param string $filename The filename
+     * @param string $key The optional key
      *
      * @return bool
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function bases_to_json(string $filename,string $key ='bases'): bool
     {
@@ -2007,13 +2001,14 @@ if (not_exist('users_to_json'))
      *
      * @method users_to_json
      *
-     * @param  string        $filename  The filename
-     * @param  string        $key      The optional key
+     * @param string $filename The filename
+     * @param string $key The optional key
      *
      * @return bool
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function users_to_json($filename,string $key = 'users') : bool
     {
@@ -2062,7 +2057,7 @@ if (not_exist('sql_to_json'))
     {
         $x =  json($filename);
 
-        $keys = collection($key);
+        $keys = collect($key);
 
         foreach($query as $k => $v)
             $x->add(app()->connect()->request($v),$keys->get($k));
@@ -2108,7 +2103,7 @@ if (not_exist('query_result'))
         elseif(empty(app()->model()->from($table)->all()))
             return html('code',$sql,'text-center'). html('div',$table_empty_text,'alert alert-danger mt-5');
         else
-            return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collection($data)->print(true,\app()->model()->columns());
+            return  empty($data) ? html('div',$result_empty_text,'alert alert-danger') : html('code',$sql,'text-center') .collect($data)->print(true,app()->model()->columns());
 
     }
 }
@@ -2128,7 +2123,7 @@ if (not_exist('length'))
      * @throws Kedavra
      *
      */
-    function length($data): int
+    function sum($data): int
     {
         if (is_array($data))
             return count($data);
@@ -2158,7 +2153,7 @@ if (not_exist('execute_query'))
     {
 
 
-        $data = collection(\Imperium\Request\Request::all());
+        $data = collect(\Imperium\Request\Request::all());
         $column_name = $data->get('column');
         $condition   = $data->get('condition');
         $expected = $data->get('expected');
@@ -2214,7 +2209,9 @@ if (not_exist('query_view'))
      * @param string $validation_error_text
      * @param string $icon
      * @return string
+     * @throws DependencyException
      * @throws Kedavra
+     * @throws NotFoundException
      */
     function query_view(string $confirm_message, string $query_action, string $create_record_action,  string $create_record_submit_text,  string $current_table_name, string $expected_placeholder, string $submit_query_text, string $reset_form_text, string $validation_success_text = 'success' , $validation_error_text= 'must not be empty', string $icon  = '<i class="fas fa-heart"></i>') : string
     {
@@ -2307,7 +2304,7 @@ if (not_exist('json'))
     }
 }
 
-if(not_exist('collection'))
+if(not_exist('collect'))
 {
     /**
      *
@@ -2320,7 +2317,7 @@ if(not_exist('collection'))
      * @return Collection
      *
      */
-    function collection($data = []): Collection
+    function collect($data = []): Collection
     {
         if (is_object($data))
         {
@@ -2400,12 +2397,12 @@ if (not_exist('zones'))
      */
     function zones(string $select_time_zone_text) : array
     {
-        $zones = collection(['' => $select_time_zone_text]);
+        $zones = collect(['' => $select_time_zone_text]);
 
         foreach (DateTimeZone::listIdentifiers() as $x)
             $zones->merge([$x => $x]);
 
-        return $zones->collection();
+        return $zones->all();
     }
 }
 if (not_exist('https'))
@@ -2447,21 +2444,19 @@ if (not_exist('tables_select'))
      *
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
     function tables_select(string $current, string $url_prefix,string $separator): string
     {
 
-        $tables = collection(["" => $current]);
+        $tables = collect(["" => $current]);
 
         foreach (app()->table()->show() as $x)
         {
             if (different($x,$current))
-                $tables->add($x,"$url_prefix$separator$x");
+                $tables->put("$url_prefix$separator$x",$x);
         }
-        return  form('',id())->large(true)->row()->redirect('table',$tables->collection())->end_row()->get() ;
+        return  form('',id())->large(true)->row()->redirect('table',$tables->all())->end_row()->get() ;
     }
 }
 
@@ -2472,21 +2467,22 @@ if (not_exist('users_select'))
      *
      * @method users_select
      *
-     * @param  string $urlPrefix The url prefix
-     * @param  string $currentUser The current username
-     * @param  string $chooseText The select text
-     * @param  bool $use_a_redirect_select To use a redirect select
-     * @param  string $separator The url separator
-     * @param  string $icon The select user icon
+     * @param string $urlPrefix The url prefix
+     * @param string $currentUser The current username
+     * @param string $chooseText The select text
+     * @param bool $use_a_redirect_select To use a redirect select
+     * @param string $separator The url separator
+     * @param string $icon The select user icon
      *
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function users_select(string $urlPrefix,string $currentUser,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = ''): string
     {
-        $users = collection(array('' => $chooseText));
+        $users = collect(array('' => $chooseText));
 
         foreach (app()->users()->show() as $x)
         {
@@ -2494,7 +2490,7 @@ if (not_exist('users_select'))
                 $users->merge(["$urlPrefix$separator$x" => $x]);
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->large(true)->row()->redirect('users',$users->collection(),$icon)->end_row()->get() : form('',uniqid())->large(true)->row()->select(true,'users',$users->collection(),$icon)->end_row()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->large(true)->row()->redirect('users',$users->all(),$icon)->end_row()->get() : form('',uniqid())->large(true)->row()->select(true,'users',$users->all(),$icon)->end_row()->get();
     }
 }
 
@@ -2513,11 +2509,13 @@ if (not_exist('bases_select'))
      *
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
+     * @throws NotFoundException
      */
     function bases_select(string $urlPrefix,string $currentBase,string $chooseText,bool $use_a_redirect_select,string $separator = '/',string $icon = '<i class="fas fa-database"></i>'): string
     {
-        $bases = collection(array('' => $chooseText));
+        $bases = collect(array('' => $chooseText));
 
         foreach (app()->bases()->show() as $x)
         {
@@ -2526,7 +2524,7 @@ if (not_exist('bases_select'))
 
         }
 
-        return $use_a_redirect_select ?  form('',uniqid())->large(true)->row()->redirect('bases',$bases->collection(),$icon)->end_row()->get() : form('',uniqid())->large(true)->row()->select(true,'bases',$bases->collection(),$icon)->end_row()->get();
+        return $use_a_redirect_select ?  form('',uniqid())->large(true)->row()->redirect('bases',$bases->all(),$icon)->end_row()->get() : form('',uniqid())->large(true)->row()->select(true,'bases',$bases->all(),$icon)->end_row()->get();
     }
 }
 
@@ -2548,20 +2546,20 @@ if (not_exist('commands'))
 
         $data =   glob($commands.DIRECTORY_SEPARATOR . '*.php');
 
-        $commands = collection();
+        $commands = collect();
 
         foreach ($data as $c)
         {
-            $command = collection(explode('/',$c))->last();
+            $command = collect(explode('/',$c))->last();
 
-            $command = collection(explode('.',$command))->begin();
+            $command = collect(explode('.',$command))->first();
 
             $command = "$namespace\\$command";
 
-            $commands->add(new $command());
+            $commands->push(new $command());
         }
 
-        return $commands->collection();
+        return $commands->all();
     }
 }
 
@@ -2579,7 +2577,7 @@ if (not_exist('extensions'))
      */
     function extensions(string $expected): array
     {
-        $core_path =  ROOT .DIRECTORY_SEPARATOR . collection(config('app','dir'))->get('app');
+        $core_path =  ROOT .DIRECTORY_SEPARATOR . collect(config('app','dir'))->get('app');
 
 
         $dir  =  $core_path . DIRECTORY_SEPARATOR . 'Twig' . DIRECTORY_SEPARATOR. $expected;
@@ -2594,20 +2592,20 @@ if (not_exist('extensions'))
 
         $data =   glob($path .DIRECTORY_SEPARATOR . '*.php');
 
-        $x = collection();
+        $x = collect();
 
         foreach ($data as $c)
         {
-            $code = collection(explode(DIRECTORY_SEPARATOR,$c))->last();
+            $code = collect(explode(DIRECTORY_SEPARATOR,$c))->last();
 
-            $class = collection(explode('.',$code))->begin();
+            $class = collect(explode('.',$code))->first();
 
             $code = "$namespace\\$class";
 
-            $x->add(new $code(),strtolower($class));
+            $x->put(strtolower($class),new $code());
         }
 
-        return $x->collection();
+        return $x->all();
     }
 }
 if(not_exist('routes'))
@@ -2619,7 +2617,6 @@ if(not_exist('routes'))
      * @param OutputInterface $output
      * @param array $routes
      *
-     * @throws Kedavra
      *
      */
     function routes(OutputInterface $output,array $routes): void
@@ -2641,50 +2638,50 @@ if(not_exist('routes'))
                     $action =  "<fg=yellow;options=bold>$route->action</>";
                     $method =  "<fg=cyan;options=bold>$route->method</>";
 
-                    if (length($route->method) == 6)
+                    if (sum($route->method) == 6)
                         $output->write("|  $method  ");
-                    elseif(length($route->method) == 4)
+                    elseif(sum($route->method) == 4)
                         $output->write("|  $method    ");
-                    elseif(length($route->method) == 3)
+                    elseif(sum($route->method) == 3)
                         $output->write("|  $method     ");
 
 
 
-                    if (length($route->name) < 3)
+                    if (sum($route->name) < 3)
                         $output->write("|  $name\t\t\t|");
 
-                    elseif(length($route->name) > 10)
+                    elseif(sum($route->name) > 10)
                         $output->write("|  $name\t|");
                     else
                         $output->write("|  $name\t\t|");
 
 
-                    if (length($route->url) < 5)
+                    if (sum($route->url) < 5)
                         $output->write("  $url\t\t\t|");
-                    elseif(length($route->url) < 13)
+                    elseif(sum($route->url) < 13)
                         $output->write("  $url\t\t|");
-                    elseif(length($route->url)> 18 )
+                    elseif(sum($route->url)> 18 )
                         $output->write("  $url\t|");
                     else
                         $output->write("  $url\t|");
 
 
-                    if (length($route->controller) < 7)
+                    if (sum($route->controller) < 7)
                         $output->write("  $controller\t\t|");
-                    elseif (length($route->controller) < 10)
+                    elseif (sum($route->controller) < 10)
                         $output->write("  $controller\t|");
-                    elseif (length($route->controller) > 10 && length($route->controller) < 15)
+                    elseif (sum($route->controller) > 10 && length($route->controller) < 15)
                         $output->write("  $controller\t|");
-                    elseif (length($route->controller)> 15)
+                    elseif (sum($route->controller)> 15)
                         $output->write("  $controller\t|");
                     else
                         $output->write("  $controller\t|");
 
-                    if (length($route->action) < 5)
+                    if (sum($route->action) < 5)
                         $output->write("  $action\t\t\t|\n");
-                    elseif(length($route->action) < 10)
+                    elseif(sum($route->action) < 10)
                         $output->write("  $action\t\t|\n");
-                    elseif(length($route->action) > 12)
+                    elseif(sum($route->action) > 12)
                         $output->write("  $action\t|\n");
                     else
                         $output->write("  $action\t|\n");
@@ -2710,45 +2707,45 @@ if(not_exist('routes'))
 
 
 
-                    if (length($route->method) >4 )
+                    if (sum($route->method) >4 )
                         $output->write("|  $method\t");
                     else
                         $output->write("|  $method\t\t");
 
-                    if (length($route->name) < 5)
+                    if (sum($route->name) < 5)
                         $output->write("|  $name\t\t\t\t|");
 
-                    elseif(length($route->name) > 10)
+                    elseif(sum($route->name) > 10)
                         $output->write("|  $name\t\t|");
                     else
                         $output->write("|  $name\t\t\t|");
 
 
-                    if (length($route->url) < 5)
+                    if (sum($route->url) < 5)
                         $output->write("  $url\t\t\t\t\t|");
-                    elseif(length($route->url) < 13)
+                    elseif(sum($route->url) < 13)
                         $output->write("  $url\t\t\t\t|");
-                    elseif(length($route->url)> 18 )
+                    elseif(sum($route->url)> 18 )
                         $output->write("  $url\t\t|");
                     else
                         $output->write("  $url\t\t\t|");
 
-                    if (length($route->controller) < 5)
+                    if (sum($route->controller) < 5)
                         $output->write("  $controller\t\t\t\t\t|");
-                    elseif (length($route->controller) < 8)
+                    elseif (sum($route->controller) < 8)
                         $output->write("  $controller\t\t\t\t|");
-                    elseif (length($route->controller) > 8 && length($route->controller) < 15)
+                    elseif (sum($route->controller) > 8 && length($route->controller) < 15)
                         $output->write("  $controller\t\t\t|");
-                    elseif (length($route->controller)> 15)
+                    elseif (sum($route->controller)> 15)
                         $output->write("  $controller\t\t\t|");
                     else
                         $output->write("  $controller\t\t\t|");
 
-                    if (length($route->action) < 5)
+                    if (sum($route->action) < 5)
                         $output->write("  $action\t\t\t\t|\n");
-                    elseif(length($route->action) < 10)
+                    elseif(sum($route->action) < 10)
                         $output->write("  $action\t\t\t|\n");
-                    elseif(length($route->action) > 12)
+                    elseif(sum($route->action) > 12)
                         $output->write("  $action\t\t|\n");
                     else
                         $output->write("  $action\t\t\t|\n");
@@ -3246,11 +3243,11 @@ function base_url(...$params): string
     {
         $url = https() ? 'https://'.request()->getHost() . '/' : 'http://' . \request()->getHost() .'/' ;
 
-        append($url,collection($params)->join('/'));
+        append($url,collect($params)->join('/'));
 
         return  $url;
     }
-    return '/'. collection($params)->join('/');
+    return '/'. collect($params)->join('/');
 
     }
 }
@@ -3260,15 +3257,13 @@ if (not_exist('is_admin'))
     /**
      * @return bool
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
     function is_admin(): bool
     {
         $request = ServerRequest::fromGlobals();
-        $prefix = \config('auth','admin_prefix');
-        $connected = \app()->session()->has('__connected__');
+        $prefix = config('auth','admin_prefix');
+        $connected = app()->session()->has('__connected__');
 
         if (equal($prefix,'/') && $connected)
             return true;
@@ -3289,9 +3284,6 @@ if (not_exist('css'))
      * @param string $filename
      *
      * @return string
-     * @throws DependencyException
-     * @throws Kedavra
-     * @throws NotFoundException
      */
     function css(string $filename): string
     {
@@ -3310,9 +3302,6 @@ if (not_exist('img'))
      *
      * @return string
      *
-     * @throws DependencyException
-     * @throws Kedavra
-     * @throws NotFoundException
      */
     function img(string $filename,string $alt): string
     {
@@ -3329,10 +3318,8 @@ if (not_exist('js'))
      * @param string $filename
      *
      * @param string $type
+     *
      * @return string
-     * @throws DependencyException
-     * @throws Kedavra
-     * @throws NotFoundException
      */
     function js(string  $filename,string $type= ''): string
     {
@@ -3378,14 +3365,6 @@ if (not_exist('server'))
     }
 }
 
-if (not_exist('phinx'))
-{
-    function phinx()
-    {
-
-        d(\request()->server->all());
-    }
-}
 if (not_exist('post'))
 {
     /**
@@ -3448,12 +3427,12 @@ if (not_exist('collation'))
      */
     function collation(Connect $connect): array
     {
-        $collation = collection();
+        $collation = collect();
 
         $connexion = $connect;
 
         if($connexion->sqlite())
-            return $collation->collection();
+            return $collation->all();
 
 
         assign($connexion->mysql(),$request,'SHOW COLLATION');
@@ -3463,7 +3442,7 @@ if (not_exist('collation'))
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));
 
-        return $collation->collection();
+        return $collation->all();
     }
 }
 if (not_exist('charset'))
@@ -3483,12 +3462,12 @@ if (not_exist('charset'))
      */
     function charset(Connect $connect): array
     {
-        $collation = collection();
+        $collation = collect();
 
         $connexion = $connect;
 
         if ($connexion->sqlite())
-            return $collation->collection();
+            return $collation->all();
 
         $request = '';
 
@@ -3499,7 +3478,7 @@ if (not_exist('charset'))
         foreach ($connexion->request($request) as $char)
             $collation->push(current($char));
 
-        return $collation->collection();
+        return $collation->all();
     }
 }
 
@@ -3516,7 +3495,6 @@ if (not_exist('base'))
      *
      * @return Base
      *
-     * @throws Kedavra
      *
      */
     function base(Connect $connect,Table $table): Base
@@ -3783,9 +3761,7 @@ if(not_exist('whoops'))
      */
     function whoops(): Run
     {
-        $whoops = new Run;
-        $whoops->pushHandler(new PrettyPageHandler);
-        return $whoops->register();
+        return (new Run())->appendHandler(new PrettyPageHandler)->register();
     }
 }
 if(not_exist('before_key'))
@@ -3796,17 +3772,17 @@ if(not_exist('before_key'))
      *
      * @method array_prev
      *
-     * @param  array $array The array
-     * @param  mixed $key The after key
+     * @param array $array The array
+     * @param mixed $key The after key
      *
      * @return mixed
      *
-     * @throws Kedavra
      *
+     * @throws Kedavra
      */
     function before_key(array $array, $key)
     {
-        return collection($array)->value_before_key($key);
+        return collect($array)->value_before_key($key);
     }
 
 }
@@ -3822,20 +3798,11 @@ if(not_exist('req'))
      *
      * @return array
      *
-     * @throws Kedavra
-     *
      */
     function req(string ...$queries): array
     {
-        $data = collection();
-
         $instance = app()->connect();
-
-        foreach($queries as $k => $query)
-            $data->add($instance->request($query),$k);
-
-        return $data->collection();
-
+        return collect($queries)->each([$instance,'request'])->all();
     }
 }
 
@@ -3851,20 +3818,13 @@ if(not_exist('execute'))
      *
      * @return bool
      *
-     * @throws Kedavra
      *
      */
     function execute(string ...$queries): bool
     {
 
-        $data = collection();
-
         $instance = app()->connect();
-
-        foreach($queries as $k => $query)
-            $data->add($instance->execute($query),$k);
-
-        return $data->not_exist(false);
+        return collect($queries)->each([$instance,'execute'])->ok();
     }
 }
 
@@ -3901,7 +3861,6 @@ if (not_exist('table'))
      *
      * @return Table
      *
-     * @throws Kedavra
      *
      */
     function table(Connect $connect): Table
@@ -3989,8 +3948,9 @@ if (not_exist('remove_bases'))
      *
      * @return bool
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function remove_bases(string ...$bases): bool
     {
@@ -4006,22 +3966,22 @@ if (not_exist('form'))
      *
      * @method form
      *
-     * @param  string $action The form action
-     * @param  string $id The form id
-     * @param  string $class The form class
-     * @param  string $confirm To enable confirm
-     * @param  string $method  The form method
-     * @param  bool $enctype To manage file
-     * @param  string $charset The charset
+     * @param string $action The form action
+     * @param string $id The form id
+     * @param string $class The form class
+     * @param string $confirm To enable confirm
+     * @param bool $enctype To manage file
+     * @param string $charset The charset
      *
      * @return Form
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
-    function form(string $action, string $id, string $class = '',string $confirm = '',string $method = Form::POST, bool $enctype = false,  string $charset = 'utf-8'): Form
+    function form(string $action, string $id, string $class = '',string $confirm = '', bool $enctype = false,  string $charset = 'utf-8'): Form
     {
-        return def($confirm) ? (new Form())->validate()->start($action,$method,$confirm,$id,$class,$enctype,$charset) : (new Form())->start($action,$method,$confirm,$id,$class,$enctype,$charset);
+        return def($confirm) ? (new Form())->validate()->start($action,$confirm,$class,$enctype,$charset) : (new Form())->start($action,$confirm,$class,$enctype,$charset);
     }
 }
 
@@ -4063,7 +4023,7 @@ if(not_exist('slug'))
      */
     function slug(string $data,string $delimiter = " "): string
     {
-        return collection(explode($delimiter,$data))->each('strtolower')->join('-');
+        return collect(explode($delimiter,$data))->each('strtolower')->join('-');
     }
 }
 
@@ -4154,7 +4114,6 @@ if (not_exist('sql'))
      *
      * @return Query
      *
-     * @throws Kedavra
      *
      */
     function sql(string $table): Query
@@ -4170,14 +4129,15 @@ if (not_exist('lines'))
      *
      * @method lines
      *
-     * @param  string $filename The filename path
+     * @param string $filename The filename path
      *
      * @return array
      *
+     * @throws Kedavra
      */
     function lines(string $filename): array
     {
-        return File::lines($filename);
+        return (new File($filename))->lines();
     }
 }
 
@@ -4188,15 +4148,16 @@ if (not_exist('file_keys'))
      *
      * @method file_keys
      *
-     * @param  string    $filename   The filename path
-     * @param  string    $delimiter The delimiter
+     * @param string $filename The filename path
+     * @param string $delimiter The delimiter
      *
      * @return array
      *
+     * @throws Kedavra
      */
     function file_keys(string $filename,string $delimiter): array
     {
-        return File::keys($filename,$delimiter);
+        return (new File($filename))->keys($delimiter);
     }
 
 }
@@ -4209,15 +4170,16 @@ if (not_exist('file_values'))
      *
      * @method file_values
      *
-     * @param  string      $filename  The file path
-     * @param  string      $delimiter The delimiter
+     * @param string $filename The file path
+     * @param string $delimiter The delimiter
      *
      * @return array
      *
+     * @throws Kedavra
      */
     function file_values(string $filename,string $delimiter): array
     {
-        return File::values($filename,$delimiter);
+        return (new File($filename))->values($delimiter);
     }
 
 }
@@ -4249,14 +4211,14 @@ if (not_exist('months'))
 
     function months()
     {
-        $data = collection();
+        $data = collect();
 
         $format = new IntlDateFormatter(\config('locales','locale'),IntlDateFormatter::FULL, IntlDateFormatter::FULL, null, null, "MMM");
 
         for($i=1;$i!=12;$i++)
-            $data->add(ucfirst($format->format(mktime(0, 0, 0, $i))));
+            $data->push(ucfirst($format->format(mktime(0, 0, 0, $i))));
 
-        return $data->collection();
+        return $data->all();
     }
 }
 if (not_exist('add_user'))
@@ -4267,13 +4229,14 @@ if (not_exist('add_user'))
      *
      * @method add_user
      *
-     * @param  string $user The username
-     * @param  string $password The user password
+     * @param string $user The username
+     * @param string $password The user password
      *
      * @return bool
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function add_user(string $user,string $password): bool
     {
@@ -4442,7 +4405,7 @@ if (not_exist('insert_into'))
     {
         $instance = $model->from($table);
 
-        $x = collection($instance->columns())->join(',');
+        $x = collect($instance->columns())->join(',');
 
         $data = "INSERT INTO $table ($x) VALUES (";
 
@@ -4493,7 +4456,7 @@ if (not_exist('routes_add'))
         $instance = $model;
 
 
-        $x = collection($instance->columns())->join(',');
+        $x = collect($instance->columns())->join(',');
 
         $data = "INSERT INTO routes ($x) VALUES (";
 
@@ -4537,16 +4500,16 @@ if (not_exist('controllers'))
     {
         $dir = CONTROLLERS;
 
-        $controllers  = collection(File::search("$dir" .DIRECTORY_SEPARATOR. '*.php'));
+        $controllers  = collect(File::search("$dir" .DIRECTORY_SEPARATOR. '*.php'));
 
-        $data = collection();
+        $data = collect();
 
         if ($controllers)
         {
             foreach ($controllers as $controller)
-                $data->add(collection(explode('.',collection(explode(DIRECTORY_SEPARATOR,$controller))->last()))->begin());
+                $data->push(collect(explode('.',collect(explode(DIRECTORY_SEPARATOR,$controller))->last()))->first());
         }
-        return $data->collection();
+        return $data->all();
     }
 }
 if (not_exist('glyph'))

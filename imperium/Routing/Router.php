@@ -3,8 +3,6 @@
 namespace Imperium\Routing {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Middleware\TrailingSlashMiddleware;
@@ -65,7 +63,7 @@ namespace Imperium\Routing {
         public function __construct(ServerRequestInterface $request)
         {
 
-            $this->method = $request->getMethod() !== GET ?  strtoupper(collection($request->getParsedBody())->get('method')) : GET;
+            $this->method = $request->getMethod() !== GET ?  strtoupper(collect($request->getParsedBody())->get('method')) : GET;
 
             $this->url           = $request->getUri()->getPath();
 
@@ -79,8 +77,6 @@ namespace Imperium\Routing {
          * @return RouteResult| RedirectResponse
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         public function search()
         {
@@ -121,9 +117,7 @@ namespace Imperium\Routing {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public static function url(string $name,array $args=[]): string
         {
@@ -162,9 +156,9 @@ namespace Imperium\Routing {
 
             foreach  ($middle as $middleware)
             {
-                $middle = collection(explode(DIRECTORY_SEPARATOR,$middleware))->last();
+                $middle = collect(explode(DIRECTORY_SEPARATOR,$middleware))->last();
 
-                $middleware = collection(explode('.',$middle))->begin();
+                $middleware = collect(explode('.',$middle))->first();
 
                 $class = "$namespace$middleware";
 
@@ -193,17 +187,17 @@ namespace Imperium\Routing {
         {
             array_shift($this->args);
 
-            $params = collection();
+            $params = collect();
 
             foreach ($this->args as $match)
             {
                 is_numeric($match) ? $this->with($match,NUMERIC) : $this->with($match,STRING);
 
-                is_numeric($match) ? $params->add(intval($match)): $params->add($match);
+                is_numeric($match) ? $params->set(intval($match)): $params->set($match);
             }
 
 
-           return  new RouteResult(CONTROLLERS_NAMESPACE,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->collection());
+           return  new RouteResult(CONTROLLERS_NAMESPACE,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->all());
         }
 
 

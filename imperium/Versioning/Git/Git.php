@@ -113,14 +113,14 @@ namespace Imperium\Versioning\Git {
                 app()->cache()->clear();
             }
 
-            app()->session()->set('repo',realpath($repository));
+            app()->session()->put('repo',realpath($repository));
 
 
             self::$repository =  realpath($repository);
 
             self::model();
             self::connect();
-            self::$name =  collection(explode(DIRECTORY_SEPARATOR,$repository))->last();
+            self::$name =  collect(explode(DIRECTORY_SEPARATOR,$repository))->last();
             Dir::checkout(self::$repository);
 
 
@@ -162,13 +162,7 @@ namespace Imperium\Versioning\Git {
          */
         private static function create_tables(): bool
         {
-            $data = collection();
-
-            $data->add(self::connect()->execute(self::CONTRIBUTORS_TABLE));
-            $data->add(self::connect()->execute(self::BUGS_TABLE));
-            $data->add(self::connect()->execute(self::TODO_TABLE));
-
-            return $data->not_exist(false);
+            return collect()->set(self::connect()->execute(self::CONTRIBUTORS_TABLE),self::connect()->execute(self::BUGS_TABLE),self::connect()->execute(self::TODO_TABLE))->ok();
         }
         /**
          *
@@ -237,12 +231,12 @@ namespace Imperium\Versioning\Git {
          */
         public function send_bug(): RedirectResponse
         {
-            $data = collection();
+            $data = collect();
 
             foreach ($this->model()->from('bugs')->columns() as $column)
-                $data->add(request()->request->get($column));
+                $data->set(request()->request->get($column));
 
-            $x = $this->model()->from('bugs')->insert_new_record($this->model(),$data->collection());
+            $x = $this->model()->from('bugs')->insert_new_record($this->model(),$data->all());
 
             if (is_false($x))
                 return back('Failed to insert data',false);
@@ -268,7 +262,7 @@ namespace Imperium\Versioning\Git {
 
             (new File('download',EMPTY_AND_WRITE_FILE_MODE))->write("$x")->flush();
 
-            $version = collection($this->releases())->begin();
+            $version = collect($this->releases())->first();
 
             return equal(os(true),Os::LINUX) ?  (new Download($this->create_archives('tar.gz',$version)))->download() : (new Download($this->create_archives('zip',$version)))->download()  ;
 
@@ -311,7 +305,7 @@ namespace Imperium\Versioning\Git {
         {
             def($directory) ?  $this->execute("git ls-tree  $branch -r $directory") : $this->execute("git ls-tree  $branch ");
 
-            $x =  collection();
+            $x =  collect();
 
             foreach ($this->data as $datum)
             {
@@ -324,8 +318,8 @@ namespace Imperium\Versioning\Git {
 
                         if (is_false($y))
                         {
-                            $file = str_replace("$directory/",'',collection(string_parse($datum))->last());
-                            $x->add($file);
+                            $file = str_replace("$directory/",'',collect(string_parse($datum))->last());
+                            $x->set($file);
                         }
                     }
 
@@ -335,13 +329,13 @@ namespace Imperium\Versioning\Git {
 
                         if (not_def(strstr($datum,'/')))
                         {
-                            $x->add_if_not_exist( collection(string_parse($datum))->last());
+                            $x->uniq(collect(string_parse($datum))->last());
                         }
                     }
                 }
             }
 
-            return $x->collection();
+            return $x->all();
         }
 
         /**
@@ -518,7 +512,7 @@ namespace Imperium\Versioning\Git {
         public function commits_by_month(string $author): Collection
         {
 
-            $contributions = collection();
+            $contributions = collect();
             $now = now()->days(1)->format('Y-m-d') ;
             $month =  $this->months();
 
@@ -532,10 +526,10 @@ namespace Imperium\Versioning\Git {
                 else
                     $this->execute("git log --after={$month->get($i)} --before={$month->get($x)} --pretty=format:'%s' --author='$author'");
 
-                $contributions->add($this->data()->length(),$month->get($i));
+                $contributions->put($month->get($i),$this->data()->sum());
                 $i++;
                 $x++;
-            }while($i!=$month->length());
+            }while($i!=$month->sum());
 
             return $contributions;
 
@@ -548,16 +542,16 @@ namespace Imperium\Versioning\Git {
          */
         public function months(): Collection
         {
-            $months= collection();
-            $months->add(now()->addMonths(1)->days(1)->format('Y-m-d'));
+            $months= collect();
+            $months->set(now()->addMonths(1)->days(1)->format('Y-m-d'));
             for ($i=0;$i!=14;$i++)
             {
                 $x =  now()->addMonths(-$i)->days(1)->format('Y-m-d') ;
-                $months->add($x);
+                $months->set($x);
             }
 
 
-            return collection($months->reverse());
+            return $months->reverse();
         }
 
         /**
@@ -579,12 +573,12 @@ namespace Imperium\Versioning\Git {
                 $this->execute("git ls-tree --name-only -d $branch ");
 
 
-            $directories = collection();
+            $directories = collect();
 
 
             if (def($directory))
             {
-                if ($this->data()->length() === 2)
+                if ($this->data()->sum() === 2)
                     return [];
 
                 foreach ($this->data as $dir)
@@ -596,15 +590,15 @@ namespace Imperium\Versioning\Git {
                     {
 
                         if (!strstr($x,'/'))
-                            $directories->add_if_not_exist($x);
+                            $directories->uniq($x);
                         else
-                            $directories->add_if_not_exist(collection(explode(DIRECTORY_SEPARATOR,$x))->begin());
+                            $directories->uniq(collect(explode(DIRECTORY_SEPARATOR,$x))->first());
 
                     }
                 }
-                return $directories->collection();
+                return $directories->all();
             }
-            return $this->data()->collection();
+            return $this->data()->all();
 
         }
 
@@ -625,7 +619,7 @@ namespace Imperium\Versioning\Git {
 
             $complete = request()->getRequestUri();
 
-            $parts = collection(explode('/tree',$complete));
+            $parts = collect(explode('/tree',$complete));
 
             $current_directory = trim($parts->get(1),'/');
 
@@ -639,13 +633,13 @@ namespace Imperium\Versioning\Git {
                                 <a href="'.base_url($this->owner(),$this->repository(),$branch).'">'.$this->repository().'</a>
                             </li>';
 
-                $x = collection(explode('/',$current_directory));
+                $x = collect(explode('/',$current_directory));
 
                 if (not_def($file))
                 {
                     $ancient ='';
 
-                    foreach ($x->collection() as $k=> $v)
+                    foreach ($x->all() as $k=> $v)
                     {
                         if (def($v))
                         {
@@ -660,13 +654,13 @@ namespace Imperium\Versioning\Git {
                 {
 
 
-                    $parts = collection(explode('/file',$complete))->get(1);
-                    $x =  collection(explode('/',$parts));
+                    $parts = collect(explode('/file',$complete))->get(1);
+                    $x =  collect(explode('/',$parts));
 
 
                     $ancient ='';
 
-                    foreach ($x->collection() as $k=> $v)
+                    foreach ($x->all() as $k=> $v)
                     {
                          if (def($v))
                          {
@@ -755,7 +749,7 @@ namespace Imperium\Versioning\Git {
          */
         public function data(): Collection
         {
-            return collection($this->data);
+            return collect($this->data);
         }
 
         /**
@@ -767,7 +761,7 @@ namespace Imperium\Versioning\Git {
          */
         public function branches_found(): string
         {
-            return $this->is_remote() ? numb(collection(Dir::scan('refs/heads'))->length()) : numb(collection($this->branches())->length());
+            return $this->is_remote() ? numb(collect(Dir::scan('refs/heads'))->sum()) : numb(collect($this->branches())->sum());
         }
 
         /**
@@ -799,12 +793,12 @@ namespace Imperium\Versioning\Git {
          */
         public function branches(): array
         {
-            $branches = collection();
+            $branches = collect();
 
             foreach ($this->get_branch() as $branch)
-                $branches->add(trim(str_replace('* ','',$branch)));
+                $branches->push(trim(str_replace('* ','',$branch)));
 
-            return $branches->collection();
+            return $branches->all();
         }
 
 
@@ -817,7 +811,7 @@ namespace Imperium\Versioning\Git {
          */
         public function release_size(): string
         {
-            return '<button type="button" class="btn btn-primary"><i class="material-icons">all_out</i> <span>'.numb(collection($this->releases())->length()).' Releases</span></button>';
+            return '<button type="button" class="btn btn-primary"><i class="material-icons">all_out</i> <span>'.numb(collect($this->releases())->sum()).' Releases</span></button>';
 
         }
 
@@ -833,12 +827,13 @@ namespace Imperium\Versioning\Git {
          */
         public function contributors_size(): string
         {
-           return '<button type="button" class="btn btn-primary"><i class="material-icons">group</i> <span>'.numb(\collection($this->contributors())->length()).' Contributors</span></button>';
+           return '<button type="button" class="btn btn-primary"><i class="material-icons">group</i> <span>'.numb(collect($this->contributors())->sum()).' Contributors</span></button>';
         }
 
         /**
          * @param string $search_placeholder
          * @return string
+         * @throws Kedavra
          */
         public function contributors_view(string $search_placeholder = 'Search a contributor'):string
         {
@@ -947,6 +942,7 @@ namespace Imperium\Versioning\Git {
 
         /**
          * @return Git
+         * @throws Kedavra
          */
         public function save(): Git
         {
@@ -1013,7 +1009,7 @@ namespace Imperium\Versioning\Git {
          */
         public function news(): string
         {
-            return not_def($this->releases()) ? 'No releases found' : $this->change(collection($this->releases())->get(0),collection($this->releases())->get(1));
+            return not_def($this->releases()) ? 'No releases found' : $this->change(collect($this->releases())->get(0),collect($this->releases())->get(1));
         }
 
         /**
@@ -1087,10 +1083,8 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
-         * 
+         *
          */
         public function release_view(string $search_placeholder = 'Find a version'): string
         {
@@ -1411,7 +1405,7 @@ namespace Imperium\Versioning\Git {
          */
         public function push(): bool
         {
-            foreach ($this->remote()->collection() as $remote)
+            foreach ($this->remote()->all() as $remote)
             {
                 is_false($this->shell("git push $remote --all"),true,"Failed to send modifications");
 
@@ -1452,10 +1446,10 @@ namespace Imperium\Versioning\Git {
         }
         public function commits(string $directory,$branch = 'master')
         {
-            $data = \collection();
+            $data = collect();
             foreach ($this->directories($directory,$branch) as  $v)
 
-                    $data->add(shell_exec("git log $branch -n1  --pretty=format='%s' -- $directory/$v"));
+                    $data->set(shell_exec("git log $branch -n1  --pretty=format='%s' -- $directory/$v"));
 
             return $data;
         }
@@ -1467,23 +1461,7 @@ namespace Imperium\Versioning\Git {
          */
         private function get_branch(): array
         {
-
-            $branches = collection();
-
-            if ($this->is_remote())
-                return  Dir::scan('refs/heads');
-            else
-                $this->execute('git branch --all');
-
-
-
-            foreach ($this->data()->collection() as $x)
-            {
-                $x = collection(explode('/',$x))->last();
-                $branches->add($x);
-            }
-
-            return $branches->collection();
+            return  Dir::scan('refs/heads');
         }
 
 
@@ -1513,7 +1491,7 @@ namespace Imperium\Versioning\Git {
         public function releases(): array
         {
            if (is_null($this->releases))
-               $this->releases = collection(Dir::scan('refs/tags'))->reverse();
+               $this->releases = collect(Dir::scan('refs/tags'))->reverse()->all();
 
 
             return $this->releases;
@@ -1533,10 +1511,10 @@ namespace Imperium\Versioning\Git {
         {
             self::create_tables();
 
-            $contributors = collection();
+            $contributors = collect();
 
             foreach ($this->execute("git shortlog -n --all") as $contributor)
-                $contributors->add_if_not_exist(collection(string_parse($contributor))->pop()->join(" "));
+                $contributors->uniq(collect(string_parse($contributor))->pop()->join(" "));
 
 
             foreach ($contributors->reverse() as $contributor)
@@ -1544,7 +1522,7 @@ namespace Imperium\Versioning\Git {
                 self::model()->from('contributors')->insert_new_record(self::model(),['id' => 'id' , 'name' =>$contributor]);
 
             }
-            return $contributors->collection();
+            return $contributors->all();
         }
 
 
@@ -1589,7 +1567,7 @@ namespace Imperium\Versioning\Git {
         public function todo(): string
         {
 
-            $column =  collection(config('auth','columns'))->get('auth');
+            $column =  collect(config('auth','columns'))->get('auth');
 
             if (app()->auth()->connected() && equal(current_user()->$column,$this->owner()))
             {
@@ -1707,6 +1685,7 @@ namespace Imperium\Versioning\Git {
          * Display contribution view
          *
          * @return string
+         * @throws Kedavra
          */
         public function contributions_view(): string
         {

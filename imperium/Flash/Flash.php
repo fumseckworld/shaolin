@@ -42,7 +42,6 @@ namespace Imperium\Flash {
          *
          * Flash constructor
          *
-         * @Inject({"session"})
          *
          * @param SessionInterface $session
          *

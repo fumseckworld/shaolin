@@ -2,6 +2,7 @@
 
 namespace Imperium\Session {
 
+    use Imperium\Collection\Collection;
 
 
     /**
@@ -22,10 +23,18 @@ namespace Imperium\Session {
     class Session implements SessionInterface
     {
 
+        /**
+         * @var Collection
+         */
+        private $session;
+
         private function start()
         {
-            if (session_status() === PHP_SESSION_NONE)
-                session_start();
+           if (request()->getScriptName() !== './vendor/bin/phpunit')
+           {
+               if (session_status() === PHP_SESSION_NONE)
+                   session_start();
+           }
         }
 
 
@@ -40,8 +49,7 @@ namespace Imperium\Session {
          */
         public function get($key)
         {
-            $this->start();
-            return $this->has($key) ? $_SESSION[$key] : '';
+            return  $this->session->get($key);
         }
 
         /**
@@ -55,9 +63,7 @@ namespace Imperium\Session {
          */
         public function has($key): bool
         {
-
-            $this->start();
-            return array_key_exists($key,$_SESSION);
+            return $this->session->has($key);
         }
 
         /**
@@ -67,13 +73,12 @@ namespace Imperium\Session {
          * @param $value
          * @param string $key
          *
-         * @return void
+         * @return Collection
+         *
          */
-        public function set($key,$value): void
+        public function put($key,$value): Collection
         {
-
-            $this->start();
-            $_SESSION[$key] = $value;
+            return  $this->session->put($key,$value);
         }
 
         /**
@@ -87,14 +92,7 @@ namespace Imperium\Session {
          */
         public function remove($key): bool
         {
-
-            $this->start();
-            if ($this->has($key))
-            {
-                unset($_SESSION[$key]);
-                return true;
-            }
-            return false;
+            return $this->has($key) ?   $this->session->del($key)->key_not_exist($key) : false;
         }
 
         /**
@@ -102,8 +100,7 @@ namespace Imperium\Session {
          */
         public function all(): array
         {
-            $this->start();
-            return $_SESSION;
+            return $this->session->all();
         }
 
 
@@ -119,9 +116,7 @@ namespace Imperium\Session {
          */
         public function def($key, $value)
         {
-
-            $this->set($key,$value);
-            return $this->get($key);
+            return $this->session->put($key,$value)->get($key);
         }
 
         /**
@@ -129,7 +124,8 @@ namespace Imperium\Session {
          */
         public function __construct()
         {
-
+            $this->start();
+            $this->session = collect($_SESSION);
         }
 
         /**
@@ -142,9 +138,9 @@ namespace Imperium\Session {
         public function clear(): bool
         {
             foreach ($this->all() as $k => $v)
-               $this->remove($k);
+               $this->session->del($k);
 
-            return not_def($this->all());
+            return $this->session->empty();
         }
     }
 }

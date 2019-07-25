@@ -182,17 +182,10 @@ namespace Imperium\Connexion {
          * @param string ...$queries
          *
          * @return bool
-         *
-         * @throws Kedavra
-         *
          */
         public function queries(string ...$queries): bool
         {
-            $data = collection();
-            foreach ($queries as $query)
-                $data->add($this->execute($query));
-
-            return $data->not_exist(false);
+            return collect($queries)->each([$this,'execute'])->ok();
         }
 
         /**

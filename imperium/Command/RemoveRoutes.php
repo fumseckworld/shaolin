@@ -36,11 +36,11 @@ namespace Imperium\Command {
          */
         public function names(): array
         {
-            $data = collection();
+            $data = collect();
             foreach ($this->routes()->query()->mode(SELECT)->from('routes')->only('name')->get() as $x)
-                $data->add($x->name);
+                $data->push($x->name);
 
-            return $data->collection();
+            return $data->all();
         }
 
         public function interact(InputInterface $input, OutputInterface $output)

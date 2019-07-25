@@ -3,8 +3,6 @@
 
 namespace Imperium\Tables {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Imperium\Collection\Collection;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
@@ -12,7 +10,6 @@ namespace Imperium\Tables {
     use Imperium\Model\Model;
     use Imperium\Zen;
     use Imperium\App;
-    use function PHPSTORM_META\type;
 
     /**
      *
@@ -67,14 +64,6 @@ namespace Imperium\Tables {
          * @var string
          */
         private $charset;
-
-        /**
-         *
-         * All columns types
-         *
-         * @var array
-         */
-        private $all_types;
 
 
         /**
@@ -303,7 +292,7 @@ namespace Imperium\Tables {
         {
             switch ($this->driver)
             {
-                case MYSQL;
+                case MYSQL:
                     return  $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT ?;",$constraint);
                 break;
                 case SQLITE:
@@ -336,14 +325,14 @@ namespace Imperium\Tables {
             $command = $this->startCreateCommand($table);
 
             $columns = $this->added_columns;
-            $uniq = collection();
+            $uniq = collect();
 
-            foreach ($columns->collection() as $column)
+            foreach ($columns->all() as $column)
             {
                 $end =  has($column[App::FIELD_NAME],$columns->last());
 
                 if($column[Table::FIELD_UNIQUE])
-                    $uniq->add($column[Table::FIELD_NAME]);
+                    $uniq->set($column[Table::FIELD_NAME]);
 
                 append($command,$this->updateCreateCommand($column,$end));
 
@@ -352,7 +341,7 @@ namespace Imperium\Tables {
 
             append($command, ' )');
 
-            $this->added_columns = collection();
+            $this->added_columns = collect();
 
             $data = $this->connexion->execute($command);
 
@@ -411,7 +400,7 @@ namespace Imperium\Tables {
          */
         private function updateCreateCommand(array $field,bool $end) : string
         {
-            $x = collection($field);
+            $x = collect($field);
             $check = def($x->get(self::CHECK)) ? $this->check($x->get(self::FIELD_NAME), $x->get(self::CHECK_CONDITION), $x->get(self::CHECK_EXPECTED)) :  '';
 
             $size = $x->get(App::FIELD_LENGTH);
@@ -478,17 +467,17 @@ namespace Imperium\Tables {
             $rec = $this->column->for($this->current());
 
             $columns = $rec->show();
-            $columns_str = collection($columns)->join(',');
+            $columns_str = collect($columns)->join(',');
 
             $query = "INSERT INTO {$this->current()} ($columns_str) VALUES ";
 
             $primary = $rec->primary_key();
 
-            $x = collection();
+            $x = collect();
 
             $sqlite = $this->connexion->sqlite();
 
-            $types = collection($rec->types());
+            $types = collect($rec->types());
 
             for($i=0;different($i,$records);$i++)
             {
@@ -502,10 +491,10 @@ namespace Imperium\Tables {
                         {
                             case MYSQL:
                             case SQLITE:
-                                $x->add('NULL', $column);
+                                $x->put($column,'NULL');
                             break;
                             default:
-                                $x->add('DEFAULT',$column);
+                                $x->put($column,'DEFAULT');
                             break;
                         }
                     }
@@ -513,32 +502,32 @@ namespace Imperium\Tables {
                     {
 
                         if (has($type, self::BOOL))
-                            $x->add(true_or_false($this->driver),$column);
+                            $x->put(true_or_false($this->driver),$column);
 
 
                         if (has($type, self::JSONS))
                         {
-                            $data = collection();
+                            $data = collect();
                             $number = rand(1,10);
 
                             for ($i=0; $i < $number ; $i++)
                             {
                                 if(is_pair($i))
-                                    $data->add(faker()->text(50),$i);
+                                    $data->put($i,faker()->text(50));
                                 else
-                                    $data->add(faker()->numberBetween(1,50),$i);
+                                    $data->put($i,faker()->numberBetween(1,50));
                             }
-                            $x->add($data->json(),$column);
+                            $x->put($data->json(),$column);
 
                         }
                         if (has($type,self::DATE_TYPES))
-                            $x->add($this->connexion->instance()->quote(faker()->date()),$column);
+                            $x->put($column,$this->connexion->instance()->quote(faker()->date()));
 
                         if (has($type,self::NUMERIC_TYPES))
-                            $x->add(faker()->numberBetween(1,100),$column);
+                            $x->put($column,faker()->numberBetween(1,100));
 
                         if (has($type,self::TEXT_TYPES))
-                            $x->add($this->connexion->instance()->quote(faker()->text(50)),$column);
+                            $x->put($column,$this->connexion->instance()->quote(faker()->text(50)));
                     }
 
                 }
@@ -615,7 +604,7 @@ namespace Imperium\Tables {
          */
         public function is_empty(): bool
         {
-            return collection($this->all())->empty();
+            return collect($this->all())->empty();
         }
 
         /**
@@ -694,9 +683,9 @@ namespace Imperium\Tables {
          **/
         public function convert(string $charset,string $collate): bool
         {
-            is_true(collection($this->all_charset)->not_exist($charset),true,"The charset $charset is not valid");
+            is_true(collect($this->all_charset)->not_exist($charset),true,"The charset $charset is not valid");
 
-            is_true(collection($this->all_collation)->not_exist($collate),true,"The collation $collate is not valid");
+            is_true(collect($this->all_collation)->not_exist($collate),true,"The collation $collate is not valid");
 
             switch ($this->driver)
             {
@@ -729,7 +718,7 @@ namespace Imperium\Tables {
          */
         public function not_exist(string $table): bool
         {
-            return  collection($this->show())->not_exist($table);
+            return  collect($this->show())->not_exist($table);
         }
 
         /**
@@ -766,7 +755,7 @@ namespace Imperium\Tables {
          */
         public function all_types(): array
         {
-           return  collection()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->collection();
+           return  collect()->merge(self::DATE_TYPES,self::NUMERIC_TYPES,self::TEXT_TYPES)->all();
         }
 
         /**
@@ -783,7 +772,7 @@ namespace Imperium\Tables {
          */
         public function exist(string ...$tables): bool
         {
-            return collection($this->show())->inside($tables);
+            return collect($this->show())->contains($tables);
         }
 
         /**
@@ -818,9 +807,9 @@ namespace Imperium\Tables {
          */
         public function show(): array
         {
-            $tables = collection();
+            $tables = collect();
 
-            $hidden = collection($this->hidden_tables());
+            $hidden = collect($this->hidden_tables());
 
             switch ($this->driver)
             {
@@ -869,7 +858,7 @@ namespace Imperium\Tables {
                     }
                 break;
             }
-            return $tables->collection();
+            return $tables->all();
         }
 
         /**
@@ -944,7 +933,7 @@ namespace Imperium\Tables {
          */
         public function found(): int
         {
-            return collection($this->show())->length();
+            return collect($this->show())->sum();
         }
 
         /**
@@ -966,9 +955,9 @@ namespace Imperium\Tables {
         {
             $primary = $this->primary();
 
-            $columns = collection();
+            $columns = collect();
 
-            $ignoreValues = collection($ignore);
+            $ignoreValues = collect($ignore);
 
             foreach ($values  as $k => $value)
             {
@@ -976,7 +965,7 @@ namespace Imperium\Tables {
                 {
                     if ($ignoreValues->empty())
                     {
-                        if ($columns->numeric($value))
+                        if (is_numeric($value))
                             $columns->push("$k = $value");
                         else
                             $columns->push("$k = {$this->connexion->instance()->quote($value)}");
@@ -985,7 +974,7 @@ namespace Imperium\Tables {
 
                         if ($ignoreValues->not_exist($value))
                         {
-                            if ($columns->numeric($value))
+                            if (is_numeric($value))
                                 $columns->push("$k = $value");
                             else
                                 $columns->push("$k = {$this->connexion->instance()->quote($value)}");
@@ -1061,7 +1050,7 @@ namespace Imperium\Tables {
             {
                 $data = collation($this->connexion);
 
-                is_true(collection($data)->not_exist($new_collation),true,"The collation $new_collation  is not valid");
+                is_true(collect($data)->not_exist($new_collation),true,"The collation $new_collation  is not valid");
 
                 $this->collation = $new_collation;
             }
@@ -1085,7 +1074,7 @@ namespace Imperium\Tables {
             if ($this->connexion->mysql())
             {
 
-                is_true(collection($this->all_charset)->not_exist($new_charset),true,"The charset $new_charset is not valid");
+                is_true(collect($this->all_charset)->not_exist($new_charset),true,"The charset $new_charset is not valid");
 
                 $this->charset = $new_charset;
             }
@@ -1093,7 +1082,7 @@ namespace Imperium\Tables {
             if ($this->connexion->postgresql())
             {
 
-                is_true(collection($this->all_charset)->not_exist(strtoupper($new_charset)),true,"The charset $new_charset is not valid");
+                is_true(collect($this->all_charset)->not_exist(strtoupper($new_charset)),true,"The charset $new_charset is not valid");
 
                 $this->charset = $new_charset;
             }
@@ -1140,8 +1129,8 @@ namespace Imperium\Tables {
 
             $primary = $rec->primary_key();
 
-            $hidden = collection($ignore);
-            $values = collection();
+            $hidden = collect($ignore);
+            $values = collect();
 
             foreach ($collection as  $items)
             {
@@ -1154,7 +1143,7 @@ namespace Imperium\Tables {
                         {
                             if ($values->not_exist($value))
                             {
-                                if ($values->numeric($value))
+                                if (is_numeric($value))
                                     $values->push($value);
                                 else
                                     $values->push($this->connexion->instance()->quote($value));

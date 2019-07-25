@@ -18,7 +18,7 @@ class IpMiddleware implements Middleware
      */
     public function __invoke(ServerRequestInterface $request)
     {
-        is_true(collection(METHOD_SUPPORTED)->not_exist($request->getMethod()),true,'not supported');
+        is_true(collect(METHOD_SUPPORTED)->not_exist($request->getMethod()),true,'not supported');
 
     }
 }

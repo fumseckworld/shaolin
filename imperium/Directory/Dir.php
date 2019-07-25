@@ -184,7 +184,7 @@ namespace Imperium\Directory {
          */
         public static function scan(string $dir,$sorting_order = SCANDIR_SORT_ASCENDING ): array
         {
-            return collection(scandir($dir,$sorting_order))->remove_value('.')->remove_value('..')->collection();
+            return collect(scandir($dir,$sorting_order))->del('.','..')->all();
         }
 
         /**²
@@ -247,12 +247,12 @@ namespace Imperium\Directory {
          */
         public static function contains(string $path,string ...$dirs)
         {
-            $result = collection();
+            $result = collect();
 
             foreach ($dirs as $dir)
-                $result->add(is_dir($path .DIRECTORY_SEPARATOR . $dir));
+                $result->push(is_dir($path .DIRECTORY_SEPARATOR . $dir));
 
-            return $result->not_exist(false);
+            return $result->ok();
         }
     }
 }

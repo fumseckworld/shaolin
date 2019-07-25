@@ -99,7 +99,7 @@ class Pagination implements PaginationManagement
      * @param int    $perPage
      * @param string $instance
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public static function paginate(int $perPage, string $instance): Pagination
     {
@@ -415,7 +415,7 @@ class Pagination implements PaginationManagement
      *
      * @param int $adjacent
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setAdjacent(int $adjacent): Pagination
     {
@@ -428,7 +428,7 @@ class Pagination implements PaginationManagement
      *
      * @param int $current
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setCurrent(int $current): Pagination
     {
@@ -441,7 +441,7 @@ class Pagination implements PaginationManagement
      *
      * @param string $endChar
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setEndChar(string $endChar): Pagination
     {
@@ -455,7 +455,7 @@ class Pagination implements PaginationManagement
      *
      * @param string $startChar
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setStartChar(string $startChar): Pagination
     {
@@ -469,7 +469,7 @@ class Pagination implements PaginationManagement
      *
      * @param string $endClass
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setEndCssClass(string $endClass): Pagination
     {
@@ -483,7 +483,7 @@ class Pagination implements PaginationManagement
      *
      * @param string $startClass
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setLiCssClass(string $startClass): Pagination
     {
@@ -497,7 +497,7 @@ class Pagination implements PaginationManagement
      *
      * @param string $ulClass
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setUlCssClass(string $ulClass): Pagination
     {
@@ -510,7 +510,7 @@ class Pagination implements PaginationManagement
      *
      * @param int $total
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setTotal(int $total): Pagination
     {
@@ -522,7 +522,7 @@ class Pagination implements PaginationManagement
     /**
      * @param bool $bool
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setWithLinkInCurrentLi(bool $bool): Pagination
     {
@@ -536,7 +536,7 @@ class Pagination implements PaginationManagement
      *
      * @param int $type
      *
-     * @return \Imperium\Html\Pagination\Pagination
+     * @return Pagination
      */
     public function setType(int $type): Pagination
     {

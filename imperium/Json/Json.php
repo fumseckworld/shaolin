@@ -34,7 +34,7 @@ namespace Imperium\Json {
          */
         public function __construct(string $filename,string $mode = EMPTY_AND_WRITE_FILE_MODE)
         {
-            $this->data = collection();
+            $this->data = collect();
 
             $this->filename = new File($filename,$mode);
 
@@ -68,7 +68,7 @@ namespace Imperium\Json {
          */
         public function add($value,$key = ''): Json
         {
-            $this->data->add($value,$key);
+            $this->data->put($key,$value);
 
             return $this;
         }
@@ -104,7 +104,7 @@ namespace Imperium\Json {
          */
         public function generate(): bool
         {
-            return $this->create($this->data->collection());
+            return $this->create($this->data->all());
         }
 
         /**
@@ -123,7 +123,7 @@ namespace Imperium\Json {
         {
             not_in(self::VALID,$option,true,"The option used is not valid");
 
-            return json_encode($this->data->collection(),$option,$depth);
+            return json_encode($this->data->all(),$option,$depth);
         }
 
         /**

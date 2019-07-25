@@ -5,7 +5,6 @@ namespace Imperium\Routing {
 
 
     use Imperium\Connexion\Connect;
-    use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Model\Model;
     use Imperium\Tables\Table;
@@ -121,7 +120,6 @@ namespace Imperium\Routing {
          *
          * @return Connect
          *
-         * @throws Kedavra
          *
          */
         private function routes_connect():Connect

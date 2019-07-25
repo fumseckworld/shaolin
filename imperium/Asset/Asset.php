@@ -33,7 +33,7 @@ namespace Imperium\Asset {
          */
         public function css(): string
         {
-            $filename = collection(explode('.',$this->filename))->begin();
+            $filename = collect(explode('.',$this->filename))->first();
 
             append($filename,'.css');
 

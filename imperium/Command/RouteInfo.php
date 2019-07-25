@@ -31,11 +31,11 @@ namespace Imperium\Command {
 
         public function names(): array
         {
-            $data = collection();
+            $data = collect();
             foreach ($this->routes()->query()->from('routes')->mode(SELECT)->only('name')->get() as $x)
-                $data->add($x->name);
+                $data->set($x->name);
 
-            return $data->collection();
+            return $data->all();
         }
 
         /**

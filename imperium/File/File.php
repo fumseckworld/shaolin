@@ -40,8 +40,8 @@ namespace Imperium\File {
         {
             not_in(FILES_OPEN_MODE,$mode,true,"The open mode is not a valid mode");
 
-            if (is_false(file_exists($filename)))
-                self::create($filename);
+            if (!file_exists($filename))
+                touch($filename);
 
             $this->mode = $mode;
 
@@ -72,12 +72,12 @@ namespace Imperium\File {
          */
         public static function exist(string ...$files): bool
         {
-            $data = collection();
+            $data = collect();
 
             foreach ($files as $file)
-                file_exists($file) ?  $data->add(true,$file) :  $data->add(false,$file);
+                file_exists($file) ?  $data->put(true,$file) :  $data->put(false,$file);
 
-            return $data->not_exist(false);
+            return $data->ok();
         }
 
         /**
@@ -91,7 +91,7 @@ namespace Imperium\File {
          */
         public static function create(string $filename): bool
         {
-            return self::exist($filename) ? false : touch($filename);
+            return  touch($filename);
         }
 
         /**
@@ -160,17 +160,17 @@ namespace Imperium\File {
          */
         public function lines(): array
         {
-            $data = collection();
+            $data = collect();
 
             $this->rewind();
 
             while ($this->valid())
             {
-                $data->add($this->line());
+                $data->set($this->line());
                 $this->next();
             }
 
-            return $data->collection();
+            return $data->values();
 
         }
         /**
@@ -279,7 +279,7 @@ namespace Imperium\File {
          */
         public function infos(): Collection
         {
-            return collection($this->instance()->fstat());
+            return collect($this->instance()->fstat());
         }
 
         /**
@@ -349,7 +349,7 @@ namespace Imperium\File {
         {
            if ($this->writable())
            {
-               is_true(equal($this->instance()->fwrite($text,length($text)),0,true,"Fail to write data"));
+               is_true(equal($this->instance()->fwrite($text,sum($text)),0,true,"Fail to write data"));
            }
             return $this;
         }
@@ -754,14 +754,14 @@ namespace Imperium\File {
          */
         public function keys(string $delimiter= ':')
         {
-            $data = collection();
+            $data = collect();
             foreach ($this->lines() as $line)
             {
                 if (def($line))
-                    $data->add(collection(explode($delimiter,$line))->begin());
+                    $data->set(collect(explode($delimiter,$line))->first());
             }
 
-           return $data->collection();
+           return $data->values();
         }
 
 
@@ -776,13 +776,13 @@ namespace Imperium\File {
          */
         public function values(string $delimiter): array
         {
-            $data = collection();
+            $data = collect();
 
             foreach ($this->lines() as $line)
             {
-               $data->add(collection(explode($delimiter,$line))->last());
+               $data->set(collect(explode($delimiter,$line))->last());
             }
-           return $data->collection();
+           return $data->values();
         }
 
         /**
@@ -798,13 +798,13 @@ namespace Imperium\File {
         public function change_values(array $keys, array $values,string $delimiter =':'): bool
         {
 
-            different(length($keys),length($values),true,'The keys and values size are different');
+            different(sum($keys),sum($values),true,'The keys and values size are different');
 
-            $keys = collection($keys);
+            $keys = collect($keys);
 
-            $values = collection($values);
+            $values = collect($values);
 
-            foreach ($keys->collection() as $k => $v)
+            foreach ($keys->all() as $k => $v)
             {
                 $key = $keys->get($k);
 

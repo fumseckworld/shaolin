@@ -3,11 +3,6 @@
 
 namespace Imperium\Debug;
 
-
-
-
-use DI\DependencyException;
-use DI\NotFoundException;
 use Imperium\App;
 use Imperium\Exception\Kedavra;
 
@@ -19,8 +14,6 @@ class Bar
      * @param App $app
      * @return string
      * @throws Kedavra
-     * @throws DependencyException
-     * @throws NotFoundException
      */
     public function render(App $app):string
     {

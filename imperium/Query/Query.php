@@ -271,7 +271,7 @@ namespace Imperium\Query {
                 case Query::UNION_ALL:
                     return "$union $where $and $or $order $limit";
                 break;
-                case collection(self::JOIN_MODE)->exist($mode) :
+                case collect(self::JOIN_MODE)->exist($mode) :
                     return "$join $order $limit";
                 break;
 
@@ -323,7 +323,7 @@ namespace Imperium\Query {
          */
         public function only(string ...$columns): Query
         {
-            $this->columns  = collection($columns)->join(', ');
+            $this->columns  = collect($columns)->join(', ');
 
             return $this;
         }
@@ -436,7 +436,7 @@ namespace Imperium\Query {
         public function mode(int $mode): Query
         {
 
-            if (collection(Table::MODE)->has_key($mode))
+            if (collect(Table::MODE)->has($mode))
                 $this->mode = $mode;
             else
                throw new Kedavra("The current mode is not valid");
@@ -494,7 +494,7 @@ namespace Imperium\Query {
 
             if ($columns_define)
             {
-                $end = collection($columns)->last();
+                $end = collect($columns)->last();
                 foreach($columns as $column)
                     different($column,$end) ?  append($select,"$first_table.$column, $second_table.$column, ") : append($select,"$first_table.$column, $second_table.$column");
             }
@@ -590,11 +590,11 @@ namespace Imperium\Query {
 
             if (has($driver,[Connect::SQLITE]))
             {
-                $fields = collection($this->tables->column()->for($this->table())->show());
+                $fields = collect($this->tables->column()->for($this->table())->show());
                 $end =  $fields->last();
                 $columns = '';
 
-                foreach ($fields->collection() as $column)
+                foreach ($fields->all() as $column)
                 {
                     if (different($column , $end))
                         append($columns,"$column LIKE '%$value%' OR ");
