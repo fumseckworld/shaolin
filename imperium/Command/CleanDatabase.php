@@ -21,11 +21,11 @@ namespace Imperium\Command {
         public function execute(InputInterface $input, OutputInterface $output)
         {
 
-            $base = config('db','base');
+            $base = db('base');
 
             $tables = [];
 
-            $hidden  = config('db','hidden_tables');
+            $hidden  = db('hidden_tables');
 
             merge($tables,app()->show_tables(),$hidden);
 

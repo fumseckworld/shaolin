@@ -13,7 +13,7 @@ namespace Imperium\Command {
         protected function configure()
         {
 
-            $base = config('db','base');
+            $base = db('base');
             $this->setAliases(['dump']);
             $this->setDescription("Dump the $base database");
         }

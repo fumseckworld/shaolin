@@ -2,7 +2,7 @@
 
 namespace Imperium\Tables {
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
 
@@ -332,7 +332,7 @@ namespace Imperium\Tables {
          *
          * The columns defined
          *
-         * @var Collection
+         * @var Collect
          *
          */
         private $added;
@@ -999,7 +999,6 @@ namespace Imperium\Tables {
          * @return bool
          *
          * @throws Kedavra
-         *
          */
         public function has_types(string ...$types): bool
         {

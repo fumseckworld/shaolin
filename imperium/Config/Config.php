@@ -2,7 +2,7 @@
 
 namespace Imperium\Config {
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Symfony\Component\Yaml\Yaml;
@@ -46,7 +46,7 @@ namespace Imperium\Config {
          */
         private $key;
         /**
-         * @var Collection
+         * @var Collect
          */
         private $values;
 

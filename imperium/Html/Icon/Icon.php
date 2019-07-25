@@ -4,7 +4,7 @@
 namespace Imperium\Html\Icon {
 
     use Exception;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
 
     /**
      *
@@ -23,7 +23,7 @@ namespace Imperium\Html\Icon {
     {
 
         /**
-         * @var Collection
+         * @var Collect
          */
         private $data;
 
@@ -43,7 +43,7 @@ namespace Imperium\Html\Icon {
         private $icon_class;
 
         /**
-         * @var Collection
+         * @var Collect
          */
         private $id;
 

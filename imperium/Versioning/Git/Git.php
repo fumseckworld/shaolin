@@ -2,11 +2,9 @@
 
 namespace Imperium\Versioning\Git {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Highlight\Highlighter;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Connexion\Connect;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
@@ -15,6 +13,8 @@ namespace Imperium\Versioning\Git {
     use Imperium\Html\Form\Form;
     use Imperium\Markdown\Markdown;
     use Imperium\Model\Model;
+    use Imperium\Query\Query;
+    use Imperium\Request\Request;
     use Imperium\Tables\Table;
     use Imperium\Writing\Write;
     use Sinergi\BrowserDetector\Os;
@@ -42,6 +42,15 @@ namespace Imperium\Versioning\Git {
          * @var string
          */
         private static $name;
+
+        /**
+         * @var Table
+         */
+        private static $table;
+        /**
+         * @var Query
+         */
+        private static $query;
 
         /**
          * @var array
@@ -128,6 +137,21 @@ namespace Imperium\Versioning\Git {
         }
 
 
+        public static function table()
+        {
+            if (is_null(self::$table))
+                self::$table =   new Table(self::connect());
+
+            return self::$table;
+        }
+
+        public static function query()
+        {
+            if (is_null(self::$query))
+                self::$query =   new Query(self::table(),self::connect());
+
+            return self::$query;
+        }
         /**
          *
          * @return Model
@@ -136,7 +160,7 @@ namespace Imperium\Versioning\Git {
         public static function model()
         {
             if (is_null(self::$model))
-                self::$model =  new Model(self::connect(),new Table(self::connect()));
+                self::$model =  new Model(self::connect(),self::table(),self::query(),new Request());
 
 
             return self::$model;
@@ -484,10 +508,10 @@ namespace Imperium\Versioning\Git {
          *
          * @param string $author
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function commits_by_year(string $author): Collection
+        public function commits_by_year(string $author): Collect
         {
 
             $today = now()->format('Y-m-d');
@@ -505,11 +529,11 @@ namespace Imperium\Versioning\Git {
          *
          * @param string $author
          *
-         * @return Collection
+         * @return Collect
          *
          *
          */
-        public function commits_by_month(string $author): Collection
+        public function commits_by_month(string $author): Collect
         {
 
             $contributions = collect();
@@ -537,10 +561,10 @@ namespace Imperium\Versioning\Git {
 
         /**
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function months(): Collection
+        public function months(): Collect
         {
             $months= collect();
             $months->set(now()->addMonths(1)->days(1)->format('Y-m-d'));
@@ -744,10 +768,10 @@ namespace Imperium\Versioning\Git {
          *
          * Result of command
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function data(): Collection
+        public function data(): Collect
         {
             return collect($this->data);
         }
@@ -1369,10 +1393,10 @@ namespace Imperium\Versioning\Git {
          *
          * @param string $sha1
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function lines(string $sha1): Collection
+        public function lines(string $sha1): Collect
         {
             $this->execute("git show $sha1 --stat ");
 
@@ -1384,10 +1408,10 @@ namespace Imperium\Versioning\Git {
          *
          * Get a collection of all remotes
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function remote(): Collection
+        public function remote(): Collect
         {
             $this->execute('git remote');
 
@@ -1469,10 +1493,10 @@ namespace Imperium\Versioning\Git {
          *
          * Show the repositories status
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function status(): Collection
+        public function status(): Collect
         {
             $this->execute('git status');
 
@@ -1560,9 +1584,7 @@ namespace Imperium\Versioning\Git {
          * A
          *
          * @return string
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function todo(): string
         {
@@ -1638,9 +1660,7 @@ namespace Imperium\Versioning\Git {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public function report_bugs_view(): string

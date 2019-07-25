@@ -3,7 +3,7 @@
 namespace Imperium\Html\Table {
 
     use Carbon\Carbon;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Exception\Kedavra;
 
     /**
@@ -78,14 +78,14 @@ namespace Imperium\Html\Table {
         /**
          * The  html code
          *
-         * @var Collection
+         * @var Collect
          *
          */
         private $data;
 
         /**
          *
-         * @var Collection
+         * @var Collect
          *
          */
         private $columns;

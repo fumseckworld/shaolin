@@ -4,7 +4,6 @@ namespace Imperium\Flash {
 
 
     use Exception;
-    use Imperium\Session\ArraySession;
     use Imperium\Session\Session;
     use Imperium\Session\SessionInterface;
 
@@ -62,7 +61,7 @@ namespace Imperium\Flash {
          */
         public function success(string $message): void
         {
-            $this->session->set(self::SUCCESS_KEY,$message);
+            $this->session->put(self::SUCCESS_KEY,$message);
         }
 
         /**
@@ -119,7 +118,7 @@ namespace Imperium\Flash {
          */
         public function failure(string $message): void
         {
-            $this->session->set(self::FAILURE_KEY,$message);
+            $this->session->put(self::FAILURE_KEY,$message);
         }
 
         /**

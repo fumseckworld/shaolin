@@ -6,7 +6,7 @@ namespace Imperium\Testing {
 
     use GuzzleHttp\Psr7\ServerRequest;
     use Imperium\Cache\Cache;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
     use Imperium\Model\Model;
@@ -39,10 +39,10 @@ namespace Imperium\Testing {
          *
          * @param array $data
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function collect(array $data =[]): Collection
+        public function collect(array $data =[]): Collect
         {
             return app()->collection($data);
         }
@@ -70,8 +70,6 @@ namespace Imperium\Testing {
          * Get an instance of route model
          *
          * @return Model
-         *
-         * @throws Kedavra
          *
          */
         public function route(): Model

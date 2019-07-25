@@ -71,16 +71,6 @@ namespace Imperium\Bases {
 
         /**
          *
-         * All bases
-         *
-         * @var array
-         *
-         */
-        private $all;
-
-
-        /**
-         *
          * Base Constructor
          *
          * @method __construct

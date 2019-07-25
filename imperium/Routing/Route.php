@@ -7,6 +7,8 @@ namespace Imperium\Routing {
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
     use Imperium\Model\Model;
+    use Imperium\Query\Query;
+    use Imperium\Request\Request;
     use Imperium\Tables\Table;
 
     trait Route
@@ -29,12 +31,11 @@ namespace Imperium\Routing {
          *
          * @return Model
          *
-         * @throws Kedavra
          *
          */
         public function routes(): Model
         {
-            return (new Model($this->routes_connect(),$this->routes_table()))->from('routes');
+            return (new Model($this->routes_connect(),$this->routes_table(),new Query($this->routes_table(),$this->routes_connect()),new Request()))->from('routes');
         }
 
 
@@ -106,7 +107,6 @@ namespace Imperium\Routing {
          *
          * @return Table
          *
-         * @throws Kedavra
          *
          */
         private function routes_table(): Table

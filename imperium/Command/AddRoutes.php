@@ -2,7 +2,7 @@
 
 namespace Imperium\Command {
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Routing\Route;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -41,7 +41,7 @@ namespace Imperium\Command {
            return controllers();
 
         }
-        public function methods():Collection
+        public function methods():Collect
         {
             return collect(METHOD_SUPPORTED)->each('strtolower');
         }

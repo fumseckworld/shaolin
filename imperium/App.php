@@ -9,7 +9,7 @@ namespace Imperium {
     use Imperium\Asset\Asset;
     use Imperium\Bases\Base;
     use Imperium\Cache\Cache;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
     use Imperium\Debug\Bar;
@@ -1077,10 +1077,10 @@ namespace Imperium {
          *
          * @param mixed $data
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function collection($data = []): Collection
+        public function collection($data = []): Collect
         {
             return collect($data);
         }
@@ -1208,6 +1208,8 @@ namespace Imperium {
          *
          * @return RedirectResponse
          *
+         * @throws Kedavra
+         *
          */
         public function back(string $message ='', bool $success = true): RedirectResponse
         {
@@ -1281,8 +1283,6 @@ namespace Imperium {
         /**
          *
          * @return Model
-         *
-         * @throws Kedavra
          *
          */
         public function route(): Model

@@ -48,7 +48,6 @@ namespace Imperium\Validator {
          * @return Validator|RedirectResponse
          *
          * @throws Exception
-         *
          */
         public function define(string ...$args)
         {

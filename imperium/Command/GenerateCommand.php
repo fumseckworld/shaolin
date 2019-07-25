@@ -26,15 +26,14 @@ namespace Imperium\Command {
 
             $command  = $input->getArgument('name');
 
-            $dir = collection(config('app','dir'))->get('command');
-
-            $core  = core_path(collection(config('app','dir'))->get('app'));
-
-            $namespace = config('app','namespace') . '\\' . $dir;
+            $dir = COMMAND;
 
 
-            $file =  $core .DIRECTORY_SEPARATOR . $dir  .DIRECTORY_SEPARATOR. $command .'.php';
-            if (File::not_exist($file))
+            $namespace = 'Shaolin\\' . $dir;
+
+
+            $file =   $dir  .DIRECTORY_SEPARATOR. $command .'.php';
+            if (!File::exist($file))
             {
                 File::create($file);
 

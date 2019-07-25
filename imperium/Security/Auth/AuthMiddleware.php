@@ -31,12 +31,9 @@ namespace Imperium\Security\Auth {
 
             if (app()->auth()->connected())
             {
-                if (current_user()->id != 1 && is_admin())
-                    return to($home);
-
                 if(strpos($request->getUri()->getPath(),'/login') === 0 || equal($request->getUri()->getPath(),"/register"))
                 {
-                    return current_user()->id == 1 ? to($admin) :  to($home);
+                    return  to($home);
                 }
             }
         }

@@ -4,7 +4,7 @@
 namespace Imperium\Cache {
 
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
 
     class Cache
     {
@@ -27,10 +27,10 @@ namespace Imperium\Cache {
          *
          * Get cache infos
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function infos(): Collection
+        public function infos(): Collect
         {
             return collect(apcu_cache_info());
         }

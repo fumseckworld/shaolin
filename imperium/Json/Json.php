@@ -5,13 +5,13 @@ namespace Imperium\Json {
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
 
     class Json
     {
 
         /**
-         * @var Collection
+         * @var Collect
          */
         private $data;
 

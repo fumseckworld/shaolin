@@ -8,7 +8,7 @@ namespace Imperium {
     use Imperium\Asset\Asset;
     use Imperium\Bases\Base;
     use Imperium\Cache\Cache;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
@@ -199,10 +199,10 @@ namespace Imperium {
          *
          * @param mixed $data
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function collection($data = []): Collection;
+        public function collection($data = []): Collect;
 
 
 

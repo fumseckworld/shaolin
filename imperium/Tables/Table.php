@@ -3,7 +3,7 @@
 
 namespace Imperium\Tables {
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
     use Imperium\Import\Import;
@@ -30,7 +30,7 @@ namespace Imperium\Tables {
          *
          * All columns added to create a new table
          *
-         * @var Collection
+         * @var Collect
          *
          */
         private $added_columns;

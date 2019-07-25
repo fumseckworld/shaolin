@@ -2,9 +2,7 @@
 
 namespace Imperium\Security\Auth {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Exception\Kedavra;
     use Imperium\Html\Form\Form;
     use Imperium\Model\Model;
@@ -88,9 +86,7 @@ namespace Imperium\Security\Auth {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public function account(string $route_name,string $username_placeholder,string $last_name_placeholder,string $email_placeholder,string $password_placeholder,string $submit_text): string
@@ -335,10 +331,10 @@ namespace Imperium\Security\Auth {
             {
                 if (check($request->get($password_column), $user->$password_column))
                 {
-                    $this->session->set(self::USERNAME, $request->get($this->column()));
+                    $this->session->put(self::USERNAME, $request->get($this->column()));
 
-                    $this->session->set(self::CONNECTED, true);
-                    $this->session->set(self::ID,$user->id);
+                    $this->session->put(self::CONNECTED, true);
+                    $this->session->put(self::ID,$user->id);
 
                     return $this->redirect();
                 } else
@@ -371,11 +367,7 @@ namespace Imperium\Security\Auth {
          */
         private function clean_session(): void
         {
-            $this->session->remove(self::CONNECTED);
-
-            $this->session->remove(self::USERNAME);
-
-            $this->session->remove(self::ID);
+            $this->session->remove(self::CONNECTED,self::USERNAME,self::ID);
         }
 
         /**
@@ -470,23 +462,23 @@ namespace Imperium\Security\Auth {
         }
 
         /**
-         * @return Collection
+         * @return Collect
          *
          * @throws Kedavra
          *
          */
-        private function messages(): Collection
+        private function messages(): Collect
         {
             return collect(config('auth', 'messages'));
         }
 
         /**
-         * @return Collection
+         * @return Collect
          *
          * @throws Kedavra
          *
          */
-        private function columns(): Collection
+        private function columns(): Collect
         {
             return collect(config('auth','columns'));
         }

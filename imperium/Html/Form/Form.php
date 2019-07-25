@@ -2,8 +2,6 @@
 
 namespace Imperium\Html\Form {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Imperium\App;
     use Imperium\Exception\Kedavra;
 
@@ -573,9 +571,8 @@ namespace Imperium\Html\Form {
          *
          * @return Form
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function start(string $route,string $confirm ='',string $class = '',  bool $enctype = false,string $charset = 'utf-8'): Form
         {

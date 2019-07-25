@@ -2,7 +2,7 @@
 
 namespace Imperium\Session {
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
 
 
     /**
@@ -24,7 +24,7 @@ namespace Imperium\Session {
     {
 
         /**
-         * @var Collection
+         * @var Collect
          */
         private $session;
 
@@ -73,10 +73,10 @@ namespace Imperium\Session {
          * @param $value
          * @param string $key
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function put($key,$value): Collection
+        public function put($key,$value): Collect
         {
             return  $this->session->put($key,$value);
         }
@@ -85,14 +85,16 @@ namespace Imperium\Session {
          *
          * Remove a value
          *
-         * @param mixed $key
-         *
+         * @param array $keys
          * @return bool
-         *
          */
-        public function remove($key): bool
+        public function remove(...$keys): bool
         {
-            return $this->has($key) ?   $this->session->del($key)->key_not_exist($key) : false;
+            $data = collect();
+            foreach ($keys as $key)
+                $data->push($this->session->del($key)->ok());
+
+            return $data->ok();
         }
 
         /**

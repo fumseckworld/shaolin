@@ -3,6 +3,8 @@
 
 namespace Imperium\Model {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\App;
     use Imperium\Connexion\Connect;
     use Imperium\Exception\Kedavra;
@@ -11,7 +13,7 @@ namespace Imperium\Model {
     use Imperium\Routing\Route;
     use Imperium\Security\Csrf\Csrf;
     use Imperium\Tables\Table;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Html\Form\Form;
     use Imperium\Zen;
     use PDO;
@@ -110,10 +112,14 @@ namespace Imperium\Model {
 
         /**
          *
-         * @var Collection
+         * @var Collect
          *
          */
         private $data;
+        /**
+         * @var Request
+         */
+        private $request;
 
         /**
          *
@@ -122,14 +128,16 @@ namespace Imperium\Model {
          *
          * @param Connect $connect
          * @param Table $table
+         * @param Query $query
+         * @param Request $request
          */
-        public function __construct(Connect $connect,Table $table)
+        public function __construct(Connect $connect,Table $table,Query $query,Request $request)
         {
             $this->connexion = $connect;
             $this->table = $table;
             $this->data = collect();
-            $this->sql =  \query($table,$connect);
-
+            $this->sql = $query;
+            $this->request = $request;
         }
 
         /**
@@ -206,11 +214,11 @@ namespace Imperium\Model {
          */
         public function update(): bool
         {
-            $table = Request::get('__table__');
+            $table = $this->request->get('__table__');
 
-            $id = intval(Request::get($this->from($table)->primary()));
+            $id = intval($this->request->get($this->from($table)->primary()));
 
-            $data = collect(Request::all())->del(Csrf::KEY,'__table__');
+            $data = collect($this->request->all())->del(CSRF::KEY,'__table__');
 
             $columns = $this->table()->column()->for($table)->show();
 
@@ -265,6 +273,8 @@ namespace Imperium\Model {
          * @return string
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function edit_form(string $table,int $id,string $action,string $submit_text,string $submit_icon): string
         {
@@ -278,13 +288,14 @@ namespace Imperium\Model {
          * @method create
          *
          * @param string $table
-         * @param  string $action The form action
-
-         * @param  string $submit_text The submit text
+         * @param string $action The form action
+         * @param string $submit_text The submit text
          * @param string $submit_icon
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function create_form(string $table,string $action, string $submit_text,string $submit_icon): string
         {
@@ -340,7 +351,7 @@ namespace Imperium\Model {
             switch ($mode)
             {
                 case DISPLAY_TABLE:
-                    return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current='. $current_page .'&limit='.'" value="'.get('limit',10).'"  step="10" min="1" type="number"></div>'.\Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(),$records,'table-responsive','','','')->generate(\collection(config('form','class'))->get('table')). html('div',$pagination,'mt-4');
+                    return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current='. $current_page .'&limit='.'" value="'.get('limit',10).'"  step="10" min="1" type="number"></div>'.\Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(),$records,'table-responsive','','','')->generate(collect(config('form','class'))->get('table')). html('div',$pagination,'mt-4');
                 break;
                 case DISPLAY_ARTICLE:
                     return article($records,$pagination);
@@ -398,6 +409,8 @@ namespace Imperium\Model {
          * @return string
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function show(   string $action_remove_text ='Remove',string $confirm_text = 'Are you sure ?',
                                  string $action_edit_text ='Edit',
@@ -440,7 +453,7 @@ namespace Imperium\Model {
 
 
             if (is_false($session->has('limit')))
-                $session->set('limit',10);
+                $session->put('limit',10);
 
             $limit_records_per_page = intval($session->get('limit'));
             $primary =  $this->from($table)->primary();
@@ -833,18 +846,18 @@ namespace Imperium\Model {
          */
         public function add(): bool
         {
-            $data = collect(Request::all())->del(Csrf::KEY,'__table__');
+            $table = $this->request->get('__table__');
+            $data = collect($this->request->all())->del(Csrf::KEY,'__table__');
 
-            $primary = $this->table()->column()->for(Request::get('__table__'))->primary_key();
-            $columns = $this->from(Request::get('__table__'))->columns();
+            $primary = $this->table()->column()->for($table)->primary_key();
+            $columns = $this->from($table)->columns();
 
             $x = collect();
 
             foreach ($columns as $column)
                 equal($column, $primary) ? $x->put($column, $column) : $x->put($column,$data->get($column));
 
-
-            return  $this->table()->from(Request::get('__table__'))->save($this,$x->all());
+            return  $this->table()->from($table)->save($this,$x->all());
         }
 
         /**
@@ -1026,7 +1039,8 @@ namespace Imperium\Model {
          * @return string
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function parse($record,string $action,string $submit_text,string $table,string $primary): string
         {

@@ -3,7 +3,6 @@
 namespace Imperium\Collection {
 
     use ArrayAccess;
-    use Imperium\Exception\Kedavra;
     use Iterator;
 
    /**
@@ -19,7 +18,7 @@ namespace Imperium\Collection {
     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
     *
     **/
-    class Collection implements ArrayAccess, Iterator
+    class Collect implements ArrayAccess, Iterator
     {
 
        /*
@@ -63,7 +62,7 @@ namespace Imperium\Collection {
         {
             $this->data = $data;
 
-            $this->position = 0;
+            $this->init();
         }
 
 
@@ -73,23 +72,26 @@ namespace Imperium\Collection {
          *
          * @method count
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function count(): Collection
+        public function count(): Collect
         {
             return $this->checkout(array_count_values($this->all()));
         }
 
         /**
-        *
-        * Initialize the position to i and return the position
-        *
-        * @param int $i
-        *
-        * @return int
-        */
-        public function init(int $i = 0)
+         *
+         * Initialise position counter
+         *
+         * @method init
+         *
+         * @param int $i
+         *
+         * @return int
+         *
+         */
+        public function init(int $i = 0): int
         {
             $this->position = $i;
 
@@ -98,130 +100,52 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Convert the data in the array to html code
+         * Extract a slice of the array
          *
-         * @method print
+         * @method slice
          *
-         * @param  bool $html_table To print a html table
-         * @param  array $columns Print defined columns name
-         * @param  bool $html_cards To print cards
-         * @param  string $html_head_code The customize html head code
-         * @param  string $html_end_head_code The customize html end head code
-         * @param  string $html_body_element The body code
-         * @param  string $body_class The body class
-         * @param  string $body_elements_separator The html tag to separate the elements
-         * @param  string $html_before_all The html code to add before all
-         * @param  string $html_after_all The html code to add after_all
+         * @param int $offset
+         * @param int|null $limit
          *
-         * @return string
+         * @return Collect
          *
          */
-        public function print( bool $html_table = true ,array $columns =[],bool $html_cards = false,string $html_head_code= '',string $html_end_head_code ='',string $html_body_element = '',string $body_class= '',string $body_elements_separator= '',string $html_before_all = '<div class="row">',string $html_after_all = '</div>'): string
+        public function slice(int $offset,int $limit = null): Collect
         {
-            $this->rewind();
-
-
-            if (!$html_table && $html_cards)
-            {
-                $code = '';
-
-                append($code,'<div class="row">');
-
-
-                while ($this->valid())
-                {
-                    $values = $this->current();
-
-                    append($code,'<div class="col-lg-4"><div class="card ml-4 mr-4 mt-4 mb-4"><div class="card-body">');
-
-
-                    foreach ($values as $k => $v)
-                    {
-                        append($code,"<p> {$values->$k} </p>");
-
-                    }
-
-                    append($code,'</div></div></div>');
-
-                    $this->next();
-                }
-                append($code,'</div>');
-
-                return $code;
-
-            }
-
-            if ($html_table && !$html_cards)
-            {
-                $code = '';
-
-                append($code,'<table class="table table-bordered table-hover"><thead><tr>');
-
-                foreach ($columns as $column)
-                {
-                    append($code, '<th>'.$column.'</th>');
-
-                }
-
-                append($code,'</tr></thead><tbody>');
-
-                while ($this->valid())
-                {
-
-                    $values = $this->current();
-                    append($code,'<tr>');
-
-                    foreach ($values as $k => $v)
-                    {
-                        append($code,"<td> {$values->$k} </td>");
-
-                    }
-
-                    append($code,'</tr> ');
-
-
-                    $this->next();
-                }
-                append($code,'</tbody></table>');
-                return $code;
-            }
-
-            if (!$html_table && !$html_cards)
-            {
-
-                $code = '';
-                append($code,$html_before_all);
-                while ($this->valid())
-                {
-                    $values = $this->current();
-
-                    append($code,$html_head_code,'<'.$html_body_element.' class="'.$body_class.'">');
-
-
-                    foreach ($values as $k => $v)
-                    {
-                        append($code,"<$body_elements_separator> {$values->$k} </$body_elements_separator>");
-
-                    }
-
-                    append($code,'</'.$html_body_element.'>',$html_end_head_code);
-
-
-                    $this->next();
-                }
-
-                append($code,$html_after_all);
-
-                return $code;
-            }
-            return '';
+            return $this->checkout(array_slice($this->all(),$offset,$limit));
         }
 
+        /**
+         *
+         *
+         * Chunk the array in separate array
+         *
+         * @method chunk
+         *
+         * @param int $x
+         *
+         * @return Collect
+         *
+         */
+        public function chunk(int $x): Collect
+        {
+            $data = collect();
+
+            while (def($this->data))
+            {
+                $data->push($this->diff($this->slice($x)->all())->all());
+
+                $this->data = $this->slice($x)->all();
+            }
+
+            return $this->checkout($data->all());
+
+        }
         /**
         *
         * Return the array generated
         *
-        * @method collection
+        * @method all
         *
         * @return array
         *
@@ -239,10 +163,10 @@ namespace Imperium\Collection {
          *
          * @param mixed ...$keys
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function only(...$keys): Collection
+        public function only(...$keys): Collect
         {
             $x = collect();
 
@@ -258,23 +182,23 @@ namespace Imperium\Collection {
         /**
          *
          *
-         * Compare two array
+         * Compare the array with the x array
          *
          * @method diff
          *
          * @param array $x
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function diff(array $x): Collection
+        public function diff(array $x): Collect
         {
             return $this->checkout(array_diff($this->all(),$x));
         }
 
         /**
         *
-        * Return the last element in the array
+        * Return the last element of the array
         *
         * @method last
         *
@@ -288,7 +212,7 @@ namespace Imperium\Collection {
 
         /**
         *
-        * Return the begin of the array
+        * Return the first element of the array
         *
         * @method first
         *
@@ -306,9 +230,10 @@ namespace Imperium\Collection {
          *
          * @method reverse
          *
-         * @return Collection
+         * @return Collect
+         *
          */
-        public function reverse(): Collection
+        public function reverse(): Collect
         {
             return $this->checkout(array_reverse($this->data));
         }
@@ -323,63 +248,50 @@ namespace Imperium\Collection {
          *
          * @return mixed
          *
-         * @throws Kedavra
-         *
          */
         public function value_before_key($key)
         {
-            $length = $this->sum();
 
-            if ($this->has($key) && superior($length,1))
+            if ($this->has($key))
             {
 
                 foreach ($this->data as $k => $v)
-                    if(different($k,$key))
+                    if($k !== $key)
                         $this->beforeValue = $v;
                     else
                         return $this->beforeValue;
 
             }
-
-            if (superior($length,1))
-            {
-                foreach ($this->data as $v)
-                    if(different($v,$key))
-                        $this->beforeValue = $v;
-                    else
-                        return $this->beforeValue;
-            }
-
-            return $this->has($key) ? $this->data[$key] : $key;
+            return '';
 
         }
 
-        /**
+       /**
         *
-        * Return all values
+        * Collect all values
         *
         * @method values
         *
-        * @return array
+        * @return Collect
         *
         */
-        public function values(): array
+        public function values(): Collect
         {
-            return array_values($this->all());
+            return $this->checkout(array_values($this->all()));
         }
 
-        /**
+       /**
         *
-        * Return all keys
+        * Collect all keys
         *
         * @method keys
         *
-        * @return array
+        * @return Collect
         *
         */
-        public function keys(): array
+        public function keys(): Collect
         {
-            return array_keys($this->all());
+            return $this->checkout(array_keys($this->all()));
         }
 
         /**
@@ -417,11 +329,12 @@ namespace Imperium\Collection {
         }
 
         /**
+         *
         * Get a value in the array by a key
         *
         * @method get
         *
-        * @param mixed $key The value key
+        * @param mixed $key
         *
         * @return mixed
         *
@@ -432,12 +345,17 @@ namespace Imperium\Collection {
         }
 
         /**
+         *
+         * Check if the array has not a key
+         *
+         * @method has_not
+         *
          * @param $key
          *
          * @return bool
          *
          */
-        public function key_not_exist($key): bool
+        public function has_not($key): bool
         {
             return  ! $this->has($key);
         }
@@ -588,11 +506,11 @@ namespace Imperium\Collection {
          * @param $old_value
          * @param $new_value
          *
-         * @return Collection
+         * @return Collect
          *
          *
          */
-        public function refresh($old_value,$new_value): Collection
+        public function refresh($old_value,$new_value): Collect
         {
             if ($old_value !== $new_value)
             {
@@ -613,10 +531,10 @@ namespace Imperium\Collection {
          *
          * @param mixed[] $values The values to add
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function push(...$values): Collection
+        public function push(...$values): Collect
         {
             foreach ($values as $value)
                 array_push($this->data,$value);
@@ -634,10 +552,10 @@ namespace Imperium\Collection {
          *
          * @param  mixed[] $values The values to add
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function stack(...$values): Collection
+        public function stack(...$values): Collect
         {
             foreach ($values as $value)
                 array_unshift($this->data,$value);
@@ -653,10 +571,10 @@ namespace Imperium\Collection {
          *
          * @param array[]
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function merge(array ...$array): Collection
+        public function merge(array ...$array): Collect
         {
             foreach($array as  $x)
                 $this->data = array_merge($this->data,$x);
@@ -672,10 +590,10 @@ namespace Imperium\Collection {
          *
          * @param mixed ...$values
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function set(...$values): Collection
+        public function set(...$values): Collect
         {
             foreach ($values as $value)
                 $this->add($value);
@@ -692,10 +610,10 @@ namespace Imperium\Collection {
          * @param mixed $key
          * @param mixed $value
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function put($key,$value): Collection
+        public function put($key,$value): Collect
         {
             return $this->add($value,$key);
         }
@@ -708,13 +626,13 @@ namespace Imperium\Collection {
          *
          * @param mixed ...$data
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function del(...$data): Collection
+        public function del(...$data): Collect
         {
             foreach ($data as $datum)
-                $this->exist($datum) ? $this->remove_value($datum) : $this->remove($datum);
+                $this->exist($datum) ? $this->remove_value($datum)  : $this->remove($datum);
 
             return $this->checkout($this->all());
         }
@@ -732,7 +650,7 @@ namespace Imperium\Collection {
          */
         public function join(string $glue =','): string
         {
-           return implode($glue,$this->values());
+           return implode($glue,$this->values()->all());
         }
 
         /**
@@ -748,7 +666,7 @@ namespace Imperium\Collection {
          */
         public function join_keys(string $glue = ','): string
         {
-            return implode($glue,$this->keys());
+            return implode($glue,$this->keys()->all());
         }
         
         /**
@@ -819,10 +737,10 @@ namespace Imperium\Collection {
          *
          * @method clear
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function clear(): Collection
+        public function clear(): Collect
         {
            return $this->checkout([]);
         }
@@ -847,10 +765,10 @@ namespace Imperium\Collection {
          *
          * @method shift
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function shift(): Collection
+        public function shift(): Collect
         {
             array_shift($this->data);
 
@@ -863,10 +781,10 @@ namespace Imperium\Collection {
          *
          * @method pop
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function pop(): Collection
+        public function pop(): Collect
         {
             array_pop($this->data);
 
@@ -881,10 +799,10 @@ namespace Imperium\Collection {
          *
          * @param array $data
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function checkout(array $data): Collection
+        public function checkout(array $data): Collect
         {
             return new static($data);
         }
@@ -957,10 +875,10 @@ namespace Imperium\Collection {
          *
          * @param callable $callable
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function each($callable): Collection
+        public function each($callable): Collect
         {
             $result = collect();
 
@@ -972,14 +890,16 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Add a uniq value
+         * Add the value only if not exist
          *
          * @method uniq
          *
          * @param array $values
-         * @return Collection
+         *
+         * @return Collect
+         *
          */
-        public function uniq(...$values): Collection
+        public function uniq(...$values): Collect
         {
             foreach ($values as $value)
             {
@@ -999,10 +919,10 @@ namespace Imperium\Collection {
          * @param  mixed $value  The value to add
          * @param  mixed $key   The value's key
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        private function add($value,$key = ''): Collection
+        private function add($value,$key = ''): Collect
         {
             not_def($key) ?  $this->data[] = $value :  $this->data[$key] = $value;
 
@@ -1016,9 +936,11 @@ namespace Imperium\Collection {
          * @method remove
          *
          * @param array $keys
-         * @return Collection
+         *
+         * @return Collect
+         *
          */
-        private function remove(...$keys): Collection
+        private function remove(...$keys): Collect
         {
 
             foreach ($keys as $key)
@@ -1037,9 +959,11 @@ namespace Imperium\Collection {
          * Remove a value in the array
          *
          * @param array $values
-         * @return Collection
+         *
+         * @return Collect
+         *
          */
-        private function remove_value(...$values): Collection
+        private function remove_value(...$values): Collect
         {
             foreach ($values as $value)
             {

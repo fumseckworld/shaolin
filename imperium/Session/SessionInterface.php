@@ -3,7 +3,7 @@
 namespace Imperium\Session {
 
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
 
     interface SessionInterface
     {
@@ -35,10 +35,10 @@ namespace Imperium\Session {
          * @param $key
          * @param $value
          *
-         * @return  Collection
+         * @return  Collect
          *
          */
-        public function put($key,$value): Collection ;
+        public function put($key,$value): Collect ;
 
         /**
          *
@@ -56,12 +56,12 @@ namespace Imperium\Session {
          *
          * Remove a key
          *
-         * @param $key
+         * @param array $keys
          *
          * @return bool
          *
          */
-        public function remove($key): bool ;
+        public function remove(...$keys): bool ;
 
         /**
          *

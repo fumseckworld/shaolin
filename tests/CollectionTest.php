@@ -90,15 +90,40 @@ class CollectionTest extends Unit
         $this->assertNotEmpty($this->collect(['willy'])->diff([1,2,3,4,5,6])->all());
     }
 
+    public function test_slice()
+    {
+        $this->assertEquals([4,5,6,7,8,9],$this->collect([1,2,3,4,5,6,7,8,9])->slice(3)->all());
+        $this->assertEquals([4,5],$this->collect([1,2,3,4,5,6,7,8,9])->slice(3,2)->all());
+    }
+
+    public function test_merge()
+    {
+        $this->assertEquals([1,2,3,4,5,6,7,8,9,10],$this->collect()->merge([1,2,3,4,5],[6,7],[8],[9,10])->all());
+    }
+    public function test_chunk()
+    {
+        $this->assertEquals([0 =>[1,2,3],1=> [4,5,6],2=> [7,8,9]],$this->collect([1,2,3,4,5,6,7,8,9])->chunk(3)->all());
+        $this->assertEquals([0 =>[1,2],1=> [3,4],2=> [5,6],3=>[7,8],4=> [9]],$this->collect([1,2,3,4,5,6,7,8,9])->chunk(2)->all());
+    }
     public function test_only()
     {
         $this->assertEquals([['username' => 'willy'],['username' => 'bob']],$this->collect()->push(['id'=> 1,'username' => 'willy'],['id'=> 2,'username' => 'bob'])->only('username')->all());
+        $this->assertEquals('0,1',$this->collect()->push(['id'=> 1,'username' => 'willy'],['id'=> 2,'username' => 'bob'])->join_keys());
+        $this->assertFalse($this->collect()->push(['id'=> 1,'username' => 'willy'],['id'=> 2,'username' => 'bob'])->contains('alexandra'));
+        $this->assertTrue($this->collect()->push(['id'=> 1,'username' => 'willy'],['id'=> 2,'username' => 'bob'])->not_contains('alexandra'));
         $this->assertTrue($this->collect()->push(['id'=> 1,'username' => 'willy'],['id'=> 2,'username' => 'bob'])->only('username')->contains('willy','bob'));
         $this->assertFalse($this->collect()->push(['id'=> 1,'username' => 'willy'],['id'=> 2,'username' => 'bob'])->only('username')->contains('MARC','marion'));
         $this->assertEquals(['username' => 'willy'],$this->collect(['id'=> 1,'username' => 'willy'])->only('username')->all());
 
     }
-    
+
+    public function test_value_before_key()
+    {
+        $x = $this->collect([1,2,3,4,5,6,7,8,9,10]);
+        $this->assertEquals(2,$x->value_before_key(2));
+        $this->assertEquals('',$x->value_before_key(5002));
+
+    }
     public function test_each()
     {
         $this->assertEquals('linux-is-a-super-operating-system',$this->collect(['LINUX','iS','A','sUPEr','OperatinG','SyStem'])->each([$this,'for_all'])->join('-'));

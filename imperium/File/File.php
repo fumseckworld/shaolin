@@ -2,7 +2,7 @@
 
 namespace Imperium\File {
 
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Parsedown;
@@ -170,7 +170,7 @@ namespace Imperium\File {
                 $this->next();
             }
 
-            return $data->values();
+            return $data->values()->all();
 
         }
         /**
@@ -274,10 +274,10 @@ namespace Imperium\File {
          *
          * Gets information about the file
          *
-         * @return Collection
+         * @return Collect
          *
          */
-        public function infos(): Collection
+        public function infos(): Collect
         {
             return collect($this->instance()->fstat());
         }
@@ -761,7 +761,7 @@ namespace Imperium\File {
                     $data->set(collect(explode($delimiter,$line))->first());
             }
 
-           return $data->values();
+           return $data->values()->all();
         }
 
 
@@ -782,7 +782,7 @@ namespace Imperium\File {
             {
                $data->set(collect(explode($delimiter,$line))->last());
             }
-           return $data->values();
+           return $data->values()->all();
         }
 
         /**

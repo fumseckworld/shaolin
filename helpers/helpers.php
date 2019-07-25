@@ -36,7 +36,7 @@ use Imperium\Tables\Table;
 use Imperium\Html\Form\Form;
 use Imperium\Connexion\Connect;
 use Sinergi\BrowserDetector\Os;
-use Imperium\Collection\Collection;
+use Imperium\Collection\Collect;
 use Sinergi\BrowserDetector\Device;
 use Intervention\Image\ImageManager;
 use Sinergi\BrowserDetector\Browser;
@@ -2314,10 +2314,10 @@ if(not_exist('collect'))
      *
      * @param  array      $data The started array
      *
-     * @return Collection
+     * @return Collect
      *
      */
-    function collect($data = []): Collection
+    function collect($data = []): Collect
     {
         if (is_object($data))
         {
@@ -2325,9 +2325,9 @@ if(not_exist('collect'))
             foreach ($data as $k => $v)
                 $x[$k] = $v;
 
-            return new Collection($x);
+            return new Collect($x);
         }
-        return is_array($data) ? new Collection($data) : new Collection();
+        return is_array($data) ? new Collect($data) : new Collect();
     }
 }
 

@@ -71,7 +71,7 @@ namespace Imperium\Security\Hashing {
 
             not_in(hash_algos(),$this->algorithm,true,"The current algorithm is not supported");
 
-            $this->valid = $this->generate();
+            $this->valid = hash_hmac($this->algorithm,$this->data,$this->secret);
 
         }
 
@@ -98,7 +98,7 @@ namespace Imperium\Security\Hashing {
          */
         public function generate(): string
         {
-            return hash_hmac($this->algorithm,$this->data,$this->secret);
+            return $this->valid;
         }
 
     }

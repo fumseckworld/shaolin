@@ -6,7 +6,7 @@ namespace Imperium\Dump {
     use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\File\File;
-    use Imperium\Collection\Collection;
+    use Imperium\Collection\Collect;
 
 
    /**
@@ -46,7 +46,7 @@ namespace Imperium\Dump {
          *
          * The tables to dump
          *
-         * @var Collection
+         * @var Collect
          *
          */
         private $tables;

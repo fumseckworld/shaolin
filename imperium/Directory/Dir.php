@@ -71,7 +71,6 @@ namespace Imperium\Directory {
          * @param string ...$dirs
          *
          * @throws Kedavra
-         *
          */
         public static function structure(string $source,string ...$dirs): void
         {
