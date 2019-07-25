@@ -2,7 +2,7 @@
 
 namespace Imperium\Session {
 
-    
+
 
 
     /**
