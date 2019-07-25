@@ -166,6 +166,12 @@ class CollectionTest extends Unit
     {
         return strtolower($param);
     }
+
+    public function test_max_and_min()
+    {
+        $this->assertNotEmpty($this->collect([['id'=> 1,'username' => 'willy','password',bcrypt('bcrypt')],['id'=> 2,'username' => 'alxandra','password',bcrypt('a')]])->only('id')->min());
+        $this->assertNotEmpty($this->collect([['id'=> 1,'username' => 'willy','password',bcrypt('bcrypt')],['id'=> 2,'username' => 'alxandra','password',bcrypt('a')]])->only('id')->max());
+    }
     public function for_all($param): string
     {
         return strtolower($param);

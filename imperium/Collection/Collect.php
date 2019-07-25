@@ -172,7 +172,6 @@ namespace Imperium\Collection {
             {
                 foreach ($keys as $key)
                     is_array($v) ? $x->push([$key => $v[$key]]) :  $x->put($key,$this->get($key));
-
             }
             return $this->checkout($x->all());
         }
@@ -340,6 +339,15 @@ namespace Imperium\Collection {
         public function get($key)
         {
             return $this->has($key) ? $this->data[$key] : '';
+        }
+
+        public function max()
+        {
+            return max($this->all());
+        }
+        public function min()
+        {
+            return min($this->all());
         }
 
         /**
