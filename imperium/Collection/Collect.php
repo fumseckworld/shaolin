@@ -341,10 +341,29 @@ namespace Imperium\Collection {
             return $this->has($key) ? $this->data[$key] : '';
         }
 
+        /**
+         *
+         * Return the max value in the array
+         *
+         * @method max
+         *
+         * @return mixed
+         *
+         */
         public function max()
         {
             return max($this->all());
         }
+
+        /**
+         *
+         * Get the min value in the array
+         *
+         * @method min
+         *
+         * @return mixed
+         *
+         */
         public function min()
         {
             return min($this->all());
