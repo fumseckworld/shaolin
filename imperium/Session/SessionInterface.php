@@ -35,10 +35,10 @@ namespace Imperium\Session {
          * @param $key
          * @param $value
          *
-         * @return  Collect
+         * @return  void
          *
          */
-        public function put($key,$value): Collect ;
+        public function put($key,$value): void ;
 
         /**
          *

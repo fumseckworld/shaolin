@@ -46,12 +46,12 @@ namespace Imperium\Session {
          * @param $key
          * @param $value
          *
-         * @return  Collect
+         * @return  void
          *
          */
-        public function put($key, $value): Collect
+        public function put($key, $value): void
         {
-            return $this->session->put($key,$value);
+             $this->session->put($key,$value);
         }
 
         /**

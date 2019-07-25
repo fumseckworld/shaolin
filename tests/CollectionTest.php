@@ -100,6 +100,12 @@ class CollectionTest extends Unit
     {
         $this->assertEquals([1,2,3,4,5,6,7,8,9,10],$this->collect()->merge([1,2,3,4,5],[6,7],[8],[9,10])->all());
     }
+
+    public function test_has_not()
+    {
+        $this->assertTrue($this->collect()->put('os','Linux')->has_not('operating_system'));
+        $this->assertFalse($this->collect()->put('os','Linux')->has_not('os'));
+    }
     public function test_chunk()
     {
         $this->assertEquals([0 =>[1,2,3],1=> [4,5,6],2=> [7,8,9]],$this->collect([1,2,3,4,5,6,7,8,9])->chunk(3)->all());
