@@ -3,8 +3,7 @@
 namespace Imperium\Collection {
 
     use Iterator;
-
-   /**
+    /**
     *
     * Array management
     *
@@ -414,7 +413,7 @@ namespace Imperium\Collection {
         {
             $this->position++;
         }
-        
+
         /**
          *
          * Check if array is empty
@@ -814,8 +813,10 @@ namespace Imperium\Collection {
         {
             $result = collect();
 
-            foreach ($this->all() as $value)
-                $result->set($callable($value));
+                foreach ($this->all() as  $v)
+                    $result->set($callable($v));
+
+
 
             return $this->checkout($result->all());
         }

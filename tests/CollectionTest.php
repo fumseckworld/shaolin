@@ -135,6 +135,21 @@ class CollectionTest extends Unit
         $this->assertEquals('linux-is-a-super-operating-system',$this->collect(['LINUX','iS','A','sUPEr','OperatinG','SyStem'])->each([$this,'for_all'])->join('-'));
     }
 
+    public function test()
+    {
+        $data = $this->collect(['a','b','c','d','e','f']);
+        $data->rewind();
+        do{
+            $this->assertNotEmpty($data->current());
+            $data->next();
+            $this->assertNotEmpty($data->before());
+            $this->assertIsInt($data->key());
+
+            $this->assertNotEmpty($data->after());
+            $data->next();
+        }while($data->valid());
+    }
+
     public function test_pop_end_shift()
     {
         $this->assertEquals([1,2,3,4,5],$this->collect()->set(1,2,3,4,5,6)->pop()->all());
