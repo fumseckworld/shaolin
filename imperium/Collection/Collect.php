@@ -800,7 +800,7 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Run callable function for each values in the array
+         * Run callable function for each values  and keys in the array
          *
          * @method each
          *
@@ -813,10 +813,29 @@ namespace Imperium\Collection {
         {
             $result = collect();
 
-                foreach ($this->all() as  $v)
-                    $result->set($callable($v));
+            foreach ($this->all() as  $k => $v)
+                $result->set($callable($k,$v));
 
+            return $this->checkout($result->all());
+        }
 
+        /**
+         *
+         * Execute the callable with all value in the array
+         *
+         * @method for
+         *
+         * @param callable $callable
+         *
+         * @return Collect
+         *
+         */
+        public function for($callable): Collect
+        {
+            $result = collect();
+
+            foreach ($this->all() as  $v)
+                $result->set($callable($v));
 
             return $this->checkout($result->all());
         }

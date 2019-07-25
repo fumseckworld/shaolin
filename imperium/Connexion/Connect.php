@@ -185,7 +185,7 @@ namespace Imperium\Connexion {
          */
         public function queries(string ...$queries): bool
         {
-            return collect($queries)->each([$this,'execute'])->ok();
+            return collect($queries)->for([$this,'execute'])->ok();
         }
 
         /**

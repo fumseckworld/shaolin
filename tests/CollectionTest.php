@@ -132,7 +132,8 @@ class CollectionTest extends Unit
     }
     public function test_each()
     {
-        $this->assertEquals('linux-is-a-super-operating-system',$this->collect(['LINUX','iS','A','sUPEr','OperatinG','SyStem'])->each([$this,'for_all'])->join('-'));
+        $this->assertEquals('linux-is-a-super-operating-system',$this->collect(['LINUX','iS','A','sUPEr','OperatinG','SyStem'])->for([$this,'for_all'])->join('-'));
+        $this->assertEquals('linux-is-a-super-operating-system',$this->collect(['LINUX','iS','A','sUPEr','OperatinG','SyStem'])->each([$this,'foreach_all'])->join('-'));
     }
 
     public function test()
@@ -161,6 +162,10 @@ class CollectionTest extends Unit
         $this->assertEquals([6,5,4,3,2,1,0],$this->collect([0,1,2,3,4,5,6])->reverse()->all());
     }
 
+    public function foreach_all($k,$param): string
+    {
+        return strtolower($param);
+    }
     public function for_all($param): string
     {
         return strtolower($param);
