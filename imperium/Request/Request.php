@@ -6,6 +6,18 @@ namespace Imperium\Request {
     use Symfony\Component\HttpFoundation\FileBag;
     use Symfony\Component\HttpFoundation\ServerBag;
 
+	/**
+	 * Class Request
+	 *
+	 * @package Imperium\Request
+	 *
+	 * @author Willy Micieli
+	 *
+	 * @license GPL
+	 *
+	 * @version 10
+	 *
+	 */
     class Request
     {
 

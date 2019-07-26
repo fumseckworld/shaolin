@@ -8,6 +8,19 @@ namespace Imperium\Markdown {
     use Imperium\File\File;
     use Parsedown;
 
+	/**
+	 *
+	 * Class Markdown
+	 *
+	 * @package Imperium\Markdown
+	 *
+	 * @author Willy Micieli
+	 *
+	 * @license GPL
+	 *
+	 * @version 10
+	 *
+	 */
     class Markdown
     {
         /**

@@ -5,7 +5,7 @@
 @tailwind utilities;
 
 
-body{
+body {
     @apply bg-black;
 }
 
@@ -13,146 +13,168 @@ body{
     vertical-align: middle;
 }
 
-#debug_bar{
+#debug_bar {
     border: 0;
     padding: 1rem 1rem;
     color: #3db9ec;
     background-color: #000;
 }
-.btn-hollow{
-    @apply  bg-transparent text-teal-300 font-semibold  border border-teal-500  rounded p-4 ;
+
+.btn-hollow {
+    @apply bg-transparent text-teal-300 font-semibold border border-teal-500 rounded p-4 ;
 }
-.btn-hollow:hover{
+
+.btn-hollow:hover {
     @apply bg-teal-300 text-black border-transparent;
 }
-.btn-group{
+
+.btn-group {
     @apply bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-l;
 }
-.btn-group:hover{
+
+.btn-group:hover {
     @apply bg-gray-400;
 }
-.btn,button{
+
+.btn, button {
     @apply bg-teal-600 p-4 text-teal-100 font-bold w-full;
 }
-.btn:hover,button:hover{
-    @apply bg-teal-300  text-black  border-teal-500 ;
+
+.btn:hover, button:hover {
+    @apply bg-teal-300 text-black border-teal-500 ;
 }
 
-input,textarea,select{
+input, textarea, select {
 
-  @apply appearance-none bg-transparent border border-teal-300  w-full p-5  outline-none text-teal-200 ;
+    @apply appearance-none bg-transparent border border-teal-300 w-full p-5 outline-none text-teal-200 ;
 }
 
-option{
+option {
     @apply bg-black ;
 }
-textarea{
+
+textarea {
     resize: none;
     @apply mx-auto w-full;
 }
 
-hr{
+hr {
     width: 5%;
     @apply border-b border-teal-500;
 
 }
-h1,h2,h3,h4{
-    @apply uppercase text-center font-bold  text-teal-300 pt-5 ;
+
+h1, h2, h3, h4 {
+    @apply uppercase text-center font-bold text-teal-300 pt-5 ;
 }
 
-.text{
+.text {
     @apply text-white p-4;
 }
-.text-notify
-{
-    @apply text-teal-500  p-4 mt-3;
+
+.text-notify {
+    @apply text-teal-500 p-4 mt-3;
 }
-main{
-    @apply  mx-auto mt-16;
+
+main {
+    @apply mx-auto mt-16;
 }
-section,header,article{
+
+section, header, article {
     @apply mt-4;
 }
-.repository{
+
+.repository {
     @apply bg-transparent text-white font-bold border border-teal-300;
 }
-.row{
+
+.row {
     @apply block ;
 }
-.column{
-    @apply  flex-1 m-4  ;
+
+.column {
+    @apply flex-1 m-4 ;
 }
 
 @screen sm {
-    .column{
-        @apply  flex-1 m-4 ;
+    .column {
+        @apply flex-1 m-4 ;
     }
-    .row{
+
+    .row {
         @apply block;
     }
 
 }
 @screen md {
-    .column{
-        @apply flex-1 m-4  ;
+    .column {
+        @apply flex-1 m-4 ;
     }
-    .row{
+
+    .row {
         @apply flex-auto;
     }
 }
 @screen lg {
-    .column{
-        @apply  w-1/3 m-4;
+    .column {
+        @apply w-1 / 3 m-4;
     }
-    .row{
+
+    .row {
         @apply flex;
     }
 }
-@screen xl
-{
-    .column{
-        @apply  w-1/6  m-4 ;
+@screen xl {
+    .column {
+        @apply w-1 / 6 m-4 ;
     }
-    .row{
+
+    .row {
         @apply flex;
     }
 }
 
 
-.tab{
+.tab {
     @apply uppercase bg-teal-600 p-4 text-teal-100 font-bold w-full inline-block;
 }
-.active{
-    @apply uppercase bg-teal-300 p-4 text-black font-bold w-full inline-block   text-white  border-teal-500 ;
+
+.active {
+    @apply uppercase bg-teal-300 p-4 text-black font-bold w-full inline-block text-white border-teal-500 ;
 }
-.tab:hover{
-    @apply bg-teal-300  text-black  border-teal-500 ;
+
+.tab:hover {
+    @apply bg-teal-300 text-black border-teal-500 ;
 }
 
 
-.tree{
+.tree {
     @apply bg-transparent text-teal-300 w-full;
 }
 
-.tree tr{
+.tree tr {
     @apply w-full border-2 border-teal-300 p-2;
 }
-.tree td{
+
+.tree td {
     @apply text-justify p-2 ;
 }
+
 ul.breadcrumb {
-    @apply bg-teal-300  text-black  border-teal-500 text-justify p-4;
+    @apply bg-teal-300 text-black border-teal-500 text-justify p-4;
 }
+
 ul.breadcrumb li {
     @apply inline;
 }
-ul.breadcrumb li+li:before
-{
+
+ul.breadcrumb li + li:before {
     content: "/\00a0";
     @apply p-2 text-black;
 }
+
 ul.breadcrumb li a {
-    @apply text-black  no-underline;
+    @apply text-black no-underline;
 }
 
 
@@ -164,10 +186,10 @@ ul.breadcrumb li a {
     @apply bg-teal-300 text-black text-center p-5;
 }
 
-.input-field
-{
+.input-field {
     @apply w-full outline-none p-5;
 }
+
 /* Ocean Dark Theme */
 /* https://github.com/gavsiu */
 /* Original theme - https://github.com/chriskempson/base16 */
@@ -227,8 +249,7 @@ ul.breadcrumb li a {
     color: #b48ead;
 }
 
-.hljs
-{
+.hljs {
     display: block;
     overflow-x: auto;
     background: #000;
@@ -244,48 +265,45 @@ ul.breadcrumb li a {
     font-weight: bold;
 }
 
-#readme
-{
-    @apply w-full  mt-5 pl-8 pb-16 bg-white text-black;
+#readme {
+    @apply w-full mt-5 pl-8 pb-16 bg-white text-black;
 }
-#readme table
-{
+
+#readme table {
     @apply m-5;
 }
-#readme tr
-{
+
+#readme tr {
     @apply border-2 border-black;
 }
 
-#readme td,#readme th
-{
+#readme td, #readme th {
     @apply border-2 border-white p-4 bg-gray-800 text-white;
 }
 
-#readme td:hover,#readme th:hover
-{
+#readme td:hover, #readme th:hover {
     @apply bg-gray-700 ;
 }
 
-#readme ul li{
-    @apply ml-8  mb-2 list-disc  ;
-}
-#readme p{
-    @apply text-gray-900  ;
+#readme ul li {
+    @apply ml-8 mb-2 list-disc ;
 }
 
-#readme h1,#readme h2,#readme h3,#readme h4 ,#readme h5,#readme h6
-{
+#readme p {
+    @apply text-gray-900 ;
+}
+
+#readme h1, #readme h2, #readme h3, #readme h4, #readme h5, #readme h6 {
 
     text-transform: none;
     @apply text-black font-bold mt-5 mb-2 text-justify ;
 
 }
 
-#readme a{
+#readme a {
     @apply text-blue-600;
 }
 
-#readme code{
+#readme code {
     @apply text-red-500 mb-5 text-justify font-bold;
 }

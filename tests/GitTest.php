@@ -59,7 +59,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals('3',$this->git->branches_found());
+            $this->assertEquals('4',$this->git->branches_found());
         }
 
         /**
@@ -90,9 +90,7 @@ namespace Testing {
 
             $this->assertNotEmpty($this->git->files(''));
             $this->assertContains('README.md',$this->git->files(''));
-
             $this->assertNotEmpty($this->git->files('imperium'));
-
         }
 
         /**

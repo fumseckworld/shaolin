@@ -150,7 +150,55 @@ class CollectionTest extends Unit
             $data->next();
         }while($data->valid());
     }
+    public function test_intersect()
+    {
+        $this->assertNotEmpty($this->collect()->put('name', 'willy')->put('a', 'b')->intersect($this->collect()->put('name', 'willy')->all())->all());
+        $this->assertEmpty($this->collect()->put('name', 'willy')->put('a', 'b')->intersect($this->collect()->put('x', 'z')->all())->all());
+    }
 
+    public function test_replace()
+    {
+        $this->assertEquals(['Willy Micieli','a', 'b'],$this->collect()->set('willy','a', 'b')->replace([0=>'Willy Micieli'])->all());
+    }
+
+    public function test_unique()
+    {
+        $this->assertEquals([1,2,3,4,5,6,7,8,9,10],$this->collect([1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9,10])->unique()->all());
+    }
+
+    public function test_map()
+    {
+        $this->assertEquals([1, 8, 27, 64, 125],$this->collect([1, 2, 3, 4, 5])->map([$this,'cube'])->all());
+    }
+    public function test_product()
+    {
+        $this->assertEquals(6,$this->collect([1,2,3])->product());
+    }
+    public function test_display()
+    {
+        $this->assertEquals([3,4,5],$this->collect([1, 2, 3, 4, 5, 6, 7, 8, 9])->display(2,3)->all());
+        $this->assertEquals([2,3,4],$this->collect([1, 2, 3, 4, 5, 6, 7, 8, 9])->display(1,3)->all());
+        $this->assertEquals([2,3,4,5,6,7],$this->collect([1, 2, 3, 4, 5, 6, 7, 8, 9])->display(1,6)->all());
+    }
+
+    public function test_range()
+    {
+        $this->assertEquals([1,2,3],$this->collect([1,2,3,4,5,6,7,8,9])->range(1,3)->all());
+    }
+
+    public function test_filter()
+    {
+        $this->assertEquals([10=> 11, 11=> 12, 12=> 15, 13 =>17],$this->collect([1,2,3,4,5,6,7,8,9,10,11,12,15,17])->filter([$this,'notes'])->all());
+    }
+    public function test_take()
+    {
+        $this->assertEquals(['a','b','d','c','e'],$this->collect(['a','b','d','c','e','f','g','h','k','j'])->take(5)->all());
+    }
+
+    public function test_forget()
+    {
+        $this->assertEquals(['name'=> 'willy micieli'],$this->collect(['id' => 1,'name'=> 'willy micieli'])->forget('id')->all());
+    }
     public function test_pop_end_shift()
     {
         $this->assertEquals([1,2,3,4,5],$this->collect()->set(1,2,3,4,5,6)->pop()->all());
@@ -175,5 +223,13 @@ class CollectionTest extends Unit
     public function for_all($param): string
     {
         return strtolower($param);
+    }
+    public function cube($n): string
+    {
+        return ($n * $n * $n);
+    }
+    public function notes($n): string
+    {
+        return $n > 10;
     }
 }

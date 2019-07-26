@@ -1,45 +1,47 @@
 <?php
 
-namespace Imperium\Command {
+	namespace Imperium\Command
+	{
 
 
-    use Symfony\Component\Console\Command\Command;
-    use Symfony\Component\Console\Input\InputInterface;
-    use Symfony\Component\Console\Output\OutputInterface;
+		use Symfony\Component\Console\Command\Command;
+		use Symfony\Component\Console\Input\InputInterface;
+		use Symfony\Component\Console\Output\OutputInterface;
 
-    class CleanDatabase extends Command
-    {
-        protected static $defaultName = 'db:clean';
-        protected function configure()
-        {
+		class CleanDatabase extends Command
+		{
+			protected static $defaultName = 'db:clean';
 
-            $base = config('db','base');
+			protected function configure()
+			{
 
-            $this->setDescription("Clean the $base database");
-        }
+				$base = config('db', 'base');
 
-        public function execute(InputInterface $input, OutputInterface $output)
-        {
+				$this->setDescription("Clean the $base database");
+			}
 
-            $base = db('base');
+			public function execute(InputInterface $input, OutputInterface $output)
+			{
 
-            $tables = [];
+				$base = db('base');
 
-            $hidden  = db('hidden_tables');
+				$tables = [];
 
-            merge($tables,app()->show_tables(),$hidden);
+				$hidden = db('hidden_tables');
 
-            foreach ($tables as $table)
-            {
-                is_false(app()->table()->drop($table),true,"Failed to remove the $table table");
+				merge($tables, app()->show_tables(), $hidden);
 
-            }
+				foreach ($tables as $table)
+				{
+					is_false(app()->table()->drop($table), true, "Failed to remove the $table table");
 
-            $output->write("<bg=green;fg=white>The $base database was cleaned successfully\n");
+				}
 
-            return 0;
+				$output->write("<bg=green;fg=white>The $base database was cleaned successfully\n");
+
+				return 0;
 
 
-        }
-    }
-}
+			}
+		}
+	}

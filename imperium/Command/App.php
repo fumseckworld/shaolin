@@ -1,175 +1,175 @@
 <?php
 
 
-namespace Imperium\Command {
+	namespace Imperium\Command
+	{
 
 
-    use Exception;
-    use Imperium\Directory\Dir;
-    use Imperium\File\File;
-    use Imperium\Routing\Route;
-    use Symfony\Component\Console\Command\Command;
-    use Symfony\Component\Console\Input\InputInterface;
-    use Symfony\Component\Console\Output\OutputInterface;
-    use Symfony\Component\Console\Question\Question;
+		use Exception;
+		use Imperium\Directory\Dir;
+		use Imperium\File\File;
+		use Imperium\Routing\Route;
+		use Symfony\Component\Console\Command\Command;
+		use Symfony\Component\Console\Input\InputInterface;
+		use Symfony\Component\Console\Output\OutputInterface;
+		use Symfony\Component\Console\Question\Question;
 
-    class App extends Command
-    {
-        use Route;
-        protected static $defaultName = 'app:create';
-        private $app_dir;
-        private $controller_dir;
-        private $command_dir;
-        private $middleware_dir;
-        private $views_dir;
-        private $namespace;
-        private $cache;
-        private $web;
-        private $database_dir;
-        private $driver;
-        private $base;
-        private $username;
-        private $password;
-        private $instance;
-        /**
-         * @var int
-         */
-        private $port;
+		class App extends Command
+		{
+			use Route;
+			protected static $defaultName = 'app:create';
+			private $app_dir;
+			private $controller_dir;
+			private $command_dir;
+			private $middleware_dir;
+			private $views_dir;
+			private $namespace;
+			private $cache;
+			private $web;
+			private $database_dir;
+			private $driver;
+			private $base;
+			private $username;
+			private $password;
+			private $instance;
+			/**
+			 * @var int
+			 */
+			private $port;
 
-        protected function configure()
-        {
-            $this->setDescription("Create the application structure")->setAliases(['create']);
-        }
+			protected function configure()
+			{
+				$this->setDescription("Create the application structure")->setAliases(['create']);
+			}
 
-        public function interact(InputInterface $input, OutputInterface $output)
-        {
-            $helper = $this->getHelper('question');
+			public function interact(InputInterface $input, OutputInterface $output)
+			{
+				$helper = $this->getHelper('question');
 
-            $question = new Question("<info>Set the application directory</info> <comment>[ app ]</comment> : ",'app');
+				$question = new Question("<info>Set the application directory</info> <comment>[ app ]</comment> : ", 'app');
 
-            $this->app_dir =  $helper->ask($input,$output,$question);
+				$this->app_dir = $helper->ask($input, $output, $question);
 
-            $question = new Question("<info>Set the controllers directory</info> <comment>[ Controllers ]</comment> : ",'Controllers');
+				$question = new Question("<info>Set the controllers directory</info> <comment>[ Controllers ]</comment> : ", 'Controllers');
 
-            $this->controller_dir =  $helper->ask($input,$output,$question);
+				$this->controller_dir = $helper->ask($input, $output, $question);
 
-            $question = new Question("<info>Set the commands directory</info> <comment>[ Command ]</comment> : ",'Command');
+				$question = new Question("<info>Set the commands directory</info> <comment>[ Command ]</comment> : ", 'Command');
 
-            $this->command_dir =  $helper->ask($input,$output,$question);
+				$this->command_dir = $helper->ask($input, $output, $question);
 
-            $question = new Question("<info>Set the middleware directory</info> <comment>[ Middleware ]</comment> : ",'Middleware');
+				$question = new Question("<info>Set the middleware directory</info> <comment>[ Middleware ]</comment> : ", 'Middleware');
 
-            $this->middleware_dir =  $helper->ask($input,$output,$question);
-
-
-            $question = new Question("<info>Set the views directory</info> <comment>[ Views ]</comment> : ",'Views');
-
-            $this->views_dir =  $helper->ask($input,$output,$question);
-
-            $question = new Question("<info>Set the application namespace </info> <comment>[ App ]</comment> : ",'App');
-
-            $this->namespace =  $helper->ask($input,$output,$question);
-
-            $this->web = 'web';
-
-            $question = new Question("<info>Cache directory </info> <comment>[ cache ]</comment> : ",'cache');
-
-            $this->cache =  $helper->ask($input,$output,$question);
-
-            while (not_pdo_instance($this->instance))
-            {
-                do
-                {
-                    $question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ",$this->driver);
-
-                    $drivers = [MYSQL,POSTGRESQL,SQLITE];
-
-                    $question->setAutocompleterValues($drivers);
-
-                    $this->driver =  $helper->ask($input,$output,$question);
-
-                    while (not_in([MYSQL,POSTGRESQL,SQLITE],$this->driver))
-                    {
-                        $output->write("<error>The driver was not currently supported use mysql, pgsql, or sqlite</error>\n");
-                        $question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ",$this->driver);
-                        $question->setAutocompleterValues($drivers);
-                        $this->driver =  $helper->ask($input,$output,$question);
-                    }
-                }while(is_null($this->driver));
+				$this->middleware_dir = $helper->ask($input, $output, $question);
 
 
-                $question = new Question("<info>Set the database name </info> <comment>[ $this->base ]</comment> : ",$this->base);
+				$question = new Question("<info>Set the views directory</info> <comment>[ Views ]</comment> : ", 'Views');
 
-                $this->base =  $helper->ask($input,$output,$question);
+				$this->views_dir = $helper->ask($input, $output, $question);
 
-                assign(is_null($this->base),$this->base,'');
+				$question = new Question("<info>Set the application namespace </info> <comment>[ App ]</comment> : ", 'App');
 
+				$this->namespace = $helper->ask($input, $output, $question);
 
-                if (different($this->driver,SQLITE))
-                {
-                    $names = ['root','postgres'];
-                    do
-                    {
-                        $question = new Question("<info>Set the database username </info> <comment>[ $this->username ]</comment> : ",$this->username);
-                        $question->setAutocompleterValues($names);
-                        $this->username =  $helper->ask($input,$output,$question);
+				$this->web = 'web';
 
+				$question = new Question("<info>Cache directory </info> <comment>[ cache ]</comment> : ", 'cache');
 
-                    }while(is_null($this->username));
+				$this->cache = $helper->ask($input, $output, $question);
 
-                    do
-                    {
-                        $question = new Question("<info>Set the password </info> <comment>[ $this->password ]</comment> : ",$this->password);
-                        $question->setHidden(true)->setHiddenFallback(false);
-                        $this->password=  $helper->ask($input,$output,$question);
+				while (not_pdo_instance($this->instance))
+				{
+					do
+					{
+						$question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ", $this->driver);
 
-                    }while(is_null($this->password));
+						$drivers = [MYSQL, POSTGRESQL, SQLITE];
 
-                }
-                try{
-                    if (different($this->driver,SQLITE))
-                        $this->instance = connect($this->driver,$this->base,$this->username,$this->password,LOCALHOST,'')->instance();
-                    else
-                        $this->instance = connect($this->driver,$this->base,'','',LOCALHOST,'')->instance();
-                }catch (Exception $exception)
-                {
-                    $this->instance = null;
-                }
-            }
+						$question->setAutocompleterValues($drivers);
 
-            $question = new Question("<info>Set the migrations, seeding, dump directory name </info> <comment>[db]</comment> : ",'db');
+						$this->driver = $helper->ask($input, $output, $question);
 
-            $this->database_dir =  $helper->ask($input,$output,$question);
-            $this->port = equal($this->driver,MYSQL) ? 3306 : 5432;
-        }
-
-        public function execute(InputInterface $input, OutputInterface $output)
-        {
-            $file = 'config/db.yaml';
-
-            File::remove_if_exist($file);
-
-            File::create($file);
-
-            if (different($this->driver,SQLITE))
-                File::put($file,"driver: $this->driver\nbase: '$this->base'\nusername: '$this->username'\npassword: '$this->password'\ndump: 'dump'\nhost: 'localhost'\nhidden_tables: ['migrations']\nhidden_bases: []\nhidden_users: []\ndebug: true\nport: $this->port\n");
-            else
-                File::put($file,"driver: $this->driver\nbase: '$this->base'\nusername: ''\npassword: ''\ndump: 'dump'\nhost: 'localhost'\nhidden_tables: ['migrations']\nhidden_bases: []\nhidden_users: []\ndebug: true\nport: \n");
+						while (not_in([MYSQL, POSTGRESQL, SQLITE], $this->driver))
+						{
+							$output->write("<error>The driver was not currently supported use mysql, pgsql, or sqlite</error>\n");
+							$question = new Question("<info>Set the database driver </info> <comment>[ $this->driver ]</comment> : ", $this->driver);
+							$question->setAutocompleterValues($drivers);
+							$this->driver = $helper->ask($input, $output, $question);
+						}
+					} while (is_null($this->driver));
 
 
-            $file = 'config/app.yaml';
+					$question = new Question("<info>Set the database name </info> <comment>[ $this->base ]</comment> : ", $this->base);
 
-            File::remove_if_exist($file);
+					$this->base = $helper->ask($input, $output, $question);
 
-            File::create($file);
+					assign(is_null($this->base), $this->base, '');
 
-            File::put($file,"dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\n  db: '$this->database_dir'\n\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: '$this->cache'\n  charset: 'utf-8'");
 
-            Dir::create('po');
+					if (different($this->driver, SQLITE))
+					{
+						$names = ['root', 'postgres'];
+						do
+						{
+							$question = new Question("<info>Set the database username </info> <comment>[ $this->username ]</comment> : ", $this->username);
+							$question->setAutocompleterValues($names);
+							$this->username = $helper->ask($input, $output, $question);
 
-            File::remove_if_exist('phinx.php');
-            File::create('phinx.php');
-            File::put('phinx.php',"<?php
+
+						} while (is_null($this->username));
+
+						do
+						{
+							$question = new Question("<info>Set the password </info> <comment>[ $this->password ]</comment> : ", $this->password);
+							$question->setHidden(true)->setHiddenFallback(false);
+							$this->password = $helper->ask($input, $output, $question);
+
+						} while (is_null($this->password));
+
+					}
+					try
+					{
+						if (different($this->driver, SQLITE))
+							$this->instance = connect($this->driver, $this->base, $this->username, $this->password, LOCALHOST, '')->instance(); else
+							$this->instance = connect($this->driver, $this->base, '', '', LOCALHOST, '')->instance();
+					} catch (Exception $exception)
+					{
+						$this->instance = null;
+					}
+				}
+
+				$question = new Question("<info>Set the migrations, seeding, dump directory name </info> <comment>[db]</comment> : ", 'db');
+
+				$this->database_dir = $helper->ask($input, $output, $question);
+				$this->port = equal($this->driver, MYSQL) ? 3306 : 5432;
+			}
+
+			public function execute(InputInterface $input, OutputInterface $output)
+			{
+				$file = 'config/db.yaml';
+
+				File::remove_if_exist($file);
+
+				File::create($file);
+
+				if (different($this->driver, SQLITE))
+					File::put($file, "driver: $this->driver\nbase: '$this->base'\nusername: '$this->username'\npassword: '$this->password'\ndump: 'dump'\nhost: 'localhost'\nhidden_tables: ['migrations']\nhidden_bases: []\nhidden_users: []\ndebug: true\nport: $this->port\n"); else
+					File::put($file, "driver: $this->driver\nbase: '$this->base'\nusername: ''\npassword: ''\ndump: 'dump'\nhost: 'localhost'\nhidden_tables: ['migrations']\nhidden_bases: []\nhidden_users: []\ndebug: true\nport: \n");
+
+
+				$file = 'config/app.yaml';
+
+				File::remove_if_exist($file);
+
+				File::create($file);
+
+				File::put($file, "dir:\n  app: '$this->app_dir'\n  controller: '$this->controller_dir'\n  command: '$this->command_dir'\n  middleware: '$this->middleware_dir'\n  view: '$this->views_dir'\n  db: '$this->database_dir'\n\nnamespace: '$this->namespace'\nweb_root: '$this->web'\ndevelopment_server_port: '3000'\nconfig:\n  cache: '$this->cache'\n  charset: 'utf-8'");
+
+				Dir::create('po');
+
+				File::remove_if_exist('phinx.php');
+				File::create('phinx.php');
+				File::put('phinx.php', "<?php
 
 \$x = app()->connect();
 
@@ -194,38 +194,38 @@ return [
         ]
 ];");
 
-            $app = $this->app_dir;
-            $web = $this->web;
-            $views = $app .DIRECTORY_SEPARATOR . $this->views_dir;
+				$app = $this->app_dir;
+				$web = $this->web;
+				$views = $app . DIRECTORY_SEPARATOR . $this->views_dir;
 
 
-            Dir::structure($app,$this->controller_dir,$this->middleware_dir,$this->views_dir,$this->command_dir,'Helpers','Mailers','Mailers' .DIRECTORY_SEPARATOR . 'Templates','Mailers' .DIRECTORY_SEPARATOR . 'Emails');
+				Dir::structure($app, $this->controller_dir, $this->middleware_dir, $this->views_dir, $this->command_dir, 'Helpers', 'Mailers', 'Mailers' . DIRECTORY_SEPARATOR . 'Templates', 'Mailers' . DIRECTORY_SEPARATOR . 'Emails');
 
-            Dir::structure("$app/Assets",'js','sass');
+				Dir::structure("$app/Assets", 'js', 'sass');
 
-            Dir::structure("$app/Twig",'Extensions','Functions','Filters','Tags','Tests','Globals');
+				Dir::structure("$app/Twig", 'Extensions', 'Functions', 'Filters', 'Tags', 'Tests', 'Globals');
 
-            Dir::structure($web,'img','css','js');
+				Dir::structure($web, 'img', 'css', 'js');
 
-            File::structure("$app/Helpers",'web.php','admin.php');
+				File::structure("$app/Helpers", 'web.php', 'admin.php');
 
-            File::put("$app/Helpers/web.php","<?php\n");
-            File::put("$app/Helpers/admin.php","<?php\n");
+				File::put("$app/Helpers/web.php", "<?php\n");
+				File::put("$app/Helpers/admin.php", "<?php\n");
 
-            Dir::copy('assets',"$app/Assets");
+				Dir::copy('assets', "$app/Assets");
 
-            Dir::copy('database',$this->database_dir);
+				Dir::copy('database', $this->database_dir);
 
-            Dir::remove('database');
+				Dir::remove('database');
 
-            Dir::remove('assets');
+				Dir::remove('assets');
 
-            Dir::checkout($views);
+				Dir::checkout($views);
 
-            $layout ='layout.twig';
+				$layout = 'layout.twig';
 
-            File::create($layout);
-            File::put($layout,"<!doctype html>
+				File::create($layout);
+				File::put($layout, "<!doctype html>
 <html lang=\"{{ lang() }}\">
     <head>
         <!-- Required meta tags -->
@@ -255,17 +255,16 @@ return [
     </body>
 </html>");
 
-            Dir::checkout("../..");
+				Dir::checkout("../..");
 
 
-            Dir::checkout("$web");
+				Dir::checkout("$web");
 
 
-
-            File::create('index.php');
-            File::put('index.php',"<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\necho app()->run();");
-            File::create('.htaccess');
-            File::put('.htaccess','<IfModule mod_rewrite.c>
+				File::create('index.php');
+				File::put('index.php', "<?php\n\nrequire_once dirname(__DIR__) . '/vendor/autoload.php';\n\necho app()->run();");
+				File::create('.htaccess');
+				File::put('.htaccess', '<IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes
     </IfModule>
@@ -287,22 +286,23 @@ return [
     RewriteRule ^(.*)$  index.php [L]
 </IfModule>');
 
-            Dir::checkout('..');
-            Dir::remove('tmp');
+				Dir::checkout('..');
+				Dir::remove('tmp');
 
 
-          return  $this->create_route_table();
+				return $this->create_route_table();
 
-        }
+			}
 
-        /**
-         * all drivers supported to  autocomplete driver
-         * @return array
-         */
-        private function drivers(): array
-        {
-            return  [ MYSQL,POSTGRESQL,SQLITE];
-        }
+			/**
+			 * all drivers supported to  autocomplete driver
+			 *
+			 * @return array
+			 */
+			private function drivers(): array
+			{
+				return [MYSQL, POSTGRESQL, SQLITE];
+			}
 
-    }
-}
+		}
+	}

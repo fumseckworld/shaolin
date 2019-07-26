@@ -1,27 +1,29 @@
 <?php
 
-namespace Imperium\Command {
+	namespace Imperium\Command
+	{
 
 
-    use Symfony\Component\Console\Command\Command;
-    use Symfony\Component\Console\Input\InputInterface;
-    use Symfony\Component\Console\Output\OutputInterface;
+		use Symfony\Component\Console\Command\Command;
+		use Symfony\Component\Console\Input\InputInterface;
+		use Symfony\Component\Console\Output\OutputInterface;
 
-    class DumpDatabase extends Command
-    {
-        protected static $defaultName = 'db:dump';
-        protected function configure()
-        {
+		class DumpDatabase extends Command
+		{
+			protected static $defaultName = 'db:dump';
 
-            $base = db('base');
-            $this->setAliases(['dump']);
-            $this->setDescription("Dump the $base database");
-        }
+			protected function configure()
+			{
 
-        public function execute(InputInterface $input, OutputInterface $output)
-        {
-            return app()->model()->dump_base();
+				$base = db('base');
+				$this->setAliases(['dump']);
+				$this->setDescription("Dump the $base database");
+			}
 
-        }
-    }
-}
+			public function execute(InputInterface $input, OutputInterface $output)
+			{
+				return app()->model()->dump_base();
+
+			}
+		}
+	}

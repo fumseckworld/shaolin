@@ -1,23 +1,56 @@
 <?php
 
 
-namespace Imperium\Container;
+	namespace Imperium\Container
+	{
 
+		use DI\DependencyException;
+		use DI\NotFoundException;
+		use Imperium\App;
+		use Imperium\Zen;
 
-use Imperium\App;
-use Imperium\Zen;
+		/**
+		 *
+		 * Class Container
+		 *
+		 * @package Imperium\Container
+		 *
+		 * @author Willy Micieli
+		 *
+		 * @license GPL
+		 *
+		 * @version 10
+		 *
+		 */
+		class Container
+		{
+			/**
+			 *
+			 * Instance
+			 *
+			 * @var App
+			 *
+			 */
+			private static $instance;
 
-class Container
-{
-    private static $instance;
+			/**
+			 *
+			 * Get all class instance
+			 *
+			 * @throws DependencyException
+			 * @throws NotFoundException
+			 *
+			 * @return App
+			 *
+			 */
+			public static function get(): App
+			{
+				if (is_null(self::$instance))
+				{
+					self::$instance = Zen::container()->get(App::class);
+				}
 
-    public static function get(): App
-    {
-        if (is_null(self::$instance))
-        {
-            self::$instance = Zen::container()->get(App::class);
-        }
-
-        return self::$instance;
-    }
-}
+				return self::$instance;
+			}
+		}
+	}

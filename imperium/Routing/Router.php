@@ -1,223 +1,226 @@
 <?php
 
-namespace Imperium\Routing {
+	namespace Imperium\Routing
+	{
 
 
-    use Imperium\Directory\Dir;
-    use Imperium\Exception\Kedavra;
-    use Imperium\Middleware\TrailingSlashMiddleware;
-    use Imperium\Security\Auth\AuthMiddleware;
-    use Imperium\Security\Csrf\CsrfMiddleware;
-    use Psr\Http\Message\ServerRequestInterface;
-    use Symfony\Component\HttpFoundation\RedirectResponse;
+		use Imperium\Directory\Dir;
+		use Imperium\Exception\Kedavra;
+		use Imperium\Middleware\TrailingSlashMiddleware;
+		use Imperium\Security\Auth\AuthMiddleware;
+		use Imperium\Security\Csrf\CsrfMiddleware;
+		use Psr\Http\Message\ServerRequestInterface;
+		use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
-    /**
-     *
-     * Router management
-     *
-     * @author Willy Micieli <micieli@laposte.net>
-     *
-     * @package imperium
-     *
-     * @version 4
-     *
-     * @license https://git.fumseck.eu/cgit/imperium/tree/LICENSE
-     *
-     **/
-    class Router
-    {
+		/**
+		 * Class Router
+		 *
+		 * @author  Willy Micieli
+		 *
+		 * @package Imperium\Routing
+		 *
+		 * @license GPL
+		 *
+		 * @version 10
+		 *
+		 */
+		class Router
+		{
 
-        use Route;
+			use Route;
 
-        /**
-         * @var string
-         */
-        private $method;
+			/**
+			 * @var string
+			 */
+			private $method;
 
-        /**
-         * @var string
-         */
-        private $url;
+			/**
+			 * @var string
+			 */
+			private $url;
 
-        /**
-         *
-         */
-        private $route;
+			/**
+			 *
+			 */
+			private $route;
 
-        /**
-         * @var array
-         */
-        private $args;
+			/**
+			 * @var array
+			 */
+			private $args;
 
-        /**
-         * @var array
-         */
-        private $regex;
+			/**
+			 * @var array
+			 */
+			private $regex;
 
-        /**
-         * Router constructor.
-         * @param ServerRequestInterface $request
-         * @throws Kedavra
-         */
-        public function __construct(ServerRequestInterface $request)
-        {
+			/**
+			 * Router constructor.
+			 *
+			 * @param ServerRequestInterface $request
+			 *
+			 * @throws Kedavra
+			 */
+			public function __construct(ServerRequestInterface $request)
+			{
 
-            $this->method = $request->getMethod() !== GET ?  strtoupper(collect($request->getParsedBody())->get('method')) : GET;
+				$this->method = $request->getMethod() !== GET ? strtoupper(collect($request->getParsedBody())->get('method')) : GET;
 
-            $this->url           = $request->getUri()->getPath();
+				$this->url = $request->getUri()->getPath();
 
-            $this->call_middleware($request);
-        }
+				$this->call_middleware($request);
+			}
 
-        /**
-         *
-         * Call the callable
-         *
-         * @return RouteResult| RedirectResponse
-         *
-         * @throws Kedavra
-         */
-        public function search()
-        {
+			/**
+			 *
+			 * Call the callable
+			 *
+			 * @throws Kedavra
+			 * @return RouteResult| RedirectResponse
+			 *
+			 */
+			public function search()
+			{
 
-            foreach($this->routes()->where('method',EQUAL,$this->method)->get() as $route)
-            {
-                if ($this->match($route->url))
-                {
-                    $this->route = $route;
-                    return $this->result();
-                }
+				foreach ($this->routes()->where('method', EQUAL, $this->method)->get() as $route)
+				{
+					if ($this->match($route->url))
+					{
+						$this->route = $route;
+						return $this->result();
+					}
 
-            }
-            return to(route('404'));
-        }
+				}
+				return to(route('404'));
+			}
 
-        /**
-         * @param $param
-         * @param $regex
-         *
-         * @return Router
-         *
-         */
-        public function with($param, $regex): Router
-        {
-            $this->regex[$param] = str_replace('(', '(?:', $regex);
+			/**
+			 * @param $param
+			 * @param $regex
+			 *
+			 * @return Router
+			 *
+			 */
+			public function with($param, $regex): Router
+			{
+				$this->regex[$param] = str_replace('(', '(?:', $regex);
 
-            return $this;
-        }
+				return $this;
+			}
 
-        /**
-         *
-         * Display a route url by this name
-         *
-         * @param string $name
-         *
-         * @param array $args
-         *
-         * @return string
-         *
-         * @throws Kedavra
-         */
-        public static function url(string $name,array $args=[]): string
-        {
-            $x = route($name,$args);
+			/**
+			 *
+			 * Display a route url by this name
+			 *
+			 * @param string $name
+			 *
+			 * @param array  $args
+			 *
+			 * @throws Kedavra
+			 * @return string
+			 *
+			 */
+			public static function url(string $name, array $args = []): string
+			{
+				$x = route($name, $args);
 
-            $host = request()->getHost();
+				$host = request()->getHost();
 
-            return php_sapi_name() !== 'cli' ? https() ?  "https://$host/$x" : "http://$host/$x" : $x;
+				return php_sapi_name() !== 'cli' ? https() ? "https://$host/$x" : "http://$host/$x" : $x;
 
-        }
+			}
 
-        /**
-         *
-         * @param ServerRequestInterface $request
-         *
-         * @throws Kedavra
-         *
-         */
-        private function call_middleware(ServerRequestInterface $request): void
-        {
-            $middleware_dir = 'Middleware';
+			/**
+			 *
+			 * @param ServerRequestInterface $request
+			 *
+			 * @throws Kedavra
+			 *
+			 */
+			private function call_middleware(ServerRequestInterface $request): void
+			{
+				$middleware_dir = 'Middleware';
 
-            $namespace = 'Shaolin' . '\\' . $middleware_dir. '\\';
+				$namespace = 'Shaolin' . '\\' . $middleware_dir . '\\';
 
-            $dir = CORE .DIRECTORY_SEPARATOR . $middleware_dir;
+				$dir = CORE . DIRECTORY_SEPARATOR . $middleware_dir;
 
-            is_false(Dir::is($dir),true,"The $dir directory was not found");
+				is_false(Dir::is($dir), true, "The $dir directory was not found");
 
-            $middle = glob("$dir/*php");
+				$middle = glob("$dir/*php");
 
-            call_user_func_array(new CsrfMiddleware(), [$request]);
+				call_user_func_array(new CsrfMiddleware(), [$request]);
 
-            call_user_func_array(new TrailingSlashMiddleware(), [$request]);
+				call_user_func_array(new TrailingSlashMiddleware(), [$request]);
 
-            call_user_func_array(new AuthMiddleware(), [$request]);
+				call_user_func_array(new AuthMiddleware(), [$request]);
 
-            foreach  ($middle as $middleware)
-            {
-                $middle = collect(explode(DIRECTORY_SEPARATOR,$middleware))->last();
+				foreach ($middle as $middleware)
+				{
+					$middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
 
-                $middleware = collect(explode('.',$middle))->first();
+					$middleware = collect(explode('.', $middle))->first();
 
-                $class = "$namespace$middleware";
+					$class = "$namespace$middleware";
 
-                call_user_func_array(new $class(), [$request]);
-            }
-        }
-        /**
-         *
-         * @param $match
-         *
-         * @return string
-         *
-         */
-        private function paramMatch($match):string
-        {
-           return def($this->regex[$match[1]]) ?  '(' . $this->regex[$match[1]] . ')' :  '([^/]+)';
-        }
+					call_user_func_array(new $class(), [$request]);
+				}
+			}
 
-        /**
-         *
-         * @return RouteResult
-         *
-         *
-         */
-        public function result(): RouteResult
-        {
-            array_shift($this->args);
+			/**
+			 *
+			 * @param $match
+			 *
+			 * @return string
+			 *
+			 */
+			private function paramMatch($match): string
+			{
+				return def($this->regex[$match[1]]) ? '(' . $this->regex[$match[1]] . ')' : '([^/]+)';
+			}
 
-            $params = collect();
+			/**
+			 *
+			 * @return RouteResult
+			 *
+			 *
+			 */
+			public function result(): RouteResult
+			{
+				array_shift($this->args);
 
-            foreach ($this->args as $match)
-            {
-                is_numeric($match) ? $this->with($match,NUMERIC) : $this->with($match,STRING);
+				$params = collect();
 
-                is_numeric($match) ? $params->set(intval($match)): $params->set($match);
-            }
+				foreach ($this->args as $match)
+				{
+					is_numeric($match) ? $this->with($match, NUMERIC) : $this->with($match, STRING);
 
-
-           return  new RouteResult(CONTROLLERS_NAMESPACE,$this->route->name,$this->route->url,$this->route->controller,$this->route->action,$params->all());
-        }
+					is_numeric($match) ? $params->set(intval($match)) : $params->set($match);
+				}
 
 
-        /**
-         *
-         * Check if a route matches
-         *
-         * @param string $url
-         *
-         * @return bool
-         *
-         */
-        private function match(string $url): bool
-        {
-            $path = preg_replace_callback('#:([\w]+)#', [$this, 'paramMatch'], $url);
+				return new RouteResult(CONTROLLERS_NAMESPACE, $this->route->name, $this->route->url, $this->route->controller, $this->route->action, $params->all());
+			}
 
-            $regex = "#^$path$#";
 
-            return preg_match($regex,$this->url,$this->args) === 1;
-        }
+			/**
+			 *
+			 * Check if a route matches
+			 *
+			 * @param string $url
+			 *
+			 * @return bool
+			 *
+			 */
+			private function match(string $url): bool
+			{
+				$path = preg_replace_callback('#:([\w]+)#', [$this, 'paramMatch'], $url);
 
-    }
-}
+				$regex = "#^$path$#";
+
+				return preg_match($regex, $this->url, $this->args) === 1;
+			}
+
+		}
+	}

@@ -1,40 +1,56 @@
 <?php
 
 
-namespace Imperium\Security\Csrf {
+	namespace Imperium\Security\Csrf
+	{
 
-    use Exception;
-    use Imperium\Middleware\Middleware;
-    use Psr\Http\Message\ServerRequestInterface;
+		use Exception;
+		use Imperium\Middleware\Middleware;
+		use Psr\Http\Message\ServerRequestInterface;
 
-    class CsrfMiddleware implements Middleware
-    {
+		/**
+		 *
+		 * Class CsrfMiddleware
+		 *
+		 * @author Willy Micieli
+		 *
+		 * @package Imperium\Security\Csrf
+		 *
+		 * @license GPL
+		 *
+		 * @version 10
+		 *
+		 */
+		class CsrfMiddleware implements Middleware
+		{
 
 
-        /**
-         * @var Csrf
-         */
-        private $csrf;
+			/**
+			 * @var Csrf
+			 */
+			private $csrf;
 
-        /**
-         * CsrfMiddleware constructor.
-         * @throws Exception
-         */
-        public function __construct()
-        {
-           $this->csrf = new Csrf(app()->session());
+			/**
+			 * CsrfMiddleware constructor.
+			 *
+			 * @throws Exception
+			 */
+			public function __construct()
+			{
+				$this->csrf = new Csrf(app()->session());
 
-        }
+			}
 
-        /**
-         * @param ServerRequestInterface $request
-         * @return mixed
-         * @throws Exception
-         */
-        public function __invoke(ServerRequestInterface $request)
-        {
-            $this->csrf->check($request);
+			/**
+			 * @param ServerRequestInterface $request
+			 *
+			 * @throws Exception
+			 * @return mixed
+			 */
+			public function __invoke(ServerRequestInterface $request)
+			{
+				$this->csrf->check($request);
 
-        }
-    }
-}
+			}
+		}
+	}

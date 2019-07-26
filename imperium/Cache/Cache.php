@@ -6,6 +6,19 @@ namespace Imperium\Cache {
 
     use Imperium\Collection\Collect;
 
+	/**
+	 *
+	 * Class Cache
+	 *
+	 * @package Imperium\Cache
+	 *
+	 * @author Willy Micieli
+	 *
+	 * @license GPL
+	 *
+	 * @version 10
+	 *
+	 */
     class Cache
     {
 
@@ -13,6 +26,8 @@ namespace Imperium\Cache {
          *
          * Check if a key is in the cache
          *
+		 * @method has
+		 *
          * @param $key
          *
          * @return bool
@@ -27,6 +42,8 @@ namespace Imperium\Cache {
          *
          * Get cache infos
          *
+		 * @method infos
+		 *
          * @return Collect
          *
          */
@@ -39,6 +56,8 @@ namespace Imperium\Cache {
          *
          * Check if the key has not value
          *
+		 * @method not
+		 *
          * @param string $key
          *
          * @return bool
@@ -53,6 +72,8 @@ namespace Imperium\Cache {
          *
          * Add a value inside cache
          *
+		 * @method set
+		 *
          * @param string $key
          * @param $value
          * @param int $ttl
@@ -69,6 +90,8 @@ namespace Imperium\Cache {
          *
          * Remove a value in the cache
          *
+		 * @method remove
+		 *
          * @param string $key
          *
          * @return bool|string[]
@@ -83,6 +106,8 @@ namespace Imperium\Cache {
          *
          * Clear the cache
          *
+		 * @method clear
+		 *
          * @return bool
          *
          */
@@ -95,6 +120,8 @@ namespace Imperium\Cache {
          *
          * Save a value only if are not already defined
          *
+		 * @method def
+		 *
          * @param string $key
          * @param $value
          * @param int $ttl
@@ -110,6 +137,10 @@ namespace Imperium\Cache {
 
         /**
          *
+		 * Get a value
+		 *
+		 * @method get
+		 *
          * @param string $key
          *
          * @return mixed
