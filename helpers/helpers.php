@@ -12,6 +12,7 @@
 	use Imperium\Dump\Dump;
 	use Imperium\Exception\Kedavra;
 	use Imperium\Flash\Flash;
+	use Imperium\Routing\Route;
 	use Imperium\Security\Csrf\Csrf;
 	use Imperium\Security\Hashing\Hash;
 	use Imperium\Trans\Trans;
@@ -313,12 +314,11 @@
 		 * @param string $name
 		 * @param array  $args
 		 *
-		 * @throws Kedavra
 		 * @return string
 		 */
 		function route(string $name, array $args = []): string
 		{
-			$x = (app()->routes()->by_or_fail('name', $name, "The $name route  was not found"));
+			$x = ( Route::manage()->by($name));
 
 			if (def($args))
 			{
@@ -1264,7 +1264,7 @@
 	{
 		function clear_terminal(): void
 		{
-			os(true) == Os::WINDOWS ? system('cls') : system('clear');
+			os(true) === Os::WINDOWS ? system('cls') : system('clear');
 		}
 	}
 
@@ -2573,133 +2573,7 @@
 		function routes(OutputInterface $output, array $routes): void
 		{
 
-			if (def(request()->server->get('TMUX')))
-			{
-				if (def($routes))
-				{
-					$output->write("+----------+--------------------+-----------------------+-----------------------+-----------------------+\n");
 
-					foreach ($routes as $route)
-					{
-
-						$name = "<fg=blue;options=bold>$route->name</>";
-
-						$url = "<fg=magenta;options=bold>$route->url</>";
-						$controller = "<fg=green;options=bold>$route->controller</>";
-						$action = "<fg=yellow;options=bold>$route->action</>";
-						$method = "<fg=cyan;options=bold>$route->method</>";
-
-						if (sum($route->method) == 6)
-							$output->write("|  $method  "); elseif (sum($route->method) == 4)
-							$output->write("|  $method    ");
-						elseif (sum($route->method) == 3)
-							$output->write("|  $method     ");
-
-
-						if (sum($route->name) < 3)
-							$output->write("|  $name\t\t\t|");
-
-						elseif (sum($route->name) > 10)
-							$output->write("|  $name\t|");
-						else
-							$output->write("|  $name\t\t|");
-
-
-						if (sum($route->url) < 5)
-							$output->write("  $url\t\t\t|"); elseif (sum($route->url) < 13)
-							$output->write("  $url\t\t|");
-						elseif (sum($route->url) > 18)
-							$output->write("  $url\t|");
-						else
-							$output->write("  $url\t|");
-
-
-						if (sum($route->controller) < 7)
-							$output->write("  $controller\t\t|"); elseif (sum($route->controller) < 10)
-							$output->write("  $controller\t|");
-						elseif (sum($route->controller) > 10 && length($route->controller) < 15)
-							$output->write("  $controller\t|");
-						elseif (sum($route->controller) > 15)
-							$output->write("  $controller\t|");
-						else
-							$output->write("  $controller\t|");
-
-						if (sum($route->action) < 5)
-							$output->write("  $action\t\t\t|\n"); elseif (sum($route->action) < 10)
-							$output->write("  $action\t\t|\n");
-						elseif (sum($route->action) > 12)
-							$output->write("  $action\t|\n");
-						else
-							$output->write("  $action\t|\n");
-						$output->write("+----------+--------------------+-----------------------+-----------------------+-----------------------+\n");
-					}
-				} else
-				{
-					$output->write("<error>We have not found routes</error>\n");
-				}
-			} else
-			{
-				if (def($routes))
-				{
-					$output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
-
-					foreach ($routes as $route)
-					{
-
-						$name = "<fg=blue;options=bold>$route->name</>";
-
-						$url = "<fg=magenta;options=bold>$route->url</>";
-						$controller = "<fg=green;options=bold>$route->controller</>";
-						$action = "<fg=yellow;options=bold>$route->action</>";
-						$method = "<fg=cyan;options=bold>$route->method</>";
-
-
-						if (sum($route->method) > 4)
-							$output->write("|  $method\t"); else
-							$output->write("|  $method\t\t");
-
-						if (sum($route->name) < 5)
-							$output->write("|  $name\t\t\t\t|");
-
-						elseif (sum($route->name) > 10)
-							$output->write("|  $name\t\t|");
-						else
-							$output->write("|  $name\t\t\t|");
-
-
-						if (sum($route->url) < 5)
-							$output->write("  $url\t\t\t\t\t|"); elseif (sum($route->url) < 13)
-							$output->write("  $url\t\t\t\t|");
-						elseif (sum($route->url) > 18)
-							$output->write("  $url\t\t|");
-						else
-							$output->write("  $url\t\t\t|");
-
-						if (sum($route->controller) < 5)
-							$output->write("  $controller\t\t\t\t\t|"); elseif (sum($route->controller) < 8)
-							$output->write("  $controller\t\t\t\t|");
-						elseif (sum($route->controller) > 8 && length($route->controller) < 15)
-							$output->write("  $controller\t\t\t|");
-						elseif (sum($route->controller) > 15)
-							$output->write("  $controller\t\t\t|");
-						else
-							$output->write("  $controller\t\t\t|");
-
-						if (sum($route->action) < 5)
-							$output->write("  $action\t\t\t\t|\n"); elseif (sum($route->action) < 10)
-							$output->write("  $action\t\t\t|\n");
-						elseif (sum($route->action) > 12)
-							$output->write("  $action\t\t|\n");
-						else
-							$output->write("  $action\t\t\t|\n");
-
-						$output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
-					}
-				} else
-				{
-					$output->write("<error>We have not found routes</error>\n");
-				}
-			}
 
 		}
 	}

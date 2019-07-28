@@ -195,7 +195,12 @@
 			 * @var string
 			 */
 			private $or;
-
+			
+			/**
+			 * @var int
+			 */
+			private $pdo_mode;
+			
 			/**
 			 *
 			 * The constructor
@@ -317,7 +322,7 @@
 			 *
 			 * Select only column
 			 *
-			 * @param string[] $columns
+			 * @param string ...$columns
 			 *
 			 * @return Query
 			 */
@@ -385,6 +390,8 @@
 			 */
 			public function get()
 			{
+				if (def($this->pdo_mode))
+					$this->connexion->set($this->pdo_mode);
 				return $this->use_fetch ? $this->connexion->fetch($this->sql()) : $this->connexion->request($this->sql());
 			}
 
@@ -443,7 +450,12 @@
 
 				return $this;
 			}
-
+			
+			public function pdo(int $mode)
+			{
+				$this->pdo_mode = $mode;
+				return $this;
+			}
 
 			/**
 			 *
@@ -579,14 +591,14 @@
 			{
 				$driver = $this->connexion->driver();
 
-				if (has($driver, [Connect::POSTGRESQL, Connect::MYSQL]))
+				if (has($driver, [POSTGRESQL, MYSQL]))
 				{
 					$columns = $this->tables->column()->for($this->table())->columns_to_string();
 
 					$this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
 				}
 
-				if (has($driver, [Connect::SQLITE]))
+				if (has($driver, [SQLITE]))
 				{
 					$fields = collect($this->tables->column()->for($this->table())->show());
 					$end = $fields->last();

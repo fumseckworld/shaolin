@@ -61,9 +61,6 @@
 		class App extends Zen implements Management
 		{
 
-
-			use Route;
-
 			/**
 			 * @var Connect
 			 */
@@ -185,7 +182,7 @@
 
 				$this->env = Dotenv::create(ROOT, '.env');
 
-				$this->route()->create_route_table();
+				Route::manage()->create_route_table();
 			}
 
 			/**

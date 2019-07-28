@@ -5,7 +5,8 @@ namespace Testing {
 
 
     use Imperium\Exception\Kedavra;
-    use Imperium\Routing\Router;
+	use Imperium\Routing\Route;
+	use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
     use Imperium\Testing\Unit;
     use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -49,9 +50,9 @@ namespace Testing {
          */
         public function test_add_route()
         {
-            $this->assertTrue($this->route()->save_route(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
-            $this->assertTrue($this->route()->update_route(app()->routes()->by_or_fail('name','imperium')->id,['name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
-            $this->assertTrue($this->route()->remove_route( 'imperium'));
+            $this->assertTrue(Route::manage()->create(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
+            $this->assertTrue(Route::manage()->update(Route::manage()->by('imperium')->id,['name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
+            $this->assertTrue(Route::manage()->del('imperium'));
         }
 
         /**
@@ -119,7 +120,7 @@ namespace Testing {
          4*/
         public function test_content()
         {
-            $this->assertNotEmpty($this->router('/alex',GET)->call()->send()->getContent());
+            $this->assertNotEmpty($this->router('/',GET)->call()->send()->getContent());
         }
 
 

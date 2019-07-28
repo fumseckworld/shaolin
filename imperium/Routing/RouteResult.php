@@ -79,8 +79,6 @@
 				$this->namespace = $namespace . '\\';
 				$this->class = $this->controller_class();
 				$this->controller_dir = CONTROLLERS;
-
-
 			}
 
 			/**

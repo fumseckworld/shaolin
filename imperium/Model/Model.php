@@ -35,7 +35,6 @@
 		class Model extends Zen
 		{
 
-			use Route;
 
 			/**
 			 *

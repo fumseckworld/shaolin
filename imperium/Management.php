@@ -769,12 +769,6 @@
 
 
 			/**
-			 * @return Model
-			 */
-			public function route(): Model;
-
-
-			/**
 			 *
 			 * Get cache instance
 			 *

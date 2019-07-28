@@ -28,8 +28,6 @@
 		class Router
 		{
 
-			use Route;
-
 			/**
 			 * @var string
 			 */
@@ -83,7 +81,7 @@
 			public function search()
 			{
 
-				foreach ($this->routes()->where('method', EQUAL, $this->method)->get() as $route)
+				foreach (Route::manage()->query()->from('routes')->mode(SELECT)->where('method', EQUAL, $this->method)->get() as $route)
 				{
 					if ($this->match($route->url))
 					{
