@@ -26,7 +26,7 @@ namespace Testing {
          */
         public function setUp(): void
         {
-            $this->git = new Git('depots/willy/imperium', 'willy');
+            $this->git = new Git('imperium', 'willy');
         }
 
         /**
@@ -59,7 +59,7 @@ namespace Testing {
          */
         public function test_count_branch()
         {
-            $this->assertEquals('4',$this->git->branches_found());
+            $this->assertEquals('3',$this->git->branches_found());
         }
 
         /**
@@ -112,9 +112,9 @@ namespace Testing {
             Dir::checkout(ROOT);
             $this->assertTrue(Git::create('mario','alexandra','a super mario game','supermario@gmail.om'));
             Dir::checkout(ROOT);
-            $this->assertEquals('supermario@gmail.om',(new Git('alexandra/mario',''))->email());
+            $this->assertEquals('supermario@gmail.om',(new Git('mario','alexandra'))->email());
             Dir::checkout(ROOT);
-            $this->assertTrue( Dir::remove('alexandra'));
+            $this->assertTrue( Git::remove('mario','alexandra'));
         }
 
         /***

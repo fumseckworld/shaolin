@@ -117,7 +117,7 @@ namespace Testing {
 
         /**
          * @throws Kedavra
-         4*/
+         */
         public function test_content()
         {
             $this->assertNotEmpty($this->router('/',GET)->call()->send()->getContent());

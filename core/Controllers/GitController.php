@@ -14,7 +14,7 @@ namespace Shaolin\Controllers {
     Class GitController extends Controller
 	{
 
-	    private $prefix = "depots";
+
 
         public function before_action()
         {
@@ -28,18 +28,15 @@ namespace Shaolin\Controllers {
 
 		public function close_todo(string $owner,string $reopsitory,int $id)
         {
-            return $this->git("{$this->prefix}/$owner/$reopsitory",$owner)->close_todo($id);
+            return $this->git($reopsitory,$owner)->close_todo($id);
         }
 		public function add_repository()
         {
-
-            Dir::checkout(ROOT . DIRECTORY_SEPARATOR . $this->prefix);
-
             return Git::create($this->request()->get('repository'),logged_user(),$this->request()->get('description'),$this->request()->get('email')) ? $this->back('The repository was created successfully') : $this->back('The repository already exist  ',false);
         }
         public function download_archive(string $repo,string $owner,string $tag,string $ext)
         {
-            return $this->download($this->git("{$this->prefix}/$owner/$repo",$owner)->generate_archives($ext,$tag));
+            return $this->download($repo,$owner)->generate_archives($ext,$tag);
         }
 		public function send_bugs()
         {
@@ -48,18 +45,18 @@ namespace Shaolin\Controllers {
         }
 		public function stars(string $repository,string $owner)
         {
-            return $this->git("{$this->prefix}/$owner/$repository",$owner)->stars();
+            return $this->git($repository,$owner)->stars();
         }
 		public function get_app(string $repository,string $owner)
         {
-            return $this->git("{$this->prefix}/$owner/$repository",$owner)->download();
+            return $this->git($repository,$owner)->download();
         }
 
 		public function show(string $owner,string $repo,string $branch)
         {
 
 
-            $repository = $this->git("{$this->prefix}/$owner/$repo",$owner)->save()->git('','',$branch);
+            $repository = $this->git($repo,$owner)->save()->git('','',$branch);
 
             return $this->view('repository',compact('repository'));
         }
@@ -67,13 +64,13 @@ namespace Shaolin\Controllers {
         public function show_file(string $owner,string $repository,string $branch,string $file)
         {
 
-            $tree = $this->git("{$this->prefix}/$owner/$repository",$owner)->git('',$file,$branch);
+            $tree = $this->git($repository,$owner)->git('',$file,$branch);
             return $this->view('dirs',compact('tree'));
         }
         public function tree(string $owner,string $repository,string $branch,string $tree)
         {
 
-            $tree = $this->git("{$this->prefix}/$owner/$repository",$owner)->git($tree,'',$branch);
+            $tree = $this->git($repository,$owner)->git($tree,'',$branch);
             return $this->view('dirs',compact('tree'));
         }
 

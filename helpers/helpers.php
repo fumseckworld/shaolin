@@ -91,6 +91,7 @@
 	define('MIDDLEWARE', CORE . DIRECTORY_SEPARATOR . 'Middleware');
 	define('CONFIG', CORE . DIRECTORY_SEPARATOR . 'Config');
 	define('COMMAND', CORE . DIRECTORY_SEPARATOR . 'Commands');
+	define('REPOSITORIES',ROOT .DIRECTORY_SEPARATOR  . 'Repositories');
 
 	define('NUMERIC', '([0-9]+)');
 
@@ -439,6 +440,7 @@
 		 */
 		function display_repositories(string $owner = ''): string
 		{
+
 			$username = not_def($owner) ? def(get('owner')) ? get('owner') : '*' : $owner;
 
 			$data = [];
@@ -447,13 +449,13 @@
 			if (different($username, '*'))
 			{
 
-				foreach (Dir::scan('depots') as $owner)
+				foreach (Dir::scan(REPOSITORIES) as $owner)
 				{
 					if ($owner == $username)
 					{
-						foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
+						foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
 						{
-							$data[$owner][] = realpath("depots/$owner/$repository");
+							$data[$owner][] = realpath($owner . DIRECTORY_SEPARATOR.$repository);
 						}
 					} else
 					{
@@ -466,29 +468,30 @@
 			{
 				if (app()->auth()->connected())
 				{
-					foreach (Dir::scan('depots') as $owner)
+					foreach (Dir::scan(REPOSITORIES) as $owner)
 					{
 						if (different($owner, logged_user()))
 						{
 							$owners->uniq($owner);
 
-							foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
+							foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
 							{
-								$data[$owner][] = realpath("depots/$owner/$repository");
+								$data[$owner][] = realpath($owner . DIRECTORY_SEPARATOR.$repository);
 							}
 						}
 					}
 				} else
 				{
-					foreach (Dir::scan('depots') as $owner)
+					foreach (Dir::scan(REPOSITORIES) as $owner)
 					{
 
 						$owners->uniq($owner);
-
-						foreach (Dir::scan('depots' . DIRECTORY_SEPARATOR . $owner) as $repository)
+							
+				
+						foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
 						{
 
-							$data[$owner][] = realpath("depots/$owner/$repository");
+							$data[$owner][] = realpath($owner . DIRECTORY_SEPARATOR.$repository);
 						}
 					}
 				}

@@ -183,7 +183,7 @@
 			 */
 			public static function scan(string $dir, $sorting_order = SCANDIR_SORT_ASCENDING): array
 			{
-				return collect(scandir($dir, $sorting_order))->del('.', '..')->all();
+				return collect(scandir($dir, $sorting_order))->del('.','..','.gitignore')->all();
 			}
 
 			/**²

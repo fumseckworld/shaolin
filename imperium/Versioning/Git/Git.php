@@ -134,11 +134,14 @@
 				
 				app()->session()->put('repo', realpath($repository));
 				
-				self::$repository = realpath($repository);
-				
+				self::$repository = REPOSITORIES . DIRECTORY_SEPARATOR . $owner . DIRECTORY_SEPARATOR . $repository;
+			
 				self::model();
+			
 				self::connect();
+			
 				self::$name = collect(explode(DIRECTORY_SEPARATOR, $repository))->last();
+			
 				Dir::checkout(self::$repository);
 				
 			}
@@ -958,7 +961,8 @@
 			 */
 			public static function create( string $project_name, string $owner, string $description, string $email ) : bool
 			{
-				
+				Dir::checkout(REPOSITORIES);
+
 				if ( ! Dir::exist($owner) )
 				{
 					Dir::create($owner);
@@ -981,6 +985,11 @@
 				
 				return ( connect(SQLITE, "$project_name.sqlite3", '', '', '', '') )->queries(self::BUGS_TABLE, self::TODO_TABLE, self::CONTRIBUTORS_TABLE);
 				
+			}
+			public static function remove(string $repository,string $owner): bool
+			{
+				Dir::checkout(REPOSITORIES);
+				return Dir::remove($owner . DIRECTORY_SEPARATOR . $repository);
 			}
 			
 			/**
