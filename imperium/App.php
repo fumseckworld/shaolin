@@ -847,7 +847,7 @@
 			 */
 			public function debug(): bool
 			{
-				return server(DISPLAY_BUGS, false);
+				return server(DISPLAY_BUGS) === "true";
 			}
 
 			/**

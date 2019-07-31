@@ -130,13 +130,28 @@
 			 * @param Query   $query
 			 * @param Request $request
 			 */
-			public function __construct(Connect $connect, Table $table, Query $query, Request $request)
+			public function __construct(Connect $connect)
 			{
 				$this->connexion = $connect;
-				$this->table = $table;
+
 				$this->data = collect();
-				$this->sql = $query;
-				$this->request = $request;
+			}
+
+			
+			/**
+			 * 
+			 * Check the current driver
+			 *  
+			 * @method check
+			 *
+			 * @param string $driver
+			 *
+			 * @return bool
+			 * 
+			 */
+			public function check(string $driver): bool
+			{
+				return equal($this->connexion->driver(),$driver);
 			}
 
 			/**
@@ -148,6 +163,7 @@
 			 * @param string ...$tables
 			 *
 			 * @throws Kedavra
+			 * 
 			 * @return bool
 			 *
 			 */
@@ -195,54 +211,13 @@
 			 * @return string
 			 *
 			 */
-			public function current(): string
+			private function current(): string
 			{
 				is_true(not_def($this->current), true, "No table selected");
 
 				return $this->current;
 			}
-
-			/**
-			 *
-			 * Update a record
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function update(): bool
-			{
-				$table = $this->request->get('__table__');
-
-				$id = intval($this->request->get($this->from($table)->primary()));
-
-				$data = collect($this->request->all())->del(CSRF::KEY, '__table__');
-
-				$columns = $this->table()->column()->for($table)->show();
-
-				$x = collect();
-				foreach ($columns as $column)
-					$x->set($data->get($column), $column);
-
-				return $this->table()->from($table)->update($id, $x->all());
-			}
-
-			/**
-			 *
-			 * Import the sql file content in the base
-			 *
-			 * @method import
-			 *
-			 * @throws Kedavra
-			 * @return bool
-			 *
-			 */
-			public function import(): bool
-			{
-				return (new Import())->import();
-			}
-
+			
 			/**
 			 *
 			 * Return the primary key
@@ -260,51 +235,6 @@
 
 			/**
 			 *
-			 * Generate a form to update a record
-			 *
-			 * @method edit
-			 *
-			 * @param string $table
-			 * @param int    $id          The record id
-			 * @param string $action      The form action
-			 * @param string $submit_text The submit text
-			 * @param string $submit_icon
-			 *
-			 * @throws Kedavra
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 * @return string
-			 *
-			 */
-			public function edit_form(string $table, int $id, string $action, string $submit_text, string $submit_icon): string
-			{
-				return form($action, id())->generate(2, $table, $submit_text, $submit_icon, Form::EDIT, $id);
-			}
-
-			/**
-			 *
-			 * Generate a form to create a record
-			 *
-			 * @method create
-			 *
-			 * @param string $table
-			 * @param string $action      The form action
-			 * @param string $submit_text The submit text
-			 * @param string $submit_icon
-			 *
-			 * @throws DependencyException
-			 * @throws Kedavra
-			 * @throws NotFoundException
-			 * @return string
-			 *
-			 */
-			public function create_form(string $table, string $action, string $submit_text, string $submit_icon): string
-			{
-				return form($action, '')->generate(2, $table, $submit_text, $submit_icon);
-			}
-
-			/**
-			 *
 			 * Find a record by a column
 			 *
 			 * @param string $column
@@ -317,52 +247,9 @@
 			 */
 			public function by(string $column, $expected)
 			{
-				return $this->query()->from($this->current())->mode(SELECT)->where($column, EQUAL, $expected)->use_fetch()->get();
+				return $this->query()->from($this->current())->mode(SELECT)->where($column, EQUAL, $expected)->fetch(true)->get();
 			}
 
-			/**
-			 *
-			 * Display records without action
-			 *
-			 * @param int    $mode
-			 * @param string $start_pagination_text
-			 * @param string $end_pagination_text
-			 * @param string $column
-			 * @param string $expected
-			 *
-			 * @throws Kedavra
-			 * @return string
-			 *
-			 */
-			public function display(int $mode, string $start_pagination_text, string $end_pagination_text, string $column = '', string $expected = ''): string
-			{
-
-				is_true(not_in(App::DISPLAY_MODE, $mode), true, "The mode is not valid");
-
-				$table = $this->current();
-
-				$current_page = get('current', 1);
-
-				$limit_records_per_page = different($mode, DISPLAY_ARTICLE) ? get('limit', 10) : 12;
-
-				$records = get_records($table, $current_page, $limit_records_per_page, $column, $expected);
-
-				$pagination = pagination($limit_records_per_page, "?current=", $current_page, $this->count($table), $start_pagination_text, $end_pagination_text);
-
-
-				switch ($mode)
-				{
-				case DISPLAY_TABLE:
-					return '<div class="mt-5 mb-5"> <input class="form-control" onchange="location = this.attributes[2].value +this.value"  data-url="?current=' . $current_page . '&limit=' . '" value="' . get('limit', 10) . '"  step="10" min="1" type="number"></div>' . \Imperium\Html\Table\Table::table($this->table()->column()->for($table)->show(), $records, 'table-responsive', '', '', '')->generate(collect(config('form', 'class'))->get('table')) . html('div', $pagination, 'mt-4');
-					break;
-				case DISPLAY_ARTICLE:
-					return article($records, $pagination);
-					break;
-				default:
-					return '';
-					break;
-				}
-			}
 
 			/**
 			 *
@@ -380,172 +267,6 @@
 			public function search(string $value, bool $json_output = false)
 			{
 				return $json_output ? collect($this->query()->from($this->current())->mode(SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
-			}
-
-			/**
-			 *
-			 * Display all tables not hidden
-			 *
-			 * @method show_tables
-			 *
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return array
-			 *
-			 */
-			public function show_tables(): array
-			{
-				return $this->table->show();
-			}
-
-			/**
-			 * @param string $action_remove_text
-			 * @param string $confirm_text
-			 * @param string $action_edit_text
-			 * @param string $start_pagination_text
-			 * @param string $end_pagination_text
-			 * @param string $search_placeholder
-			 * @param bool   $pagination_to_right
-			 *
-			 * @throws Kedavra
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 * @return string
-			 *
-			 */
-			public function show(string $action_remove_text = 'Remove', string $confirm_text = 'Are you sure ?', string $action_edit_text = 'Edit', string $start_pagination_text = 'Previous', string $end_pagination_text = 'Next', string $search_placeholder = 'Search', bool $pagination_to_right = true): string
-			{
-				$url = request()->getRequestUri();
-				$table = current_table();
-
-				if (not_def(strstr($url, "?table=$table")))
-				{
-					$host = \request()->getHost();
-					$path = \request()->getPathInfo();
-
-					$url = https() ? "https://$host$path?table=$table" : "http://$host$path?table=$table";
-					return to($url);
-
-				}
-				$remove_btn_class = \collect(config('form', 'class'))->get('delete');
-				$edit_btn_class = \collect(config('form', 'class'))->get('edit');
-				$session = app()->session();
-
-				$search_icon = fa('fas', 'fa-search');
-				$table_icon = fa('fas', 'fa-table');
-				$pagination_icon = fa('fas', 'fa-heart');
-				$edit_icon = fa('fas', 'fa-edit');
-				$remove_icon = fa('fas', 'fa-trash-alt');
-				$remove_url_prefix = config('auth', 'admin_prefix') . '/' . $table . '/remove';
-				$edit_url_prefix = config('auth', 'admin_prefix') . '/' . $table . '/edit';
-
-
-				$url_separator = '=';
-
-				$html = '<script>function sure(e,text){if(!confirm(text)){e.preventDefault();}}</script>';
-
-				$current_page = get('current', 1);
-
-				$url_prefix = '?table';
-
-
-				if (is_false($session->has('limit')))
-					$session->put('limit', 10);
-
-				$limit_records_per_page = intval($session->get('limit'));
-				$primary = $this->from($table)->primary();
-				$records = get_records($table, $current_page, $limit_records_per_page, get('column', $primary));
-
-
-				$pagination = pagination($limit_records_per_page, "$url_prefix$url_separator$table&current=", $current_page, $this->count($table), $start_pagination_text, $end_pagination_text);
-
-
-				$tables = collect(['/' => $table]);
-
-
-				$columns = collect(['/' => get('column', $primary)]);
-
-				$order = collect(['/' => get('order', ASC)]);
-
-				foreach ($this->show_tables() as $x)
-				{
-					if (different($x, $table))
-						$tables->merge(["?table=$x" => $x]);
-				}
-
-				$x = strstr($url, '&column=');
-				$url = str_replace($x, "", $url);
-				foreach ($this->from($table)->columns() as $x)
-				{
-					if ($columns->not_exist($x))
-						$columns->merge(["$url&column=$x" => $x]);
-				}
-				$x = strstr($url, '&order=');
-				$url = str_replace($x, "", $url);
-				foreach ([DESC, ASC] as $x)
-				{
-					if ($order->not_exist($x))
-						$order->merge(["$url&order=$x" => $x]);
-				}
-
-
-				$form = form('', id())->row()->search($search_placeholder, $search_icon)->end_row_and_new()->redirect('table', $tables->all(), $table_icon)->redirect('column', $columns->all(), $pagination_icon)->redirect('order', $order->all(), $pagination_icon)->pagination($pagination_icon, '/pagination/')->end_row()->get();
-
-				append($html, html('div', $form, 'container'));
-
-				append($html, simply_view('container', '', $table, $records, collect(config('form', 'class'))->get('table'), $action_remove_text, $confirm_text, $remove_btn_class, $remove_url_prefix, $remove_icon, $action_edit_text, $edit_url_prefix, $edit_btn_class, $edit_icon, $pagination, $pagination_to_right));
-
-
-				return $html;
-			}
-
-			/**
-			 *
-			 * Change the current table
-			 *
-			 * @method change_table
-			 *
-			 * @param string $table The table name
-			 *
-			 * @return Model
-			 *
-			 */
-			public function change_table(string $table): Model
-			{
-				return $this->from($table);
-			}
-
-
-			/**
-			 *
-			 * Check the current driver is mysql
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function is_mysql()
-			{
-				return $this->connexion->mysql();
-			}
-
-			/**
-			 *
-			 * Seed the current table
-			 *
-			 * @method seed
-			 *
-			 * @param int $records The number of records
-			 *
-			 * @throws Kedavra
-			 * @return bool
-			 *
-			 */
-			public function seed(int $records): bool
-			{
-				return $this->table()->from($this->current())->seed($records);
 			}
 
 			/**
@@ -624,34 +345,6 @@
 
 			/**
 			 *
-			 * Return true if the current connexion is postgresql
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function is_postgresql()
-			{
-				return $this->connexion->postgresql();
-			}
-
-			/**
-			 *
-			 * Return true if the current connexion is sqlite
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function is_sqlite()
-			{
-				return $this->connexion->sqlite();
-			}
-
-			/**
-			 *
 			 * Return the sql builder instance
 			 *
 			 * @return Query
@@ -659,7 +352,7 @@
 			 */
 			public function query(): Query
 			{
-				return $this->sql;
+				return new Query($this->table(),$this->connexion);
 			}
 
 			/**
@@ -669,7 +362,7 @@
 			 */
 			public function table(): Table
 			{
-				return $this->table;
+				return new Table($this->connexion);
 			}
 
 
@@ -704,7 +397,7 @@
 			 */
 			public function last(string $order_column, int $limit, int $offset = 0): array
 			{
-				return $this->query()->from($this->current())->mode(SELECT)->limit($limit, $offset)->order_by($order_column, ASC)->get();
+				return $this->query()->from($this->current())->mode(SELECT)->limit($limit, $offset)->order_by($order_column, ASC)->fetch()->get();
 			}
 
 			/**
@@ -754,7 +447,7 @@
 			 */
 			public function find(int $id)
 			{
-				return $this->query()->from($this->current())->mode(SELECT)->where($this->primary(), EQUAL, $id)->use_fetch()->get();
+				return $this->query()->from($this->current())->mode(SELECT)->where($this->primary(), EQUAL, $id)->fetch(true)->get();
 			}
 
 			/**object
@@ -771,11 +464,7 @@
 			 */
 			public function find_or_fail(int $id)
 			{
-				$data = $this->find($id);
-
-				is_true(not_def($data), true, 'Record was not found');
-
-				return $data;
+				return exist($this->find($id),true, 'Record was not found');
 			}
 
 
@@ -827,6 +516,7 @@
 			 * @param array $data
 			 *
 			 * @throws Kedavra
+			 * 
 			 * @return bool
 			 *
 			 */
@@ -836,29 +526,7 @@
 				return $this->table()->from($this->current())->save($model, $data);
 			}
 
-			/**
-			 *
-			 * Insert data in the current table
-			 *
-			 * @throws Kedavra
-			 * @return bool
-			 *
-			 */
-			public function add(): bool
-			{
-				$table = $this->request->get('__table__');
-				$data = collect($this->request->all())->del(Csrf::KEY, '__table__');
-
-				$primary = $this->table()->column()->for($table)->primary_key();
-				$columns = $this->from($table)->columns();
-
-				$x = collect();
-
-				foreach ($columns as $column)
-					equal($column, $primary) ? $x->put($column, $column) : $x->put($column, $data->get($column));
-
-				return $this->table()->from($table)->save($this, $x->all());
-			}
+		
 
 			/**
 			 *
@@ -867,6 +535,7 @@
 			 * @param string $table
 			 *
 			 * @throws Kedavra
+			 * 
 			 * @return int
 			 *
 			 */
@@ -892,19 +561,6 @@
 				return $this->connexion->instance()->quote($value);
 			}
 
-			/**
-			 *
-			 * Return the number of all tables found
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return int
-			 *
-			 */
-			public function found(): int
-			{
-				return $this->table()->found();
-			}
 
 			/**
 			 *
@@ -964,7 +620,7 @@
 			 * @return bool
 			 *
 			 */
-			public function is_empty(string $table): bool
+			public function empty(string $table): bool
 			{
 				return $this->table()->from($table)->is_empty();
 			}
@@ -984,37 +640,6 @@
 
 			/**
 			 *
-			 * return the results of the custom query in an array
-			 *
-			 * @param string $query
-			 *
-			 * @param array  $data
-			 *
-			 * @throws Kedavra
-			 * @return array
-			 *
-			 */
-			public function request(string $query, array $data): array
-			{
-				return $this->connexion->request($query, $data);
-			}
-
-			/**
-			 * @param string $request
-			 *
-			 * @param array  $data
-			 *
-			 * @throws Kedavra
-			 * @return object
-			 *
-			 */
-			public function fetch(string $request, array $data)
-			{
-				return $this->connexion->fetch($request, $data);
-			}
-
-			/**
-			 *
 			 * Execute a custom query
 			 *
 			 * @param string $query
@@ -1029,46 +654,5 @@
 			}
 
 
-			/**
-			 *
-			 * Generate a form by a pdo record
-			 *
-			 * @param        $record
-			 * @param string $action
-			 * @param string $submit_text
-			 * @param string $table
-			 * @param string $primary
-			 *
-			 * @throws Kedavra
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 * @return string
-			 *
-			 */
-			public function parse($record, string $action, string $submit_text, string $table, string $primary): string
-			{
-
-				if (empty($record))
-					return back();
-
-				$form = \form($action, id())->row();
-				$i = 1;
-				foreach ($record as $rec)
-				{
-					foreach ($rec as $k => $v)
-					{
-						if (!is_pair($i))
-						{
-							$form->end_row_and_new();
-						}
-						if (equal($k, $primary))
-							$form->primary($k, $v, $table); else
-							$form->textarea($k, $k, '', '', '', $v);
-
-						$i++;
-					}
-				}
-				return $form->end_row_and_new()->submit($submit_text)->get();
-			}
 		}
 	}

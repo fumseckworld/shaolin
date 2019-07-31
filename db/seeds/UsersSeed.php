@@ -15,11 +15,11 @@ class UsersSeed extends AbstractSeed
      */
     public function run()
     {
-        $user = collection();
+        $user = collect();
 
         for ($i=0;$i!=100;$i++)
             $user->push(['firstname' => faker()->firstName,'lastname' => faker()->lastName ,'email' => faker()->email,'password'=> bcrypt('0000')]);
 
-        $this->insert('users',$user->collection());
+        $this->insert('users',$user->all());
     }
 }

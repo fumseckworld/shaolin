@@ -4241,8 +4241,9 @@
 						append($data, $model->pdo()->quote($v) . ', ');
 				} else
 				{
-					if ($instance->is_mysql() | $instance->is_sqlite())
-						append($data, 'NULL, '); else
+					if ($instance->check(MYSQL) || $instance->check(SQLITE))
+						append($data, 'NULL, '); 
+					else
 						append($data, "DEFAULT, ");
 
 				}

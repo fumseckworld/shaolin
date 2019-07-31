@@ -81,7 +81,7 @@
 			public function search()
 			{
 
-				foreach (Route::manage()->query()->from('routes')->mode(SELECT)->where('method', EQUAL, $this->method)->get() as $route)
+				foreach (Route::manage()->expected($this->method) as $route)
 				{
 					if ($this->match($route->url))
 					{

@@ -7,8 +7,9 @@
 		use Imperium\Exception\Kedavra;
 		use Imperium\Tables\Table;
 		use Imperium\Zen;
+    use PDO;
 
-		/**
+/**
 		 * Class Query
 		 *
 		 * @package Imperium\Query
@@ -282,7 +283,7 @@
 
 				default:
 					throw new Kedavra('The query mode is not define');
-					break;
+				break;
 				}
 			}
 
@@ -395,20 +396,26 @@
 				return $this->use_fetch ? $this->connexion->fetch($this->sql()) : $this->connexion->request($this->sql());
 			}
 
+			
 			/**
 			 *
-			 * Use a simple fetch
+			 * Disable or enable the fetch
+			 *  
+			 * 
+			 * @method fetch
 			 *
+			 * 
 			 * @return Query
-			 *
+			 * 
 			 */
-			public function use_fetch(): Query
+			public function fetch(bool $fetch = false): Query
 			{
-				$this->use_fetch = true;
+				$this->use_fetch = $fetch;
 
 				return $this;
-			}
 
+			}
+		
 			/**
 			 *
 			 * Generate a limit clause
@@ -445,15 +452,29 @@
 			{
 
 				if (collect(Table::MODE)->has($mode))
-					$this->mode = $mode; else
+					$this->mode = $mode; 
+				else
 					throw new Kedavra("The current mode is not valid");
 
 				return $this;
 			}
 			
-			public function pdo(int $mode)
+			/**
+			 *
+			 * Change pdo fetch mode
+			 * 
+			 * @method pdo
+			 *
+			 * @param  int $mode
+			 *
+			 * @return Query
+			 * 
+			 */
+			public function pdo(int $mode = 0): Query
 			{
-				$this->pdo_mode = $mode;
+
+				$this->pdo_mode= $mode !== 0 ?  $mode :  PDO::FETCH_OBJ;
+
 				return $this;
 			}
 

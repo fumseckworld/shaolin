@@ -12,8 +12,9 @@
 		use PDO;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
-		
-		class Route
+    use PhpParser\Node\Expr\BinaryOp\Equal;
+
+class Route
 		{
 			
 			/**
@@ -47,8 +48,9 @@
 			private function routes() : Model
 			{
 				
-				return ( new Model($this->routes_connect(), $this->routes_table(), new Query($this->routes_table(), $this->routes_connect()), new Request()) )->from($this->table);
+				return ( new Model($this->routes_connect()))->from($this->table);
 			}
+			
 			
 			/**
 			 *
@@ -99,7 +101,6 @@
 			 */
 			public function del(string $name) : bool
 			{
-				
 				return $this->routes()->query()->from($this->table)->mode(DELETE)->where('name', EQUAL, $name)->delete();
 			}
 			
@@ -215,7 +216,7 @@
 			private function get(string $column = '') : array
 			{
 				
-				return def($column) ? $this->routes()->query()->from($this->table)->mode(SELECT)->pdo(PDO::FETCH_ASSOC)->only($column)->get() : $this->routes()->query()->from($this->table)->mode(SELECT)->get();
+				return def($column) ?  $this->routes()->query()->from($this->table)->mode(SELECT)->pdo(PDO::FETCH_ASSOC)->only($column)->get() : $this->routes()->query()->from($this->table)->mode(SELECT)->get();
 			}
 			
 			/**
@@ -236,15 +237,6 @@
 				return self::$instance;
 			}
 			
-			/***
-			 * @return Query
-			 *
-			 */
-			public function query() : Query
-			{
-				
-				return $this->routes()->query();
-			}
 			
 			/**
 			 *
@@ -282,6 +274,12 @@
 				return def($this->routes()->from($this->table)->by($column, $value));
 			}
 			
+			public function expected(string $method): array
+			{
+
+				return $this->routes()->query()->from($this->table)->mode(SELECT)->where('method',EQUAL,$method)->get();
+
+			}
 			/**
 			 *
 			 * Create all routes

@@ -8,9 +8,15 @@ TEST=./impero
 C=--coverage-html coverage
 
 
-all:
+all: prepare
 	./vendor/bin/phpunit $(C)
 coverage:
 	php -S localhost:8000 -t $@
 css:
 	npx tailwind build core/Assets/css/app.css -o web/css/app.css
+
+prepare:
+	mysql -uroot -proot -e 'DROP DATABASE imperium;'
+	mysql -uroot -proot -e 'CREATE DATABASE imperium;'
+	vendor/bin/phinx migrate
+	vendor/bin/phinx seed:run
