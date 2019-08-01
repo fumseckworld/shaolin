@@ -55,6 +55,12 @@ namespace Testing {
             $this->assertTrue(Route::manage()->del('imperium'));
         }
 
+        public function test_check()
+        {
+            $this->assertTrue(Route::manage()->check('name','root'));
+            $this->assertFalse(Route::manage()->check('name','alexandre'));
+        }
+
         /**
          * @throws Kedavra
          */

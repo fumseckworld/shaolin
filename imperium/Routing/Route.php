@@ -67,24 +67,6 @@ class Route
 				return $this->routes_table()->not_exist($this->table) ? $this->routes_connect()->execute($this->create_route_table_query) : true;
 			}
 			
-			/**
-			 *
-			 * Add a new route
-			 *
-			 * @method add
-			 *
-			 * @param  array  $data
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function add(array $data) : bool
-			{
-				
-				return routes_add($this->routes(), $data);
-			}
 			
 			/**
 			 *
