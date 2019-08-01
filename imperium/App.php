@@ -1123,7 +1123,8 @@
 			 */
 			public function session(): SessionInterface
 			{
-				return equal(request()->getScriptName(), './vendor/bin/phpunit') ? new ArraySession() : new Session();
+
+				return def(strstr(request()->getScriptName(), 'phpunit')) ? new ArraySession() : new Session();
 
 			}
 

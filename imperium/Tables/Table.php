@@ -783,7 +783,7 @@
 			 * @return bool
 			 *
 			 */
-			public function save(Model $model, array $values): bool
+			public function save($model, array $values): bool
 			{
 				return $this->connexion->execute(insert_into($model, $this->current(), $values));
 			}

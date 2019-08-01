@@ -62,8 +62,8 @@
 			 */
 			public function __construct(ServerRequestInterface $request)
 			{
-
-				$this->method = $request->getMethod() !== GET ? strtoupper(collect($request->getParsedBody())->get('method')) : GET;
+				
+				$this->method = $request->getMethod() !== GET ? def($request->getParsedBody()) ? strtoupper(collect($request->getParsedBody())->get('method')) : $request->getMethod() : GET;
 
 				$this->url = $request->getUri()->getPath();
 

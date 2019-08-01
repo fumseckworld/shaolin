@@ -9,7 +9,7 @@
     "authors": [
         {
             "name": "Willy Micieli",
-            "email": "micieli@glaposte.net"
+            "email": "micieli@laposte.net"
         }
     ],
     "require": {
@@ -59,7 +59,9 @@
             "Shaolin\\": "core/"
         },
         "files": [
-            "helpers/helpers.php"
+            "helpers/web.php",
+            "helpers/const.php",
+            "helpers/admin.php"
         ]
     },
     "require-dev": {

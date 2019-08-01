@@ -179,7 +179,7 @@
 			{
 				
 				if ( is_null(self::$model) )
-					self::$model = new Model(self::connect(), self::table(), self::query(), new Request());
+					self::$model = new Model(self::connect());
 				
 				return self::$model;
 			}
@@ -690,7 +690,7 @@
                          <nav>
                          <ul class="breadcrumb">
                             <li>
-                                <a href="' . base_url($this->owner(), $this->repository(), $branch) . '">' . $this->repository() . '</a>
+                                <a href="' . url($this->owner(), $this->repository(), $branch) . '">' . $this->repository() . '</a>
                             </li>';
 				
 				$x = collect(explode('/', $current_directory));
@@ -705,7 +705,7 @@
 						{
 							append($ancient, "$v/");
 							
-							append($data, '<li>  <a href="' . base_url($this->owner(), $this->repository(), $branch, 'tree', trim($ancient, '/')) . '">' . $v . '</a></li>');
+							append($data, '<li>  <a href="' . url($this->owner(), $this->repository(), $branch, 'tree', trim($ancient, '/')) . '">' . $v . '</a></li>');
 						}
 						
 					}
@@ -725,7 +725,7 @@
 						{
 							append($ancient, "$v/");
 							
-							append($data, '<li>  <a href="' . base_url($this->owner(), $this->repository(), $branch, 'tree', trim($ancient, '/')) . '">' . $v . '</a></li>');
+							append($data, '<li>  <a href="' . _url($this->owner(), $this->repository(), $branch, 'tree', trim($ancient, '/')) . '">' . $v . '</a></li>');
 							
 						}
 					}
@@ -740,19 +740,19 @@
 					{
 						
 						if ( def($current_directory) )
-							append($data, '<tr><td> <a href="' . base_url($this->owner(), $this->repository(), $branch, 'tree', $current_directory, $v) . '"><i class="material-icons">folder</i> ' . $v . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $current_directory/$v") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $current_directory/$v") . '</td></tr>');
+							append($data, '<tr><td> <a href="' . url($this->owner(), $this->repository(), $branch, 'tree', $current_directory, $v) . '"><i class="material-icons">folder</i> ' . $v . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $current_directory/$v") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $current_directory/$v") . '</td></tr>');
 						else
-							append($data, '<tr><td> <a href="' . base_url($this->owner(), $this->repository(), $branch, 'tree', $v) . '"><i class="material-icons">folder</i> ' . $v . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $v") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $v") . '</td></tr>');
+							append($data, '<tr><td> <a href="' . url($this->owner(), $this->repository(), $branch, 'tree', $v) . '"><i class="material-icons">folder</i> ' . $v . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $v") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $v") . '</td></tr>');
 						
 					}
 					
 					foreach ( $files as $file )
 						
 						if ( def($current_directory) )
-							append($data, '<tr><td> <a href="' . base_url($this->owner(), $this->repository(), $branch, 'file', $current_directory, $file) . '"><i class="material-icons">insert_drive_file</i> ' . $file . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $current_directory/$file") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $current_directory/$file") . '</td></tr>');
+							append($data, '<tr><td> <a href="' . url($this->owner(), $this->repository(), $branch, 'file', $current_directory, $file) . '"><i class="material-icons">insert_drive_file</i> ' . $file . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $current_directory/$file") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $current_directory/$file") . '</td></tr>');
 						else
 							
-							append($data, '<tr><td> <a href="' . base_url($this->owner(), $this->repository(), $branch, 'file', $file) . '"><i class="material-icons">insert_drive_file</i> ' . $file . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $file") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $file") . '</td></tr>');
+							append($data, '<tr><td> <a href="' . url($this->owner(), $this->repository(), $branch, 'file', $file) . '"><i class="material-icons">insert_drive_file</i> ' . $file . '</a></td><td>' . shell_exec("git log $branch --pretty=format:'%s' -n1 -- $file") . '</td><td>' . shell_exec("git log $branch --pretty=format:'%ar' -n1 -- $file") . '</td></tr>');
 					
 				}
 				else
@@ -1415,7 +1415,7 @@
 				
 				not_in(GIT_SIZE, $size, true, "Current size not valid");
 				
-				$format = '<a href="' . base_url($this->owner(), $this->repository(), $branch, 'diff', "%h") . '"> %h</a> <a href="' . '?author=%an">%an</a> %s  %ar';
+				$format = '<a href="' . url($this->owner(), $this->repository(), $branch, 'diff', "%h") . '"> %h</a> <a href="' . '?author=%an">%an</a> %s  %ar';
 				
 				$command = "git log  --stat --graph --oneline --color=always --after=$size.$period $branch";
 				

@@ -116,8 +116,7 @@ class Route
 			 */
 			private function routes_table() : Table
 			{
-				
-				return table($this->routes_connect());
+				return new Table($this->routes_connect());
 			}
 			
 			/**

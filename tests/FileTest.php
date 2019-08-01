@@ -22,8 +22,8 @@ class FileTest extends Unit
      */
     public function test_key_and_values()
     {
-        $this->assertNotEmpty($this->file('config.yaml')->keys(':'));
-        $this->assertNotEmpty($this->file('config.yaml')->values(':'));
+        $this->assertNotEmpty($this->file('file.yaml')->keys(':'));
+        $this->assertNotEmpty($this->file('file.yaml')->values(':'));
     }
     /**
      * @throws Kedavra

@@ -125,7 +125,7 @@
 						$this->entry->put('action', $action);
 						
 						
-					} while ( is_null($action) || ! Route::manage()->check('action', $action) );
+					} while ( is_null($action) ||  Route::manage()->check('action', $action) );
 					
 					$this->routes->push($this->entry->all());
 					

@@ -512,7 +512,7 @@
 			 *
 			 * Insert data in the table
 			 *
-			 * @param Model $model
+			 * @param $model
 			 * @param array $data
 			 *
 			 * @throws Kedavra
@@ -520,7 +520,7 @@
 			 * @return bool
 			 *
 			 */
-			public function insert_new_record(Model $model, array $data): bool
+			public function insert_new_record($model, array $data): bool
 			{
 
 				return $this->table()->from($this->current())->save($model, $data);

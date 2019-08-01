@@ -7,10 +7,9 @@
 	use GuzzleHttp\Psr7\ServerRequest;
 	use Imperium\Config\Config;
 	use Imperium\Container\Container;
-	use Imperium\Debug\Dumper;
+	
 	use Imperium\Directory\Dir;
 	use Imperium\Dump\Dump;
-	use Imperium\Exception\Kedavra;
 	use Imperium\Flash\Flash;
 	use Imperium\Routing\Route;
 	use Imperium\Security\Csrf\Csrf;
@@ -43,124 +42,6 @@
 	use Sinergi\BrowserDetector\Browser;
 	use Whoops\Handler\PrettyPageHandler;
 	use Imperium\Html\Pagination\Pagination;
-
-
-	define('GET', 'GET');
-	define('POST', 'POST');
-
-	define('BEFORE_ACTION', 'before_action');
-	define('AFTER_ACTION', 'after_action');
-
-	define('GIT_PERIOD', ['minute', 'minutes', 'day', 'days', 'week', 'weeks', 'month', 'months', 'year', 'years']);
-	define('GIT_SIZE', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-	define('GIT_ARCHIVE_EXT', ['tar', 'tgz', 'tar.gz', 'zip']);
-	define('LANGUAGES', ['php', '1c', 'abnf', 'accesslog', 'actionscript', 'ada', 'angelscript', 'apache', 'applescript', 'arcade', 'arduino', 'armasm', 'asciidoc', 'aspectj', 'autohotkey', 'autoit', 'avrasm', 'awk', 'axapta', 'bash', 'basic', 'bnf', 'brainfuck', 'cal', 'capnproto', 'ceylon', 'clean', 'clojure-repl', 'clojure', 'cmake', 'coffeescript', 'coq', 'cos', 'cpp', 'crmsh', 'c', 'crystal', 'cs', 'csp', 'css', 'd', 'dart', 'delphi', 'diff', 'django', 'dns', 'dockerfile', 'dos', 'dsconfig', 'dts', 'dust', 'ebnf', 'elixir', 'elm', 'erb', 'erlang-repl', 'erlang', 'excel', 'fix', 'flix', 'fortran', 'fsharp', 'gams', 'gauss', 'gcode', 'gherkin', 'glsl', 'gml', 'go', 'golo', 'gradle', 'groovy', 'haml', 'handlebars', 'haskell', 'haxe', 'hsp', 'htmlbars', 'http', 'hy', 'inform7', 'ini', 'irpf90', 'isbl', 'java', 'javascript', 'jboss-cli', 'json', 'julia-repl', 'julia', 'kotlin', 'lasso', 'ldif', 'leaf', 'less', 'lisp', 'list', 'livecodeserver', 'livescript', 'llvm', 'lsl', 'lua', 'makefile', 'markdown', 'mathematica', 'matlab', 'maxima', 'mel', 'mercury', 'mipsasm', 'mizar', 'mojolicious', 'monkey', 'moonscript', 'n1ql', 'nginx', 'nimrod', 'nix', 'nsis', 'objectivec', 'ocaml', 'openscad', 'oxygene', 'parser3', 'perl', 'pf', 'pgsql', 'php', 'plaintext', 'pony', 'powershell', 'processing', 'profile', 'prolog', 'properties', 'protobuf', 'puppet', 'purebasic', 'python', 'q', 'qml', 'r', 'reasonml', 'rib', 'roboconf', 'routeros', 'rsl', 'ruby', 'ruleslanguage', 'rust', 'sas', 'scala', 'scheme', 'scilab', 'scss', 'shell', 'smali', 'smalltalk', 'sml', 'sqf', 'sql', 'stan', 'stata', 'step21', 'stylus', 'subunit', 'swift', 'taggerscript', 'tap', 'tcl', 'tex', 'thrift', 'tp', 'twig', 'typescript', 'vala', 'vbnet', 'vbscript-html', 'vbscript', 'verilog', 'vhdl', 'vim', 'x86asm', 'xl', 'xml', 'xquery', 'yaml', 'zephir']);
-
-
-	define('DROP_NEW_LINE', 1);
-	define('READ_AHEAD', 2);
-	define('SKIP_EMPTY', 4);
-	define('READ_CSV', 8);
-	define('READ_FILE_MODE', 'r');
-	define('READ_AND_WRITE_FILE_MODE', 'r+');
-	define('EMPTY_AND_WRITE_FILE_MODE', 'w');
-	define('EMPTY_READ_AND_WRITE_FILE_MODE', 'w+');
-	define('WRITE_TO_END_FILE_MODE', 'a');
-	define('WRITE_AND_READ_TO_END_FILE_MODE', 'a+');
-	define('CREATE_TO_WRITE_MODE', 'x');
-	define('CREATE_TO_WRITE_AND_READ_MODE', 'x+');
-	define('CREATE_WITHOUT_TRUNCATE_ON_WRITE_MODE', 'c');
-	define('CREATE_WITHOUT_TRUNCATE_ON_READ_AND_WRITE_MODE', 'c+');
-	define('FILES_OPEN_MODE', [READ_FILE_MODE, READ_AND_WRITE_FILE_MODE, EMPTY_AND_WRITE_FILE_MODE, EMPTY_READ_AND_WRITE_FILE_MODE, WRITE_TO_END_FILE_MODE, WRITE_AND_READ_TO_END_FILE_MODE, CREATE_TO_WRITE_MODE, CREATE_TO_WRITE_AND_READ_MODE, CREATE_WITHOUT_TRUNCATE_ON_WRITE_MODE, CREATE_WITHOUT_TRUNCATE_ON_READ_AND_WRITE_MODE]);
-
-
-	define('LOCALHOST', 'localhost');
-
-
-	define('ASC', 'ASC');
-	define('DESC', 'DESC');
-
-	define('ROOT', dirname(__DIR__));
-	define('WEB', ROOT . DIRECTORY_SEPARATOR . 'web');
-	define('DB', ROOT . DIRECTORY_SEPARATOR . 'db');
-	define('CONTROLLERS_NAMESPACE', 'Shaolin\\Controllers');
-	define('CORE', ROOT . DIRECTORY_SEPARATOR . 'core');
-	define('CONTROLLERS', CORE . DIRECTORY_SEPARATOR . 'Controllers');
-	define('VIEWS', CORE . DIRECTORY_SEPARATOR . 'Views');
-	define('MODELS', CORE . DIRECTORY_SEPARATOR . 'Models');
-	define('MIDDLEWARE', CORE . DIRECTORY_SEPARATOR . 'Middleware');
-	define('CONFIG', CORE . DIRECTORY_SEPARATOR . 'Config');
-	define('COMMAND', CORE . DIRECTORY_SEPARATOR . 'Commands');
-	define('REPOSITORIES',ROOT .DIRECTORY_SEPARATOR  . 'Repositories');
-
-	define('NUMERIC', '([0-9]+)');
-
-	define('NOT_NUMERIC', '([^0-9]+)');
-
-	define('STRING', '([a-zA-Z]+)');
-	define('NOT_STRING', '([^A-Za-z]+)');
-
-	define('ALPHANUMERIC', '([0-9A-Za-z\-]+)');
-	define('SLUG', '([0-9A-Za-z\-]+)');
-
-	define('BETWEEN', 'BETWEEN');
-	define('EQUAL', '=');
-	define('DIFFERENT', '!=');
-	define('INFERIOR', '<');
-	define('INFERIOR_OR_EQUAL', '<=');
-	define('SUPERIOR', '>');
-	define('SUPERIOR_OR_EQUAL', '>=');
-	define('LIKE', 'LIKE');
-
-	define('MYSQL', 'mysql');
-	define('POSTGRESQL', 'pgsql');
-	define('SQLITE', 'sqlite');
-
-	define('UNION', 12);
-	define('UNION_ALL', 13);
-	define('INNER_JOIN', 14);
-	define('CROSS_JOIN', 15);
-	define('LEFT_JOIN', 16);
-	define('RIGHT_JOIN', 17);
-	define('FULL_JOIN', 18);
-	define('SELF_JOIN', 19);
-	define('NATURAL_JOIN', 20);
-	define('SELECT', 21);
-	define('DELETE', 22);
-	define('UPDATE', 23);
-	define('INSERT', 24);
-
-	define('MYSQL_PORT', 3306);
-	define('POSTGRESQL_PORT', 5432);
-
-	define('DISPLAY_TABLE', 25);
-	define('DISPLAY_ARTICLE', 26);
-	define('DISPLAY_CONTRIBUTORS', 27);
-
-	define('QUERY_COLUMN', 'column');
-	define('QUERY_CONDITION', 'condition');
-	define('QUERY_EXPECTED', 'expected');
-	define('QUERY_MODE', 'mode');
-	define('QUERY_FIRST_TABLE', 'first_table');
-	define('QUERY_FIRST_PARAM', 'first_param');
-	define('QUERY_SECOND_TABLE', 'second_table');
-	define('QUERY_SECOND_PARAM', 'second_param');
-	define('QUERY_ORDER_KEY', 'key');
-	define('QUERY_ORDER', 'order');
-	define('METHOD_SUPPORTED', ['GET', 'POST', 'PUT', 'DELETE']);
-
-
-	define('CSRF_TOKEN', 'csrf_token');
-
-	define('DB_DRIVER', 'driver');
-	define('DB_NAME', 'base');
-	define('DB_USERNAME', 'username');
-	define('DB_PASSWORD', 'password');
-	define('DB_HIDDEN_TABLES', 'hidden_tables');
-
-
-	define('DISPLAY_BUGS', 'debug');
-	define('ENV', 'env');
 
 
 	if (not_exist('memory'))
@@ -199,25 +80,7 @@
 			return route('admin');
 		}
 	}
-	if (not_exist('db'))
-	{
 
-
-		/**
-		 *
-		 * get db config value
-		 *
-		 * @param string $key
-		 *
-		 * @throws Kedavra
-		 * @return mixed
-		 *
-		 */
-		function db(string $key)
-		{
-			return config('db', $key);
-		}
-	}
 	if (not_exist('infos'))
 	{
 		/**
@@ -309,57 +172,7 @@
 		}
 	}
 
-	if (not_exist('route'))
-	{
-		/**
-		 * @param string $name
-		 * @param array  $args
-		 *
-		 * @return string
-		 */
-		function route(string $name, array $args = []): string
-		{
-			$x = ( Route::manage()->by($name));
-
-			if (def($args))
-			{
-
-				$url = '';
-
-
-				$data = explode('/', $x->url);
-				$i = 0;
-				foreach ($data as $k => $v)
-				{
-
-					if (def($v))
-					{
-
-						if (strpos($v, ':') === 0)
-						{
-
-
-							if (collect($args)->has($i))
-							{
-								append($url, '/' . $args[$i]);
-								$i++;
-							}
-
-						} else
-						{
-
-							append($url, "/$v");
-						}
-					}
-				}
-
-				return base_url(trim($url, '/'));
-
-			}
-			return base_url(trim($x->url, '/'));
-		}
-
-	}
+	
 
 	if (not_exist('exist'))
 	{
@@ -383,47 +196,6 @@
 		}
 	}
 
-
-	if (not_exist('numb'))
-	{
-		#    Output easy-to-read numbers
-		#    by james at bandit.co.nz
-		function numb(int $x)
-		{
-			// first strip any formatting;
-			$n = (0 + str_replace(",", "", $x));
-
-			// is this a number?
-			if (!is_numeric($n))
-				return false;
-
-			// now filter it;
-			if ($n > 1000000000000)
-				return round(($n / 1000000000000), 2) . ' T'; else if ($n > 1000000000)
-				return round(($n / 1000000000), 2) . ' B'; else if ($n > 1000000)
-				return round(($n / 1000000), 2) . ' M'; else if ($n > 1000)
-				return round(($n / 1000), 2) . ' K';
-
-			return number_format($n);
-		}
-	}
-	if (not_exist('string_parse'))
-	{
-		/**
-		 *
-		 * Split a sing to array
-		 *
-		 * @param string $data
-		 *
-		 * @return array
-		 *
-		 */
-		function string_parse(string $data): array
-		{
-			return preg_split('/\s+/', $data);
-		}
-
-	}
 	if (not_exist('display_repositories'))
 	{
 
@@ -955,25 +727,7 @@
 	}
 
 
-	if (not_exist('config'))
-	{
-		/**
-		 *
-		 * Get a config value
-		 *
-		 * @param string $file
-		 * @param        $key
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return mixed
-		 *
-		 */
-		function config(string $file, $key)
-		{
-			return (new Config($file, $key))->value();
-		}
-	}
+	
 
 	if (not_exist('core_path'))
 	{
@@ -1082,16 +836,7 @@
 			return call_user_func_array('sprintf', $values);
 		}
 	}
-	if (not_exist('root'))
-	{
-		function root(): string
-		{
-			if (php_sapi_name() !== 'cli')
-				return https() ? 'https://' . request()->server->get('HTTP_HOST') : 'http://' . request()->server->get('HTTP_HOST');
-
-			return '/';
-		}
-	}
+	
 	if (not_exist('config_path'))
 	{
 		/**
@@ -1263,13 +1008,6 @@
 		}
 	}
 
-	if (not_exist('clear_terminal'))
-	{
-		function clear_terminal(): void
-		{
-			os(true) === Os::WINDOWS ? system('cls') : system('clear');
-		}
-	}
 
 	if (not_exist('true_or_false'))
 	{
@@ -1354,22 +1092,6 @@
 		}
 	}
 
-	if (not_exist('app'))
-	{
-		/**
-		 *
-		 * Get all applications
-		 *
-		 * @method app
-		 *
-		 * @return App
-		 *
-		 */
-		function app(): App
-		{
-			return Container::get();
-		}
-	}
 
 
 	if (not_exist('env'))
@@ -1388,27 +1110,6 @@
 
 	}
 
-	if (not_exist('assign'))
-	{
-		/**
-		 *
-		 * Assign a value in a variable by a condition
-		 *
-		 * @method assign
-		 *
-		 * @param bool  $condition
-		 * @param mixed $variable
-		 * @param mixed $value
-		 *
-		 */
-		function assign(bool $condition, &$variable, $value)
-		{
-			if ($condition)
-			{
-				$variable = $value;
-			}
-		}
-	}
 
 
 	if (not_exist('query'))
@@ -1432,192 +1133,8 @@
 		}
 	}
 
-	if (not_exist('is_pair'))
-	{
-		/**
-		 * Check if number is pair
-		 *
-		 * @method is_pair
-		 *
-		 * @param int $x The number to check
-		 *
-		 * @return bool
-		 *
-		 */
-		function is_pair(int $x): bool
-		{
-			return $x % 2 === 0;
-		}
-	}
+	
 
-	if (not_exist('equal'))
-	{
-		/**
-		 *
-		 * Check if two values are equal
-		 *
-		 * @method equal
-		 *
-		 * @param mixed  $parameter     The parameter
-		 * @param mixed  $expected      The expected value
-		 * @param bool   $run_exception To run Exception
-		 * @param string $message       The Exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function equal($parameter, $expected, $run_exception = false, string $message = ''): bool
-		{
-			$x = strcmp($parameter, $expected) === 0;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-
-	if (not_exist('is_not_false'))
-	{
-		/**
-		 *
-		 * Check if the data is not equal to false
-		 *
-		 * @method is_not_false
-		 *
-		 * @param mixed  $data          The data to check
-		 * @param bool   $run_exception To run Exception
-		 * @param string $message       The Exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function is_not_false($data, bool $run_exception = false, string $message = ''): bool
-		{
-			$x = $data !== false;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('is_not_true'))
-	{
-		/**
-		 *
-		 * Check if data is not true
-		 *
-		 *
-		 * @method is_not_true
-		 *
-		 * @param mixed  $data          The data to check
-		 * @param bool   $run_exception To run Exception
-		 * @param string $message       The Exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function is_not_true($data, bool $run_exception = false, string $message = ''): bool
-		{
-			$x = $data !== true;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('is_false'))
-	{
-		/**
-		 *
-		 * Check if data is equal to false
-		 *
-		 * @method is_false
-		 *
-		 * @param mixed  $data          The data to check
-		 * @param bool   $run_exception To run Exception
-		 * @param string $message       The Exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function is_false($data, bool $run_exception = false, string $message = ''): bool
-		{
-			$x = $data === false;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('is_true'))
-	{
-		/**
-		 *
-		 * Check if the data is equal to true
-		 *
-		 * @method is_true
-		 *
-		 * @param mixed  $data          The data to check
-		 * @param bool   $run_exception To run Exception
-		 * @param string $message       The Exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function is_true($data, bool $run_exception = false, string $message = ''): bool
-		{
-
-			$x = $data === true;
-
-			if ($run_exception && $x)
-				throw new Kedavra($message);
-
-			return $x;
-
-		}
-	}
-
-	if (not_exist('different'))
-	{
-		/**
-		 *
-		 * Check if two data are different
-		 *
-		 * @method different
-		 *
-		 * @param mixed  $parameter     The parameter to check
-		 * @param mixed  $expected      The expected value
-		 * @param bool   $run_exception To run Exception
-		 * @param string $message       The Exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function different($parameter, $expected, $run_exception = false, string $message = ''): bool
-		{
-			$x = strcmp($parameter, $expected) !== 0;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
 	if (not_exist('debug'))
 	{
 		/**
@@ -1702,44 +1219,6 @@
 	}
 
 
-	if (not_exist('bcrypt'))
-	{
-		/**
-		 *
-		 * Hash a value
-		 *
-		 * @param string $value
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return string
-		 *
-		 */
-		function bcrypt(string $value): string
-		{
-			return (new Hash($value))->generate();
-		}
-	}
-
-	if (not_exist('check'))
-	{
-		/**
-		 *
-		 * Check the password
-		 *
-		 * @param string $valid
-		 * @param string $value
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function check(string $valid, string $value): bool
-		{
-			return (new Hash($valid))->valid($value);
-		}
-	}
 
 	if (not_exist('edit'))
 	{
@@ -2083,31 +1562,6 @@
 		}
 	}
 
-	if (not_exist('length'))
-	{
-		/**
-		 *
-		 * Return the length of data
-		 *
-		 * @method length
-		 *
-		 * @param mixed $data An array or a string
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return int
-		 *
-		 */
-		function sum($data): int
-		{
-			if (is_array($data))
-				return count($data); elseif (is_string($data))
-				return strlen($data);
-
-			throw new Kedavra('The parameter must be a string or an array');
-		}
-	}
-
 
 	if (not_exist('execute_query'))
 	{
@@ -2211,29 +1665,6 @@
 		}
 	}
 
-	if (not_exist('connect'))
-	{
-		/**
-		 *
-		 * Connect to the base
-		 *
-		 * @method connect
-		 *
-		 * @param string $driver    The base driver
-		 * @param string $base      The base name
-		 * @param string $user      The username
-		 * @param string $password  The password
-		 * @param string $host      The host
-		 * @param string $dump_path The dump directory path
-		 *
-		 * @return Connect
-		 *
-		 */
-		function connect(string $driver, string $base, string $user, string $password, string $host, string $dump_path): Connect
-		{
-			return new Connect($driver, $base, $user, $password, $host, $dump_path);
-		}
-	}
 
 
 	if (not_exist('json'))
@@ -2478,41 +1909,6 @@
 			}
 
 			return $use_a_redirect_select ? form('', uniqid())->large(true)->row()->redirect('bases', $bases->all(), $icon)->end_row()->get() : form('', uniqid())->large(true)->row()->select(true, 'bases', $bases->all(), $icon)->end_row()->get();
-		}
-	}
-
-	if (not_exist('commands'))
-	{
-		/**
-		 *
-		 * Return all available command
-		 *
-		 * @return array
-		 *
-		 */
-		function commands(): array
-		{
-
-			$commands = COMMAND;
-
-			$namespace = 'App\\' . 'Commands';
-
-			$data = glob($commands . DIRECTORY_SEPARATOR . '*.php');
-
-			$commands = collect();
-
-			foreach ($data as $c)
-			{
-				$command = collect(explode('/', $c))->last();
-
-				$command = collect(explode('.', $command))->first();
-
-				$command = "$namespace\\$command";
-
-				$commands->push(new $command());
-			}
-
-			return $commands->all();
 		}
 	}
 
@@ -3028,49 +2424,8 @@
 			return isset($_COOKIE[$key]) && !empty($_COOKIE[$key]) ? htmlspecialchars($_COOKIE[$key], ENT_QUOTES, 'UTF-8', true) : $value;
 		}
 	}
-	if (not_exist('get'))
-	{
-		/**
-		 * Get a get value
-		 *
-		 * @method get
-		 *
-		 * @param string $key The get key
-		 *
-		 * @param string $value
-		 *
-		 * @return string
-		 */
-		function get(string $key, string $value = ''): string
-		{
-			return isset($_GET[$key]) && !empty($_GET[$key]) ? htmlspecialchars($_GET[$key], ENT_QUOTES, 'UTF-8', true) : $value;
-		}
-	}
 
-
-	if (not_exist('base_url'))
-	{
-		/**
-		 * @param mixed ...$params
-		 *
-		 * @return string
-		 *
-		 */
-		function base_url(...$params): string
-		{
-
-			if (php_sapi_name() !== 'cli')
-			{
-				$url = https() ? 'https://' . request()->getHost() . '/' : 'http://' . \request()->getHost() . '/';
-
-				append($url, collect($params)->join('/'));
-
-				return $url;
-			}
-			return '/' . collect($params)->join('/');
-
-		}
-	}
+	
 
 	if (not_exist('is_admin'))
 	{
@@ -3095,58 +2450,6 @@
 		}
 	}
 
-	if (not_exist('css'))
-	{
-		/**
-		 *
-		 * Generate a css link
-		 *
-		 * @param string $filename
-		 *
-		 * @return string
-		 */
-		function css(string $filename): string
-		{
-			return app()->assets($filename)->css();
-		}
-	}
-
-	if (not_exist('img'))
-	{
-		/**
-		 *
-		 * Generate a image link
-		 *
-		 * @param string $filename
-		 * @param string $alt
-		 *
-		 * @return string
-		 *
-		 */
-		function img(string $filename, string $alt): string
-		{
-			return app()->assets($filename)->img($alt);
-		}
-	}
-
-	if (not_exist('js'))
-	{
-		/**
-		 *
-		 * Generate a js link
-		 *
-		 * @param string $filename
-		 *
-		 * @param string $type
-		 *
-		 * @return string
-		 */
-		function js(string $filename, string $type = ''): string
-		{
-			return app()->assets($filename)->js($type);
-
-		}
-	}
 
 	if (not_exist('files'))
 	{
@@ -3166,45 +2469,7 @@
 			return isset($_FILES[$key]) && !empty($_FILES[$key]) ? $_FILES[$key] : '';
 		}
 	}
-	if (not_exist('server'))
-	{
-		/**
-		 *
-		 * Get a server key
-		 *
-		 * @method server
-		 *
-		 * @param string $key The server key
-		 *
-		 * @param string $value
-		 *
-		 * @return string
-		 */
-		function server(string $key, string $value = ''): string
-		{
-			return isset($_SERVER[$key]) && !empty($_SERVER[$key]) ? $_SERVER[$key] : $value;
-		}
-	}
-
-	if (not_exist('post'))
-	{
-		/**
-		 *
-		 * Get a post key
-		 *
-		 * @method post
-		 *
-		 * @param string $key The post key
-		 *
-		 * @param string $value
-		 *
-		 * @return string
-		 */
-		function post(string $key, string $value = ''): string
-		{
-			return isset($_POST[$key]) && !empty($_POST[$key]) ? htmlspecialchars($_POST[$key], ENT_QUOTES, 'UTF-8', true) : $value;
-		}
-	}
+	
 	if (not_exist('generate'))
 	{
 		/**
@@ -3367,24 +2632,6 @@
 		}
 	}
 
-	if (not_exist('os'))
-	{
-		/**
-		 *
-		 * Return an instance of Os or os name
-		 *
-		 * @method os
-		 *
-		 * @param bool $get_name To get name
-		 *
-		 * @return Os|string
-		 *
-		 */
-		function os(bool $get_name = false)
-		{
-			return $get_name ? (new Os())->getName() : new Os();
-		}
-	}
 
 	if (not_exist('device'))
 	{
@@ -3444,149 +2691,7 @@
 		}
 	}
 
-	if (not_exist('is_mobile'))
-	{
-		/**
-		 *
-		 * Check if device is mobile
-		 *
-		 * @method is_mobile
-		 *
-		 * @return bool
-		 *
-		 */
-		function is_mobile(): bool
-		{
-			return (new Os())->isMobile();
-		}
-	}
 
-	if (not_exist('superior'))
-	{
-		/**
-		 *
-		 * Check if a value is superior
-		 *
-		 * @method superior
-		 *
-		 * @param mixed  $parameter     The data to test
-		 * @param int    $expected      The expected value
-		 * @param bool   $run_exception To run exception
-		 * @param string $message       The exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function superior($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
-		{
-
-			$x = is_array($parameter) ? count($parameter) > $expected : $parameter > $expected;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('superior_or_equal'))
-	{
-
-		/**
-		 *
-		 * Check if the value is superior or equal
-		 *
-		 * @method superior_or_equal
-		 *
-		 * @param mixed  $parameter     The data to test
-		 * @param int    $expected      The expected value
-		 * @param bool   $run_exception To run exception
-		 * @param string $message       The exception message
-		 *
-		 * @throws Kedavra
-		 * @return bool
-		 *
-		 */
-		function superior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
-		{
-
-			$x = is_array($parameter) ? count($parameter) >= $expected : $parameter >= $expected;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('inferior'))
-	{
-		/**
-		 *
-		 * To check if the value is inferior
-		 *
-		 * @method inferior
-		 *
-		 * @param mixed  $parameter     The data to test
-		 * @param int    $expected      The expected value
-		 * @param bool   $run_exception To run exception
-		 * @param string $message       The exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function inferior($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
-		{
-
-			$x = is_array($parameter) ? count($parameter) < $expected : $parameter < $expected;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('inferior_or_equal'))
-	{
-		/**
-		 *
-		 * To check if a value is inferior or equal
-		 *
-		 * @method inferior_or_equal
-		 *
-		 * @param mixed  $parameter     The data to check
-		 * @param int    $expected      The expected value
-		 * @param bool   $run_exception To run exception
-		 * @param string $message       The exception message
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function inferior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
-		{
-			$x = is_array($parameter) ? count($parameter) <= $expected : $parameter <= $expected;
-
-			is_true($x, $run_exception, $message);
-
-			return $x;
-		}
-	}
-
-	if (not_exist('whoops'))
-	{
-		/**
-		 *
-		 * @return Run
-		 */
-		function whoops(): Run
-		{
-			return (new Run())->appendHandler(new PrettyPageHandler)->register();
-		}
-	}
 	if (not_exist('before_key'))
 	{
 		/**
@@ -3692,18 +2797,7 @@
 		}
 	}
 
-	if (not_exist('faker'))
-	{
-		/**
-		 * @param string $locale
-		 *
-		 * @return Generator
-		 */
-		function faker(string $locale = 'en_US'): Generator
-		{
-			return Factory::create($locale);
-		}
-	}
+	
 
 
 	if (not_exist('remove_users'))
@@ -3808,29 +2902,7 @@
 		}
 	}
 
-	if (not_exist('update_file_values'))
-	{
 
-		/**
-		 *
-		 * Update a value in a file
-		 *
-		 * @param string   $filename
-		 * @param string   $delimiter
-		 * @param string[] $values
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return bool
-		 *
-		 */
-		function update_file_values(string $filename, string $delimiter, string ...$values): bool
-		{
-			$keys = (new File($filename))->keys($delimiter);
-
-			return (new File($filename, EMPTY_AND_WRITE_FILE_MODE))->change_values($keys, $values, $delimiter);
-		}
-	}
 	if (not_exist('slug'))
 	{
 		/**
@@ -3851,27 +2923,7 @@
 		}
 	}
 
-	if (not_exist('d'))
-	{
-		/**
-		 *
-		 * Debug values and die
-		 *
-		 * @method d
-		 *
-		 * @param mixed $values The values to debug
-		 *
-		 */
-		function d(...$values)
-		{
-			$dumper = new Dumper();
 
-			foreach ($values as $value)
-				$dumper->dump($value);
-
-			die();
-		}
-	}
 
 	if (not_exist('not_in'))
 	{
@@ -4128,25 +3180,6 @@
 		}
 	}
 
-	if (not_exist('append'))
-	{
-		/**
-		 * Append content to a variable
-		 *
-		 * @method append
-		 *
-		 * @param mixed   $variable The variable
-		 * @param mixed[] $contents The contents
-		 *
-		 */
-		function append(&$variable, ...$contents)
-		{
-			foreach ($contents as $content)
-				$variable .= $content;
-
-		}
-	}
-
 
 	if (not_exist('js_loader'))
 	{
@@ -4210,53 +3243,6 @@
 	}
 
 
-	if (not_exist('insert_into'))
-	{
-		/**
-		 *
-		 * @param Model  $model
-		 * @param string $table
-		 * @param mixed  ...$values
-		 *
-		 * @throws Kedavra
-		 * @return string
-		 *
-		 */
-		function insert_into(Model $model, string $table, array $values): string
-		{
-			$instance = $model->from($table);
-
-			$x = collect($instance->columns())->join(',');
-
-			$data = "INSERT INTO $table ($x) VALUES (";
-
-			$primary = $instance->primary();
-
-			foreach ($values as $k => $v)
-			{
-				if (different($v, $primary))
-				{
-					if (is_numeric($v))
-						append($data, $v . ' ,'); else
-						append($data, $model->pdo()->quote($v) . ', ');
-				} else
-				{
-					if ($instance->check(MYSQL) || $instance->check(SQLITE))
-						append($data, 'NULL, '); 
-					else
-						append($data, "DEFAULT, ");
-
-				}
-			}
-
-			$data = trim($data, ', ');
-
-			append($data, ')');
-
-			return $data;
-
-		}
-	}
 
 	if (not_exist('routes_add'))
 	{
@@ -4306,28 +3292,7 @@
 
 		}
 	}
-	if (not_exist('controllers'))
-	{
-		/**
-		 * @return array
-		 *
-		 */
-		function controllers(): array
-		{
-			$dir = CONTROLLERS;
-
-			$controllers = collect(File::search("$dir" . DIRECTORY_SEPARATOR . '*.php'));
-
-			$data = collect();
-
-			if ($controllers)
-			{
-				foreach ($controllers as $controller)
-					$data->push(collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, $controller))->last()))->first());
-			}
-			return $data->all();
-		}
-	}
+	
 	if (not_exist('glyph'))
 	{
 		/**
