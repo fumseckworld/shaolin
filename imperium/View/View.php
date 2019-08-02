@@ -77,6 +77,13 @@
 
 				$this->config = $config;
 
+				$cache_dir = collect($this->config)->get('cache');
+
+				if(def($cache_dir))
+					$this->config = collect($this->config)->refresh('cache',ROOT . DIRECTORY_SEPARATOR . $cache_dir)->all();
+			
+
+
 				$this->namespaces = config('twig', 'namespaces');
 
 				$this->loader = new  FilesystemLoader($this->views_path);

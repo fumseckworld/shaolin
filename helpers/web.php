@@ -280,7 +280,7 @@ if (!function_exists('not_in'))
 					{
 						foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
 						{
-							$data[$owner][] = realpath($owner . DIRECTORY_SEPARATOR.$repository);
+							$data[$owner][] = $repository;
 						}
 					} else
 					{
@@ -301,7 +301,7 @@ if (!function_exists('not_in'))
 
 							foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
 							{
-								$data[$owner][] = realpath($owner . DIRECTORY_SEPARATOR.$repository);
+								$data[$owner][] = $repository;
 							}
 						}
 					}
@@ -316,13 +316,11 @@ if (!function_exists('not_in'))
 						foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
 						{
 
-							$data[$owner][] = realpath($owner . DIRECTORY_SEPARATOR.$repository);
+							$data[$owner][] = $repository;
 						}
 					}
 				}
 			}
-
-
 			$data = collect($data);
 			$request = ServerRequest::fromGlobals();
 
@@ -358,7 +356,7 @@ if (!function_exists('not_in'))
 
 			foreach ($data->all() as $user => $repositories)
 			{
-
+                      
 				foreach ($repositories as $repository)
 				{
 					$g = new Git($repository, $user);

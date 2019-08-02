@@ -136,6 +136,7 @@
 				
 				self::$repository = REPOSITORIES . DIRECTORY_SEPARATOR . $owner . DIRECTORY_SEPARATOR . $repository;
 			
+			
 				self::model();
 			
 				self::connect();
@@ -448,22 +449,22 @@
 			 * @return string
 			 *
 			 */
-			public function readme( string $branch = 'master' )
+			public function readme( string $branch = "master")
 			{
 				
-				if ( is_null($this->readme) )
+				
+
+				$files = $this->files('', $branch);
+				
+				foreach ($this->all_readme() as $readme)
 				{
-					$files = $this->files('', $branch);
-					
-					foreach ( $this->all_readme() as $readme )
-					{
-						if ( has($readme, $files) )
-							$this->readme = ( new Markdown($this->show($readme)) )->markdown();
-					}
-					assign(is_null($this->readme), $this->readme, 'We have not found a readme');
+				
+					if(has($readme, $files))
+						return (new Markdown($this->show($readme,$branch)))->markdown();
 				}
 				
-				return $this->readme;
+				return 'We have not found a readme';
+				
 				
 			}
 			
@@ -1024,12 +1025,12 @@
 			 * Display the repository description
 			 *
 			 * @throws Kedavra
+			 * 
 			 * @return string
 			 *
 			 */
 			public function description() : string
 			{
-				
 				return substr(( new File(self::DESCRIPTION) )->read(), 0, 50);
 			}
 			
