@@ -726,7 +726,7 @@
 						{
 							append($ancient, "$v/");
 							
-							append($data, '<li>  <a href="' . _url($this->owner(), $this->repository(), $branch, 'tree', trim($ancient, '/')) . '">' . $v . '</a></li>');
+							append($data, '<li>  <a href="' . url($this->owner(), $this->repository(), $branch, 'tree', trim($ancient, '/')) . '">' . $v . '</a></li>');
 							
 						}
 					}
