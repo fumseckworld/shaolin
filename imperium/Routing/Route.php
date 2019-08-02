@@ -277,21 +277,12 @@ class Route
 			public function create(array $routes) : bool
 			{
 				
+				$route = collect($routes)->for([$this->routes(),'quote']);
 				
-				$primary = 'id';
-				$x = '';
-				foreach ( $routes as $k => $v )
-				{
-				
-				
-					different($k, $primary) ? append($x, $this->routes()->quote($v) . ', ') : append($x, 'NULL, ');
-					
-				}
-				$data =  '('.trim($x, ', ') .')';
-				$data = "INSERT INTO routes ('id','name', 'url','controller', 'action', 'method') VALUES $data";
-				
-				return  $this->routes()->execute($data);
-				
+				$sql = "INSERT INTO routes ('id','name', 'url','controller', 'action', 'method') VALUES (NULL, {$route->get('name')},{$route->get('url')},{$route->get('controller')},{$route->get('action')},{$route->get('method')})";
+			
+				return $this->routes()->execute($sql);
+			
 			}
 			
 			/**

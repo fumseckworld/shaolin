@@ -35,9 +35,11 @@ namespace Shaolin\Controllers {
             return Git::create($this->request()->get('repository'),logged_user(),$this->request()->get('description'),$this->request()->get('email')) ? $this->back('The repository was created successfully') : $this->back('The repository already exist  ',false);
           
         }
-        public function download_archive(string $repo,string $owner,string $tag,string $ext)
+        public function download_archive(string $owner,string $reopsitory,string $branch)
         {
-            return $this->download($repo,$owner)->generate_archives($ext,$tag);
+           
+           
+            return $this->git($reopsitory,$owner)->download();
         }
 		public function send_bugs()
         {
@@ -50,14 +52,16 @@ namespace Shaolin\Controllers {
         }
 		public function get_app(string $repository,string $owner)
         {
+        
+        
+        
             return $this->git($repository,$owner)->download();
         }
 
 		public function show(string $owner,string $repo,string $branch)
         {
 
-
-            $repository = $this->git($repo,$owner)->save()->git('','',$branch);
+            $repository = $this->git($repo,$owner)->git('','',$branch);
 
             return $this->view('repository',compact('repository'));
         }

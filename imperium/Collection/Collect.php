@@ -1132,15 +1132,15 @@
 			{
 				$result = collect();
 				
-				foreach ( $this->all() as $items )
+				foreach ( $this->all() as $k => $items )
 				{
 					if (is_array($items))
 					{
 						foreach ($items as $item)
-							$result->set($callable($item));
+							$result->put($k,$callable($item));
 					}else
 					{
-						$result->set($callable($items));
+						$result->put($k,$callable($items));
 					}
 				}
 				

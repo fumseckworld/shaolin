@@ -78,7 +78,7 @@
 			/**
 			 * @var string
 			 */
-			private $owner;
+			private static $owner;
 			
 			/**
 			 *
@@ -125,25 +125,24 @@
 			public function __construct( string $repository, string $owner )
 			{
 				
-				$this->owner = $owner;
+			
+				self::$owner = $owner;
 				
-				if ( different(app()->session()->get('repo'), realpath($repository)) )
-				{
-					app()->cache()->clear();
-				}
-				
-				app()->session()->put('repo', realpath($repository));
-				
+
 				self::$repository = REPOSITORIES . DIRECTORY_SEPARATOR . $owner . DIRECTORY_SEPARATOR . $repository;
 			
-			
-				self::model();
-			
-				self::connect();
-			
+
 				self::$name = collect(explode(DIRECTORY_SEPARATOR, $repository))->last();
 			
+				self::$connect = self::connect();
+				self::$model = self::model();
+				self::$table = self::table();
+				
+			
 				Dir::checkout(self::$repository);
+
+			
+			
 				
 			}
 			
@@ -193,9 +192,10 @@
 			 */
 			public static function connect() : Connect
 			{
+
 				
 				if ( is_null(self::$connect) )
-					self::$connect = connect(SQLITE, self::$repository . DIRECTORY_SEPARATOR . self::$name . '.sqlite3', '', '', '', 'dump');
+					self::$connect = connect(SQLITE, REPOSITORIES . DIRECTORY_SEPARATOR . self::$owner . DIRECTORY_SEPARATOR. self::$name. '.sqlite3', '', '', '', 'dump');
 				
 				return self::$connect;
 			}
@@ -478,7 +478,7 @@
 			public function owner() : string
 			{
 				
-				return $this->owner;
+				return self::$owner;
 			}
 			
 			/**
@@ -1129,19 +1129,20 @@
 				
 				Dir::checkout('releases');
 				
-				$file = $this->repository() . '-' . "$version.$ext";
-				
+				$file = "{$this->repository()}-$version.$ext";
+			
 				$name = self::$name;
-				if ( ! File::exist($file) )
+
+				if(!file_exists($file))
 				{
-					switch ( $ext )
+					switch ($ext)
 					{
 						case 'zip':
 							$this->shell("git archive --format=$ext --prefix=$name-$version/ $version  > $file");
-							break;
+						break;
 						default:
 							$this->shell("git archive --format=$ext --prefix=$name-$version/ $version |  gzip > $file");
-							break;
+						break;
 					}
 				}
 				
@@ -1210,9 +1211,9 @@
 			{
 				
 				if ( app()->auth()->connected() )
-					$code = '<div class="text-center"><div class="row"><div class="column"><div class="mb-3"><a class="btn-hollow mr-4" title="Home" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" title="Home" href="' . route('home') . '"><i class="material-icons">person</i></a><a href="' . route('logout') . '" class="btn-hollow mr-4" title="Logout"><i class="material-icons">power_settings_new</i></a><a class="btn-hollow mr-4" title="Download the latest version for your system" href="' . route('download', [ $this->repository(), $this->owner() ]) . '"><i class="material-icons">get_app</i></a><a class="btn-hollow mr-4" title="Star the project" href="' . route('stars', [ $this->repository(), $this->owner() ]) . '"><i class="material-icons">star</i></a><a href="#" class="btn-hollow" id="report-bugs"><i class="material-icons">bug_report</i></a></div></div></div></div>';
+					$code = '<div class="text-center"><div class="row"><div class="column"><div class="mb-3"><a class="btn-hollow mr-4" title="Home" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" title="Home" href="' . route('home') . '"><i class="material-icons">person</i></a><a href="' . route('logout') . '" class="btn-hollow mr-4" title="Logout"><i class="material-icons">power_settings_new</i></a><a class="btn-hollow mr-4" title="Download the latest version for your system" href="' . route('download', [ $this->owner(), $this->repository(),$branch]) . '"><i class="material-icons">get_app</i></a><a class="btn-hollow mr-4" title="Star the project" href="' . route('stars', [ $this->repository(), $this->owner() ]) . '"><i class="material-icons">star</i></a><a href="#" class="btn-hollow" id="report-bugs"><i class="material-icons">bug_report</i></a></div></div></div></div>';
 				else
-					$code = '<div class="text-center"><div class="row"><div class="column"><div class="mb-3"><a class="btn-hollow mr-4" title="Home" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" title="Connexion" href="' . route('connexion') . '"><i class="material-icons">person</i></a><a class="btn-hollow mr-4" title="Download the latest version for your system" href="' . route('download', [ $this->repository(), $this->owner() ]) . '"><i class="material-icons">get_app</i></a><a class="btn-hollow mr-4" title="Star the project" href="' . route('stars', [ $this->repository(), $this->owner() ]) . '"><i class="material-icons">star</i></a><a href="#" class="btn-hollow" id="report-bugs"><i class="material-icons">bug_report</i></a></div></div></div></div>';
+					$code = '<div class="text-center"><div class="row"><div class="column"><div class="mb-3"><a class="btn-hollow mr-4" title="Home" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" title="Connexion" href="' . route('connexion') . '"><i class="material-icons">person</i></a><a class="btn-hollow mr-4" title="Download the latest version for your system" href="' . route('download', [ $this->owner(),$this->repository(),$branch ]) . '"><i class="material-icons">get_app</i></a><a class="btn-hollow mr-4" title="Star the project" href="' . route('stars', [ $this->repository(), $this->owner() ]) . '"><i class="material-icons">star</i></a><a href="#" class="btn-hollow" id="report-bugs"><i class="material-icons">bug_report</i></a></div></div></div></div>';
 				
 				$html = $code . '
                         <div class="hidden" id="report-bugs-form">
@@ -1576,7 +1577,7 @@
 			 */
 			public function releases() : array
 			{
-				
+			
 				if ( is_null($this->releases) )
 					$this->releases = collect(Dir::scan('refs/tags'))->reverse()->all();
 				

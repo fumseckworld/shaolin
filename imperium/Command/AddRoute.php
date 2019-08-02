@@ -127,7 +127,7 @@
 						
 					} while ( is_null($action) ||  Route::manage()->check('action', $action) );
 					
-					$this->routes->push($this->entry->all());
+					$this->routes->push(Route::manage()->create($this->entry->all()));
 					
 					$this->entry->clear();
 					
@@ -151,7 +151,7 @@
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
 				
-				if ( Route::manage()->create($this->routes->all()) )
+				if($this->routes->ok())
 				{
 					
 					$output->writeln('<bg=green;fg=white>All routes was successfully created</>');

@@ -216,6 +216,7 @@
 			 */
 			public static function checkout(string $directory): bool
 			{
+				
 				return self::is($directory) ? chdir($directory) : false;
 			}
 

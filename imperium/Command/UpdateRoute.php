@@ -66,11 +66,12 @@
 						
 					} while ( is_null($this->search) && ! Route::manage()->check('name', $this->search) );
 					
-					$route = collect(Route::manage()->by($this->search));
+				
+					$route = Route::manage()->by($this->search);
 					
 					do
 					{
-						$question = new Question("<info>Change the method</info> <comment>[{$route->get('method')}]</comment> : ", $route->get('method'));
+						$question = new Question("<info>Change the method</info> <comment>[{$route->method}]</comment> : ", $route->method);
 						
 						$question->setAutocompleterValues(\collect(METHOD_SUPPORTED)->for('strtolower')->all());
 						
@@ -82,7 +83,7 @@
 					
 					do
 					{
-						$question = new Question("<info>Change the name</info> <comment>[{$route->get('name')}]</comment> : ", $route->get('name'));
+						$question = new Question("<info>Change the name</info> <comment>[{$route->name}]</comment> : ", $route->name);
 						
 						$name = $helper->ask($input, $output, $question);
 						
@@ -92,7 +93,7 @@
 					
 					do
 					{
-						$question = new Question("<info>Change the url</info> <comment>[{$route->get('url')}]</comment> : ", $route->get('url'));
+						$question = new Question("<info>Change the url</info> <comment>[{$route->url}]</comment> : ", $route->url);
 						
 						$url = $helper->ask($input, $output, $question);
 						
@@ -102,7 +103,7 @@
 					
 					do
 					{
-						$question = new Question("<info>Change the controller</info> <comment>[{$route->get('controller')}]</comment> : ", $route->get('controller'));
+						$question = new Question("<info>Change the controller</info> <comment>[{$route->controller}]</comment> : ", $route->controller);
 						
 						$question->setAutocompleterValues(controllers());
 						
@@ -114,7 +115,7 @@
 					
 					do
 					{
-						$question = new Question("<info>Change the controller action</info> <comment>[{$route->get('action')}]</comment> : ", $route->get('action'));
+						$question = new Question("<info>Change the controller action</info> <comment>[{$route->action}]</comment> : ", $route->action);
 						
 						$x = "Shaolin\Controllers\\{$this->entry->get('controller')}";
 						
@@ -127,7 +128,7 @@
 						
 					} while ( is_null($action) );
 					
-					$this->entry->put('id',$route->get('id'));
+					$this->entry->put('id',$route->id);
 					
 					$this->routes->push($this->entry->all());
 					
@@ -156,10 +157,10 @@
 				$data = collect();
 				
 				
-				foreach ( $this->routes->all() as $route )
-					$data->push(Route::manage()->update(intval($route[ 'id' ]), $route));
+				foreach ($this->routes->all() as $route)
+					$data->push(Route::manage()->update($route['id'], $route));
 				
-				if ( $data->ok() )
+				if ($data->ok())
 				{
 					$output->writeln("<info>All routes was updated successfully</info>");
 					
