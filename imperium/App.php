@@ -44,9 +44,9 @@
 		use Twig\Error\LoaderError;
 		use Twig\Error\RuntimeError;
 		use Twig\Error\SyntaxError;
+    	
 
-
-		/**
+/**
 		 * Class App
 		 *
 		 * @author Willy Micieli
@@ -182,9 +182,12 @@
 
 				$this->env = Dotenv::create(ROOT, '.env');
 
+				$this->env->load();
+
 				Route::manage()->create_route_table();
 			}
 
+			
 			/**
 			 *
 			 * Display all tables
@@ -852,12 +855,12 @@
 
 			/**
 			 *
-			 * @return Dotenv
+			 * @return mixed
 			 *
 			 */
-			public function env(): Dotenv
+			public function env($key)
 			{
-				return $this->env;
+				return getenv($key);
 			}
 
 			/**

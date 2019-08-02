@@ -1,6 +1,7 @@
 <?php
 
 
+use Imperium\Security\Csrf\Csrf;
 use Whoops\Run;
 use Imperium\App;
 use Faker\Factory;
@@ -17,6 +18,73 @@ use Imperium\Container\Container;
 use Imperium\Security\Hashing\Hash;
 use Whoops\Handler\PrettyPageHandler;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Imperium\Flash\Flash;
+if (!function_exists('csrf_field'))
+{
+	
+	/**
+	 * 
+	 * Generate a crsf token
+	 * 
+	 * @method csrf_field
+	 *
+	 * @return string
+	 * 
+	 */
+	function csrf_field(): string
+	{
+		$value = (new Csrf(app()->session()))->token();
+
+		return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $value . '">';
+	}
+}
+
+if (!function_exists('to'))
+{
+	
+	/**
+	 * 
+	 * Redirect to a url
+	 * 
+	 * @method to
+	 *
+	 * @param  string 	$url
+	 * @param  string 	$message
+	 * @param  bool 	$success
+	 *
+	 * @return RedirectResponse
+	 * 
+	 */
+	function to(string $url, string $message = '', bool $success = true): RedirectResponse
+	{
+		if (def($message))
+		{
+			$flash = new Flash(app()->session());
+
+			$success ? $flash->success($message) : $flash->failure($message);
+		}
+		return (new RedirectResponse($url))->send();
+	}
+}
+
+if (!function_exists('message'))
+{
+	/**
+	 *
+	 * Load a html email content
+	 *
+	 * @param string $filename
+	 *
+	 * @throws Kedavra
+	 * @return string
+	 *
+	 */
+	function message(string $filename): string
+	{
+		return (new File(EMAIL . DIRECTORY_SEPARATOR . $filename))->read();
+	}
+}
 
 if (! function_exists('app'))
 {
@@ -799,7 +867,29 @@ if (!function_exists('d'))
 		die();
 	}
 }
-
+if (!function_exists('debug'))
+{
+	
+	/**
+	 * 
+	 * Debug values only if condition match
+	 * 
+	 * @method debug
+	 *
+	 * @param  bool $condition
+	 * @param  mixed $values
+	 *
+	 * @return void
+	 * 
+	 */
+	function debug(bool $condition, ...$values)
+	{
+		if ($condition)
+		{
+			d($values);
+		}
+	}
+}
 
 if (!function_exists('bcrypt'))
 {

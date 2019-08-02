@@ -25,6 +25,20 @@ class WebTest extends Unit
         $this->assertInstanceOf(Carbon::class,now('Europe/Paris'));
     }
 
+    
+    public function test_connextion()
+    {
+        $connexion = connexion('register','login');
+        $this->assertNotEmpty($connexion);
+        $this->assertStringContainsString('Username',$connexion);
+        $this->assertStringContainsString('Lastname',$connexion);
+        $this->assertStringContainsString('Password',$connexion);
+        $this->assertStringContainsString('Confirm',$connexion);
+        $this->assertStringContainsString('Email',$connexion);
+        $this->assertStringContainsString('Log in',$connexion);
+        $this->assertStringContainsString('Create account',$connexion);
+    }
+
     public function test_numb()
     {
         $this->assertEquals('1 T',numb(1000000000000));

@@ -553,137 +553,7 @@
 			return '<form action="' . route('add-repository') . '" method="POST">' . csrf_field() . ' <input type="hidden" name="method" value="POST"><div class="row"><div class="column"><input type="text" name="repository" minlength="3" maxlength="50" autofocus="autofocus" placeholder="The project name" autocomplete="off" required="required"></div><div class="column"><input type="email"  minlength="3" maxlength="255" autocomplete="off"  name="email" placeholder="The bugs report email" required="required"></div></div><div class="row"><div class="column"><textarea name="description"  rows="10" placeholder="The repository description" autocomplete="off" required="required"></textarea></div></div><div class="row"><div class="column"><button type="submit"><i class="material-icons">add</i> Create the repository</button></div></div></form>';
 		}
 	}
-	if (not_exist('connexion'))
-	{
-
-		function connexion($register_route_name, $login_route_name, $username_text = 'Username', $lastname_text = 'Lastname', $email_address_text = 'Your Email adrress', $password_text = 'Password', $confirm_password_text = 'Confirm the password', $create_account_text = 'Create account', $connexion_text = 'Log in')
-		{
-			return '   <div class="mt-5 mb-10">
-                        <div class="row">
-                            <div class="column">
-                                <div class="flex">
-                                    <div class="flex-initial">
-                                        <div class="mb-3">
-                                           <a class="btn-hollow"  href="' . root() . '">
-                                                <i class="material-icons">apps</i> apps
-                                           </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-5 mb-10">
-                        <div class="row">
-                            <div class="column">
-                                <div class="flex">
-                                    <div class="flex-initial">
-                                        <div class="mb-3">
-                                            <a class="btn-hollow mr-4"  href="#" id="register">
-                                                <i class="material-icons">person_add</i> ' . $create_account_text . '
-                                            </a>  
-                                            <a href="#" class="btn-hollow mr-4" id="login">
-                                                <i class="material-icons">person</i>   ' . $connexion_text . '
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                 <div id="register-form" class="hidden">
-                    <form action="' . route($register_route_name) . '" method="POST">
-                        ' . csrf_field() . '
-                        <input name="method" value="POST" class="hidden">' . '
-                           <div class="row">
-                             <div class="column">
-                                <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">alternate_email</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="email" placeholder="' . $email_address_text . '" name="email" required="required">
-                                </div>                              
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="column">
-                                <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">person</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="text" placeholder="' . $username_text . '" name="firstname">
-                                </div>                              
-                            </div> 
-                            <div class="column">
-                                <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">person</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="text" placeholder="' . $lastname_text . '" name="lastname" required="required">
-                                </div>                              
-                            </div>
-                        </div>
-                     
-                        <div class="row">
-                            <div class="column">
-                                <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">vpn_key</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="8" maxlength="255"  type="password" placeholder="' . $password_text . '" name="password">
-                                </div>                              
-                            </div>
-                            <div class="column">
-                                <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">vpn_key</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="8" maxlength="255" type="password" placeholder="' . $confirm_password_text . '" name="confirm">
-                                </div>                              
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="column">
-                                <button type="submit"><i class="material-icons">person_add</i> ' . $create_account_text . '</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-                
-                <div id="login-form" class="hidden">
-                    <form action="' . route($login_route_name) . '" method="POST">
-                        ' . csrf_field() . '
-                        <input name="method" value="POST" class="hidden">
-                        <div class="row">
-                            <div class="column">
-                                 <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">person</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="3" maxlength="255" type="text" placeholder="' . $username_text . '" name="firstname" required="required">
-                                </div>      
-                            </div>     
-                              
-                            <div class="column">
-                                 <div class="input-container">
-                                    <span class="icon">
-                                        <i class="material-icons">vpn_key</i>
-                                    </span>
-                                    <input class="input-field" autocomplete="off" minlength="8" maxlength="255" type="password" placeholder="' . $password_text . '" name="password" required="required">
-                                </div>      
-                            </div>
-                        </div>
-                       <div class="row">
-                            <div class="column">
-                                <button type="submit"><i class="material-icons">person</i> ' . $connexion_text . '</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>';
-
-
-		}
-	}
+	
 	if (not_exist('copyright'))
 	{
 		/**
@@ -702,29 +572,6 @@
 		}
 	}
 
-	if (not_exist('to'))
-	{
-		/**
-		 *
-		 * @param string $url
-		 * @param string $message
-		 *
-		 * @param bool   $success
-		 *
-		 * @throws Kedavra
-		 * @return RedirectResponse
-		 */
-		function to(string $url, string $message = '', bool $success = true)
-		{
-			if (def($message))
-			{
-				$flash = new Flash(app()->session());
-
-				$success ? $flash->success($message) : $flash->failure($message);
-			}
-			return (new RedirectResponse($url))->send();
-		}
-	}
 
 
 	
@@ -948,41 +795,8 @@
 			return session_status() === PHP_SESSION_ACTIVE;
 		}
 	}
-	if (not_exist('csrf_field'))
-	{
-		/**
-		 *
-		 * Generate a token
-		 *
-		 * @throws Kedavra
-		 * @return string
-		 *
-		 */
-		function csrf_field(): string
-		{
-			$value = (new Csrf(app()->session()))->token();
 
-			return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $value . '">';
-		}
-	}
 
-	if (not_exist('message'))
-	{
-		/**
-		 *
-		 * Load a html email content
-		 *
-		 * @param string $filename
-		 *
-		 * @throws Kedavra
-		 * @return string
-		 *
-		 */
-		function message(string $filename): string
-		{
-			return (new File(realpath(core_path(collect(config('app', 'dir'))->get('app'))) . DIRECTORY_SEPARATOR . 'Mailers' . DIRECTORY_SEPARATOR . 'Emails' . DIRECTORY_SEPARATOR . $filename))->read();
-		}
-	}
 
 	if (not_exist('sql_file'))
 	{
@@ -1094,23 +908,6 @@
 
 
 
-	if (not_exist('env'))
-	{
-		/**
-		 *
-		 * @param $variable
-		 *
-		 * @return array|false|string
-		 *
-		 */
-		function env($variable)
-		{
-			return getenv($variable);
-		}
-
-	}
-
-
 
 	if (not_exist('query'))
 	{
@@ -1135,26 +932,7 @@
 
 	
 
-	if (not_exist('debug'))
-	{
-		/**
-		 *
-		 * Debug all values by a condition
-		 *
-		 * @method debug
-		 *
-		 * @param bool    $condition The condition
-		 * @param mixed[] $values    The values to debug
-		 *
-		 */
-		function debug(bool $condition, ...$values)
-		{
-			if ($condition)
-			{
-				d($values);
-			}
-		}
-	}
+	
 
 	if (not_exist('secure_register_form'))
 	{

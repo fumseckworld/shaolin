@@ -28,6 +28,155 @@ if (!function_exists('collect'))
 
 }
 
+
+
+if (!function_exists('env'))
+{
+    /**
+     *
+     * @param $variable
+     *
+     * @return array|false|string
+     *
+     */
+    function env($variable)
+    {
+        return app()->env($variable);
+    }
+
+}
+if (!function_exists('connexion'))
+{
+
+    function connexion($register_route_name, $login_route_name, $username_text = 'Username', $lastname_text = 'Lastname', $email_address_text = 'Your Email adrress', $password_text = 'Password', $confirm_password_text = 'Confirm the password', $create_account_text = 'Create account', $connexion_text = 'Log in')
+    {
+        return '   <div class="mt-5 mb-10">
+                    <div class="row">
+                        <div class="column">
+                            <div class="flex">
+                                <div class="flex-initial">
+                                    <div class="mb-3">
+                                        <a class="btn-hollow"  href="' . root() . '">
+                                            <i class="material-icons">apps</i> apps
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-5 mb-10">
+                    <div class="row">
+                        <div class="column">
+                            <div class="flex">
+                                <div class="flex-initial">
+                                    <div class="mb-3">
+                                        <a class="btn-hollow mr-4"  href="#" id="register">
+                                            <i class="material-icons">person_add</i> ' . $create_account_text . '
+                                        </a>  
+                                        <a href="#" class="btn-hollow mr-4" id="login">
+                                            <i class="material-icons">person</i>   ' . $connexion_text . '
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="register-form" class="hidden">
+                <form action="' . route($register_route_name) . '" method="POST">
+                    ' . csrf_field() . '
+                    <input name="method" value="POST" class="hidden">' . '
+                        <div class="row">
+                            <div class="column">
+                            <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">alternate_email</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="email" placeholder="' . $email_address_text . '" name="email" required="required">
+                            </div>                              
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">person</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="text" placeholder="' . $username_text . '" name="firstname">
+                            </div>                              
+                        </div> 
+                        <div class="column">
+                            <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">person</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="3" maxlength="254" type="text" placeholder="' . $lastname_text . '" name="lastname" required="required">
+                            </div>                              
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="column">
+                            <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">vpn_key</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="8" maxlength="255"  type="password" placeholder="' . $password_text . '" name="password">
+                            </div>                              
+                        </div>
+                        <div class="column">
+                            <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">vpn_key</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="8" maxlength="255" type="password" placeholder="' . $confirm_password_text . '" name="confirm">
+                            </div>                              
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <button type="submit"><i class="material-icons">person_add</i> ' . $create_account_text . '</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="login-form" class="hidden">
+                <form action="' . route($login_route_name) . '" method="POST">
+                    ' . csrf_field() . '
+                    <input name="method" value="POST" class="hidden">
+                    <div class="row">
+                        <div class="column">
+                                <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">person</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="3" maxlength="255" type="text" placeholder="' . $username_text . '" name="firstname" required="required">
+                            </div>      
+                        </div>     
+                            
+                        <div class="column">
+                                <div class="input-container">
+                                <span class="icon">
+                                    <i class="material-icons">vpn_key</i>
+                                </span>
+                                <input class="input-field" autocomplete="off" minlength="8" maxlength="255" type="password" placeholder="' . $password_text . '" name="password" required="required">
+                            </div>      
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="column">
+                            <button type="submit"><i class="material-icons">person</i> ' . $connexion_text . '</button>
+                        </div>
+                    </div>
+                </form>
+            </div>';
+
+
+    }
+}
+
 if (!function_exists('now'))
 {
     /**

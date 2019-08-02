@@ -164,6 +164,12 @@ class AdminTest extends Unit
         $this->assertFalse(superior_or_equal(10,50));
         $this->assertFalse(superior_or_equal([1,2,1,4,5,8,7,8,9,41],50));
     }
+    public function test_to()
+    {
+        $this->assertEquals(302,to('/login')->getStatusCode());
+        $this->assertEquals(302,to('/login','Connexion')->getStatusCode());
+        $this->assertEquals(302,to('/login','Connexion',false)->getStatusCode());
+    }
 
           
     public function test_inferior()
@@ -229,5 +235,17 @@ class AdminTest extends Unit
         $this->assertNotEmpty(commands());
         $this->assertNotEmpty(controllers());
     }
-    
+    public function test_csrf()
+    {
+        $first = csrf_field();
+        $scond = csrf_field();
+        $this->assertNotEquals($first,$scond);
+        $this->assertNotEmpty(csrf_field());
+
+    }
+
+    public function test_message()
+    {
+        $this->assertNotEmpty(message('index.mjml'));
+    }
 }

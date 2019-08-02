@@ -9,6 +9,7 @@ use Imperium\File\File;
 use Imperium\Testing\Unit;
 use SplFileObject;
 
+
 /**
  * Class FileTest
  * @package Testing
@@ -251,9 +252,10 @@ class FileTest extends Unit
     public function test_copy()
    {
         $this->assertTrue($this->file('.env.example')->copy('.env'));
+        $this->assertEquals('Shaolin',env('app'));
         $this->assertTrue($this->file('.env')->remove());
-
         $this->assertTrue($this->file('.env.example')->copy('.env'));
+        $this->assertEquals('Shaolin',env('app'));
    }
     /**
      * @throws Kedavra
