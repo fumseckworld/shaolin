@@ -586,18 +586,7 @@
 			 * @return Flash
 			 */
 			public function flash(): Flash;
-
-			/**
-			 *
-			 * Management of git
-			 *
-			 * @param string $repository
-			 * @param string $owner
-			 *
-			 * @return Git
-			 *
-			 */
-			public function git(string $repository, string $owner): Git;
+			
 
 			/**
 			 * @return SessionInterface

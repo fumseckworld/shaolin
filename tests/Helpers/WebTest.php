@@ -76,11 +76,6 @@ class WebTest extends Unit
         $this->assertFalse(not_in([1,2,3,4,5,6,7,8,9],9));
     }
 
-    public function test_display_repositories()
-    {
-        $this->assertNotEmpty(display_repositories('willy'));
-        $this->assertNotEmpty(display_repositories());
-    }
 
     public function test_root()
     {

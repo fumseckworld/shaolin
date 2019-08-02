@@ -1256,23 +1256,6 @@
 				return new Write($subject, $message, $author_email, $to);
 			}
 
-			/**
-			 *
-			 * Management of git
-			 *
-			 * @param string $repository
-			 * @param string $owner
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return Git
-			 *
-			 */
-			public function git(string $repository, string $owner): Git
-			{
-				return new Git($repository, $owner);
-			}
-
 
 			/**
 			 *

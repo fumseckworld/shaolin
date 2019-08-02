@@ -104,7 +104,7 @@ namespace Shaolin\Controllers {
 		public function repositories()
         {
 
-            $repo = display_repositories();
+            $repo = '';
 
             return $this->view('repositories',compact('repo'));
 
