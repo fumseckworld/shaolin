@@ -11,7 +11,6 @@ use PDO;
 use Whoops\Run;
 use Sinergi\BrowserDetector\Os;
 use Faker\Generator;
-use Imperium\Routing\Route;
 use Imperium\Security\Hashing\Hash;
 
 class AdminTest extends Unit
@@ -197,16 +196,6 @@ class AdminTest extends Unit
     }
 
 
-    public function test_check()
-    {
-        $this->assertTrue(Route::manage()->check('name','root'));
-        $this->assertTrue(Route::manage()->check('action','tree'));
-        $this->assertTrue(Route::manage()->check('controller','GitController'));
-        $this->assertTrue(Route::manage()->check('id',1));
-        $this->assertTrue(Route::manage()->check('url','/'));
-
-    }
-
     public function test_password_valid()
     {
         $x = (new Hash('valid'))->generate();
@@ -238,8 +227,8 @@ class AdminTest extends Unit
     public function test_csrf()
     {
         $first = csrf_field();
-        $scond = csrf_field();
-        $this->assertNotEquals($first,$scond);
+        $second = csrf_field();
+        $this->assertNotEquals($first,$second);
         $this->assertNotEmpty(csrf_field());
 
     }

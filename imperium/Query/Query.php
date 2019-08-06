@@ -3,13 +3,15 @@
 	namespace Imperium\Query
 	{
 
-		use Imperium\Connexion\Connect;
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use Imperium\Connexion\Connect;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Tables\Table;
 		use Imperium\Zen;
-    use PDO;
+        use PDO;
 
-/**
+        /**
 		 * Class Query
 		 *
 		 * @package Imperium\Query
@@ -200,158 +202,352 @@
 			/**
 			 * @var int
 			 */
-			private $pdo_mode;
-			
-			/**
-			 *
-			 * The constructor
-			 *
-			 * @method __construct
-			 *
-			 * @param Table   $table
-			 * @param Connect $connect
-			 *
-			 */
-			public function __construct(Table $table, Connect $connect)
-			{
-				$this->connexion = $connect;
-				$this->tables = $table;
+			private $pdo_mode = PDO::FETCH_OBJ;
 
+			/**
+             * @var string
+             */
+            private $offset;
+
+            /**
+             *
+             * The primary key
+             *
+             * @var string
+             *
+             */
+            private $primary;
+
+            /**
+             *
+             * The constructor
+             *
+             * @method __construct
+             *
+             * @param bool $routes
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
+			public function __construct(bool $routes = false)
+			{
+                $this->connexion =  $routes ? connect(SQLITE,CORE . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
 			}
 
-			/**
-			 *
-			 * Generate a from clause
-			 *
-			 * @method from
-			 *
-			 * @param string $table The table to manage
-			 *
-			 * @return Query
-			 */
-			public function from(string $table): Query
-			{
-				$this->from = "FROM $table";
 
-				$this->table = $table;
+            /**
+             *
+             *
+             * @return Connect
+             *
+             */
+			public function connexion(): Connect
+            {
+                return $this->connexion;
+            }
+
+
+            /**
+             *
+             * List all columns inside the table
+             *
+             * @return array
+             *
+             * @throws Kedavra
+             *
+             */
+            public function columns(): array
+            {
+                $fields = collect();
+                switch ($this->connexion()->driver())
+                {
+
+                    case MYSQL:
+                        foreach ($this->connexion()->set(PDO::FETCH_OBJ)->request("SHOW FULL COLUMNS FROM {$this->table}") as $column)
+                            $fields->push($column->Field);
+                    break;
+                    case POSTGRESQL:
+                        foreach ($this->connexion()->set(PDO::FETCH_OBJ)->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'") as $column)
+                            $fields->push($column->column_name);
+                    break;
+                    case SQLITE:
+                        foreach ($this->connexion()->set(PDO::FETCH_OBJ)->request("PRAGMA table_info({$this->table})") as $column)
+                            $fields->push($column->name);
+                    break;
+                }
+                return $fields->all();
+            }
+
+            /**
+             *
+             *
+             * @param string $table
+             *
+             * @param bool $routes
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
+			public static function from(string $table,bool $routes = false): Query
+            {
+                return (new static($routes))->select_table($table);
+            }
+
+            /**
+             *
+             * Add a limit
+             *
+             * @param int $limit
+             *
+             * @return Query
+             *
+             */
+			public function take(int $limit): Query
+			{
+				$this->limit = "LIMIT $limit";
 
 				return $this;
 			}
 
-			/**
-			 *
-			 * Return the query generated
-			 *
-			 * @method sql
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
-			public function sql(): string
+            /**
+             *
+             * Configure limit offset
+             *
+             * @param int $offset
+             *
+             * @return Query
+             *
+             */
+			public function offset(int $offset): Query
 			{
-				$where = def($this->where) ? $this->where : '';
-				$order = def($this->order) ? $this->order : '';
-				$table = def($this->from) ? $this->from : '';
-				$limit = def($this->limit) ? $this->limit : '';
-				$join = def($this->join) ? $this->join : '';
-				$union = def($this->union) ? $this->union : '';
-				$mode = def($this->mode) ? $this->mode : '';
-				$or = def($this->or) ? $this->or : '';
-				$and = def($this->and) ? $this->and : '';
-				$columns = def($this->columns) ? $this->columns : "*";
+			    $offset = max(0,$offset);
 
-
-				is_true(not_def($mode), true, 'The query mode is missing');
-
-				switch ($mode)
-				{
-				case Query::SELECT:
-					return "SELECT $columns $table $where $and $or $order $limit";
-					break;
-				case Query::DELETE :
-					return "DELETE $table $where $and $or";
-					break;
-				case Query::UNION:
-				case Query::UNION_ALL:
-					return "$union $where $and $or $order $limit";
-					break;
-				case collect(self::JOIN_MODE)->exist($mode) :
-					return "$join $order $limit";
-					break;
-
-				default:
-					throw new Kedavra('The query mode is not define');
-				break;
-				}
-			}
-
-
-			/**
-			 *
-			 * Generate a where clause
-			 *
-			 * @method where
-			 *
-			 * @param string $column    The column name
-			 * @param string $condition The condition
-			 * @param mixed  $expected  The expected value
-			 *
-			 * @throws Kedavra
-			 *
-			 **@return Query
-			 *
-			 */
-			public function where(string $column, string $condition, $expected): Query
-			{
-				$condition = html_entity_decode($condition);
-
-				$this->where_param = $column;
-				$this->where_condition = $condition;
-				$this->where_expected = $expected;
-
-				is_true(not_in(self::VALID_OPERATORS, $condition), true, "The operator is invalid");
-
-				$this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->instance()->quote($expected)}";
+				$this->offset =  "OFFSET $offset";
 
 				return $this;
-
 			}
 
-			/***
-			 *
-			 * Select only column
-			 *
-			 * @param string ...$columns
-			 *
-			 * @return Query
-			 */
-			public function only(string ...$columns): Query
+            /**
+             * @param string $key
+             *
+             * @return Query
+             */
+			public function primary(string $key = 'id'): Query
+            {
+                $this->primary = $key;
+
+                return $this;
+            }
+
+            /**
+             * @return string
+             *
+             */
+            public function key()
+            {
+                return $this->primary;
+            }
+
+
+            /**
+             *
+             * @param int $id
+             *
+             * @return object
+             *
+             * @throws Kedavra
+             *
+             */
+            public function find(int $id)
+            {
+                return $this->where($this->key(),EQUAL,$id)->fetch(true)->all();
+            }
+
+            /**
+             *
+             * Get values was different of expected
+             *
+             * @param string $column
+             * @param $expected
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
+            public function different(string $column,$expected)
+            {
+                return $this->where($column,DIFFERENT,$expected);
+            }
+
+
+            /**
+             *
+             * Count all record
+             *
+             * @return int
+             *
+             * @throws Kedavra
+             *
+             */
+            public function sum(): int
+            {
+                return  sum($this->all());
+            }
+            /**
+             *
+             * Destroy a record by id
+             *
+             * @param int $id
+             *
+             * @return bool
+             *
+             * @throws Kedavra
+             *
+             */
+            public function destroy(int $id): bool
+            {
+                return $this->where($this->key(),EQUAL,$id)->mode(DELETE)->delete();
+            }
+
+
+
+            /**
+             *
+             * Return the query generated
+             *
+             * @method sql
+             *
+             * @throws Kedavra
+             *
+             * @return string
+             *
+             */
+            public function sql(): string
+            {
+                $where = def($this->where) ? $this->where : '';
+                $order = def($this->order) ? $this->order : '';
+                $table = def($this->from) ? $this->from : '';
+                $limit = def($this->limit) ? $this->limit : '';
+                $offset = def($this->offset) ? $this->offset : '';
+                $join = def($this->join) ? $this->join : '';
+                $union = def($this->union) ? $this->union : '';
+                $mode = def($this->mode) ? $this->mode : '';
+                $or = def($this->or) ? $this->or : '';
+                $and = def($this->and) ? $this->and : '';
+                $columns = def($this->columns) ? $this->columns : "*";
+
+
+                $mode = def($mode) ? $mode : SELECT;
+
+                switch ($mode)
+                {
+                    case Query::SELECT:
+                        return "SELECT $columns $table $where $and $or $order $limit $offset";
+                    break;
+                    case Query::DELETE :
+                        return "DELETE $table $where $and $or";
+                    break;
+                    case Query::UNION:
+                    case Query::UNION_ALL:
+                        return "$union $where $and $or $order $limit $offset";
+                    break;
+                    case collect(self::JOIN_MODE)->exist($mode) :
+                        return "$join $order $limit";
+                    break;
+                    default:
+                        throw new Kedavra('The query mode is not define');
+                    break;
+                }
+            }
+
+
+
+            /**
+             *
+             * Generate a where clause
+             *
+             * @method where
+             *
+             * @param string $column    The column name
+             * @param string $condition The condition
+             * @param mixed  $expected  The expected value
+             *
+             * @throws Kedavra
+             *
+             **@return Query
+             *
+             */
+            public function where(string $column, string $condition, $expected): Query
+            {
+                $condition = html_entity_decode($condition);
+
+                $this->where_param = $column;
+
+                $this->where_condition = $condition;
+
+                $this->where_expected = $expected;
+
+                is_true(not_in(self::VALID_OPERATORS, $condition), true, "The operator is invalid");
+
+                $this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->instance()->quote($expected)}";
+
+                return $this;
+
+            }
+
+
+            /**
+             *
+             * Get the table name
+             *
+             * @return string
+             *
+             */
+            public function table(): string
+            {
+                return  $this->table;
+            }
+
+
+
+
+            /***
+             *
+             * Select only column
+             *
+             * @param string ...$columns
+             *
+             * @return Query
+             */
+			public function select(string ...$columns): Query
 			{
 				$this->columns = collect($columns)->join(', ');
 
 				return $this;
 			}
 
-			/**
-			 *
-			 * Generate a between clause
-			 *
-			 * @method between
-			 *
-			 * @param string $column The column name
-			 * @param mixed  $begin  The begin value
-			 * @param mixed  $last   The last value
-			 *
-			 * @return Query
-			 *
-			 */
+            /**
+             *
+             * Generate a between clause
+             *
+             * @method between
+             *
+             * @param string $column The column name
+             * @param mixed $begin The begin value
+             * @param mixed $last The last value
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
 			public function between(string $column, $begin, $last): Query
 			{
-				if (is_string($begin) && is_string($last))
-					$this->where = "WHERE $column BETWEEN '$begin' AND '$last'"; else
-					$this->where = "WHERE $column BETWEEN $begin AND $last";
+
+			    $begin = $this->connexion()->instance()->quote($begin);
+
+			    $last = $this->connexion()->instance()->quote($last);
+
+			    $this->where = "WHERE $column BETWEEN $begin AND $last";
 
 				return $this;
 			}
@@ -361,7 +557,7 @@
 			 *
 			 * Generate an order by clause
 			 *
-			 * @method order_by
+			 * @method by
 			 *
 			 * @param string $column The column name
 			 * @param string $order  The order by option
@@ -369,7 +565,7 @@
 			 * @return Query
 			 *
 			 */
-			public function order_by(string $column, string $order = DESC): Query
+			public function by(string $column, string $order = DESC): Query
 			{
 				$this->order_cond = $order;
 				$this->order_key = $column;
@@ -389,25 +585,22 @@
 			 * @return mixed
 			 *
 			 */
-			public function get()
+			public function all()
 			{
-				if (def($this->pdo_mode))
-					$this->connexion->set($this->pdo_mode);
-				return $this->use_fetch ? $this->connexion->fetch($this->sql()) : $this->connexion->request($this->sql());
+				return $this->use_fetch ? $this->connexion->set($this->pdo_mode)->fetch($this->sql()) : $this->connexion->set($this->pdo_mode)->request($this->sql());
 			}
 
-			
-			/**
-			 *
-			 * Disable or enable the fetch
-			 *  
-			 * 
-			 * @method fetch
-			 *
-			 * 
-			 * @return Query
-			 * 
-			 */
+            /**
+             *
+             * Disable or enable the fetch
+             *
+             *
+             * @method fetch
+             *
+             *
+             * @param bool $fetch
+             * @return Query
+             */
 			public function fetch(bool $fetch = false): Query
 			{
 				$this->use_fetch = $fetch;
@@ -415,25 +608,6 @@
 				return $this;
 
 			}
-		
-			/**
-			 *
-			 * Generate a limit clause
-			 *
-			 * @method limit
-			 *
-			 * @param int $limit  The limit value
-			 * @param int $offset The limit offset
-			 *
-			 * @return Query
-			 */
-			public function limit(int $limit, int $offset): Query
-			{
-				$this->limit = "LIMIT $limit OFFSET $offset";
-
-				return $this;
-			}
-
 
 			/**
 			 *
@@ -472,7 +646,6 @@
 			 */
 			public function pdo(int $mode = 0): Query
 			{
-
 				$this->pdo_mode= $mode !== 0 ?  $mode :  PDO::FETCH_OBJ;
 
 				return $this;
@@ -496,24 +669,22 @@
 				return $this->connexion->execute($this->sql());
 			}
 
-			/**
-			 *
-			 * Generate a join clause
-			 *
-			 * @method join
-			 *
-			 * @param string   $condition
-			 * @param string   $first_table  The first table name
-			 * @param string   $second_table The second table name
-			 * @param string   $first_param  The first parameter
-			 * @param string   $second_param The second parameter
-			 * @param string[] $columns      The columns
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return Query
-			 *
-			 */
+            /**
+             *
+             * Generate a join clause
+             *
+             * @method join
+             *
+             * @param string $condition
+             * @param string $first_table The first table name
+             * @param string $second_table The second table name
+             * @param string $first_param The first parameter
+             * @param string $second_param The second parameter
+             * @param string ...$columns
+             *
+             * @return Query
+             * @throws Kedavra
+             */
 			public function join(string $condition, string $first_table, string $second_table, string $first_param, string $second_param, string ...$columns): Query
 			{
 				$this->first_table = $first_table;
@@ -610,43 +781,31 @@
 			 */
 			public function like(string $value): Query
 			{
-				$driver = $this->connexion->driver();
 
-				if (has($driver, [POSTGRESQL, MYSQL]))
+
+				if ($this->connexion()->mysql() || $this->connexion()->postgresql())
 				{
-					$columns = $this->tables->column()->for($this->table())->columns_to_string();
+					$columns = collect($this->columns())->join();
 
 					$this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
-				}
 
-				if (has($driver, [SQLITE]))
-				{
-					$fields = collect($this->tables->column()->for($this->table())->show());
-					$end = $fields->last();
-					$columns = '';
+				}else{
+                    $fields = collect($this->columns());
+                    $end = $fields->last();
+                    $columns = '';
 
-					foreach ($fields->all() as $column)
-					{
-						if (different($column, $end))
-							append($columns, "$column LIKE '%$value%' OR "); else
-							append($columns, "$column LIKE '%$value%'");
-					}
+                    foreach ($fields->all() as $column)
+                    {
+                        if (different($column, $end))
+                            append($columns, "$column LIKE '%$value%' OR ");
+                        else
+                            append($columns, "$column LIKE '%$value%'");
+                    }
 
-					$this->where = "WHERE $columns";
-				}
-				return $this;
-			}
+                    $this->where = "WHERE $columns";
+                }
 
-			/**
-			 *
-			 * Get the current table
-			 *
-			 * @return string
-			 *
-			 */
-			private function table(): string
-			{
-				return $this->table;
+                return $this;
 			}
 
 			/**
@@ -691,6 +850,87 @@
 
 				return $this;
 			}
-		}
+
+            /**
+             *
+             *
+             * @param string $column
+             * @param mixed ...$values
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             *
+             */
+			public function not(string $column, ...$values): Query
+            {
+
+                if (def($this->where))
+                {
+                    foreach ($values as $value)
+                    append($this->where ," AND $column != {$this->connexion->instance()->quote($value)}");
+
+                }else{
+
+                    foreach ($values as  $k  => $value)
+                    {
+                        $k == 0 ?  append($this->where,"WHERE $column != {$this->connexion->instance()->quote($value)} ") :   append($this->where ," AND $column != {$this->connexion->instance()->quote($value)}");
+                    }
+                }
+
+                return $this;
+            }
+
+            /**
+             *
+             *
+             * @param string $column
+             * @param mixed ...$values
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
+            public function only(string $column, ...$values): Query
+            {
+
+
+                if (def($this->where))
+                {
+                    foreach ($values as $value)
+
+                        append($this->where ," AND $column = {$this->connexion->instance()->quote($value)}");
+
+                }else{
+
+                    foreach ($values as  $k  => $value)
+                    {
+                        $k == 0 ?  append($this->where,"WHERE $column = {$this->connexion->instance()->quote($value)} ") :   append($this->where ," AND $column = {$this->connexion->instance()->quote($value)}");
+                    }
+                }
+
+                return $this;
+            }
+
+            /**
+             *
+             *
+             *
+             * @param string $table
+             *
+             * @return Query
+             *
+             */
+            private function select_table(string $table): Query
+            {
+                $this->from = "FROM $table";
+
+                $this->table = $table;
+
+                return $this;
+            }
+
+
+        }
 
 	}

@@ -543,12 +543,6 @@
 			 */
 			public function remove_column(string $table, string $column): bool;
 
-			/**
-			 *
-			 * @return Model
-			 *
-			 */
-			public function model(): Model;
 
 			/**
 			 * @return Form

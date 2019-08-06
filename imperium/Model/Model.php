@@ -1,24 +1,17 @@
 <?php
 
 
+
+
+
+
 	namespace Imperium\Model
 	{
 
-		use DI\DependencyException;
-		use DI\NotFoundException;
-		use Imperium\App;
-		use Imperium\Connexion\Connect;
-		use Imperium\Exception\Kedavra;
-		use Imperium\Query\Query;
-		use Imperium\Request\Request;
-		use Imperium\Routing\Route;
-		use Imperium\Security\Csrf\Csrf;
-		use Imperium\Tables\Table;
-		use Imperium\Collection\Collect;
-		use Imperium\Html\Form\Form;
-		use Imperium\Zen;
-		use PDO;
-		use Imperium\Import\Import;
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use Imperium\Exception\Kedavra;
+        use Imperium\Query\Query;
 
 		/**
 		 * Class Model
@@ -32,627 +25,205 @@
 		 * @version 10
 		 *
 		 */
-		class Model extends Zen
+		abstract class Model
 		{
-
-
-			/**
-			 *
-			 * The connection to the base
-			 *
-			 * @var Connect
-			 *
-			 */
-			private $connexion;
-
-			/**
-			 *
-			 * The table management
-			 *
-			 * @var Table
-			 *
-			 */
-			private $table;
-
-			/**
-			 *
-			 * The current table
-			 *
-			 * @var string
-			 *
-			 */
-			private $current;
-
-			/**
-			 *
-			 * The queries management instance
-			 *
-			 * @var Query
-			 *
-			 */
-			private $sql;
-
-
-			/**
-			 *
-			 * The column used
-			 *
-			 * @var string
-			 *
-			 */
-			private $column;
-
-			/**
-			 *
-			 * The where condition
-			 *
-			 * @var string
-			 *
-			 */
-			private $condition;
-
-			/**
-			 *
-			 * The expected value
-			 *
-			 * @var mixed
-			 *
-			 */
-			private $expected;
-
-			/**
-			 *
-			 * The selected columns
-			 *
-			 * @var string
-			 *
-			 */
-			private $only;
-
-			/**
-			 *
-			 * @var Collect
-			 *
-			 */
-			private $data;
-			/**
-			 * @var Request
-			 */
-			private $request;
-
-			/**
-			 *
-			 *
-			 * @method __construct
-			 *
-			 * @param Connect $connect
-			 * @param Table   $table
-			 * @param Query   $query
-			 * @param Request $request
-			 */
-			public function __construct(Connect $connect)
-			{
-				$this->connexion = $connect;
-
-				$this->data = collect();
-			}
-
 			
 			/**
 			 * 
-			 * Check the current driver
-			 *  
-			 * @method check
+			 * The table associated with the model.
 			 *
-			 * @param string $driver
-			 *
-			 * @return bool
+			 * @var string
 			 * 
 			 */
-			public function check(string $driver): bool
-			{
-				return equal($this->connexion->driver(),$driver);
-			}
+			protected $table;
 
 			/**
-			 *
-			 * Dump a table or the base
-			 *
-			 * @method dump
-			 *
-			 * @param string ...$tables
-			 *
-			 * @throws Kedavra
 			 * 
-			 * @return bool
+			 * The primary key for the model.
 			 *
-			 */
-			public function dump(string ...$tables): bool
-			{
-				return dumper(false, $tables);
-			}
-
-			/**
-			 *
-			 * Dump the base
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function dump_base(): bool
-			{
-				return dumper(true);
-			}
-
-			/**
-			 *
-			 * Select a table
-			 *
-			 * @param string $table
-			 *
-			 * @return Model
-			 */
-			public function from(string $table): Model
-			{
-				$this->current = $table;
-
-				return $this;
-			}
-
-
-			/**
-			 *
-			 * Return the current table
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
-			private function current(): string
-			{
-				is_true(not_def($this->current), true, "No table selected");
-
-				return $this->current;
-			}
-			
-			/**
-			 *
-			 * Return the primary key
-			 *
-			 * @method primary
-			 *
-			 * @throws Kedavra
-			 * @return string
-			 *
-			 */
-			public function primary(): string
-			{
-				return $this->table()->from($this->current())->primary();
-			}
-
-			/**
-			 *
-			 * Find a record by a column
-			 *
-			 * @param string $column
-			 * @param mixed  $expected
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
-			public function by(string $column, $expected)
-			{
-				return $this->query()->from($this->current())->mode(SELECT)->where($column, EQUAL, $expected)->fetch(true)->get();
-			}
-
-
-			/**
-			 *
-			 * Search in the current table a value
-			 *
-			 * @method search
-			 *
-			 * @param string $value       The value to search
-			 * @param bool   $json_output To save data in a json file
-			 *
-			 * @throws Kedavra
-			 * @return array|string
-			 *
-			 */
-			public function search(string $value, bool $json_output = false)
-			{
-				return $json_output ? collect($this->query()->from($this->current())->mode(SELECT)->like($value)->get())->json() : $this->query()->from($this->current())->mode(Query::SELECT)->like($value)->get();
-			}
-
-			/**
-			 *
-			 * Select only the columns
-			 *
-			 * @method only
-			 *
-			 * @param string[] $columns The columns name
-			 *
-			 * @return Model
-			 *
-			 */
-			public function only(string ...$columns): Model
-			{
-				$this->only = collect($columns)->join();
-
-				return $this;
-			}
-
-			/**
-			 *
-			 * Return the query result
-			 *
-			 * @method get
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return mixed
-			 *
-			 */
-			public function get()
-			{
-				is_true(not_def($this->column, $this->expected, $this->condition), true, "The where clause was not found");
-
-				return def($this->only) ? $this->query()->from($this->current())->mode(SELECT)->where($this->column, $this->condition, $this->expected)->only($this->only)->get() : $this->query()->from($this->current())->mode(Query::SELECT)->where($this->column, $this->condition, $this->expected)->get();
-			}
-
-
-			/**
-			 *
-			 * Set a column value
-			 *
-			 * @method set
-			 *
-			 * @param string $column_name The column name
-			 * @param mixed  $value       The value
-			 *
-			 * @return Model
-			 *
-			 */
-			public function set(string $column_name, $value): Model
-			{
-				$this->data->put($column_name, $value);
-
-				return $this;
-			}
-
-			/**
-			 *
-			 * Save new record in the table
-			 *
-			 * @throws Kedavra
-			 * @return bool
-			 *
-			 */
-			public function save(): bool
-			{
-				$data = collect();
-
-				foreach ($this->columns() as $column)
-					$data->put($column, $this->data->get($column));
-
-				return $this->insert_new_record($this, $data->all());
-			}
-
-			/**
-			 *
-			 * Return the sql builder instance
-			 *
-			 * @return Query
-			 *
-			 */
-			public function query(): Query
-			{
-				return new Query($this->table(),$this->connexion);
-			}
-
-			/**
-			 *
-			 * @return Table
-			 *
-			 */
-			public function table(): Table
-			{
-				return new Table($this->connexion);
-			}
-
-
-			/**
-			 *
-			 * Get the news records with a limit and order by clause
-			 *
-			 * @param string $order_column
-			 * @param int    $limit
-			 * @param int    $offset
-			 *
-			 * @throws Kedavra
-			 * @return array
-			 *
-			 */
-			public function news(string $order_column, int $limit, int $offset = 0): array
-			{
-				return $this->query()->from($this->current())->mode(SELECT)->limit($limit, $offset)->order_by($order_column)->get();
-			}
-
-			/**
-			 *
-			 * Get the lasts record by a limit and an order by clause
-			 *
-			 * @param string $order_column
-			 * @param int    $limit
-			 * @param int    $offset
-			 *
-			 * @throws Kedavra
-			 * @return array
-			 *
-			 */
-			public function last(string $order_column, int $limit, int $offset = 0): array
-			{
-				return $this->query()->from($this->current())->mode(SELECT)->limit($limit, $offset)->order_by($order_column, ASC)->fetch()->get();
-			}
-
-			/**
-			 *
-			 * Get all records in current table
-			 * with an order by
-			 *
-			 * @param string $column
-			 * @param string $order
-			 *
-			 * @throws Kedavra
-			 * @return array
-			 *
-			 */
-			public function all(string $column = '', string $order = DESC): array
-			{
-				return def($column) ? $this->table()->from($this->current())->all($column, $order) : $this->table()->from($this->current())->all($this->primary(), $order);
-			}
-
-			/**
-			 *
-			 * Return a result by a column or fail
-			 *
-			 * @param string $column
-			 * @param        $expected
-			 *
-			 * @param string $message
-			 *
-			 * @throws Kedavra
-			 * @return object
-			 *
-			 */
-			public function by_or_fail(string $column, $expected, string $message = 'Record was not found'): object
-			{
-				return exist($this->by($column, $expected), true, $message);
-			}
-
-			/**
-			 *
-			 * Select a record by this id
-			 *
-			 * @param int $id
-			 *
-			 * @throws Kedavra
-			 * @return object
-			 *
-			 */
-			public function find(int $id)
-			{
-				return $this->query()->from($this->current())->mode(SELECT)->where($this->primary(), EQUAL, $id)->fetch(true)->get();
-			}
-
-			/**object
-			 *
-			 * Find a record or fail if not found
-			 *
-			 * @method find_or_fail
-			 *
-			 * @param int $id The record id
-			 *
-			 * @throws Kedavra
-			 * @return object
-			 *
-			 */
-			public function find_or_fail(int $id)
-			{
-				return exist($this->find($id),true, 'Record was not found');
-			}
-
-
-			/**
-			 *
-			 * Select record by a where clause
-			 *
-			 * @method where
-			 *
-			 * @param string $column    The column name
-			 * @param string $condition The condition
-			 * @param mixed  $expected  The expected value
-			 *
-			 * @return Model
-			 *
-			 */
-			public function where(string $column, string $condition, $expected): Model
-			{
-				$this->column = $column;
-
-				$this->condition = $condition;
-
-				$this->expected = $expected;
-
-				return $this;
-			}
-
-
-			/**
-			 *
-			 * Remove a record by this id
-			 *
-			 * @param int $id
-			 *
-			 * @throws Kedavra
-			 * @return bool
-			 *
-			 */
-			public function remove(int $id): bool
-			{
-				return $this->query()->from($this->current())->mode(Query::DELETE)->where($this->primary(), EQUAL, $id)->delete();
-			}
-
-			/**
-			 *
-			 * Insert data in the table
-			 *
-			 * @param $model
-			 * @param array $data
-			 *
-			 * @throws Kedavra
+			 * @var string
 			 * 
-			 * @return bool
-			 *
 			 */
-			public function insert_new_record($model, array $data): bool
-			{
-
-				return $this->table()->from($this->current())->save($model, $data);
-			}
-
-		
+			protected $primary = 'id';
 
 			/**
-			 *
-			 * Return number of record inside the current table
-			 *
-			 * @param string $table
-			 *
-			 * @throws Kedavra
 			 * 
-			 * @return int
+			 * The number of models to return for pagination.
 			 *
+			 * @var int
 			 */
-			public function count(string $table = ''): int
+			protected $per_page = 12;
+
+            /**
+             *
+             * The sql query to create the table
+             *
+             * @var string
+             *
+             */
+            protected $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
+
+            /**
+             * @var bool
+             */
+            protected $routes = false;
+
+            /**
+             * Undocumented function
+             *
+             * @return array
+             *
+             * @throws Kedavra
+             *
+             */
+			public static function all(): array
 			{
-				return def($table) ? $this->table()->from($table)->count() : $this->table()->from($this->current())->count();
+                return  static::query()->all();
 			}
 
+            /**
+             * @param array $values
+             * @return bool
+             * @throws Kedavra
+             */
+            public  static  function create(array $values): bool
+            {
 
-			/**
-			 *
-			 * Escape a string value
-			 *
-			 * @param string $value
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
-			public function quote(string $value): string
+                $x = collect(static::query()->columns())->join(',');
+
+                $values = collect($values)->for('htmlspecialchars')->all();
+
+                $table = static::query()->table();
+                $id = static::query()->key();
+
+                $sql = "INSERT INTO $table ($x) VALUES (";
+
+                foreach ($values as $k => $v)
+                {
+                    if (different($k, $id))
+                    {
+                        append($sql, static::query()->connexion()->instance()->quote($v). ', ');
+                    } else
+                    {
+                        if (static::query()->connexion()->mysql()|| static::query()->connexion()->sqlite())
+                            append($sql, 'NULL, ');
+                        else
+                            append($sql, "DEFAULT, ");
+
+                    }
+                }
+
+                $sql = trim($sql, ', ');
+
+                append($sql, ')');
+
+                return static::query()->connexion()->execute($sql);
+            }
+            /**
+             *
+             * Destroy a record by id
+             *
+             * @param int $id
+             *
+             * @return bool
+             *
+             * @throws Kedavra
+             *
+             */
+			public static function destroy(int $id): bool
+            {
+                return static::query()->destroy($id);
+            }
+
+            /**
+             *
+             * Count record in a table
+             *
+             * @return int
+             *
+             * @throws Kedavra
+             *
+             */
+            public static function count(): int
+            {
+               return static::query()->sum();
+            }
+
+            /**
+             *
+             * Generate a clause where
+             *
+             * @param string $column
+             * @param string $condition
+             * @param mixed $expected
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
+			public static function where(string $column,string $condition,$expected): Query
 			{
-				return $this->connexion->instance()->quote($value);
+				return static::query()->mode(SELECT)->where($column,$condition,$expected);
 			}
 
+            /**
+             *
+             * Find a record by an id
+             *
+             * @param int $id
+             *
+             * @return object
+             *
+             * @throws Kedavra
+             *
+             */
+            public static function find(int $id)
+            {
+                return static::query()->find($id);
+            }
 
-			/**
-			 *
-			 * Empty the table
-			 *
-			 * @param string $table
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function truncate(string $table): bool
+            /**
+             *
+             * Use a different where clause
+             *
+             * @param string $column
+             * @param mixed $expected
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             *
+             */
+            public static function different(string $column,$expected): Query
+            {
+                return  self::where($column,DIFFERENT,$expected);
+            }
+
+            /**
+             * Begin querying the model.
+             *
+             * @return Query
+             */
+			private static function query(): Query
 			{
-				return $this->table()->truncate($table);
+				return (new static)->builder();
+				
 			}
 
-
-			/**
-			 *
-			 * Update a record by this id
-			 *
-			 * @param int   $id
-			 * @param array $data
-			 * @param array $ignore
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function update_record(int $id, array $data, array $ignore = []): bool
+            /**
+             *
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
+			private function builder(): Query
 			{
-				return $this->table()->from($this->current())->update($id, $data, $ignore);
+			    return  Query::from($this->table,$this->routes)->primary($this->primary);
+
 			}
 
-			/**
-			 * Display all columns inside the current table
-			 *
-			 * @throws Kedavra
-			 * @return array
-			 *
-			 */
-			public function columns(): array
-			{
-				return $this->table()->column()->for($this->current())->show();
-			}
-
-			/**
-			 *
-			 * Check if the current table has not record
-			 *
-			 * @param string $table
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function empty(string $table): bool
-			{
-				return $this->table()->from($table)->is_empty();
-			}
-
-			/**
-			 * get pdo instance
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return PDO
-			 *
-			 */
-			public function pdo(): PDO
-			{
-				return $this->connexion->instance();
-			}
-
-			/**
-			 *
-			 * Execute a custom query
-			 *
-			 * @param string $query
-			 *
-			 * @throws Kedavra
-			 * @return bool
-			 *
-			 */
-			public function execute(string $query): bool
-			{
-				return $this->connexion->execute($query);
-			}
-
-
-		}
+        }
 	}
+
+

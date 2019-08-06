@@ -5,7 +5,9 @@
 	{
 
 
-		use GuzzleHttp\Psr7\ServerRequest;
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use GuzzleHttp\Psr7\ServerRequest;
 		use Imperium\Cache\Cache;
 		use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
@@ -30,16 +32,16 @@
 		class Unit extends TestCase
 		{
 
-			/**
-			 *
-			 * @param string $url
-			 * @param string $method
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return RouteResult|RedirectResponse
-			 *
-			 */
+            /**
+             *
+             * @param string $url
+             * @param string $method
+             *
+             * @return RouteResult|RedirectResponse
+             * @throws Kedavra
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
 
 			public function visit(string $url, string $method = GET)
 			{

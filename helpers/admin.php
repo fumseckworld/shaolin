@@ -88,15 +88,16 @@ if (!function_exists('message'))
 
 if (! function_exists('app'))
 {
-/**
- *
- * Get all applications
- *
- * @method app
- *
- * @return App
- *
- */
+    /**
+     *
+     * Get all applications
+     *
+     * @method app
+     *
+     * @return App
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
 function app(): App
 {
 	return Container::get();
@@ -194,19 +195,17 @@ function def(...$values): bool
 if (!function_exists('update_file_values'))
 {
 
-	/**
-	 *
-	 * Update a value in a file
-	 *
-	 * @param string   $filename
-	 * @param string   $delimiter
-	 * @param string[] $values
-	 *
-	 * @throws Kedavra
-	 *
-	 * @return bool
-	 *
-	 */
+    /**
+     *
+     * Update a value in a file
+     *
+     * @param string $filename
+     * @param string $delimiter
+     * @param string ...$values
+     *
+     * @return bool
+     * @throws Kedavra
+     */
 	function update_file_values(string $filename, string $delimiter, string ...$values): bool
 	{
 		$keys = (new File($filename))->keys($delimiter);
@@ -232,6 +231,21 @@ if (!function_exists('string_parse'))
         return preg_split('/\s+/', $data);
     }
 
+}
+
+if(!function_exists('instance'))
+{
+    /**
+     *
+     * @return Connect
+     *
+     * @throws Kedavra
+     *
+     */
+	function instance(): Connect
+	{
+		return connect(db('driver'),db('base'),db('username'),db('password'),db('host'),db('dump'));
+	}
 }
 
 
@@ -622,7 +636,7 @@ if (!function_exists('connect'))
 	 * @return Connect
 	 * 
 	 */
-	function connect(string $driver, string $base, string $user, string $password, string $host, string $dump_path): Connect
+	function connect(string $driver, string $base, string $user ='', string $password='', string $host='localhost', string $dump_path= 'dump'): Connect
 	{
 		return new Connect($driver, $base, $user, $password, $host, $dump_path);
 	}

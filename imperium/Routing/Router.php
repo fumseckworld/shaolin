@@ -7,10 +7,11 @@
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Middleware\TrailingSlashMiddleware;
-		use Imperium\Security\Auth\AuthMiddleware;
+        use Imperium\Model\Routes;
+        use Imperium\Security\Auth\AuthMiddleware;
 		use Imperium\Security\Csrf\CsrfMiddleware;
 		use Psr\Http\Message\ServerRequestInterface;
-		use Symfony\Component\HttpFoundation\RedirectResponse;
+        use Symfony\Component\HttpFoundation\RedirectResponse;
 
 
 		/**
@@ -80,15 +81,13 @@
 			 */
 			public function search()
 			{
-
-				foreach (Route::manage()->expected($this->method) as $route)
+				foreach (Routes::where('method',EQUAL,$this->method)->all() as $route)
 				{
-					if ($this->match($route->url))
-					{
-						$this->route = $route;
-						return $this->result();
-					}
-
+                    if ($this->match($route->url))
+                    {
+                        $this->route = $route;
+                        return $this->result();
+                    }
 				}
 				return to(route('404'));
 			}

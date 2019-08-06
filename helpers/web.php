@@ -1,6 +1,9 @@
 <?php
 use Carbon\Carbon;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Imperium\Directory\Dir;
+use Imperium\Model\Routes;
 use Imperium\Routing\Route;
 use Imperium\Exception\Kedavra;
 use Sinergi\BrowserDetector\Os;
@@ -498,23 +501,23 @@ if (!function_exists('root'))
 
 if (!function_exists('route'))
 {
-    
+
     /**
-     * 
+     *
      * Get a route url
-     * 
+     *
      * @method route
      *
-     * @param  mixed $name
-     * @param  mixed $args
+     * @param mixed $name
+     * @param mixed $args
      *
      * @return string
-     * 
+     *
+     * @throws Kedavra
      */
     function route(string $name, array $args = []): string
     {
-        $x = ( Route::manage()->by($name));
-
+        $x = Routes::where('name',EQUAL,$name)->fetch(true)->all();
         if (def($args))
         {
 
@@ -572,7 +575,7 @@ if (!function_exists('url'))
     function url(...$params): string
     {
 
-        return php_sapi_name() !== 'cli' ? https() ? 'https://' . request()->getHost() . '/' .collect($params)->join('/') : 'http://' . \request()->getHost() . '/' .collect($params)->join('/') : '/' . collect($params)->join('/');       
+        return php_sapi_name() !== 'cli' ? https() ? 'https://' . request()->getHost() . '/' .collect($params)->join('/') : 'http://' . request()->getHost() . '/' .collect($params)->join('/') : '/' . collect($params)->join('/');
 
     }
     
@@ -655,7 +658,8 @@ if (!function_exists('css'))
      * @param string $filename
      *
      * @return string
-     * 
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function css(string $filename): string
     {
@@ -673,7 +677,8 @@ if (!function_exists('img'))
      * @param string $alt
      *
      * @return string
-     *
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function img(string $filename, string $alt): string
     {
@@ -692,6 +697,8 @@ if (!function_exists('js'))
      * @param string $type
      *
      * @return string
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function js(string $filename, string $type = ''): string
     {

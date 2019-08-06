@@ -5,7 +5,7 @@ namespace Testing {
 
 
     use Imperium\Exception\Kedavra;
-	use Imperium\Routing\Route;
+    use Imperium\Model\Routes;
 	use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
     use Imperium\Testing\Unit;
@@ -50,15 +50,11 @@ namespace Testing {
          */
         public function test_add_route()
         {
-            $this->assertTrue(Route::manage()->create(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
-            $this->assertTrue(Route::manage()->update(Route::manage()->by('imperium')->id,['name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
-            $this->assertTrue(Route::manage()->del('imperium'));
-        }
 
-        public function test_check()
-        {
-            $this->assertTrue(Route::manage()->check('name','root'));
-            $this->assertFalse(Route::manage()->check('name','alexandre'));
+            $this->assertTrue(Routes::create(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
+            $this->assertTrue(Routes::destroy(Routes::where('name',EQUAL,'imperium')->fetch(true)->all()->id));
+
+
         }
 
         /**

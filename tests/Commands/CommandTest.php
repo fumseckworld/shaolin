@@ -1,21 +1,27 @@
 <?php
 	
 	namespace Testing\Commands;
-	
-	use Imperium\Routing\Route;
-	use Imperium\Testing\Unit;
-	
-	class CommandTest extends Unit
+
+	use Imperium\Exception\Kedavra;
+    use Imperium\Model\Routes;
+    use Imperium\Testing\Unit;
+
+    class CommandTest extends Unit
 	{
+        /**
+         * @throws Kedavra
+         */
 		public function test_list()
 		{
-			$this->assertNotEmpty(Route::manage()->names());
-			$this->assertNotEmpty(Route::manage()->urls());
-			$this->assertNotEmpty(Route::manage()->actions());
-			$this->assertNotEmpty(Route::manage()->all());
-			$this->assertNotEmpty(Route::manage()->find("root"));
-			$this->assertNotEmpty(Route::manage()->find("GitController"));
-			$this->assertNotEmpty(Route::manage()->find("1"));
+		    $this->assertNotEmpty(Routes::all());
+		    $this->assertNotEmpty(Routes::find(1));
+		    $this->assertNotEmpty(Routes::where('name',EQUAL,'root')->all());
+		    $this->assertNotEmpty(Routes::where('url',EQUAL,'/')->all());
+		    $this->assertNotEmpty(Routes::where('controller',EQUAL,'GitController')->all());
+		    $this->assertNotEmpty(Routes::where('action',EQUAL,'repositories')->all());
+		    $this->assertNotEmpty(Routes::where('method',EQUAL,'GET')->all());
+
+
 		}
 		
 	

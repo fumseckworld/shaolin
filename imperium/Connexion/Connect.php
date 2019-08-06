@@ -7,8 +7,8 @@
 		use Imperium\Exception\Kedavra;
 		use PDO;
 		use PDOException;
-		
-		/**
+
+        /**
 		 *
 		 * Class Connect
 		 *
@@ -140,29 +140,29 @@
 			 * @return Connect
 			 *
 			 */
-			public function set( int $pdo_mode ): Connect
+			public function set(int $pdo_mode): Connect
 			{
 				$this->mode = $pdo_mode;
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 * Execute all queries
-			 *
-			 * @method queries
-			 *
-			 * @param  string  ...$queries
-			 *
-			 * @return bool
-			 *
-			 */
+
+            /**
+             *
+             * Execute all queries
+             *
+             * @method queries
+             *
+             * @param string ...$queries
+             *
+             * @return bool
+             */
 			public function queries( string ...$queries ) : bool
 			{
 				return collect($queries)->for([ $this, 'execute' ])->ok();
 			}
-			
+
+
 			/**
 			 *
 			 * Return the current host used
@@ -318,7 +318,7 @@
 			{
 				$instance = $this->getInstance();
 				
-				if ( is_string($instance) )
+				if (is_string($instance))
 					throw new Kedavra($instance);
 				
 				return $instance;
@@ -335,7 +335,7 @@
 			 * @return object
 			 *
 			 */
-			public function fetch( string $sql, string ...$vars )
+			public function fetch(string $sql, string ...$vars )
 			{
 				$query = $this->instance()->prepare($sql);
 				

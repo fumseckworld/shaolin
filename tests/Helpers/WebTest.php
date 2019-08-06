@@ -26,7 +26,7 @@ class WebTest extends Unit
     }
 
     
-    public function test_connextion()
+    public function test_connexion()
     {
         $connexion = connexion('register','login');
         $this->assertNotEmpty($connexion);
@@ -88,6 +88,10 @@ class WebTest extends Unit
         $this->assertEquals('/home/imperium/todo',route('todo',['imperium']));
     }
 
+    public function test_is_mobile()
+    {
+        $this->assertFalse(is_mobile());
+    }
 
     public function test_is_pair()
     {

@@ -174,7 +174,6 @@
 				$this->view = $this->app(View::class);
 				$this->request = $this->app(Request::class);
 				$this->cache = $this->app(Cache::class);
-				$this->model = $this->app(Model::class);
 				$this->table = $this->app(Table::class);
 				$this->connect = $this->app(Connect::class);
 
@@ -184,7 +183,7 @@
 
 				$this->env->load();
 
-				Route::manage()->create_route_table();
+
 			}
 
 			
@@ -914,18 +913,16 @@
 				return $this->json($filename)->create($data);
 			}
 
-			/**
-			 *
-			 * Generate json with a query
-			 *
-			 * @param string   $filename
-			 * @param string[] $queries
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
+            /**
+             *
+             * Generate json with a query
+             *
+             * @param string $filename
+             * @param string ...$queries
+             *
+             * @return bool
+             * @throws Kedavra
+             */
 			public function sql_to_json(string $filename, string ...$queries): bool
 			{
 				$json = $this->json($filename);
@@ -1001,15 +998,6 @@
 				return $this->table()->from($table)->rename($new_name);
 			}
 
-
-			/**
-			 *
-			 * @return Model
-			 */
-			public function model(): Model
-			{
-				return $this->model;
-			}
 
 			/**
 			 * @return Query
@@ -1099,8 +1087,7 @@
 			}
 
 			/**
-			 * @throws Kedavra
-			 * @return Flash
+             * @return Flash
 			 */
 			public function flash(): Flash
 			{
@@ -1109,19 +1096,17 @@
 
 			/**
 			 *
-			 * @throws Kedavra
-			 * @return Oauth
+             * @return Oauth
 			 *
 			 */
 			public function auth(): Oauth
 			{
-				return new Oauth($this->session(), $this->model());
+				return new Oauth($this->session());
 			}
 
 			/**
 			 *
-			 * @throws Kedavra
-			 * @return SessionInterface
+             * @return SessionInterface
 			 *
 			 */
 			public function session(): SessionInterface
@@ -1194,8 +1179,7 @@
 			 * @param string $message
 			 * @param bool   $success
 			 *
-			 * @throws Kedavra
-			 *
+             *
 			 * @return RedirectResponse
 			 *
 			 */
@@ -1210,8 +1194,6 @@
 			 *
 			 * @param string $message
 			 * @param bool   $success
-			 *
-			 * @throws Kedavra
 			 *
 			 * @return RedirectResponse
 			 *
@@ -1229,8 +1211,7 @@
 			 * @param string $message
 			 * @param bool   $success
 			 *
-			 * @throws Kedavra
-			 * @return RedirectResponse
+             * @return RedirectResponse
 			 *
 			 */
 			public function to(string $url, string $message = '', bool $success = true): RedirectResponse
@@ -1267,16 +1248,6 @@
 			public function validator()
 			{
 				return new Validator($this->request()->request());
-			}
-
-			/**
-			 *
-			 * @return Model
-			 *
-			 */
-			public function route(): Model
-			{
-				return $this->routes();
 			}
 
 			/**
@@ -1342,8 +1313,7 @@
 			 * @param string $condition
 			 * @param string $order_by
 			 *
-			 * @throws Kedavra
-			 *
+             *
 			 * @return array
 			 *
 			 */

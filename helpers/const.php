@@ -48,7 +48,6 @@ define('MIDDLEWARE', CORE . DIRECTORY_SEPARATOR . 'Middleware');
 define('CONFIG', CORE . DIRECTORY_SEPARATOR . 'Config');
 define('COMMAND', CORE . DIRECTORY_SEPARATOR . 'Commands');
 define('EMAIL',CORE . DIRECTORY_SEPARATOR . 'Emails');
-define('REPOSITORIES',ROOT .DIRECTORY_SEPARATOR  . 'Repositories');
 
 define('NUMERIC', '([0-9]+)');
 define('NOT_NUMERIC', '([^0-9]+)');

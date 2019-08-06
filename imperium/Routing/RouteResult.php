@@ -46,7 +46,7 @@
 			/**
 			 * @var string
 			 */
-			private $namespace;
+			private $app_namespace;
 			/**
 			 * @var string
 			 */
@@ -76,7 +76,7 @@
 				$this->controller = $controller;
 				$this->action = $action;
 				$this->args = $args;
-				$this->namespace = $namespace . '\\';
+				$this->app_namespace = $namespace . '\\';
 				$this->class = $this->controller_class();
 				$this->controller_dir = CONTROLLERS;
 			}
@@ -88,9 +88,9 @@
 			 * @return string
 			 *
 			 */
-			public function namespace(): string
+			public function app_namespace(): string
 			{
-				return $this->namespace;
+				return $this->app_namespace;
 			}
 
 			/**
@@ -114,7 +114,7 @@
 			 */
 			public function controller_class(): string
 			{
-				return "{$this->namespace()}{$this->controller()}";
+				return "{$this->app_namespace()}{$this->controller()}";
 			}
 
 			/**

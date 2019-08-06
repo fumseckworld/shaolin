@@ -5,9 +5,8 @@
 
 		use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Html\Form\Form;
-		use Imperium\Model\Model;
-		use Imperium\Request\Request;
+        use Imperium\Model\Users;
+        use Imperium\Request\Request;
 		use Imperium\Session\SessionInterface;
 		use Imperium\Writing\Write;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -59,96 +58,18 @@
 			 */
 			const ID = '__id__';
 
-			/**
-			 * @var Model
-			 */
-			private $model;
 
-			/**
-			 * @var string
-			 */
-			private $table;
-
-
-			/**
-			 *
-			 * Oauth constructor.
-			 *
-			 *
-			 * @param SessionInterface $session
-			 * @param Model            $model
-			 */
-			public function __construct(SessionInterface $session, Model $model)
+            /**
+             *
+             * Oauth constructor.
+             *
+             *
+             * @param SessionInterface $session
+             */
+			public function __construct(SessionInterface $session)
 			{
 				$this->session = $session;
 
-				$this->model = $model;
-
-			}
-
-			/**
-			 *
-			 * Generate a form to update account
-			 *
-			 * @param string $route_name
-			 * @param string $username_placeholder
-			 * @param string $last_name_placeholder
-			 * @param string $email_placeholder
-			 * @param string $password_placeholder
-			 * @param string $submit_text
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
-			public function account(string $route_name, string $username_placeholder, string $last_name_placeholder, string $email_placeholder, string $password_placeholder, string $submit_text): string
-			{
-				if ($this->connected())
-				{
-					$form = new Form();
-					$form->start(route($route_name), POST);
-					$user = $this->model->find($this->session->get(self::ID));
-					$columns = $this->model->columns();
-					foreach ($columns as $column)
-					{
-						if (!is_null($user->$column))
-						{
-
-							switch ($column)
-							{
-							case 'id':
-								$form->hide()->input(Form::HIDDEN, $column, $column, '', '', '', $user->$column)->end_hide();
-								break;
-							case 'email':
-								$form->input(Form::EMAIL, $column, $email_placeholder, '', '', '', $user->$column);
-								break;
-							case 'password':
-								$form->input(Form::PASSWORD, $column, $password_placeholder, '', '', '', '', false);
-								break;
-							case 'created_at':
-							case 'updated_at':
-								$form->hide()->input(Form::HIDDEN, $column, $column, '', '', '', $user->$column)->end_hide();
-								break;
-							case 'username':
-								$form->input(Form::TEXT, $column, $username_placeholder, '', '', '', $user->$column);
-								break;
-							case 'lastname':
-								$form->input(Form::TEXT, $column, $last_name_placeholder, '', '', '', $user->$column);
-								break;
-							default:
-								$form->input(Form::TEXT, $column, $column, '', '', '', $user->$column);
-								break;
-							}
-						} else
-						{
-							$form->hide()->input(Form::HIDDEN, $column, $column)->end_hide();
-						}
-					}
-					return $form->submit($submit_text)->get();
-
-				}
-				return '';
 			}
 
 			/**
@@ -185,16 +106,17 @@
 				return to('/', $this->messages()->get('bye'));
 			}
 
-			/**
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object|string
-			 *
-			 */
+            /**
+             *
+             *
+             * @return object|string
+             *
+             * @throws Kedavra
+             *
+             */
 			public function current()
 			{
-				return $this->connected() ? $this->model->from('users')->find($this->session->get(self::ID)) : '';
+				return $this->connected() ? Users::find(intval($this->session->get(self::ID))) : '';
 			}
 
 			/**
@@ -213,37 +135,6 @@
 				return is_object($x) ? $x->username : '';
 			}
 
-			/**
-			 *
-			 * Create the new user from a form
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return RedirectResponse
-			 *
-			 */
-			public function create(): RedirectResponse
-			{
-				$request = new Request();
-				$password = $this->columns()->get('password');
-
-				foreach ($this->model->from('users')->columns() as $column)
-				{
-					if (different($column, $this->columns()->get('confirm')))
-					{
-						if (not_def($request->get($column)))
-						{
-							$this->model->set($column, $column);
-						} else
-						{
-							if (equal($column, $password))
-								$this->model->set($column, bcrypt($request->get($column))); else
-								$this->model->set($column, $request->get($column));
-						}
-					}
-				}
-				return $this->model->save() ? back($this->messages()->get('account_created_successfully')) : back($this->messages()->get('account_creation_fail'), false);
-			}
 
 			/**
 			 *
@@ -257,18 +148,19 @@
 				return $this->session->has(self::CONNECTED) && $this->session->has(self::ID) && $this->session->has(self::USERNAME) && $this->session->get(self::CONNECTED) === true;
 			}
 
-			/**
-			 *
-			 * Count users found
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return int
-			 *
-			 */
+            /**
+             *
+             * Count users found
+             *
+             *
+             * @return int
+             *
+             * @throws Kedavra
+             *
+             */
 			public function count(): int
 			{
-				return $this->model->count($this->table);
+				return Users::count();
 			}
 
 			/**
@@ -283,46 +175,9 @@
 			 */
 			public function find(string $expected)
 			{
-				return $this->model->by($this->column(), $expected);
+				return Users::where($this->column(),EQUAL, $expected)->fetch(true)->all();
 			}
 
-			/**
-			 *
-			 * Reset the user password
-			 *
-			 * @param string $expected
-			 * @param string $new_password
-			 *
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return RedirectResponse
-			 *
-			 */
-			public function reset(string $expected, string $new_password): RedirectResponse
-			{
-
-				$id = $this->columns()->get('id');
-
-				$password = $this->columns()->get('password');
-
-				$user = $this->model->by($this->column(), $expected);
-
-				$data = collect();
-
-				if (def($user))
-				{
-					foreach ($user as $u)
-					{
-						$data->merge(collect($u)->all());
-
-						$data->refresh($u->$password, bcrypt($new_password));
-
-						return $this->model->update_record($u->$id, $data->all()) ? $this->redirect() : to('/', $this->messages()->get('reset_fail'));
-					}
-				}
-				return $this->user_not_found();
-			}
 
 			/**
 			 *
@@ -336,7 +191,7 @@
 			{
 				$request = new Request();
 
-				$user = $this->model->from('users')->by($this->column(), $request->get($this->column()));
+				$user = $this->find($request->get($this->columns()));
 
 				$password_column = $this->columns()->get('password');
 
@@ -423,53 +278,12 @@
 			{
 				if ($this->connected())
 				{
-					is_false($this->model->remove($this->session->get(self::ID)), true, 'Failed to remove user');
+
+					is_false(Users::destroy(intval($this->session->get(self::ID))), true, 'Failed to remove user');
 
 					$this->clean_session();
 
 					return to('/', $this->messages()->get('account_deleted'));
-				}
-				return to('/');
-			}
-
-
-			/**
-			 *
-			 * Remove an user on success
-			 *
-			 * @param int $id
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return RedirectResponse
-			 *
-			 */
-			public function remove_user(int $id)
-			{
-				if ($this->connected())
-				{
-					return $this->model->remove($id) ? back($this->messages()->get('user_removed')) : back($this->messages()->get('user_remove_failure'));
-				}
-				return to('/');
-			}
-
-			/**
-			 *
-			 * Update the user account
-			 *
-			 * @param array $data
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return RedirectResponse
-			 *
-			 */
-			public function update_account(array $data): RedirectResponse
-			{
-				if ($this->connected())
-				{
-					return $this->model->update_record($this->session->get(self::ID), $data, [\request()->request->get(CSRF_TOKEN)]) ? back($this->messages()->get('account_updated_successfully')) : back($this->messages()->get('account_updated_failure'), false);
-
 				}
 				return to('/');
 			}
