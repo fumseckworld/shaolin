@@ -44,7 +44,7 @@ if (!function_exists('env'))
      */
     function env($variable)
     {
-        return app()->env($variable);
+        return getenv($variable);
     }
 
 }

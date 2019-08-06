@@ -12,7 +12,6 @@
 		use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
-		use Imperium\Model\Model;
 		use Imperium\Routing\RouteResult;
 		use PHPUnit\Framework\TestCase;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -59,7 +58,7 @@
 			 */
 			public function collect(array $data = []): Collect
 			{
-				return app()->collection($data);
+				return collect($data);
 			}
 
 			/**
@@ -79,19 +78,6 @@
 				return new File($filename, $mode);
 			}
 
-
-			/**
-			 *
-			 * Get an instance of route model
-			 *
-			 * @return Model
-			 *
-			 */
-			public function route(): Model
-			{
-				return app()->routes();
-			}
-
 			/**
 			 *
 			 * Get the cache instance
@@ -101,7 +87,7 @@
 			 */
 			public function cache(): Cache
 			{
-				return app()->cache();
+				return new Cache();
 			}
 		}
 	}
