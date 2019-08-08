@@ -81,14 +81,6 @@
 			private $connexion;
 
 			/**
-			 *
-			 * The instance of Table
-			 *
-			 * @var Table
-			 */
-			private $tables;
-
-			/**
 			 * The from clause
 			 *
 			 * @var string
@@ -338,16 +330,57 @@
 
                 return $this;
             }
-
-            /**
-             * @return string
-             *
-             */
+			
+			/**
+			 * @return string
+			 *
+			 * @throws Kedavra
+			 *
+			 */
             public function key()
             {
-                return $this->primary;
+                return def($this->primary) ? $this->primary : $this->primary_key();
             }
-
+			
+			
+			/**
+			 *
+			 * Found the primary key
+			 *
+			 * @return string
+			 *
+			 *
+			 * @throws Kedavra
+			 *
+			 */
+			public function primary_key(): string
+			{
+				switch ($this->connexion()->driver())
+				{
+					case MYSQL:
+						
+						foreach ($this->connexion()->request("show columns from {$this->table} where `Key` = 'PRI';") as $key)
+							return $key->Field;
+						break;
+					
+					case POSTGRESQL:
+						
+						foreach($this->connexion()->request ("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';") as $key)
+							return $key->column_name;
+						break;
+					
+					case SQLITE:
+						
+						foreach ($this->connexion()->request("PRAGMA table_info({$this->table})") as $field)
+						{
+							if (def($field->pk))
+								return $field->name;
+						}
+						break;
+				}
+				
+				throw  new Kedavra('We have not found a primary key');
+			}
 
             /**
              *
@@ -781,8 +814,7 @@
 			 */
 			public function like(string $value): Query
 			{
-
-
+				
 				if ($this->connexion()->mysql() || $this->connexion()->postgresql())
 				{
 					$columns = collect($this->columns())->join();
@@ -926,7 +958,7 @@
                 $this->from = "FROM $table";
 
                 $this->table = $table;
-
+				
                 return $this;
             }
 

@@ -116,7 +116,8 @@
 			 */
 			public function def($key, $value)
 			{
-				return $this->put($key, $value)->get($key);
+			    $this->put($key, $value);
+			    return $this->get($key);
 			}
 
 			/**

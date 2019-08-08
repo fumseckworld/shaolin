@@ -2,14 +2,10 @@
 use Carbon\Carbon;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Imperium\Directory\Dir;
 use Imperium\Model\Routes;
-use Imperium\Routing\Route;
 use Imperium\Exception\Kedavra;
 use Sinergi\BrowserDetector\Os;
 use Imperium\Collection\Collect;
-use Imperium\Versioning\Git\Git;
-use GuzzleHttp\Psr7\ServerRequest;
 
 if (!function_exists('collect'))
 {
@@ -51,6 +47,23 @@ if (!function_exists('env'))
 if (!function_exists('connexion'))
 {
 
+    /**
+     *
+     * @param $register_route_name
+     * @param $login_route_name
+     * @param string $username_text
+     * @param string $lastname_text
+     * @param string $email_address_text
+     * @param string $password_text
+     * @param string $confirm_password_text
+     * @param string $create_account_text
+     * @param string $connexion_text
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
     function connexion($register_route_name, $login_route_name, $username_text = 'Username', $lastname_text = 'Lastname', $email_address_text = 'Your Email adrress', $password_text = 'Password', $confirm_password_text = 'Confirm the password', $create_account_text = 'Create account', $connexion_text = 'Log in')
     {
         return '   <div class="mt-5 mb-10">
@@ -250,183 +263,6 @@ if (!function_exists('not_in'))
 
         return $x;
     }
-
-
-    if (!function_exists('display_repositories'))
-	{
-
-		/**
-		 *
-		 * Display repositories
-		 *
-		 * @param string $owner
-		 *
-		 * @throws Kedavra
-		 *
-		 * @return string
-		 *
-		 */
-		function display_repositories(string $owner = ''): string
-		{
-
-			$username = not_def($owner) ? def(get('owner')) ? get('owner') : '*' : $owner;
-
-			$data = [];
-			$owners = collect();
-
-			if (different($username, '*'))
-			{
-
-				foreach (Dir::scan(REPOSITORIES) as $owner)
-				{
-					if ($owner == $username)
-					{
-						foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
-						{
-							$data[$owner][] = $repository;
-						}
-					} else
-					{
-						$owners->uniq($owner);
-					}
-				}
-			}
-
-			if (equal($username, '*'))
-			{
-				if (app()->auth()->connected())
-				{
-					foreach (Dir::scan(REPOSITORIES) as $owner)
-					{
-						if (different($owner, logged_user()))
-						{
-							$owners->uniq($owner);
-
-							foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
-							{
-								$data[$owner][] = $repository;
-							}
-						}
-					}
-				} else
-				{
-					foreach (Dir::scan(REPOSITORIES) as $owner)
-					{
-
-						$owners->uniq($owner);
-							
-				
-						foreach (Dir::scan(realpath(REPOSITORIES . DIRECTORY_SEPARATOR . $owner)) as $repository)
-						{
-
-							$data[$owner][] = $repository;
-						}
-					}
-				}
-			}
-			$data = collect($data);
-			$request = ServerRequest::fromGlobals();
-
-			if (app()->auth()->connected())
-			{
-				if (equal($request->getUri()->getPath(), '/home'))
-					$code = '<div class="mt-10"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4"  href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>'; else
-					$code = '<div class="mt-10"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow mr-4" href="' . route('home') . '"><i class="material-icons">person</i></a><a class="btn-hollow" href="' . route('logout') . '"><i class="material-icons">power_settings_new</i></a></div></div></div></div></div></div>';
-			} else
-			{
-				$code = '<div class="mt-10"><div class="row"><div class="column"><div class="flex"><div class="flex-start"><div class="mb-3"><a class="btn-hollow mr-4" href="' . root() . '"><i class="material-icons">group</i></a><a class="btn-hollow" href="' . route('connexion') . '"><i class="material-icons">person</i></a></div></div></div></div></div></div>';
-			}
-
-
-			$end_code = '';
-
-			if (def($request->getUri()->getQuery()) || equal($request->getUri()->getPath(), '/home'))
-			{
-				append($code, '<div class="row"><div class="column"><input class="input" type="text" placeholder="Search a project"  onkeyup="search_project()" id="search_project"  autofocus="autofocus"> </div></div><div id="projects"><div class="row">');
-
-			} else
-			{
-				append($code, '<div class="row"><div class="column"><input class="input" type="text" placeholder="Search a project"  onkeyup="search_project()" id="search_project"  autofocus="autofocus"> </div><div class="column"><select onChange="location = this.options[this.selectedIndex].value"><option value="Select an user" >Select an user</option>');
-				foreach ($data->keys() as $x)
-					append($code, '<option value="?owner=' . $x . '">' . $x . '</option>');
-
-				append($code, '</select></div></div><div id="projects"><div class="row">');
-			}
-
-
-			$k = 0;
-
-
-			foreach ($data->all() as $user => $repositories)
-			{
-                      
-				foreach ($repositories as $repository)
-				{
-					$g = new Git($repository, $user);
-					append($code, '
-                    
-                    <section class="column repository" id="' . $g->repository() . '">  
-                      
-                        <h2 class="title">' . $g->repository() . '</h2>
-                        <hr>
-                        <article class="text-center">
-                            <p class="text">' . $g->description() . '</p>
-                            <div class="inline-flex mt-4 mb-4">
-                                <a class="btn-hollow mr-4" href="' . app()->url('repository', $g->owner(), $g->repository(), 'master') . '">
-                                    <i class="material-icons">code</i> code
-                                </a> ');
-					if (!is_mobile())
-						append($code, '<a class="btn-hollow mr-4" href="' . app()->url('download', $g->repository(), $g->owner()) . '"> <i class="material-icons">get_app</i>download</a>');
-
-					append($code, ' 
-                                <a class="btn-hollow" href="?owner=' . $g->owner() . '">
-                                     <i class="material-icons">  person</i>  ' . $g->owner() . '
-                                </a>
-                            </div>
-                            <div class="border-t bg-teal-900 border-teal-300 p-4">
-                                ' . $g->last_update() . '
-                            </div>
-                        </article>             
-                    </section>');
-
-
-					if (!is_pair($k))
-						append($code, '</div><div class="row">');
-
-
-					$k++;
-				}
-				append($code, '</div><div class="row">');
-
-			}
-
-
-			append($code, $end_code, '</div></div><script> function search_project()
-        { 
-            let input, filter, ul, li, i;
-            input = document.getElementById("search_project");
-            filter = input.value;
-            ul = document.getElementById("projects");
-            li = ul.getElementsByClassName("repository");
-           
-            for (i = 0; i < li.length; i++)
-            {
-                let x = li[i].getAttribute("id");
-             
-                if (x.indexOf(filter) > -1)
-                {
-                    li[i].style.display = "";
-                } else {
-                    li[i].style.display = "none";
-                }   
-            }
-        }     
-</script>');
-
-			return $code;
-
-		}
-	}
 }
 
 

@@ -4,7 +4,6 @@
 	{
 
 		use Imperium\Exception\Kedavra;
-		use Imperium\Session\Session;
 		use Imperium\Session\SessionInterface;
 
 		/**
@@ -51,14 +50,9 @@
 
 
 			/**
-			 * @var Session
+			 * @var SessionInterface
 			 */
 			private $session;
-
-			/**
-			 * @var string
-			 */
-			private $flash;
 
 			/**
 			 *
@@ -71,6 +65,7 @@
 			public function __construct(SessionInterface $session)
 			{
 				$this->session = $session;
+
 			}
 
 			/**
@@ -125,12 +120,10 @@
 
 				$message = $this->get($key);
 
-				$this->session->remove($key);
 
 				if (def($message))
 				{
 					return $success ? '<div class="row"><div class="column"><div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-5" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>' : '<div class="row"><div class="column"><div class="bg-red-300 border-t-4 border-red-500 rounded-b text-red-800 px-4 py-3 shadow-md mb-5" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>';
-
 				}
 
 				return '';
@@ -169,11 +162,11 @@
 			{
 				not_in(self::VALID, $key, true, "The current key is not valid");
 
-				$this->flash = $this->session->get($key);
+				$message = $this->session->get($key);
 
 				$this->session->remove($key);
 
-				return $this->flash;
+				return $message;
 			}
 
 

@@ -1170,10 +1170,11 @@
 
 	if (not_exist('url'))
 	{
-		/**
-		 * @throws Kedavra
-		 * @return string
-		 */
+        /**
+         * @return string
+         * @throws \Imperium\Exception\Kedavra
+         * @throws Kedavra
+         */
 		function url()
 		{
 			return '<a href="javascript:history.go(-1)" class="' . config('back', 'class') . '">' . config('back', 'message') . '</a>';
