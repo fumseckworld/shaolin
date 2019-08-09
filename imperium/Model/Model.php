@@ -78,6 +78,55 @@
 			}
 			
 			/**
+			 * @param  string  $column
+			 * @param  string  $expected
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return object
+			 *
+			 */
+			public static function by(string $column,string $expected): object
+			{
+				return static::query()->where($column,EQUAL,$expected)->fetch(true)->all();
+			}
+			/**
+			 *
+			 * Get only column values
+			 *
+			 * @param  string  $column
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return array
+			 *
+			 */
+			public static function only(string $column): array
+			{
+				$x = collect();
+				
+				foreach(static::query()->select($column)->all() as $data)
+					$x->push($data->$column);
+				
+				return $x->all();
+			}
+			
+			/**
+			 *
+			 *
+			 * @param  string  $x
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return mixed
+			 *
+			 */
+			public static function search(string $x)
+			{
+				return static::query()->like($x)->all();
+			}
+			
+			/**
 			 *
 			 *
 			 * Add a new record
@@ -101,20 +150,8 @@
 				
 				$sql = "INSERT INTO $table ($x) VALUES (";
 				
-				foreach ($values as $k => $v)
-				{
-					if (different($k, $id))
-					{
-						append($sql, static::query()->connexion()->instance()->quote($v) . ', ');
-					} else
-					{
-						if (static::query()->connexion()->mysql() || static::query()->connexion()->sqlite())
-							append($sql, 'NULL, ');
-						else
-							append($sql, "DEFAULT, ");
-						
-					}
-				}
+				foreach(static::query()->columns() as $column)
+					equal($column,$id) ? static::query()->connexion()->postgresql() ? 	append($sql, 'DEFAULT, ') : 	append($sql, 'NULL, ') : append($sql, static::query()->connexion()->instance()->quote(collect($values)->get($column)) . ', ');
 				
 				$sql = trim($sql, ', ');
 				

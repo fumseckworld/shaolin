@@ -8,8 +8,7 @@ class Routes extends Model
     protected $table = "routes";
 
     protected $routes = true;
-
-
-
-
+	
+	
+	
 }

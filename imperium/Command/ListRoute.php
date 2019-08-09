@@ -3,7 +3,8 @@
 	namespace Imperium\Command
 	{
 		
-		use Imperium\Routing\Route;
+		use Imperium\Exception\Kedavra;
+		use Imperium\Model\Routes;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
 		
@@ -14,6 +15,7 @@
 			
 			protected function configure()
 			{
+				
 				$this->setDescription('List all routes');
 			}
 			
@@ -24,12 +26,14 @@
 			 * @param  InputInterface   $input
 			 * @param  OutputInterface  $output
 			 *
+			 * @throws Kedavra
 			 * @return int|null
 			 *
 			 */
-			public function execute( InputInterface $input, OutputInterface $output )
+			public function execute(InputInterface $input, OutputInterface $output)
 			{
-				Route::manage()->list($input, $output);
+				
+				routes($output, Routes::all());
 				
 				return 0;
 			}

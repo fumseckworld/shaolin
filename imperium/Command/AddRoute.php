@@ -5,7 +5,7 @@
 		
 		use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Routing\Route;
+		use Imperium\Model\Routes;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
 		use Symfony\Component\Console\Question\Question;
@@ -67,7 +67,7 @@
 						
 						$this->entry->put('method', $method);
 						
-					} while ( is_null($method) || not_in(METHOD_SUPPORTED, $method) );
+					}while(is_null($method) || not_in(METHOD_SUPPORTED, $method));
 					
 					do
 					{
@@ -79,7 +79,7 @@
 						
 						$this->entry->put('name', $name);
 						
-					} while ( is_null($name) || Route::manage()->check('name', $name) );
+					}while(is_null($name) || def(Routes::where('name', EQUAL, $name)->all()));
 					
 					do
 					{
@@ -91,8 +91,7 @@
 						
 						$this->entry->put('url', $url);
 						
-						
-					} while ( is_null($url) || Route::manage()->check('url', $url) );
+					}while(is_null($url) || def(Routes::where('url', EQUAL, $url)->all()));
 					
 					do
 					{
@@ -106,7 +105,7 @@
 						
 						$this->entry->put('controller', $controller);
 						
-					} while ( is_null($controller) );
+					}while(is_null($controller));
 					
 					do
 					{
@@ -117,17 +116,16 @@
 						
 						$x = "Shaolin\Controllers\\{$this->entry->get('controller')}";
 						
-						if ( class_exists($x) )
+						if(class_exists($x))
 							$question->setAutocompleterValues(get_class_methods(new $x));
 						
 						$action = $helper->ask($input, $output, $question);
 						
 						$this->entry->put('action', $action);
 						
-						
-					} while ( is_null($action) ||  Route::manage()->check('action', $action) );
+					}while(is_null($action) || def(Routes::where('action', EQUAL, $action)->all()));
 					
-					$this->routes->push(Route::manage()->create($this->entry->all()));
+					$this->routes->push(Routes::create($this->entry->all()));
 					
 					$this->entry->clear();
 					
@@ -137,7 +135,7 @@
 					
 					$continue = $continue === 'Y';
 					
-				} while ( $continue );
+				}while($continue);
 				
 			}
 			
@@ -145,7 +143,6 @@
 			 * @param  InputInterface   $input
 			 * @param  OutputInterface  $output
 			 *
-			 * @throws Kedavra
 			 * @return int|null
 			 */
 			public function execute(InputInterface $input, OutputInterface $output)

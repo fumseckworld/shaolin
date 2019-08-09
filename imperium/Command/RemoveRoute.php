@@ -3,11 +3,10 @@
 	namespace Imperium\Command;
 	
 	use Imperium\Exception\Kedavra;
-	use Imperium\Routing\Route;
+	use Imperium\Model\Routes;
 	use Symfony\Component\Console\Input\InputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
 	use Symfony\Component\Console\Question\Question;
-	use Symfony\Component\Console\Terminal;
 	
 	class RemoveRoute extends \Symfony\Component\Console\Command\Command
 	{
@@ -16,8 +15,11 @@
 		
 		private          $route_name;
 		
+		private          $id;
+		
 		protected function configure()
 		{
+			
 			$this->setDescription('Delete a route');
 		}
 		
@@ -27,11 +29,12 @@
 		 *
 		 * @throws Kedavra
 		 */
-		public function interact( InputInterface $input, OutputInterface $output )
+		public function interact(InputInterface $input, OutputInterface $output)
 		{
+			
 			$helper = $this->getHelper('question');
 			
-			$names = collect(Route::manage()->names())->for('strtolower')->all();
+			$names = Routes::only('name');
 			
 			do
 			{
@@ -45,8 +48,8 @@
 				
 				$this->route_name = $x;
 				
-			} while ( is_null($x) || collect($names)->not_exist($x) );
-			
+			}while(is_null($x) || collect($names)->not_exist($x));
+			$this->id = Routes::by('name', $this->route_name)->id;
 		}
 		
 		/**
@@ -56,14 +59,16 @@
 		 * @throws Kedavra
 		 * @return int|void|null
 		 */
-		public function execute( InputInterface $input, OutputInterface $output )
+		public function execute(InputInterface $input, OutputInterface $output)
 		{
-			if ( Route::manage()->del($this->route_name) )
+			
+			if(Routes::destroy($this->id))
 			{
 				$output->writeln('<bg=green;fg=white>The route was removed successfully</>');
+				
 				return 0;
 			}
-		
+			
 			$output->writeln('<bg=red;fg=white>Fail to remove route</>');
 			
 			return 1;
