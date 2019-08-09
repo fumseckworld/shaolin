@@ -22,7 +22,6 @@
 		 */
 		class Collect implements Iterator
 		{
-			
 			/**
 			 *
 			 * The data
@@ -59,13 +58,61 @@
 			 * @param  array  $data
 			 *
 			 */
-			public function __construct( array $data = [] )
+			public function __construct(array $data = [])
 			{
 				$this->data = $data;
-				
-				$this->init();
+				$this->position();
 			}
 			
+			/**
+			 *
+			 * @param  array  $keys
+			 * @param  array  $values
+			 *
+			 * @return Collect
+			 *
+			 */
+			public function combine(array $keys, array $values) : Collect
+			{
+				return $this->checkout(array_combine($keys, $values));
+			}
+			
+			/**
+			 *
+			 * Execute the callable and return true on success
+			 *
+			 * @param callable $callable
+			 *
+			 * @return bool
+			 *
+			 */
+			public function exec($callable) : bool
+			{
+				return array_walk($this->data, $callable);
+			}
+			
+			/**
+			 *
+			 *
+			 * @return int|mixed|string
+			 *
+			 */
+			public function first_key()
+			{
+				return array_key_first($this->data);
+			}
+			
+			/**
+			 *
+			 *
+			 *
+			 * @return int|mixed|string
+			 *
+			 */
+			public function last_key()
+			{
+				return array_key_last($this->data);
+			}
 			
 			/**
 			 *
@@ -92,10 +139,9 @@
 			 * @return int
 			 *
 			 */
-			public function init( int $i = 0 ) : int
+			public function position(int $i = 0) : int
 			{
 				$this->position = $i;
-				
 				return $this->position;
 			}
 			
@@ -111,7 +157,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function slice( int $offset, int $limit = null ) : Collect
+			public function slice(int $offset, int $limit = null) : Collect
 			{
 				return $this->checkout(array_slice($this->all(), $offset, $limit));
 			}
@@ -128,19 +174,15 @@
 			 * @return Collect
 			 *
 			 */
-			public function chunk( int $x ) : Collect
+			public function chunk(int $x) : Collect
 			{
 				$data = collect();
-				
-				while ( def($this->data) )
+				while(def($this->data))
 				{
 					$data->push($this->diff($this->slice($x)->all())->all());
-					
 					$this->data = $this->slice($x)->all();
 				}
-				
 				return $this->checkout($data->all());
-				
 			}
 			
 			/**
@@ -168,16 +210,14 @@
 			 * @return Collect
 			 *
 			 */
-			public function only( ...$keys ) : Collect
+			public function only(...$keys) : Collect
 			{
 				$x = collect();
-				
-				foreach ( $this->all() as $k => $v )
+				foreach($this->all() as $k => $v)
 				{
-					foreach ( $keys as $key )
+					foreach($keys as $key)
 						is_array($v) ? $x->push([ $key => $v[ $key ] ]) : $x->put($key, $this->get($key));
 				}
-				
 				return $this->checkout($x->all());
 			}
 			
@@ -193,7 +233,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function diff( array $x ) : Collect
+			public function diff(array $x) : Collect
 			{
 				return $this->checkout(array_diff($this->all(), $x));
 			}
@@ -251,22 +291,17 @@
 			 * @return mixed
 			 *
 			 */
-			public function value_before_key( $key )
+			public function value_before_key($key)
 			{
-				
-				if ( $this->has($key) )
+				if($this->has($key))
 				{
-					
-					foreach ( $this->data as $k => $v )
-						if ( $k !== $key )
+					foreach($this->data as $k => $v)
+						if($k !== $key)
 							$this->beforeValue = $v;
 						else
 							return $this->beforeValue;
-					
 				}
-				
 				return '';
-				
 			}
 			
 			/**
@@ -310,7 +345,6 @@
 			public function before()
 			{
 				$this->position--;
-				
 				return $this->current();
 			}
 			
@@ -327,7 +361,6 @@
 			public function after()
 			{
 				$this->position++;
-				
 				return $this->current();
 			}
 			
@@ -342,7 +375,7 @@
 			 * @return mixed
 			 *
 			 **/
-			public function get( $key )
+			public function get($key)
 			{
 				return $this->has($key) ? $this->data[ $key ] : '';
 			}
@@ -386,7 +419,7 @@
 			 * @return bool
 			 *
 			 */
-			public function has_not( $key ) : bool
+			public function has_not($key) : bool
 			{
 				return ! $this->has($key);
 			}
@@ -477,7 +510,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function intersect( array $x ) : Collect
+			public function intersect(array $x) : Collect
 			{
 				return $this->checkout(array_intersect($this->all(), $x));
 			}
@@ -493,7 +526,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function replace( array $data ) : Collect
+			public function replace(array $data) : Collect
 			{
 				return $this->checkout(array_replace($this->all(), $data));
 			}
@@ -510,7 +543,6 @@
 			public function arsort() : Collect
 			{
 				arsort($this->data);
-				
 				return $this;
 			}
 			
@@ -525,10 +557,9 @@
 			 * @return Collect
 			 *
 			 */
-			public function asort( int $flag = SORT_REGULAR ) : Collect
+			public function asort(int $flag = SORT_REGULAR) : Collect
 			{
 				asort($this->data, $flag);
-				
 				return $this;
 			}
 			
@@ -543,11 +574,10 @@
 			 * @return Collect
 			 *
 			 */
-			public function forget( ...$keys ) : Collect
+			public function forget(...$keys) : Collect
 			{
-				foreach ( $keys as $key )
+				foreach($keys as $key)
 					$this->del($key);
-				
 				return $this;
 			}
 			
@@ -576,7 +606,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function take( int $x ) : Collect
+			public function take(int $x) : Collect
 			{
 				return $this->checkout($this->chunk($x)->first());
 			}
@@ -593,12 +623,12 @@
 				return array_product($this->all());
 			}
 			
-			public function map( $callable )
+			public function map($callable)
 			{
 				return $this->checkout(array_map($callable, $this->all()));
 			}
 			
-			public function reduce( $callable )
+			public function reduce($callable)
 			{
 				return $this->checkout(array_reduce($this->all(), $callable));
 			}
@@ -615,7 +645,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function filter( $callable, int $flag = 0 ) : Collect
+			public function filter($callable, int $flag = 0) : Collect
 			{
 				return $this->checkout(array_filter($this->all(), $callable, $flag));
 			}
@@ -632,7 +662,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function display( int $page, int $limit ) : Collect
+			public function display(int $page, int $limit) : Collect
 			{
 				return $this->slice($page, $limit);
 			}
@@ -648,16 +678,14 @@
 			 * @return Collect
 			 *
 			 */
-			public function sort( int $flag = SORT_REGULAR ) : Collect
+			public function sort(int $flag = SORT_REGULAR) : Collect
 			{
 				sort($this->data, $flag);
-				
 				return $this;
 			}
 			
-			public function by( $key ) : Collect
+			public function by($key) : Collect
 			{
-			
 			}
 			
 			/**
@@ -686,14 +714,12 @@
 			public function shuffle() : Collect
 			{
 				shuffle($this->data);
-				
 				return $this->checkout($this->all());
 			}
 			
-			public function krsort( int $flag = SORT_REGULAR ) : Collect
+			public function krsort(int $flag = SORT_REGULAR) : Collect
 			{
 				krsort($this->data, $flag);
-				
 				return $this;
 			}
 			
@@ -703,10 +729,9 @@
 			 * @return Collect
 			 *
 			 */
-			public function ksort( int $flag = SORT_REGULAR ) : Collect
+			public function ksort(int $flag = SORT_REGULAR) : Collect
 			{
 				ksort($this->data, $flag);
-				
 				return $this;
 			}
 			
@@ -723,7 +748,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function range( int $start, int $end, int $step = 1 ) : Collect
+			public function range(int $start, int $end, int $step = 1) : Collect
 			{
 				return $this->checkout(range($start, $end, $step));
 			}
@@ -740,18 +765,16 @@
 			 * @return Collect
 			 *
 			 */
-			public function refresh( $old_value, $new_value ) : Collect
+			public function refresh($old_value, $new_value) : Collect
 			{
-				
-				if ( $old_value !== $new_value )
+				if($old_value !== $new_value)
 				{
-					foreach ( $this->all() as $k => $v )
+					foreach($this->all() as $k => $v)
 					{
-						if ( $v === $old_value && $this->has($k) )
+						if($v === $old_value && $this->has($k))
 							$this->data[ $k ] = $new_value;
 					}
 				}
-				
 				return $this;
 			}
 			
@@ -766,11 +789,10 @@
 			 * @return Collect
 			 *
 			 */
-			public function push( ...$values ) : Collect
+			public function push(...$values) : Collect
 			{
-				foreach ( $values as $value )
+				foreach($values as $value)
 					array_push($this->data, $value);
-				
 				return $this;
 			}
 			
@@ -785,11 +807,10 @@
 			 * @return Collect
 			 *
 			 */
-			public function stack( ...$values ) : Collect
+			public function stack(...$values) : Collect
 			{
-				foreach ( $values as $value )
+				foreach($values as $value)
 					array_unshift($this->data, $value);
-				
 				return $this;
 			}
 			
@@ -803,11 +824,10 @@
 			 *
 			 * @return Collect
 			 */
-			public function merge( array ...$array ) : Collect
+			public function merge(array ...$array) : Collect
 			{
-				foreach ( $array as $x )
+				foreach($array as $x)
 					$this->data = array_merge($this->data, $x);
-				
 				return $this;
 			}
 			
@@ -822,11 +842,10 @@
 			 * @return Collect
 			 *
 			 */
-			public function set( ...$values ) : Collect
+			public function set(...$values) : Collect
 			{
-				foreach ( $values as $value )
+				foreach($values as $value)
 					$this->add($value);
-				
 				return $this;
 			}
 			
@@ -842,7 +861,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function put( $key, $value ) : Collect
+			public function put($key, $value) : Collect
 			{
 				return $this->add($value, $key);
 			}
@@ -858,11 +877,10 @@
 			 * @return Collect
 			 *
 			 */
-			public function del( ...$data ) : Collect
+			public function del(...$data) : Collect
 			{
-				foreach ( $data as $datum )
+				foreach($data as $datum)
 					$this->exist($datum) ? $this->remove_value($datum) : $this->remove($datum);
-				
 				return $this->checkout($this->all());
 			}
 			
@@ -877,7 +895,7 @@
 			 * @return string
 			 *
 			 */
-			public function join( string $glue = ',' ) : string
+			public function join(string $glue = ',') : string
 			{
 				return implode($glue, $this->values()->all());
 			}
@@ -893,7 +911,7 @@
 			 * @return string
 			 *
 			 */
-			public function join_keys( string $glue = ',' ) : string
+			public function join_keys(string $glue = ',') : string
 			{
 				return implode($glue, $this->keys()->all());
 			}
@@ -923,7 +941,7 @@
 			 * @return bool
 			 *
 			 **/
-			public function exist( $value ) : bool
+			public function exist($value) : bool
 			{
 				return in_array($value, $this->data);
 			}
@@ -939,7 +957,7 @@
 			 * @return bool
 			 *
 			 */
-			public function has( $key ) : bool
+			public function has($key) : bool
 			{
 				return is_string($key) || is_numeric($key) ? key_exists($key, $this->all()) : false;
 			}
@@ -955,7 +973,7 @@
 			 * @return bool
 			 *
 			 */
-			public function not_exist( $value ) : bool
+			public function not_exist($value) : bool
 			{
 				return ! $this->exist($value);
 			}
@@ -1000,7 +1018,6 @@
 			public function shift() : Collect
 			{
 				array_shift($this->data);
-				
 				return $this;
 			}
 			
@@ -1016,7 +1033,6 @@
 			public function pop() : Collect
 			{
 				array_pop($this->data);
-				
 				return $this;
 			}
 			
@@ -1031,7 +1047,7 @@
 			 * @return Collect
 			 *
 			 */
-			public function checkout( array $data ) : Collect
+			public function checkout(array $data) : Collect
 			{
 				return new static($data);
 			}
@@ -1060,23 +1076,22 @@
 			 *
 			 * @return bool
 			 */
-			public function contains( ...$values ) : bool
+			public function contains(...$values) : bool
 			{
-				foreach ( $this->all() as $datum )
+				foreach($this->all() as $datum)
 				{
-					if ( is_array($datum) )
+					if(is_array($datum))
 					{
-						foreach ( $values as $value )
+						foreach($values as $value)
 						{
-							if ( is_array($datum) )
+							if(is_array($datum))
 							{
-								if ( in_array($value, $datum) )
+								if(in_array($value, $datum))
 									return true;
 							}
 						}
 					}
 				}
-				
 				return false;
 			}
 			
@@ -1091,7 +1106,7 @@
 			 * @return bool
 			 *
 			 */
-			public function not_contains( string $value ) : bool
+			public function not_contains(string $value) : bool
 			{
 				return ! $this->contains($value);
 			}
@@ -1107,13 +1122,11 @@
 			 * @return Collect
 			 *
 			 */
-			public function each( $callable ) : Collect
+			public function each($callable) : Collect
 			{
 				$result = collect();
-				
-				foreach ( $this->all() as $k => $v )
+				foreach($this->all() as $k => $v)
 					$result->set($callable($k, $v));
-				
 				return $this->checkout($result->all());
 			}
 			
@@ -1128,25 +1141,28 @@
 			 * @return Collect
 			 *
 			 */
-			public function for( $callable ) : Collect
+			public function for($callable) : Collect
 			{
 				$result = collect();
-				
-				foreach ( $this->all() as $k => $items )
+				foreach($this->all() as $k => $items)
 				{
-					if (is_array($items))
-					{
-						foreach ($items as $item)
-							$result->put($k,$callable($item));
-					}else
-					{
-						$result->put($k,$callable($items));
-					}
+					$result->put($k, $callable($items));
 				}
-				
-				
-				
 				return $this->checkout($result->all());
+			}
+			
+			/**
+			 *
+			 * Initialise all keys to value
+			 *
+			 * @param $value
+			 *
+			 * @return Collect
+			 *
+			 */
+			public function init($value)
+			{
+				return $this->checkout(array_fill_keys($this->keys()->all(), $value));
 			}
 			
 			/**
@@ -1160,14 +1176,13 @@
 			 * @return Collect
 			 *
 			 */
-			public function uniq( ...$values ) : Collect
+			public function uniq(...$values) : Collect
 			{
-				foreach ( $values as $value )
+				foreach($values as $value)
 				{
-					if ( $this->not_exist($value) )
+					if($this->not_exist($value))
 						$this->push($value);
 				}
-				
 				return $this;
 			}
 			
@@ -1183,10 +1198,9 @@
 			 * @return Collect
 			 *
 			 */
-			private function add( $value, $key = '' ) : Collect
+			private function add($value, $key = '') : Collect
 			{
 				not_def($key) ? $this->data[] = $value : $this->data[ $key ] = $value;
-				
 				return $this;
 			}
 			
@@ -1201,15 +1215,13 @@
 			 * @return Collect
 			 *
 			 */
-			private function remove( ...$keys ) : Collect
+			private function remove(...$keys) : Collect
 			{
-				
-				foreach ( $keys as $key )
+				foreach($keys as $key)
 				{
-					if ( $this->has($key) )
+					if($this->has($key))
 						unset($this->data[ $key ]);
 				}
-				
 				return $this;
 			}
 			
@@ -1222,14 +1234,13 @@
 			 * @return Collect
 			 *
 			 */
-			private function remove_value( ...$values ) : Collect
+			private function remove_value(...$values) : Collect
 			{
-				foreach ( $values as $value )
+				foreach($values as $value)
 				{
-					if ( ( $key = array_search($value, $this->data) ) !== false )
+					if(( $key = array_search($value, $this->data) ) !== false)
 						unset($this->data[ $key ]);
 				}
-				
 				return $this;
 			}
 			
