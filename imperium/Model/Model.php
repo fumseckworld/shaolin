@@ -78,18 +78,20 @@
 			}
 			
 			/**
+			 * 
 			 * @param  string  $column
-			 * @param  string  $expected
+			 * @param  mixed  $expected
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return object
 			 *
 			 */
-			public static function by(string $column,string $expected): object
+			public static function by(string $column, $expected): object
 			{
 				return static::query()->where($column,EQUAL,$expected)->fetch(true)->all();
 			}
+			
 			/**
 			 *
 			 * Get only column values

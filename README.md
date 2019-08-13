@@ -6,3 +6,9 @@ It's a library written to be useful for everybody, in order to manage dbs and to
 # **Installation**
 
 `composer require imperium/imperium`
+
+# In development
+
+* curl
+* shop
+* string

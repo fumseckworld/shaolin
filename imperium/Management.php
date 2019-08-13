@@ -7,7 +7,8 @@
         use Imperium\Cache\Cache;
         use Imperium\Collection\Collect;
         use Imperium\Connexion\Connect;
-        use Imperium\Exception\Kedavra;
+		use Imperium\Curl\Curl;
+		use Imperium\Exception\Kedavra;
         use Imperium\File\File;
         use Imperium\Flash\Flash;
         use Imperium\Html\Form\Form;
@@ -15,7 +16,8 @@
         use Imperium\Request\Request;
         use Imperium\Routing\Router;
         use Imperium\Session\SessionInterface;
-        use Imperium\Tables\Table;
+		use Imperium\Shopping\Shop;
+		use Imperium\Tables\Table;
         use Imperium\Security\Auth\Oauth;
         use Imperium\Writing\Write;
         use Psr\Http\Message\ServerRequestInterface;
@@ -378,5 +380,23 @@
 			 * @return string
 			 */
 			public function url(string $route, ...$args): string;
+			
+			/**
+			 *
+			 * Get an instance of curl management
+			 *
+			 * @return Curl
+			 *
+			 */
+			public function curl(): Curl;
+			
+			/**
+			 *
+			 * Get and instance of shop class
+			 *
+			 * @return Shop
+			 *
+			 */
+			public function shop(): Shop;
 		}
 	}

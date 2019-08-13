@@ -5,7 +5,7 @@ create_action: '/create'
 columns:
   password: 'password'
   id: 'id'
-  auth: 'firstname'
+  auth: 'id'
 messages:
   welcome: 'Welcome'
   user_not_found: 'User was not found'

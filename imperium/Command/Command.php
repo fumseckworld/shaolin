@@ -42,7 +42,7 @@
 			public function run() : int
 			{
 				
-				$commands = [ new AddRoute(), new ListRoute(), new RemoveRoute(), new FindRoute(), new UpdateRoute() ];
+				$commands = [ new AddRoute(), new ListRoute(), new RemoveRoute(), new FindRoute(), new UpdateRoute() , new Serve()];
 				
 				$this->add($commands)->add(commands());
 				

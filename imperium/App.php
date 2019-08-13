@@ -12,9 +12,11 @@
 		use Imperium\Collection\Collect;
 		use Imperium\Config\Config;
 		use Imperium\Connexion\Connect;
+		use Imperium\Curl\Curl;
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\Download;
 		use Imperium\Session\Session;
+		use Imperium\Shopping\Shop;
 		use Imperium\View\View;
 		use Imperium\Writing\Write;
 		use Imperium\File\File;
@@ -495,6 +497,7 @@
 				return route($route, $args);
 			}
 			
+			
 			/**
 			 *
 			 * Get query builder
@@ -510,7 +513,30 @@
 			 */
 			public function sql(string $table, bool $routes = false): Query
 			{
-				return Query::from($table,$routes);
+				return Query::from($table, $routes);
+			}
+			
+			/**
+			 *
+			 * Init curl
+			 *
+			 * @return Curl
+			 */
+			public function curl(): Curl
+			{
+				return new Curl();
+			}
+			
+			/**
+			 *
+			 * Get and instance of shop class
+			 *
+			 * @return Shop
+			 *
+			 */
+			public function shop(): Shop
+			{
+				return new Shop();
 			}
 		}
 	}

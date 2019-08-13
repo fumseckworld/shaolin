@@ -71,25 +71,7 @@
 				$this->session = $session;
 
 			}
-
-			/**
-			 *
-			 * Send an email to reset password
-			 *
-			 * @param string $subject
-			 * @param string $to
-			 * @param string $message
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
-			public function send_reset_email(string $subject, string $to, string $message): bool
-			{
-				return Write::email($subject, $message, config('mail', 'from'), $to)->send();
-			}
-
+			
 			/**
 			 *
 			 * Logout the user
@@ -118,23 +100,6 @@
 			{
 				return $this->connected() ? Users::find(intval($this->session->get(self::ID))) : '';
 			}
-
-			/**
-			 *
-			 * Display the connected username
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
-			public function connected_username(): string
-			{
-				$x = $this->current();
-
-				return is_object($x) ? $x->username : '';
-			}
-
 
 			/**
 			 *
@@ -187,17 +152,17 @@
 			 * @return RedirectResponse
 			 *
 			 */
-			public function login(): RedirectResponse
+			public function login(string $password,$user_value): RedirectResponse
 			{
 				$request = new Request();
 
-				$user = $this->find($request->get($this->columns()));
+				$user = $this->find($user_value);
 
 				$password_column = $this->columns()->get('password');
 
 				if (def($user))
 				{
-					if (check($request->get($password_column), $user->$password_column))
+					if (check($password, $user->$password_column))
 					{
 						$this->session->put(self::USERNAME, $request->get($this->column()));
 

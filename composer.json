@@ -41,6 +41,7 @@
         "ext-json": "*",
         "ext-memcached": "*",
         "ext-apcu": "*",
+        "ext-curl": "*",
         "erusev/parsedown": "^1.7",
         "php-di/php-di": "^6.0",
         "doctrine/annotations": "^1.6",

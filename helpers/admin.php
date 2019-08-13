@@ -21,6 +21,33 @@
 	use Symfony\Component\HttpFoundation\RedirectResponse;
 	use Imperium\Flash\Flash;
 	
+
+
+
+	if (!function_exists('sql_file'))
+	{
+		/**
+		 *
+		 * Get the sql file path
+		 *
+		 * @method sql_file_path
+		 *
+		 * @param string $table
+		 *
+		 * @throws Kedavra
+		 * @return string
+		 *
+		 */
+		function sql_file(string $table = ''): string
+		{
+			if (def($table) && different(app()->connect()->driver(), SQLITE))
+				return def($table) ? app()->connect()->dump_path() . DIRECTORY_SEPARATOR . "$table.sql" : app()->connect()->dump_path() . DIRECTORY_SEPARATOR . app()->connect()->base() . '.sql';
+
+
+			return app()->connect()->dump_path() . DIRECTORY_SEPARATOR . collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, app()->connect()->base()))->last()))->first() . '.sql';
+		}
+	}
+
 	if (!function_exists('csrf_field'))
 	{
 		
@@ -71,7 +98,55 @@
 			return (new RedirectResponse($url))->send();
 		}
 	}
+
+
+	if (!function_exists('back'))
+	{
+		/**
+		 * @param string $message
+		 * @param bool   $success
+		 *
+		 * @throws Kedavra
+		 *
+		 * @return RedirectResponse
+		 *
+		 */
+		function back(string $message = '', bool $success = true): RedirectResponse
+		{
+			$back = request()->server->get('HTTP_REFERER');
+
+			if (is_null($back))
+				$back = '/';
+
+			return to($back, $message, $success);
+		}
+	}
 	
+	if (!function_exists('redirect'))
+	{
+		/**
+		 *
+		 * Redirect to a route
+		 *
+		 * @param string $route_name
+		 * @param string $message
+		 * @param bool   $success
+		 *
+		 * @throws Kedavra
+		 *
+		 * @return RedirectResponse
+		 *
+		 */
+		function redirect(string $route_name, string $message = '', bool $success = true): RedirectResponse
+		{
+			if (def($message))
+			{
+				$flash = new Flash(app()->session());
+				$success ? $flash->success($message) : $flash->failure($message);
+			}
+			return (new RedirectResponse(route($route_name)))->send();
+		}
+	}
 	if (!function_exists('message'))
 	{
 		/**
