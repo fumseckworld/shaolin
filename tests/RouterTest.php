@@ -2,9 +2,10 @@
 
 
 namespace Testing {
-
-
-    use Imperium\Exception\Kedavra;
+	
+	use DI\DependencyException;
+	use DI\NotFoundException;
+	use Imperium\Exception\Kedavra;
     use Imperium\Model\Routes;
 	use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
@@ -17,24 +18,26 @@ namespace Testing {
      */
     class RouterTest extends Unit
     {
-
-        /**
-         * @param string $url
-         * @param string $method
-         *
-         * @return RedirectResponse|RouteResult
-         *
-         * @throws Kedavra
-         */
+		/**
+		 * @param  string  $url
+		 * @param  string  $method
+		 *
+		 * @throws Kedavra
+		 * @throws DependencyException
+		 * @throws NotFoundException
+		 * @return RedirectResponse|RouteResult
+		 *
+		 */
         private function router(string $url,string $method)
         {
             return $this->visit($url,$method);
         }
-
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_route_result()
         {
             $request = $this->visit('/');
@@ -56,28 +59,35 @@ namespace Testing {
 
 
         }
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_get()
         {
             $this->assertTrue($this->router('/',GET)->call()->send()->isSuccessful());
+            $this->assertTrue($this->router('/imperiu/diff/2545632k',GET)->call()->send()->isSuccessful());
         }
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_post()
         {
             $this->expectException(Kedavra::class);
 
             $this->assertFalse($this->router('/u/willy/p',POST)->call()->send()->isSuccessful());
         }
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_redirect()
         {
             $response = $this->router('/alex/',GET);
@@ -86,10 +96,12 @@ namespace Testing {
             $this->assertTrue($response->isRedirect('/error'));
             $this->assertTrue($response->isRedirect(route('404')));
         }
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_url()
         {
             $this->assertEquals('/',Router::url('root'));
@@ -98,27 +110,32 @@ namespace Testing {
             $this->assertEquals('/',app()->url('root'));
             $this->assertEquals('/app',app()->url('app'));
         }
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_params()
         {
             $this->assertEquals('/imperium/diff/#AEA',app()->url('commit','imperium','#AEA'));
         }
-
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_root()
         {
             $this->assertTrue($this->router('/',GET)->call()->send()->isOk());
         }
-
-        /**
-         * @throws Kedavra
-         */
+	
+		/**
+		 * @throws DependencyException
+		 * @throws Kedavra
+		 * @throws NotFoundException
+		 */
         public function test_content()
         {
             $this->assertNotEmpty($this->router('/',GET)->call()->send()->getContent());

@@ -5,7 +5,8 @@
 
         use DI\DependencyException;
         use DI\NotFoundException;
-        use Imperium\Connexion\Connect;
+		use Imperium\Collection\Collect;
+		use Imperium\Connexion\Connect;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Tables\Table;
 		use Imperium\Zen;
@@ -25,7 +26,8 @@
 		 */
 		class Query extends Zen
 		{
-
+	
+			
 			/**
 			 *
 			 * The query mode
@@ -522,7 +524,7 @@
 
                 is_true(not_in(self::VALID_OPERATORS, $condition), true, "The operator is invalid");
 
-                $this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->instance()->quote($expected)}";
+                $this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->pdo()->quote($expected)}";
 
                 return $this;
 
@@ -576,9 +578,9 @@
 			public function between(string $column, $begin, $last): Query
 			{
 
-			    $begin = $this->connexion()->instance()->quote($begin);
+			    $begin = $this->connexion()->pdo()->quote($begin);
 
-			    $last = $this->connexion()->instance()->quote($last);
+			    $last = $this->connexion()->pdo()->quote($last);
 
 			    $this->where = "WHERE $column BETWEEN $begin AND $last";
 
@@ -855,7 +857,7 @@
 			public function and(string $column, string $condition, string $expected): Query
 			{
 				if (is_string($expected))
-					$this->and = "AND $column $condition {$this->connexion->instance()->quote($expected)}"; else
+					$this->and = "AND $column $condition {$this->connexion->pdo()->quote($expected)}"; else
 					$this->and = "AND $column $condition $expected";
 
 				return $this;
@@ -877,7 +879,7 @@
 			public function or(string $value, string $condition, string $expected): Query
 			{
 				if (is_string($expected))
-					$this->or = "OR $value $condition {$this->connexion->instance()->quote($expected)}"; else
+					$this->or = "OR $value $condition {$this->connexion->pdo()->quote($expected)}"; else
 					$this->or = "OR $value $condition $expected";
 
 				return $this;
@@ -900,13 +902,13 @@
                 if (def($this->where))
                 {
                     foreach ($values as $value)
-                    append($this->where ," AND $column != {$this->connexion->instance()->quote($value)}");
+                    append($this->where ," AND $column != {$this->connexion->pdo()->quote($value)}");
 
                 }else{
 
                     foreach ($values as  $k  => $value)
                     {
-                        $k == 0 ?  append($this->where,"WHERE $column != {$this->connexion->instance()->quote($value)} ") :   append($this->where ," AND $column != {$this->connexion->instance()->quote($value)}");
+                        $k == 0 ?  append($this->where,"WHERE $column != {$this->connexion->pdo()->quote($value)} ") :   append($this->where ," AND $column != {$this->connexion->pdo()->quote($value)}");
                     }
                 }
 
@@ -931,13 +933,13 @@
                 {
                     foreach ($values as $value)
 
-                        append($this->where ," AND $column = {$this->connexion->instance()->quote($value)}");
+                        append($this->where ," AND $column = {$this->connexion->pdo()->quote($value)}");
 
                 }else{
 
                     foreach ($values as  $k  => $value)
                     {
-                        $k == 0 ?  append($this->where,"WHERE $column = {$this->connexion->instance()->quote($value)} ") :   append($this->where ," AND $column = {$this->connexion->instance()->quote($value)}");
+                        $k == 0 ?  append($this->where,"WHERE $column = {$this->connexion->pdo()->quote($value)} ") :   append($this->where ," AND $column = {$this->connexion->pdo()->quote($value)}");
                     }
                 }
 
@@ -961,8 +963,19 @@
 				
                 return $this;
             }
-
-
-        }
+			
+			/**
+			 * @param  int  $page
+			 * @param  int  $limit
+			 *
+			 * @throws Kedavra
+			 * @return Collect
+			 */
+			public function display(int $page, int $limit): Collect
+			{
+				return collect($this->all())->display($page,$limit);
+			}
+			
+		}
 
 	}

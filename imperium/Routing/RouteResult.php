@@ -201,11 +201,9 @@
 				{
 					$x = call_user_func_array([$class, $this->action()], $this->args);
 					call_user_func_array([$class, AFTER_ACTION], $this->args);
-
-					return $x;
+					return  $x;
 				}
-
-				return  call_user_func_array([$class, $this->action()], $this->args);
+				return   call_user_func_array([$class, $this->action()], $this->args);
 
 			}
 		}

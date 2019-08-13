@@ -81,7 +81,7 @@
 			 *
 			 * Execute the callable and return true on success
 			 *
-			 * @param callable $callable
+			 * @param  callable  $callable
 			 *
 			 * @return bool
 			 *

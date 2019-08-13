@@ -79,7 +79,7 @@ class AdminTest extends Unit
 	
     public function test_instance()
 	{
-		$this->assertInstanceOf(PDO::class,instance()->instance());
+		$this->assertInstanceOf(PDO::class,instance()->pdo());
 	}
 	
 	public function test_assign()
@@ -168,7 +168,7 @@ class AdminTest extends Unit
     public function test_connect()
     {
         $this->assertInstanceOf(Connect::class,connect('mysql','','root','root',LOCALHOST,'dump'));
-        $this->assertInstanceOf(PDO::class,connect('mysql','','root','root',LOCALHOST,'dump')->instance());
+        $this->assertInstanceOf(PDO::class,connect('mysql','','root','root',LOCALHOST,'dump')->pdo());
     }
 
         

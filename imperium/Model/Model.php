@@ -64,6 +64,20 @@
 			}
 			
 			/**
+			 * @param  int     $begin
+			 * @param  int     $end
+			 * @param  string  $column
+			 *
+			 * @throws Kedavra
+			 * @return Query
+			 */
+			public static function between(int $begin, int $end, string $column = '') : Query
+			{
+				$column = def($column) ? $column : self::key();
+				return static::query()->between($column, $begin, $end);
+			}
+			
+			/**
 			 *
 			 * The number of models to return for pagination.
 			 *
@@ -108,6 +122,21 @@
 			
 			/**
 			 *
+			 * @param  mixed  $expected
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return object
+			 *
+			 */
+			public static function get($expected) : object
+			{
+				is_true(not_def($expected), true, "Missing the expected value");
+				return self::by(self::key(), $expected);
+			}
+			
+			/**
+			 *
 			 * @param  string  $column
 			 * @param  mixed   $expected
 			 *
@@ -116,10 +145,10 @@
 			 * @return object
 			 *
 			 */
-			public static function by($expected, string $column = '') : object
+			public static function by(string $column, $expected) : object
 			{
-				$column = def($column) ? $column : self::key();
-				return static::query()->where($column, EQUAL, $expected)->fetch(true)->all();
+				$x = static::query()->where($column, EQUAL, $expected)->fetch(true)->all();
+				return is_object($x) ? $x : new \stdClass();
 			}
 			
 			/**
@@ -176,7 +205,7 @@
 				$id = static::query()->key();
 				$sql = "INSERT INTO $table ($x) VALUES (";
 				foreach(static::query()->columns() as $column)
-					equal($column, $id) ? static::query()->connexion()->postgresql() ? append($sql, 'DEFAULT, ') : append($sql, 'NULL, ') : append($sql, static::query()->connexion()->instance()->quote(collect($values)->get($column)) . ', ');
+					equal($column, $id) ? static::query()->connexion()->postgresql() ? append($sql, 'DEFAULT, ') : append($sql, 'NULL, ') : append($sql, static::query()->connexion()->pdo()->quote(collect($values)->get($column)) . ', ');
 				$sql = trim($sql, ', ');
 				append($sql, ')');
 				return static::query()->connexion()->execute($sql);

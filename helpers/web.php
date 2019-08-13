@@ -1,7 +1,6 @@
 <?php
 
 	
-	use Symfony\Component\HttpFoundation\RedirectResponse;	
 	use Carbon\Carbon;
 	use DI\DependencyException;
 	use DI\NotFoundException;
@@ -10,7 +9,6 @@
 	use Sinergi\BrowserDetector\Os;
 	use Imperium\Collection\Collect;
 	use Symfony\Component\Console\Output\OutputInterface;
-	use Symfony\Component\HttpFoundation\Response;
 	
 	if (!function_exists('collect'))
 	{
@@ -600,6 +598,10 @@
 	
 	if (!function_exists('clear_terminal'))
 	{
+		/**
+		 * @throws Kedavra
+		 * @return bool
+		 */
 		function clear_terminal(): bool
 		{
 			

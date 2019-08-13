@@ -1,20 +1,20 @@
 <?php
-
+	
 	namespace Imperium\Config
 	{
-
+		
 		use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Symfony\Component\Yaml\Yaml;
-
+		
 		/**
 		 *
 		 * Class Config
 		 *
-		 * @package Imperium\Config
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\Config
 		 *
 		 * @license GPL
 		 *
@@ -23,14 +23,12 @@
 		 */
 		class Config extends Yaml
 		{
-
-
 			/**
 			 * @var string
 			 *
 			 */
 			const EXT = '.yaml';
-
+			
 			/**
 			 *
 			 * The config filename
@@ -39,7 +37,7 @@
 			 *
 			 */
 			private $file;
-
+			
 			/**
 			 *
 			 * The config key
@@ -48,19 +46,19 @@
 			 *
 			 */
 			private $key;
-
+			
 			/**
 			 * @var Collect
 			 */
 			private $values;
-
+			
 			/**
 			 *
 			 * Config constructor.
 			 *
 			 *
-			 * @param string $file
-			 * @param        $key
+			 * @param  string  $file
+			 * @param          $key
 			 *
 			 * @throws Kedavra
 			 *
@@ -68,20 +66,13 @@
 			public function __construct(string $file, $key)
 			{
 				$file = CONFIG . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
-
 				is_false(File::exist($file), true, "The $file file  was not found at " . $this->path());
-
 				$this->values = collect(self::parseFile($file));
-
 				is_false($this->values->has($key), true, "The $key key was not found in the  $file at " . $this->path());
-
 				$this->file = $file;
-
 				$this->key = $key;
-
 			}
-
-
+			
 			/**
 			 * Get config path
 			 *
@@ -90,11 +81,11 @@
 			 * @return string
 			 *
 			 */
-			public function path(): string
+			public function path() : string
 			{
 				return CONFIG;
 			}
-
+			
 			/**
 			 *
 			 * Get the config value
@@ -108,5 +99,6 @@
 			{
 				return $this->values->get($this->key);
 			}
+			
 		}
 	}

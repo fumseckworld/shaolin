@@ -10,7 +10,6 @@
 	
 	class RemoveRoute extends \Symfony\Component\Console\Command\Command
 	{
-		
 		protected static $defaultName = "route:destroy";
 		
 		private          $route_name;
@@ -19,7 +18,6 @@
 		
 		protected function configure()
 		{
-			
 			$this->setDescription('Delete a route');
 		}
 		
@@ -31,23 +29,15 @@
 		 */
 		public function interact(InputInterface $input, OutputInterface $output)
 		{
-			
 			$helper = $this->getHelper('question');
-			
 			$names = Routes::only('name');
-			
 			do
 			{
 				clear_terminal();
-				
 				$question = new Question("<info>Enter the route name</info> : ");
-				
 				$question->setAutocompleterValues($names);
-				
 				$x = $helper->ask($input, $output, $question);
-				
 				$this->route_name = $x;
-				
 			}while(is_null($x) || collect($names)->not_exist($x));
 			$this->id = Routes::by('name', $this->route_name)->id;
 		}
@@ -61,16 +51,12 @@
 		 */
 		public function execute(InputInterface $input, OutputInterface $output)
 		{
-			
 			if(Routes::destroy($this->id))
 			{
 				$output->writeln('<bg=green;fg=white>The route was removed successfully</>');
-				
 				return 0;
 			}
-			
 			$output->writeln('<bg=red;fg=white>Fail to remove route</>');
-			
 			return 1;
 		}
 		

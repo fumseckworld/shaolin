@@ -314,9 +314,9 @@
 			 * @return PDO
 			 *
 			 */
-			public function instance() : PDO
+			public function pdo() : PDO
 			{
-				$instance = $this->getInstance();
+				$instance = $this->getpdo();
 				
 				if (is_string($instance))
 					throw new Kedavra($instance);
@@ -337,7 +337,7 @@
 			 */
 			public function fetch(string $sql, string ...$vars )
 			{
-				$query = $this->instance()->prepare($sql);
+				$query = $this->pdo()->prepare($sql);
 				
 				is_true(is_bool($query), true, $sql);
 				
@@ -385,7 +385,7 @@
 			public function request( string $sql, string ...$vars ) : array
 			{
 				
-				$query = $this->instance()->prepare($sql);
+				$query = $this->pdo()->prepare($sql);
 				
 				$query->execute($vars);
 				
@@ -418,7 +418,7 @@
 			 */
 			public function execute( string $sql, string ...$vars ) : bool
 			{
-				$query = $this->instance()->prepare($sql);
+				$query = $this->pdo()->prepare($sql);
 				
 				is_true(is_bool($query), true, $sql);
 				
@@ -443,7 +443,7 @@
 			 */
 			public function transaction() : Connect
 			{
-				is_false($this->instance()->beginTransaction(), true, "Transaction start fail");
+				is_false($this->pdo()->beginTransaction(), true, "Transaction start fail");
 				
 				return $this;
 			}
@@ -459,7 +459,7 @@
 			 */
 			public function commit() : bool
 			{
-				return $this->instance()->commit();
+				return $this->pdo()->commit();
 			}
 			
 			/**
@@ -473,7 +473,7 @@
 			 */
 			public function rollback() : Connect
 			{
-				is_false($this->instance()->rollBack(), true, "ROLLBACK as fail");
+				is_false($this->pdo()->rollBack(), true, "ROLLBACK as fail");
 				
 				return $this;
 			}
@@ -483,7 +483,7 @@
 			 * @return string|PDO
 			 *
 			 */
-			private function getInstance()
+			private function getpdo()
 			{
 				$database = $this->database;
 				$username = $this->username;

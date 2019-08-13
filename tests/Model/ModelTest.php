@@ -19,8 +19,14 @@ class ModelTest extends Unit
         $this->assertNotEmpty(Users::all());
         $this->assertEquals(99,Users::count());
         $this->assertNotEmpty(Users::only('id'));
-        $this->assertInstanceOf(stdClass::class,Users::by(1));
+        $this->assertInstanceOf(stdClass::class,Users::get(1));
         $this->assertNotEmpty(Users::search('a'));
+        $columns = Users::columns();
+        $this->assertNotEmpty($columns);
+        $this->assertContains('id',$columns);
+        $this->assertContains('firstname',$columns);
+        $this->assertContains('lastname',$columns);
+        $this->assertContains('password',$columns);
         
         $this->assertTrue(Users::destroy(1));
         $this->assertEquals(98,Users::count());
@@ -28,7 +34,14 @@ class ModelTest extends Unit
         $this->assertEquals(48,Users::where('id',INFERIOR_OR_EQUAL,50)->sum());
 
     }
-	
+	public function test_between()
+	{
+		$this->assertNotEmpty(Users::between(10,50)->display(1,15)->all());
+		$this->assertNotEmpty(Users::between(10,50)->all());
+		$this->assertNotEmpty(Users::between(10,50)->display(2,50)->get(0));
+		$this->assertNotEmpty(Users::between(10,50)->display(2,50)->last());
+		$this->assertNotEmpty(Users::between(10,50)->display(2,50)->first());
+	}
 	/**
 	 * @throws Kedavra
 	 */
