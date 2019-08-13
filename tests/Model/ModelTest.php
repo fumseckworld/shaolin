@@ -34,13 +34,14 @@ class ModelTest extends Unit
         $this->assertEquals(48,Users::where('id',INFERIOR_OR_EQUAL,50)->sum());
 
     }
+	
+	/**
+	 * @throws Kedavra
+	 */
 	public function test_between()
 	{
-		$this->assertNotEmpty(Users::between(10,50)->display(1,15)->all());
-		$this->assertNotEmpty(Users::between(10,50)->all());
-		$this->assertNotEmpty(Users::between(10,50)->display(2,50)->get(0));
-		$this->assertNotEmpty(Users::between(10,50)->display(2,50)->last());
-		$this->assertNotEmpty(Users::between(10,50)->display(2,50)->first());
+		$this->assertNotEmpty(Users::between(10,50)->paginate([$this,'records'],1,10));
+		
 	}
 	/**
 	 * @throws Kedavra
@@ -50,4 +51,11 @@ class ModelTest extends Unit
         $this->assertTrue((new Dump(true,[]))->dump());
         $this->assertTrue((new Import())->import());
     }
+    
+    public function records($key,$item)
+	{
+	
+		return '<header><h2>'.$item->firstname.' '. $item->lastname.'</h2></header><div class="text-center"><a href="mailto:'.$item->email.'"  class="btn-hollow"> contact</a></div>';
+		
+	}
 }

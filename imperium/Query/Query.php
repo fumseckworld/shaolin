@@ -965,15 +965,23 @@
             }
 			
 			/**
+			 * @param       $callable
 			 * @param  int  $page
 			 * @param  int  $limit
 			 *
 			 * @throws Kedavra
-			 * @return Collect
+			 *
+			 * @return string
+			 *
 			 */
-			public function display(int $page, int $limit): Collect
+			public function paginate($callable,int $page, int $limit): string
 			{
-				return collect($this->all())->display($page,$limit);
+				$x = 	collect($this->all());
+				$data =  $x->display($page,$limit);
+				
+				$pagination = pagination($limit,'',$page,$x->sum(),'previous','next','','');
+				
+				return collect($data->all())->each($callable)->join('') . ' ' . $pagination;
 			}
 			
 		}

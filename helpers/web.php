@@ -4,6 +4,7 @@
 	use Carbon\Carbon;
 	use DI\DependencyException;
 	use DI\NotFoundException;
+	use Imperium\Html\Pagination\Pagination;
 	use Imperium\Model\Routes;
 	use Imperium\Exception\Kedavra;
 	use Sinergi\BrowserDetector\Os;
@@ -594,6 +595,28 @@
 			
 		}
 		
+	}
+	
+	if (!function_exists('pagination'))
+	{
+		/**
+		 * create a pagination
+		 *
+		 * @param int    $limit_per_page
+		 * @param string $pagination_prefix_url
+		 * @param int    $current_page
+		 * @param int    $total_of_records
+		 * @param string $start_pagination_text
+		 * @param string $end_pagination_text
+		 * @param string $ul_class
+		 * @param string $li_class
+		 *
+		 * @return string
+		 */
+		function pagination(int $limit_per_page, string $pagination_prefix_url, int $current_page, int $total_of_records, string $start_pagination_text, string $end_pagination_text, string $ul_class = 'pagination', string $li_class = 'page-item'): string
+		{
+			return Pagination::paginate($limit_per_page, $pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
+		}
 	}
 	
 	if (!function_exists('clear_terminal'))

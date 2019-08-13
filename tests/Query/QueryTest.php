@@ -4,6 +4,8 @@
 namespace Testing\Query;
 
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Imperium\Exception\Kedavra;
 use Imperium\Query\Query;
 use Imperium\Testing\Unit;
@@ -11,7 +13,11 @@ use PDO;
 
 class QueryTest extends Unit
 {
-
+	/**
+	 * @throws Kedavra
+	 * @throws DependencyException
+	 * @throws NotFoundException
+	 */
     public function test()
     {
         $this->assertNotEmpty(Query::from('users')->columns());
@@ -23,7 +29,12 @@ class QueryTest extends Unit
         $this->assertEquals('SELECT id, lastname FROM users     LIMIT 10 OFFSET 2',Query::from('users')->select('id','lastname')->take(10)->offset(2)->sql());
         $this->assertNotEmpty(Query::from('users')->like('a')->all());
     }
-
+	
+	/**
+	 * @throws DependencyException
+	 * @throws Kedavra
+	 * @throws NotFoundException
+	 */
     public function test_exec()
     {
         $this->expectException(Kedavra::class);
