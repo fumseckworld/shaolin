@@ -1,7 +1,7 @@
 <?php
 	
 	chdir(dirname(__DIR__));
-	
+	use App\Models\Users;
 	require_once 'vendor/autoload.php';
 	
-	app()->run();
+	d(Users::by('5'));

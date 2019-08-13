@@ -51,7 +51,7 @@
 			
 			private function add(array $commands)
 			{
-				
+		
 				foreach($commands as $command)
 					$this->command->add($command);
 				

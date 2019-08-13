@@ -18,7 +18,7 @@ class UsersSeed extends AbstractSeed
         $user = collect();
 
         for ($i=0;$i!=100;$i++)
-            $user->push(['firstname' => faker()->firstName,'lastname' => faker()->lastName ,'email' => faker()->email,'password'=> bcrypt('0000')]);
+            $user->set(['firstname' => faker()->firstName,'lastname' => faker()->lastName ,'email' => faker()->email,'password'=> bcrypt('0000')]);
 
         $this->insert('users',$user->all());
     }

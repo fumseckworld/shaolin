@@ -842,10 +842,11 @@
 			
 			$commands = COMMAND;
 			
-			$namespace = 'Shaolin\\' . 'Commands';
+			$namespace = 'App\Console';
 			
 			$data = glob($commands . DIRECTORY_SEPARATOR . '*.php');
 			
+		
 			$commands = collect();
 			
 			foreach ($data as $c)
@@ -856,7 +857,7 @@
 				
 				$command = "$namespace\\$command";
 				
-				$commands->push(new $command());
+				$commands->set(new $command());
 			}
 			
 			return $commands->all();

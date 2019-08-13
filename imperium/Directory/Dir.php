@@ -70,15 +70,19 @@
 			 * @param string[] ...$dirs
 			 *
 			 * @throws Kedavra
+			 * 
+			 * @return bool
+			 * 
 			 */
-			public static function structure(string $source, string ...$dirs): void
+			public static function structure(string $source, string ...$dirs): bool
 			{
-				if (self::is($source))
-					self::remove($source);
+				$data = collect();
+				self::is($source) ?  self::remove($source) && self::create($source) :  	self::create($source);
 
-				self::create($source);
 				foreach ($dirs as $dir)
-					self::create("$source/$dir");
+					$data->push(self::create("$source/$dir"));
+				
+				return $data->ok();
 			}
 
 			/**
@@ -202,7 +206,7 @@
 			 */
 			public static function create(string $directory, int $permissions = 0755): bool
 			{
-				return is_false(self::is($directory)) ? mkdir($directory, $permissions) : false;
+				return is_false(self::is($directory)) ? mkdir($directory, $permissions) : self::remove($directory) && mkdir($directory,$permissions);
 			}
 
 			/**

@@ -20,6 +20,12 @@ class AdminTest extends Unit
     {
         $this->assertInstanceOf(App::class,app());
     }
+    
+    public function test_redirect()
+    {
+    	
+        $this->assertTrue(redirect('root','a',true)->isRedirect('/'));
+    }
 
     public function test_db()
     {
@@ -70,7 +76,28 @@ class AdminTest extends Unit
         equal('a','a',true,'Values are equals');
     }
 
-
+	
+    public function test_instance()
+	{
+		$this->assertInstanceOf(PDO::class,instance()->instance());
+	}
+	
+	public function test_assign()
+	{
+		$var ='';
+		assign(false,$var,'alexandra');
+		$this->assertEquals('',$var);
+		assign(true,$var,'alexandra');
+		$this->assertEquals('alexandra',$var);
+		assign(true,$var,'');
+		$this->assertEquals('',$var);
+	}
+    public function test_string_parse()
+	{
+		$this->assertNotEmpty(string_parse('i am a super boy'));
+		$this->assertEquals(['i','am','a','super','boy'],string_parse('i am a super boy'));
+	}
+	
     public function test_different()
     {
         $this->assertFalse(different('a','a'));

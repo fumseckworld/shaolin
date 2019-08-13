@@ -2,13 +2,14 @@
 
 	namespace Imperium\Security\Auth
 	{
-
+		
+		use DI\DependencyException;
+		use DI\NotFoundException;
 		use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
-        use Imperium\Model\Users;
+        use App\Models\Users;
         use Imperium\Request\Request;
 		use Imperium\Session\SessionInterface;
-		use Imperium\Writing\Write;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
 
 		/**
@@ -77,9 +78,9 @@
 			 * Logout the user
 			 *
 			 * @throws Kedavra
-			 *
+			 * @throws DependencyException
+			 * @throws NotFoundException
 			 * @return RedirectResponse
-			 *
 			 */
 			public function logout(): RedirectResponse
 			{
@@ -142,15 +143,18 @@
 			{
 				return Users::where($this->column(),EQUAL, $expected)->fetch(true)->all();
 			}
-
-
+			
 			/**
 			 *
 			 * Connect an user on success
 			 *
-			 * @throws Kedavra
-			 * @return RedirectResponse
+			 * @param  string  $password
+			 * @param          $user_value
 			 *
+			 * @throws DependencyException
+			 * @throws Kedavra
+			 * @throws NotFoundException
+			 * @return RedirectResponse
 			 */
 			public function login(string $password,$user_value): RedirectResponse
 			{
@@ -207,37 +211,37 @@
 			 *
 			 * Get the auth column name
 			 *
-			 * @throws Kedavra
 			 *
 			 * @return string
 			 *
 			 */
 			private function column(): string
 			{
-				return $this->columns()->get('auth');
+				return Users::key();
 			}
-
+			
 			/**
 			 *
 			 * Redirect user
 			 *
+			 * @throws DependencyException
 			 * @throws Kedavra
+			 * @throws NotFoundException
 			 * @return RedirectResponse
-			 *
 			 */
 			public function redirect(): RedirectResponse
 			{
 				return to('/home', $this->messages()->get('welcome'));
 			}
-
+			
 			/**
 			 *
 			 * Remove user account
 			 *
+			 * @throws DependencyException
 			 * @throws Kedavra
-			 *
+			 * @throws NotFoundException
 			 * @return RedirectResponse
-			 *
 			 */
 			public function remove_account()
 			{

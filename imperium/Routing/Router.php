@@ -139,7 +139,7 @@
 			{
 				$middleware_dir = 'Middleware';
 
-				$namespace = 'Shaolin' . '\\' . $middleware_dir . '\\';
+				$namespace = 'App' . '\\' . $middleware_dir . '\\';
 
 				$dir = CORE . DIRECTORY_SEPARATOR . $middleware_dir;
 

@@ -1,6 +1,5 @@
 <?php
 	
-	
 	namespace Imperium\Model
 	{
 		
@@ -12,9 +11,9 @@
 		/**
 		 * Class Model
 		 *
-		 * @package Imperium\Model
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\Model
 		 *
 		 * @license GPL
 		 *
@@ -23,7 +22,6 @@
 		 */
 		abstract class Model
 		{
-			
 			/**
 			 *
 			 * The table associated with the model.
@@ -41,6 +39,29 @@
 			 *
 			 */
 			protected $primary = 'id';
+			
+			/**
+			 *
+			 * The column name used to find records
+			 *
+			 * @var string
+			 *
+			 */
+			protected static $by = 'id';
+			
+			/**
+			 *
+			 * Display all columns
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return array
+			 *
+			 */
+			public static function columns() : array
+			{
+				return static::query()->columns();
+			}
 			
 			/**
 			 *
@@ -67,29 +88,38 @@
 			/**
 			 * Undocumented function
 			 *
-			 * @return array
-			 *
 			 * @throws Kedavra
 			 *
+			 * @return array
+			 *
 			 */
-			public static function all(): array
+			public static function all() : array
 			{
 				return static::query()->all();
 			}
 			
 			/**
-			 * 
+			 * @return string
+			 */
+			public static function key() : string
+			{
+				return static::$by;
+			}
+			
+			/**
+			 *
 			 * @param  string  $column
-			 * @param  mixed  $expected
+			 * @param  mixed   $expected
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return object
 			 *
 			 */
-			public static function by(string $column, $expected): object
+			public static function by($expected, string $column = '') : object
 			{
-				return static::query()->where($column,EQUAL,$expected)->fetch(true)->all();
+				$column = def($column) ? $column : self::key();
+				return static::query()->where($column, EQUAL, $expected)->fetch(true)->all();
 			}
 			
 			/**
@@ -103,13 +133,11 @@
 			 * @return array
 			 *
 			 */
-			public static function only(string $column): array
+			public static function only(string $column) : array
 			{
 				$x = collect();
-				
 				foreach(static::query()->select($column)->all() as $data)
 					$x->push($data->$column);
-				
 				return $x->all();
 			}
 			
@@ -133,48 +161,39 @@
 			 *
 			 * Add a new record
 			 *
-			 * @param array $values
-			 *
-			 * @return bool
+			 * @param  array  $values
 			 *
 			 * @throws Kedavra
 			 *
+			 * @return bool
+			 *
 			 */
-			public static function create(array $values): bool
+			public static function create(array $values) : bool
 			{
-				
 				$x = collect(static::query()->columns())->join(',');
-				
 				$values = collect($values)->for('htmlspecialchars')->all();
-				
 				$table = static::query()->table();
 				$id = static::query()->key();
-				
 				$sql = "INSERT INTO $table ($x) VALUES (";
-				
 				foreach(static::query()->columns() as $column)
-					equal($column,$id) ? static::query()->connexion()->postgresql() ? 	append($sql, 'DEFAULT, ') : 	append($sql, 'NULL, ') : append($sql, static::query()->connexion()->instance()->quote(collect($values)->get($column)) . ', ');
-				
+					equal($column, $id) ? static::query()->connexion()->postgresql() ? append($sql, 'DEFAULT, ') : append($sql, 'NULL, ') : append($sql, static::query()->connexion()->instance()->quote(collect($values)->get($column)) . ', ');
 				$sql = trim($sql, ', ');
-				
 				append($sql, ')');
-				
 				return static::query()->connexion()->execute($sql);
 			}
-			
 			
 			/**
 			 *
 			 * Destroy a record by id
 			 *
-			 * @param int $id
-			 *
-			 * @return bool
+			 * @param  int  $id
 			 *
 			 * @throws Kedavra
 			 *
+			 * @return bool
+			 *
 			 */
-			public static function destroy(int $id): bool
+			public static function destroy(int $id) : bool
 			{
 				return static::query()->destroy($id);
 			}
@@ -183,12 +202,12 @@
 			 *
 			 * Count record in a table
 			 *
-			 * @return int
-			 *
 			 * @throws Kedavra
 			 *
+			 * @return int
+			 *
 			 */
-			public static function count(): int
+			public static function count() : int
 			{
 				return static::query()->sum();
 			}
@@ -197,15 +216,15 @@
 			 *
 			 * Generate a clause where
 			 *
-			 * @param string $column
-			 * @param string $condition
-			 * @param mixed $expected
-			 *
-			 * @return Query
+			 * @param  string  $column
+			 * @param  string  $condition
+			 * @param  mixed   $expected
 			 *
 			 * @throws Kedavra
+			 * @return Query
+			 *
 			 */
-			public static function where(string $column, string $condition, $expected): Query
+			public static function where(string $column, string $condition, $expected) : Query
 			{
 				return static::query()->mode(SELECT)->where($column, $condition, $expected);
 			}
@@ -214,11 +233,11 @@
 			 *
 			 * Find a record by an id
 			 *
-			 * @param int $id
-			 *
-			 * @return object
+			 * @param  int  $id
 			 *
 			 * @throws Kedavra
+			 *
+			 * @return object
 			 *
 			 */
 			public static function find(int $id)
@@ -230,16 +249,17 @@
 			 *
 			 * Use a different where clause
 			 *
-			 * @param string $column
-			 * @param mixed $expected
-			 *
-			 * @return Query
+			 * @param  string  $column
+			 * @param  mixed   $expected
 			 *
 			 * @throws Kedavra
 			 *
+			 * @return Query
+			 *
 			 */
-			public static function different(string $column, $expected): Query
+			public static function different($expected, string $column = '') : Query
 			{
+				$column = def($column) ? $column : self::key();
 				return self::where($column, DIFFERENT, $expected);
 			}
 			
@@ -248,23 +268,21 @@
 			 *
 			 * @return Query
 			 */
-			private static function query(): Query
+			private static function query() : Query
 			{
-				return (new static)->builder();
-				
+				return ( new static )->builder();
 			}
 			
 			/**
 			 *
-			 * @return Query
-			 *
 			 * @throws DependencyException
 			 * @throws NotFoundException
+			 * @return Query
+			 *
 			 */
-			private function builder(): Query
+			private function builder() : Query
 			{
 				return Query::from($this->table, $this->routes)->primary($this->primary);
-				
 			}
 			
 		}

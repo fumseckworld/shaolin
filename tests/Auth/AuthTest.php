@@ -1,10 +1,10 @@
 <?php
 
-namespace Testing\auth;
+namespace Testing\Auth;
 
 use Imperium\Security\Auth\Oauth;
 use PHPUnit\Framework\TestCase;
-use Shaolin\Models\Users;
+use App\Models\Users;
 
 class AuthTest extends TestCase
 {
@@ -26,7 +26,7 @@ class AuthTest extends TestCase
 
     public function test_count()
     {
-        $this->assertEquals(99,$this->auth->count());
+        $this->assertEquals(100,$this->auth->count());
     }
 
 
