@@ -51,11 +51,18 @@
 			 */
 			public function __construct(int $current_page, int $limit, int $total)
 			{
+				$limit = equal($limit,0) ? 1 : $limit;
+				
 				$this->current_page = $current_page;
+				
 				$this->limit = $limit;
+				
 				$this->total = $total;
+				
 				$this->pages =  ceil($total/$limit);
+				
 				$this->url = config('pagination','url');
+				
 			}
 			
 			/**
