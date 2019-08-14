@@ -2,9 +2,12 @@
 
 	namespace Imperium\Middleware
 	{
-
-
-		use Exception;
+		
+		use DI\DependencyException;
+		use DI\NotFoundException;
+		use GuzzleHttp\Psr7\Response;
+		use Imperium\Exception\Kedavra;
+		use Psr\Http\Message\ResponseInterface;
 		use Psr\Http\Message\ServerRequestInterface;
 
 		/**
@@ -21,25 +24,36 @@
 		 */
 		class TrailingSlashMiddleware implements Middleware
 		{
-
+			
 			/**
-			 * @param ServerRequestInterface $request
+			 * Handles a request and produces a response.
 			 *
-			 * @throws Exception
-			 * @return mixed
+			 * May call other collaborating code to generate the response.
+			 *
+			 * @param  ServerRequestInterface  $request
+			 *
+			 * @throws DependencyException
+			 * @throws NotFoundException
+			 * @throws Kedavra
+			 * @throws NotFoundException
+			 * @return ResponseInterface
 			 */
-			public function __invoke(ServerRequestInterface $request)
+			public function handle(ServerRequestInterface $request) : ResponseInterface
 			{
+				
 				$url = $request->getUri()->getPath();
-
+				
 				if (different($url, '/'))
 				{
 					$end = collect(explode('/', $url))->last();
-
+					
 					if (equal($end, '/'))
 						return to(trim($url, '/'));
 				}
-
+				return new Response();
 			}
+			
+			
+			
 		}
 	}

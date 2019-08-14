@@ -2,10 +2,11 @@
 
 	namespace Imperium\Middleware
 	{
-
-
+		
+		use Psr\Http\Message\ResponseInterface;
 		use Psr\Http\Message\ServerRequestInterface;
-
+		use Psr\Http\Server\RequestHandlerInterface;
+		
 		/**
 		 * Interface Middleware
 		 *
@@ -18,13 +19,18 @@
 		 * @version 10
 		 *
 		 */
-		interface  Middleware
+		interface  Middleware extends RequestHandlerInterface
 		{
+			
 			/**
-			 * @param ServerRequestInterface $request
+			 * Handles a request and produces a response.
 			 *
-			 * @return mixed
+			 * May call other collaborating code to generate the response.
+			 *
+			 * @param  ServerRequestInterface  $request
+			 *
+			 * @return ResponseInterface
 			 */
-			public function __invoke(ServerRequestInterface $request);
+			public function handle(ServerRequestInterface $request): ResponseInterface;
 		}
 	}

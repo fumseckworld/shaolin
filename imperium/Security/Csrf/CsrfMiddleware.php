@@ -5,7 +5,10 @@
 	{
 
 		use Exception;
+		use GuzzleHttp\Psr7\Response;
+		use Imperium\Exception\Kedavra;
 		use Imperium\Middleware\Middleware;
+		use Psr\Http\Message\ResponseInterface;
 		use Psr\Http\Message\ServerRequestInterface;
 
 		/**
@@ -40,17 +43,22 @@
 				$this->csrf = new Csrf(app()->session());
 
 			}
-
+			
 			/**
-			 * @param ServerRequestInterface $request
+			 * Handles a request and produces a response.
 			 *
-			 * @throws Exception
-			 * @return mixed
+			 * May call other collaborating code to generate the response.
+			 *
+			 * @param  ServerRequestInterface  $request
+			 *
+			 * @throws Kedavra
+			 * @return ResponseInterface
 			 */
-			public function __invoke(ServerRequestInterface $request)
+			public function handle(ServerRequestInterface $request) : ResponseInterface
 			{
 				$this->csrf->check($request);
-
+				return  new Response();
 			}
+			
 		}
 	}
