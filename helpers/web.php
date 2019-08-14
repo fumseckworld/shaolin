@@ -602,21 +602,18 @@
 		/**
 		 * create a pagination
 		 *
-		 * @param int    $limit_per_page
-		 * @param string $pagination_prefix_url
-		 * @param int    $current_page
-		 * @param int    $total_of_records
-		 * @param string $start_pagination_text
-		 * @param string $end_pagination_text
-		 * @param string $ul_class
-		 * @param string $li_class
+		 * @param  int  $current_page
+		 * @param  int  $limit
+		 * @param  int  $total
 		 *
+		 * @throws Kedavra
 		 * @return string
 		 */
-		function pagination(int $limit_per_page, string $pagination_prefix_url, int $current_page, int $total_of_records, string $start_pagination_text, string $end_pagination_text, string $ul_class = 'pagination', string $li_class = 'page-item'): string
+		function pagination(int $current_page,int $limit,int $total): string
 		{
-			return Pagination::paginate($limit_per_page, $pagination_prefix_url)->setTotal($total_of_records)->setStartChar($start_pagination_text)->setEndChar($end_pagination_text)->setUlCssClass($ul_class)->setLiCssClass($li_class)->setEndCssClass($li_class)->setCurrent($current_page)->get('');
+			return  (new Pagination($current_page,$limit,$total))->paginate();
 		}
+		
 	}
 	
 	if (!function_exists('clear_terminal'))

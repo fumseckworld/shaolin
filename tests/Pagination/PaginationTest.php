@@ -15,6 +15,8 @@
 		public function test()
 		{
 			$this->assertNotEmpty((new Pagination(1,15,50))->paginate());
+			$this->assertNotEmpty(pagination(1,15,50));
+			$this->assertNotEmpty(pagination(1,0,50));
 			$this->assertNotEmpty((new Pagination(1,0,50))->paginate());
 		}
 	}
