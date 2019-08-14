@@ -117,6 +117,20 @@
 			
 			/**
 			 *
+			 * Display the primary key
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return string
+			 *
+			 */
+			public static  function primary(): string
+			{
+				return static::query()->primary_key();
+			}
+			
+			/**
+			 *
 			 * @param  mixed  $expected
 			 *
 			 * @throws Kedavra
@@ -195,14 +209,22 @@
 			public static function create(array $values) : bool
 			{
 				$x = collect(static::query()->columns())->join(',');
+				
 				$values = collect($values)->for('htmlspecialchars')->all();
+				
 				$table = static::query()->table();
+				
 				$id = static::query()->key();
+				
 				$sql = "INSERT INTO $table ($x) VALUES (";
+				
 				foreach(static::query()->columns() as $column)
 					equal($column, $id) ? static::query()->connexion()->postgresql() ? append($sql, 'DEFAULT, ') : append($sql, 'NULL, ') : append($sql, static::query()->connexion()->pdo()->quote(collect($values)->get($column)) . ', ');
+				
 				$sql = trim($sql, ', ');
+				
 				append($sql, ')');
+				
 				return static::query()->connexion()->execute($sql);
 			}
 			
