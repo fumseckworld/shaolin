@@ -13,7 +13,6 @@
         use Imperium\Flash\Flash;
         use Imperium\Html\Form\Form;
         use Imperium\Query\Query;
-        use Imperium\Request\Request;
         use Imperium\Routing\Router;
         use Imperium\Session\SessionInterface;
 		use Imperium\Shopping\Shop;
@@ -22,7 +21,8 @@
         use Imperium\Writing\Write;
         use Psr\Http\Message\ServerRequestInterface;
         use Symfony\Component\HttpFoundation\RedirectResponse;
-        use Symfony\Component\HttpFoundation\Response;
+		use Symfony\Component\HttpFoundation\Request;
+		use Symfony\Component\HttpFoundation\Response;
 
 
         /**
@@ -68,7 +68,7 @@
 			 *
 			 */
 			public function file(string $filename, string $mode = READ_FILE_MODE): File;
-
+	
 
 			/**
 			 *
@@ -191,9 +191,10 @@
              *
              * Get an instance of request
              *
-             * @return \Symfony\Component\HttpFoundation\Request
+             * @return Request
+			 *
              */
-			public function request(): \Symfony\Component\HttpFoundation\Request;
+			public function request(): Request;
 
 
 			/**

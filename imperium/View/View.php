@@ -247,23 +247,22 @@
 			public function load(string $class, string $view, array $args = []): string
 			{
 				$dir = ucfirst(strtolower(str_replace('Controller', '', collect(explode("\\", $class))->last())));
-
-				$dir = $this->views_path . DIRECTORY_SEPARATOR . $dir;
+				
 
 				Dir::create($dir);
-
+				
 				$view = collect(explode('.', $view))->first();
 
 				append($view, '.twig');
-
-				$file = $dir . DIRECTORY_SEPARATOR . $view;
-
-				if (!file_exists($file))
-					(new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
-
-				$file = trim(str_replace($this->views_path, '', $file), '/');
-
-				return $this->twig()->render($file, $args);
+				
+				$view = VIEWS . DIRECTORY_SEPARATOR.  $dir .  DIRECTORY_SEPARATOR . $view;
+				
+				if(!file_exists($view))
+					(new File($view, EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
+				
+				$view = str_replace(VIEWS,'',$view);
+				
+				return $this->twig()->render($view, $args);
 			}
 
 			/**
