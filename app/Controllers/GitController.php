@@ -19,7 +19,7 @@ namespace App\Controllers {
 		}
 	    public function repositories()
         {
-			$users = $this->sql('users')->between('id',0,100)->paginate([$this,'records'],get('p',1),10);
+			$users = $this->sql('users')->paginate([$this,'records'],get('page',1),12);
             return $this->view('repositories',compact('users'));
         }
         

@@ -382,12 +382,14 @@
 			 *
 			 * Redirect user to a route
 			 *
-			 * @param string $route
-			 * @param string $message
-			 * @param bool $success
+			 * @param  string  $route
+			 * @param  string  $message
+			 * @param  bool    $success
 			 *
+			 * @throws DependencyException
+			 * @throws Kedavra
+			 * @throws NotFoundException
 			 * @return RedirectResponse
-			 *
 			 *
 			 */
 			public function redirect(string $route, string $message = '', bool $success = true): RedirectResponse
@@ -399,11 +401,12 @@
 			 *
 			 * Redirect user back
 			 *
-			 * @param string $message
-			 * @param bool $success
+			 * @param  string  $message
+			 * @param  bool    $success
 			 *
+			 * @throws DependencyException
+			 * @throws NotFoundException
 			 * @return RedirectResponse
-			 *
 			 */
 			public function back(string $message = '', bool $success = true): RedirectResponse
 			{

@@ -1,0 +1,4 @@
+url: '?page='
+link_class: 'page-link'
+ul_class: 'pagination mt-5'
+li_class: 'page-item'

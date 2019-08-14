@@ -49,6 +49,22 @@
 			 */
 			protected static $by = 'id';
 			
+			
+			/**
+			 *
+			 * The sql query to create the table
+			 *
+			 * @var string
+			 *
+			 */
+			protected $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
+			
+			/**
+			 * @var bool
+			 */
+			protected $routes = false;
+			
+			
 			/**
 			 *
 			 * Display all columns
@@ -77,28 +93,7 @@
 				return static::query()->between($column, $begin, $end);
 			}
 			
-			/**
-			 *
-			 * The number of models to return for pagination.
-			 *
-			 * @var int
-			 */
-			protected $per_page = 12;
-			
-			/**
-			 *
-			 * The sql query to create the table
-			 *
-			 * @var string
-			 *
-			 */
-			protected $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
-			
-			/**
-			 * @var bool
-			 */
-			protected $routes = false;
-			
+	
 			/**
 			 * Undocumented function
 			 *

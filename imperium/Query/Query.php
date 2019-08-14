@@ -8,6 +8,7 @@
 		use Imperium\Collection\Collect;
 		use Imperium\Connexion\Connect;
 		use Imperium\Exception\Kedavra;
+		use Imperium\Html\Pagination\Pagination;
 		use Imperium\Tables\Table;
 		use Imperium\Zen;
         use PDO;
@@ -979,7 +980,8 @@
 				$x = 	collect($this->all());
 				$data =  $x->display($page,$limit);
 				
-				$pagination = pagination($limit,'',$page,$x->sum(),'previous','next','','');
+				$pagination = (new Pagination($page,$limit,$x->sum()))->paginate();
+			
 				
 				return collect($data->all())->each($callable)->join('') . ' ' . $pagination;
 			}
