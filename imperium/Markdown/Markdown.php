@@ -31,21 +31,19 @@ namespace Imperium\Markdown {
          * @var string
          */
         private $filename;
-
-        /**
-         * Markdown constructor.
-         *
-         * @param  $text
-         * @param string $filename
-         *
-         */
-        public function __construct(string $text, string $filename = "")
+	
+		/**
+		 * Markdown constructor.
+		 *
+		 * @param  string  $filename
+		 * @param  string  $text
+		 */
+        public function __construct(string $filename,string $text ='')
         {
-            $this->text = $text;
-
 
             $this->filename = $filename;
-        }
+			$this->text = $text;
+		}
 
         /**
          * @return string
