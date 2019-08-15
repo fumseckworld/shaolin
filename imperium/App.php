@@ -208,24 +208,7 @@
 				
 				return new Form();
 			}
-			
-			/**
-			 *
-			 * Get an instance of query
-			 *
-			 * @param  string  $table
-			 *
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 * @return Query
-			 *
-			 */
-			public function query(string $table) : Query
-			{
-				
-				return Query::from($table);
-			}
-			
+		
 			/**
 			 *
 			 * Get an instance of table
@@ -329,8 +312,10 @@
 			 */
 			public function run() : Response
 			{
+				$x = $this->router(ServerRequest::fromGlobals())->search();
 				
-				return $this->router(ServerRequest::fromGlobals())->search()->call()->send();
+				return  $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
+				
 			}
 			
 			/**
@@ -457,18 +442,6 @@
 				return to($url, $message, $success);
 			}
 			
-			/**
-			 *
-			 * Get the debug bar
-			 *
-			 * @return string
-			 *
-			 */
-			public function debug_bar() : string
-			{
-				
-				return '';
-			}
 			
 			/**
 			 *
@@ -580,10 +553,10 @@
 			 *
 			 * Save the database
 			 *
+			 * @throws DependencyException
 			 * @throws Kedavra
-			 *
+			 * @throws NotFoundException
 			 * @return bool
-			 *
 			 */
 			public function save() : bool
 			{

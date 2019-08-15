@@ -1,9 +1,14 @@
 <?php
 
 namespace App\Controllers {
-    
-    use Imperium\Controller\Controller;
-	use Imperium\File\File;
+	
+	use App\Models\Users;
+	use Imperium\Controller\Controller;
+	use Imperium\Exception\Kedavra;
+	use Symfony\Component\HttpFoundation\Response;
+	use Twig\Error\LoaderError;
+	use Twig\Error\RuntimeError;
+	use Twig\Error\SyntaxError;
 	
 	Class GitController extends Controller
 	{
@@ -22,9 +27,18 @@ namespace App\Controllers {
 		{
 			return $this->view('a',func_get_args());
 		}
+		
+		/**
+		 * @throws Kedavra
+		 * @throws LoaderError
+		 * @throws RuntimeError
+		 * @throws SyntaxError
+		 * @return Response
+		 */
 	    public function repositories()
         {
-			$users = $this->sql('users')->paginate([$this,'records'],get('page',1),12);
+        	$users = Users::paginate([$this,'records'],get('page',1),10);
+		
             return $this->view('repositories',compact('users'));
         }
         

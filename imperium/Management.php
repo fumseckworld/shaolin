@@ -139,16 +139,7 @@
 			 */
 			public function form(): Form;
 
-            /**
-             *
-             * Get an instance of query
-             *
-             * @param string $table
-             *
-             * @return Query
-             *
-             */
-			public function query(string $table): Query;
+   
 
 
 			/**
@@ -328,15 +319,6 @@
 			 */
 			public function to(string $url, string $message = '', bool $success = true): RedirectResponse;
 
-
-			/**
-			 *
-			 * Get the debug bar
-			 *
-			 * @return string
-			 *
-			 */
-			public function debug_bar(): string;
 
 			/**
 			 *

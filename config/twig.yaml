@@ -1,5 +1,5 @@
 namespaces:
-  admin: 'admin'
+
 config:
   cache: 'cache'
   charset: 'utf-8'

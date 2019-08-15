@@ -4,10 +4,13 @@
 namespace Testing;
 
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use GuzzleHttp\Psr7\ServerRequest;
 use Imperium\Exception\Kedavra;
 use Imperium\Routing\Router;
 use Imperium\Security\Csrf\Csrf;
+use Imperium\Security\Csrf\CsrfMiddleware;
 use Imperium\Session\ArraySession;
 use PHPUnit\Framework\TestCase;
 use Imperium\Testing\Unit;
@@ -30,12 +33,12 @@ class CsrfTest extends Unit
     {
         $this->csrf = new Csrf(new ArraySession());
     }
-
-    
-
-    /**
-     * @throws Kedavra
-     */
+	
+	/**
+	 * @throws Kedavra
+	 * @throws DependencyException
+	 * @throws NotFoundException
+	 */
     public function test_exception()
     {
         $this->expectException(Kedavra::class);

@@ -752,22 +752,22 @@
 			{
 				return collect()->merge(self::DATE_TYPES, self::NUMERIC_TYPES, self::TEXT_TYPES)->all();
 			}
-
+			
 			/**
 			 *
 			 * Check if a table exist
 			 *
 			 * @method exist
 			 *
-			 * @param string ...$tables
+			 * @param  string  $table
 			 *
 			 * @throws Kedavra
 			 * @return bool
-			 *
 			 */
-			public function exist(string ...$tables): bool
+			public function exist(string $table): bool
 			{
-				return collect($this->show())->contains($tables);
+				
+				return collect($this->show())->exist($table);
 			}
 
 			/**

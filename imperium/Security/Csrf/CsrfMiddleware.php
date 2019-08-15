@@ -56,6 +56,7 @@
 			 */
 			public function handle(ServerRequestInterface $request) : ResponseInterface
 			{
+				
 				$this->csrf->check($request);
 				return  new Response();
 			}

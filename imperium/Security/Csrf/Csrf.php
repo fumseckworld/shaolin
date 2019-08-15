@@ -109,7 +109,7 @@
 
 				if (has($request->getMethod(), self::METHOD, true))
 				{
-
+					
 					$params = $request->getParsedBody() ?: [];
 
 					$token = collect($params)->get(self::KEY);

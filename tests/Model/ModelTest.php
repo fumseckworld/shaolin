@@ -2,6 +2,8 @@
 
 namespace Testing\Model;
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Imperium\Dump\Dump;
 use Imperium\Exception\Kedavra;
 use Imperium\Import\Import;
@@ -44,8 +46,11 @@ class ModelTest extends Unit
 		$this->assertNotEmpty(Users::between(10,50)->paginate([$this,'records'],1,10));
 		
 	}
+	
 	/**
 	 * @throws Kedavra
+	 * @throws DependencyException
+	 * @throws NotFoundException
 	 */
     public function test_import()
     {

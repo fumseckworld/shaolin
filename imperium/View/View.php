@@ -97,10 +97,14 @@
 				$this->twig->addExtension(new ArrayExtension());
 
 				$this->twig->addExtension(new TranslationExtension());
-
-
-				foreach ($this->namespaces as $k => $v)
-					$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . $k, $v);
+				
+				$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . 'Admin' ,'admin');
+				$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . 'Users' ,'users');
+				if(def($this->namespaces))
+				{
+					foreach ($this->namespaces as $k => $v)
+						$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . $k, $v);
+				}
 
 
 				$functions = collect();
@@ -118,12 +122,9 @@
 					function (string $name)
 					{
 						return css($name);
-					}, ['is_safe' => ['html']]), new TwigFunction('debug',
-
-					function ()
-					{
-						return app()->debug_bar();
-					}, ['is_safe' => ['html']]), new TwigFunction('copyright',
+					}, ['is_safe' => ['html']]),
+					
+					new TwigFunction('copyright',
 
 					function ()
 					{
