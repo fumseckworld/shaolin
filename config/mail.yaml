@@ -1,5 +1,5 @@
-smtp: 'smtp.orange.fr'
-port: 25
+smtp: 'localhost'
+port: 1025
 username: ''
 password: ''
 dir: 'Emails'

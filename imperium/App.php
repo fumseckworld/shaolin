@@ -13,6 +13,7 @@
 		use Imperium\Config\Config;
 		use Imperium\Connexion\Connect;
 		use Imperium\Curl\Curl;
+		use Imperium\Dump\Dump;
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\Download;
 		use Imperium\Session\Session;
@@ -306,6 +307,7 @@
 			 * @param  ServerRequestInterface  $serverRequest
 			 *
 			 *
+			 * @throws Kedavra
 			 * @return Router
 			 *
 			 */
@@ -572,6 +574,20 @@
 			{
 				
 				return new Shop();
+			}
+			
+			/**
+			 *
+			 * Save the database
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return bool
+			 *
+			 */
+			public function save() : bool
+			{
+				return (new Dump(true,[]))->dump();
 			}
 			
 		}

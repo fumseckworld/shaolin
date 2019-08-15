@@ -4,6 +4,7 @@
 	{
 		
 		use Exception;
+		use Imperium\Exception\Kedavra;
 		use Symfony\Component\Console\Application;
 		
 		class Command
@@ -20,6 +21,8 @@
 			 *
 			 * @param  string  $name
 			 * @param  string  $version
+			 *
+			 * @throws Kedavra
 			 */
 			public function __construct(string $name = "UNKNOWN", string $version = 'UNKNOWN')
 			{
@@ -42,7 +45,7 @@
 			public function run() : int
 			{
 				
-				$commands = [ new AddRoute(), new ListRoute(), new RemoveRoute(), new FindRoute(), new UpdateRoute() , new Serve()];
+				$commands = [ new CleanDatabase(), new Dkim(),new DumpDatabase(), new GenerateController(),new GenerateMigrations(),new MigrateDatabase(), new RollbackDatabase(),new SeedDatabase(), new AddRoute(), new ListRoute(), new RemoveRoute(), new FindRoute(), new UpdateRoute() , new Serve()];
 				
 				$this->add($commands)->add(commands());
 				

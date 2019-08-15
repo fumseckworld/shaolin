@@ -86,26 +86,7 @@
 				$this->private_key = (new File(ROOT . DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
 
 			}
-
-
-			/**
-			 *
-			 *
-			 * @param string $subject
-			 * @param string $message
-			 * @param string $author_email
-			 * @param string $to
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return Write
-			 *
-			 */
-			public static function email(string $subject, string $message, string $author_email, string $to): Write
-			{
-				return new static($subject, $message, $author_email, $to);
-			}
-
+			
 			/**
 			 *
 			 * @throws Kedavra
@@ -145,15 +126,13 @@
 
 				return $this;
 			}
-
+			
 			/**
 			 *
-			 * @param string[] $emails
+			 * @param  string  ...$emails
 			 *
 			 * @throws Kedavra
-			 *
 			 * @return bool
-			 *
 			 */
 			public static function valid(string ...$emails): bool
 			{

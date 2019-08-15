@@ -1,0 +1,19 @@
+{
+  "name": "imperium",
+  "version": "1.0.0",
+  "description": "<p align=\"center\"><img src=\"https://zupimages.net/up/18/08/rd2u.png\" width=\"300\" alt=\"imperium\"></p>",
+  "main": "tailwind.config.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@git.fumseck.eu:composer/imperium"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

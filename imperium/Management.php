@@ -358,7 +358,15 @@
 			 *
 			 */
 			public function cache(): Cache;
-
+			
+			/**
+			 *
+			 * Save the database
+			 *
+			 * @return bool
+			 *
+			 */
+			public function save(): bool;
 
 			/**
 			 *

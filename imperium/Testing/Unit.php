@@ -13,6 +13,7 @@
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Routing\RouteResult;
+		use Imperium\Writing\Write;
 		use PHPUnit\Framework\TestCase;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -77,7 +78,23 @@
 			{
 				return new File($filename, $mode);
 			}
-
+			
+			/**
+			 * @param  string  $subject
+			 * @param  string  $message
+			 * @param  string  $author_email
+			 * @param  string  $to
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return Write
+			 *
+			 */
+			public function write(string $subject,string $message,string $author_email,string $to): Write
+			{
+				return new Write($subject,$message,$author_email,$to);
+			}
+			
 			/**
 			 *
 			 * Get the cache instance

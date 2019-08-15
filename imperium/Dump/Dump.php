@@ -2,13 +2,14 @@
 
 	namespace Imperium\Dump
 	{
-
+		
+		use DI\DependencyException;
+		use DI\NotFoundException;
 		use Imperium\Connexion\Connect;
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Collection\Collect;
-		use function Symfony\Component\VarDumper\Dumper\esc;
 
 
 		/**
@@ -63,18 +64,18 @@
 			 *
 			 */
 			private $quote;
-
-
+			
 			/**
 			 *
 			 * Dumper constructor
 			 *
 			 * @method __construct
 			 *
-			 * @param bool  $base   The option to dump the base
-			 * @param array $tables The names of the tables
+			 * @param  bool   $base    The option to dump the base
+			 * @param  array  $tables  The names of the tables
 			 *
-			 *
+			 * @throws DependencyException
+			 * @throws NotFoundException
 			 */
 			public function __construct(bool $base, array $tables)
 			{
