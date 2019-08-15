@@ -17,6 +17,11 @@ namespace App\Controllers {
 		{
 		
 		}
+		
+		public function add_repository()
+		{
+			return $this->view('a',func_get_args());
+		}
 	    public function repositories()
         {
 			$users = $this->sql('users')->paginate([$this,'records'],get('page',1),12);

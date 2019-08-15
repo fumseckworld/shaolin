@@ -7,9 +7,7 @@
 		use DI\NotFoundException;
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Middleware\TrailingSlashMiddleware;
 		use Imperium\Model\Routes;
-		use Imperium\Security\Auth\AuthMiddleware;
 		use Imperium\Security\Csrf\CsrfMiddleware;
 		use Psr\Http\Message\ServerRequestInterface;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -58,6 +56,8 @@
 			 * Router constructor.
 			 *
 			 * @param  ServerRequestInterface  $request
+			 *
+			 * @throws Kedavra
 			 *
 			 */
 			public function __construct(ServerRequestInterface $request)
@@ -133,9 +133,8 @@
 			 *
 			 * @param  ServerRequestInterface  $request
 			 *
-			 * @throws DependencyException
 			 * @throws Kedavra
-			 * @throws NotFoundException
+			 *
 			 */
 			private function call_middleware(ServerRequestInterface $request) : void
 			{
@@ -150,8 +149,19 @@
 				
 				$middle = glob("$dir/*php");
 				
-				call_user_func_array([new TrailingSlashMiddleware(),'handle'],[$request]);
-			
+				call_user_func_array([new CsrfMiddleware(),'handle'],[$request]);
+				
+				
+				foreach  ($middle as $middleware)
+				{
+					$middle = collect(explode(DIRECTORY_SEPARATOR,$middleware))->last();
+					
+					$middleware = collect(explode('.',$middle))->first();
+					
+					$class = "$namespace$middleware";
+					
+					call_user_func_array([new $class(),'handle'], [$request]);
+				}
 				
 				
 			}
