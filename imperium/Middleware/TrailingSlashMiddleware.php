@@ -47,6 +47,7 @@
 				{
 					$end = collect(explode('/', $url))->last();
 					
+				
 					if (equal($end, '/'))
 						return to(trim($url, '/'));
 				}

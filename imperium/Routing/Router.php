@@ -59,9 +59,6 @@
 			 *
 			 * @param  ServerRequestInterface  $request
 			 *
-			 * @throws DependencyException
-			 * @throws Kedavra
-			 * @throws NotFoundException
 			 */
 			public function __construct(ServerRequestInterface $request)
 			{
@@ -153,23 +150,10 @@
 				
 				$middle = glob("$dir/*php");
 				
-				(new CsrfMiddleware())->handle($request);
+				call_user_func_array([new TrailingSlashMiddleware(),'handle'],[$request]);
+			
 				
-				(new TrailingSlashMiddleware())->handle($request);
 				
-				(new AuthMiddleware())->handle($request);
-				
-				foreach($middle as $middleware)
-				{
-					$middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
-					
-					$middleware = collect(explode('.', $middle))->first();
-					
-					$class = "$namespace$middleware";
-					
-					(new $class())->handle($request);
-					
-				}
 			}
 			
 			/**
