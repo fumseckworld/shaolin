@@ -17,6 +17,7 @@ class ModelTest extends Unit
     public function test_all()
     {
         $this->assertNotEmpty(Users::all());
+        $this->assertNotEmpty(Users::paginate([$this,'records'],1,10));
         $this->assertEquals(99,Users::count());
         $this->assertNotEmpty(Users::only('id'));
         $this->assertInstanceOf(stdClass::class,Users::get(1));

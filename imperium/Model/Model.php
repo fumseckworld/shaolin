@@ -22,6 +22,7 @@
 		 */
 		abstract class Model
 		{
+			
 			/**
 			 *
 			 * The table associated with the model.
@@ -49,7 +50,6 @@
 			 */
 			protected static $by = 'id';
 			
-			
 			/**
 			 *
 			 * The sql query to create the table
@@ -64,7 +64,6 @@
 			 */
 			protected $routes = false;
 			
-			
 			/**
 			 *
 			 * Display all columns
@@ -76,6 +75,7 @@
 			 */
 			public static function columns() : array
 			{
+				
 				return static::query()->columns();
 			}
 			
@@ -89,11 +89,12 @@
 			 */
 			public static function between(int $begin, int $end, string $column = '') : Query
 			{
+				
 				$column = def($column) ? $column : self::key();
+				
 				return static::query()->between($column, $begin, $end);
 			}
 			
-	
 			/**
 			 * Undocumented function
 			 *
@@ -104,6 +105,7 @@
 			 */
 			public static function all() : array
 			{
+				
 				return static::query()->all();
 			}
 			
@@ -112,6 +114,7 @@
 			 */
 			public static function key() : string
 			{
+				
 				return static::$by;
 			}
 			
@@ -124,8 +127,9 @@
 			 * @return string
 			 *
 			 */
-			public static  function primary(): string
+			public static function primary() : string
 			{
+				
 				return static::query()->primary_key();
 			}
 			
@@ -140,7 +144,9 @@
 			 */
 			public static function get($expected) : object
 			{
+				
 				is_true(not_def($expected), true, "Missing the expected value");
+				
 				return self::by(self::key(), $expected);
 			}
 			
@@ -156,7 +162,9 @@
 			 */
 			public static function by(string $column, $expected) : object
 			{
+				
 				$x = static::query()->where($column, EQUAL, $expected)->fetch(true)->all();
+				
 				return is_object($x) ? $x : new \stdClass();
 			}
 			
@@ -173,9 +181,11 @@
 			 */
 			public static function only(string $column) : array
 			{
+				
 				$x = collect();
 				foreach(static::query()->select($column)->all() as $data)
 					$x->push($data->$column);
+				
 				return $x->all();
 			}
 			
@@ -191,6 +201,7 @@
 			 */
 			public static function search(string $x)
 			{
+				
 				return static::query()->like($x)->all();
 			}
 			
@@ -208,24 +219,36 @@
 			 */
 			public static function create(array $values) : bool
 			{
+				
 				$x = collect(static::query()->columns())->join(',');
-				
 				$values = collect($values)->for('htmlspecialchars')->all();
-				
 				$table = static::query()->table();
-				
 				$id = static::query()->key();
-				
 				$sql = "INSERT INTO $table ($x) VALUES (";
-				
 				foreach(static::query()->columns() as $column)
 					equal($column, $id) ? static::query()->connexion()->postgresql() ? append($sql, 'DEFAULT, ') : append($sql, 'NULL, ') : append($sql, static::query()->connexion()->pdo()->quote(collect($values)->get($column)) . ', ');
-				
 				$sql = trim($sql, ', ');
-				
 				append($sql, ')');
 				
 				return static::query()->connexion()->execute($sql);
+			}
+			
+			/**
+			 *
+			 * Display all records with a pagination
+			 *
+			 * @param  callable  $callable
+			 * @param  int       $current_page
+			 * @param  int       $limit
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return string
+			 *
+			 */
+			public static function paginate($callable, int $current_page, int $limit) : string
+			{
+				return static::query()->paginate($callable, $current_page, $limit);
 			}
 			
 			/**
@@ -241,6 +264,7 @@
 			 */
 			public static function destroy(int $id) : bool
 			{
+				
 				return static::query()->destroy($id);
 			}
 			
@@ -255,6 +279,7 @@
 			 */
 			public static function count() : int
 			{
+				
 				return static::query()->sum();
 			}
 			
@@ -272,6 +297,7 @@
 			 */
 			public static function where(string $column, string $condition, $expected) : Query
 			{
+				
 				return static::query()->mode(SELECT)->where($column, $condition, $expected);
 			}
 			
@@ -288,6 +314,7 @@
 			 */
 			public static function find(int $id)
 			{
+				
 				return static::query()->find($id);
 			}
 			
@@ -305,7 +332,9 @@
 			 */
 			public static function different($expected, string $column = '') : Query
 			{
+				
 				$column = def($column) ? $column : self::key();
+				
 				return self::where($column, DIFFERENT, $expected);
 			}
 			
@@ -316,7 +345,8 @@
 			 */
 			private static function query() : Query
 			{
-				return ( new static )->builder();
+				
+				return (new static)->builder();
 			}
 			
 			/**
@@ -328,6 +358,7 @@
 			 */
 			private function builder() : Query
 			{
+				
 				return Query::from($this->table, $this->routes)->primary($this->primary);
 			}
 			
