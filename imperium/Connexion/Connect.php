@@ -309,7 +309,6 @@
 			 *
 			 * @method instance
 			 *
-			 * @throws Kedavra
 			 *
 			 * @return PDO
 			 *
@@ -318,10 +317,7 @@
 			{
 				$instance = $this->getpdo();
 				
-				if (is_string($instance))
-					throw new Kedavra($instance);
-				
-				return $instance;
+				return  is_string($instance) ? new PDO( 'sqlite::memory:') :  $instance;
 				
 			}
 			
@@ -554,6 +550,8 @@
 				$this->instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 				
 				$this->instance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+				
+				$this->instance->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_OBJ);
 				
 				return $this->instance;
 				
