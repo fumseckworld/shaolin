@@ -28,7 +28,7 @@
 				
 				$hidden = db('hidden_tables');
 				
-				merge($tables, app()->tables(), $hidden);
+				$tables = collect($tables)->merge(app()->tables(),$hidden)->all();
 				
 				foreach($tables as $table)
 				{

@@ -9,6 +9,9 @@ class Users extends Model
     protected  $table = "users";
   
     protected static  $by = 'id';
+    
+    protected static  $limit = 20;
+	
 	
 	
 }

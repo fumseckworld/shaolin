@@ -299,31 +299,14 @@
 			 *
 			 * @param  int  $limit
 			 *
-			 * @return Query
-			 *
-			 */
-			public function take(int $limit) : Query
-			{
-				
-				$this->limit = "LIMIT $limit";
-				
-				return $this;
-			}
-			
-			/**
-			 *
-			 * Configure limit offset
-			 *
 			 * @param  int  $offset
 			 *
 			 * @return Query
-			 *
 			 */
-			public function offset(int $offset) : Query
+			public function take(int $limit, int $offset = 0) : Query
 			{
 				
-				$offset = max(0, $offset);
-				$this->offset = "OFFSET $offset";
+				$this->limit = $this->connexion()->mysql() ? "LIMIT $offset,$limit" : "LIMIT $limit OFFSET $offset";
 				
 				return $this;
 			}
@@ -481,20 +464,20 @@
 				{
 					case SELECT:
 						return "SELECT $columns $table $where $and $or $order $limit $offset";
-					break;
+						break;
 					case DELETE :
 						return "DELETE $table $where $and $or";
-					break;
+						break;
 					case UNION:
 					case UNION_ALL:
 						return "$union $where $and $or $order $limit $offset";
-					break;
+						break;
 					case collect(self::JOIN_MODE)->exist($mode) :
 						return "$join $order $limit";
-					break;
+						break;
 					default:
 						throw new Kedavra('The query mode is not define');
-					break;
+						break;
 				}
 			}
 			
@@ -517,15 +500,10 @@
 			{
 				
 				$condition = html_entity_decode($condition);
-				
 				$this->where_param = $column;
-				
 				$this->where_condition = $condition;
-				
 				$this->where_expected = $expected;
-				
 				is_true(not_in(self::VALID_OPERATORS, $condition), true, "The operator is invalid");
-				
 				$this->where = is_numeric($expected) ? "WHERE $column $condition $expected" : "WHERE $column $condition {$this->connexion->pdo()->quote($expected)}";
 				
 				return $this;
@@ -570,7 +548,6 @@
 			 * @param  mixed   $begin   The begin value
 			 * @param  mixed   $last    The last value
 			 *
-			 * @throws Kedavra
 			 * @return Query
 			 *
 			 */
@@ -785,13 +762,13 @@
 							$this->union = "SELECT * FROM $first_table UNION SELECT * FROM $second_table";
 						else
 							$this->union = "SELECT $first_column FROM $first_table UNION SELECT $second_column FROM $second_table";
-					break;
+						break;
 					case Query::UNION_ALL:
 						if(not_def($first_column, $second_column))
 							$this->union = "SELECT * FROM $first_table UNION ALL SELECT * FROM $second_table";
 						else
 							$this->union = "SELECT $first_column FROM $first_table UNION ALL SELECT $second_column FROM $second_table";
-					break;
+						break;
 				}
 				
 				return $this;
@@ -844,13 +821,13 @@
 			 * @param  string  $condition
 			 * @param  string  $expected
 			 *
-			 * @throws Kedavra
 			 * @return Query
 			 *
 			 */
 			public function and(string $column, string $condition, string $expected) : Query
 			{
-				append($this->and," AND $column $condition {$this->connexion->pdo()->quote($expected)}");
+				
+				append($this->and, " AND $column $condition {$this->connexion->pdo()->quote($expected)}");
 				
 				return $this;
 			}
@@ -863,7 +840,6 @@
 			 * @param  string  $condition
 			 * @param  string  $expected
 			 *
-			 * @throws Kedavra
 			 *
 			 * @return Query
 			 *
@@ -872,7 +848,6 @@
 			{
 				
 				append($this->or, " OR $value $condition {$this->connexion->pdo()->quote($expected)}");
-	
 				
 				return $this;
 			}
@@ -883,7 +858,6 @@
 			 * @param  string  $column
 			 * @param  mixed   ...$values
 			 *
-			 * @throws Kedavra
 			 *
 			 * @return Query
 			 *
@@ -913,7 +887,6 @@
 			 * @param  string  $column
 			 * @param  mixed   ...$values
 			 *
-			 * @throws Kedavra
 			 * @return Query
 			 *
 			 */
@@ -967,11 +940,9 @@
 			public function paginate($callable, int $page, int $limit) : string
 			{
 				
-				$x = collect($this->all());
-				$data = $x->display($page, $limit);
-				$pagination = (new Pagination($page, $limit, $x->sum()))->paginate();
+				$pagination = (new Pagination($page, $limit, $this->sum()))->paginate();
 				
-				return collect($data->all())->each($callable)->join('') . ' ' . $pagination;
+				return collect($this->take($limit, (($page) - 1) * $limit)->all())->each($callable)->join('') . ' ' . $pagination;
 			}
 			
 		}

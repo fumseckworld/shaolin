@@ -37,8 +37,9 @@ namespace App\Controllers {
 		 */
 	    public function repositories()
         {
-        	$users = Users::paginate([$this,'records'],get('page',1),10);
-		
+        	
+        	$users = Users::paginate([$this,'records'],get('page',1));
+       
             return $this->view('repositories',compact('users'));
         }
         
@@ -50,8 +51,7 @@ namespace App\Controllers {
 		
 		public function records($key,$item)
 		{
-			
-			return '<header><h2>'.$item->firstname.' '. $item->lastname.'</h2></header><div class="text-center"><a href="mailto:'.$item->email.'"  class="btn-hollow"> contact</a></div>';
+			return '<p>'.$item->firstname .'</p>';
 			
 		}
 	}

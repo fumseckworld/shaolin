@@ -52,6 +52,15 @@
 			
 			/**
 			 *
+			 * The per page limit
+			 *
+			 * @var int
+			 *
+			 */
+			protected static $limit = 20;
+			
+			/**
+			 *
 			 * The sql query to create the table
 			 *
 			 * @var string
@@ -94,7 +103,7 @@
 				
 				return static::query()->between($column, $begin, $end);
 			}
-			
+		
 			/**
 			 * Undocumented function
 			 *
@@ -239,16 +248,13 @@
 			 *
 			 * @param  callable  $callable
 			 * @param  int       $current_page
-			 * @param  int       $limit
 			 *
 			 * @throws Kedavra
-			 *
 			 * @return string
-			 *
 			 */
-			public static function paginate($callable, int $current_page, int $limit) : string
+			public static function paginate($callable, int $current_page) : string
 			{
-				return static::query()->paginate($callable, $current_page, $limit);
+				return static::query()->paginate($callable, $current_page, static::$limit);
 			}
 			
 			/**
