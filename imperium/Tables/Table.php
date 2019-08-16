@@ -1,9 +1,8 @@
 <?php
-
-
+	
 	namespace Imperium\Tables
 	{
-
+		
 		use Imperium\Collection\Collect;
 		use Imperium\Connexion\Connect;
 		use Imperium\Exception\Kedavra;
@@ -11,13 +10,13 @@
 		use Imperium\Model\Model;
 		use Imperium\Zen;
 		use Imperium\App;
-
+		
 		/**
 		 * Class Table
 		 *
-		 * @package Imperium\Tables
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\Tables
 		 *
 		 * @license GPL
 		 *
@@ -26,6 +25,7 @@
 		 */
 		class Table extends Zen
 		{
+			
 			/**
 			 *
 			 * All columns added to create a new table
@@ -34,19 +34,19 @@
 			 *
 			 */
 			private $added_columns;
-
+			
 			/**
 			 * @var Connect
 			 */
 			private $connexion;
-
+			
 			/**
 			 * Current table
 			 *
 			 * @var string
 			 */
 			private $table;
-
+			
 			/**
 			 *
 			 * Current driver
@@ -54,18 +54,17 @@
 			 * @var string
 			 */
 			private $driver;
-
+			
 			/**
 			 * @var string
 			 */
 			private $collation;
-
+			
 			/**
 			 * @var string
 			 */
 			private $charset;
-
-
+			
 			/**
 			 *
 			 * All available collations
@@ -74,7 +73,7 @@
 			 *
 			 */
 			private $all_collation;
-
+			
 			/**
 			 *
 			 * All available charsets
@@ -83,53 +82,53 @@
 			 *
 			 */
 			private $all_charset;
-
+			
 			/**
 			 * @var Column
 			 */
 			private $column;
-
+			
 			/**
 			 * @var string
 			 */
 			private $primary;
-
-
+			
 			/**
 			 * Select a table
 			 *
 			 * @method from
 			 *
-			 * @param string $table The table to manage
+			 * @param  string  $table  The table to manage
 			 *
 			 * @return Table
 			 *
 			 *
 			 */
-			public function from(string $table): Table
+			public function from(string $table) : Table
 			{
+				
 				$this->table = $table;
-
+				
 				return $this;
 			}
-
+			
 			/**
 			 *
 			 *
 			 * @method __construct
 			 *
-			 * @param Connect $connect The connection to the base
+			 * @param  Connect  $connect  The connection to the base
 			 *
 			 *
 			 */
 			public function __construct(Connect $connect)
 			{
+				
 				$this->connexion = $connect;
 				$this->driver = $connect->driver();
 				$this->column = new Column($connect);
 			}
-
-
+			
 			/**
 			 *
 			 * Get an instance of column
@@ -137,11 +136,12 @@
 			 * @return Column
 			 *
 			 */
-			public function column(): Column
+			public function column() : Column
 			{
+				
 				return $this->column;
 			}
-
+			
 			/**
 			 *
 			 * Return the current table name
@@ -149,11 +149,12 @@
 			 * @return string
 			 *
 			 */
-			public function current(): string
+			public function current() : string
 			{
+				
 				return $this->table;
 			}
-
+			
 			/**
 			 *
 			 * Check if current database has table
@@ -163,11 +164,12 @@
 			 * @return bool
 			 *
 			 */
-			public function has(): bool
+			public function has() : bool
 			{
+				
 				return def($this->show());
 			}
-
+			
 			/**
 			 *
 			 * Change  collation
@@ -177,24 +179,24 @@
 			 * @return bool
 			 *
 			 */
-			public function change_collation(): bool
+			public function change_collation() : bool
 			{
+				
 				is_false(def($this->collation), true, "The collation was not define");
-
-				switch ($this->driver)
+				switch($this->driver)
 				{
-				case MYSQL :
-					return $this->connexion->execute("ALTER TABLE {$this->current()} COLLATE ?;", $this->collation);
-					break;
-				case POSTGRESQL :
-					return $this->connexion->execute("update pg_database set datcollate='?', datctype='?' where datname = '{$this->connexion->base()}'", $this->collation, $this->collation);
-					break;
-				default :
-					return false;
-					break;
+					case MYSQL :
+						return $this->connexion->execute("ALTER TABLE {$this->current()} COLLATE ?;", $this->collation);
+						break;
+					case POSTGRESQL :
+						return $this->connexion->execute("update pg_database set datcollate='?', datctype='?' where datname = '{$this->connexion->base()}'", $this->collation, $this->collation);
+						break;
+					default :
+						return false;
+						break;
 				}
 			}
-
+			
 			/**
 			 *
 			 * Change charset
@@ -204,84 +206,82 @@
 			 * @return bool
 			 *
 			 */
-			public function change_charset(): bool
+			public function change_charset() : bool
 			{
+				
 				is_false(def($this->charset), true, "The charset was not define");
-
-				switch ($this->driver)
+				switch($this->driver)
 				{
-				case MYSQL :
-					return $this->connexion->execute("ALTER TABLE {$this->current()} CHARACTER SET = ?;", $this->charset);
-					break;
-				case POSTGRESQL :
-					return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('?') where datname = '{$this->connexion->base()}'", $this->charset);
-					break;
-				default :
-					return false;
-					break;
+					case MYSQL :
+						return $this->connexion->execute("ALTER TABLE {$this->current()} CHARACTER SET = ?;", $this->charset);
+						break;
+					case POSTGRESQL :
+						return $this->connexion->execute("update pg_database set encoding = pg_char_to_encoding('?') where datname = '{$this->connexion->base()}'", $this->charset);
+						break;
+					default :
+						return false;
+						break;
 				}
 			}
-
-
+			
 			/**
 			 *
 			 * Remove a table
 			 *
 			 * @method drop
 			 *
-			 * @param string $table The table name
+			 * @param  string  $table  The table name
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return bool
 			 *
 			 */
-			public function drop(string $table): bool
+			public function drop(string $table) : bool
 			{
+				
 				return $this->connexion->execute("DROP TABLE $table");
 			}
-
+			
 			/**
 			 *
 			 * Empty the table
 			 *
 			 * @method truncate
 			 *
-			 * @param string $table The table name
+			 * @param  string  $table  The table name
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return bool
 			 *
 			 */
-			public function truncate(string $table): bool
+			public function truncate(string $table) : bool
 			{
-
-				switch ($this->driver)
+				
+				switch($this->driver)
 				{
-				case MYSQL :
-					return $this->connexion->execute("TRUNCATE TABLE $table");
-					break;
-				case POSTGRESQL :
-					return $this->connexion->execute("TRUNCATE TABLE $table RESTART IDENTITY");
-					break;
-				case SQLITE :
-					return $this->connexion->execute("DELETE  FROM $table") && $this->connexion->execute('VACUUM');
-					break;
-				default:
-					return false;
-					break;
+					case MYSQL :
+						return $this->connexion->execute("TRUNCATE TABLE $table");
+						break;
+					case POSTGRESQL :
+						return $this->connexion->execute("TRUNCATE TABLE $table RESTART IDENTITY");
+						break;
+					case SQLITE :
+						return $this->connexion->execute("DELETE  FROM $table") && $this->connexion->execute('VACUUM');
+						break;
+					default:
+						return false;
+						break;
 				}
-
-
 			}
-
+			
 			/**
 			 *
 			 * Remove a constraint in a table
 			 *
-			 * @param string $column
-			 * @param string $constraint
+			 * @param  string  $column
+			 * @param  string  $constraint
 			 *
 			 * @throws Kedavra
 			 *
@@ -290,67 +290,56 @@
 			 */
 			public function remove_constraint(string $column, string $constraint)
 			{
-				switch ($this->driver)
+				
+				switch($this->driver)
 				{
-				case MYSQL:
-					return $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT ?;", $constraint);
-					break;
-				case SQLITE:
-					return $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN ? DROP ?;", $column, $constraint);
-					break;
-				default:
-					return false;
-					break;
+					case MYSQL:
+						return $this->connexion->execute("ALTER TABLE {$this->current()} DROP CONSTRAINT ?;", $constraint);
+						break;
+					case SQLITE:
+						return $this->connexion->execute("ALTER TABLE {$this->current()} ALTER COLUMN ? DROP ?;", $column, $constraint);
+						break;
+					default:
+						return false;
+						break;
 				}
-
 			}
-
+			
 			/**
 			 *
 			 * Create the table
 			 *
 			 * @method create
 			 *
-			 * @param string $table The table name
+			 * @param  string  $table  The table name
 			 *
 			 * @throws Kedavra
 			 *
 			 **@return bool
 			 *
 			 */
-			public function create(string $table): bool
+			public function create(string $table) : bool
 			{
+				
 				is_true($this->exist($table), true, "The table $table already exist");
-
 				$command = $this->startCreateCommand($table);
-
 				$columns = $this->added_columns;
 				$uniq = collect();
-
-				foreach ($columns->all() as $column)
+				foreach($columns->all() as $column)
 				{
-					$end = has($column[App::FIELD_NAME], $columns->last());
-
-					if ($column[Table::FIELD_UNIQUE])
-						$uniq->set($column[Table::FIELD_NAME]);
-
+					$end = has($column[ App::FIELD_NAME ], $columns->last());
+					if($column[ Table::FIELD_UNIQUE ])
+						$uniq->set($column[ Table::FIELD_NAME ]);
 					append($command, $this->updateCreateCommand($column, $end));
-
 				}
-
-
 				append($command, ' )');
-
 				$this->added_columns = collect();
-
 				$data = $this->connexion->execute($command);
-
 				is_false($data, true, $command);
-
+				
 				return $data;
 			}
-
-
+			
 			/**
 			 *
 			 * Execute the sql file content
@@ -362,184 +351,159 @@
 			 * @return bool
 			 *
 			 */
-			public function import(): bool
+			public function import() : bool
 			{
+				
 				return (new Import())->import();
 			}
-
+			
 			/**
 			 *
 			 *
 			 * @method startCreateCommand
 			 *
-			 * @param string $table
+			 * @param  string  $table
 			 *
 			 * @return string
 			 *
 			 */
-			private function startCreateCommand(string $table): string
+			private function startCreateCommand(string $table) : string
 			{
+				
 				return "CREATE TABLE IF NOT EXISTS $table ( ";
 			}
-
-
+			
 			/**
 			 *
 			 * append field in command to create table
 			 *
 			 *
-			 * @param array $field
+			 * @param  array  $field
 			 *
-			 * @param bool  $end
+			 * @param  bool   $end
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return string
 			 *
 			 */
-			private function updateCreateCommand(array $field, bool $end): string
+			private function updateCreateCommand(array $field, bool $end) : string
 			{
+				
 				$x = collect($field);
 				$check = def($x->get(self::CHECK)) ? $this->check($x->get(self::FIELD_NAME), $x->get(self::CHECK_CONDITION), $x->get(self::CHECK_EXPECTED)) : '';
-
 				$size = $x->get(App::FIELD_LENGTH);
-
 				$command = '';
-
 				append($command, "{$x->get(App::FIELD_NAME)} ");
-
 				$size ? append($command, " {$x->get(App::FIELD_TYPE)}($size)") : append($command, " {$x->get(App::FIELD_TYPE)} ");
-
-
-				if ($x->get(App::FIELD_PRIMARY))
+				if($x->get(App::FIELD_PRIMARY))
 				{
-					switch ($this->driver)
+					switch($this->driver)
 					{
-					case MYSQL:
-						append($command, ' AUTO_INCREMENT PRIMARY KEY');
-						break;
-					case POSTGRESQL:
-						append($command, '  PRIMARY KEY');
-						break;
-					case SQLITE:
-						append($command, '  PRIMARY KEY AUTOINCREMENT');
-						break;
+						case MYSQL:
+							append($command, ' AUTO_INCREMENT PRIMARY KEY');
+							break;
+						case POSTGRESQL:
+							append($command, '  PRIMARY KEY');
+							break;
+						case SQLITE:
+							append($command, '  PRIMARY KEY AUTOINCREMENT');
+							break;
 					}
 				}
-
-				if (!$end)
+				if( ! $end)
 				{
-					if (is_false($x->get(Table::FIELD_NULLABLE)))
+					if(is_false($x->get(Table::FIELD_NULLABLE)))
 						append($command, ' NOT NULL');
-
-					if (is_true($x->get(Table::DEFAULT)))
+					if(is_true($x->get(Table::DEFAULT)))
 					{
 						$value = $x->get(Table::DEFAULT_VALUE);
-						if (is_string($value))
-							append($command, " DEFAULT '$value'"); else
+						if(is_string($value))
+							append($command, " DEFAULT '$value'");
+						else
 							append($command, " DEFAULT $value");
 					}
-
 				}
 				append($command, " $check");
-
-				if (!$end)
+				if( ! $end)
 					append($command, ', ');
-
+				
 				return $command;
 			}
-
+			
 			/**
 			 *
 			 * Seed current table
 			 *
-			 * @param int $records
+			 * @param  int  $records
 			 *
 			 * @throws Kedavra
 			 * @return bool
 			 *
 			 */
-			public function seed(int $records): bool
+			public function seed(int $records) : bool
 			{
+				
 				$rec = $this->column->for($this->current());
-
 				$columns = $rec->show();
 				$columns_str = collect($columns)->join(',');
-
 				$query = "INSERT INTO {$this->current()} ($columns_str) VALUES ";
-
 				$primary = $rec->primary_key();
-
 				$x = collect();
-
 				$sqlite = $this->connexion->sqlite();
-
 				$types = collect($rec->types());
-
-				for ($i = 0; different($i, $records); $i++)
+				for($i = 0; different($i, $records); $i++)
 				{
-					foreach ($columns as $k => $column)
+					foreach($columns as $k => $column)
 					{
 						$type = $sqlite ? strtolower($types->get($k)) : $types->get($k);
-
-						if (equal($column, $primary))
+						if(equal($column, $primary))
 						{
-							switch ($this->driver)
+							switch($this->driver)
 							{
-							case MYSQL:
-							case SQLITE:
-								$x->put($column, 'NULL');
-								break;
-							default:
-								$x->put($column, 'DEFAULT');
-								break;
+								case MYSQL:
+								case SQLITE:
+									$x->put($column, 'NULL');
+									break;
+								default:
+									$x->put($column, 'DEFAULT');
+									break;
 							}
-						} else
+						}
+						else
 						{
-
-							if (has($type, self::BOOL))
+							if(has($type, self::BOOL))
 								$x->put(true_or_false($this->driver), $column);
-
-
-							if (has($type, self::JSONS))
+							if(has($type, self::JSONS))
 							{
 								$data = collect();
 								$number = rand(1, 10);
-
-								for ($i = 0; $i < $number; $i++)
+								for($i = 0; $i < $number; $i++)
 								{
-									if (is_pair($i))
-										$data->put($i, faker()->text(50)); else
+									if(is_pair($i))
+										$data->put($i, faker()->text(50));
+									else
 										$data->put($i, faker()->numberBetween(1, 50));
 								}
 								$x->put($data->json(), $column);
-
 							}
-							if (has($type, self::DATE_TYPES))
+							if(has($type, self::DATE_TYPES))
 								$x->put($column, $this->connexion->instance()->quote(faker()->date()));
-
-							if (has($type, self::NUMERIC_TYPES))
+							if(has($type, self::NUMERIC_TYPES))
 								$x->put($column, faker()->numberBetween(1, 100));
-
-							if (has($type, self::TEXT_TYPES))
+							if(has($type, self::TEXT_TYPES))
 								$x->put($column, $this->connexion->instance()->quote(faker()->text(50)));
 						}
-
 					}
-
-
 					$value = '(' . $x->join(', ') . '),';
-
 					append($query, $value);
-
 					$x->clear();
 				}
 				$query = trim($query, ',');
-
+				
 				return $this->connexion->execute($query);
-
 			}
-
+			
 			/**
 			 *
 			 * Get all available types for current driver
@@ -549,44 +513,44 @@
 			 * @return array
 			 *
 			 */
-			public function types(): array
+			public function types() : array
 			{
-				switch ($this->driver)
+				
+				switch($this->driver)
 				{
-				case MYSQL:
-					return self::MYSQL_TYPES;
-					break;
-				case POSTGRESQL:
-					return self::POSTGRESQL_TYPES;
-					break;
-				case SQLITE:
-					return self::SQLITE_TYPES;
-					break;
-				default:
-					return [];
-					break;
+					case MYSQL:
+						return self::MYSQL_TYPES;
+						break;
+					case POSTGRESQL:
+						return self::POSTGRESQL_TYPES;
+						break;
+					case SQLITE:
+						return self::SQLITE_TYPES;
+						break;
+					default:
+						return [];
+						break;
 				}
 			}
-
-
+			
 			/**
 			 *
 			 * Dump a table
 			 *
 			 * @method dump
 			 *
-			 * @param string[] $tables
+			 * @param  string[]  $tables
 			 *
 			 * @throws Kedavra
 			 * @return bool
 			 *
 			 */
-			public function dump(string ...$tables): bool
+			public function dump(string ...$tables) : bool
 			{
-				return def($tables) ? dumper(false, $tables) : dumper(false, [$this->current()]);
+				
+				return def($tables) ? dumper(false, $tables) : dumper(false, [ $this->current() ]);
 			}
-
-
+			
 			/**
 			 *
 			 * Check if the current table  has not records
@@ -598,135 +562,136 @@
 			 * @return bool
 			 *
 			 */
-			public function is_empty(): bool
+			public function is_empty() : bool
 			{
+				
 				return collect($this->all())->empty();
 			}
-
+			
 			/**
 			 *
 			 * Select a record by this id
 			 *
 			 * @method select_by_id
 			 *
-			 * @param int $id the record id
+			 * @param  int  $id  the record id
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return array
 			 *
 			 */
-			public function select(int $id): array
+			public function select(int $id) : array
 			{
+				
 				return $this->connexion->request("SELECT * FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = ?", $id);
 			}
-
-
+			
 			/**
 			 *
 			 * Select a record by id or fail
 			 *
 			 * @method select_or_fail
 			 *
-			 * @param int $id The record id
+			 * @param  int  $id  The record id
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return array
 			 *
 			 */
-			public function select_or_fail(int $id): array
+			public function select_or_fail(int $id) : array
 			{
+				
 				$data = $this->from($this->current())->select($id);
-
 				superior($data, 1, true, "The primary key is not unique");
-
 				inferior($data, 1, true, "The records was not found");
-
+				
 				return $data;
 			}
-
+			
 			/**
 			 *
 			 * Remove a record by id
 			 *
 			 * @method remove
 			 *
-			 * @param int $id The record id
+			 * @param  int  $id  The record id
 			 *
 			 * @throws Kedavra
 			 * @return bool
 			 *
 			 */
-			public function remove(int $id): bool
+			public function remove(int $id) : bool
 			{
+				
 				return $this->connexion->execute("DELETE FROM {$this->current()} WHERE {$this->column->for($this->current())->primary_key()} = ?", $id);
 			}
-
+			
 			/**
 			 *
 			 * Convert a table
 			 *
 			 * @method convert
 			 *
-			 * @param string $charset The charset
-			 * @param string $collate The collation
+			 * @param  string  $charset  The charset
+			 * @param  string  $collate  The collation
 			 *
 			 * @throws Kedavra
 			 *
 			 **@return bool
 			 *
 			 */
-			public function convert(string $charset, string $collate): bool
+			public function convert(string $charset, string $collate) : bool
 			{
+				
 				is_true(collect($this->all_charset)->not_exist($charset), true, "The charset $charset is not valid");
-
 				is_true(collect($this->all_collation)->not_exist($collate), true, "The collation $collate is not valid");
-
-				switch ($this->driver)
+				switch($this->driver)
 				{
-				case MYSQL:
-					return $this->connexion->execute("ALTER TABLE {$this->current()} CONVERT TO CHARACTER SET ? COLLATE ? ", $charset, $collate);
-					break;
-				case POSTGRESQL:
-					return $this->set_charset($charset)->change_charset() && $this->set_collation($collate)->change_collation();
-					break;
-				default:
-					return false;
-					break;
+					case MYSQL:
+						return $this->connexion->execute("ALTER TABLE {$this->current()} CONVERT TO CHARACTER SET ? COLLATE ? ", $charset, $collate);
+						break;
+					case POSTGRESQL:
+						return $this->set_charset($charset)->change_charset() && $this->set_collation($collate)->change_collation();
+						break;
+					default:
+						return false;
+						break;
 				}
 			}
-
-
+			
 			/**
 			 *
 			 * Check if a table not exist
 			 *
 			 * @method not_exist
 			 *
-			 * @param string $table The table name
+			 * @param  string  $table  The table name
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return bool
 			 *
 			 */
-			public function not_exist(string $table): bool
+			public function not_exist(string $table) : bool
 			{
+				
 				return collect($this->show())->not_exist($table);
 			}
-
+			
 			/**
 			 * @throws Kedavra
 			 *
 			 * @return array
 			 *
 			 */
-			public function collation(): array
+			public function collation() : array
 			{
+				
 				return collation($this->connexion);
 			}
-
+			
 			/**
 			 *
 			 * Display all charset
@@ -736,11 +701,12 @@
 			 * @return array
 			 *
 			 */
-			public function charset(): array
+			public function charset() : array
 			{
+				
 				return charset($this->connexion);
 			}
-
+			
 			/**
 			 *
 			 * Display all types
@@ -748,8 +714,9 @@
 			 * @return array
 			 *
 			 */
-			public function all_types(): array
+			public function all_types() : array
 			{
+				
 				return collect()->merge(self::DATE_TYPES, self::NUMERIC_TYPES, self::TEXT_TYPES)->all();
 			}
 			
@@ -764,31 +731,31 @@
 			 * @throws Kedavra
 			 * @return bool
 			 */
-			public function exist(string $table): bool
+			public function exist(string $table) : bool
 			{
 				
 				return collect($this->show())->exist($table);
 			}
-
+			
 			/**
 			 *
 			 * Save the values in the current table
 			 *
 			 * @method save
 			 *
-			 * @param Model $model
-			 * @param array $values The values
+			 * @param  Model  $model
+			 * @param  array  $values  The values
 			 *
 			 * @throws Kedavra
 			 * @return bool
 			 *
 			 */
-			public function save($model, array $values): bool
+			public function save($model, array $values) : bool
 			{
+				
 				return $this->connexion->execute(insert_into($model, $this->current(), $values));
 			}
-
-
+			
 			/**
 			 *
 			 * Display all tables
@@ -800,87 +767,83 @@
 			 * @return array
 			 *
 			 */
-			public function show(): array
+			public function show() : array
 			{
+				
 				$tables = collect();
-
 				$hidden = collect($this->hidden_tables());
-
-				switch ($this->driver)
+				switch($this->driver)
 				{
-				case MYSQL :
-
-					foreach ($this->connexion->request("SHOW TABLES") as $table)
-					{
-						$tab = current($table);
-						if ($hidden->empty())
+					case MYSQL :
+						foreach($this->connexion->request("SHOW TABLES") as $table)
 						{
-							$tables->push($tab);
-						} else
-						{
-							if ($hidden->not_exist($tab))
+							$tab = current($table);
+							if($hidden->empty())
+							{
 								$tables->push($tab);
+							}
+							else
+							{
+								if($hidden->not_exist($tab))
+									$tables->push($tab);
+							}
 						}
-					}
-					break;
-
-				case POSTGRESQL :
-
-					foreach ($this->connexion->request("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');") as $table)
-					{
-						$tab = current($table);
-						if ($hidden->empty())
+						break;
+					case POSTGRESQL :
+						foreach($this->connexion->request("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');") as $table)
 						{
-							$tables->push($tab);
-						} else
-						{
-							if ($hidden->not_exist($tab))
+							$tab = current($table);
+							if($hidden->empty())
+							{
 								$tables->push($tab);
+							}
+							else
+							{
+								if($hidden->not_exist($tab))
+									$tables->push($tab);
+							}
 						}
-					}
-					break;
-
-				case SQLITE :
-
-					foreach ($this->connexion->request("SELECT tbl_name FROM sqlite_master") as $table)
-					{
-						$tab = current($table);
-						if ($hidden->empty())
+						break;
+					case SQLITE :
+						foreach($this->connexion->request("SELECT tbl_name FROM sqlite_master") as $table)
 						{
-							$tables->push($tab);
-						} else
-						{
-							if ($hidden->not_exist($tab))
+							$tab = current($table);
+							if($hidden->empty())
+							{
 								$tables->push($tab);
+							}
+							else
+							{
+								if($hidden->not_exist($tab))
+									$tables->push($tab);
+							}
 						}
-					}
-					break;
+						break;
 				}
+				
 				return $tables->all();
 			}
-
+			
 			/**
 			 *
 			 * Count number of records inside a table
 			 *
-			 * @param string $table
+			 * @param  string  $table
 			 *
 			 * @throws Kedavra
 			 * @return int
 			 *
 			 */
-			public function count(string $table = ''): int
+			public function count(string $table = '') : int
 			{
+				
 				$table = def($table) ? $table : $this->current();
-
-				foreach ($this->connexion->request("SELECT COUNT({$this->primary()}) FROM $table") as $number)
+				foreach($this->connexion->request("SELECT COUNT({$this->primary()}) FROM $table") as $number)
 					return current($number);
-
-
+				
 				return 0;
-
 			}
-
+			
 			/**
 			 *
 			 * Get the primary key
@@ -890,33 +853,35 @@
 			 * @return string
 			 *
 			 */
-			public function primary(): string
+			public function primary() : string
 			{
+				
 				assign(not_def($this->primary), $this->primary, $this->column()->for($this->current())->primary_key());
-
+				
 				return $this->primary;
 			}
-
+			
 			/**
 			 *
 			 * Select all records in a table
 			 *
 			 * @method all
 			 *
-			 * @param string $column
-			 * @param string $order The order clause
+			 * @param  string  $column
+			 * @param  string  $order  The order clause
 			 *
 			 * @throws Kedavra
 			 * @return array
 			 *
 			 */
-			public function all(string $column = '', string $order = DESC): array
+			public function all(string $column = '', string $order = DESC) : array
 			{
+				
 				$column = def($column) ? $column : $this->primary();
-
+				
 				return $this->connexion->request("SELECT * FROM {$this->current()} ORDER BY $column $order");
 			}
-
+			
 			/**
 			 *
 			 * Count all tables found
@@ -929,164 +894,154 @@
 			 *
 			 *
 			 */
-			public function found(): int
+			public function found() : int
 			{
+				
 				return collect($this->show())->sum();
 			}
-
+			
 			/**
 			 *
 			 * Update a record
 			 *
 			 * @method update
 			 *
-			 * @param int   $id     The record id
-			 * @param array $values The new values
-			 * @param array $ignore The values to ignore
+			 * @param  int    $id      The record id
+			 * @param  array  $values  The new values
+			 * @param  array  $ignore  The values to ignore
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return bool
 			 *
 			 */
-			public function update(int $id, array $values, array $ignore = []): bool
+			public function update(int $id, array $values, array $ignore = []) : bool
 			{
+				
 				$primary = $this->primary();
-
 				$columns = collect();
-
 				$ignoreValues = collect($ignore);
-
-				foreach ($values as $k => $value)
+				foreach($values as $k => $value)
 				{
-					if (different($k, $primary))
+					if(different($k, $primary))
 					{
-						if ($ignoreValues->empty())
+						if($ignoreValues->empty())
 						{
-							if (is_numeric($value))
-								$columns->push("$k = $value"); else
+							if(is_numeric($value))
+								$columns->push("$k = $value");
+							else
 								$columns->push("$k = {$this->connexion->instance()->quote($value)}");
-						} else
+						}
+						else
 						{
-
-							if ($ignoreValues->not_exist($value))
+							if($ignoreValues->not_exist($value))
 							{
-								if (is_numeric($value))
-									$columns->push("$k = $value"); else
+								if(is_numeric($value))
+									$columns->push("$k = $value");
+								else
 									$columns->push("$k = {$this->connexion->instance()->quote($value)}");
 							}
 						}
 					}
-
 				}
-
 				$columns = $columns->join(', ');
-
 				$sql = "UPDATE  {$this->current()} SET $columns WHERE $primary = $id";
-
-
+				
 				return $this->connexion->execute($sql);
 			}
-
+			
 			/**
 			 *
 			 * Rename a table
 			 *
 			 * @method rename
 			 *
-			 * @param string $new_name The new name
+			 * @param  string  $new_name  The new name
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return bool
 			 *
 			 */
-			public function rename(string $new_name): bool
+			public function rename(string $new_name) : bool
 			{
-
+				
 				is_false(def($this->table), true, "Missing the table name");
-
-				switch ($this->driver)
+				switch($this->driver)
 				{
-				case MYSQL :
-					$data = $this->connexion->execute("RENAME TABLE {$this->current()} TO ?", $new_name);
-					assign($data, $this->table, $new_name);
-					return $data;
-					break;
-				case POSTGRESQL :
-				case SQLITE :
-					$data = $this->connexion->execute("ALTER TABLE {$this->current()} RENAME TO ?", $new_name);
-					assign($data, $this->table, $new_name);
-					return $data;
-					break;
-				default :
-					return false;
-					break;
+					case MYSQL :
+						$data = $this->connexion->execute("RENAME TABLE {$this->current()} TO ?", $new_name);
+						assign($data, $this->table, $new_name);
+						
+						return $data;
+						break;
+					case POSTGRESQL :
+					case SQLITE :
+						$data = $this->connexion->execute("ALTER TABLE {$this->current()} RENAME TO ?", $new_name);
+						assign($data, $this->table, $new_name);
+						
+						return $data;
+						break;
+					default :
+						return false;
+						break;
 				}
 			}
-
-
+			
 			/**
 			 *
 			 * Set the new collation
 			 *
 			 * @method set_collation
 			 *
-			 * @param string $new_collation The collation
+			 * @param  string  $new_collation  The collation
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return Table
 			 *
 			 */
-			public function set_collation(string $new_collation): Table
+			public function set_collation(string $new_collation) : Table
 			{
-
-				if (!$this->connexion->sqlite())
+				
+				if( ! $this->connexion->sqlite())
 				{
 					$data = collation($this->connexion);
-
 					is_true(collect($data)->not_exist($new_collation), true, "The collation $new_collation  is not valid");
-
 					$this->collation = $new_collation;
 				}
-
+				
 				return $this;
 			}
-
+			
 			/**
 			 *
 			 * Set new collation
 			 *
-			 * @param string $new_charset
+			 * @param  string  $new_charset
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return Table
 			 *
 			 */
-			public function set_charset(string $new_charset): Table
+			public function set_charset(string $new_charset) : Table
 			{
-				if ($this->connexion->mysql())
+				
+				if($this->connexion->mysql())
 				{
-
 					is_true(collect($this->all_charset)->not_exist($new_charset), true, "The charset $new_charset is not valid");
-
 					$this->charset = $new_charset;
 				}
-
-				if ($this->connexion->postgresql())
+				if($this->connexion->postgresql())
 				{
-
 					is_true(collect($this->all_charset)->not_exist(strtoupper($new_charset)), true, "The charset $new_charset is not valid");
-
 					$this->charset = $new_charset;
 				}
-
+				
 				return $this;
 			}
-
-
+			
 			/**
 			 *
 			 * Return the current table name
@@ -1096,85 +1051,73 @@
 			 * @return string
 			 *
 			 */
-			public function get_current_tmp_table(): string
+			public function get_current_tmp_table() : string
 			{
+				
 				return '_' . sha1($this->current());
 			}
-
+			
 			/**
 			 *
 			 * Insert multiples data in the table
 			 *
 			 * @method insert_multiples
 			 *
-			 * @param array $collection The data to insert
-			 * @param array $ignore     The data to ignore
+			 * @param  array  $collection  The data to insert
+			 * @param  array  $ignore      The data to ignore
 			 *
 			 * @throws Kedavra
 			 *
 			 * @return bool
 			 *
 			 */
-			public function insert_multiples(array $collection, array $ignore = []): bool
+			public function insert_multiples(array $collection, array $ignore = []) : bool
 			{
-
-
+				
 				$rec = $this->column->for($this->current());
-
 				$query = "INSERT INTO {$this->current()} ({$rec->columns_to_string()}) VALUES ";
-
 				$primary = $rec->primary_key();
-
 				$hidden = collect($ignore);
 				$values = collect();
-
-				foreach ($collection as $items)
+				foreach($collection as $items)
 				{
-					foreach ($items as $key => $value)
+					foreach($items as $key => $value)
 					{
-
-						if (different($key, $primary))
+						if(different($key, $primary))
 						{
-							if ($hidden->not_exist($value))
+							if($hidden->not_exist($value))
 							{
-								if ($values->not_exist($value))
+								if($values->not_exist($value))
 								{
-									if (is_numeric($value))
-										$values->push($value); else
+									if(is_numeric($value))
+										$values->push($value);
+									else
 										$values->push($this->connexion->instance()->quote($value));
 								}
 							}
-						} else
+						}
+						else
 						{
-
-							switch ($this->driver)
+							switch($this->driver)
 							{
-							case POSTGRESQL:
-								$values->push(" DEFAULT");
-								break;
-							default:
-								$values->push('NULL');
-								break;
+								case POSTGRESQL:
+									$values->push(" DEFAULT");
+									break;
+								default:
+									$values->push('NULL');
+									break;
 							}
 						}
-
 					}
-
-
 					$value = '(' . $values->join(', ') . '),';
-
 					append($query, $value);
-
 					$values->clear();
 				}
-
 				$query = trim($query, ',');
-
-
+				
 				return $this->connexion->execute($query);
-
 			}
-
+			
 			/**
 			 *
 			 * Show hidden tables
@@ -1184,11 +1127,11 @@
 			 * @return array
 			 *
 			 */
-			public function hidden_tables(): array
+			public function hidden_tables() : array
 			{
+				
 				return config('db', 'hidden_tables');
 			}
-
+			
 		}
-
 	}

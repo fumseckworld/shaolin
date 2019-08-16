@@ -1,15 +1,15 @@
 <?php
-
+	
 	namespace Imperium\Session
 	{
-
+		
 		use Imperium\Collection\Collect;
-
+		
 		/**
 		 *
 		 * Interface SessionInterface
 		 *
-		 * @author Willy Micieli
+		 * @author  Willy Micieli
 		 *
 		 * @package Imperium\Session
 		 *
@@ -20,6 +20,7 @@
 		 */
 		interface SessionInterface
 		{
+			
 			/**
 			 * Get a session key
 			 *
@@ -29,7 +30,7 @@
 			 *
 			 */
 			public function get($key);
-
+			
 			/**
 			 *
 			 * Check if the session has a key
@@ -39,8 +40,8 @@
 			 * @return bool
 			 *
 			 */
-			public function has($key): bool;
-
+			public function has($key) : bool;
+			
 			/**
 			 *
 			 * Define a value
@@ -51,8 +52,8 @@
 			 * @return  void
 			 *
 			 */
-			public function put($key, $value): void;
-
+			public function put($key, $value) : void;
+			
 			/**
 			 *
 			 * Set and return value
@@ -64,18 +65,18 @@
 			 *
 			 */
 			public function def($key, $value);
-
+			
 			/**
 			 *
 			 * Remove a key
 			 *
-			 * @param array $keys
+			 * @param  array  $keys
 			 *
 			 * @return bool
 			 *
 			 */
-			public function remove(...$keys): bool;
-
+			public function remove(...$keys) : bool;
+			
 			/**
 			 *
 			 * Get all value
@@ -83,13 +84,13 @@
 			 * @return array
 			 *
 			 */
-			public function all(): array;
-
+			public function all() : array;
+			
 			/**
 			 * SessionInterface constructor.
 			 */
 			public function __construct();
-
+			
 			/**
 			 *
 			 * Clear the session
@@ -97,7 +98,7 @@
 			 * @return bool
 			 *
 			 */
-			public function clear(): bool;
-
+			public function clear() : bool;
+			
 		}
 	}

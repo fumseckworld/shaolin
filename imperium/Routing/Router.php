@@ -140,30 +140,18 @@
 			{
 				
 				$middleware_dir = 'Middleware';
-				
 				$namespace = 'App' . '\\' . $middleware_dir . '\\';
-				
 				$dir = CORE . DIRECTORY_SEPARATOR . $middleware_dir;
-				
 				is_false(Dir::is($dir), true, "The $dir directory was not found");
-				
 				$middle = glob("$dir/*php");
-				
-				call_user_func_array([new CsrfMiddleware(),'handle'],[$request]);
-				
-				
-				foreach  ($middle as $middleware)
+				call_user_func_array([ new CsrfMiddleware(), 'handle' ], [ $request ]);
+				foreach($middle as $middleware)
 				{
-					$middle = collect(explode(DIRECTORY_SEPARATOR,$middleware))->last();
-					
-					$middleware = collect(explode('.',$middle))->first();
-					
+					$middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
+					$middleware = collect(explode('.', $middle))->first();
 					$class = "$namespace$middleware";
-					
-					call_user_func_array([new $class(),'handle'], [$request]);
+					call_user_func_array([ new $class(), 'handle' ], [ $request ]);
 				}
-				
-				
 			}
 			
 			/**
@@ -193,7 +181,6 @@
 				foreach($this->args as $match)
 				{
 					is_numeric($match) ? $this->with($match, NUMERIC) : $this->with($match, STRING);
-					
 					is_numeric($match) ? $params->set(intval($match)) : $params->set($match);
 				}
 				
@@ -213,7 +200,6 @@
 			{
 				
 				$path = preg_replace_callback('#:([\w]+)#', [ $this, 'paramMatch' ], $url);
-				
 				$regex = "#^$path$#";
 				
 				return preg_match($regex, $this->url, $this->args) === 1;

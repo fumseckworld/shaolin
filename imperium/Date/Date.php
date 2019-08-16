@@ -1,16 +1,17 @@
 <?php
-
+	
 	namespace Imperium\Date
 	{
+		
 		use Carbon\Carbon;
-
+		
 		/**
 		 *
 		 * Class Date
 		 *
-		 * @package Imperium\Date
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\Date
 		 *
 		 * @license GPL
 		 *
@@ -19,6 +20,6 @@
 		 */
 		class Date extends Carbon
 		{
-
+		
 		}
 	}

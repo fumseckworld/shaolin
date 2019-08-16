@@ -1,18 +1,18 @@
 <?php
-
+	
 	namespace Imperium\Import
 	{
-
+		
 		use Exception;
 		use Imperium\Connexion\Connect;
 		use Imperium\Exception\Kedavra;
-
+		
 		/**
 		 * Class Import
 		 *
-		 * @package Imperium\Import
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\Import
 		 *
 		 * @license GPL
 		 *
@@ -21,7 +21,7 @@
 		 */
 		class Import
 		{
-
+			
 			/**
 			 *
 			 * the connexion
@@ -30,7 +30,7 @@
 			 *
 			 */
 			private $connexion;
-
+			
 			/**
 			 *
 			 * the sql file
@@ -38,7 +38,7 @@
 			 * @var string
 			 */
 			private $sql_file;
-
+			
 			/**
 			 *
 			 * The current driver
@@ -47,7 +47,7 @@
 			 *
 			 */
 			private $driver;
-
+			
 			/**
 			 *
 			 * The base name
@@ -56,7 +56,7 @@
 			 *
 			 */
 			private $base;
-
+			
 			/**
 			 * Import constructor.
 			 *
@@ -64,12 +64,13 @@
 			 */
 			public function __construct()
 			{
+				
 				$this->connexion = app()->connect();
 				$this->driver = $this->connexion->driver();
 				$this->base = $this->connexion->base();
 				$this->sql_file = sql_file();
 			}
-
+			
 			/**
 			 *
 			 * Import the data
@@ -81,30 +82,30 @@
 			 * @return bool
 			 *
 			 */
-			public function import(): bool
+			public function import() : bool
 			{
-
+				
 				$password = $this->connexion->password();
 				$username = $this->connexion->user();
 				$host = $this->connexion->host();
 				$base = $this->base;
 				$sql = $this->sql_file;
-
-				switch ($this->driver)
+				switch($this->driver)
 				{
 					case MYSQL:
 						return is_not_false(system("mysql -u $username -h $host -p$password $base < $sql"));
-					break;
+						break;
 					case POSTGRESQL:
 						return is_not_false(system(" psql  -h $host  -U $username $base < $sql"));
-					break;
+						break;
 					case SQLITE:
 						return is_not_false(system("sqlite3 $base < $sql"));
-					break;
+						break;
 					default:
 						return false;
-					break;
+						break;
 				}
 			}
+			
 		}
 	}

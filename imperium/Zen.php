@@ -239,7 +239,7 @@
 			 */
 			const INSERT       = 24;
 			
-			const DISPLAY_MODE = [ DISPLAY_TABLE , DISPLAY_ARTICLE , DISPLAY_CONTRIBUTORS ];
+			const DISPLAY_MODE = [ DISPLAY_TABLE, DISPLAY_ARTICLE, DISPLAY_CONTRIBUTORS ];
 			
 			/**
 			 *
@@ -320,9 +320,9 @@
 			 * @var array
 			 *
 			 */
-			const VALID_OPERATORS = [ EQUAL , DIFFERENT , INFERIOR , INFERIOR_OR_EQUAL , SUPERIOR , SUPERIOR_OR_EQUAL , LIKE , '<>'];
+			const VALID_OPERATORS = [ EQUAL, DIFFERENT, INFERIOR, INFERIOR_OR_EQUAL, SUPERIOR, SUPERIOR_OR_EQUAL, LIKE, '<>' ];
 			
-			const CONDITION       = [ EQUAL => 'EQUAL' , DIFFERENT => 'DIFFERENT' , INFERIOR => 'INFERIOR' , INFERIOR_OR_EQUAL => 'INFERIOR OR EQUAL' , SUPERIOR => 'SUPERIOR' , SUPERIOR_OR_EQUAL => 'SUPERIOR OR EQUAL' , LIKE => 'LIKE' ];
+			const CONDITION       = [ EQUAL => 'EQUAL', DIFFERENT => 'DIFFERENT', INFERIOR => 'INFERIOR', INFERIOR_OR_EQUAL => 'INFERIOR OR EQUAL', SUPERIOR => 'SUPERIOR', SUPERIOR_OR_EQUAL => 'SUPERIOR OR EQUAL', LIKE => 'LIKE' ];
 			
 			/**
 			 *
@@ -332,29 +332,29 @@
 			 *
 			 */
 			const MODE            = [
-				UPDATE       => 'UPDATE' ,     // 23
-				SELECT       => 'SELECT' ,     // 21
-				DELETE       => 'DELETE' ,     // 22
-				INSERT       => 'INSERT' ,     //24
-				UNION        => 'UNION' ,      //12
-				UNION_ALL    => 'UNION_ALL' ,  //13
-				INNER_JOIN   => 'INNER JOIN' , // 14
-				CROSS_JOIN   => 'CROSS JOIN' , //15
-				LEFT_JOIN    => 'LEFT JOIN' ,  //16
-				RIGHT_JOIN   => 'RIGHT JOIN' , //17
-				FULL_JOIN    => 'FULL JOIN' ,  // 18
+				UPDATE       => 'UPDATE',     // 23
+				SELECT       => 'SELECT',     // 21
+				DELETE       => 'DELETE',     // 22
+				INSERT       => 'INSERT',     //24
+				UNION        => 'UNION',      //12
+				UNION_ALL    => 'UNION_ALL',  //13
+				INNER_JOIN   => 'INNER JOIN', // 14
+				CROSS_JOIN   => 'CROSS JOIN', //15
+				LEFT_JOIN    => 'LEFT JOIN',  //16
+				RIGHT_JOIN   => 'RIGHT JOIN', //17
+				FULL_JOIN    => 'FULL JOIN',  // 18
 				NATURAL_JOIN => 'NATURAL JOIN' ];
 			
 			const QUERY_VIEW_MODE = [
-				SELECT       => 'SELECT' ,     // 21
-				DELETE       => 'DELETE' ,     // 22
-				UNION        => 'UNION' ,      //12
-				UNION_ALL    => 'UNION_ALL' ,  //13
-				INNER_JOIN   => 'INNER JOIN' , // 14
-				CROSS_JOIN   => 'CROSS JOIN' , //15
-				LEFT_JOIN    => 'LEFT JOIN' ,  //16
-				RIGHT_JOIN   => 'RIGHT JOIN' , //17
-				FULL_JOIN    => 'FULL JOIN' ,  // 18
+				SELECT       => 'SELECT',     // 21
+				DELETE       => 'DELETE',     // 22
+				UNION        => 'UNION',      //12
+				UNION_ALL    => 'UNION_ALL',  //13
+				INNER_JOIN   => 'INNER JOIN', // 14
+				CROSS_JOIN   => 'CROSS JOIN', //15
+				LEFT_JOIN    => 'LEFT JOIN',  //16
+				RIGHT_JOIN   => 'RIGHT JOIN', //17
+				FULL_JOIN    => 'FULL JOIN',  // 18
 				NATURAL_JOIN => 'NATURAL JOIN' ];
 			
 			/**
@@ -364,9 +364,9 @@
 			 * @var array
 			 *
 			 */
-			const JOIN_MODE  = [ INNER_JOIN , CROSS_JOIN , LEFT_JOIN , RIGHT_JOIN , FULL_JOIN , NATURAL_JOIN ];
+			const JOIN_MODE  = [ INNER_JOIN, CROSS_JOIN, LEFT_JOIN, RIGHT_JOIN, FULL_JOIN, NATURAL_JOIN ];
 			
-			const UNION_MODE = [ self::UNION , self::UNION_ALL , ];
+			const UNION_MODE = [ self::UNION, self::UNION_ALL, ];
 			
 			/**
 			 *
@@ -1025,7 +1025,6 @@
 			 * @var string
 			 *
 			 */
-			
 			const DATE_RANGE = 'daterange';
 			
 			/**
@@ -1169,7 +1168,7 @@
 			 * @var array
 			 *
 			 */
-			const DATE_TYPES = [ self::DATE , self::DATETIME , self::INTERVAL , self::TIME , self::TIMESTAMP , self::YEAR , self::INTERVAL , self::TIMESTAMP_WITH_TIME_ZONE , self::TIMESTAMP_WITHOUT_TIME_ZONE , self::TIME_WITH_TIME_ZONE , self::TIME_WITHOUT_TIME_ZONE ];
+			const DATE_TYPES = [ self::DATE, self::DATETIME, self::INTERVAL, self::TIME, self::TIMESTAMP, self::YEAR, self::INTERVAL, self::TIMESTAMP_WITH_TIME_ZONE, self::TIMESTAMP_WITHOUT_TIME_ZONE, self::TIME_WITH_TIME_ZONE, self::TIME_WITHOUT_TIME_ZONE ];
 			
 			/**
 			 *
@@ -1178,7 +1177,7 @@
 			 * @var array
 			 *
 			 */
-			const SPACIAL_TYPES = [ self::GEOMETRY , self::POINT , self::LINESTRING , self::POLYGON , self::MULTIPOINT , self::MULTILINESTRING , self::MULTIPOLYGON , self::GEOMETRYCOLLECTION ];
+			const SPACIAL_TYPES = [ self::GEOMETRY, self::POINT, self::LINESTRING, self::POLYGON, self::MULTIPOINT, self::MULTILINESTRING, self::MULTIPOLYGON, self::GEOMETRYCOLLECTION ];
 			
 			/**
 			 *
@@ -1187,7 +1186,7 @@
 			 * @var array
 			 *
 			 */
-			const NUMERIC_TYPES = [ self::INT , self::INTEGER , self::DECIMAL , self::DOUBLE_PRECISION , self::BIGINT , self::REAL , self::DOUBLE , self::NUMERIC , self::BIG_SERIAL , self::BIT , self::SERIAL , self::SMALL_SERIAL , self::BIG_SERIAL , self::INT2 , self::INT4 , self::INT8 , self::FLOAT , self::TINYINT , self::SMALLINT , self::MEDIUMINT ];
+			const NUMERIC_TYPES = [ self::INT, self::INTEGER, self::DECIMAL, self::DOUBLE_PRECISION, self::BIGINT, self::REAL, self::DOUBLE, self::NUMERIC, self::BIG_SERIAL, self::BIT, self::SERIAL, self::SMALL_SERIAL, self::BIG_SERIAL, self::INT2, self::INT4, self::INT8, self::FLOAT, self::TINYINT, self::SMALLINT, self::MEDIUMINT ];
 			
 			/**
 			 *
@@ -1196,16 +1195,10 @@
 			 * @var array
 			 *
 			 */
-			const TEXT_TYPES = [ self::VARCHAR , self::CHAR , self::BINARY , self::VARBINARY , self::CHARACTER_VARYING , self::CHARACTER , self::BLOB , self::MEDIUMBLOB , self::ENUM , self::SET , self::TEXT , self::MEDIUMTEXT , self::TINYTEXT , self::TEXT , self::MEDIUMTEXT , self::LONGTEXT ];
+			const TEXT_TYPES = [ self::VARCHAR, self::CHAR, self::BINARY, self::VARBINARY, self::CHARACTER_VARYING, self::CHARACTER, self::BLOB, self::MEDIUMBLOB, self::ENUM, self::SET, self::TEXT, self::MEDIUMTEXT, self::TINYTEXT, self::TEXT, self::MEDIUMTEXT, self::LONGTEXT ];
 			
 			const ALL_TYPES  = [
-				self::DATE , self::DATETIME , self::INTERVAL , self::TIME , self::TIMESTAMP , self::YEAR , self::INTERVAL , self::TIMESTAMP_WITH_TIME_ZONE , self::TIMESTAMP_WITHOUT_TIME_ZONE , self::TIME_WITH_TIME_ZONE , self::TIME_WITHOUT_TIME_ZONE ,
-				
-				self::GEOMETRY , self::POINT , self::LINESTRING , self::POLYGON , self::MULTIPOINT , self::MULTILINESTRING , self::MULTIPOLYGON , self::GEOMETRYCOLLECTION ,
-				
-				self::INT , self::INTEGER , self::DECIMAL , self::DOUBLE_PRECISION , self::BIGINT , self::REAL , self::DOUBLE , self::NUMERIC , self::BIG_SERIAL , self::BIT , self::SERIAL , self::SMALL_SERIAL , self::BIG_SERIAL , self::INT2 , self::INT4 , self::INT8 , self::FLOAT , self::TINYINT , self::SMALLINT , self::MEDIUMINT ,
-				
-				self::VARCHAR , self::CHAR , self::BINARY , self::VARBINARY , self::CHARACTER_VARYING , self::CHARACTER , self::BLOB , self::MEDIUMBLOB , self::ENUM , self::SET , self::TEXT , self::MEDIUMTEXT , self::TINYTEXT , self::TEXT , self::MEDIUMTEXT , self::LONGTEXT ];
+				self::DATE, self::DATETIME, self::INTERVAL, self::TIME, self::TIMESTAMP, self::YEAR, self::INTERVAL, self::TIMESTAMP_WITH_TIME_ZONE, self::TIMESTAMP_WITHOUT_TIME_ZONE, self::TIME_WITH_TIME_ZONE, self::TIME_WITHOUT_TIME_ZONE, self::GEOMETRY, self::POINT, self::LINESTRING, self::POLYGON, self::MULTIPOINT, self::MULTILINESTRING, self::MULTIPOLYGON, self::GEOMETRYCOLLECTION, self::INT, self::INTEGER, self::DECIMAL, self::DOUBLE_PRECISION, self::BIGINT, self::REAL, self::DOUBLE, self::NUMERIC, self::BIG_SERIAL, self::BIT, self::SERIAL, self::SMALL_SERIAL, self::BIG_SERIAL, self::INT2, self::INT4, self::INT8, self::FLOAT, self::TINYINT, self::SMALLINT, self::MEDIUMINT, self::VARCHAR, self::CHAR, self::BINARY, self::VARBINARY, self::CHARACTER_VARYING, self::CHARACTER, self::BLOB, self::MEDIUMBLOB, self::ENUM, self::SET, self::TEXT, self::MEDIUMTEXT, self::TINYTEXT, self::TEXT, self::MEDIUMTEXT, self::LONGTEXT ];
 			
 			/**
 			 *
@@ -1214,45 +1207,19 @@
 			 * @var array
 			 *
 			 */
-			const FLOTING_POINT_TYPES = [ self::FLOAT , self::DOUBLE ];
+			const FLOTING_POINT_TYPES = [ self::FLOAT, self::DOUBLE ];
 			
 			const MYSQL_TYPES         = [
-				
 				// CHARACTER
-				
-				self::CHAR , self::VARCHAR , self::BINARY , self::VARBINARY , self::BLOB , self::TINYTEXT , self::MEDIUMTEXT , self::TEXT , self::LONGTEXT , self::ENUM , self::SET ,
-				
-				// INTEGER TYPES
-				
-				self::INTEGER , self::INT , self::SMALLINT , self::TINYINT , self::MEDIUMINT , self::BIGINT , self::REAL , self::DOUBLE , self::DOUBLE_PRECISION ,
-				
-				// FIXED POINT TYPE
-				
-				self::DECIMAL , self::NUMERIC ,
-				
-				// FLOTING POINT TYPES
-				
-				self::FLOAT , self::DOUBLE ,
-				
-				// DATE AND TIME TYPES
-				
-				self::DATE , self::TIME , self::DATETIME , self::TIMESTAMP , self::YEAR ,
-				
-				// JSON TYPES
-				
-				self::JSON ,
-				
-				// BIT TYPE
-				
-				self::BIT ,
-				
-				// BOLLEAN TYPES
-				
-				self::BOOLEAN ,
-				
-				// SPACIAL DATA TYPES
-				
-				self::POINT , self::MULTIPOINT , self::LINESTRING , self::MULTILINESTRING , self::GEOMETRY , self::POLYGON , self::MULTIPOLYGON , self::GEOMETRYCOLLECTION ];
+				self::CHAR, self::VARCHAR, self::BINARY, self::VARBINARY, self::BLOB, self::TINYTEXT, self::MEDIUMTEXT, self::TEXT, self::LONGTEXT, self::ENUM, self::SET, // INTEGER TYPES
+				self::INTEGER, self::INT, self::SMALLINT, self::TINYINT, self::MEDIUMINT, self::BIGINT, self::REAL, self::DOUBLE, self::DOUBLE_PRECISION, // FIXED POINT TYPE
+				self::DECIMAL, self::NUMERIC, // FLOTING POINT TYPES
+				self::FLOAT, self::DOUBLE, // DATE AND TIME TYPES
+				self::DATE, self::TIME, self::DATETIME, self::TIMESTAMP, self::YEAR, // JSON TYPES
+				self::JSON, // BIT TYPE
+				self::BIT, // BOLLEAN TYPES
+				self::BOOLEAN, // SPACIAL DATA TYPES
+				self::POINT, self::MULTIPOINT, self::LINESTRING, self::MULTILINESTRING, self::GEOMETRY, self::POLYGON, self::MULTIPOLYGON, self::GEOMETRYCOLLECTION ];
 			
 			/**
 			 *
@@ -1262,56 +1229,20 @@
 			 *
 			 */
 			const POSTGRESQL_TYPES = [
-				
 				// CHARACTER
-				
-				self::CHAR , self::VARCHAR , self::CHARACTER_VARYING , self::TEXT , self::CHARACTER ,
-				
-				// INTEGER TYPES
-				
-				self::SMALLINT , self::INTEGER , self::BIGINT , self::DECIMAL , self::NUMERIC , self::REAL , self::DOUBLE_PRECISION , self::SMALL_SERIAL , self::SERIAL , self::BIG_SERIAL ,
-				
-				// FIXED POINT TYPE
-				
-				self::DECIMAL , self::NUMERIC ,
-				
-				// FLOTING POINT TYPES
-				
-				self::FLOAT , self::DOUBLE ,
-				
-				self::XML , self::MONEY ,
-				
-				// RANGE TYPES
-				
-				self::INT4_RANGE , self::INT8_RANGE , self::NUMRANGE , self::TSRANGE , self::TSTZRANGE , self::DATE_RANGE ,
-				
-				// DATE AND TIME TYPES
-				
-				self::TIMESTAMP , self::TIMESTAMP_WITHOUT_TIME_ZONE , self::TIMESTAMP_WITH_TIME_ZONE , self::DATE , self::TIME , self::TIME_WITHOUT_TIME_ZONE , self::TIME_WITH_TIME_ZONE , self::INTERVAL ,
-				
-				// JSON TYPES
-				
-				self::JSON , self::JSONB , self::TSQUERY , self::TSVECTOR ,
-				
-				// BIT TYPE
-				
-				self::BITEA ,
-				
-				// BOLLEAN TYPES
-				
-				self::BOOLEAN ,
-				
-				// NETWORKS TYPES
-				
-				self::CIDR , self::INET , self::MACADDR , self::MACADDR8 , self::UUID ,
-				
-				// SPACIAL DATA TYPES
-				
-				self::POINT , self::LINE , self::LSEG , self::BOX , self::PATH , self::POLYGON , self::CIRCLE ,
+				self::CHAR, self::VARCHAR, self::CHARACTER_VARYING, self::TEXT, self::CHARACTER, // INTEGER TYPES
+				self::SMALLINT, self::INTEGER, self::BIGINT, self::DECIMAL, self::NUMERIC, self::REAL, self::DOUBLE_PRECISION, self::SMALL_SERIAL, self::SERIAL, self::BIG_SERIAL, // FIXED POINT TYPE
+				self::DECIMAL, self::NUMERIC, // FLOTING POINT TYPES
+				self::FLOAT, self::DOUBLE, self::XML, self::MONEY, // RANGE TYPES
+				self::INT4_RANGE, self::INT8_RANGE, self::NUMRANGE, self::TSRANGE, self::TSTZRANGE, self::DATE_RANGE, // DATE AND TIME TYPES
+				self::TIMESTAMP, self::TIMESTAMP_WITHOUT_TIME_ZONE, self::TIMESTAMP_WITH_TIME_ZONE, self::DATE, self::TIME, self::TIME_WITHOUT_TIME_ZONE, self::TIME_WITH_TIME_ZONE, self::INTERVAL, // JSON TYPES
+				self::JSON, self::JSONB, self::TSQUERY, self::TSVECTOR, // BIT TYPE
+				self::BITEA, // BOLLEAN TYPES
+				self::BOOLEAN, // NETWORKS TYPES
+				self::CIDR, self::INET, self::MACADDR, self::MACADDR8, self::UUID, // SPACIAL DATA TYPES
+				self::POINT, self::LINE, self::LSEG, self::BOX, self::PATH, self::POLYGON, self::CIRCLE, ];
 			
-			];
-			
-			const SQLITE_TYPES     = [ self::NULL , self::INTEGER , self::REAL , self::TEXT , self::BLOB , self::NUMERIC , self::NONE ];
+			const SQLITE_TYPES     = [ self::NULL, self::INTEGER, self::REAL, self::TEXT, self::BLOB, self::NUMERIC, self::NONE ];
 			
 			/**
 			 * @var ContainerBuilder
@@ -1326,47 +1257,33 @@
 			 * @throws Exception
 			 * @return mixed
 			 */
-			public function app( string $key )
+			public function app(string $key)
 			{
 				
-				return self::container()->get( $key );
+				return self::container()->get($key);
 			}
 			
+		
 			public static function container()
 			{
 				
-				if( is_null( self::$container ) )
+				if(is_null(self::$container))
 				{
 					$c = new ContainerBuilder();
-					
-					$c->addDefinitions( CORE . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'admin.php' );
-					
-					$c->addDefinitions( CORE . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'web.php' );
-					
-					$c->enableCompilation( ROOT . DIRECTORY_SEPARATOR . 'tmp' );
-					
-					$c->useAnnotations( true );
-					
-					$c->useAutowiring( true );
-					
+					$c->addDefinitions(CORE . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'admin.php');
+					$c->addDefinitions(CORE . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'web.php');
+					$c->enableCompilation(ROOT . DIRECTORY_SEPARATOR . 'tmp');
+					$c->useAnnotations(true);
+					$c->useAutowiring(true);
 					$c = $c->build();
-					
-					$c->set( 'db.driver' , db( 'driver' ) );
-					
-					$c->set( 'db.name' , db( 'base' ) );
-					
-					$c->set( 'db.username' , db( 'username' ) );
-					
-					$c->set( 'db.password' , db( 'password' ) );
-					
-					$c->set( 'db.host' , db( 'host' ) );
-					
-					$c->set( 'db.dump' , db( 'dump' ) );
-					
-					$c->set( "views.path" , VIEWS );
-					
-					$c->set( "views.config" , config( 'twig' , 'config' ) );
-					
+					$c->set('db.driver', db('driver'));
+					$c->set('db.name', db('base'));
+					$c->set('db.username', db('username'));
+					$c->set('db.password', db('password'));
+					$c->set('db.host', db('host'));
+					$c->set('db.dump', db('dump'));
+					$c->set("views.path", VIEWS);
+					$c->set("views.config", config('twig', 'config'));
 					self::$container = $c;
 				}
 				

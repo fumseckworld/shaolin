@@ -260,15 +260,15 @@
 					case MYSQL:
 						foreach($this->connexion()->request("SHOW FULL COLUMNS FROM {$this->table}") as $column)
 							$fields->push($column->Field);
-					break;
+						break;
 					case POSTGRESQL:
 						foreach($this->connexion()->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'") as $column)
 							$fields->push($column->column_name);
-					break;
+						break;
 					case SQLITE:
 						foreach($this->connexion()->request("PRAGMA table_info({$this->table})") as $column)
 							$fields->push($column->name);
-					break;
+						break;
 				}
 				
 				return $fields->all();

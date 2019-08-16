@@ -1,5 +1,5 @@
 <?php
-
+	
 	namespace Imperium\Dump
 	{
 		
@@ -10,8 +10,7 @@
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Collection\Collect;
-
-
+		
 		/**
 		 * Class Dump
 		 *
@@ -20,6 +19,7 @@
 		 */
 		class Dump
 		{
+			
 			/**
 			 *
 			 * Connection to the base
@@ -28,7 +28,7 @@
 			 *
 			 */
 			private $connexion;
-
+			
 			/**
 			 *
 			 * To dump a base
@@ -37,7 +37,7 @@
 			 *
 			 */
 			private $base;
-
+			
 			/**
 			 *
 			 * The tables to dump
@@ -46,7 +46,7 @@
 			 *
 			 */
 			private $tables;
-
+			
 			/**
 			 *
 			 * The dump command
@@ -55,7 +55,7 @@
 			 *
 			 */
 			private $command;
-
+			
 			/**
 			 *
 			 * The quote to use
@@ -79,13 +79,14 @@
 			 */
 			public function __construct(bool $base, array $tables)
 			{
+				
 				$this->connexion = app()->connect();
 				$this->base = $base;
 				$this->tables = collect($tables);
 				$this->command = '';
 				$this->quote = $this->determine_quote();
 			}
-
+			
 			/**
 			 *
 			 * Dump a table or a base
@@ -97,83 +98,70 @@
 			 * @return bool
 			 *
 			 */
-			public function dump(): bool
+			public function dump() : bool
 			{
+				
 				$database = $this->connexion->base();
 				$driver = $this->connexion->driver();
 				$password = $this->connexion->password();
 				$username = $this->connexion->user();
 				$dump_path = $this->connexion->dump_path();
 				$host = $this->connexion->host();
-
-
 				Dir::clear($dump_path);
-
 				$filename = equal($driver, SQLITE) ? $dump_path . DIRECTORY_SEPARATOR . collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, $database))->last()))->first() . '.sql' : "$dump_path/$database.sql";
-
-				switch ($driver)
+				switch($driver)
 				{
 					case MYSQL:
 						append($this->command, $this->quote, 'mysqldump', $this->quote, " -u$username", " -p$password");
-
-						if ($this->base)
+						if($this->base)
 						{
 							append($this->command, " $database > $filename");
-
 							system($this->command);
-						} else
+						}
+						else
 						{
 							$tables = $this->tables->join(' ');
-
 							append($this->command, " $database", " --tables $tables", " > $filename");
-
 							system($this->command);
 						}
 					break;
 					case POSTGRESQL:
-
 						append($this->command, 'pg_dump', " -U $username", " -h $host", " -d $database", ' -p 5432', ' --clean', ' --if-exists', ' --inserts', ' --no-owner');
-
-						if ($this->base)
+						if($this->base)
 						{
 							append($this->command, " > $filename");
-
 							system($this->command);
-
+							
 							return File::exist($filename);
-
-						} else
+						}
+						else
 						{
 							append($this->command, " -t");
-
 							append($this->command, $this->tables->join(' -t '));
-
 							append($this->command, " > $filename");
-
 							system($this->command);
 						}
 					break;
 					case SQLITE:
 						append($this->command, "sqlite3");
-
-						if ($this->base)
+						if($this->base)
 						{
 							append($this->command, " $database .dump > $filename");
-
 							system($this->command);
-						} else
-						{
-							return  false;
 						}
-						break;
-						default:
+						else
+						{
 							return false;
-						break;
+						}
+					break;
+					default:
+						return false;
+					break;
 				}
-
+				
 				return File::exist($filename);
 			}
-
+			
 			/**
 			 *
 			 *
@@ -183,9 +171,11 @@
 			 * @return string
 			 *
 			 */
-			private function determine_quote(): string
+			private function determine_quote() : string
 			{
+				
 				return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? '"' : "'";
 			}
+			
 		}
 	}

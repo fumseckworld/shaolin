@@ -1,18 +1,16 @@
 <?php
-
-
+	
 	namespace Imperium\Exception
 	{
-
-
+		
 		use Exception;
-
+		
 		/**
 		 * Class Kedavra
 		 *
-		 * @package Imperium\Exception
+		 * @author  Willy Micili
 		 *
-		 * @author Willy Micili
+		 * @package Imperium\Exception
 		 *
 		 * @license GPL
 		 *
@@ -21,6 +19,6 @@
 		 */
 		class Kedavra extends Exception
 		{
-
+		
 		}
 	}

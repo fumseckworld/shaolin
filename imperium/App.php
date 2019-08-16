@@ -208,7 +208,7 @@
 				
 				return new Form();
 			}
-		
+			
 			/**
 			 *
 			 * Get an instance of table
@@ -312,10 +312,10 @@
 			 */
 			public function run() : Response
 			{
+				
 				$x = $this->router(ServerRequest::fromGlobals())->search();
 				
-				return  $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
-				
+				return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
 			}
 			
 			/**
@@ -442,7 +442,6 @@
 				return to($url, $message, $success);
 			}
 			
-			
 			/**
 			 *
 			 * @param  string  $content
@@ -560,7 +559,8 @@
 			 */
 			public function save() : bool
 			{
-				return (new Dump(true,[]))->dump();
+				
+				return (new Dump(true, []))->dump();
 			}
 			
 		}

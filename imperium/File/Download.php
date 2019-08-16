@@ -1,19 +1,18 @@
 <?php
-
-
+	
 	namespace Imperium\File
 	{
-
+		
 		use Imperium\Exception\Kedavra;
 		use Symfony\Component\HttpFoundation\Response;
-
+		
 		/**
 		 *
 		 * Class Download
 		 *
-		 * @package Imperium\File
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\File
 		 *
 		 * @license GPL
 		 *
@@ -22,25 +21,26 @@
 		 */
 		class Download
 		{
-
+			
 			/**
 			 * @var File
 			 */
 			private $filename;
-
+			
 			/**
 			 *
 			 * Download constructor.
 			 *
-			 * @param string $filename
+			 * @param  string  $filename
 			 *
 			 * @throws Kedavra
 			 */
 			public function __construct(string $filename)
 			{
+				
 				$this->filename = new File($filename);
 			}
-
+			
 			/**
 			 *
 			 * Download the file
@@ -52,9 +52,11 @@
 			 * @return Response
 			 *
 			 */
-			public function download(): Response
+			public function download() : Response
 			{
+				
 				return $this->filename->download();
 			}
+			
 		}
 	}

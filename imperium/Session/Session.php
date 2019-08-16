@@ -1,9 +1,8 @@
 <?php
-
+	
 	namespace Imperium\Session
 	{
-
-
+		
 		/**
 		 * Class Session
 		 *
@@ -18,34 +17,34 @@
 		 */
 		class Session implements SessionInterface
 		{
-
-
+			
 			private function start()
 			{
-				if (request()->getScriptName() !== './vendor/bin/phpunit')
+				
+				if(request()->getScriptName() !== './vendor/bin/phpunit')
 				{
-					if (session_status() === PHP_SESSION_NONE)
+					if(session_status() === PHP_SESSION_NONE)
 						session_start();
 				}
 			}
-
-
+			
 			/**
 			 *
 			 * Get a session value
 			 *
-			 * @param mixed $key
+			 * @param  mixed  $key
 			 *
 			 * @return mixed
 			 *
 			 */
 			public function get($key)
 			{
+				
 				$this->start();
-
-				return $this->has($key) ? $_SESSION[$key] : '';
+				
+				return $this->has($key) ? $_SESSION[ $key ] : '';
 			}
-
+			
 			/**
 			 *
 			 * Check if a key exist
@@ -55,62 +54,63 @@
 			 * @return bool
 			 *
 			 */
-			public function has($key): bool
+			public function has($key) : bool
 			{
+				
 				$this->start();
+				
 				return array_key_exists($key, $_SESSION);
-
 			}
-
+			
 			/**
 			 *
 			 * Add a new value
 			 *
-			 * @param        $value
-			 * @param string $key
+			 * @param          $value
+			 * @param  string  $key
 			 *
 			 * @return void
 			 *
 			 */
-			public function put($key, $value): void
+			public function put($key, $value) : void
 			{
+				
 				$this->start();
-				$_SESSION[$key] = $value;
-
+				$_SESSION[ $key ] = $value;
 			}
-
+			
 			/**
 			 *
 			 * Remove a value
 			 *
-			 * @param array $keys
+			 * @param  array  $keys
 			 *
 			 * @return bool
 			 */
-			public function remove(...$keys): bool
+			public function remove(...$keys) : bool
 			{
+				
 				$this->start();
-
-				foreach ($keys as $key)
+				foreach($keys as $key)
 				{
-					if (array_key_exists($key, $_SESSION))
-						unset($_SESSION[$key]);
+					if(array_key_exists($key, $_SESSION))
+						unset($_SESSION[ $key ]);
 				}
-
-
+				
 				return true;
 			}
-
+			
 			/**
 			 * @return array
 			 */
-			public function all(): array
+			public function all() : array
 			{
+				
 				$this->start();
+				
 				return $_SESSION;
 			}
-
-
+			
 			/**
 			 *
 			 * Set and return value
@@ -123,21 +123,20 @@
 			 */
 			public function def($key, $value)
 			{
+				
 				$this->start();
-				$_SESSION[$key] = $value;
+				$_SESSION[ $key ] = $value;
+				
 				return $value;
-
 			}
-
+			
 			/**
 			 * SessionInterface constructor.
 			 */
 			public function __construct()
 			{
-
-
 			}
-
+			
 			/**
 			 *
 			 * Clear the session
@@ -145,13 +144,15 @@
 			 * @return bool
 			 *
 			 */
-			public function clear(): bool
+			public function clear() : bool
 			{
+				
 				$this->start();
-				foreach ($this->all() as $k => $v)
-					unset($_SESSION[$k]);
-
+				foreach($this->all() as $k => $v)
+					unset($_SESSION[ $k ]);
+				
 				return true;
 			}
+			
 		}
 	}

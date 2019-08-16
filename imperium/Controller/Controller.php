@@ -1,14 +1,14 @@
 <?php
-
-
+	
 	namespace Imperium\Controller
 	{
+		
 		use Imperium\App;
-
+		
 		/**
 		 * Class Controller
 		 *
-		 * @author Willy Micieli
+		 * @author  Willy Micieli
 		 *
 		 * @package Imperium\Controller
 		 *
@@ -20,6 +20,6 @@
 		 */
 		class Controller extends App
 		{
-
+		
 		}
 	}

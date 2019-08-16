@@ -1,5 +1,5 @@
 <?php
-
+	
 	namespace Imperium\Middleware
 	{
 		
@@ -10,9 +10,9 @@
 		/**
 		 * Interface Middleware
 		 *
-		 * @package Imperium\Middleware
+		 * @author  Willy Micieli
 		 *
-		 * @author Willy Micieli
+		 * @package Imperium\Middleware
 		 *
 		 * @license GPL
 		 *
@@ -31,6 +31,7 @@
 			 *
 			 * @return ResponseInterface
 			 */
-			public function handle(ServerRequestInterface $request): ResponseInterface;
+			public function handle(ServerRequestInterface $request) : ResponseInterface;
+			
 		}
 	}

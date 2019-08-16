@@ -103,7 +103,7 @@
 				
 				return static::query()->between($column, $begin, $end);
 			}
-		
+			
 			/**
 			 * Undocumented function
 			 *
@@ -254,6 +254,7 @@
 			 */
 			public static function paginate($callable, int $current_page) : string
 			{
+				
 				return static::query()->paginate($callable, $current_page, static::$limit);
 			}
 			

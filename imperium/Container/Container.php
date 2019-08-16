@@ -46,9 +46,9 @@
 			public static function get() : App
 			{
 				
-				if( is_null( self::$instance ) )
+				if(is_null(self::$instance))
 				{
-					self::$instance = Zen::container()->get( App::class );
+					self::$instance = Zen::container()->get(App::class);
 				}
 				
 				return self::$instance;

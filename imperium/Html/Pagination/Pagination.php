@@ -1,6 +1,5 @@
 <?php
-
-
+	
 	namespace Imperium\Html\Pagination
 	{
 		
@@ -40,7 +39,6 @@
 			 */
 			private $url;
 			
-			
 			/**
 			 *
 			 * @param  int  $current_page
@@ -51,19 +49,13 @@
 			 */
 			public function __construct(int $current_page, int $limit, int $total)
 			{
-				$limit = equal($limit,0) ? 1 : $limit;
 				
+				$limit = equal($limit, 0) ? 1 : $limit;
 				$this->current_page = $current_page;
-				
 				$this->limit = $limit;
-				
 				$this->total = $total;
-				
-				$this->pages =  intval(ceil($total/$limit)) + 1;
-				
-				
-				$this->url = config('pagination','url');
-				
+				$this->pages = intval(ceil($total / $limit)) + 1;
+				$this->url = config('pagination', 'url');
 			}
 			
 			/**
@@ -76,12 +68,13 @@
 			 */
 			public function paginate() : string
 			{
-				$html = '<nav aria-label="Page navigation"><ul class="'.config('pagination','ul_class').'">';
-				for($i=1;$i!=$this->pages;$i++)
-					$i === $this->current_page ? append($html,'<li class="'.config('pagination','li_class').' active"><a href="'.$this->url .$i.'" class="'.config('pagination','link_class').' active ">'.$i.'</a></li>') : append($html,'<li class="'.config('pagination','li_class').'"><a href="' .$this->url .$i.'" class="'.config('pagination','link_class').'">'.$i.'</a></li>');
 				
-				append($html,'</ul></nav>');
-				return  $html;
+				$html = '<nav aria-label="Page navigation"><ul class="' . config('pagination', 'ul_class') . '">';
+				for($i = 1; $i != $this->pages; $i++)
+					$i === $this->current_page ? append($html, '<li class="' . config('pagination', 'li_class') . ' active"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . ' active ">' . $i . '</a></li>') : append($html, '<li class="' . config('pagination', 'li_class') . '"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>');
+				append($html, '</ul></nav>');
+				
+				return $html;
 			}
 			
 		}

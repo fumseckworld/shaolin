@@ -1,21 +1,20 @@
 <?php
-
-
+	
 	namespace Imperium\Security\Csrf
 	{
-
+		
 		use Exception;
 		use GuzzleHttp\Psr7\Response;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Middleware\Middleware;
 		use Psr\Http\Message\ResponseInterface;
 		use Psr\Http\Message\ServerRequestInterface;
-
+		
 		/**
 		 *
 		 * Class CsrfMiddleware
 		 *
-		 * @author Willy Micieli
+		 * @author  Willy Micieli
 		 *
 		 * @package Imperium\Security\Csrf
 		 *
@@ -26,13 +25,12 @@
 		 */
 		class CsrfMiddleware implements Middleware
 		{
-
-
+			
 			/**
 			 * @var Csrf
 			 */
 			private $csrf;
-
+			
 			/**
 			 * CsrfMiddleware constructor.
 			 *
@@ -40,8 +38,8 @@
 			 */
 			public function __construct()
 			{
+				
 				$this->csrf = new Csrf(app()->session());
-
 			}
 			
 			/**
@@ -58,7 +56,8 @@
 			{
 				
 				$this->csrf->check($request);
-				return  new Response();
+				
+				return new Response();
 			}
 			
 		}
