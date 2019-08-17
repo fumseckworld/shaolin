@@ -83,7 +83,7 @@
 				$this->args = $args;
 				$this->app_namespace = $namespace . '\\';
 				$this->class = $this->controller_class();
-				$this->controller_dir = CONTROLLERS;
+				$this->controller_dir = dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .'app' .DIRECTORY_SEPARATOR. 'Controllers';
 			}
 			
 			/**

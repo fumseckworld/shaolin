@@ -38,7 +38,7 @@
 				
 				$controller = ucfirst(str_replace('Controller', '', $input->getArgument('controller')));
 				append($controller, 'Controller');
-				$controllers = CONTROLLERS;
+				$controllers = 'app' . DIRECTORY_SEPARATOR .'Controllers';
 				$namespace = 'App' . '\\' . 'Controllers';
 				$file = $controllers . DIRECTORY_SEPARATOR . $controller . '.php';
 				if(file_exists($file))

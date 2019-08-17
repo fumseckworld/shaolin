@@ -81,7 +81,7 @@
 					{
 						clear_terminal();
 						$question = new Question("<info>Define the action to call</info> : ");
-						$x = "Shaolin\Controllers\\{$this->entry->get('controller')}";
+						$x = "App\Controllers\\{$this->entry->get('controller')}";
 						if(class_exists($x))
 							$question->setAutocompleterValues(get_class_methods(new $x));
 						$action = $helper->ask($input, $output, $question);

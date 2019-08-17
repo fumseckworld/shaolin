@@ -7,6 +7,7 @@
 		use DI\NotFoundException;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Query\Query;
+		use stdClass;
 		
 		/**
 		 * Class Model
@@ -93,8 +94,8 @@
 			 * @param  int     $end
 			 * @param  string  $column
 			 *
-			 * @throws Kedavra
 			 * @return Query
+			 *
 			 */
 			public static function between(int $begin, int $end, string $column = '') : Query
 			{
@@ -174,7 +175,7 @@
 				
 				$x = static::query()->where($column, EQUAL, $expected)->fetch(true)->all();
 				
-				return is_object($x) ? $x : new \stdClass();
+				return is_object($x) ? $x : new stdClass();
 			}
 			
 			/**
@@ -350,7 +351,7 @@
 			 *
 			 * @return Query
 			 */
-			private static function query() : Query
+			public static function query() : Query
 			{
 				
 				return (new static)->builder();

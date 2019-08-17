@@ -104,7 +104,7 @@
 			public function check(ServerRequestInterface $request)
 			{
 				
-				if(has($request->getMethod(), self::METHOD, true))
+				if(has($request->getMethod(), self::METHOD))
 				{
 					$params = $request->getParsedBody() ? : [];
 					$token = collect($params)->get(self::KEY);

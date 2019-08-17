@@ -65,7 +65,7 @@
 			 */
 			public function __construct(string $file, $key)
 			{
-				$file = CONFIG . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
+				$file = $this->path() . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
 				is_false(File::exist($file), true, "The $file file  was not found at " . $this->path());
 				$this->values = collect(self::parseFile($file));
 				is_false($this->values->has($key), true, "The $key key was not found in the  $file at " . $this->path());
@@ -83,7 +83,12 @@
 			 */
 			public function path() : string
 			{
-				return CONFIG;
+				
+				if(def(request()->server->get('DOCUMENT_ROOT')))
+					return dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .'config';
+				
+				return dirname(request()->server->get('PWD')) . DIRECTORY_SEPARATOR . 'config';
+				
 			}
 			
 			/**

@@ -36,20 +36,6 @@ define('LOCALHOST', 'localhost');
 define('ASC', 'ASC');
 define('DESC', 'DESC');
 
-define('ROOT', dirname(__DIR__));
-define('WEB', ROOT . DIRECTORY_SEPARATOR . 'web');
-define('DB', ROOT . DIRECTORY_SEPARATOR . 'db');
-define('CONTROLLERS_NAMESPACE', 'App\\Controllers');
-define('CORE', ROOT . DIRECTORY_SEPARATOR . 'app');
-define('CONTROLLERS', CORE . DIRECTORY_SEPARATOR . 'Controllers');
-define('VIEWS', CORE . DIRECTORY_SEPARATOR . 'Views');
-define('MODELS', CORE . DIRECTORY_SEPARATOR . 'Models');
-define('MIDDLEWARE', CORE . DIRECTORY_SEPARATOR . 'Middleware');
-define('CONFIG', ROOT . DIRECTORY_SEPARATOR . 'config');
-define('COMMAND', CORE . DIRECTORY_SEPARATOR . 'Console');
-define('EMAIL',CORE . DIRECTORY_SEPARATOR . 'Emails');
-define('HELPERS',CORE . DIRECTORY_SEPARATOR . 'Helpers');
-
 define('NUMERIC', '([0-9]+)');
 define('NOT_NUMERIC', '([^0-9]+)');
 define('STRING', '([a-zA-Z]+)');

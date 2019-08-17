@@ -41,7 +41,7 @@
 				
 				$namespace = 'App\Models';
 				
-				$file = MODELS . DIRECTORY_SEPARATOR . $model . '.php';
+				$file = 'app' .DIRECTORY_SEPARATOR.'Models'. DIRECTORY_SEPARATOR . $model . '.php';
 				
 				if(file_exists($file))
 				{

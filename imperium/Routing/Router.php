@@ -141,7 +141,7 @@
 				
 				$middleware_dir = 'Middleware';
 				$namespace = 'App' . '\\' . $middleware_dir . '\\';
-				$dir = CORE . DIRECTORY_SEPARATOR . $middleware_dir;
+				$dir = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR.'app'. DIRECTORY_SEPARATOR . $middleware_dir;
 				is_false(Dir::is($dir), true, "The $dir directory was not found");
 				$middle = glob("$dir/*php");
 				call_user_func_array([ new CsrfMiddleware(), 'handle' ], [ $request ]);
@@ -184,7 +184,7 @@
 					is_numeric($match) ? $params->set(intval($match)) : $params->set($match);
 				}
 				
-				return new RouteResult(CONTROLLERS_NAMESPACE, $this->route->name, $this->route->url, $this->route->controller, $this->route->action, $params->all());
+				return new RouteResult('App\Controllers', $this->route->name, $this->route->url, $this->route->controller, $this->route->action, $params->all());
 			}
 			
 			/**

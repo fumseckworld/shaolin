@@ -64,7 +64,7 @@
 			public function ip() : string
 			{
 				
-				return $this->request()->server->get('REMOTE_ADDR');
+				return $this->request()->getClientIp();
 			}
 			
 			/**

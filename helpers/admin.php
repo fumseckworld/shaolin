@@ -37,8 +37,10 @@
 		 */
 		function sql_file(string $table = '') : string
 		{
+			
 			if(def($table) && different(app()->connect()->driver(), SQLITE))
 				return def($table) ? app()->connect()->dump_path() . DIRECTORY_SEPARATOR . "$table.sql" : app()->connect()->dump_path() . DIRECTORY_SEPARATOR . app()->connect()->base() . '.sql';
+			
 			return app()->connect()->dump_path() . DIRECTORY_SEPARATOR . collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, app()->connect()->base()))->last()))->first() . '.sql';
 		}
 	}
@@ -57,7 +59,9 @@
 		 */
 		function csrf_field() : string
 		{
-			$value = ( new Csrf(app()->session()) )->token();
+			
+			$value = (new Csrf(app()->session()))->token();
+			
 			return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $value . '">';
 		}
 	}
@@ -79,12 +83,14 @@
 		 */
 		function to(string $url, string $message = '', bool $success = true) : RedirectResponse
 		{
+			
 			if(def($message))
 			{
 				$flash = new Flash(app()->session());
 				$success ? $flash->success($message) : $flash->failure($message);
 			}
-			return ( new RedirectResponse($url) )->send();
+			
+			return (new RedirectResponse($url))->send();
 		}
 	}
 	if( ! function_exists('back'))
@@ -99,9 +105,11 @@
 		 */
 		function back(string $message = '', bool $success = true) : RedirectResponse
 		{
+			
 			$back = request()->server->get('HTTP_REFERER');
 			if(is_null($back))
 				$back = '/';
+			
 			return to($back, $message, $success);
 		}
 	}
@@ -122,12 +130,14 @@
 		 */
 		function redirect(string $route_name, string $message = '', bool $success = true) : RedirectResponse
 		{
+			
 			if(def($message))
 			{
 				$flash = new Flash(app()->session());
 				$success ? $flash->success($message) : $flash->failure($message);
 			}
-			return ( new RedirectResponse(route($route_name)) )->send();
+			
+			return (new RedirectResponse(route($route_name)))->send();
 		}
 	}
 	if( ! function_exists('message'))
@@ -144,7 +154,8 @@
 		 */
 		function message(string $filename) : string
 		{
-			return ( new File(EMAIL . DIRECTORY_SEPARATOR . $filename) )->read();
+			
+			return (new File('app' .DIRECTORY_SEPARATOR. 'Email'. DIRECTORY_SEPARATOR . $filename))->read();
 		}
 	}
 	if( ! function_exists('app'))
@@ -161,6 +172,7 @@
 		 */
 		function app() : App
 		{
+			
 			return Container::get();
 		}
 	}
@@ -175,6 +187,7 @@
 		 */
 		function faker(string $locale = 'en_US') : Generator
 		{
+			
 			return Factory::create($locale);
 		}
 	}
@@ -195,6 +208,7 @@
 		 */
 		function db(string $key)
 		{
+			
 			return config('db', $key);
 		}
 	}
@@ -216,7 +230,8 @@
 		 */
 		function config(string $file, $key)
 		{
-			return ( new Config($file, $key) )->value();
+			
+			return (new Config($file, $key))->value();
 		}
 	}
 	if( ! function_exists('def'))
@@ -234,11 +249,13 @@
 		 */
 		function def(...$values) : bool
 		{
+			
 			foreach($values as $value)
 			{
 				if( ! isset($value) || empty($value))
 					return false;
 			}
+			
 			return true;
 		}
 	}
@@ -257,8 +274,10 @@
 		 */
 		function update_file_values(string $filename, string $delimiter, string ...$values) : bool
 		{
-			$keys = ( new File($filename) )->keys($delimiter);
-			return ( new File($filename, EMPTY_AND_WRITE_FILE_MODE) )->change_values($keys, $values, $delimiter);
+			
+			$keys = (new File($filename))->keys($delimiter);
+			
+			return (new File($filename, EMPTY_AND_WRITE_FILE_MODE))->change_values($keys, $values, $delimiter);
 		}
 	}
 	if( ! function_exists('string_parse'))
@@ -274,6 +293,7 @@
 		 */
 		function string_parse(string $data) : array
 		{
+			
 			return preg_split('/\s+/', $data);
 		}
 	}
@@ -288,6 +308,7 @@
 		 */
 		function instance() : Connect
 		{
+			
 			return connect(db('driver'), db('base'), db('username'), db('password'), db('host'), db('dump'));
 		}
 	}
@@ -306,6 +327,7 @@
 		 */
 		function assign(bool $condition, &$variable, $value)
 		{
+			
 			if($condition)
 			{
 				$variable = $value;
@@ -327,9 +349,11 @@
 		 */
 		function not_def(...$values) : bool
 		{
+			
 			foreach($values as $value)
 				if(def($value))
 					return false;
+			
 			return true;
 		}
 	}
@@ -344,6 +368,7 @@
 		 */
 		function request() : Request
 		{
+			
 			return Request::createFromGlobals();
 		}
 	}
@@ -360,6 +385,7 @@
 		 */
 		function https() : bool
 		{
+			
 			return request()->isSecure();
 		}
 	}
@@ -383,8 +409,10 @@
 		 */
 		function equal($parameter, $expected, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = strcmp($parameter, $expected) === 0;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -408,8 +436,10 @@
 		 */
 		function is_not_false($data, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = $data !== false;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -432,8 +462,10 @@
 		 */
 		function is_not_true($data, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = $data !== true;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -456,8 +488,10 @@
 		 */
 		function is_false($data, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = $data === false;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -480,9 +514,11 @@
 		 */
 		function is_true($data, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = $data === true;
 			if($run_exception && $x)
 				throw new Kedavra($message);
+			
 			return $x;
 		}
 	}
@@ -506,8 +542,10 @@
 		 */
 		function different($parameter, $expected, $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = strcmp($parameter, $expected) !== 0;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -528,6 +566,7 @@
 		 */
 		function server(string $key, string $value = '') : string
 		{
+			
 			return isset($_SERVER[ $key ]) && ! empty($_SERVER[ $key ]) ? $_SERVER[ $key ] : $value;
 		}
 	}
@@ -548,6 +587,7 @@
 		 */
 		function post(string $key, string $value = '') : string
 		{
+			
 			return isset($_POST[ $key ]) && ! empty($_POST[ $key ]) ? htmlspecialchars($_POST[ $key ], ENT_QUOTES, 'UTF-8', true) : $value;
 		}
 	}
@@ -568,6 +608,7 @@
 		 */
 		function get(string $key, string $value = '') : string
 		{
+			
 			return isset($_GET[ $key ]) && ! empty($_GET[ $key ]) ? htmlspecialchars($_GET[ $key ], ENT_QUOTES, 'UTF-8', true) : $value;
 		}
 	}
@@ -591,6 +632,7 @@
 		 */
 		function connect(string $driver, string $base, string $user = '', string $password = '', string $host = 'localhost', string $dump_path = 'dump') : Connect
 		{
+			
 			return new Connect($driver, $base, $user, $password, $host, $dump_path);
 		}
 	}
@@ -615,8 +657,10 @@
 		 */
 		function superior($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = is_array($parameter) ? count($parameter) > $expected : $parameter > $expected;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -641,8 +685,10 @@
 		 */
 		function superior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = is_array($parameter) ? count($parameter) >= $expected : $parameter >= $expected;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -666,8 +712,10 @@
 		 */
 		function inferior($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = is_array($parameter) ? count($parameter) < $expected : $parameter < $expected;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -691,8 +739,10 @@
 		 */
 		function inferior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
 		{
+			
 			$x = is_array($parameter) ? count($parameter) <= $expected : $parameter <= $expected;
 			is_true($x, $run_exception, $message);
+			
 			return $x;
 		}
 	}
@@ -704,7 +754,8 @@
 		 */
 		function whoops() : Run
 		{
-			return ( new Run() )->appendHandler(new PrettyPageHandler)->register();
+			
+			return (new Run())->appendHandler(new PrettyPageHandler)->register();
 		}
 	}
 	if( ! function_exists('os'))
@@ -722,7 +773,8 @@
 		 */
 		function os(bool $get_name = false)
 		{
-			return $get_name ? ( new Os() )->getName() : new Os();
+			
+			return $get_name ? (new Os())->getName() : new Os();
 		}
 	}
 	if( ! function_exists('commands'))
@@ -738,7 +790,8 @@
 		 */
 		function commands() : array
 		{
-			$commands = COMMAND;
+			
+			$commands = 'app' . DIRECTORY_SEPARATOR . 'Console';
 			$namespace = 'App\Console';
 			$data = glob($commands . DIRECTORY_SEPARATOR . '*.php');
 			$commands = collect();
@@ -749,6 +802,7 @@
 				$command = "$namespace\\$command";
 				$commands->set(new $command());
 			}
+			
 			return $commands->all();
 		}
 	}
@@ -765,7 +819,8 @@
 		 */
 		function controllers() : array
 		{
-			$dir = CONTROLLERS;
+			
+			$dir = 'app' . DIRECTORY_SEPARATOR . 'Controllers';
 			$controllers = collect(File::search("$dir" . DIRECTORY_SEPARATOR . '*.php'));
 			$data = collect();
 			if($controllers)
@@ -773,6 +828,7 @@
 				foreach($controllers as $controller)
 					$data->push(collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, $controller))->last()))->first());
 			}
+			
 			return $data->all();
 		}
 	}
@@ -789,6 +845,7 @@
 		 */
 		function d(...$values)
 		{
+			
 			$dumper = new Dumper();
 			foreach($values as $value)
 				$dumper->dump($value);
@@ -811,6 +868,7 @@
 		 */
 		function debug(bool $condition, ...$values)
 		{
+			
 			if($condition)
 			{
 				d($values);
@@ -832,7 +890,8 @@
 		 */
 		function bcrypt(string $value) : string
 		{
-			return ( new Hash($value) )->generate();
+			
+			return (new Hash($value))->generate();
 		}
 	}
 	if( ! function_exists('check'))
@@ -852,6 +911,7 @@
 		 */
 		function check(string $plain_text_password, string $hash_value) : bool
 		{
-			return ( new Hash($plain_text_password) )->valid($hash_value);
+			
+			return (new Hash($plain_text_password))->valid($hash_value);
 		}
 	}

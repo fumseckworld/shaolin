@@ -227,7 +227,7 @@
 			public function __construct(bool $routes = false)
 			{
 				
-				$this->connexion = $routes ? connect(SQLITE, CORE . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
+				$this->connexion = $routes ? connect(SQLITE, dirname(request()->server->get('DOCUMENT_ROOT'))  .DIRECTORY_SEPARATOR. 'app'. DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
 			}
 			
 			/**
