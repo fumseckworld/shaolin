@@ -300,6 +300,22 @@
 			return (new File($filename, EMPTY_AND_WRITE_FILE_MODE))->change_values($keys, $values, $delimiter);
 		}
 	}
+	if( ! function_exists('history'))
+	{
+		/**
+		 *
+		 * Go to last page
+		 *
+		 * @throws Kedavra
+		 *
+		 * @return string
+		 *
+		 */
+		function history(): string
+		{
+			return  '<button onclick="window.history.back()" class="'.config('history','class').'">'.config('history','text').'</button>';
+		}
+	}
 	if( ! function_exists('string_parse'))
 	{
 		/**

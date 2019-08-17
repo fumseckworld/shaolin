@@ -3,7 +3,6 @@
 	namespace Imperium\View
 	{
 		
-		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Flash\Flash;
 		use Sinergi\BrowserDetector\Os;
@@ -128,10 +127,10 @@
 					
 					return new Os();
 				}, [ 'is_safe' => [ 'html' ] ]),
-					new TwigFunction('back', function()
+					new TwigFunction('history', function()
 				{
 					
-					return url();
+					return history();
 				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('csrf_field', function()
 				{
 					
@@ -254,7 +253,6 @@
 			
 			/**
 			 *
-			 * @throws Kedavra
 			 *
 			 * @return mixed
 			 *
@@ -262,10 +260,8 @@
 			public function locale_path() : string
 			{
 				
-				$dir = dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'po';
-				Dir::create($dir);
-				
-				return realpath($dir);
+				return base('po');
+			
 			}
 			
 			/**
