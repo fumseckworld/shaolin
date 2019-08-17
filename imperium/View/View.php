@@ -79,7 +79,7 @@
 				$this->config = $config;
 				$cache_dir = collect($this->config)->get('cache');
 				if(def($cache_dir))
-					$this->config = collect($this->config)->refresh('cache', ROOT . DIRECTORY_SEPARATOR . $cache_dir)->all();
+					$this->config = collect($this->config)->refresh('cache', dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . $cache_dir)->all();
 				$this->namespaces = config('twig', 'namespaces');
 				$this->loader = new  FilesystemLoader($this->views_path);
 				$this->twig = new Environment($this->loader(), $this->config);
@@ -87,12 +87,12 @@
 				$this->twig->addExtension(new Twig_Extensions_Extension_I18n());
 				$this->twig->addExtension(new ArrayExtension());
 				$this->twig->addExtension(new TranslationExtension());
-				$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . 'Admin', 'admin');
-				$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . 'Users', 'users');
+				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Admin', 'admin');
+				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Users', 'users');
 				if(def($this->namespaces))
 				{
 					foreach($this->namespaces as $k => $v)
-						$this->loader()->addPath(VIEWS . DIRECTORY_SEPARATOR . $k, $v);
+						$this->loader()->addPath( $views_path . DIRECTORY_SEPARATOR .$k, $v);
 				}
 				$functions = collect();
 				$functions->set(new TwigFunction('display', function(string $key)
@@ -105,11 +105,7 @@
 				{
 					
 					return css($name);
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('copyright', function()
-					{
-						
-						return copyright();
-					}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('mobile', function()
+				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('mobile', function()
 				{
 					
 					return is_mobile();
@@ -117,11 +113,8 @@
 				{
 					
 					return new Os();
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('bootswatch', function(string $theme)
-				{
-					
-					return bootswatch($theme);
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('back', function()
+				}, [ 'is_safe' => [ 'html' ] ]),
+					new TwigFunction('back', function()
 				{
 					
 					return url();
@@ -157,18 +150,14 @@
 				{
 					
 					return route($name, $args);
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('navbar', function(string $app_name, string ...$names)
-				{
-					
-					return navbar($app_name, $names);
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('logged', function()
+				}, [ 'is_safe' => [ 'html' ] ]),new TwigFunction('logged', function()
 				{
 					
 					return app()->auth()->connected();
 				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('user', function()
 				{
 					
-					return current_user();
+					return app()->auth()->current();
 				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('development', function()
 				{
 					
@@ -211,10 +200,10 @@
 				Dir::create($dir);
 				$view = collect(explode('.', $view))->first();
 				append($view, '.twig');
-				$view = VIEWS . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $view;
+				$view = $this->views_path . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $view;
 				if( ! file_exists($view))
 					(new File($view, EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
-				$view = str_replace(VIEWS, '', $view);
+				$view = str_replace($this->views_path, '', $view);
 				
 				return $this->twig()->render($view, $args);
 			}
@@ -263,7 +252,7 @@
 			public function locale_path() : string
 			{
 				
-				$dir = ROOT . DIRECTORY_SEPARATOR . 'po';
+				$dir = dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'po';
 				Dir::create($dir);
 				
 				return realpath($dir);

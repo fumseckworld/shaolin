@@ -9,7 +9,7 @@ It's a library written to be useful for everybody, in order to manage dbs and to
 `composer require imperium/imperium`
 
 * [**Source code**](https://git.fumseck.eu/cgit/imperium)
-    * [**Download**](https://git.fumseck.eu/cgit/imperium/snapshot/imperium-10.1.2.zip)
+    * [**Download**](https://git.fumseck.eu/cgit/imperium/snapshot/imperium-10.1.3.zip)
     * [**Report a bug**](mailto:bugzilla@laposte.net)
-    * [**Sow diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=10.1.2&id2=10.1.1&dt=2)
+    * [**Sow diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=10.1.3&id2=10.1.2&dt=2)
     
