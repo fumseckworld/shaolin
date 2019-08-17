@@ -372,11 +372,9 @@
 			 *
 			 * Return a view
 			 *
-			 * @param  string  $dir
 			 * @param  string  $name
 			 * @param  array   $args
 			 *
-			 * @throws Kedavra
 			 * @throws LoaderError
 			 * @throws RuntimeError
 			 * @throws SyntaxError
@@ -384,10 +382,10 @@
 			 * @return Response
 			 *
 			 */
-			public function view(string $dir,string $name, array $args = []) : Response
+			public function view(string $name, array $args = []) : Response
 			{
 				
-				return $this->response($this->view->load($dir, $name, $args));
+				return $this->response($this->view->load($name, $args));
 			}
 			
 			/**

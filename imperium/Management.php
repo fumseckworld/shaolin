@@ -256,14 +256,12 @@
 			 *
 			 * Return a view
 			 *
-			 * @param  string  $dir
 			 * @param  string  $name
 			 * @param  array   $args
 			 *
 			 * @return Response
-			 *
 			 */
-			public function view(string $dir,string $name,array $args = []) : Response;
+			public function view(string $name,array $args = []) : Response;
 			
 			/**
 			 *

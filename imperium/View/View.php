@@ -5,7 +5,6 @@
 		
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
-		use Imperium\File\File;
 		use Imperium\Flash\Flash;
 		use Sinergi\BrowserDetector\Os;
 		use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -76,25 +75,40 @@
 			{
 				
 				$this->views_path = $views_path;
+				
 				$this->config = $config;
+				
 				$cache_dir = collect($this->config)->get('cache');
+				
 				if(def($cache_dir))
 					$this->config = collect($this->config)->refresh('cache', dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . $cache_dir)->all();
+				
 				$this->namespaces = config('twig', 'namespaces');
+			
 				$this->loader = new  FilesystemLoader($this->views_path);
+			
 				$this->twig = new Environment($this->loader(), $this->config);
+			
 				$this->twig->addExtension(new Twig_Extensions_Extension_Text());
+			
 				$this->twig->addExtension(new Twig_Extensions_Extension_I18n());
+			
 				$this->twig->addExtension(new ArrayExtension());
+			
 				$this->twig->addExtension(new TranslationExtension());
+			
 				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Admin', 'admin');
+			
 				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Users', 'users');
+			
 				if(def($this->namespaces))
 				{
 					foreach($this->namespaces as $k => $v)
 						$this->loader()->addPath( $views_path . DIRECTORY_SEPARATOR .$k, $v);
 				}
+				
 				$functions = collect();
+				
 				$functions->set(new TwigFunction('display', function(string $key)
 				{
 					
@@ -163,11 +177,16 @@
 					
 					return config('twig', 'development') === true;
 				}, [ 'is_safe' => [ 'html' ] ]));
+				
 				foreach($functions->all() as $function)
 					$this->twig()->addFunction($function);
+				
 				putenv("LANG={$this->locale()}");
+				
 				bindtextdomain($this->domain(), $this->locale_path());
+				
 				bind_textdomain_codeset($this->domain(), 'UTF-8');
+				
 				textdomain($this->domain());
 			}
 			
@@ -181,31 +200,20 @@
 			}
 			
 			/**
-			 * @param  string  $dir
 			 * @param  string  $view
 			 * @param  array   $args
 			 *
-			 * @throws Kedavra
 			 * @throws LoaderError
 			 * @throws RuntimeError
 			 * @throws SyntaxError
 			 * @return string
 			 */
-			public function load(string $dir, string $view, array $args = []) : string
+			public function load(string $view, array $args = []) : string
 			{
-				
-				Dir::create($dir);
 				
 				$view = collect(explode('.', $view))->first();
 				
 				append($view, '.twig');
-				
-				$view = $this->views_path . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $view;
-				
-				if( ! file_exists($view))
-					(new File($view, EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
-				
-				$view = str_replace($this->views_path, '', $view);
 				
 				return $this->twig()->render($view, $args);
 			}
