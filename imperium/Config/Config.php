@@ -87,7 +87,7 @@
 				if(def(request()->server->get('DOCUMENT_ROOT')))
 					return dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .'config';
 				
-				return dirname(request()->server->get('PWD')) . DIRECTORY_SEPARATOR . 'config';
+				return request()->server->get('PWD') . DIRECTORY_SEPARATOR . 'config';
 				
 			}
 			
