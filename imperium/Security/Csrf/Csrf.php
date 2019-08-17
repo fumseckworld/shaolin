@@ -86,7 +86,9 @@
 			{
 				
 				$this->session->put(self::SERVER, base64_encode((new Hash(request()->getHost()))->generate()));
+				
 				$token = base64_encode($this->session->get(self::SERVER)) . base64_encode(bin2hex(random_bytes(16)));
+				
 				$this->session->put(self::KEY, $token);
 				
 				return $token;
@@ -107,10 +109,15 @@
 				if(has($request->getMethod(), self::METHOD))
 				{
 					$params = $request->getParsedBody() ? : [];
+					
 					$token = collect($params)->get(self::KEY);
+					
 					is_true(not_def($token), true, 'We have not found the csrf token');
+					
 					different($this->session->get(self::SERVER), base64_decode(collect(explode('==', $token))->get(0)), true, "The Server is not valid");
+				
 					is_true(different($token, $this->session->get(self::KEY), true, "The token is invalid"));
+					
 					$this->session->remove(self::KEY);
 				}
 			}

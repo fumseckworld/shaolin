@@ -140,6 +140,26 @@
 			return (new RedirectResponse(route($route_name)))->send();
 		}
 	}
+	if( ! function_exists('base'))
+	{
+		/**
+		 *
+		 * Get absolute path
+		 *
+		 * @param  string  $dir
+		 *
+		 * @return string
+		 *
+		 */
+		function base(string $dir = '') : string
+		{
+			
+			if(def($dir))
+				return def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . $dir : request()->server->get('PWD') . DIRECTORY_SEPARATOR . $dir;
+			
+			return def(request()->server->get('DOCUMENT_ROOT')) ? dirname(request()->server->get('DOCUMENT_ROOT')) : request()->server->get('PWD');
+		}
+	}
 	if( ! function_exists('message'))
 	{
 		/**
@@ -155,7 +175,7 @@
 		function message(string $filename) : string
 		{
 			
-			return (new File(dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'app' .DIRECTORY_SEPARATOR. 'Email'. DIRECTORY_SEPARATOR . $filename))->read();
+			return (new File(base('app') . DIRECTORY_SEPARATOR . 'Email' . DIRECTORY_SEPARATOR . $filename))->read();
 		}
 	}
 	if( ! function_exists('app'))
@@ -438,6 +458,7 @@
 		{
 			
 			$x = $data !== false;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -464,6 +485,7 @@
 		{
 			
 			$x = $data !== true;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -490,6 +512,7 @@
 		{
 			
 			$x = $data === false;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -516,6 +539,7 @@
 		{
 			
 			$x = $data === true;
+			
 			if($run_exception && $x)
 				throw new Kedavra($message);
 			
@@ -544,6 +568,7 @@
 		{
 			
 			$x = strcmp($parameter, $expected) !== 0;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -566,8 +591,7 @@
 		 */
 		function server(string $key, string $value = '') : string
 		{
-			
-			return isset($_SERVER[ $key ]) && ! empty($_SERVER[ $key ]) ? $_SERVER[ $key ] : $value;
+			return request()->server->get($key,$value);
 		}
 	}
 	if( ! function_exists('post'))
@@ -587,8 +611,7 @@
 		 */
 		function post(string $key, string $value = '') : string
 		{
-			
-			return isset($_POST[ $key ]) && ! empty($_POST[ $key ]) ? htmlspecialchars($_POST[ $key ], ENT_QUOTES, 'UTF-8', true) : $value;
+			return request()->request->get($key,$value);
 		}
 	}
 	if( ! function_exists('get'))
@@ -608,8 +631,8 @@
 		 */
 		function get(string $key, string $value = '') : string
 		{
-			
-			return isset($_GET[ $key ]) && ! empty($_GET[ $key ]) ? htmlspecialchars($_GET[ $key ], ENT_QUOTES, 'UTF-8', true) : $value;
+			return  request()->query->get($key,$value);
+		
 		}
 	}
 	if( ! function_exists('connect'))
@@ -659,6 +682,7 @@
 		{
 			
 			$x = is_array($parameter) ? count($parameter) > $expected : $parameter > $expected;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -687,6 +711,7 @@
 		{
 			
 			$x = is_array($parameter) ? count($parameter) >= $expected : $parameter >= $expected;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -714,6 +739,7 @@
 		{
 			
 			$x = is_array($parameter) ? count($parameter) < $expected : $parameter < $expected;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;
@@ -741,6 +767,7 @@
 		{
 			
 			$x = is_array($parameter) ? count($parameter) <= $expected : $parameter <= $expected;
+			
 			is_true($x, $run_exception, $message);
 			
 			return $x;

@@ -119,10 +119,18 @@
 			{
 				
 				$success = equal($key, self::SUCCESS_KEY);
+				
+				$success_class = config('flash','success_class');
+				
+				$failure_class = config('flash','failure_class');
+				
+				$column_class = config('flash','column_class');
+				
 				$message = $this->get($key);
+				
 				if(def($message))
 				{
-					return $success ? '<div class="row"><div class="column"><div class="bg-teal-100 border-t-4 border-teal-500 rounded-b text-teal-900 px-4 py-3 shadow-md mb-5" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>' : '<div class="row"><div class="column"><div class="bg-red-300 border-t-4 border-red-500 rounded-b text-red-800 px-4 py-3 shadow-md mb-5" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>';
+					return $success ? '<div class="row"><div class="'.$column_class.'"><div class="'.$success_class.'" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>' : '<div class="row"><div class="'.$column_class.'"><div class="'.$failure_class.'" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>';
 				}
 				
 				return '';

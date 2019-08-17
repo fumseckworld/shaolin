@@ -63,10 +63,10 @@
 			public function __construct(ServerRequestInterface $request)
 			{
 				
-				is_true(not_def(Routes::first()),true,"No registered routes found");
-				
 				$this->method = $request->getMethod() !== GET ? def($request->getParsedBody()) ? strtoupper(collect($request->getParsedBody())->get('method')) : $request->getMethod() : GET;
+			
 				$this->url = $request->getUri()->getPath();
+			
 				$this->call_middleware($request);
 			}
 			
@@ -142,16 +142,25 @@
 			{
 				
 				$middleware_dir = 'Middleware';
+				
 				$namespace = 'App' . '\\' . $middleware_dir . '\\';
-				$dir = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR.'app'. DIRECTORY_SEPARATOR . $middleware_dir;
+				
+				$dir = base('app'). DIRECTORY_SEPARATOR . $middleware_dir;
+				
 				is_false(Dir::is($dir), true, "The $dir directory was not found");
+				
 				$middle = glob("$dir/*php");
+				
 				call_user_func_array([ new CsrfMiddleware(), 'handle' ], [ $request ]);
+				
 				foreach($middle as $middleware)
 				{
 					$middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
+					
 					$middleware = collect(explode('.', $middle))->first();
+					
 					$class = "$namespace$middleware";
+					
 					call_user_func_array([ new $class(), 'handle' ], [ $request ]);
 				}
 			}
@@ -179,7 +188,9 @@
 			{
 				
 				array_shift($this->args);
+				
 				$params = collect();
+				
 				foreach($this->args as $match)
 				{
 					is_numeric($match) ? $this->with($match, NUMERIC) : $this->with($match, STRING);
@@ -202,6 +213,7 @@
 			{
 				
 				$path = preg_replace_callback('#:([\w]+)#', [ $this, 'paramMatch' ], $url);
+				
 				$regex = "#^$path$#";
 				
 				return preg_match($regex, $this->url, $this->args) === 1;

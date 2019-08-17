@@ -23,6 +23,7 @@
 		 */
 		class Config extends Yaml
 		{
+			
 			/**
 			 * @var string
 			 *
@@ -65,11 +66,17 @@
 			 */
 			public function __construct(string $file, $key)
 			{
+				
 				$file = $this->path() . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
+				
 				is_false(File::exist($file), true, "The $file file  was not found at " . $this->path());
+				
 				$this->values = collect(self::parseFile($file));
+				
 				is_false($this->values->has($key), true, "The $key key was not found in the  $file at " . $this->path());
+				
 				$this->file = $file;
+				
 				$this->key = $key;
 			}
 			
@@ -84,11 +91,7 @@
 			public function path() : string
 			{
 				
-				if(def(request()->server->get('DOCUMENT_ROOT')))
-					return dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR .'config';
-				
-				return request()->server->get('PWD') . DIRECTORY_SEPARATOR . 'config';
-				
+				return base('config');
 			}
 			
 			/**
@@ -102,6 +105,7 @@
 			 */
 			public function value()
 			{
+				
 				return $this->values->get($this->key);
 			}
 			
