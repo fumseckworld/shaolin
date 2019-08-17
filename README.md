@@ -11,5 +11,5 @@ It's a library written to be useful for everybody, in order to manage dbs and to
 * [**Source code**](https://git.fumseck.eu/cgit/imperium)
     * [**Download**](https://git.fumseck.eu/cgit/imperium/snapshot/imperium-10.1.4.zip)
     * [**Report a bug**](mailto:bugzilla@laposte.net)
-    * [**Sow diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=10.1.4&id2=10.1.3&dt=2)
+    * [**Show diff**](https://git.fumseck.eu/cgit/imperium/diff/?id=10.1.4&id2=10.1.3&dt=2)
     
