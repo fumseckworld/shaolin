@@ -227,7 +227,10 @@
 			public function __construct(bool $routes = false)
 			{
 				
-				$this->connexion = $routes ? connect(SQLITE, dirname(request()->server->get('DOCUMENT_ROOT'))  .DIRECTORY_SEPARATOR. 'app'. DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
+				if(php_sapi_name() === 'cli' && $routes)
+					$this->connexion = $routes ? connect(SQLITE, 'app'. DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
+				else
+					$this->connexion = $routes ? connect(SQLITE, dirname(request()->server->get('DOCUMENT_ROOT'))  .DIRECTORY_SEPARATOR. 'app'. DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
 			}
 			
 			/**

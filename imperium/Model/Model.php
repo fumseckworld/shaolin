@@ -67,7 +67,7 @@
 			 * @var string
 			 *
 			 */
-			protected $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
+			protected static $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
 			
 			/**
 			 * @var bool
@@ -231,13 +231,20 @@
 			{
 				
 				$x = collect(static::query()->columns())->join(',');
+				
 				$values = collect($values)->for('htmlspecialchars')->all();
+				
 				$table = static::query()->table();
+				
 				$id = static::query()->key();
+				
 				$sql = "INSERT INTO $table ($x) VALUES (";
+				
 				foreach(static::query()->columns() as $column)
 					equal($column, $id) ? static::query()->connexion()->postgresql() ? append($sql, 'DEFAULT, ') : append($sql, 'NULL, ') : append($sql, static::query()->connexion()->pdo()->quote(collect($values)->get($column)) . ', ');
+				
 				$sql = trim($sql, ', ');
+				
 				append($sql, ')');
 				
 				return static::query()->connexion()->execute($sql);

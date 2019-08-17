@@ -155,7 +155,7 @@
 		function message(string $filename) : string
 		{
 			
-			return (new File('app' .DIRECTORY_SEPARATOR. 'Email'. DIRECTORY_SEPARATOR . $filename))->read();
+			return (new File(dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'app' .DIRECTORY_SEPARATOR. 'Email'. DIRECTORY_SEPARATOR . $filename))->read();
 		}
 	}
 	if( ! function_exists('app'))

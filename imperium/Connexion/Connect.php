@@ -116,7 +116,7 @@
 			public function __construct( string $driver, string $base, string $username, string $password, string $host, string $dump_path )
 			{
 				
-				$this->dump_path = $dump_path;
+				$this->dump_path = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'db' . DIRECTORY_SEPARATOR. $dump_path;
 				
 				$this->driver = $driver;
 				

@@ -1270,9 +1270,9 @@
 				if(is_null(self::$container))
 				{
 					$c = new ContainerBuilder();
-					$c->addDefinitions(CORE . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'admin.php');
-					$c->addDefinitions(CORE . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'web.php');
-					$c->enableCompilation(ROOT . DIRECTORY_SEPARATOR . 'tmp');
+					$c->addDefinitions(dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'app' . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'admin.php');
+					$c->addDefinitions(dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'app' . DIRECTORY_SEPARATOR . 'Container' . DIRECTORY_SEPARATOR . 'web.php');
+					$c->enableCompilation(dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'tmp');
 					$c->useAnnotations(true);
 					$c->useAutowiring(true);
 					$c = $c->build();
@@ -1282,7 +1282,7 @@
 					$c->set('db.password', db('password'));
 					$c->set('db.host', db('host'));
 					$c->set('db.dump', db('dump'));
-					$c->set("views.path", VIEWS);
+					$c->set("views.path", dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'app' . DIRECTORY_SEPARATOR . 'Views') ;
 					$c->set("views.config", config('twig', 'config'));
 					self::$container = $c;
 				}

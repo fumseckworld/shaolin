@@ -684,9 +684,6 @@
 				return $this;
 			}
 			
-			public function by($key) : Collect
-			{
-			}
 			
 			/**
 			 *
