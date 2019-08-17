@@ -7,8 +7,8 @@
 		use Imperium\Exception\Kedavra;
 		use PDO;
 		use PDOException;
-
-        /**
+		
+		/**
 		 *
 		 * Class Connect
 		 *
@@ -113,19 +113,14 @@
 			 *
 			 *
 			 */
-			public function __construct( string $driver, string $base, string $username, string $password, string $host, string $dump_path )
+			public function __construct(string $driver, string $base, string $username, string $password, string $host, string $dump_path)
 			{
 				
-				$this->dump_path = dirname(request()->server->get('DOCUMENT_ROOT')) .DIRECTORY_SEPARATOR .'db' . DIRECTORY_SEPARATOR. $dump_path;
-				
+				$this->dump_path = dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'db' . DIRECTORY_SEPARATOR . $dump_path;
 				$this->driver = $driver;
-				
 				$this->database = $base;
-				
 				$this->username = $username;
-				
 				$this->password = $password;
-				
 				$this->host = $host;
 			}
 			
@@ -140,29 +135,30 @@
 			 * @return Connect
 			 *
 			 */
-			public function set(int $pdo_mode): Connect
+			public function set(int $pdo_mode) : Connect
 			{
+				
 				$this->mode = $pdo_mode;
 				
 				return $this;
 			}
-
-            /**
-             *
-             * Execute all queries
-             *
-             * @method queries
-             *
-             * @param string ...$queries
-             *
-             * @return bool
-             */
-			public function queries( string ...$queries ) : bool
+			
+			/**
+			 *
+			 * Execute all queries
+			 *
+			 * @method queries
+			 *
+			 * @param  string  ...$queries
+			 *
+			 * @return bool
+			 */
+			public function queries(string ...$queries) : bool
 			{
+				
 				return collect($queries)->for([ $this, 'execute' ])->ok();
 			}
-
-
+			
 			/**
 			 *
 			 * Return the current host used
@@ -174,6 +170,7 @@
 			 */
 			public function host() : string
 			{
+				
 				return $this->host;
 			}
 			
@@ -188,6 +185,7 @@
 			 */
 			public function driver() : string
 			{
+				
 				return $this->driver;
 			}
 			
@@ -202,6 +200,7 @@
 			 */
 			public function base() : string
 			{
+				
 				return $this->database;
 			}
 			
@@ -216,6 +215,7 @@
 			 **/
 			public function user() : string
 			{
+				
 				return $this->username;
 			}
 			
@@ -230,6 +230,7 @@
 			 */
 			public function password() : string
 			{
+				
 				return $this->password;
 			}
 			
@@ -244,6 +245,7 @@
 			 */
 			public function fetch_mode() : int
 			{
+				
 				return $this->mode;
 			}
 			
@@ -258,6 +260,7 @@
 			 */
 			public function dump_path() : string
 			{
+				
 				return $this->dump_path;
 			}
 			
@@ -272,6 +275,7 @@
 			 */
 			public function mysql() : bool
 			{
+				
 				return $this->driver() === MYSQL;
 			}
 			
@@ -286,6 +290,7 @@
 			 */
 			public function postgresql() : bool
 			{
+				
 				return $this->driver() === POSTGRESQL;
 			}
 			
@@ -300,6 +305,7 @@
 			 */
 			public function sqlite() : bool
 			{
+				
 				return $this->driver() === SQLITE;
 			}
 			
@@ -315,10 +321,10 @@
 			 */
 			public function pdo() : PDO
 			{
+				
 				$instance = $this->getpdo();
 				
-				return  is_string($instance) ? new PDO( 'sqlite::memory:') :  $instance;
-				
+				return is_string($instance) ? new PDO('sqlite::memory:') : $instance;
 			}
 			
 			/**
@@ -331,18 +337,14 @@
 			 * @return object
 			 *
 			 */
-			public function fetch(string $sql, string ...$vars )
+			public function fetch(string $sql, string ...$vars)
 			{
+				
 				$query = $this->pdo()->prepare($sql);
-				
 				is_true(is_bool($query), true, $sql);
-				
 				$query->execute($vars);
-				
 				$x = $query->fetch($this->fetch_mode());
-				
 				is_false($query->closeCursor(), true, "Fail to close the connection");
-				
 				$query = null;
 				
 				return $x;
@@ -359,8 +361,9 @@
 			 * @return bool
 			 *
 			 */
-			public function not( string $driver ) : bool
+			public function not(string $driver) : bool
 			{
+				
 				return $this->driver() !== $driver;
 			}
 			
@@ -378,7 +381,7 @@
 			 * @return array
 			 *
 			 */
-			public function request( string $sql, string ...$vars ) : array
+			public function request(string $sql, string ...$vars) : array
 			{
 				
 				$query = $this->pdo()->prepare($sql);
@@ -412,8 +415,9 @@
 			 * @return bool
 			 *
 			 */
-			public function execute( string $sql, string ...$vars ) : bool
+			public function execute(string $sql, string ...$vars) : bool
 			{
+				
 				$query = $this->pdo()->prepare($sql);
 				
 				is_true(is_bool($query), true, $sql);
@@ -425,7 +429,6 @@
 				$query = null;
 				
 				return $x;
-				
 			}
 			
 			/**
@@ -439,6 +442,7 @@
 			 */
 			public function transaction() : Connect
 			{
+				
 				is_false($this->pdo()->beginTransaction(), true, "Transaction start fail");
 				
 				return $this;
@@ -455,6 +459,7 @@
 			 */
 			public function commit() : bool
 			{
+				
 				return $this->pdo()->commit();
 			}
 			
@@ -469,6 +474,7 @@
 			 */
 			public function rollback() : Connect
 			{
+				
 				is_false($this->pdo()->rollBack(), true, "ROLLBACK as fail");
 				
 				return $this;
@@ -481,23 +487,23 @@
 			 */
 			private function getpdo()
 			{
+				
 				$database = $this->database;
 				$username = $this->username;
 				$password = $this->password;
 				$driver = $this->driver;
 				$host = $this->host;
-				
-				if ( is_null($this->instance) )
+				if(is_null($this->instance))
 				{
-					if ( $this->sqlite() )
+					if($this->sqlite())
 					{
-						if ( def($database) )
+						if(def($database))
 						{
 							try
 							{
 								$this->instance = new PDO("$driver:$database");
 							}
-							catch ( PDOException $e )
+							catch(PDOException $e)
 							{
 								return $e->getMessage();
 							}
@@ -508,22 +514,21 @@
 							{
 								$this->instance = new PDO("$driver::memory:");
 							}
-							catch ( PDOException $e )
+							catch(PDOException $e)
 							{
 								return $e->getMessage();
 							}
 						}
-						
 					}
 					else
 					{
-						if ( def($database) )
+						if(def($database))
 						{
 							try
 							{
 								$this->instance = new PDO("$driver:host=$host;dbname=$database", $username, $password);
 							}
-							catch ( PDOException $e )
+							catch(PDOException $e)
 							{
 								return $e->getMessage();
 							}
@@ -534,27 +539,22 @@
 							{
 								$this->instance = new PDO("$driver:host=$host;dbname=$database", $username, $password);
 							}
-							catch ( PDOException $e )
+							catch(PDOException $e)
 							{
 								return $e->getMessage();
 							}
 						}
 					}
-					
 				}
 				else
 				{
 					return $this->instance;
 				}
-				
 				$this->instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
-				
 				$this->instance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-				
-				$this->instance->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_OBJ);
+				$this->instance->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
 				
 				return $this->instance;
-				
 			}
 			
 		}

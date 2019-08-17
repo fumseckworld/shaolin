@@ -90,6 +90,37 @@
 			}
 			
 			/**
+			 *
+			 *
+			 * Get the first records (id = 1)
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return object
+			 *
+			 */
+			public static function first() : object
+			{
+				
+				return static::query()->by(static::$by,ASC)->take(1)->fetch(true)->all();
+			}
+			
+			/**
+			 *
+			 * Get the last record (id != 1)
+			 *
+			 * @throws Kedavra
+			 *
+			 * @return object
+			 *
+			 */
+			public static function last() : object
+			{
+				
+				return static::query()->by(static::$by,DESC)->take(1)->fetch(true)->all();
+			}
+			
+			/**
 			 * @param  int     $begin
 			 * @param  int     $end
 			 * @param  string  $column
@@ -232,7 +263,7 @@
 				
 				$x = collect(static::query()->columns())->join(',');
 				
-				$values = collect($values)->for('htmlspecialchars')->all();
+				$values = collect($values)->for('htmlentities')->all();
 				
 				$table = static::query()->table();
 				
@@ -258,7 +289,9 @@
 			 * @param  int       $current_page
 			 *
 			 * @throws Kedavra
+			 *
 			 * @return string
+			 *
 			 */
 			public static function paginate($callable, int $current_page) : string
 			{

@@ -181,7 +181,7 @@
 			}
 			
 			/**
-			 * @param  string  $class
+			 * @param  string  $dir
 			 * @param  string  $view
 			 * @param  array   $args
 			 *
@@ -189,20 +189,22 @@
 			 * @throws LoaderError
 			 * @throws RuntimeError
 			 * @throws SyntaxError
-			 *
 			 * @return string
-			 *
 			 */
-			public function load(string $class, string $view, array $args = []) : string
+			public function load(string $dir, string $view, array $args = []) : string
 			{
 				
-				$dir = ucfirst(strtolower(str_replace('Controller', '', collect(explode("\\", $class))->last())));
 				Dir::create($dir);
+				
 				$view = collect(explode('.', $view))->first();
+				
 				append($view, '.twig');
+				
 				$view = $this->views_path . DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR . $view;
+				
 				if( ! file_exists($view))
 					(new File($view, EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n");
+				
 				$view = str_replace($this->views_path, '', $view);
 				
 				return $this->twig()->render($view, $args);

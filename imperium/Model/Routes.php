@@ -23,4 +23,7 @@
 		{
 			return static::query()->connexion()->execute(static::$create_route_table_query);
 		}
+		
+		
+		
 	}

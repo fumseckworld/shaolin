@@ -63,6 +63,8 @@
 			public function __construct(ServerRequestInterface $request)
 			{
 				
+				is_true(not_def(Routes::first()),true,"No registered routes found");
+				
 				$this->method = $request->getMethod() !== GET ? def($request->getParsedBody()) ? strtoupper(collect($request->getParsedBody())->get('method')) : $request->getMethod() : GET;
 				$this->url = $request->getUri()->getPath();
 				$this->call_middleware($request);
