@@ -80,7 +80,7 @@
 				$this->connect = $this->app(Connect::class);
 				$this->view = $this->app(View::class);
 				$this->table = $this->app(Table::class);
-				Dotenv::create(dirname(request()->server->get('DOCUMENT_ROOT')), '.env')->load();
+				Dotenv::create(base(), '.env')->load();
 			}
 			
 			/**
