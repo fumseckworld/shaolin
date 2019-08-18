@@ -80,7 +80,7 @@
 				$cache_dir = collect($this->config)->get('cache');
 				
 				if(def($cache_dir))
-					$this->config = collect($this->config)->refresh('cache', dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . $cache_dir)->all();
+					$this->config = collect($this->config)->refresh('cache', base($cache_dir))->all();
 				
 				$this->namespaces = config('twig', 'namespaces');
 			
