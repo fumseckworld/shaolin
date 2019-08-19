@@ -323,7 +323,7 @@
 					return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
 				}
 
-				return $this->view('maintenance',[],503,['Retry-After' => config('mode','retry')])->send();
+				return $this->view('maintenance',[],503,['Retry-After' => 600])->send();
 			}
 			
 			/**
