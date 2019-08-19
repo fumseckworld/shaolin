@@ -258,10 +258,12 @@
 			 *
 			 * @param  string  $name
 			 * @param  array   $args
-			 *
+			 * @param  int     $status
+			 * @param  array   $header 
+			 * 
 			 * @return Response
 			 */
-			public function view(string $name,array $args = []) : Response;
+			public function view(string $name,array $args = [],int $status= 200,array $headers = []) : Response;
 			
 			/**
 			 *
