@@ -94,16 +94,16 @@
 				{
 					case MYSQL:
 						return is_not_false(system("mysql -u $username -h $host -p$password $base < $sql"));
-						break;
+					break;
 					case POSTGRESQL:
 						return is_not_false(system(" psql  -h $host  -U $username $base < $sql"));
-						break;
+					break;
 					case SQLITE:
 						return is_not_false(system("sqlite3 $base < $sql"));
-						break;
+					break;
 					default:
 						return false;
-						break;
+					break;
 				}
 			}
 			

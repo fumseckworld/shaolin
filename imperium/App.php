@@ -307,15 +307,19 @@
 			 * @throws DependencyException
 			 * @throws Kedavra
 			 * @throws NotFoundException
+			 * 
 			 * @return Response
 			 *
 			 */
 			public function run() : Response
 			{
+				if(equal(config('mode','mode'),'up'))
+				{
+					$x = $this->router(ServerRequest::fromGlobals())->search();
 				
-				$x = $this->router(ServerRequest::fromGlobals())->search();
-				
-				return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
+					return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
+				}
+				return $this->view('maintenance');
 			}
 			
 			/**
