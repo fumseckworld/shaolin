@@ -76,7 +76,8 @@
 			 */
 			public function __construct()
 			{
-				
+				if(server(DISPLAY_BUGS) == 'true')
+					whoops();
 				$this->connect = $this->app(Connect::class);
 				$this->view = $this->app(View::class);
 				$this->table = $this->app(Table::class);

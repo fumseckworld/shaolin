@@ -89,36 +89,6 @@
 				return static::query()->columns();
 			}
 			
-			/**
-			 *
-			 *
-			 * Get the first records (id = 1)
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
-			public static function first() : object
-			{
-				
-				return static::query()->by(static::$by,ASC)->take(1)->fetch(true)->all();
-			}
-			
-			/**
-			 *
-			 * Get the last record (id != 1)
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
-			public static function last() : object
-			{
-				
-				return static::query()->by(static::$by,DESC)->take(1)->fetch(true)->all();
-			}
 			
 			/**
 			 * @param  int     $begin

@@ -228,9 +228,9 @@
 			{
 				
 				if(php_sapi_name() === 'cli' && $routes)
-					$this->connexion = $routes ? connect(SQLITE, 'app'. DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
+					$this->connexion = $routes ? connect(SQLITE, 'app' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
 				else
-					$this->connexion = $routes ? connect(SQLITE, dirname(request()->server->get('DOCUMENT_ROOT'))  .DIRECTORY_SEPARATOR. 'app'. DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
+					$this->connexion = $routes ? connect(SQLITE, dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
 			}
 			
 			/**
@@ -263,15 +263,15 @@
 					case MYSQL:
 						foreach($this->connexion()->request("SHOW FULL COLUMNS FROM {$this->table}") as $column)
 							$fields->push($column->Field);
-					break;
+						break;
 					case POSTGRESQL:
 						foreach($this->connexion()->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'") as $column)
 							$fields->push($column->column_name);
-					break;
+						break;
 					case SQLITE:
 						foreach($this->connexion()->request("PRAGMA table_info({$this->table})") as $column)
 							$fields->push($column->name);
-					break;
+						break;
 				}
 				
 				return $fields->all();
@@ -357,18 +357,18 @@
 					case MYSQL:
 						foreach($this->connexion()->request("show columns from {$this->table} where `Key` = 'PRI';") as $key)
 							return $key->Field;
-					break;
+						break;
 					case POSTGRESQL:
 						foreach($this->connexion()->request("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';") as $key)
 							return $key->column_name;
-					break;
+						break;
 					case SQLITE:
 						foreach($this->connexion()->request("PRAGMA table_info({$this->table})") as $field)
 						{
 							if(def($field->pk))
 								return $field->name;
 						}
-					break;
+						break;
 				}
 				throw  new Kedavra('We have not found a primary key');
 			}
@@ -467,20 +467,20 @@
 				{
 					case SELECT:
 						return "SELECT $columns $table $where $and $or $order $limit $offset";
-					break;
+						break;
 					case DELETE :
 						return "DELETE $table $where $and $or";
-					break;
+						break;
 					case UNION:
 					case UNION_ALL:
 						return "$union $where $and $or $order $limit $offset";
-					break;
+						break;
 					case collect(self::JOIN_MODE)->exist($mode) :
 						return "$join $order $limit";
-					break;
+						break;
 					default:
 						throw new Kedavra('The query mode is not define');
-					break;
+						break;
 				}
 			}
 			
@@ -723,19 +723,19 @@
 				{
 					case INNER_JOIN:
 						$this->join = "$mod $select FROM $first_table INNER JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
-					break;
+						break;
 					case CROSS_JOIN:
 						$this->join = "$mod $select FROM $first_table CROSS JOIN $second_table";
-					break;
+						break;
 					case LEFT_JOIN:
 						$this->join = "$mod $select FROM $first_table LEFT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
-					break;
+						break;
 					case RIGHT_JOIN:
 						$this->join = "$mod $select FROM $first_table RIGHT JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
-					break;
+						break;
 					case FULL_JOIN:
 						$this->join = "$mod $select FROM $first_table FULL  JOIN $second_table ON $first_table.$first_param $condition $second_table.$second_param";
-					break;
+						break;
 				}
 				
 				return $this;
@@ -765,13 +765,13 @@
 							$this->union = "SELECT * FROM $first_table UNION SELECT * FROM $second_table";
 						else
 							$this->union = "SELECT $first_column FROM $first_table UNION SELECT $second_column FROM $second_table";
-					break;
+						break;
 					case Query::UNION_ALL:
 						if(not_def($first_column, $second_column))
 							$this->union = "SELECT * FROM $first_table UNION ALL SELECT * FROM $second_table";
 						else
 							$this->union = "SELECT $first_column FROM $first_table UNION ALL SELECT $second_column FROM $second_table";
-					break;
+						break;
 				}
 				
 				return $this;
@@ -946,6 +946,19 @@
 				$pagination = (new Pagination($page, $limit, $this->sum()))->paginate();
 				
 				return collect($this->take($limit, (($page) - 1) * $limit)->all())->each($callable)->join('') . ' ' . $pagination;
+			}
+			
+			/**
+			 * @param  int  $limit
+			 *
+			 * @return Query
+			 */
+			public function limit(int $limit) : Query
+			{
+				
+				$this->limit = "LIMIT $limit";
+				
+				return $this;
 			}
 			
 		}
