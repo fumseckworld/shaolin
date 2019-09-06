@@ -5,7 +5,8 @@
 	use DI\DependencyException;
 	use DI\NotFoundException;
 	use Imperium\Html\Pagination\Pagination;
-	use Imperium\Model\Web;
+    use Imperium\Model\Admin;
+    use Imperium\Model\Web;
 	use Imperium\Exception\Kedavra;
 	use Sinergi\BrowserDetector\Os;
 	use Imperium\Collection\Collect;
@@ -492,25 +493,28 @@
 	
 	if (!function_exists('route'))
 	{
-		
-		/**
-		 *
-		 * Get a route url
-		 *
-		 * @method route
-		 *
-		 * @param mixed $name
-		 * @param mixed $args
-		 *
-		 * @return string
-		 *
-		 * @throws Kedavra
-		 */
-		function route(string $name, array $args = []): string
+
+        /**
+         *
+         * Get a route url
+         *
+         * @method route
+         *
+         * @param mixed $name
+         * @param bool $admin
+         * @param mixed $args
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         */
+		function route(string $name,bool $admin = false,array $args = []): string
 		{
 			
-			$x = Web::where('name', EQUAL, $name)->fetch(true)->all();
-			
+			$x = $admin ? Admin::where('name', EQUAL, $name)->fetch(true)->all() :   Web::where('name', EQUAL, $name)->fetch(true)->all();
+
+			is_true(not_def($x),true,"The $name route name was not found");
+
 			if (def($args))
 			{
 				

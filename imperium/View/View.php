@@ -159,10 +159,10 @@
 				{
 					
 					return root();
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('route', function(string $name, ...$args)
+				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('route', function(string $name, bool $admin = false,...$args)
 				{
 					
-					return route($name, $args);
+					return route($name,$admin, $args);
 				}, [ 'is_safe' => [ 'html' ] ]),new TwigFunction('logged', function()
 				{
 					
