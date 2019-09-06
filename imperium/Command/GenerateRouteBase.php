@@ -5,12 +5,13 @@
 		
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Model\Routes;
+		use Imperium\Model\Web;
+		use Imperium\Model\Admin;
 		use Symfony\Component\Console\Command\Command;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
 		
-		class GenerateRoutesTable extends Command
+		class GenerateRouteBase extends Command
 		{
 			
 			protected static $defaultName = 'route:generate';
@@ -18,7 +19,7 @@
 			protected function configure()
 			{
 				
-				$this->setDescription('Generate the router table');
+				$this->setDescription('Generate the web route base');
 			}
 			
 			/**
@@ -30,8 +31,10 @@
 			 */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
-				Dir::create('app' .DIRECTORY_SEPARATOR . 'Routes');
-				return Routes::generate();
+	            Web::generate();
+	            Admin::generate();
+	            return 0;
+
 			}
 			
 		}

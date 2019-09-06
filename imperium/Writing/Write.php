@@ -79,7 +79,7 @@
 				$this->message->setReplyTo($author_email);
 				$this->mailer = new Swift_Mailer($this->transport);
 				config($file, 'html') ? $this->message->setBody(message($message), 'text/html', 'utf-8') : $this->message->setBody($message, 'text/plain', 'utf-8');
-				$this->private_key = (new File(dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
+				$this->private_key = (new File(base() . DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
 			}
 			
 			/**

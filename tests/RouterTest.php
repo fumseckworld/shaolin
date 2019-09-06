@@ -6,7 +6,7 @@ namespace Testing {
 	use DI\DependencyException;
 	use DI\NotFoundException;
 	use Imperium\Exception\Kedavra;
-    use Imperium\Model\Routes;
+    use Imperium\Model\Web;
 	use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
     use Imperium\Testing\Unit;
@@ -54,8 +54,8 @@ namespace Testing {
         public function test_add_route()
         {
 
-            $this->assertTrue(Routes::create(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
-            $this->assertTrue(Routes::destroy(Routes::where('name',EQUAL,'imperium')->fetch(true)->all()->id));
+            $this->assertTrue(Web::create(['id' => 'id','name' =>'imperium', 'url' => '/imperium','controller' => 'AuthController' ,'action' => 'imperium','method' => GET]));
+            $this->assertTrue(Web::destroy(Web::where('name',EQUAL,'imperium')->fetch(true)->all()->id));
 
 
         }

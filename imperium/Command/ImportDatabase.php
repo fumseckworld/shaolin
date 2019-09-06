@@ -31,9 +31,7 @@
 			 * @param  InputInterface   $input
 			 * @param  OutputInterface  $output
 			 *
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 * @throws Kedavra
+             * @throws Kedavra
 			 * @return int|null
 			 */
 			public function execute(InputInterface $input, OutputInterface $output)

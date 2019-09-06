@@ -1,5 +1,7 @@
 .idea
 .env
+app
+web
 vendor
 coverage
 node_modules

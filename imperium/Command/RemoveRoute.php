@@ -3,7 +3,8 @@
 	namespace Imperium\Command;
 	
 	use Imperium\Exception\Kedavra;
-	use Imperium\Model\Routes;
+    use Imperium\Model\Admin;
+    use Imperium\Model\Web;
 	use Symfony\Component\Console\Input\InputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
 	use Symfony\Component\Console\Question\Question;
@@ -15,8 +16,18 @@
 		private          $route_name;
 		
 		private          $id;
-		
-		protected function configure()
+        /**
+         * @var string
+         */
+        private $choose;
+        /**
+         * @var array
+         */
+        private $names;
+
+        private $helper;
+
+        protected function configure()
 		{
 			$this->setDescription('Delete a route');
 		}
@@ -29,17 +40,25 @@
 		 */
 		public function interact(InputInterface $input, OutputInterface $output)
 		{
-			$helper = $this->getHelper('question');
-			$names = Routes::only('name');
-			do
-			{
-				clear_terminal();
-				$question = new Question("<info>Enter the route name</info> : ");
-				$question->setAutocompleterValues($names);
-				$x = $helper->ask($input, $output, $question);
-				$this->route_name = $x;
-			}while(is_null($x) || collect($names)->not_exist($x));
-			$this->id = Routes::by('name', $this->route_name)->id;
+
+			$this->helper = $this->getHelper('question');
+
+            do {
+                clear_terminal();
+
+                $question = new Question("<info>Route for admin or web ?</info> : ");
+
+                $question->setAutocompleterValues(['admin', 'web']);
+
+                $this->choose = $this->helper->ask($input, $output, $question);
+
+            } while (is_null($this->choose) || not_in(['admin', 'web'], $this->choose));
+
+
+            $this->names =  $this->choose == 'web' ? Web::only('name') : Admin::only('name');
+
+
+
 		}
 		
 		/**
@@ -51,11 +70,46 @@
 		 */
 		public function execute(InputInterface $input, OutputInterface $output)
 		{
-			if(Routes::destroy($this->id))
-			{
-				$output->writeln('<bg=green;fg=white>The route was removed successfully</>');
-				return 0;
-			}
+
+            if (not_def($this->names))
+            {
+                clear_terminal();
+                $output->writeln("<error>The table is empty</error>");
+                return 1;
+            }
+
+            do
+            {
+                clear_terminal();
+
+                $question = new Question("<info>Enter the route name</info> : ");
+
+                $question->setAutocompleterValues($this->names);
+
+                $x = $this->helper->ask($input, $output, $question);
+
+                $this->route_name = $x;
+
+            }while(is_null($x) || collect($this->names)->not_exist($x));
+
+            $this->id =  $this->choose == 'web' ? Web::by('name',$this->route_name)->id : Admin::by('name',$this->route_name)->id;
+
+		    if ($this->choose == 'web')
+            {
+                if(Web::destroy($this->id))
+                {
+                    $output->writeln('<bg=green;fg=white>The route was removed successfully</>');
+                    return 0;
+                }
+            }else
+            {
+                if(Admin::destroy($this->id))
+                {
+                    $output->writeln('<bg=green;fg=white>The route was removed successfully</>');
+                    return 0;
+                }
+            }
+
 			$output->writeln('<bg=red;fg=white>Fail to remove route</>');
 			return 1;
 		}

@@ -8,7 +8,7 @@ use App\Models\Users;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Imperium\Exception\Kedavra;
-use Imperium\Model\Routes;
+use Imperium\Model\Web;
 use Imperium\Query\Query;
 use Imperium\Testing\Unit;
 use PDO;
@@ -25,18 +25,18 @@ class QueryTest extends Unit
         $this->assertNotEmpty(Query::from('users')->columns());
         $this->assertEquals(10,Query::from('users')->take(10)->sum());
         $this->assertEquals(10,Query::from('users')->different('id',10)->take(10,2)->sum());
-        $this->assertEquals(10,Query::from('users')->select('id','lastname')->take(10,4)->sum());
-        $this->assertEquals(10,Query::from('users')->select('id','lastname')->take(10,3)->by('lastname')->sum());
-        $this->assertEquals(20,Query::from('users')->select('id','lastname')->between('id',1,50)->pdo(PDO::FETCH_ASSOC)->take(20,1)->by('id',ASC)->sum());
-        $this->assertEquals('SELECT id, lastname FROM users     LIMIT 2,10 ',Query::from('users')->select('id','lastname')->take(10,2)->sql());
+        $this->assertEquals(10,Query::from('users')->select(['id','lastname'])->take(10,4)->sum());
+        $this->assertEquals(10,Query::from('users')->select(['id','lastname'])->take(10,3)->by('lastname')->sum());
+        $this->assertEquals(20,Query::from('users')->select(['id','lastname'])->between('id',1,50)->pdo(PDO::FETCH_ASSOC)->take(20,1)->by('id',ASC)->sum());
+        $this->assertEquals('SELECT id, lastname FROM users     LIMIT 2,10 ',Query::from('users')->select(['id','lastname'])->take(10,2)->sql());
         $this->assertNotEmpty(Query::from('users')->like('a')->all());
     }
 		
     public function test_query_primary_key()
 	{
 		$this->assertEquals('id',Query::from('users')->primary_key());
-		$this->assertEquals('id',Routes::key());
-		$this->assertEquals('id',Routes::primary());
+		$this->assertEquals('id',Web::key());
+		$this->assertEquals('id',Web::primary());
 	}
 	public function test_query_not()
 	{
@@ -68,7 +68,7 @@ class QueryTest extends Unit
 	public function test_query_like()
 	{
 		$this->assertNotEmpty(Query::from('users')->like('a')->all());
-		$this->assertNotEmpty(Routes::search('a'));
+		$this->assertNotEmpty(Web::search('a'));
 		$this->assertCount(5,Query::from('users')->not('id',2,3,4,5,6,7)->take(5)->all());
 		$this->assertCount(5,Query::from('users')->where('id',DIFFERENT,5)->not('id',2,3,4,6,7,54)->take(5)->all());
 		

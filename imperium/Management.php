@@ -214,18 +214,17 @@
 			 *
 			 */
 			public function assets(string $filename) : Asset;
-			
-			/**
-			 *
-			 * Get query builder
-			 *
-			 * @param  string  $table
-			 * @param  bool    $routes
-			 *
-			 * @return Query
-			 *
-			 */
-			public function sql(string $table, bool $routes = false) : Query;
+
+            /**
+             *
+             * Get query builder
+             *
+             * @param string $table
+             * @param bool $web
+             * @param bool $admin
+             * @return Query
+             */
+			public function sql(string $table, bool $web = false,bool $admin =false) : Query;
 			
 			/**
 			 *

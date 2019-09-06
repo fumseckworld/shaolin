@@ -1,2 +1,2 @@
 algorithm: 'sha256'
-secret: 'secrets'
+secret: 'secret'

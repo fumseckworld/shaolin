@@ -5,7 +5,7 @@
 	use DI\DependencyException;
 	use DI\NotFoundException;
 	use Imperium\Html\Pagination\Pagination;
-	use Imperium\Model\Routes;
+	use Imperium\Model\Web;
 	use Imperium\Exception\Kedavra;
 	use Sinergi\BrowserDetector\Os;
 	use Imperium\Collection\Collect;
@@ -509,7 +509,7 @@
 		function route(string $name, array $args = []): string
 		{
 			
-			$x = Routes::where('name', EQUAL, $name)->fetch(true)->all();
+			$x = Web::where('name', EQUAL, $name)->fetch(true)->all();
 			
 			if (def($args))
 			{

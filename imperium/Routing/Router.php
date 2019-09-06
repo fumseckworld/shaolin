@@ -7,7 +7,7 @@
 		use DI\NotFoundException;
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Model\Routes;
+		use Imperium\Model\Web;
 		use Imperium\Security\Csrf\CsrfMiddleware;
 		use Psr\Http\Message\ServerRequestInterface;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -82,7 +82,7 @@
 			public function search()
 			{
 				
-				foreach(Routes::where('method', EQUAL, $this->method)->all() as $route)
+				foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
 				{
 					if($this->match($route->url))
 					{

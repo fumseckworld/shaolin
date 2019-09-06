@@ -212,25 +212,27 @@
 			 *
 			 */
 			private $primary;
-			
-			/**
-			 *
-			 * The constructor
-			 *
-			 * @method __construct
-			 *
-			 * @param  bool  $routes
-			 *
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 */
-			public function __construct(bool $routes = false)
+
+            /**
+             *
+             * The constructor
+             *
+             * @method __construct
+             *
+             * @param bool $web
+             * @param bool $admin
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
+			public function __construct(bool $web = false,bool $admin = false)
 			{
-				
-				if(php_sapi_name() === 'cli' && $routes)
-					$this->connexion = $routes ? connect(SQLITE, 'app' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
-				else
-					$this->connexion = $routes ? connect(SQLITE, dirname(request()->server->get('DOCUMENT_ROOT')) . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Routes' . DIRECTORY_SEPARATOR . 'routes.sqlite3') : $this->app(Connect::class);
+
+			    if ($web)
+			        $this->connexion = connect(SQLITE, base('routes'). DIRECTORY_SEPARATOR . 'web.sqlite3');
+                elseif($admin)
+                    $this->connexion =  connect(SQLITE, base('routes'). DIRECTORY_SEPARATOR . 'admin.sqlite3');
+                else
+                   $this->connexion =  $this->app(Connect::class);
 			}
 			
 			/**
@@ -241,8 +243,7 @@
 			 */
 			public function connexion() : Connect
 			{
-				
-				return $this->connexion->set(PDO::FETCH_OBJ);
+				return $this->connexion->set($this->pdo_mode);
 			}
 			
 			/**
@@ -263,37 +264,37 @@
 					case MYSQL:
 						foreach($this->connexion()->request("SHOW FULL COLUMNS FROM {$this->table}") as $column)
 							$fields->push($column->Field);
-						break;
+                    break;
 					case POSTGRESQL:
 						foreach($this->connexion()->request("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'") as $column)
 							$fields->push($column->column_name);
-						break;
+                    break;
 					case SQLITE:
 						foreach($this->connexion()->request("PRAGMA table_info({$this->table})") as $column)
 							$fields->push($column->name);
-						break;
+                    break;
 				}
 				
 				return $fields->all();
 			}
-			
-			/**
-			 *
-			 *
-			 * @param  string  $table
-			 *
-			 * @param  bool    $routes
-			 *
-			 * @throws DependencyException
-			 * @throws NotFoundException
-			 *
-			 * @return Query
-			 *
-			 */
-			public static function from(string $table, bool $routes = false) : Query
+
+            /**
+             *
+             *
+             * @param string $table
+             *
+             * @param bool $routes
+             * @param bool $admin
+             *
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
+			public static function from(string $table, bool $routes = false,bool $admin =false) : Query
 			{
 				
-				return (new static($routes))->select_table($table);
+				return (new static($routes,$admin))->select_table($table);
 			}
 			
 			/**
@@ -529,11 +530,11 @@
 			 *
 			 * Select only column
 			 *
-			 * @param  string  ...$columns
+			 * @param  array  ...$columns
 			 *
 			 * @return Query
 			 */
-			public function select(string ...$columns) : Query
+			public function select(array $columns) : Query
 			{
 				
 				$this->columns = collect($columns)->join(', ');

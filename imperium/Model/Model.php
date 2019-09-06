@@ -7,7 +7,8 @@
 		use DI\NotFoundException;
 		use Imperium\Exception\Kedavra;
 		use Imperium\Query\Query;
-		use stdClass;
+        use Imperium\Zen;
+        use stdClass;
 		
 		/**
 		 * Class Model
@@ -21,7 +22,7 @@
 		 * @version 10
 		 *
 		 */
-		abstract class Model
+		abstract class Model extends Zen
 		{
 			
 			/**
@@ -73,6 +74,11 @@
 			 * @var bool
 			 */
 			protected $routes = false;
+
+			/**
+			 * @var bool
+			 */
+			protected $admin = false;
 			
 			/**
 			 *
@@ -160,8 +166,140 @@
 				
 				return self::by(self::key(), $expected);
 			}
-			
-			/**
+
+
+
+            /**
+             *
+             * Seed current table
+             *
+             * @param int $records
+             *
+             * @return bool
+             *
+             * @throws Kedavra
+             *
+             */
+            public static function seed(int $records): bool
+            {
+                $table = static::query()->table();
+
+                $columns = static::columns();
+
+                $columns_str = collect($columns)->join(',');
+
+                $query = "INSERT INTO $table ($columns_str) VALUES ";
+
+                $primary = static::primary();
+
+                $x = collect();
+
+                $sqlite = static::query()->connexion()->sqlite();
+
+
+                $types = collect(static::types());
+
+                for($i=0;different($i,$records);$i++)
+                {
+                    foreach ($columns as $k => $column)
+                    {
+                        $type = $sqlite ? strtolower($types->get($k)) : $types->get($k);
+
+                        if (equal($column,$primary))
+                        {
+                            switch (static::query()->connexion()->driver())
+                            {
+                                case MYSQL:
+                                case SQLITE:
+                                    $x->put($column,'NULL');
+                                break;
+                                default:
+                                    $x->put($column,'DEFAULT');
+                                break;
+                            }
+                        }
+                        else
+                        {
+
+                            if (has($type, self::BOOL))
+                            {
+                                $number = rand(0,1);
+                                $number == 0 ? $x->put($column,'false') : $x->put($column,'true');
+                            }
+
+
+                            if (has($type, self::JSONS))
+                            {
+                                $data = collect();
+
+                                $number = rand(1,10);
+
+                                for ($i=0; $i < $number ; $i++)
+                                {
+                                    if(is_pair($i))
+                                        $x->put($i,static::query()->connexion()->pdo()->quote(faker()->text(50)));
+                                    else
+                                        $data->put($i,faker()->numberBetween(1,50));
+                                }
+                                $x->put($column,$data->json());
+
+                            }
+                            if (has($type,self::DATE_TYPES))
+                                $x->put($column,faker()->date());
+
+                            if (has($type,self::NUMERIC_TYPES))
+                                $x->put($column,faker()->numberBetween(1,100));
+
+                            if (has($type,self::TEXT_TYPES))
+                            {
+                                $x->put($column,static::query()->connexion()->pdo()->quote(faker()->text(50)));
+                            }
+
+                        }
+
+                    }
+
+
+                    $value = '(' .$x->join(', ') . '),';
+
+                    append($query,$value);
+
+                    $x->clear();
+                }
+                $query = trim($query,',');
+
+                return  static::query()->connexion()->execute($query);
+
+            }
+            /**
+             *
+             * Get all available types for current driver
+             *
+             * @method types
+             *
+             * @return array
+             *
+             */
+            public static function types() : array
+            {
+                switch (static::query()->connexion()->driver())
+                {
+                    case MYSQL:
+                        return self::MYSQL_TYPES;
+                    break;
+                    case POSTGRESQL:
+                        return self::POSTGRESQL_TYPES;
+                    break;
+                    case SQLITE:
+                        return self::SQLITE_TYPES;
+                    break;
+                    default:
+                        return [];
+                    break;
+                }
+            }
+
+            /**
 			 *
 			 * @param  string  $column
 			 * @param  mixed   $expected
@@ -178,28 +316,20 @@
 				
 				return is_object($x) ? $x : new stdClass();
 			}
-			
-			/**
-			 *
-			 * Get only column values
-			 *
-			 * @param  string  $column
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return array
-			 *
-			 */
-			public static function only(string $column) : array
+
+            /**
+             *
+             * Get only column values
+             *
+             * @param string[] $columns
+             * @return array
+             * @throws Kedavra
+             */
+			public static function only(string ...$columns) : array
 			{
-				
-				$x = collect();
-				foreach(static::query()->select($column)->all() as $data)
-					$x->push($data->$column);
-				
-				return $x->all();
+				return static::query()->select($columns)->all();
 			}
-			
+
 			/**
 			 *
 			 *
@@ -250,7 +380,40 @@
 				
 				return static::query()->connexion()->execute($sql);
 			}
-			
+
+            /**
+             *
+             * Update a record
+             *
+             * @param int $id
+             * @param array $values
+             *
+             * @return bool
+             *
+             * @throws Kedavra
+             *
+             */
+			public static function update(int $id,array $values): bool
+            {
+                $primary = static::query()->primary_key();
+
+                $columns = collect();
+
+                $table = static::query()->table();
+
+                foreach ($values  as $k => $value)
+                {
+                    if (different($k,$primary))
+                        $columns->push("$k =" .static::query()->connexion()->pdo()->quote($value));
+
+                }
+
+                $columns =  $columns->join(', ');
+
+                $command = "UPDATE  $table SET $columns WHERE $primary = $id";
+
+                return  static::query()->connexion()->execute($command);
+            }
 			/**
 			 *
 			 * Display all records with a pagination
@@ -377,7 +540,7 @@
 			private function builder() : Query
 			{
 				
-				return Query::from($this->table, $this->routes)->primary($this->primary);
+				return Query::from($this->table, $this->routes,$this->admin)->primary($this->primary);
 			}
 			
 		}

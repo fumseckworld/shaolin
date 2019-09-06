@@ -3,15 +3,14 @@
 	namespace Imperium\Model;
 	
 	use Imperium\Exception\Kedavra;
-	use Imperium\File\File;
 	
-	class Routes extends Model
+	class Admin extends Model
 	{
 		
 		protected $table  = "routes";
-		
-		protected $routes = true;
-		
+
+		protected $admin = true;
+
 		/**
 		 *
 		 * @throws Kedavra
