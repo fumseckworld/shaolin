@@ -55,8 +55,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Imperium\\": "imperium/",
-      "App\\": "app/"
+      "Imperium\\": "imperium/"
     },
     "files": [
       "helpers/web.php",
