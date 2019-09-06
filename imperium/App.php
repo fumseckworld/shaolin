@@ -316,7 +316,8 @@ namespace Imperium {
          */
         public function run(): Response
         {
-            if (equal(config('mode', 'mode'), 'up')) {
+            if (equal(config('mode', 'mode'), 'up') || equal(config('mode', 'mode'), 'admin'))
+            {
                 $x = $this->router(ServerRequest::fromGlobals())->search();
 
                 return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();

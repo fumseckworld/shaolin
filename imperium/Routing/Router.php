@@ -7,7 +7,8 @@
 		use DI\NotFoundException;
 		use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Model\Web;
+        use Imperium\Model\Admin;
+        use Imperium\Model\Web;
 		use Imperium\Security\Csrf\CsrfMiddleware;
 		use Psr\Http\Message\ServerRequestInterface;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -81,17 +82,36 @@
 			 */
 			public function search()
 			{
+
+                if (equal(config('mode', 'mode'), 'admin'))
+                {
+                    foreach(Admin::where('method', EQUAL, $this->method)->all() as $route)
+                    {
+
+                        if($this->match($route->url))
+                        {
+                            $this->route = $route;
+
+                            return $this->result();
+                        }
+                    }
+
+                }else
+                {
+
+                    foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
+                    {
+                        if($this->match($route->url))
+                        {
+                            $this->route = $route;
+
+                            return $this->result();
+                        }
+                    }
+
+                }
 				
-				foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
-				{
-					if($this->match($route->url))
-					{
-						$this->route = $route;
-						
-						return $this->result();
-					}
-				}
-				
+
 				return to(route('404'));
 			}
 			
