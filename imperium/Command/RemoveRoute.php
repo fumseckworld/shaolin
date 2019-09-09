@@ -5,7 +5,8 @@
 	use Imperium\Exception\Kedavra;
     use Imperium\Model\Admin;
     use Imperium\Model\Web;
-	use Symfony\Component\Console\Input\InputInterface;
+    use Symfony\Component\Console\Helper\Helper;
+    use Symfony\Component\Console\Input\InputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
 	use Symfony\Component\Console\Question\Question;
 	
@@ -31,7 +32,22 @@
 		{
 			$this->setDescription('Delete a route');
 		}
-		
+
+        public function name(bool $web = true)
+        {
+            $x = \collect();
+            if ($web)
+            {
+                foreach (Web::all() as $v)
+                    $x->push($v->name);
+                return $x->all();
+            }
+
+            foreach (Admin::all() as $v)
+                $x->push($v->name);
+
+            return $x->all();
+        }
 		/**
 		 * @param  InputInterface   $input
 		 * @param  OutputInterface  $output
@@ -55,7 +71,7 @@
             } while (is_null($this->choose) || not_in(['admin', 'web'], $this->choose));
 
 
-            $this->names =  $this->choose == 'web' ? Web::only('name') : Admin::only('name');
+            $this->names =  $this->choose == 'web' ? $this->name() : $this->name(false);
 
 
 

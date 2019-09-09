@@ -16,22 +16,13 @@ namespace Imperium\Command {
 
         private $search;
         private $choose;
-
+        
         protected function configure()
         {
 
             $this->setDescription('Find a route');
         }
 
-        /**
-         * @return array
-         * @throws Kedavra
-         */
-        private function all()
-        {
-
-            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(), Web::only('name'), Web::only('url'), Web::only('action'), Web::only('controller'))->all();
-        }
 
         /**
          *
@@ -64,7 +55,10 @@ namespace Imperium\Command {
 
                     $question = new Question("<info>Please enter the search value : </info>");
 
-                    $question->setAutocompleterValues($this->all());
+                    if (equal($this->choose,'web'))
+                        $question->setAutocompleterValues($this->web());
+                    else
+                        $question->setAutocompleterValues($this->admin());
 
                     $this->search = $helper->ask($input, $output, $question);
 
@@ -77,9 +71,7 @@ namespace Imperium\Command {
 
                 $question = new Question("<info>Continue [Y/n] : </info>", 'Y');
 
-                $continue = strtoupper($helper->ask($input, $output, $question));
-
-                $continue = $continue === 'Y';
+                $continue = strtoupper($helper->ask($input, $output, $question)) === 'Y';
 
             } while ($continue);
 
@@ -97,6 +89,87 @@ namespace Imperium\Command {
             $output->writeln('<info>bye</info>');
 
             return 0;
+        }
+
+        private function controller(bool $web = true): array
+        {
+            $x = collect();
+            if ($web)
+            {
+                foreach (Web::all() as $v)
+                    $x->push($v->controller);
+                return $x->all();
+            }
+
+            foreach (Admin::all() as $v)
+                $x->push($v->controller);
+
+            return $x->all();
+        }
+
+        private function name(bool $web = true): array
+        {
+            $x = collect();
+            if ($web)
+            {
+                foreach (Web::all() as $v)
+                    $x->push($v->name);
+                return $x->all();
+            }
+
+            foreach (Admin::all() as $v)
+                $x->push($v->name);
+
+            return $x->all();
+        }
+
+        private function url(bool $web = true): array
+        {
+            $x = collect();
+            if ($web)
+            {
+                foreach (Web::all() as $v)
+                    $x->push($v->url);
+                return $x->all();
+            }
+
+            foreach (Admin::all() as $v)
+                $x->push($v->url);
+
+            return $x->all();
+        }
+
+        private function action(bool $web =true)
+        {
+            $x = collect();
+            if ($web)
+            {
+                foreach (Web::all() as $v)
+                    $x->push($v->action);
+                return $x->all();
+            }
+
+            foreach (Admin::all() as $v)
+                $x->push($v->action);
+
+            return $x->all();
+        }
+
+        /**
+         * @return array
+         */
+        private function web()
+        {
+
+            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(), $this->url(),$this->action(), $this->controller())->all();
+        }
+        /**
+         * @return array
+         */
+        private function admin()
+        {
+
+            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(false),$this->url(false),$this->action(false),$this->controller(false))->all();
         }
 
     }

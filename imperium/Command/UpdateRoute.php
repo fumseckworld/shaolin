@@ -38,7 +38,22 @@
 				
 				$this->setDescription('Update a route');
 			}
-			
+			public function name(bool $web = true)
+            {
+                $x = \collect();
+                if ($web)
+                {
+                    foreach (Web::all() as $v)
+                        $x->push($v->name);
+                    return $x->all();
+                }
+
+                foreach (Admin::all() as $v)
+                    $x->push($v->name);
+
+                return $x->all();
+            }
+
 			/**
 			 *
 			 * @param  InputInterface   $input
@@ -90,7 +105,7 @@
                 }
                 do
                 {
-                    if ($this->choose =='web')
+                    if ($this->choose == 'web')
                     {
                         do
                         {
@@ -98,7 +113,7 @@
 
                             $question = new Question("<info>Please enter the route name : </info>");
 
-                            $question->setAutocompleterValues(Web::only('name'));
+                            $question->setAutocompleterValues($this->name());
 
                             $this->search = $helper->ask($input, $output, $question);
 
@@ -171,7 +186,7 @@
 
                             $question = new Question("<info>Please enter the route name : </info>");
 
-                            $question->setAutocompleterValues(Web::only('name'));
+                            $question->setAutocompleterValues($this->name(false));
 
                             $this->search = $helper->ask($input, $output, $question);
 
@@ -240,9 +255,7 @@
 
                     $question = new Question("<info>Continue [Y/n] : </info>", 'Y');
 
-                    $continue = strtoupper($helper->ask($input, $output, $question));
-
-                    $continue = $continue === 'Y';
+                    $continue = strtoupper($helper->ask($input, $output, $question)) === 'Y';
 
                 }while($continue);
 
