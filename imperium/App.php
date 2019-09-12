@@ -500,16 +500,17 @@ namespace Imperium {
          * Generate url string
          *
          * @param string $route
+         * @param bool $admin
          * @param mixed $args
          *
          * @return string
          *
          * @throws Kedavra
          */
-        public function url(string $route, ...$args): string
+        public function url(string $route, bool $admin,...$args): string
         {
 
-            return route($route, $args);
+            return route($route,$admin, $args);
         }
 
         /**

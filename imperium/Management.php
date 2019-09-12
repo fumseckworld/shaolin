@@ -343,17 +343,18 @@
 			 *
 			 */
 			public function download(string $filename) : Response;
-			
-			/**
-			 *
-			 * Generate url string
-			 *
-			 * @param  string  $route
-			 * @param  mixed   $args
-			 *
-			 * @return string
-			 */
-			public function url(string $route, ...$args) : string;
+
+            /**
+             *
+             * Generate url string
+             *
+             * @param string $route
+             * @param bool $admin
+             * @param mixed $args
+             *
+             * @return string
+             */
+			public function url(string $route,bool $admin ,...$args) : string;
 			
 			/**
 			 *
