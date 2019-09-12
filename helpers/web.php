@@ -444,6 +444,8 @@
 				return count($data);
 			elseif (is_string($data))
 				return strlen($data);
+			elseif (is_integer($data) || is_numeric($data) || is_float($data) || is_int($data))
+				return intval($data);
 			else
 				
 				throw new Kedavra('The parameter must be a string or an array');

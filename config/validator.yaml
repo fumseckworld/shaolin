@@ -1,0 +1,5 @@
+required: 'The %s field is required'
+empty: 'The %s field must not be empty'
+between: 'The %s field must be between %d and %d'
+email: 'The %s email is not valid'
+digits: 'The %s argument is not a number'
