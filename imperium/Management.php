@@ -18,7 +18,8 @@
 		use Imperium\Shopping\Shop;
 		use Imperium\Tables\Table;
 		use Imperium\Security\Auth\Oauth;
-		use Imperium\Writing\Write;
+        use Imperium\Validator\Validator;
+        use Imperium\Writing\Write;
 		use Psr\Http\Message\ServerRequestInterface;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
 		use Symfony\Component\HttpFoundation\Request;
@@ -250,18 +251,17 @@
 			 *
 			 */
 			public function write(string $subject, string $message, string $author_email, string $to) : Write;
-			
-			/**
-			 *
-			 * Return a view
-			 *
-			 * @param  string  $name
-			 * @param  array   $args
-			 * @param  int     $status
-			 * @param  array   $header 
-			 * 
-			 * @return Response
-			 */
+
+            /**
+             *
+             * Return a view
+             *
+             * @param string $name
+             * @param array $args
+             * @param int $status
+             * @param array $headers
+             * @return Response
+             */
 			public function view(string $name,array $args = [],int $status= 200,array $headers = []) : Response;
 			
 			/**
@@ -373,6 +373,17 @@
 			 *
 			 */
 			public function shop() : Shop;
-			
+
+            /**
+             *
+             * Get an instance of validator
+             *
+             * @param array $data
+             *
+             * @return Validator
+             *
+             */
+			public function validator(array $data): Validator;
+
 		}
 	}

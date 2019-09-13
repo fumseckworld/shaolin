@@ -17,6 +17,7 @@ namespace Imperium {
     use Imperium\File\Download;
     use Imperium\Session\Session;
     use Imperium\Shopping\Shop;
+    use Imperium\Validator\Validator;
     use Imperium\View\View;
     use Imperium\Writing\Write;
     use Imperium\File\File;
@@ -569,6 +570,22 @@ namespace Imperium {
         {
 
             return (new Dump(true, []))->dump();
+        }
+
+        /**
+         *
+         * Get an instance of validator
+         *
+         * @param array $data
+         *
+         * @return Validator
+         *
+         * @throws Kedavra
+         *
+         */
+        public function validator(array $data): Validator
+        {
+            return new Validator($this->collect($data));
         }
     }
 }

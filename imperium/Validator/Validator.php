@@ -11,10 +11,9 @@ namespace Imperium\Validator {
     use Imperium\Collection\Collect;
     use Imperium\Exception\Kedavra;
     use Imperium\Flash\Flash;
-    use Imperium\Request\Request;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
-    abstract class Validator
+    class Validator
     {
 
         /**
@@ -66,20 +65,6 @@ namespace Imperium\Validator {
 
             $this->data = $data;
             $this->errors = collect();
-        }
-
-        /**
-         *
-         * Validate the request
-         *
-         * @return Validator
-         *
-         * @throws Kedavra
-         *
-         */
-        public static function validate(): Validator
-        {
-            return new static(collect((new Request())->all()));
         }
 
         /**
