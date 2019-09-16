@@ -39,7 +39,7 @@
 			$this->assertInstanceOf(Shop::class,app()->shop());
 			$this->assertNotEmpty(app()->tables());
 			$this->assertTrue(app()->save());
-			$this->assertTrue(app()->run()->isRedirect('/error'));
+
 		
 		}
 	}

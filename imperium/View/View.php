@@ -159,7 +159,16 @@
 				{
 					
 					return root();
-				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('route', function(string $name, bool $admin = false,...$args)
+				}, [ 'is_safe' => [ 'html' ] ]),
+
+                new TwigFunction('locale', function(string $locale)
+				{
+					return equal(app()->lang(),$locale);
+
+				}, [ 'is_safe' => [ 'html' ] ]),
+
+
+                new TwigFunction('route', function(string $name, bool $admin = false,...$args)
 				{
 					
 					return route($name,$admin, $args);

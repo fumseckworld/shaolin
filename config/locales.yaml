@@ -1,4 +1,4 @@
-locale: 'fr'
+locale: 'en'
 supported: ['fr']
 domain: 'messages'
 dir: 'po'

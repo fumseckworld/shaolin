@@ -11,6 +11,7 @@ namespace Imperium {
     use Imperium\Collection\Collect;
     use Imperium\Config\Config;
     use Imperium\Connexion\Connect;
+    use Imperium\Cookies\Cookies;
     use Imperium\Curl\Curl;
     use Imperium\Dump\Dump;
     use Imperium\Exception\Kedavra;
@@ -354,7 +355,7 @@ namespace Imperium {
         public function lang(): string
         {
 
-            return $this->config('locales', 'locale');
+            return $this->cookies()->get('locale',$this->config('locales', 'locale'));
         }
 
         /**
@@ -508,10 +509,10 @@ namespace Imperium {
          *
          * @throws Kedavra
          */
-        public function url(string $route, bool $admin,...$args): string
+        public function url(string $route, bool $admin, ...$args): string
         {
 
-            return route($route,$admin, $args);
+            return route($route, $admin, $args);
         }
 
         /**
@@ -526,10 +527,10 @@ namespace Imperium {
          * @throws DependencyException
          * @throws NotFoundException
          */
-        public function sql(string $table, bool $web = false,$admin = false): Query
+        public function sql(string $table, bool $web = false, $admin = false): Query
         {
 
-            return Query::from($table, $web,$admin);
+            return Query::from($table, $web, $admin);
         }
 
         /**
@@ -586,6 +587,18 @@ namespace Imperium {
         public function validator(array $data): Validator
         {
             return new Validator($this->collect($data));
+        }
+
+        /**
+         *
+         * Get an instance of cookies
+         *
+         * @return Cookies
+         *
+         */
+        public function cookies(): Cookies
+        {
+            return new Cookies();
         }
     }
 }

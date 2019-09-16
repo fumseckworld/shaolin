@@ -47,20 +47,28 @@ namespace Imperium\Validator {
          *
          * @param Collect $data
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function __construct(Collect $data)
         {
             $file = 'validator';
 
+            $lang = app()->lang();
+
             $this->message =
             [
-                'required' => config($file,'required'),
-                'empty' => config($file,'empty'),
-                'between' => config($file,'between'),
-                'email' => config($file,'email'),
-                'digits' => config($file,'digits'),
+                'required' => collect(config($file,$lang))->get('required'),
+                'empty' => collect(config($file,$lang))->get('empty'),
+                'between' => collect(config($file,$lang))->get('between'),
+                'email' => collect(config($file,$lang))->get('email'),
+                'digits' => collect(config($file,$lang))->get('digits'),
+                'alpha' => collect(config($file,$lang))->get('alpha'),
+                'alphanumeric' => collect(config($file,$lang))->get('alphanumeric'),
+                'boolean' => collect(config($file,$lang))->get('boolean'),
+                'lower' => collect(config($file,$lang))->get('lower'),
+                'upper' => collect(config($file,$lang))->get('upper'),
             ];
 
             $this->data = $data;
@@ -71,16 +79,85 @@ namespace Imperium\Validator {
          *
          * Check if values exist in data
          *
-         * @param string ...$values
-         *
+         * @param string[] $keys
          * @return Validator
          */
-        public function required(string ...$values): Validator
+        public function required(string ...$keys): Validator
         {
-            foreach ($values as $key)
+            foreach ($keys as $key)
             {
-                if ($this->data->has($key))
+                if (!$this->data->has($key))
                     $this->errors->push(sprintf($this->message['required'], $key));
+            }
+
+            return $this;
+        }
+
+        /**
+         *
+         * Check if values are alpha
+         *
+         * @param string[] $keys
+         * @return Validator
+         */
+        public function alpha(string ...$keys): Validator
+        {
+            foreach ($keys as $key)
+            {
+                if (!ctype_alpha($this->data->get($key)))
+                    $this->errors->push(sprintf($this->message['alpha'], $key));
+            }
+
+            return $this;
+        }
+
+        /**
+         *
+         * Check if values are alpha
+         *
+         * @param string[] $keys
+         * @return Validator
+         */
+        public function lower(string ...$keys): Validator
+        {
+            foreach ($keys as $key)
+            {
+                if (!ctype_lower($this->data->get($key)))
+                    $this->errors->push(sprintf($this->message['lower'], $key));
+            }
+
+            return $this;
+        }     /**
+         *
+         * Check if values are alpha
+         *
+         * @param string[] $keys
+         * @return Validator
+         */
+        public function upper(string ...$keys): Validator
+        {
+            foreach ($keys as $key)
+            {
+                if (!ctype_upper($this->data->get($key)))
+                    $this->errors->push(sprintf($this->message['upper'], $key));
+            }
+
+            return $this;
+        }
+
+        /**
+         *
+         * Check if values are alphanumeric
+         *
+         * @param string[] $keys
+         * @return Validator
+         */
+        public function alphanumeric(string ...$keys): Validator
+        {
+            foreach ($keys as $key)
+            {
+                if (!ctype_alnum($this->data->get($key)))
+                    $this->errors->push(sprintf($this->message['alphanumeric'], $key));
             }
 
             return $this;
@@ -90,16 +167,14 @@ namespace Imperium\Validator {
          *
          * Check if the emails are valid
          *
-         * @param string ...$values
-         *
+         * @param string[] $keys
          * @return Validator
-         *
          */
-        public function email(string ...$values): Validator
+        public function email(string ...$keys): Validator
         {
-            foreach ($values as $key)
+            foreach ($keys as $key)
             {
-                if (!(new EmailValidator())->isValid($key, new RFCValidation()))
+                if (!(new EmailValidator())->isValid($this->data->get($key), new RFCValidation()))
                 {
                     $this->errors->push(sprintf($this->message['email'], $key));
                 }
@@ -110,13 +185,12 @@ namespace Imperium\Validator {
 
         /**
          *
-         * @param string ...$values
-         *
+         * @param string[] $keys
          * @return Validator
          */
-        public function define(string ...$values): Validator
+        public function define(string ...$keys): Validator
         {
-            foreach ($values as $key)
+            foreach ($keys as $key)
             {
                 if (not_def($this->data->get($key)))
                     $this->errors->push(sprintf($this->message['empty'], $key));
@@ -130,20 +204,19 @@ namespace Imperium\Validator {
          *
          * Check if the key was between the min and the max
          *
-         * @param mixed $value
+         * @param $key
          * @param int $min
          * @param int $max
          *
          * @return Validator
          *
          * @throws Kedavra
-         *
          */
-        public function between($value, int $min, int $max): Validator
+        public function between($key, int $min, int $max): Validator
         {
-            if (superior(sum($value), $max) || inferior(sum($value), $min))
+            if (superior(sum($this->data->get($key)), $max) || inferior(sum($this->data->get($key)), $min))
             {
-                $this->errors->push(sprintf($this->message['between'], $value));
+                $this->errors->push(sprintf($this->message['between'], $key,$min,$max));
             }
             return $this;
         }
@@ -152,16 +225,14 @@ namespace Imperium\Validator {
          *
          * Check if the key was between the min and the max
          *
-         * @param mixed $values
-         *
+         * @param $keys
          * @return Validator
-         *
          */
-        public function digits($values): Validator
+        public function digits(...$keys): Validator
         {
-            foreach ($values as $key)
+            foreach ($keys as $key)
             {
-                if (!preg_match('[0-9]+',$key))
+                if (!ctype_xdigit($this->data->get($key)))
                     $this->errors->push(sprintf($this->message['digits'], $key));
             }
             return $this;
@@ -172,17 +243,14 @@ namespace Imperium\Validator {
          * Execute the callable on success
          *
          * @param callable $callable
-         * @param array $args
-         *
          * @return RedirectResponse
          *
          * @throws DependencyException
          * @throws NotFoundException
-         *
          */
-        public function do($callable, $args = []): RedirectResponse
+        public function do($callable): RedirectResponse
         {
-            return def($this->errors()) ? $this->display() : call_user_func_array($callable, $args);
+            return def($this->errors()) ? $this->display() : call_user_func_array($callable, $this->data->all());
         }
 
         /**

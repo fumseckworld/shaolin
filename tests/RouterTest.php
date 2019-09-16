@@ -7,7 +7,6 @@ namespace Testing {
 	use DI\NotFoundException;
 	use Imperium\Exception\Kedavra;
     use Imperium\Model\Web;
-	use Imperium\Routing\Router;
     use Imperium\Routing\RouteResult;
     use Imperium\Testing\Unit;
     use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,8 +40,8 @@ namespace Testing {
         public function test_route_result()
         {
             $request = $this->visit('/');
-            $this->assertEquals('repositories',$request->action());
-            $this->assertEquals('GitController',$request->controller());
+            $this->assertEquals('home',$request->action());
+            $this->assertEquals('WelcomeController',$request->controller());
             $this->assertEquals('/',$request->url());
             $this->assertEquals('root',$request->name());
             $this->assertEquals([],$request->args());
@@ -68,7 +67,7 @@ namespace Testing {
         public function test_get()
         {
             $this->assertTrue($this->router('/',GET)->call()->send()->isSuccessful());
-            $this->assertTrue($this->router('/imperiu/diff/2545632k',GET)->call()->send()->isSuccessful());
+            
         }
 	
 		/**
@@ -93,33 +92,12 @@ namespace Testing {
             $response = $this->router('/alex/',GET);
             $this->assertEquals(302,$response->getStatusCode());
             $this->assertTrue($response->isRedirection());
-            $this->assertTrue($response->isRedirect('/error'));
+            $this->assertTrue($response->isRedirect('/not_found'));
             $this->assertTrue($response->isRedirect(route('404')));
+        
         }
+        
 	
-		/**
-		 * @throws DependencyException
-		 * @throws Kedavra
-		 * @throws NotFoundException
-		 */
-        public function test_url()
-        {
-            $this->assertEquals('/',Router::url('root'));
-            $this->assertEquals('/app',Router::url('app'));
-
-            $this->assertEquals('/',app()->url('root'));
-            $this->assertEquals('/app',app()->url('app'));
-        }
-	
-		/**
-		 * @throws DependencyException
-		 * @throws Kedavra
-		 * @throws NotFoundException
-		 */
-        public function test_params()
-        {
-            $this->assertEquals('/imperium/diff/#AEA',app()->url('commit','imperium','#AEA'));
-        }
 	
 		/**
 		 * @throws DependencyException

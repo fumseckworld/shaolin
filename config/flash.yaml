@@ -1,4 +1,3 @@
-success:
-  class: 'alert alert-success alert-dismissible fade show'
-failure:
-  class: 'alert alert-danger alert-dismissible fade show'
+success_class: 'alert alert-success alert-dismissible fade show'
+failure_class: 'alert alert-danger alert-dismissible fade show'
+column_class: 'alert alert-danger alert-dismissible fade show'

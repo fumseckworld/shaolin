@@ -7,7 +7,8 @@
 		use Imperium\Cache\Cache;
 		use Imperium\Collection\Collect;
 		use Imperium\Connexion\Connect;
-		use Imperium\Curl\Curl;
+        use Imperium\Cookies\Cookies;
+        use Imperium\Curl\Curl;
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Flash\Flash;
@@ -235,7 +236,17 @@
 			 *
 			 */
 			public function lang() : string;
-			
+
+            /**
+             *
+             * Get an instance of cookies
+             *
+             *
+             * @return Cookies
+             *
+             */
+			public function cookies(): Cookies;
+
 			/**
 			 *
 			 * Get an instance of write to send mail

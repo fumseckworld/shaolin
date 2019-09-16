@@ -11,6 +11,12 @@ define('GIT_PERIOD', ['minute', 'minutes', 'day', 'days', 'week', 'weeks', 'mont
 define('GIT_SIZE', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
 define('GIT_ARCHIVE_EXT', ['tar', 'tgz', 'tar.gz', 'zip']);
 
+define('ONE_CENTURY', time() + 365 * 24 * 3600 * 100);
+define('ONE_YEAR', time() + 365 * 24 * 3600);
+define('ONE_MONTH', time() + 30 * 24 * 3600);
+define('ONE_WEEK', time() + 7 * 24 * 3600);
+define('NEVER', time() + 9999 * 6000 * 3600 );
+
 define('DROP_NEW_LINE', 1);
 define('READ_AHEAD', 2);
 define('SKIP_EMPTY', 4);

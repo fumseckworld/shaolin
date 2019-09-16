@@ -23,8 +23,10 @@ class FileTest extends Unit
      */
     public function test_key_and_values()
     {
+        $this->assertTrue($this->file('file.yaml',EMPTY_AND_WRITE_FILE_MODE)->write("a:b\nb:c")->flush());
         $this->assertNotEmpty($this->file('file.yaml')->keys(':'));
         $this->assertNotEmpty($this->file('file.yaml')->values(':'));
+        $this->assertTrue(unlink('file.yaml'));
     }
     /**
      * @throws Kedavra
@@ -224,8 +226,10 @@ class FileTest extends Unit
      */
    public function test_file_change_values()
    {
-       $keys = $this->file('config.yaml')->keys();
+       
+       $this->assertTrue($this->file('config.yaml',EMPTY_AND_WRITE_FILE_MODE)->write("game:lol\nsuccess:false")->flush());
 
+       $keys = $this->file('config.yaml')->keys();
        $this->assertTrue($this->file('config.yaml',EMPTY_AND_WRITE_FILE_MODE)->change_values($keys,['League of legend','false']));
        $this->assertTrue(update_file_values('config.yaml',':','League of legend','true'));
    }

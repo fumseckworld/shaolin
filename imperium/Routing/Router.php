@@ -132,27 +132,6 @@
 			
 			/**
 			 *
-			 * Display a route url by this name
-			 *
-			 * @param  string  $name
-			 *
-			 * @param  array   $args
-			 *
-			 * @throws Kedavra
-			 * @return string
-			 *
-			 */
-			public static function url(string $name, array $args = []) : string
-			{
-				
-				$x = route($name, $args);
-				$host = request()->getHost();
-				
-				return php_sapi_name() !== 'cli' ? https() ? "https://$host/$x" : "http://$host/$x" : $x;
-			}
-			
-			/**
-			 *
 			 * @param  ServerRequestInterface  $request
 			 *
 			 * @throws Kedavra

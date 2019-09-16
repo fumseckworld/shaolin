@@ -8,10 +8,12 @@
 		use GuzzleHttp\Psr7\ServerRequest;
 		use Imperium\Cache\Cache;
 		use Imperium\Collection\Collect;
-		use Imperium\Exception\Kedavra;
+        use Imperium\Cookies\Cookies;
+        use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Routing\RouteResult;
-		use Imperium\Writing\Write;
+        use Imperium\Validator\Validator;
+        use Imperium\Writing\Write;
 		use PHPUnit\Framework\TestCase;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
 		
@@ -45,7 +47,19 @@
 				
 				return app()->router(new ServerRequest($method, $url))->search();
 			}
-			
+
+            /**
+             *
+             * Get an instance of cookies
+             *
+             * @return Cookies
+             *
+             */
+			public function cookies(): Cookies
+            {
+                return new Cookies();
+            }
+
 			/**
 			 *
 			 * Get a collection instance
@@ -60,6 +74,21 @@
 				
 				return collect($data);
 			}
+
+            /**
+             *
+             * Get an instance of validator
+             *
+             * @param array $data
+             * @return Validator
+             *
+             * @throws Kedavra
+             *
+             */
+			public function validate(array $data): Validator
+            {
+                return new Validator($this->collect($data));
+            }
 			
 			/**
 			 *
