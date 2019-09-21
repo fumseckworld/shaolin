@@ -9,7 +9,8 @@
 		use Imperium\Cache\Cache;
 		use Imperium\Collection\Collect;
         use Imperium\Cookies\Cookies;
-        use Imperium\Exception\Kedavra;
+		use Imperium\Encrypt\Crypt;
+		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Routing\RouteResult;
         use Imperium\Validator\Validator;
@@ -74,17 +75,19 @@
 				
 				return collect($data);
 			}
-
-            /**
-             *
-             * Get an instance of validator
-             *
-             * @param array $data
-             * @return Validator
-             *
-             * @throws Kedavra
-             *
-             */
+			
+			/**
+			 *
+			 * Get an instance of validator
+			 *
+			 * @param  array  $data
+			 *
+			 * @throws DependencyException
+			 * @throws Kedavra
+			 * @throws NotFoundException
+			 * @return Validator
+			 *
+			 */
 			public function validate(array $data): Validator
             {
                 return new Validator($this->collect($data));
@@ -136,6 +139,22 @@
 			{
 				
 				return new Cache();
+			}
+			
+			/**
+			 *
+			 * Get an instance of crypt
+			 *
+			 * @throws DependencyException
+			 * @throws Kedavra
+			 * @throws NotFoundException
+			 *
+			 * @return Crypt
+			 *
+			 */
+			public function crypt(): Crypt
+			{
+				return new Crypt();
 			}
 			
 		}

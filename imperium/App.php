@@ -83,6 +83,7 @@ namespace Imperium {
             $this->view = $this->app(View::class);
             $this->table = $this->app(Table::class);
             Dotenv::create(base(), '.env')->load();
+
         }
 
         /**
@@ -581,8 +582,9 @@ namespace Imperium {
          *
          * @return Validator
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function validator(array $data): Validator
         {
@@ -599,6 +601,11 @@ namespace Imperium {
         public function cookies(): Cookies
         {
             return new Cookies();
+        }
+
+        public function env($variable)
+        {
+            return getenv($variable);
         }
     }
 }

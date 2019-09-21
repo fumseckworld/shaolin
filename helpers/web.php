@@ -194,8 +194,9 @@
 		 */
 		function env($variable)
 		{
-			
-			return getenv($variable);
+
+			return app()->env($variable);
+
 		}
 		
 	}

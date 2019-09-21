@@ -4,6 +4,7 @@
 namespace Testing;
 
 
+use Imperium\Encrypt\Crypt;
 use Imperium\Exception\Kedavra;
 use Imperium\File\File;
 use Imperium\Testing\Unit;
@@ -258,9 +259,16 @@ class FileTest extends Unit
         $this->assertTrue($this->file('.env.example')->copy('.env'));
         $this->assertEquals('Shaolin',env('app'));
         $this->assertTrue($this->file('.env')->remove());
+        
         $this->assertTrue($this->file('.env.example')->copy('.env'));
         $this->assertEquals('Shaolin',env('app'));
+	   	$this->assertTrue($this->file('.env')->remove());
+	
+	   $this->assertTrue($this->file('.env.example')->copy('.env'));
+	   $key = Crypt::generateKey();
+	   $this->assertTrue($this->file('.env',EMPTY_AND_WRITE_FILE_MODE)->write("APP_KEY=$key")->flush());
    }
+   
     /**
      * @throws Kedavra
      */

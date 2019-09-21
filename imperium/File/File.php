@@ -8,7 +8,8 @@
 		use Imperium\Exception\Kedavra;
 		use Parsedown;
 		use SplFileObject;
-		use Symfony\Component\HttpFoundation\Response;
+        use Symfony\Component\DependencyInjection\Tests\Compiler\D;
+        use Symfony\Component\HttpFoundation\Response;
 		
 		/**
 		 *
@@ -48,7 +49,7 @@
 			 */
 			public function __construct(string $filename, string $mode = READ_FILE_MODE)
 			{
-				
+
 				not_in(FILES_OPEN_MODE, $mode, true, "The open mode is not a valid mode");
 				if( ! file_exists($filename))
 					touch($filename);
