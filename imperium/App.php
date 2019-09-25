@@ -14,6 +14,7 @@ namespace Imperium {
     use Imperium\Cookies\Cookies;
     use Imperium\Curl\Curl;
     use Imperium\Dump\Dump;
+    use Imperium\Encrypt\Crypt;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
     use Imperium\Session\Session;
@@ -319,8 +320,7 @@ namespace Imperium {
          */
         public function run(): Response
         {
-            if (equal(config('mode', 'mode'), 'up') || equal(config('mode', 'mode'), 'admin'))
-            {
+            if (equal(config('mode', 'mode'), 'up') || equal(config('mode', 'mode'), 'admin')) {
                 $x = $this->router(ServerRequest::fromGlobals())->search();
 
                 return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
@@ -356,7 +356,7 @@ namespace Imperium {
         public function lang(): string
         {
 
-            return $this->cookies()->get('locale',$this->config('locales', 'locale'));
+            return $this->cookies()->get('locale', $this->config('locales', 'locale'));
         }
 
         /**
@@ -606,6 +606,42 @@ namespace Imperium {
         public function env($variable)
         {
             return getenv($variable);
+        }
+
+        /**
+         *
+         * Crypt data
+         *
+         * @param string $data
+         *
+         * @param bool $serialize
+         * @return string
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        public function crypt(string $data, bool $serialize = true): string
+        {
+            return (new Crypt())->encrypt($data, $serialize);
+        }
+
+        /**
+         *
+         * Decrypt the encrypted value
+         *
+         * @param string $encrypted
+         *
+         * @param bool $unserialize
+         * @return string
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        public function decrypt(string $encrypted, bool $unserialize = true): string
+        {
+            return (new Crypt())->decrypt($encrypted, $unserialize);
         }
     }
 }

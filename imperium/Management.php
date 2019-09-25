@@ -2,8 +2,8 @@
 	
 	namespace Imperium
 	{
-		
-		use Imperium\Asset\Asset;
+
+        use Imperium\Asset\Asset;
 		use Imperium\Cache\Cache;
 		use Imperium\Collection\Collect;
 		use Imperium\Connexion\Connect;
@@ -134,7 +134,7 @@
 			 * @return Form
 			 */
 			public function form() : Form;
-			
+
 			/**
 			 *
 			 * Get an instance of table
@@ -343,7 +343,31 @@
 			 *
 			 */
 			public function save() : bool;
-			
+
+            /**
+             *
+             * Crypt data
+             *
+             * @param string $data
+             *
+             * @param bool $serialize
+             * @return string
+             *
+             */
+			public function crypt(string $data,bool $serialize = true) : string ;
+
+            /**
+             *
+             * Decrypt the encrypted value
+             *
+             * @param string $encrypted
+             * @param bool $unserialize
+             *
+             * @return string
+             *
+             */
+			public function decrypt(string $encrypted,bool $unserialize) : string ;
+
 			/**
 			 *
 			 * Download a file
