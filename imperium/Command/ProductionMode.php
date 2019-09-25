@@ -16,7 +16,7 @@
 			protected function configure()
 			{
 				
-				$this->setDescription('Turn application in prdouction mode')->setAliases(['up']);
+				$this->setDescription('Turn application in production mode')->setAliases(['up']);
 			}
 			
 			public function execute(InputInterface $input, OutputInterface $output)

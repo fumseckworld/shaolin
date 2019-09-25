@@ -24,7 +24,7 @@
 				
 				$base = db('base');
 				$this->setAliases([ 'import' ]);
-				$this->setDescription("Import sql file content into $base database");
+				$this->setDescription("Import sql file content into the $base database");
 			}
 			
 			/**

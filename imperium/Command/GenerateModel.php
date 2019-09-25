@@ -23,7 +23,7 @@
 					->setDescription('Create a new model')
 					// the full command description shown when running the command with
 					// the "--help" option
-					->setHelp('php shaolin make:model model table')->addArgument('model', InputArgument::REQUIRED, 'The controller name.')->addArgument('table', InputArgument::REQUIRED, 'The table name.');
+					->setHelp('php shaolin make:model model table')->addArgument('model', InputArgument::REQUIRED, 'The model name.')->addArgument('table', InputArgument::REQUIRED, 'The table name.');
 			}
 			
 			/**

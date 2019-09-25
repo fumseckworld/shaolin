@@ -19,7 +19,7 @@
 			protected function configure()
 			{
 				
-				$this->setDescription('Generate the web route base');
+				$this->setDescription('Generate all routes bases');
 			}
 			
 			/**

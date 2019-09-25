@@ -16,7 +16,7 @@
 			protected function configure()
 			{
 				
-				$this->setDescription('Turn application in AdminMode mode')->setAliases(['admin']);
+				$this->setDescription('Turn application in admin mode')->setAliases(['admin']);
 			}
 			
 			public function execute(InputInterface $input, OutputInterface $output)

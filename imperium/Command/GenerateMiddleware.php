@@ -23,7 +23,7 @@
 					->setDescription('Create a new middleware')
 					// the full command description shown when running the command with
 					// the "--help" option
-					->setHelp('php shaolin make:model name')->addArgument('middleware', InputArgument::REQUIRED, 'The middleware name.');
+					->setHelp('php shaolin make:middleware name')->addArgument('middleware', InputArgument::REQUIRED, 'The middleware name.');
 			}
 			
 			/**
