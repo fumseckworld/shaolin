@@ -47,7 +47,8 @@
     "php-di/php-di": "^6.0",
     "doctrine/annotations": "^1.6",
     "danielstjules/stringy": "^3.1",
-    "fzaninotto/faker": "^1.7"
+    "fzaninotto/faker": "^1.7",
+    "ext-redis": "*"
   },
   "autoload-dev": {
     "psr-4": {

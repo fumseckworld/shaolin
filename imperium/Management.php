@@ -14,7 +14,8 @@
 		use Imperium\Flash\Flash;
 		use Imperium\Html\Form\Form;
 		use Imperium\Query\Query;
-		use Imperium\Routing\Router;
+        use Imperium\Redis\Redis;
+        use Imperium\Routing\Router;
 		use Imperium\Session\SessionInterface;
 		use Imperium\Shopping\Shop;
 		use Imperium\Tables\Table;
@@ -69,6 +70,14 @@
 			 */
 			public function file(string $filename, string $mode = READ_FILE_MODE) : File;
 			
+			/**
+			 *
+			 * Get an instance of redis
+			 *
+			 * @return Redis
+			 */
+			public function redis(): Redis;
+
 			/**
 			 *
 			 * Check if a table exist

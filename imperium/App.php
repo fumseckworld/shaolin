@@ -17,6 +17,7 @@ namespace Imperium {
     use Imperium\Encrypt\Crypt;
     use Imperium\Exception\Kedavra;
     use Imperium\File\Download;
+    use Imperium\Redis\Redis;
     use Imperium\Session\Session;
     use Imperium\Shopping\Shop;
     use Imperium\Validator\Validator;
@@ -68,6 +69,7 @@ namespace Imperium {
          * @var Connect
          */
         private $connect;
+
 
         /**
          * App constructor.
@@ -642,6 +644,17 @@ namespace Imperium {
         public function decrypt(string $encrypted, bool $unserialize = true): string
         {
             return (new Crypt())->decrypt($encrypted, $unserialize);
+        }
+	
+		/**
+		 *
+		 * Get an instance of redis
+		 *
+		 * @return Redis
+		 */
+        public function redis(): Redis
+        {
+            return new Redis();
         }
     }
 }
