@@ -26,6 +26,13 @@ class AdminTest extends Unit
     	
         $this->assertTrue(redirect('root','a',true)->isRedirect('/'));
     }
+    
+    public function test_history()
+	{
+		$this->assertNotEmpty(history());
+		$this->assertStringContainsString('btn',history());
+		$this->assertStringContainsString('back',history());
+	}
 
     public function test_db()
     {
