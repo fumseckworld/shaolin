@@ -7,6 +7,7 @@
 		use DI\DependencyException;
 		use DI\NotFoundException as NotFoundExceptionAlias;
 		use Exception;
+		use Symfony\Component\HttpFoundation\Request;
 		
 		/**
 		 *
@@ -1284,6 +1285,7 @@
 					$c->set('db.dump', db('dump'));
 					$c->set("views.path",base('app'). DIRECTORY_SEPARATOR . 'Views') ;
 					$c->set("views.config", config('twig', 'config'));
+					$c->set(Request::class, Request::createFromGlobals());
 					self::$container = $c;
 				}
 				
