@@ -16,7 +16,7 @@ css:
 	npx tailwind build core/Assets/css/app.css -o web/css/app.css
 
 prepare: vendor
-	mysql -uroot -proot -e 'DROP DATABASE imperium;'
+	mysql -uroot -proot -e 'DROP DATABASE IF EXISTS imperium;'
 	mysql -uroot -proot -e 'CREATE DATABASE imperium;'
 	vendor/bin/phinx migrate
 	vendor/bin/phinx seed:run

@@ -41,7 +41,7 @@ namespace Testing {
         {
             $request = $this->visit('/');
             $this->assertEquals('home',$request->action());
-            $this->assertEquals('WelcomeController',$request->controller());
+            $this->assertEquals('HomeController',$request->controller());
             $this->assertEquals('/',$request->url());
             $this->assertEquals('root',$request->name());
             $this->assertEquals([],$request->args());
@@ -92,7 +92,7 @@ namespace Testing {
             $response = $this->router('/alex/',GET);
             $this->assertEquals(302,$response->getStatusCode());
             $this->assertTrue($response->isRedirection());
-            $this->assertTrue($response->isRedirect('/not_found'));
+            $this->assertTrue($response->isRedirect('/error'));
             $this->assertTrue($response->isRedirect(route('404')));
         
         }

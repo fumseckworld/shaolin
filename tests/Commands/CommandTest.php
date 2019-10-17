@@ -17,7 +17,7 @@
 		    $this->assertNotEmpty(Web::find(1));
 		    $this->assertNotEmpty(Web::where('name',EQUAL,'root')->all());
 		    $this->assertNotEmpty(Web::where('url',EQUAL,'/')->all());
-		    $this->assertNotEmpty(Web::where('controller',EQUAL,'WelcomeController')->all());
+		    $this->assertNotEmpty(Web::where('controller',EQUAL,'HomeController')->all());
 		    $this->assertNotEmpty(Web::where('action',EQUAL,'home')->all());
 		    $this->assertNotEmpty(Web::where('method',EQUAL,'GET')->all());
 
