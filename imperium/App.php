@@ -651,10 +651,70 @@ namespace Imperium {
 		 * Get an instance of redis
 		 *
 		 * @return Redis
+         *
 		 */
         public function redis(): Redis
         {
             return new Redis();
+        }
+
+        /**
+         *
+         * Retrieve a $_GET value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function get(string $key, $default = null)
+        {
+            return $this->request()->query->get($key,$default);
+        }
+
+        /**
+         *
+         * Retrieve a $_POST value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         */
+        public function post(string $key, $default = null)
+        {
+            return $this->request()->request->get($key,$default);
+        }
+
+        /**
+         *
+         * Retrieve a $_COOKIE value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function cookie(string $key, $default = null)
+        {
+            return $this->request()->cookies->get($key,$default);
+        }
+
+        /**
+         *
+         * Retrieve a $_FILES value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function files(string $key, $default = null)
+        {
+            return $this->request()->files->get($key,$default);
         }
     }
 }

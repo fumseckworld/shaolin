@@ -399,8 +399,51 @@
              * @return string
              */
 			public function url(string $route,bool $admin ,...$args) : string;
-			
-			/**
+
+            /**
+             *
+             * Retrieve a $_GET value
+             *
+             * @param string $key
+             * @param null $default
+             *
+             * @return mixed
+             *
+             */
+			public function get(string $key,$default = null);
+
+            /**
+             * @param string $key
+             * @param null $default
+             * @return mixed
+             */
+			public function post(string $key,$default = null);
+
+            /**
+             *
+             * Get a $_COOKIE value
+             *
+             * @param string $key
+             * @param null $default
+             *
+             * @return mixed
+             *
+             */
+            public function cookie(string $key,$default = null);
+
+            /**
+             *
+             * Get a $_FILES  value
+             *
+             * @param string $key
+             * @param null $default
+             *
+             * @return mixed
+             *
+             */
+            public function files(string $key,$default = null);
+
+            /**
 			 *
 			 * Get an instance of curl management
 			 *
