@@ -79,50 +79,54 @@
 			 * @var bool
 			 */
 			protected $admin = false;
-			
-			/**
-			 *
-			 * Display all columns
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return array
-			 *
-			 */
+
+            /**
+             *
+             * Display all columns
+             *
+             * @return array
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function columns() : array
 			{
-				
 				return static::query()->columns();
 			}
-			
-			
-			/**
-			 * @param  int     $begin
-			 * @param  int     $end
-			 * @param  string  $column
-			 *
-			 * @return Query
-			 *
-			 */
+
+
+            /**
+             * @param int $begin
+             * @param int $end
+             * @param string $column
+             *
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             *
+             */
 			public static function between(int $begin, int $end, string $column = '') : Query
 			{
-				
 				$column = def($column) ? $column : self::key();
 				
 				return static::query()->between($column, $begin, $end);
 			}
-			
-			/**
-			 * Undocumented function
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return array
-			 *
-			 */
+
+            /**
+             * Undocumented function
+             *
+             * @return array
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function all() : array
 			{
-				
 				return static::query()->all();
 			}
 			
@@ -131,42 +135,42 @@
 			 */
 			public static function key() : string
 			{
-				
 				return static::$by;
 			}
-			
-			/**
-			 *
-			 * Display the primary key
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
+
+            /**
+             *
+             * Display the primary key
+             *
+             * @return string
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function primary() : string
 			{
-				
 				return static::query()->primary_key();
 			}
-			
-			/**
-			 *
-			 * @param  mixed  $expected
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
+
+            /**
+             *
+             * @param mixed $expected
+             *
+             * @return object
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function get($expected) : object
 			{
-				
 				is_true(not_def($expected), true, "Missing the expected value");
 				
 				return self::by(self::key(), $expected);
 			}
-
 
 
             /**
@@ -177,7 +181,9 @@
              *
              * @return bool
              *
+             * @throws DependencyException
              * @throws Kedavra
+             * @throws NotFoundException
              *
              */
             public static function seed(int $records): bool
@@ -271,6 +277,7 @@
                 return  static::query()->connexion()->execute($query);
 
             }
+
             /**
              *
              * Get all available types for current driver
@@ -278,6 +285,9 @@
              * @method types
              *
              * @return array
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
              *
              */
             public static function types() : array
@@ -300,15 +310,15 @@
             }
 
             /**
-			 *
-			 * @param  string  $column
-			 * @param  mixed   $expected
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
+             *
+             * @param string $column
+             * @param mixed $expected
+             *
+             * @return object
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             */
 			public static function by(string $column, $expected) : object
 			{
 				
@@ -321,46 +331,54 @@
              *
              * Get only column values
              *
-             * @param string[] $columns
+             * @param string ...$columns
+             *
              * @return array
+             *
+             * @throws DependencyException
              * @throws Kedavra
+             * @throws NotFoundException
+             *
              */
 			public static function only(string ...$columns) : array
 			{
 				return static::query()->select($columns)->all();
 			}
 
-			/**
-			 *
-			 *
-			 * @param  string  $x
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return mixed
-			 *
-			 */
+            /**
+             *
+             * Search a value
+             *
+             * @param string $x
+             *
+             * @return mixed
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function search(string $x)
 			{
-				
 				return static::query()->like($x)->all();
 			}
-			
-			/**
-			 *
-			 *
-			 * Add a new record
-			 *
-			 * @param  array  $values
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
+
+            /**
+             *
+             *
+             * Add a new record
+             *
+             * @param array $values
+             *
+             * @return bool
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function create(array $values) : bool
 			{
-				
 				$x = collect(static::query()->columns())->join(',');
 				
 				$values = collect($values)->for('htmlentities')->all();
@@ -390,7 +408,9 @@
              *
              * @return bool
              *
+             * @throws DependencyException
              * @throws Kedavra
+             * @throws NotFoundException
              *
              */
 			public static function update(int $id,array $values): bool
@@ -414,103 +434,113 @@
 
                 return  static::query()->connexion()->execute($command);
             }
-			/**
-			 *
-			 * Display all records with a pagination
-			 *
-			 * @param  callable  $callable
-			 * @param  int       $current_page
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
+
+            /**
+             *
+             * Display all records with a pagination
+             *
+             * @param callable $callable
+             * @param int $current_page
+             *
+             * @return string
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function paginate($callable, int $current_page) : string
 			{
-				
 				return static::query()->paginate($callable, $current_page, static::$limit);
 			}
-			
-			/**
-			 *
-			 * Destroy a record by id
-			 *
-			 * @param  int  $id
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return bool
-			 *
-			 */
+
+            /**
+             *
+             * Destroy a record by id
+             *
+             * @param int $id
+             *
+             * @return bool
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function destroy(int $id) : bool
 			{
-				
 				return static::query()->destroy($id);
 			}
-			
-			/**
-			 *
-			 * Count record in a table
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return int
-			 *
-			 */
+
+            /**
+             *
+             * Count record in a table
+             *
+             * @return int
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function count() : int
 			{
-				
 				return static::query()->sum();
 			}
-			
-			/**
-			 *
-			 * Generate a clause where
-			 *
-			 * @param  string  $column
-			 * @param  string  $condition
-			 * @param  mixed   $expected
-			 *
-			 * @throws Kedavra
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             * Generate a clause where
+             *
+             * @param string $column
+             * @param string $condition
+             * @param mixed $expected
+             *
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function where(string $column, string $condition, $expected) : Query
 			{
-				
 				return static::query()->mode(SELECT)->where($column, $condition, $expected);
 			}
-			
-			/**
-			 *
-			 * Find a record by an id
-			 *
-			 * @param  int  $id
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
+
+            /**
+             *
+             * Find a record by an id
+             *
+             * @param int $id
+             *
+             * @return object
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function find(int $id)
 			{
-				
 				return static::query()->find($id);
 			}
-			
-			/**
-			 *
-			 * Use a different where clause
-			 *
-			 * @param  string  $column
-			 * @param  mixed   $expected
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             * Use a different where clause
+             *
+             * @param mixed $expected
+             *
+             * @param string $column
+             *
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
 			public static function different($expected, string $column = '') : Query
 			{
 				
@@ -518,15 +548,19 @@
 				
 				return self::where($column, DIFFERENT, $expected);
 			}
-			
-			/**
-			 * Begin querying the model.
-			 *
-			 * @return Query
-			 */
+
+            /**
+             *
+             * Begin querying the model.
+             *
+             * @return Query
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             *
+             */
 			public static function query() : Query
 			{
-				
 				return (new static)->builder();
 			}
 			
@@ -534,12 +568,12 @@
 			 *
 			 * @throws DependencyException
 			 * @throws NotFoundException
+             *
 			 * @return Query
 			 *
 			 */
 			private function builder() : Query
 			{
-				
 				return Query::from($this->table, $this->routes,$this->admin)->primary($this->primary);
 			}
 			

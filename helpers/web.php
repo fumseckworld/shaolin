@@ -185,13 +185,14 @@
 	
 	if (!function_exists('env'))
 	{
-		/**
-		 *
-		 * @param $variable
-		 *
-		 * @return array|false|string
-		 *
-		 */
+        /**
+         *
+         * @param $variable
+         *
+         * @return array|false|string
+         * @throws DependencyException
+         * @throws NotFoundException
+         */
 		function env($variable)
 		{
 
