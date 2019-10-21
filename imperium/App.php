@@ -103,7 +103,6 @@ namespace Imperium {
          */
         public function config(string $file, $key)
         {
-
             return (new Config($file, $key))->value();
         }
 
@@ -121,7 +120,6 @@ namespace Imperium {
          */
         public function file(string $filename, string $mode = READ_FILE_MODE): File
         {
-
             return new File($filename, $mode);
         }
 
@@ -138,7 +136,6 @@ namespace Imperium {
          */
         public function exist(string $table): bool
         {
-
             return $this->table()->exist($table);
         }
 
@@ -153,7 +150,6 @@ namespace Imperium {
          */
         public function collect(array $data = []): Collect
         {
-
             return collect($data);
         }
 
@@ -168,7 +164,6 @@ namespace Imperium {
          */
         public function tables(): array
         {
-
             return $this->table()->show();
         }
 
@@ -185,7 +180,6 @@ namespace Imperium {
          */
         public function remove(string $table): bool
         {
-
             return $this->table()->drop($table);
         }
 
@@ -202,7 +196,6 @@ namespace Imperium {
          */
         public function truncate(string $table): bool
         {
-
             return $this->table()->truncate($table);
         }
 
@@ -211,7 +204,6 @@ namespace Imperium {
          */
         public function form(): Form
         {
-
             return new Form();
         }
 
@@ -224,7 +216,6 @@ namespace Imperium {
          */
         public function table(): Table
         {
-
             return $this->table;
         }
 
@@ -237,7 +228,6 @@ namespace Imperium {
          */
         public function connect(): Connect
         {
-
             return $this->connect;
         }
 
@@ -250,11 +240,11 @@ namespace Imperium {
          */
         public function flash(): Flash
         {
-
             return new Flash($this->session());
         }
 
         /**
+         *
          * Get an instance of session
          *
          * @return SessionInterface
@@ -262,7 +252,6 @@ namespace Imperium {
          */
         public function session(): SessionInterface
         {
-
             return def(strstr(request()->getScriptName(), 'phpunit')) ? new ArraySession() : new Session();
         }
 
@@ -271,10 +260,10 @@ namespace Imperium {
          * Get an instance of request
          *
          * @return Request
+         *
          */
         public function request(): Request
         {
-
             return Request::createFromGlobals();
         }
 
@@ -287,7 +276,6 @@ namespace Imperium {
          */
         public function auth(): Oauth
         {
-
             return new Oauth($this->session());
         }
 
@@ -299,10 +287,10 @@ namespace Imperium {
          * @return Router
          *
          * @throws Kedavra
+         *
          */
         public function router(ServerRequestInterface $serverRequest): Router
         {
-
             return new Router($serverRequest);
         }
 
@@ -317,8 +305,8 @@ namespace Imperium {
          * @throws NotFoundException
          * @throws RuntimeError
          * @throws SyntaxError
-         *
          * @throws DependencyException
+         *
          */
         public function run(): Response
         {
@@ -342,7 +330,6 @@ namespace Imperium {
          */
         public function assets(string $filename): Asset
         {
-
             return new Asset($filename);
         }
 
@@ -357,7 +344,6 @@ namespace Imperium {
          */
         public function lang(): string
         {
-
             return $this->cookies()->get('locale', $this->config('locales', 'locale'));
         }
 
@@ -377,7 +363,6 @@ namespace Imperium {
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
         {
-
             return new Write($subject, $message, $author_email, $to);
         }
 
@@ -396,7 +381,6 @@ namespace Imperium {
          */
         public function view(string $name, array $args = [], int $status = 200, array $headers = []): Response
         {
-
             return $this->response($this->view->load($name, $args), $status, $headers);
         }
 
@@ -715,6 +699,21 @@ namespace Imperium {
         public function files(string $key, $default = null)
         {
             return $this->request()->files->get($key,$default);
+        }
+
+        /**
+         *
+         * Retrieve a $_SERVER value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function server(string $key, $default = null)
+        {
+            return $this->request()->server->get($key,$default);
         }
     }
 }

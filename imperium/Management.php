@@ -413,11 +413,28 @@
 			public function get(string $key,$default = null);
 
             /**
+             *
+             * Retrieve a $_POST value
+             *
              * @param string $key
              * @param null $default
+             *
              * @return mixed
+             *
              */
 			public function post(string $key,$default = null);
+
+            /**
+             *
+             * Retrieve a $_SERVER value
+             *
+             * @param string $key
+             * @param null $default
+             *
+             * @return mixed
+             *
+             */
+            public function server(string $key,$default = null);
 
             /**
              *
