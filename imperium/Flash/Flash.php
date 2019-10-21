@@ -130,7 +130,7 @@
 				
 				if(def($message))
 				{
-					return $success ? '<div class="row"><div class="'.$column_class.'"><div class="'.$success_class.'" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>' : '<div class="row"><div class="'.$column_class.'"><div class="'.$failure_class.'" role="alert"><div class="flex"><p class="font-bold">' . $message . '</p></div></div></div></div>';
+					return $success ? '<div class="row"><div class="'.$column_class.'"><div class="'.$success_class.'" role="alert"><div class="flex"><div>' . $message . '</div></div></div></div></div>' : '<div class="row"><div class="'.$column_class.'"><div class="'.$failure_class.'" role="alert"><div class="flex"><div>' . $message . '</div></div></div></div></div>';
 				}
 				
 				return '';
