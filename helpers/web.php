@@ -358,19 +358,22 @@
          * @method route
          *
          * @param mixed $name
-         * @param bool $admin
          * @param mixed $args
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
-		function route(string $name,bool $admin = false,array $args = []): string
+		function route(string $name,array $args = []): string
 		{
-			
-			$x = $admin ? Admin::where('name', EQUAL, $name)->fetch(true)->all() :   Web::where('name', EQUAL, $name)->fetch(true)->all();
 
-			is_true(not_def($x),true,"The $name route name was not found");
+		    $admin =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
+            $web =    Web::where('name', EQUAL, $name)->fetch(true)->all();
+
+            $x = def($web) ? $web : $admin;
+
 
 			if (def($args))
 			{
@@ -410,6 +413,16 @@
 		}
 		
 	}
+
+	if (!function_exists('detect_method'))
+    {
+        function detect_method(string $route)
+        {
+            $web = Web::where('name',EQUAL,$route)->fetch(true)->all();
+            $admin = Admin::where('name',EQUAL,$route)->fetch(true)->all();
+            return def($web) ? $web->method : $admin->method;
+        }
+    }
 	
 	if (!function_exists('url'))
 	{

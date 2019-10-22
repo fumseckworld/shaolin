@@ -2,8 +2,10 @@
 	
 	namespace Imperium\Html\Form
 	{
-		
-		use Imperium\App;
+
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use Imperium\App;
 		use Imperium\Exception\Kedavra;
 		
 		/**
@@ -579,6 +581,7 @@
 			{
 				
 				$this->method = detect_method($route);
+
 				$method = POST;
 				if($this->validate)
 				{
@@ -1344,33 +1347,35 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 * Generate a form to edit or create a record
-			 *
-			 *
-			 * @method generate
-			 *
-			 * @param  int     $form_grid    The number to modify the form generation output
-			 * @param  string  $table        The current table
-			 * @param  string  $submit_text  The submit button text
-			 * @param  string  $submit_icon  The submit icon
-			 * @param  int     $mode         Define the mode edit or create
-			 * @param  int     $id           The record id
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
-			public function generate(int $form_grid, string $table, string $submit_text, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0) : string
+
+            /**
+             *
+             * Generate a form to edit or create a record
+             *
+             *
+             * @method generate
+             *
+             * @param string $table The current table
+             * @param string $submit_text The submit button text
+             * @param string $submit_icon The submit icon
+             * @param int $mode Define the mode edit or create
+             * @param int $id The record id
+             *
+             * @return string
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
+			public function generate(string $table, string $submit_text, string $submit_icon = '', int $mode = Form::CREATE, int $id = 0) : string
 			{
 				
 				$instance = app()->table()->column()->for($table);
+
 				$primary = $instance->primary_key();
-				equal($form_grid, 0, true, "Zero is not a valid number");
+
 				not_in([ Form::EDIT, Form::CREATE ], $mode, true, "The mode used is not a valid mode");
+
 				if(equal($mode, Form::EDIT))
 				{
 					$data = app()->table()->from($table)->select_or_fail($id);

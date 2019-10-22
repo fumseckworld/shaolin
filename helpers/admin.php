@@ -610,6 +610,19 @@
 			return request()->server->get($key,$value);
 		}
 	}
+
+	if (!function_exists('obj'))
+    {
+        function obj($obj): array
+        {
+            $x = collect();
+            foreach ($obj as $k => $v)
+            {
+                $x->put($k,$v);
+            }
+            return $x->all();
+        }
+    }
 	if( ! function_exists('post'))
 	{
 		/**

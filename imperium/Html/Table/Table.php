@@ -4,7 +4,9 @@
 	{
 		
 		use Carbon\Carbon;
-		use Imperium\Collection\Collect;
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
 		
 		/**
@@ -343,16 +345,18 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 * Generate the table
-			 *
-			 * @param  string  $class
-			 *
-			 * @throws Kedavra
-			 * @return string
-			 */
+
+            /**
+             *
+             * Generate the table
+             *
+             * @param string $class
+             *
+             * @return string
+             * @throws Kedavra
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
 			public function generate(string $class = '') : string
 			{
 				

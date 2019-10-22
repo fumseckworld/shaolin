@@ -7,6 +7,8 @@
         use DI\NotFoundException;
         use Imperium\Controller\Controller;
         use Imperium\Exception\Kedavra;
+        use Imperium\Html\Form\Form;
+        use Imperium\Html\Table\Table;
         use Symfony\Component\HttpFoundation\RedirectResponse;
         use Symfony\Component\HttpFoundation\Response;
         use Twig\Error\LoaderError;
@@ -86,15 +88,6 @@
 
             /**
              *
-             * The table name
-             *
-             * @var string
-             *
-             */
-            protected static $table = '';
-
-            /**
-             *
              * The pagination limit
              *
              * @var int
@@ -107,21 +100,19 @@
              *
              * Create a new record
              *
-             * @param array $values
+             * @param string $table
              *
              * @return RedirectResponse
              *
              * @throws DependencyException
-             * @throws NotFoundException
              * @throws Kedavra
+             * @throws NotFoundException
              *
              */
-            public function create(array $values): RedirectResponse
+            public function add(string $table): RedirectResponse
             {
 
                 $this->init();
-
-                $table = static::$table;
 
                 $sql = $this->sql($table);
 
@@ -129,7 +120,7 @@
 
                 $x = collect($columns)->join();
 
-                $values = collect($values)->for('htmlentities')->all();
+                $values = collect($this->request()->request->all())->del(CSRF_TOKEN)->for('htmlentities')->all();
 
                 $id = $sql->key();
 
@@ -150,7 +141,7 @@
              *
              * Read all record with a pagination
              *
-             * @param callable $callable
+             * @param string $table
              * @param int $current_page
              *
              * @return Response
@@ -163,20 +154,65 @@
              * @throws SyntaxError
              *
              */
-            public function read($callable,int $current_page): Response
+            public function show(string $table,int $current_page): Response
             {
-                $all = $this->sql(static::$table)->paginate($callable,$current_page,static::$limit);
+                $all = $this->sql($table)->paginate([$this,'home'],$current_page,static::$limit);
 
-                return  $this->view('@crud/read',compact('all'));
+                return  $this->view('@crud/show',compact('all'));
             }
 
+            /**
+             *
+             * Generate a form to update a record
+             *
+             * @param string $table
+             * @param int $id
+             *
+             * @return Response
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws LoaderError
+             * @throws NotFoundException
+             * @throws RuntimeError
+             * @throws SyntaxError
+             *
+             */
+            public function edit(string $table,int $id): Response
+            {
+                $form =  $this->form()->generate($table,$this->config('crud','update_text'),'',Form::EDIT,$id);
+                return  $this->view('@crud/edit',compact('form'));
+            }
+
+            /**
+             *
+             * Create a form to add content
+             *
+             * @param string $table
+             *
+             * @return Response
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws LoaderError
+             * @throws NotFoundException
+             * @throws RuntimeError
+             * @throws SyntaxError
+             *
+             */
+            public function create(string $table): Response
+            {
+                $form = $this->form()->start('create')->generate($table,$this->config('crud','create_text'));
+
+                return $this->view('@crud/create',compact('form'));
+            }
 
             /**
              *
              * Update a record
              *
+             * @param string $table
              * @param int $id
-             * @param array $values
              *
              * @return RedirectResponse
              *
@@ -185,18 +221,18 @@
              * @throws NotFoundException
              *
              */
-            public function update(int $id,array $values):RedirectResponse
+            public function refresh(string $table,int $id): RedirectResponse
             {
 
                 $this->init();
-
-                $table = static::$table;
 
                 $sql = $this->sql($table);
 
                 $primary = $sql->key();
 
                 $columns = collect();
+
+                $values = collect($this->request()->request->all())->del(CSRF_TOKEN)->all();
 
                 foreach ($values  as $k => $value)
                 {
@@ -217,6 +253,7 @@
              *
              * Destroy a record
              *
+             * @param string $table
              * @param int $id
              *
              * @return RedirectResponse
@@ -226,11 +263,30 @@
              * @throws NotFoundException
              *
              */
-            public function delete(int $id): RedirectResponse
+            public function destroy(string $table,int $id): RedirectResponse
             {
                 $this->init();
 
-                return $this->sql(static::$table)->destroy($id) ? $this->back($this->deleted) : $this->back($this->no_deleted,false);
+                return $this->sql($table)->destroy($id) ? $this->back($this->deleted) : $this->back($this->no_deleted,false);
+            }
+
+            /**
+             *
+             *
+             * @param $key
+             * @param $value
+             *
+             * @return string
+             */
+            public function home($key, $value): string
+            {
+
+
+               $html = '<td>';
+               foreach ($this->collect(obj($value))->keys()->all() as $key)
+                append($html,"<tr>$key</tr>");
+
+                return $html .'</td>';
             }
 
             /**
@@ -253,6 +309,11 @@
                 $this->deleted = config($file,'deleted');
 
                 $this->no_deleted = config($file,'no_deleted');
+            }
+
+            private function all($table)
+            {
+                return $this->sql($table)->take(static::$limit)->all();
             }
 
         }

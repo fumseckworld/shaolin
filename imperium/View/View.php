@@ -99,7 +99,9 @@
 				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Admin', 'admin');
 			
 				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Users', 'users');
-			
+
+                $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Crud', 'crud');
+
 				if(def($this->namespaces))
 				{
 					foreach($this->namespaces as $k => $v)

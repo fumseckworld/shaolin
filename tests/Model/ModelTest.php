@@ -20,7 +20,7 @@ class ModelTest extends Unit
     {
         $this->assertNotEmpty(Users::all());
         $this->assertNotEmpty(Users::paginate([$this,'records'],1));
-        $this->assertEquals(99,Users::count());
+        $this->assertEquals(100,Users::count());
         $this->assertNotEmpty(Users::only('id'));
         $this->assertInstanceOf(stdClass::class,Users::get(1));
         $this->assertNotEmpty(Users::search('a'));
@@ -32,7 +32,7 @@ class ModelTest extends Unit
         $this->assertContains('password',$columns);
         
         $this->assertTrue(Users::destroy(1));
-        $this->assertEquals(98,Users::count());
+        $this->assertEquals(99,Users::count());
         $this->assertEquals(10,Users::different(5)->take(10,2)->sum());
         $this->assertEquals(48,Users::where('id',INFERIOR_OR_EQUAL,50)->sum());
 
