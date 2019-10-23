@@ -343,8 +343,11 @@
                 foreach ($value as $v)
                     append($html,'<td>'.substr($v,0,50).'</td>');
 
+                $confirm = $this->config('crud','sure');
+                $sure = "onclick=\"return confirm('$confirm');\"";
+
                 append($html,'<td><a href="'.route('edit',true,[$this->current,$value->id]).'" class="'.$this->config('crud','edit_class').'">'.$this->config('crud','edit_text').'</a></td>');
-                append($html,'<td><a href="'.route('remove',true,[$this->current,$value->id]).'" class="'.$this->config('crud','remove_class').'"> '.$this->config('crud','remove_text').'</a></td>');
+                append($html,'<td><a href="'.route('remove',true,[$this->current,$value->id]).'" class="'.$this->config('crud','remove_class').'" '.$sure.'>  '.$this->config('crud','remove_text').'</a></td>');
                 return $html . '</tr>';
             }
             /**
