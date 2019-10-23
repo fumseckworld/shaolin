@@ -221,18 +221,24 @@
              *
              * @param bool $web
              * @param bool $admin
+             * @param bool $todo
+             * @param bool $task
              * @throws DependencyException
              * @throws NotFoundException
              */
-			public function __construct(bool $web = false,bool $admin = false)
+			public function __construct(bool $web = false,bool $admin = false,bool $todo =false,bool $task = false)
 			{
 
 			    if ($web)
 			        $this->connexion = connect(SQLITE, base('app'). DIRECTORY_SEPARATOR . 'Routing' .DIRECTORY_SEPARATOR. 'web.sqlite3');
                 elseif($admin)
                     $this->connexion =  connect(SQLITE, base('app'). DIRECTORY_SEPARATOR . 'Routing' .DIRECTORY_SEPARATOR. 'admin.sqlite3');
+                elseif($task)
+                    $this->connexion =  connect(SQLITE, base('app'). DIRECTORY_SEPARATOR . 'Routing' .DIRECTORY_SEPARATOR. 'task.sqlite3');
+                elseif($todo)
+                    $this->connexion =  connect(SQLITE, base('app'). DIRECTORY_SEPARATOR . 'Tasks' .DIRECTORY_SEPARATOR. 'todo.sqlite3');
                 else
-                   $this->connexion =  $this->app(Connect::class);
+                    $this->connexion =  $this->app(Connect::class);
 			}
 			
 			/**
@@ -286,15 +292,17 @@
              * @param bool $routes
              * @param bool $admin
              *
+             * @param bool $todo
+             * @param bool $task
              * @return Query
              *
              * @throws DependencyException
              * @throws NotFoundException
              */
-			public static function from(string $table, bool $routes = false,bool $admin =false) : Query
+			public static function from(string $table, bool $routes = false,bool $admin =false,bool $todo = false,bool $task = false) : Query
 			{
 				
-				return (new static($routes,$admin))->select_table($table);
+				return (new static($routes,$admin,$todo,$task))->select_table($table);
 			}
 			
 			/**

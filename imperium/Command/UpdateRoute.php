@@ -2,10 +2,13 @@
 	
 	namespace Imperium\Command
 	{
-		
-		use Imperium\Collection\Collect;
+
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use Imperium\Collection\Collect;
 		use Imperium\Exception\Kedavra;
         use Imperium\Model\Admin;
+        use Imperium\Model\Task;
         use Imperium\Model\Web;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
@@ -38,7 +41,16 @@
 				
 				$this->setDescription('Update a route');
 			}
-			public function name(bool $web = true)
+
+            /**
+             * @param bool $web
+             * @param bool $admin
+             * @return array
+             * @throws Kedavra
+             * @throws DependencyException
+             * @throws NotFoundException
+             */
+            private function name(bool $web = true, bool $admin = false)
             {
                 $x = \collect();
                 if ($web)
@@ -48,7 +60,14 @@
                     return $x->all();
                 }
 
-                foreach (Admin::all() as $v)
+                if ($admin)
+                {
+                    foreach (Admin::all() as $v)
+                        $x->push($v->name);
+
+                    return $x->all();
+                }
+                foreach (Task::all() as $v)
                     $x->push($v->name);
 
                 return $x->all();
@@ -73,13 +92,13 @@
                 do {
                     clear_terminal();
 
-                    $question = new Question("<info>Route for admin or web ?</info> : ");
+                    $question = new Question("<info>Route for admin, web or task ?</info> : ");
 
-                    $question->setAutocompleterValues(['admin', 'web']);
+                    $question->setAutocompleterValues(['admin', 'web','task']);
 
                     $this->choose = $helper->ask($input, $output, $question);
 
-                } while (is_null($this->choose) || not_in(['admin', 'web'], $this->choose));
+                } while (is_null($this->choose) || not_in(['admin', 'web','task'], $this->choose));
 
 				
 			}
@@ -90,12 +109,14 @@
              *
              * @return int|null
              * @throws Kedavra
+             * @throws DependencyException
+             * @throws NotFoundException
              */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
                 $helper = $this->getHelper('question');
 
-                if ($this->choose == 'web' && not_def(Web::all()) || $this->choose == 'admin' && not_def(Admin::all()))
+                if ($this->choose == 'web' && not_def(Web::all()) || $this->choose == 'admin' && not_def(Admin::all()) || $this->choose === 'task' && not_def(Task::all()))
                 {
                     clear_terminal();
 
@@ -180,13 +201,14 @@
                         }while(is_null($action));
 
                         $this->entry->put('id', $route->id);
-                    }else {
+                    }elseif( $this->choose == 'admin')
+                    {
                         do {
                             clear_terminal();
 
                             $question = new Question("<info>Please enter the route name : </info>");
 
-                            $question->setAutocompleterValues($this->name(false));
+                            $question->setAutocompleterValues($this->name(false,true));
 
                             $this->search = $helper->ask($input, $output, $question);
 
@@ -223,6 +245,74 @@
                             $this->entry->put('url', $url);
 
                         } while (def(Admin::where('url', EQUAL, $url)->all()) && different($route->url, $url));
+
+                        do {
+                            $question = new Question("<info>Change the controller</info> <comment>[{$route->controller}]</comment> : ", $route->controller);
+                            $question->setAutocompleterValues(controllers());
+                            $controller = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('controller', $controller);
+
+                        } while (is_null($controller));
+
+                        do {
+                            $question = new Question("<info>Change the action</info> <comment>[{$route->action}]</comment> : ", $route->action);
+                            $x = "App\Controllers\\{$this->entry->get('controller')}";
+
+                            if (class_exists($x))
+                                $question->setAutocompleterValues(get_class_methods(new $x));
+
+                            $action = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('action', $action);
+
+                        } while (is_null($action));
+
+                        $this->entry->put('id', $route->id);
+                    }else
+                    {
+                        do {
+                            clear_terminal();
+
+                            $question = new Question("<info>Please enter the route name : </info>");
+
+                            $question->setAutocompleterValues($this->name(false,false));
+
+                            $this->search = $helper->ask($input, $output, $question);
+
+                        } while (is_null($this->search) && not_def(Admin::where('name', EQUAL, $this->search)->all()));
+
+                        $route = Task::by('name', $this->search);
+
+                        do {
+                            $question = new Question("<info>Change the method</info> <comment>[{$route->method}]</comment> : ", $route->method);
+
+                            $question->setAutocompleterValues(collect(METHOD_SUPPORTED)->for('strtolower')->all());
+
+                            $method = strtoupper($helper->ask($input, $output, $question));
+
+                            $this->entry->put('method', $method);
+
+                        } while (is_null($method));
+
+                        do {
+                            $question = new Question("<info>Change the name</info> <comment>[{$route->name}]</comment> : ", $route->name);
+
+                            $name = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('name', $name);
+
+                        } while (def(Task::where('name', EQUAL, $name)->all()) && different($route->name, $name));
+
+
+                        do {
+                            $question = new Question("<info>Change the url</info> <comment>[{$route->url}]</comment> : ", $route->url);
+
+                            $url = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('url', $url);
+
+                        } while (def(Task::where('url', EQUAL, $url)->all()) && different($route->url, $url));
 
                         do {
                             $question = new Question("<info>Change the controller</info> <comment>[{$route->controller}]</comment> : ", $route->controller);

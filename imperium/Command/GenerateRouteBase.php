@@ -2,10 +2,12 @@
 	
 	namespace Imperium\Command
 	{
-		
-		use Imperium\Directory\Dir;
+
+        use Imperium\Action\Todo;
+        use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
-		use Imperium\Model\Web;
+        use Imperium\Model\Task;
+        use Imperium\Model\Web;
 		use Imperium\Model\Admin;
 		use Symfony\Component\Console\Command\Command;
 		use Symfony\Component\Console\Input\InputInterface;
@@ -33,6 +35,8 @@
 			{
 	            Web::generate();
 	            Admin::generate();
+	            Task::generate();
+	            Todo::generate();
 	            return 0;
 
 			}

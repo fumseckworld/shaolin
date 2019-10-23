@@ -2,8 +2,11 @@
 
 namespace Imperium\Command {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Exception\Kedavra;
     use Imperium\Model\Admin;
+    use Imperium\Model\Task;
     use Imperium\Model\Web;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +17,13 @@ namespace Imperium\Command {
 
         protected static $defaultName = "route:find";
 
+        /**
+         * @var string
+         */
         private $search;
+        /**
+         * @var string
+         */
         private $choose;
         
         protected function configure()
@@ -31,6 +40,8 @@ namespace Imperium\Command {
          *
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {
@@ -42,32 +53,51 @@ namespace Imperium\Command {
                 do {
                     clear_terminal();
 
-                    $question = new Question("<info>Route for admin or web ?</info> : ");
+                    $question = new Question("<info>Route for admin, web or task ?</info> : ");
 
-                    $question->setAutocompleterValues(['admin', 'web']);
+                    $question->setAutocompleterValues(['admin', 'web','task']);
 
                     $this->choose = $helper->ask($input, $output, $question);
 
-                } while (is_null($this->choose) || not_in(['admin', 'web'], $this->choose));
+                } while (is_null($this->choose) || not_in(['admin', 'web','task'], $this->choose));
 
                 do {
                     clear_terminal();
 
                     $question = new Question("<info>Please enter the search value : </info>");
 
-                    if (equal($this->choose,'web'))
-                        $question->setAutocompleterValues($this->web());
-                    else
-                        $question->setAutocompleterValues($this->admin());
+                    switch ($this->choose)
+                    {
+                        case 'admin':
+                            $question->setAutocompleterValues($this->admin());
+                        break;
+                        case 'task':
+                            $question->setAutocompleterValues($this->task());
+                        break;
+                        default:
+                            $question->setAutocompleterValues($this->web());
+                        break;
+                    }
 
-                    $this->search = $helper->ask($input, $output, $question);
+                   $this->search = $helper->ask($input, $output, $question);
 
                 } while (is_null($this->search));
 
                 clear_terminal();
 
+                switch ($this->choose)
+                {
+                    case 'admin':
+                        routes($output,Admin::search($this->search)) ;
+                    break;
+                    case 'task':
+                        routes($output, Task::search($this->search));
+                    break;
+                    default:
+                        routes($output,Web::search($this->search));
+                    break;
+                }
 
-                $this->choose == 'admin' ? routes($output, Admin::search($this->search)) : routes($output, Web::search($this->search));
 
                 $question = new Question("<info>Continue [Y/n] : </info>", 'Y');
 
@@ -91,7 +121,15 @@ namespace Imperium\Command {
             return 0;
         }
 
-        private function controller(bool $web = true): array
+        /**
+         * @param bool $web
+         * @param bool $admin
+         * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        private function controller(bool $web =true,bool $admin = false): array
         {
             $x = collect();
             if ($web)
@@ -101,13 +139,33 @@ namespace Imperium\Command {
                 return $x->all();
             }
 
-            foreach (Admin::all() as $v)
+            if ($admin)
+            {
+                foreach (Admin::all() as $v)
+                     $x->push($v->controller);
+
+
+                return $x->all();
+            }
+
+
+            foreach (Task::all() as $v)
                 $x->push($v->controller);
 
+
             return $x->all();
+
         }
 
-        private function name(bool $web = true): array
+        /**
+         * @param bool $web
+         * @param bool $admin
+         * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        private function name(bool $web = true,bool $admin =false): array
         {
             $x = collect();
             if ($web)
@@ -117,13 +175,29 @@ namespace Imperium\Command {
                 return $x->all();
             }
 
-            foreach (Admin::all() as $v)
+            if ($admin)
+            {
+                foreach (Admin::all() as $v)
+                    $x->push($v->name);
+                return $x->all();
+            }
+
+            foreach (Task::all() as $v)
                 $x->push($v->name);
+
 
             return $x->all();
         }
 
-        private function url(bool $web = true): array
+        /**
+         * @param bool $web
+         * @param bool $admin
+         * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        private function url(bool $web = true,bool $admin = false): array
         {
             $x = collect();
             if ($web)
@@ -133,13 +207,30 @@ namespace Imperium\Command {
                 return $x->all();
             }
 
-            foreach (Admin::all() as $v)
+            if ($admin)
+            {
+                foreach (Admin::all() as $v)
+                    $x->push($v->url);
+                return $x->all();
+            }
+
+
+            foreach (Task::all() as $v)
                 $x->push($v->url);
 
             return $x->all();
+
         }
 
-        private function action(bool $web =true)
+        /**
+         * @param bool $web
+         * @param bool $admin
+         * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        private function action(bool $web =true,bool $admin = false)
         {
             $x = collect();
             if ($web)
@@ -149,7 +240,16 @@ namespace Imperium\Command {
                 return $x->all();
             }
 
-            foreach (Admin::all() as $v)
+            if ($admin)
+            {
+                foreach (Admin::all() as $v)
+                    $x->push($v->action);
+
+                return $x->all();
+            }
+
+
+            foreach (Task::all() as $v)
                 $x->push($v->action);
 
             return $x->all();
@@ -157,19 +257,38 @@ namespace Imperium\Command {
 
         /**
          * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         private function web()
         {
 
             return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(), $this->url(),$this->action(), $this->controller())->all();
         }
+
         /**
          * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
         private function admin()
         {
 
-            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(false),$this->url(false),$this->action(false),$this->controller(false))->all();
+            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(false,true),$this->url(false,true),$this->action(false,true),$this->controller(false,true))->all();
+        }
+
+        /**
+         * @return array
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        private function task()
+        {
+
+            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(false,false),$this->url(false,false),$this->action(false,false),$this->controller(false,false))->all();
         }
 
     }

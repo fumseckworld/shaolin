@@ -5,9 +5,10 @@
 		
 		use DI\DependencyException;
 		use DI\NotFoundException;
-		use Imperium\Directory\Dir;
+        use Imperium\Directory\Dir;
 		use Imperium\Exception\Kedavra;
         use Imperium\Model\Admin;
+        use Imperium\Model\Task;
         use Imperium\Model\Web;
 		use Imperium\Security\Csrf\CsrfMiddleware;
 		use Psr\Http\Message\ServerRequestInterface;
@@ -99,15 +100,31 @@
                 }else
                 {
 
-                    foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
+                    if (equal(config('mode', 'mode'), 'todo'))
                     {
-                        if($this->match($route->url))
+                        foreach (Task::where('method',EQUAL,$this->method) as $route)
                         {
-                            $this->route = $route;
+                            if($this->match($route->url))
+                            {
+                                $this->route = $route;
 
-                            return $this->result();
+                                return $this->result();
+                            }
                         }
                     }
+                    else
+                    {
+                        foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
+                        {
+                            if($this->match($route->url))
+                            {
+                                $this->route = $route;
+
+                                return $this->result();
+                            }
+                        }
+                    }
+
 
                 }
 				

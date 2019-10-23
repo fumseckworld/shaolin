@@ -326,6 +326,15 @@ namespace Imperium {
                 return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
             }
 
+            if (equal(config('mode', 'mode'), 'todo') && equal($this->request()->getClientIp(),'127.0.0.1'))
+            {
+
+                $x = $this->router(ServerRequest::fromGlobals())->search();
+
+                return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
+            }
+
+
             return $this->view('maintenance', [], 503, ['Retry-After' => 600])->send();
         }
 

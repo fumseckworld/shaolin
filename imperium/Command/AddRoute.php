@@ -2,8 +2,11 @@
 
 namespace Imperium\Command {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Collection\Collect;
     use Imperium\Exception\Kedavra;
+    use Imperium\Model\Task;
     use Imperium\Model\Web;
     use Imperium\Model\Admin;
     use Symfony\Component\Console\Input\InputInterface;
@@ -36,7 +39,8 @@ namespace Imperium\Command {
          * @param OutputInterface $output
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {
@@ -51,15 +55,15 @@ namespace Imperium\Command {
                 do {
                     clear_terminal();
 
-                    $question = new Question("<info>Route for admin or web ?</info> : ");
+                    $question = new Question("<info>Route for admin, web or task ?</info> : ");
 
-                    $question->setAutocompleterValues(['admin', 'web']);
+                    $question->setAutocompleterValues(['admin', 'web','task']);
 
                     $route = $helper->ask($input, $output, $question);
 
                     $this->entry->put('route', $route);
 
-                } while (is_null($route) || not_in(['admin', 'web'], $route));
+                } while (is_null($route) || not_in(['admin', 'web' ,'task'], $route));
 
                 do {
                     clear_terminal();
@@ -128,9 +132,68 @@ namespace Imperium\Command {
 
                     } while (is_null($action) || def(Web::where('action', EQUAL, $action)->all()));
 
-                } else
+                } elseif($this->entry->get('route') == 'admin')
                 {
-                    do {
+
+
+                        do {
+                            clear_terminal();
+
+                            $question = new Question("<info>Define the route name</info> : ");
+
+                            $name = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('name', $name);
+
+                        } while (is_null($name) || def(Admin::where('name', EQUAL, $name)->all()));
+
+                         do {
+                            clear_terminal();
+
+                            $question = new Question("<info>Define the route url</info> : ");
+
+                            $url = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('url', $url);
+
+                        } while (is_null($url) || def(Admin::where('url', EQUAL, $url)->all()));
+
+
+                        do {
+
+                            clear_terminal();
+
+                            $question = new Question("<info>Define the controller to call</info> : ");
+
+                            $question->setAutocompleterValues(controllers());
+
+                            $controller = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('controller', $controller);
+
+                        } while (is_null($controller));
+
+                         do {
+
+                            clear_terminal();
+
+                            $question = new Question("<info>Define the action to call</info> : ");
+
+                            $x = "App\Controllers\\{$this->entry->get('controller')}";
+
+                            if (class_exists($x))
+                                $question->setAutocompleterValues(get_class_methods(new $x));
+
+                            $action = $helper->ask($input, $output, $question);
+
+                            $this->entry->put('action', $action);
+
+                        } while (is_null($action) || def(Admin::where('action', EQUAL, $action)->all()));
+
+                }else
+                {
+                    do
+                    {
                         clear_terminal();
 
                         $question = new Question("<info>Define the route name</info> : ");
@@ -139,7 +202,7 @@ namespace Imperium\Command {
 
                         $this->entry->put('name', $name);
 
-                    } while (is_null($name) || def(Admin::where('name', EQUAL, $name)->all()));
+                    } while (is_null($name) || def(Task::where('name', EQUAL, $name)->all()));
 
                     do {
                         clear_terminal();
@@ -150,8 +213,7 @@ namespace Imperium\Command {
 
                         $this->entry->put('url', $url);
 
-                    } while (is_null($url) || def(Admin::where('url', EQUAL, $url)->all()));
-
+                    } while (is_null($url) || def(Task::where('url', EQUAL, $url)->all()));
 
 
                     do {
@@ -183,12 +245,21 @@ namespace Imperium\Command {
 
                         $this->entry->put('action', $action);
 
-                    } while (is_null($action) || def(Admin::where('action', EQUAL, $action)->all()));
-
+                    } while (is_null($action) || def(Task::where('action', EQUAL, $action)->all()));
                 }
 
-
-                $this->entry->get('route') == 'web' ? $this->routes->push(Web::create($this->entry->all())) : $this->routes->push(Admin::create($this->entry->all()));
+                switch ($this->entry->get('route'))
+                {
+                    case 'admin':
+                        $this->routes->push(Admin::create($this->entry->all()));
+                    break;
+                    case 'task':
+                        $this->routes->push(Task::create($this->entry->all()));
+                    break;
+                    default:
+                        $this->routes->push(Web::create($this->entry->all()));
+                    break;
+                }
 
                 $this->entry->clear();
 
@@ -211,7 +282,7 @@ namespace Imperium\Command {
         {
             if ($this->routes->ok())
             {
-                $output->writeln('<bg=green;fg=white>All routes was successfully created</>');
+                $output->writeln('<info>All routes was successfully created</info>');
                 return 0;
             }
             $output->writeln('<bg=red;fg=white>Fail to create routes</>');

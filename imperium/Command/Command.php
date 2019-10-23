@@ -46,7 +46,7 @@ namespace Imperium\Command {
         public function run(): int
         {
 
-            $commands = [ new KeyGenerate(),new AdminMode(), new ImportDatabase(), new ProductionMode(), new Maintenance(), new GenerateMiddleware(), new GenerateView(), new GenerateRouteBase(), new GenerateModel(), new CleanDatabase(), new Dkim(), new DumpDatabase(), new GenerateController(), new GenerateMigrations(), new MigrateDatabase(), new RollbackDatabase(), new SeedDatabase(), new AddRoute(), new ListRoute(), new RemoveRoute(), new FindRoute(), new UpdateRoute(), new Serve()];
+            $commands = [ new TodoMode(), new KeyGenerate(),new AdminMode(), new ImportDatabase(), new ProductionMode(), new Maintenance(), new GenerateMiddleware(), new GenerateView(), new GenerateRouteBase(), new GenerateModel(), new CleanDatabase(), new Dkim(), new DumpDatabase(), new GenerateController(), new GenerateMigrations(), new MigrateDatabase(), new RollbackDatabase(), new SeedDatabase(), new AddRoute(), new ListRoute(), new RemoveRoute(), new FindRoute(), new UpdateRoute(), new Serve()];
 
             $this->add($commands)->add(commands());
 
