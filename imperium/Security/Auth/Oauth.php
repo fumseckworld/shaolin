@@ -131,17 +131,17 @@
 				
 				return Users::count();
 			}
-			
-			/**
-			 *
-			 *
-			 * @param  string  $expected
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return object
-			 *
-			 */
+
+            /**
+             *
+             *
+             * @param string $expected
+             *
+             * @return object
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             */
 			public function find(string $expected)
 			{
 				
@@ -223,7 +223,7 @@
 			private function column() : string
 			{
 				
-				return Users::key();
+				return addslashes(Users::key());
 			}
 			
 			/**
