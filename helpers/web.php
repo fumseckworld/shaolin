@@ -373,6 +373,9 @@
 		    $admin_r =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
             $web =    Web::where('name', EQUAL, $name)->fetch(true)->all();
 
+            is_true($admin && not_def($admin_r) || !$admin && not_def($web),true,"The $name route was not found");
+
+
             $x = $admin ? $admin_r : $web;
 
 

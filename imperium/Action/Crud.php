@@ -97,6 +97,23 @@
              * @var string
              */
             private $current;
+            /**
+             *
+             * The failure truncate message
+             *
+             * @var string
+             *
+             */
+            private $no_truncated;
+
+            /**
+             *
+             * The truncated table success message
+             *
+             * @var string
+             *
+             */
+            private $truncated;
 
 
             /**
@@ -158,6 +175,7 @@
             public function show(string $table): Response
             {
                 $this->current = $table;
+
                 $all = '<div class="table-responsive"><table class="table table-bordered"><thead>';
                 foreach ($this->sql($table)->columns() as $column)
                     append($all,"<th>$column</th>");
@@ -167,6 +185,25 @@
                 append($all,'</tbody></table></div>');
 
                 return  $this->view('@crud/show',compact('all','table'));
+            }
+
+            /**
+             *
+             * Truncate a table
+             *
+             * @param string $table
+             *
+             * @return RedirectResponse
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             */
+            public function clear(string $table): RedirectResponse
+            {
+                $this->init();
+
+                return  $this->truncate($table) ? $this->to(route('show',true,[$table]),$this->truncated) : $this->to(route('show',true,[$table]),$this->no_truncated,false);
             }
 
             /**
@@ -329,7 +366,10 @@
 
                 $this->deleted = config($file,'deleted');
 
-                $this->no_deleted = config($file,'no_deleted');
+                $this->no_truncated = config($file,'no_truncated');
+
+                $this->truncated = config($file,'truncated');
+
             }
 
 
