@@ -358,6 +358,7 @@
          * @method route
          *
          * @param mixed $name
+         * @param bool $admin
          * @param mixed $args
          *
          * @return string
@@ -366,13 +367,13 @@
          * @throws Kedavra
          * @throws NotFoundException
          */
-		function route(string $name,array $args = []): string
+		function route(string $name,bool $admin = false,array $args = []): string
 		{
 
-		    $admin =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
+		    $admin_r =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
             $web =    Web::where('name', EQUAL, $name)->fetch(true)->all();
 
-            $x = def($web) ? $web : $admin;
+            $x = $admin ? $admin_r : $web;
 
 
 			if (def($args))

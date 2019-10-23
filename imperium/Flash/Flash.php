@@ -124,13 +124,11 @@
 				
 				$failure_class = config('flash','failure_class');
 				
-				$column_class = config('flash','column_class');
-				
 				$message = $this->get($key);
 				
 				if(def($message))
 				{
-					return $success ? '<div class="row"><div class="'.$column_class.'"><div class="'.$success_class.'" role="alert"><div class="flex"><div>' . $message . '</div></div></div></div></div>' : '<div class="row"><div class="'.$column_class.'"><div class="'.$failure_class.'" role="alert"><div class="flex"><div class="font-bold">' . $message . '</div></div></div></div></div>';
+					return $success ? '<div class="'.$success_class.'" role="alert">'.$message.'</div>':'<div class="'.$failure_class.'" role="alert">'.$message.'<div>';
 				}
 				
 				return '';

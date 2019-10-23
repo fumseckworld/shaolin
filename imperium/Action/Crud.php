@@ -8,7 +8,6 @@
         use Imperium\Controller\Controller;
         use Imperium\Exception\Kedavra;
         use Imperium\Html\Form\Form;
-        use Imperium\Html\Table\Table;
         use Symfony\Component\HttpFoundation\RedirectResponse;
         use Symfony\Component\HttpFoundation\Response;
         use Twig\Error\LoaderError;
@@ -94,6 +93,10 @@
              *
              */
             protected static $limit = 20;
+            /**
+             * @var string
+             */
+            private $current;
 
 
             /**
@@ -142,8 +145,7 @@
              * Read all record with a pagination
              *
              * @param string $table
-             * @param int $current_page
-             *
+             * 
              * @return Response
              *
              * @throws DependencyException
@@ -152,13 +154,19 @@
              * @throws NotFoundException
              * @throws RuntimeError
              * @throws SyntaxError
-             *
              */
-            public function show(string $table,int $current_page): Response
+            public function show(string $table): Response
             {
-                $all = $this->sql($table)->paginate([$this,'home'],$current_page,static::$limit);
+                $this->current = $table;
+                $all = '<div class="table-responsive"><table class="table table-bordered"><thead>';
+                foreach ($this->sql($table)->columns() as $column)
+                    append($all,"<th>$column</th>");
 
-                return  $this->view('@crud/show',compact('all'));
+                append($all,'</thead><tbody>');
+                append($all,$this->sql($table)->paginate([$this,'display'],$this->get('page',1),static::$limit));
+                append($all,'</tbody></table></div>');
+
+                return  $this->view('@crud/show',compact('all','table'));
             }
 
             /**
@@ -180,8 +188,8 @@
              */
             public function edit(string $table,int $id): Response
             {
-                $form =  $this->form()->generate($table,$this->config('crud','update_text'),'',Form::EDIT,$id);
-                return  $this->view('@crud/edit',compact('form'));
+                $form =  $this->form()->start('update',true,[$table,$id])->generate($table,$this->config('crud','update_text'),'',Form::EDIT,$id);
+                return  $this->view('@crud/edit',compact('form','table'));
             }
 
             /**
@@ -202,9 +210,9 @@
              */
             public function create(string $table): Response
             {
-                $form = $this->form()->start('create')->generate($table,$this->config('crud','create_text'));
+                $form = $this->form()->start('create',true,[$table])->generate($table,$this->config('crud','create_text'));
 
-                return $this->view('@crud/create',compact('form'));
+                return $this->view('@crud/create',compact('form','table'));
             }
 
             /**
@@ -224,6 +232,7 @@
             public function refresh(string $table,int $id): RedirectResponse
             {
 
+
                 $this->init();
 
                 $sql = $this->sql($table);
@@ -232,7 +241,7 @@
 
                 $columns = collect();
 
-                $values = collect($this->request()->request->all())->del(CSRF_TOKEN)->all();
+                $values = collect($this->request()->request->all())->del(CSRF_TOKEN,'method','__table__')->for('htmlentities')->all();
 
                 foreach ($values  as $k => $value)
                 {
@@ -273,22 +282,34 @@
             /**
              *
              *
-             * @param $key
-             * @param $value
-             *
-             * @return string
+             * @return Response
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws LoaderError
+             * @throws NotFoundException
+             * @throws RuntimeError
+             * @throws SyntaxError
              */
-            public function home($key, $value): string
+            public function home():Response
             {
-
-
-               $html = '<td>';
-               foreach ($this->collect(obj($value))->keys()->all() as $key)
-                append($html,"<tr>$key</tr>");
-
-                return $html .'</td>';
+                $x = collect(['/' => $this->config('crud','select_table_text')]);
+                foreach ($this->tables() as $table)
+                    $x->put(route('show',true,[$table,1]),$table);
+                $tables = $x->all();
+                $form = $this->form()->redirect('table',$tables)->get();
+                return  $this->view('@crud/home',compact('tables','form'));
             }
 
+            public function display($key,$value)
+            {
+                $html =  '<tr>';
+                foreach ($value as $v)
+                    append($html,'<td>'.substr($v,0,50).'</td>');
+
+                append($html,'<td><a href="'.route('edit',true,[$this->current,$value->id]).'" class="'.$this->config('crud','edit_class').'">'.$this->config('crud','edit_text').'</a></td>');
+                append($html,'<td><a href="'.route('remove',true,[$this->current,$value->id]).'" class="'.$this->config('crud','remove_class').'"> '.$this->config('crud','remove_text').'</a></td>');
+                return $html . '</tr>';
+            }
             /**
              *
              * @throws Kedavra
@@ -311,10 +332,7 @@
                 $this->no_deleted = config($file,'no_deleted');
             }
 
-            private function all($table)
-            {
-                return $this->sql($table)->take(static::$limit)->all();
-            }
+
 
         }
 	}

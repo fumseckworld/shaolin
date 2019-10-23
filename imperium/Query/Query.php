@@ -946,7 +946,7 @@
 				
 				$pagination = (new Pagination($page, $limit, $this->sum()))->paginate();
 				
-				return collect($this->take($limit, (($page) - 1) * $limit)->all())->each($callable)->join('') . ' ' . $pagination;
+				return collect($this->take($limit, (($page) - 1) * $limit)->by('id')->all())->each($callable)->join('') . ' ' . $pagination;
 			}
 			
 			/**

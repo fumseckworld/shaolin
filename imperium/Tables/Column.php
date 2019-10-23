@@ -1009,21 +1009,7 @@
 				return true;
 			}
 
-			/**
-			 *
-			 * Return the column type
-			 *
-			 * @param string $column
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return mixed
-			 *
-			 */
-			public function column_type(string $column)
-			{
-				return collect($this->show())->search($column)->set_new_data($this->types())->result();
-			}
+
 
 			/**
 			 *
@@ -1042,7 +1028,7 @@
 
 				foreach ($this->show() as $k => $v)
 				{
-					$data->put($$v, $this->column_type($v));
+					$data->put($v, collect($this->types())->get($k) );
 				}
 				return $data->all();
 			}

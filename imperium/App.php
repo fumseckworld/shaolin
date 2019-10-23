@@ -310,7 +310,17 @@ namespace Imperium {
          */
         public function run(): Response
         {
-            if (equal(config('mode', 'mode'), 'up') || equal(config('mode', 'mode'), 'admin')) {
+            if (equal(config('mode', 'mode'), 'up'))
+            {
+
+                $x = $this->router(ServerRequest::fromGlobals())->search();
+
+                return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();
+            }
+
+            if (equal(config('mode', 'mode'), 'admin') && equal($this->request()->getClientIp(),'127.0.0.1'))
+            {
+
                 $x = $this->router(ServerRequest::fromGlobals())->search();
 
                 return $x instanceof RedirectResponse ? $x->send() : $x->call()->send();

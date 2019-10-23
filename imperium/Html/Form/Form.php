@@ -559,25 +559,27 @@
 				
 				return self::FORM_SEPARATOR;
 			}
-			
-			/**
-			 *
-			 * Open the form
-			 *
-			 * @method start
-			 *
-			 * @param  string  $route
-			 * @param  string  $confirm  The confirm text
-			 * @param  string  $class    The form class
-			 * @param  bool    $enctype  Configuration to support upload
-			 * @param  string  $charset  The form charset
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return Form
-			 *
-			 */
-			public function start(string $route, string $confirm = '', string $class = '', bool $enctype = false, string $charset = 'utf-8') : Form
+
+            /**
+             *
+             * Open the form
+             *
+             * @method start
+             *
+             * @param string $route
+             * @param bool $admin
+             * @param array $args
+             * @param string $confirm The confirm text
+             * @param string $class The form class
+             * @param bool $enctype Configuration to support upload
+             * @param string $charset The form charset
+             *
+             * @return Form
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             */
+			public function start(string $route,bool $admin,array $args,string $confirm = '', string $class = '', bool $enctype = false, string $charset = 'utf-8') : Form
 			{
 				
 				$this->method = detect_method($route);
@@ -589,16 +591,16 @@
 					if($enctype)
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
 						else
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
 					}
 					else
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
 						else
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
 					}
 				}
 				else
@@ -606,16 +608,16 @@
 					if($enctype)
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" enctype="multipart/form-data">');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" enctype="multipart/form-data">');
 						else
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" enctype="multipart/form-data">');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" enctype="multipart/form-data">');
 					}
 					else
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" >');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" >');
 						else
-							append($this->form, '<form action="' . route($route) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" >');
+							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" >');
 					}
 				}
 				if(config($this->file, 'large'))
@@ -1323,7 +1325,7 @@
 					append($this->form, '<div class="' . self::AUTO_COL . '"><div class="' . $this->separator() . '">');
 				append($this->form, '<select class="' . self::CUSTOM_SELECT_CLASS . ' ' . $this->get_input_class() . '" name="' . $name . '"   onChange="location = this.options[this.selectedIndex].value">');
 				foreach($options as $k => $option)
-					append($this->form, '<option value="' . $k . '"> ' . $option . '</option>');
+					is_integer($k) ? append($this->form,'<option value="' . $option . '"> ' . $option . '</option>'):append($this->form, '<option value="' . $k . '"> ' . $option . '</option>');
 				if(def($icon))
 					append($this->form, '</select></div></div></div>');
 				else
@@ -1371,6 +1373,8 @@
 			{
 				
 				$instance = app()->table()->column()->for($table);
+				$types = app()->table()->column()->for($table)->types();
+                $columns = app()->table()->column()->for($table)->show();
 
 				$primary = $instance->primary_key();
 
@@ -1467,63 +1471,48 @@
 					$numeric = App::NUMERIC_TYPES;
 					$date = App::DATE_TYPES;
 					$text = App::TEXT_TYPES;
-					$all_num = collect($numeric)->sum();
-					$all_date = collect($date)->sum();
-					$all_text = collect($text)->sum();
 					$this->row();
-					foreach($text as $k => $t)
+					foreach($types as $k => $t)
 					{
-						if(is_pair($all_text))
-						{
-							if(is_pair($all_text))
-								$this->textarea($t, $t);
-							else
-								$this->textarea($t, $t)->end_row_and_new();
-						}
-						else
-						{
-							if(equal($k % 3, 0))
-								$this->textarea($t, $t)->end_row_and_new();
-							else
-								$this->textarea($t, $t);
-						}
-					}
-					$this->end_row_and_new();
-					foreach($numeric as $k => $n)
-					{
-						if(different($n, $primary))
-						{
-							if(is_pair($all_num))
-							{
-								if(is_pair($all_num))
-									$this->input(Form::NUMBER, $n, $n);
-								else
-									$this->input(Form::NUMBER, $n, $n)->end_row_and_new();
-							}
-							else
-							{
-								$this->input(Form::NUMBER, $n, $n);
-							}
-						}
-					}
-					$this->end_row_and_new();
-					foreach($date as $k => $d)
-					{
-						if(is_pair($all_date))
-						{
-							if(is_pair($all_date))
-								$this->input(Form::DATE, $d, $d, '', '', '', $current);
-							else
-								$this->input(Form::DATE, $d, $d, '', '', '', $current)->end_row_and_new();
-						}
-						else
-						{
-							if(equal($k % 3, 0))
-								$this->input(Form::DATE, $d, $d, '', '', '', $current)->end_row_and_new();
-							else
-								$this->input(Form::DATE, $d, $d, '', '', '', $current);
-						}
-					}
+                        $x = collect($columns)->get($k);
+                        if ($x !== $primary)
+                        {
+
+                            if (is_pair($k)) {
+
+                                if (in_array($t, $text))
+                                    $this->textarea($x, $x)->end_row_and_new();
+                                elseif (in_array($t, $numeric))
+                                    $this->input(Form::NUMBER, $x, $x)->end_row_and_new();
+                                elseif (in_array($t, $date))
+                                    $this->input(Form::DATE, $x, $x)->end_row_and_new();
+                                else
+                                    $this->textarea($x, $x)->end_row_and_new();
+                            } else {
+                                if (equal($k % 3, 0)) {
+                                    if (in_array($t, $text))
+                                        $this->textarea($x, $x)->end_row_and_new();
+                                    elseif (in_array($t, $numeric))
+                                        $this->input(Form::NUMBER, $x, $x)->end_row_and_new();
+                                    elseif (in_array($t, $date))
+                                        $this->input(Form::DATE, $x, $x)->end_row_and_new();
+                                    else
+                                        $this->textarea($x, $x)->end_row_and_new();
+                                } else {
+                                    if (in_array($t, $text))
+                                        $this->textarea($x, $x)->end_row_and_new();
+                                    elseif (in_array($t, $numeric))
+                                        $this->input(Form::NUMBER, $x, $x)->end_row_and_new();
+                                    elseif (in_array($t, $date))
+                                        $this->input(Form::DATE, $x, $x)->end_row_and_new();
+                                    else
+                                        $this->textarea($x, $x)->end_row_and_new();
+                                }
+
+                            }
+                        }
+                    }
+
 					$this->end_row_and_new();
 					$id = app()->connect()->postgresql() ? 'DEFAULT' : 'NULL';
 					

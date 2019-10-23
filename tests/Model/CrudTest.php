@@ -56,4 +56,14 @@ class CrudTest extends Unit
     {
         $this->assertTrue($this->crud->create('users')->isOk());
     }
+
+    public function test_edit()
+    {
+        $this->assertTrue($this->crud->edit('users',30)->isOk());
+    }
+    public function test_refresh()
+    {
+        $this->expectException(Kedavra::class);
+        $this->crud->refresh('users',30);
+    }
 }
