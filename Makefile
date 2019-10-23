@@ -4,7 +4,6 @@ OLD=7.2.19
 MEDIUM=7.3.6
 LAST=7.3.6
 
-TEST=./impero
 C=--coverage-html coverage
 
 
@@ -20,6 +19,6 @@ prepare: vendor
 	mysql -uroot -proot -e 'CREATE DATABASE imperium;'
 	vendor/bin/phinx migrate
 	vendor/bin/phinx seed:run
-
+	php shaolin up
 vendor:
 	composer install
