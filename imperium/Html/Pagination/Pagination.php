@@ -56,6 +56,7 @@
 				$this->total = $total;
 				$this->pages = intval(ceil($total / $limit)) + 1;
 				$this->url = config('pagination', 'url');
+
 			}
 			
 			/**
@@ -68,8 +69,12 @@
 			 */
 			public function paginate() : string
 			{
-				
+
+                if (superior_or_equal($this->limit,$this->total))
+                    return '';
+
 				$html = '<nav aria-label="Page navigation"><ul class="' . config('pagination', 'ul_class') . '">';
+
 				for($i = 1; $i != $this->pages; $i++)
 					$i === $this->current_page ? append($html, '<li class="' . config('pagination', 'li_class') . ' active"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>') : append($html, '<li class="' . config('pagination', 'li_class') . '"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>');
 				append($html, '</ul></nav>');
