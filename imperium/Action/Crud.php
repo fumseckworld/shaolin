@@ -203,7 +203,7 @@
             {
                 $this->init();
 
-                return  $this->truncate($table) ? $this->to(route('show',true,[$table]),$this->truncated) : $this->to(route('show',true,[$table]),$this->no_truncated,false);
+                return  $this->truncate($table) ? $this->to(route('show',false,true,false,[$table]),$this->truncated) : $this->to(route('show',false,true,false,[$table]),$this->no_truncated,false);
             }
 
             /**
@@ -225,7 +225,7 @@
              */
             public function edit(string $table,int $id): Response
             {
-                $form =  $this->form()->start('update',true,[$table,$id])->generate($table,$this->config('crud','update_text'),'',Form::EDIT,$id);
+                $form =  $this->form()->start('update',false,true,false,[$table,$id])->generate($table,$this->config('crud','update_text'),'',Form::EDIT,$id);
                 return  $this->view('@crud/edit',compact('form','table'));
             }
 
@@ -247,7 +247,7 @@
              */
             public function create(string $table): Response
             {
-                $form = $this->form()->start('create',true,[$table])->generate($table,$this->config('crud','create_text'));
+                $form = $this->form()->start('create',false,true,false,[$table])->generate($table,$this->config('crud','create_text'));
 
                 return $this->view('@crud/create',compact('form','table'));
             }
@@ -331,13 +331,21 @@
             {
                 $x = collect(['/' => $this->config('crud','select_table_text')]);
                 foreach ($this->tables() as $table)
-                    $x->put(route('show',true,[$table,1]),$table);
+                    $x->put(route('show',false,true,false,[$table,1]),$table);
                 $tables = $x->all();
                 $form = $this->form()->redirect('table',$tables)->get();
                 return  $this->view('@crud/home',compact('tables','form'));
             }
 
-            public function display($key,$value)
+            /**
+             * @param $key
+             * @param $value
+             * @return string
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             */
+            public function display($key,$value): string
             {
                 $html =  '<tr>';
                 foreach ($value as $v)
@@ -346,8 +354,8 @@
                 $confirm = $this->config('crud','sure');
                 $sure = "onclick=\"return confirm('$confirm');\"";
 
-                append($html,'<td><a href="'.route('edit',true,[$this->current,$value->id]).'" class="'.$this->config('crud','edit_class').'">'.$this->config('crud','edit_text').'</a></td>');
-                append($html,'<td><a href="'.route('remove',true,[$this->current,$value->id]).'" class="'.$this->config('crud','remove_class').'" '.$sure.'>  '.$this->config('crud','remove_text').'</a></td>');
+                append($html,'<td><a href="'.route('edit',false,true,false,[$this->current,$value->id]).'" class="'.$this->config('crud','edit_class').'">'.$this->config('crud','edit_text').'</a></td>');
+                append($html,'<td><a href="'.route('remove',false,true,false,[$this->current,$value->id]).'" class="'.$this->config('crud','remove_class').'" '.$sure.'>  '.$this->config('crud','remove_text').'</a></td>');
                 return $html . '</tr>';
             }
             /**

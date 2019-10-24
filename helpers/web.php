@@ -359,6 +359,7 @@ use Imperium\Model\Web;
          * @method route
          *
          * @param mixed $name
+         * @param bool $web
          * @param bool $admin
          * @param bool $task
          * @param mixed $args
@@ -369,19 +370,19 @@ use Imperium\Model\Web;
          * @throws Kedavra
          * @throws NotFoundException
          */
-		function route(string $name,bool $admin = false,bool $task = false,array $args = []): string
+		function route(string $name,bool $web,bool $admin = false,bool $task = false,array $args = []): string
 		{
 
 		    $admin_r =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
-            $web =    Web::where('name', EQUAL, $name)->fetch(true)->all();
-            $task_r   = Task::where('name',EQUAL,$name)->fetch()->all();
+            $web_r =    Web::where('name', EQUAL, $name)->fetch(true)->all();
+            $task_r   = Task::where('name',EQUAL,$name)->fetch(true)->all();
             if ($admin)
             {
                 is_true(not_def($admin_r),true,"The $name route was not found");
             }
             if ($web)
             {
-                is_true(not_def($web),true,"The $name route was not found");
+                is_true(not_def($web_r),true,"The $name route was not found");
             }
             if ($task)
             {
@@ -389,15 +390,21 @@ use Imperium\Model\Web;
             }
 
 
+            if ($admin)
 
-            $x = $admin ? $admin_r : $web ? $web : $task_r;
+                $x = $admin_r;
+            elseif ($web)
+                $x = $web_r;
+            else
+                $x = $task_r;
+
 
 
 			if (def($args))
 			{
 				
 				$url = '';
-				
+
 				$data = explode('/', $x->url);
 				$i = 0;
 				foreach ($data as $k => $v)
@@ -426,8 +433,12 @@ use Imperium\Model\Web;
 				return url(trim($url, '/'));
 				
 			}
-			foreach ($x as $url)
-			    return  $url->url;
+		    if (is_array($x))
+            {
+                foreach ($x as $url)
+                    return  $url->url;
+            }
+			return  $x->url;
 
 		}
 		
