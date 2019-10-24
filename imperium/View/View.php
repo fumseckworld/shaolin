@@ -96,11 +96,13 @@
 			
 				$this->twig->addExtension(new TranslationExtension());
 			
-				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Admin', 'admin');
+				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'admin', 'admin');
 			
-				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Users', 'users');
+				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'users', 'users');
 
-                $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'Crud', 'crud');
+                $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'crud', 'crud');
+
+                $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'todo', 'todo');
 
 				if(def($this->namespaces))
 				{
@@ -170,10 +172,10 @@
 				}, [ 'is_safe' => [ 'html' ] ]),
 
 
-                new TwigFunction('route', function(string $name, bool $admin = false,...$args)
+                new TwigFunction('route', function(string $name, bool $admin = false,bool $task = false,...$args)
 				{
 					
-					return route($name,$admin, $args);
+					return route($name,$admin,$task, $args);
 				}, [ 'is_safe' => [ 'html' ] ]),new TwigFunction('logged', function()
 				{
 					

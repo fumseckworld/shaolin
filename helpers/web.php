@@ -6,7 +6,8 @@
 	use DI\NotFoundException;
 	use Imperium\Html\Pagination\Pagination;
     use Imperium\Model\Admin;
-    use Imperium\Model\Web;
+use Imperium\Model\Task;
+use Imperium\Model\Web;
 	use Imperium\Exception\Kedavra;
 	use Sinergi\BrowserDetector\Os;
 	use Imperium\Collection\Collect;
@@ -359,6 +360,7 @@
          *
          * @param mixed $name
          * @param bool $admin
+         * @param bool $task
          * @param mixed $args
          *
          * @return string
@@ -367,16 +369,28 @@
          * @throws Kedavra
          * @throws NotFoundException
          */
-		function route(string $name,bool $admin = false,array $args = []): string
+		function route(string $name,bool $admin = false,bool $task = false,array $args = []): string
 		{
 
 		    $admin_r =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
             $web =    Web::where('name', EQUAL, $name)->fetch(true)->all();
+            $task_r   = Task::where('name',EQUAL,$name)->fetch()->all();
+            if ($admin)
+            {
+                is_true(not_def($admin_r),true,"The $name route was not found");
+            }
+            if ($web)
+            {
+                is_true(not_def($web),true,"The $name route was not found");
+            }
+            if ($task)
+            {
+                is_true(not_def($task_r),true,"The $name route was not found");
+            }
 
-            is_true($admin && not_def($admin_r) || !$admin && not_def($web),true,"The $name route was not found");
 
 
-            $x = $admin ? $admin_r : $web;
+            $x = $admin ? $admin_r : $web ? $web : $task_r;
 
 
 			if (def($args))
@@ -412,19 +426,35 @@
 				return url(trim($url, '/'));
 				
 			}
-			
-			return url(trim($x->url, '/'));
+			foreach ($x as $url)
+			    return  $url->url;
+
 		}
 		
 	}
 
 	if (!function_exists('detect_method'))
     {
-        function detect_method(string $route)
+        function detect_method(string $route,bool $web = true,bool $admin =false,bool $task = false)
         {
-            $web = Web::where('name',EQUAL,$route)->fetch(true)->all();
-            $admin = Admin::where('name',EQUAL,$route)->fetch(true)->all();
-            return def($web) ? $web->method : $admin->method;
+            if ($web)
+            {
+                $web = Web::where('name',EQUAL,$route)->fetch(true)->all();
+               return $web->method;
+            }
+            if ($admin)
+            {
+                $admin = Admin::where('name',EQUAL,$route)->fetch(true)->all();
+               return $admin->method;
+            }
+
+            if ($task)
+            {
+                $task = Task::where('name',EQUAL,$route)->fetch(true)->all();
+                return $task->method;
+            }
+
+            return 'POST';
         }
     }
 	

@@ -567,7 +567,9 @@
              * @method start
              *
              * @param string $route
+             * @param bool $web
              * @param bool $admin
+             * @param bool $task
              * @param array $args
              * @param string $confirm The confirm text
              * @param string $class The form class
@@ -579,10 +581,11 @@
              * @throws Kedavra
              * @throws NotFoundException
              */
-			public function start(string $route,bool $admin,array $args,string $confirm = '', string $class = '', bool $enctype = false, string $charset = 'utf-8') : Form
+			public function start(string $route,bool $web,bool $admin,bool $task,array $args= [],string $confirm = '', string $class = '', bool $enctype = false, string $charset = 'utf-8') : Form
 			{
 				
-				$this->method = detect_method($route);
+				$this->method = detect_method($route,$web,$admin,$task);
+
 
 				$method = POST;
 				if($this->validate)
@@ -591,16 +594,16 @@
 					if($enctype)
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
 						else
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  enctype="multipart/form-data" onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
 					}
 					else
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" class="' . self::VALIDATE . '" accept-charset="' . $charset . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')">');
 						else
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . ' ' . self::VALIDATE . '"  onsubmit="return confirm(' . "'" . $confirm . "'" . ')" >');
 					}
 				}
 				else
@@ -608,16 +611,16 @@
 					if($enctype)
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" enctype="multipart/form-data">');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" enctype="multipart/form-data">');
 						else
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" enctype="multipart/form-data">');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" enctype="multipart/form-data">');
 					}
 					else
 					{
 						if(not_def($class))
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" >');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" >');
 						else
-							append($this->form, '<form action="' . route($route,$admin,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" >');
+							append($this->form, '<form action="' . route($route,$admin,$task,$args) . '" method="' . $method . '" accept-charset="' . $charset . '" class="' . $class . '" >');
 					}
 				}
 				if(config($this->file, 'large'))

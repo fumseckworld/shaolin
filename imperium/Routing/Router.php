@@ -64,7 +64,7 @@
 			 */
 			public function __construct(ServerRequestInterface $request)
 			{
-				
+
 				$this->method = $request->getMethod() !== GET ? def($request->getParsedBody()) ? strtoupper(collect($request->getParsedBody())->get('method')) : $request->getMethod() : GET;
 			
 				$this->url = $request->getUri()->getPath();
@@ -86,6 +86,7 @@
 
                 if (equal(config('mode', 'mode'), 'admin'))
                 {
+
                     foreach(Admin::where('method', EQUAL, $this->method)->all() as $route)
                     {
 
@@ -97,34 +98,35 @@
                         }
                     }
 
-                }else
+                }
+
+                if (equal(config('mode', 'mode'), 'todo'))
                 {
 
-                    if (equal(config('mode', 'mode'), 'todo'))
+                    foreach (Task::where('method',EQUAL,$this->method)->all() as $route)
                     {
-                        foreach (Task::where('method',EQUAL,$this->method) as $route)
+                        if($this->match($route->url))
                         {
-                            if($this->match($route->url))
-                            {
-                                $this->route = $route;
+                            $this->route = $route;
 
-                                return $this->result();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
-                        {
-                            if($this->match($route->url))
-                            {
-                                $this->route = $route;
-
-                                return $this->result();
-                            }
+                            return $this->result();
                         }
                     }
                 }
+
+                if (equal(config('mode','mode'),'up'))
+                {
+                    foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
+                    {
+                        if($this->match($route->url))
+                        {
+                            $this->route = $route;
+
+                            return $this->result();
+                        }
+                    }
+                }
+
 				
 
 				return to(route('404'));

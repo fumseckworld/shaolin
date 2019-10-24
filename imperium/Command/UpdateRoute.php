@@ -201,6 +201,7 @@
                         }while(is_null($action));
 
                         $this->entry->put('id', $route->id);
+
                     }elseif( $this->choose == 'admin')
                     {
                         do {
@@ -280,7 +281,7 @@
 
                             $this->search = $helper->ask($input, $output, $question);
 
-                        } while (is_null($this->search) && not_def(Admin::where('name', EQUAL, $this->search)->all()));
+                        } while (is_null($this->search) && not_def(Task::where('name', EQUAL, $this->search)->all()));
 
                         $route = Task::by('name', $this->search);
 
@@ -338,8 +339,18 @@
 
                         $this->entry->put('id', $route->id);
                     }
-
-                    $this->choose == 'admin' ? $this->routes->push(Admin::update($this->entry->get('id'),$this->entry->all())) : $this->routes->push(Web::update($this->entry->get('id'),$this->entry->all()));
+                    switch ($this->choose)
+                    {
+                        case 'admin':
+                            $this->routes->push(Admin::update($this->entry->get('id'),$this->entry->all()));
+                        break;
+                        case 'task':
+                            $this->routes->push(Task::update($this->entry->get('id'),$this->entry->all()));
+                        break;
+                        default:
+                            $this->routes->push(Web::update($this->entry->get('id'),$this->entry->all()));
+                        break;
+                    }
 
                     $this->entry->clear();
 

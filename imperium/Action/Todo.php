@@ -11,7 +11,7 @@ use Imperium\Model\Model;
 
 class Todo extends Model
 {
-    protected $table = "toto";
+    protected $table = "todo";
 
     protected $todo = true;
 
