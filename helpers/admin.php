@@ -115,20 +115,20 @@
 	}
 	if( ! function_exists('redirect'))
 	{
-		/**
-		 *
-		 * Redirect to a route
-		 *
-		 * @param  string  $route_name
-		 * @param  string  $message
-		 * @param  bool    $success
-		 *
-		 * @throws DependencyException
-		 * @throws Kedavra
-		 * @throws NotFoundException
-		 * @return RedirectResponse
-		 */
-		function redirect(string $route_name, string $message = '', bool $success = true) : RedirectResponse
+        /**
+         *
+         * Redirect to a route
+         *
+         * @param string $url
+         * @param string $message
+         * @param bool $success
+         *
+         * @return RedirectResponse
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         */
+		function redirect(string $url, string $message = '', bool $success = true) : RedirectResponse
 		{
 			
 			if(def($message))
@@ -137,7 +137,7 @@
 				$success ? $flash->success($message) : $flash->failure($message);
 			}
 			
-			return (new RedirectResponse(route($route_name)))->send();
+			return (new RedirectResponse($url))->send();
 		}
 	}
 	if( ! function_exists('base'))

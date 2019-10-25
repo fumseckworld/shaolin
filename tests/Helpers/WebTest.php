@@ -70,8 +70,8 @@ class WebTest extends Unit
 
     public function test_route()
     {
-        $this->assertEquals('/',route('root'));
-        $this->assertEquals('/game/imperium',route('game',false,['imperium']));
+        $this->assertEquals('/',route('web','root'));
+        $this->assertEquals('/game/imperium',route('web','game',['imperium']));
     }
 
     public function test_is_mobile()

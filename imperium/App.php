@@ -407,20 +407,20 @@ namespace Imperium {
          *
          * Redirect user to a route
          *
+         * @param string $db
          * @param string $route
+         * @param array $args
          * @param string $message
          * @param bool $success
          *
          * @return RedirectResponse
-         *
+         * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
-         * @throws DependencyException
          */
-        public function redirect(string $route, string $message = '', bool $success = true): RedirectResponse
+        public function redirect(string $db,string $route,array $args =[],string $message = '', bool $success = true) : RedirectResponse
         {
-
-            return redirect($route, $message, $success);
+            return redirect(route($db,$route,$args), $message, $success);
         }
 
         /**
@@ -436,7 +436,6 @@ namespace Imperium {
          */
         public function back(string $message = '', bool $success = true): RedirectResponse
         {
-
             return back($message, $success);
         }
 
@@ -454,7 +453,6 @@ namespace Imperium {
          */
         public function to(string $url, string $message = '', bool $success = true): RedirectResponse
         {
-
             return to($url, $message, $success);
         }
 
@@ -507,18 +505,19 @@ namespace Imperium {
          *
          * Generate url string
          *
+         * @param string $db
          * @param string $route
-         * @param bool $admin
          * @param mixed $args
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
-        public function url(string $route, bool $admin, ...$args): string
+        public function url(string $db,string $route,...$args) : string
         {
-
-            return route($route, $admin, $args);
+            return route($db,$route,$args);
         }
 
         /**
@@ -535,7 +534,6 @@ namespace Imperium {
          */
         public function sql(string $table, bool $web = false, $admin = false): Query
         {
-
             return Query::from($table, $web, $admin);
         }
 
@@ -547,7 +545,6 @@ namespace Imperium {
          */
         public function curl(): Curl
         {
-
             return new Curl();
         }
 
@@ -560,7 +557,6 @@ namespace Imperium {
          */
         public function shop(): Shop
         {
-
             return new Shop();
         }
 
@@ -575,7 +571,6 @@ namespace Imperium {
          */
         public function save(): bool
         {
-
             return (new Dump(true, []))->dump();
         }
 

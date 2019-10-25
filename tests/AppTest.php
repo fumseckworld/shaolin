@@ -31,7 +31,7 @@
 			$this->assertInstanceOf(Request::class,app()->request());
 			$this->assertInstanceOf(Oauth::class,app()->auth());
 			$this->assertInstanceOf(Write::class,app()->write('test','i am a test','micieli@laposte.net','micieli@laposte.net'));
-			$this->assertInstanceOf(RedirectResponse::class,app()->redirect('root'));
+			$this->assertInstanceOf(RedirectResponse::class,app()->redirect('web','root'));
 			$this->assertInstanceOf(RedirectResponse::class,app()->back());
 			$this->assertInstanceOf(RedirectResponse::class,app()->to('/'));
 			$this->assertInstanceOf(Cache::class,app()->cache());

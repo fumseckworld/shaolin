@@ -172,10 +172,10 @@
 				}, [ 'is_safe' => [ 'html' ] ]),
 
 
-                new TwigFunction('route', function(string $name, bool $web,bool $admin,bool $task,...$args)
+                new TwigFunction('route', function(string $db, string $route,...$args)
 				{
 					
-					return route($name,$web,$admin,$task, $args);
+					return route($db,$route,$args);
 				}, [ 'is_safe' => [ 'html' ] ]),new TwigFunction('logged', function()
 				{
 					

@@ -358,10 +358,8 @@ use Imperium\Model\Web;
          *
          * @method route
          *
-         * @param mixed $name
-         * @param bool $web
-         * @param bool $admin
-         * @param bool $task
+         * @param string $db
+         * @param string $route
          * @param mixed $args
          *
          * @return string
@@ -370,35 +368,23 @@ use Imperium\Model\Web;
          * @throws Kedavra
          * @throws NotFoundException
          */
-		function route(string $name,bool $web,bool $admin = false,bool $task = false,array $args = []): string
+		function route(string $db,string $route,array $args =[]): string
 		{
-
-		    $admin_r =  Admin::where('name', EQUAL, $name)->fetch(true)->all();
-            $web_r =    Web::where('name', EQUAL, $name)->fetch(true)->all();
-            $task_r   = Task::where('name',EQUAL,$name)->fetch(true)->all();
-            if ($admin)
+		    switch ($db)
             {
-                is_true(not_def($admin_r),true,"The $name route was not found");
+                case 'admin':
+                    $x = Admin::where('name',EQUAL,$route)->fetch(true)->all();
+                break;
+                case 'web':
+                    $x = Web::where('name',EQUAL,$route)->fetch(true)->all();
+                break;
+                case 'task':
+                    $x = Task::where('name',EQUAL,$route)->fetch(true)->all();
+                break;
+                default:
+                    throw new Kedavra("The db parameter must be web, admin or task");
+                break;
             }
-            if ($web)
-            {
-                is_true(not_def($web_r),true,"The $name route was not found");
-            }
-            if ($task)
-            {
-                is_true(not_def($task_r),true,"The $name route was not found");
-            }
-
-
-            if ($admin)
-
-                $x = $admin_r;
-            elseif ($web)
-                $x = $web_r;
-            else
-                $x = $task_r;
-
-
 
 			if (def($args))
 			{
@@ -446,26 +432,40 @@ use Imperium\Model\Web;
 
 	if (!function_exists('detect_method'))
     {
-        function detect_method(string $route,bool $web = true,bool $admin =false,bool $task = false)
+        /**
+         *
+         * Detect a route method
+         *
+         * @param string $db
+         * @param string $route
+         *
+         * @return string
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         *
+         */
+        function detect_method(string $db,string $route): string
         {
-            if ($web)
-            {
-                $web = Web::where('name',EQUAL,$route)->fetch(true)->all();
-               return $web->method;
-            }
-            if ($admin)
-            {
-                $admin = Admin::where('name',EQUAL,$route)->fetch(true)->all();
-               return $admin->method;
-            }
 
-            if ($task)
+            switch ($db)
             {
-                $task = Task::where('name',EQUAL,$route)->fetch(true)->all();
-                return $task->method;
+                case 'admin':
+                    $x = Admin::where('name',EQUAL,$route)->fetch(true)->all();
+                    break;
+                case 'web':
+                    $x = Web::where('name',EQUAL,$route)->fetch(true)->all();
+                    break;
+                case 'task':
+                    $x = Task::where('name',EQUAL,$route)->fetch(true)->all();
+                    break;
+                default:
+                    throw new Kedavra("The db parameter must be web, admin or task");
+                break;
             }
+            return $x->method;
 
-            return 'POST';
         }
     }
 	

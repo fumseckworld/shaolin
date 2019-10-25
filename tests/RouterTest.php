@@ -48,7 +48,9 @@ namespace Testing {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function test_add_route()
         {
@@ -93,7 +95,7 @@ namespace Testing {
             $this->assertEquals(302,$response->getStatusCode());
             $this->assertTrue($response->isRedirection());
             $this->assertTrue($response->isRedirect('/error'));
-            $this->assertTrue($response->isRedirect(route('404')));
+            $this->assertTrue($response->isRedirect(route('web','404')));
         
         }
         

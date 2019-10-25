@@ -129,7 +129,7 @@
 
 				
 
-				return to(route('404'));
+				return to(route('web','404'));
 			}
 			
 			/**

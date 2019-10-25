@@ -24,7 +24,7 @@ class AdminTest extends Unit
     public function test_redirect()
     {
     	
-        $this->assertTrue(redirect('root','a',true)->isRedirect('/'));
+        $this->assertTrue(redirect('/','a',true)->isRedirect('/'));
     }
     
     public function test_history()

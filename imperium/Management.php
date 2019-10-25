@@ -283,21 +283,20 @@
              * @return Response
              */
 			public function view(string $name,array $args = [],int $status= 200,array $headers = []) : Response;
-			
-			/**
-			 *
-			 * Redirect user to a route
-			 *
-			 * @param  string  $route
-			 * @param  string  $message
-			 * @param  bool    $success
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return RedirectResponse
-			 *
-			 */
-			public function redirect(string $route, string $message = '', bool $success = true) : RedirectResponse;
+
+            /**
+             *
+             * Redirect user to a route
+             *
+             * @param string $db
+             * @param string $route
+             * @param array $args
+             * @param string $message
+             * @param bool $success
+             *
+             * @return RedirectResponse
+             */
+			public function redirect(string $db,string $route,array $args =[],string $message = '', bool $success = true) : RedirectResponse;
 			
 			/**
 			 *
@@ -393,12 +392,14 @@
              * Generate url string
              *
              * @param string $route
+             * @param bool $web
              * @param bool $admin
+             * @param bool $task
              * @param mixed $args
              *
              * @return string
              */
-			public function url(string $route,bool $admin ,...$args) : string;
+			public function url(string $db,string $route,...$args) : string;
 
             /**
              *
