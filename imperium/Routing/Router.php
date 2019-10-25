@@ -127,8 +127,6 @@
                     }
                 }
 
-				
-
 				return to(route('web','404'));
 			}
 			

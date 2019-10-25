@@ -31,7 +31,17 @@ class CrudTest extends Unit
 	 */
     public function test_show()
     {
-        $this->assertTrue($this->crud->show('users',1)->isOk());
+        $this->assertTrue($this->crud->show('users')->isOk());
+
+    }
+
+    /**
+	 * @throws Kedavra
+	 */
+    public function test_home()
+    {
+        $this->assertTrue($this->crud->home()->isOk());
+        $this->assertTrue($this->crud->clear('countries')->isRedirect('/countries'));
 
     }
 	
