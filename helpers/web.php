@@ -430,6 +430,49 @@ use Imperium\Model\Web;
 		
 	}
 
+    if(!function_exists('fa'))
+    {
+        /**
+         *
+         * Generate a fa icon
+         *
+         * @method fa
+         *
+         * @param  string $prefix    The fa prefix
+         * @param  string $icon     The fa icon name
+         * @param  string $options  The fa options
+         *
+         * @return string
+         *
+         */
+        function fa(string $prefix,string $icon, string $options = ''): string
+        {
+            $x = "$prefix $icon $options";
+            return '<i class="'.$x.'"></i>';
+        }
+    }
+
+	if (!function_exists('ago'))
+    {
+        /**
+         *
+         * @param string $time
+         * @param null $tz
+         *
+         * @return string
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        function ago(string $time,$tz = null):string
+        {
+            Carbon::setLocale(app()->lang());
+
+            return Carbon::parse($time,$tz)->diffForHumans();
+
+        }
+    }
 	if (!function_exists('detect_method'))
     {
         /**
