@@ -347,6 +347,27 @@
 			
 			return connect(db('driver'), db('base'), db('username'), db('password'), db('host'), db('dump'));
 		}
+	}	if( ! function_exists('is_not_connected'))
+	{
+        /**
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+		function is_not_connected() : bool
+		{
+		    try{
+
+                return ! instance()->pdo() instanceof PDO;
+            }catch (Kedavra $exception)
+            {
+
+                return  true;
+            }
+
+		}
 	}
 	if( ! function_exists('assign'))
 	{

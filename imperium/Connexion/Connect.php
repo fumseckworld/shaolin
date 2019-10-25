@@ -308,23 +308,28 @@
 				
 				return $this->driver() === SQLITE;
 			}
-			
-			/**
-			 *
-			 * Return the PDO instance on success
-			 *
-			 * @method instance
-			 *
-			 *
-			 * @return PDO
-			 *
-			 */
+
+            /**
+             *
+             * Return the PDO instance on success
+             *
+             * @method instance
+             *
+             *
+             * @return PDO
+             *
+             * @throws Kedavra
+             *
+             */
 			public function pdo() : PDO
 			{
 				
 				$instance = $this->getpdo();
 				
-				return is_string($instance) ? new PDO('sqlite::memory:') : $instance;
+				if (is_string($instance))
+				    throw new Kedavra($instance);
+                else
+                    return $instance;
 			}
 			
 			/**
