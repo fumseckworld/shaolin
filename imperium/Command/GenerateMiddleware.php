@@ -44,7 +44,7 @@
 				
 				if(file_exists($file))
 				{
-					$output->write("<bg=red;fg=white>The $x middleware already exist\n");
+					$output->write("<bg=red;fg=white>The $x middleware already exist\n</>");
 					
 					return 1;
 				}

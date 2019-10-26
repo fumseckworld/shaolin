@@ -206,7 +206,7 @@
 
 				$this->add_test(glob(base('app').DIRECTORY_SEPARATOR.'Twig'.DIRECTORY_SEPARATOR.'Tests'.DIRECTORY_SEPARATOR .'*.php'));
 
-				
+
 
 			}
 			
