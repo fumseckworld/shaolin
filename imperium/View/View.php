@@ -95,10 +95,7 @@
 				$this->twig->addExtension(new ArrayExtension());
 			
 				$this->twig->addExtension(new TranslationExtension());
-			
-				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'admin', 'admin');
-			
-				$this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'users', 'users');
+				
 
                 $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'crud', 'crud');
 
