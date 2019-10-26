@@ -3,14 +3,12 @@
 	namespace Imperium\View
 	{
 
-        use DI\DependencyException;
-        use DI\NotFoundException;
         use Imperium\Cookies\Cookies;
         use Imperium\Exception\Kedavra;
 		use Imperium\Flash\Flash;
 		use Sinergi\BrowserDetector\Os;
 		use Symfony\Bridge\Twig\Extension\TranslationExtension;
-		use Twig\Environment;
+        use Twig\Environment;
 		use Twig\Error\LoaderError;
 		use Twig\Error\RuntimeError;
 		use Twig\Error\SyntaxError;
@@ -70,10 +68,8 @@
              *
              * @param array $config
              *
-             * @throws DependencyException
              * @throws Kedavra
              * @throws LoaderError
-             * @throws NotFoundException
              */
 			public function __construct(string $views_path, array $config)
 			{
@@ -100,7 +96,7 @@
 				$this->twig->addExtension(new ArrayExtension());
 			
 				$this->twig->addExtension(new TranslationExtension());
-				
+
                 $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'crud', 'crud');
 
                 $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'todo', 'todo');
@@ -201,6 +197,19 @@
 				bind_textdomain_codeset($this->domain(), 'UTF-8');
 				
 				textdomain($this->domain());
+
+				$this->add_functions(glob(base('twig').DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR .'*.php'));
+
+				$this->add_filters(glob(base('twig').DIRECTORY_SEPARATOR.'filters'.DIRECTORY_SEPARATOR .'*.php'));
+
+				$this->add_globals(glob(base('twig').DIRECTORY_SEPARATOR.'globals'.DIRECTORY_SEPARATOR .'*.php'));
+
+				$this->add_test(glob(base('twig').DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR .'*.php'));
+
+				$this->add_tags(glob(base('twig').DIRECTORY_SEPARATOR.'tags'.DIRECTORY_SEPARATOR .'*.php'));
+
+				$this->add_extensions(glob(base('twig').DIRECTORY_SEPARATOR.'extensions'.DIRECTORY_SEPARATOR .'*.php'));
+
 			}
 			
 			/**
@@ -331,7 +340,6 @@
 			 *
 			 * @param  array  $extensions
 			 *
-			 *
 			 */
 			public function add_tags(array $extensions) : void
 			{
@@ -342,7 +350,7 @@
 			/**
 			 * @param  array  $functions
 			 */
-			public function add_functions(array $functions)
+			public function add_functions(array $functions): void
 			{
 				foreach($functions as $function)
 					$this->twig()->addFunction($function);
