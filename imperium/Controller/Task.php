@@ -37,6 +37,21 @@ namespace Imperium\Controller {
 
         /**
          *
+         * Update a task
+         *
+         * @return RedirectResponse
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
+        public function update(): RedirectResponse
+        {
+            return Todo::update($this->request()->request->get('id'),$this->collect($this->request()->request->all())->del(CSRF_TOKEN,'method')->all()) ? $this->back('updated') : $this->back('not updated',false);
+        }
+
+        /**
+         *
          * Create a task
          *
          * @return RedirectResponse
