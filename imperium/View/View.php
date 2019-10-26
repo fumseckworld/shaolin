@@ -198,17 +198,15 @@
 				
 				textdomain($this->domain());
 
-				$this->add_functions(glob(base('twig').DIRECTORY_SEPARATOR.'functions'.DIRECTORY_SEPARATOR .'*.php'));
+				$this->add_functions(glob(base('app').DIRECTORY_SEPARATOR.'Twig'.DIRECTORY_SEPARATOR.'Functions'.DIRECTORY_SEPARATOR .'*.php'));
 
-				$this->add_filters(glob(base('twig').DIRECTORY_SEPARATOR.'filters'.DIRECTORY_SEPARATOR .'*.php'));
+				$this->add_filters(glob(base('app').DIRECTORY_SEPARATOR.'Twig'.DIRECTORY_SEPARATOR.'Filters'.DIRECTORY_SEPARATOR .'*.php'));
 
-				$this->add_globals(glob(base('twig').DIRECTORY_SEPARATOR.'globals'.DIRECTORY_SEPARATOR .'*.php'));
+				$this->add_globals(glob(base('app').DIRECTORY_SEPARATOR.'Twig'.DIRECTORY_SEPARATOR.'Globals'.DIRECTORY_SEPARATOR .'*.php'));
 
-				$this->add_test(glob(base('twig').DIRECTORY_SEPARATOR.'tests'.DIRECTORY_SEPARATOR .'*.php'));
+				$this->add_test(glob(base('app').DIRECTORY_SEPARATOR.'Twig'.DIRECTORY_SEPARATOR.'Tests'.DIRECTORY_SEPARATOR .'*.php'));
 
-				$this->add_tags(glob(base('twig').DIRECTORY_SEPARATOR.'tags'.DIRECTORY_SEPARATOR .'*.php'));
-
-				$this->add_extensions(glob(base('twig').DIRECTORY_SEPARATOR.'extensions'.DIRECTORY_SEPARATOR .'*.php'));
+				
 
 			}
 			
@@ -291,8 +289,16 @@
 			 */
 			public function add_filters(array $filters) : void
 			{
-				foreach($filters as $filter)
-					$this->twig()->addFilter(new $filter());
+			    foreach ($filters as $filter)
+                {
+                    $x = collect(explode(DIRECTORY_SEPARATOR,$filter))->last();
+                    $x = collect(explode('.',$x))->first();
+                    $x = "App\Twig\Filters\\$x";
+
+                    foreach ((new $x())->getFilters() as $j)
+                        $this->twig->addFilter($j);
+                }
+
 			}
 			
 			/**
@@ -306,7 +312,15 @@
 			public function add_test(array $tests) : void
 			{
 				foreach($tests as $test)
-					$this->twig()->addTest(new $test());
+                {
+                    $x = collect(explode(DIRECTORY_SEPARATOR,$test))->last();
+                    $x = collect(explode('.',$x))->first();
+                    $x = "App\Twig\Tests\\$x";
+
+                    foreach ((new $x())->getTests() as $j)
+                        $this->twig->addTest($j);
+                }
+
 			}
 			
 			/**
@@ -319,33 +333,17 @@
 			 */
 			public function add_globals(array $globals) : void
 			{
-				foreach($globals as $k => $v)
-					$this->twig()->addGlobal($k, $v);
+                foreach($globals as $global)
+                {
+                    $x = collect(explode(DIRECTORY_SEPARATOR,$global))->last();
+                    $x = collect(explode('.',$x))->first();
+                    $x = "App\Twig\Globals\\$x";
+
+                    foreach ((new $x())->getGlobals() as $k => $v)
+                        $this->twig->addGlobal($k,$v);
+                }
 			}
-			
-			/**
-			 * Add twig extensions
-			 *
-			 * @param  array  $extensions
-			 *
-			 *
-			 */
-			public function add_extensions(array $extensions) : void
-			{
-				foreach($extensions as $extension)
-					$this->twig()->addExtension(new $extension());
-			}
-			
-			/**
-			 *
-			 * @param  array  $extensions
-			 *
-			 */
-			public function add_tags(array $extensions) : void
-			{
-				foreach($extensions as $extension)
-					$this->twig()->addTokenParser(new $extension());
-			}
+
 			
 			/**
 			 * @param  array  $functions
@@ -353,7 +351,14 @@
 			public function add_functions(array $functions): void
 			{
 				foreach($functions as $function)
-					$this->twig()->addFunction(new $function());
+                {
+                    $x = collect(explode(DIRECTORY_SEPARATOR,$function))->last();
+                    $x = collect(explode('.',$x))->first();
+                    $x = "App\Twig\Functions\\$x";
+
+                    foreach ((new $x())->getFunctions() as $j)
+                        $this->twig->addFunction($j);
+                }
 			}
 			
 		}
