@@ -32,7 +32,7 @@ namespace Imperium\Controller {
          */
         public function finish(int $id): RedirectResponse
         {
-            return Todo::destroy($id) ? $this->back('removed') : $this->back('not removed',false);
+            return Todo::destroy($id) ? $this->back($this->config('todo','toto_closed')) : $this->back($this->config('todo','toto_not_close'),false);
         }
 
         /**
@@ -47,7 +47,7 @@ namespace Imperium\Controller {
          */
         public function update(): RedirectResponse
         {
-            return Todo::update($this->request()->request->get('id'),$this->collect($this->request()->request->all())->del(CSRF_TOKEN,'method')->all()) ? $this->back('updated') : $this->back('not updated',false);
+            return Todo::update($this->request()->request->get('id'),$this->collect($this->request()->request->all())->del(CSRF_TOKEN,'method')->all()) ? $this->back($this->config('todo','todo_updated')) : $this->back($this->config('todo','todo_not_updated'),false);
         }
 
         /**
@@ -64,7 +64,7 @@ namespace Imperium\Controller {
         public function add(): RedirectResponse
         {
             $todo = collect($this->request()->request->all())->del(CSRF_TOKEN,'method')->all();
-            return Todo::create($todo) ? $this->back('created') : $this->back('fail',false);
+            return Todo::create($todo) ? $this->back($this->config('todo','todo_created')) : $this->back($this->config('todo','todo_not_created'),false);
         }
 
         /**
@@ -94,7 +94,7 @@ namespace Imperium\Controller {
                 ->end_row_and_new()
                 ->select(false,'priority',['none','low','medium','high'])
                 ->end_row_and_new()
-                ->submit('add')
+                ->submit(fa('fa','fa-plus'))
                 ->end_row()
                 ->get();
             return $this->view('@todo/home',compact('todo','form'));
