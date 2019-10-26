@@ -2,8 +2,10 @@
 	
 	namespace Imperium\View
 	{
-		
-		use Imperium\Exception\Kedavra;
+
+        use DI\DependencyException;
+        use DI\NotFoundException;
+        use Imperium\Exception\Kedavra;
 		use Imperium\Flash\Flash;
 		use Sinergi\BrowserDetector\Os;
 		use Symfony\Bridge\Twig\Extension\TranslationExtension;
@@ -57,19 +59,21 @@
 			 * @var Environment
 			 */
 			private $twig;
-			
-			/**
-			 * Twig constructor.
-			 *
-			 * @Inject({"views.path", "views.config"})
-			 *
-			 * @param  string  $views_path
-			 *
-			 * @param  array   $config
-			 *
-			 * @throws Kedavra
-			 * @throws LoaderError
-			 */
+
+            /**
+             * Twig constructor.
+             *
+             * @Inject({"views.path", "views.config"})
+             *
+             * @param string $views_path
+             *
+             * @param array $config
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws LoaderError
+             * @throws NotFoundException
+             */
 			public function __construct(string $views_path, array $config)
 			{
 				
@@ -95,7 +99,7 @@
 				$this->twig->addExtension(new ArrayExtension());
 			
 				$this->twig->addExtension(new TranslationExtension());
-				
+
 
                 $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'crud', 'crud');
 
@@ -235,17 +239,18 @@
 				
 				return $this->loader;
 			}
-			
-			/**
-			 * @throws Kedavra
-			 *
-			 * @return string
-			 *
-			 */
+
+            /**
+             * @return string
+             *
+             * @throws Kedavra
+             * @throws DependencyException
+             * @throws NotFoundException
+             *
+             */
 			public function locale() : string
 			{
-				
-				return config('locales', 'locale');
+				return app()->lang();
 			}
 			
 			/**
@@ -257,7 +262,6 @@
 			 */
 			public function domain()
 			{
-				
 				return config('locales', 'domain');
 			}
 			
@@ -269,9 +273,7 @@
 			 */
 			public function locale_path() : string
 			{
-				
 				return base('po');
-			
 			}
 			
 			/**
@@ -284,7 +286,6 @@
 			 */
 			public function add_filters(array $filters) : void
 			{
-				
 				foreach($filters as $filter)
 					$this->twig()->addFilter($filter);
 			}
@@ -299,7 +300,6 @@
 			 */
 			public function add_test(array $tests) : void
 			{
-				
 				foreach($tests as $test)
 					$this->twig()->addTest($test);
 			}
@@ -314,7 +314,6 @@
 			 */
 			public function add_globals(array $globals) : void
 			{
-				
 				foreach($globals as $k => $v)
 					$this->twig()->addGlobal($k, $v);
 			}
@@ -328,7 +327,6 @@
 			 */
 			public function add_extensions(array $extensions) : void
 			{
-				
 				foreach($extensions as $extension)
 					$this->twig()->addExtension($extension);
 			}
@@ -341,7 +339,6 @@
 			 */
 			public function add_tags(array $extensions) : void
 			{
-				
 				foreach($extensions as $extension)
 					$this->twig()->addTokenParser($extension);
 			}
@@ -351,7 +348,6 @@
 			 */
 			public function add_functions(array $functions)
 			{
-				
 				foreach($functions as $function)
 					$this->twig()->addFunction($function);
 			}
