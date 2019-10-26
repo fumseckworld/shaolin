@@ -292,7 +292,7 @@
 			public function add_filters(array $filters) : void
 			{
 				foreach($filters as $filter)
-					$this->twig()->addFilter($filter);
+					$this->twig()->addFilter(new $filter());
 			}
 			
 			/**
@@ -306,7 +306,7 @@
 			public function add_test(array $tests) : void
 			{
 				foreach($tests as $test)
-					$this->twig()->addTest($test);
+					$this->twig()->addTest(new $test());
 			}
 			
 			/**
@@ -333,7 +333,7 @@
 			public function add_extensions(array $extensions) : void
 			{
 				foreach($extensions as $extension)
-					$this->twig()->addExtension($extension);
+					$this->twig()->addExtension(new $extension());
 			}
 			
 			/**
@@ -344,7 +344,7 @@
 			public function add_tags(array $extensions) : void
 			{
 				foreach($extensions as $extension)
-					$this->twig()->addTokenParser($extension);
+					$this->twig()->addTokenParser(new $extension());
 			}
 			
 			/**
@@ -353,7 +353,7 @@
 			public function add_functions(array $functions): void
 			{
 				foreach($functions as $function)
-					$this->twig()->addFunction($function);
+					$this->twig()->addFunction(new $function());
 			}
 			
 		}
