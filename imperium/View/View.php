@@ -5,6 +5,7 @@
 
         use DI\DependencyException;
         use DI\NotFoundException;
+        use Imperium\Cookies\Cookies;
         use Imperium\Exception\Kedavra;
 		use Imperium\Flash\Flash;
 		use Sinergi\BrowserDetector\Os;
@@ -99,8 +100,7 @@
 				$this->twig->addExtension(new ArrayExtension());
 			
 				$this->twig->addExtension(new TranslationExtension());
-
-
+				
                 $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'crud', 'crud');
 
                 $this->loader()->addPath($views_path . DIRECTORY_SEPARATOR . 'todo', 'todo');
@@ -208,7 +208,6 @@
 			 */
 			public function twig() : Environment
 			{
-				
 				return $this->twig;
 			}
 			
@@ -236,7 +235,6 @@
 			 */
 			public function loader() : FilesystemLoader
 			{
-				
 				return $this->loader;
 			}
 
@@ -244,13 +242,11 @@
              * @return string
              *
              * @throws Kedavra
-             * @throws DependencyException
-             * @throws NotFoundException
              *
              */
 			public function locale() : string
 			{
-				return app()->lang();
+				 return (new Cookies())->get('locale', config('locales', 'locale'));
 			}
 			
 			/**
