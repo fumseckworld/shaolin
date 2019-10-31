@@ -12,7 +12,7 @@ use Imperium\Model\Web;
 	use Sinergi\BrowserDetector\Os;
 	use Imperium\Collection\Collect;
 	use Symfony\Component\Console\Output\OutputInterface;
-	
+
 	if (!function_exists('collect'))
 	{
 		/**

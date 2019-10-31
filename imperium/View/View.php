@@ -185,6 +185,10 @@
 				{
 					
 					return config('twig', 'development') === true;
+				}, [ 'is_safe' => [ 'html' ] ]),new TwigFunction('url', function(...$args)
+				{
+
+					return url($args);
 				}, [ 'is_safe' => [ 'html' ] ]));
 				
 				foreach($functions->all() as $function)
