@@ -181,9 +181,11 @@
                     append($all,"<th>$column</th>");
 
                 append($all,'</thead><tbody>');
-                append($all,$this->sql($table)->paginate([$this,'display'],$this->get('page',1),static::$limit));
-                append($all,'</tbody></table></div>');
 
+                $x = $this->sql($table)->paginate([$this,'display'],$this->get('page',1),static::$limit);
+                append($all,$x->content());
+                append($all,'</tbody></table></div>');
+                append($all,$x->pagination());
                 return  $this->view('@crud/show',compact('all','table'));
             }
 

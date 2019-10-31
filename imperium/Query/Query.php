@@ -11,7 +11,7 @@
 		use Imperium\Tables\Table;
 		use Imperium\Zen;
 		use PDO;
-		
+
 		/**
 		 * Class Query
 		 *
@@ -213,6 +213,19 @@
 			 */
 			private $primary;
 
+			/**
+             *
+             * The pagination
+             *
+             * @var string
+             */
+            private $pagination;
+
+            /**
+             * @var string
+             */
+            private $content;
+
             /**
              *
              * The constructor
@@ -301,7 +314,6 @@
              */
 			public static function from(string $table, bool $routes = false,bool $admin =false,bool $todo = false,bool $task = false) : Query
 			{
-				
 				return (new static($routes,$admin,$todo,$task))->select_table($table);
 			}
 			
@@ -549,20 +561,22 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 * Generate a between clause
-			 *
-			 * @method between
-			 *
-			 * @param  string  $column  The column name
-			 * @param  mixed   $begin   The begin value
-			 * @param  mixed   $last    The last value
-			 *
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             * Generate a between clause
+             *
+             * @method between
+             *
+             * @param string $column The column name
+             * @param mixed $begin The begin value
+             * @param mixed $last The last value
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             *
+             */
 			public function between(string $column, $begin, $last) : Query
 			{
 				
@@ -824,18 +838,19 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 * Add on the where clause an and clause
-			 *
-			 * @param  string  $column
-			 * @param  string  $condition
-			 * @param  string  $expected
-			 *
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             * Add on the where clause an and clause
+             *
+             * @param string $column
+             * @param string $condition
+             * @param string $expected
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
 			public function and(string $column, string $condition, string $expected) : Query
 			{
 				
@@ -843,19 +858,20 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 * Add on the where clause a n or clause
-			 *
-			 * @param  string  $value
-			 * @param  string  $condition
-			 * @param  string  $expected
-			 *
-			 *
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             * Add on the where clause a n or clause
+             *
+             * @param string $value
+             * @param string $condition
+             * @param string $expected
+             *
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
 			public function or(string $value, string $condition, string $expected) : Query
 			{
 				
@@ -863,17 +879,18 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 *
-			 * @param  string  $column
-			 * @param  mixed   ...$values
-			 *
-			 *
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             *
+             * @param string $column
+             * @param mixed ...$values
+             *
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             */
 			public function not(string $column, ...$values) : Query
 			{
 				
@@ -892,16 +909,18 @@
 				
 				return $this;
 			}
-			
-			/**
-			 *
-			 *
-			 * @param  string  $column
-			 * @param  mixed   ...$values
-			 *
-			 * @return Query
-			 *
-			 */
+
+            /**
+             *
+             *
+             * @param string $column
+             * @param mixed ...$values
+             *
+             * @return Query
+             *
+             * @throws Kedavra
+             *
+             */
 			public function only(string $column, ...$values) : Query
 			{
 				
@@ -946,15 +965,17 @@
 			 *
 			 * @throws Kedavra
 			 *
-			 * @return string
+			 * @return Query
 			 *
 			 */
-			public function paginate($callable, int $page, int $limit) : string
+			public function paginate($callable, int $page, int $limit) : Query
 			{
 				
-				$pagination = (new Pagination($page, $limit, $this->sum()))->paginate();
+				$this->pagination = (new Pagination($page, $limit, $this->sum()))->paginate();
 				
-				return collect($this->take($limit, (($page) - 1) * $limit)->by('id')->all())->each($callable)->join('') . ' ' . $pagination;
+				$this->content =  collect($this->take($limit, (($page) - 1) * $limit)->by('id')->all())->each($callable)->join('');
+
+				return  $this;
 			}
 			
 			/**
@@ -969,6 +990,30 @@
 				
 				return $this;
 			}
-			
+
+
+            /**
+             *
+             * Return the pagination
+             *
+             * @return string
+             *
+             */
+			public function pagination(): string
+            {
+                return $this->pagination;
+            }
+
+            /**
+             *
+             * Return the pagination
+             *
+             * @return string
+             *
+             */
+			public function content(): string
+            {
+                return $this->content;
+            }
 		}
 	}

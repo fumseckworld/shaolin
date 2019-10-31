@@ -454,14 +454,14 @@
              * @param callable $callable
              * @param int $current_page
              *
-             * @return string
+             * @return Query
              *
              * @throws DependencyException
              * @throws Kedavra
              * @throws NotFoundException
              *
              */
-			public static function paginate($callable, int $current_page) : string
+			public static function paginate($callable, int $current_page) : Query
 			{
 				return static::query()->paginate($callable, $current_page, static::$limit);
 			}
