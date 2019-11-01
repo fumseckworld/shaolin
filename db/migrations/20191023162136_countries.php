@@ -30,6 +30,7 @@ class Countries extends AbstractMigration
     {
         $this->table('countries')
             ->addColumn('name','string')
+            ->addTimestamps()
         ->create();
     }
 }

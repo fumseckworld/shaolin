@@ -47,7 +47,7 @@ namespace Imperium\Controller {
          */
         public function update(): RedirectResponse
         {
-            return Todo::update($this->request()->request->get('id'),$this->collect($this->request()->request->all())->del(CSRF_TOKEN,'method')->all()) ? $this->back($this->config('todo','todo_updated')) : $this->back($this->config('todo','todo_not_updated'),false);
+            return Todo::update($this->request()->request->get('id'),$this->collect($this->request()->request->all())->del(CSRF_TOKEN,'_method')->all()) ? $this->back($this->config('todo','todo_updated')) : $this->back($this->config('todo','todo_not_updated'),false);
         }
 
         /**
@@ -84,19 +84,22 @@ namespace Imperium\Controller {
         public function home(): Response
         {
             $todo = Todo::query()->by('due',self::ASC)->all();
-            $form = $this->form()->start('task','add')
+            $form = $this->form(POST,'task','add')
                 ->row()
-                ->input(Form::TEXT,'task','task')
-                ->end_row_and_new()
-                ->textarea('description','description')
-                ->end_row_and_new()
-                ->input(Form::DATE,'due','The due date')
-                ->end_row_and_new()
-                ->select(false,'priority',['none','low','medium','high'])
-                ->end_row_and_new()
-                ->submit(fa('fa','fa-plus'))
-                ->end_row()
-                ->get();
+                ->add('task','text',['placeholder'=> $this->config('todo','task_name'),'required' => 'required'])
+                ->end()
+                ->row()
+                ->add('description','textarea',['required'=> 'required','cols'=> 10,'placeholder'=> $this->config('todo','task_description')])
+                ->end()
+                ->row()
+                ->add('due','date',['required'=>'required'])
+                ->end()
+                ->row()
+                ->select('priority',['none','low','medium','high'])
+                ->end()
+                ->get(fa('fa','fa-plus'));
+
+
             return $this->view('@todo/home',compact('todo','form'));
         }
     }

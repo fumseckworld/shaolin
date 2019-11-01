@@ -7,7 +7,6 @@
         use DI\NotFoundException;
         use Imperium\Controller\Controller;
         use Imperium\Exception\Kedavra;
-        use Imperium\Html\Form\Form;
         use Symfony\Component\HttpFoundation\RedirectResponse;
         use Symfony\Component\HttpFoundation\Response;
         use Twig\Error\LoaderError;
@@ -227,7 +226,7 @@
              */
             public function edit(string $table,int $id): Response
             {
-                $form =  $this->form()->start('admin','update',[$table,$id])->generate($table,$this->config('crud','update_text'),'',Form::EDIT,$id);
+                $form =  $this->form(POST,'admin','update',$table,$id)->edit($table,$id);
                 return  $this->view('@crud/edit',compact('form','table'));
             }
 
@@ -249,7 +248,7 @@
              */
             public function create(string $table): Response
             {
-                $form = $this->form()->start('admin','create',[$table])->generate($table,$this->config('crud','create_text'));
+                $form = $this->form(POST,'admin','create',$table)->generate($table);
 
                 return $this->view('@crud/create',compact('form','table'));
             }
@@ -271,7 +270,6 @@
             public function refresh(string $table,int $id): RedirectResponse
             {
 
-
                 $this->init();
 
                 $sql = $this->sql($table);
@@ -280,7 +278,7 @@
 
                 $columns = collect();
 
-                $values = collect($this->request()->request->all())->del(CSRF_TOKEN,'method','__table__')->for('htmlentities')->all();
+                $values = collect($this->request()->request->all())->del(CSRF_TOKEN,'_method')->for('htmlentities')->all();
 
                 foreach ($values  as $k => $value)
                 {
@@ -320,32 +318,34 @@
 
             /**
              *
+             * Crud home
              *
              * @return Response
-             * @throws DependencyException
+             *
              * @throws Kedavra
              * @throws LoaderError
-             * @throws NotFoundException
              * @throws RuntimeError
              * @throws SyntaxError
              */
-            public function home():Response
+            public function home(): Response
             {
-                $x = collect(['/' => $this->config('crud','select_table_text')]);
-                foreach ($this->tables() as $table)
-                    $x->put(route('admin','show',[$table,1]),$table);
-                $tables = $x->all();
-                $form = $this->form()->redirect('table',$tables)->get();
-                return  $this->view('@crud/home',compact('tables','form'));
+                $form =redirect_select($this->tables());
+                return  $this->view('@crud/home',compact('form'));
             }
 
             /**
+             *
+             * Generate a row in the table
+             *
              * @param $key
              * @param $value
+             *
              * @return string
+             *
              * @throws DependencyException
              * @throws Kedavra
              * @throws NotFoundException
+             *
              */
             public function display($key,$value): string
             {
@@ -360,6 +360,7 @@
                 append($html,'<td><a href="'.route('admin','remove',[$this->current,$value->id]).'" class="'.$this->config('crud','remove_class').'" '.$sure.'>  '.$this->config('crud','remove_text').'</a></td>');
                 return $html . '</tr>';
             }
+
             /**
              *
              * @throws Kedavra

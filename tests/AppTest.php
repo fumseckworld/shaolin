@@ -26,7 +26,7 @@
 			$this->assertInstanceOf(Collect::class,app()->collect());
 			$this->assertInstanceOf(File::class,app()->file('README.md'));
 			$this->assertInstanceOf(Table::class,app()->table());
-			$this->assertInstanceOf(Form::class,app()->form());
+			$this->assertInstanceOf(Form::class,app()->form('post','admin','create','users'));
 			$this->assertInstanceOf(Query::class,app()->sql('users'));
 			$this->assertInstanceOf(Request::class,app()->request());
 			$this->assertInstanceOf(Oauth::class,app()->auth());

@@ -373,6 +373,7 @@ use Imperium\Model\Web;
 		    switch ($db)
             {
                 case 'admin':
+
                     $x = Admin::where('name',EQUAL,$route)->fetch(true)->all();
                 break;
                 case 'web':
@@ -385,6 +386,9 @@ use Imperium\Model\Web;
                     throw new Kedavra("The db parameter must be web, admin or task");
                 break;
             }
+
+            is_true(not_def($x),true,"The $route route was not found inside $db base");
+
 
 			if (def($args))
 			{
@@ -534,7 +538,39 @@ use Imperium\Model\Web;
 		}
 		
 	}
-	
+	if (!function_exists('redirect_select'))
+    {
+
+        /**
+         *
+         * Generate a redirect select
+         *
+         * @param array $options
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        function redirect_select(array $options): string
+        {
+            $html = '';
+
+            append($html, '<div class="' . collect(config('form','class'))->get('separator').'">');
+
+            append($html, '<select class="' . collect(config('form','class'))->get('base').'"  onChange="location = this.options[this.selectedIndex].value">');
+
+            append($html,'<option value="'.root().'"> ' . config('form','choice_option') . '</option>');
+
+            foreach($options as $k => $option)
+                is_integer($k) ? append($html,'<option value="' . $option . '"> ' . $option . '</option>'):append($httml, '<option value="' . $k . '"> ' . $option . '</option>');
+
+            append($html, '</select></div></div>');
+
+            return $html;
+        }
+    }
+
 	if (!function_exists('append'))
 	{
 		

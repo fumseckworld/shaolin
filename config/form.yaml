@@ -1,5 +1,7 @@
 class:
-  submit: 'btn-outline-primary  text-uppercase'
+  base: 'form-control'
+  separator: 'form-group'
+  submit: 'btn-outline-primary btn mb-5 text-uppercase'
   reset:  'btn-danger'
   remove: 'btn-danger'
   button: 'btn-secondary'
@@ -9,14 +11,6 @@ class:
   edit:   'btn btn-primary'
   delete : 'btn btn-danger'
   table:  'table table-bordered table-hover'
-textarea:
-  col: 10
-  row: 5
-save: true
-padding: 2
-margin: 2
-validate: false
-large: true
-small: false
-pagination_step: 10
-space: true
+update_text: 'update'
+create_text: 'create'
+choice_option: 'choose a value'

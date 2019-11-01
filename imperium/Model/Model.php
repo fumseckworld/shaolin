@@ -118,6 +118,7 @@
              *
              * @throws DependencyException
              * @throws NotFoundException
+             * @throws Kedavra
              *
              */
 			public static function between(int $begin, int $end, string $column = '') : Query

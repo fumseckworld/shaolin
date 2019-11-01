@@ -200,11 +200,18 @@ namespace Imperium {
         }
 
         /**
+         * @param string $method
+         * @param string $db
+         * @param string $route
+         * @param array $route_args
          * @return Form
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
-        public function form(): Form
+        public function form(string $method,string $db, string $route,...$route_args): Form
         {
-            return new Form();
+            return new Form($method,$db,$route,$route_args);
         }
 
         /**

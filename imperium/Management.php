@@ -138,19 +138,22 @@
 			 *
 			 */
 			public function truncate(string $table) : bool;
-			
-			/**
-			 * @return Form
-			 */
-			public function form() : Form;
 
-			/**
-			 *
-			 * Get an instance of table
-			 *
-			 * @return Table
-			 *
-			 */
+            /**
+             * @param string $method
+             * @param string $db
+             * @param string $route
+             * @param array $route_args
+             * @return Form
+             */
+			public function form(string $method,string $db, string $route,...$route_args) : Form;
+
+            /**
+             *
+             * Get an instance of table
+             *
+             * @return Table
+             */
 			public function table() : Table;
 			
 			/**
@@ -391,13 +394,12 @@
              *
              * Generate url string
              *
+             * @param string $db
              * @param string $route
-             * @param bool $web
-             * @param bool $admin
-             * @param bool $task
              * @param mixed $args
              *
              * @return string
+             *
              */
 			public function url(string $db,string $route,...$args) : string;
 

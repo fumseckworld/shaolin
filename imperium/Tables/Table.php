@@ -473,7 +473,7 @@
 						else
 						{
 							if(has($type, self::BOOL))
-								$x->put(true_or_false($this->driver), $column);
+								$x->put(rand(0,1), $column);
 							if(has($type, self::JSONS))
 							{
 								$data = collect();
@@ -488,11 +488,11 @@
 								$x->put($data->json(), $column);
 							}
 							if(has($type, self::DATE_TYPES))
-								$x->put($column, $this->connexion->instance()->quote(faker()->date()));
+								$x->put($column, $this->connexion->pdo()->quote(faker()->date()));
 							if(has($type, self::NUMERIC_TYPES))
 								$x->put($column, faker()->numberBetween(1, 100));
 							if(has($type, self::TEXT_TYPES))
-								$x->put($column, $this->connexion->instance()->quote(faker()->text(50)));
+								$x->put($column, $this->connexion->pdo()->quote(faker()->text(50)));
 						}
 					}
 					$value = '(' . $x->join(', ') . '),';
