@@ -89,7 +89,7 @@ namespace Imperium\Controller {
                 ->add('task','text',['placeholder'=> $this->config('todo','task_name'),'required' => 'required'])
                 ->end()
                 ->row()
-                ->add('description','textarea',['required'=> 'required','cols'=> 10,'placeholder'=> $this->config('todo','task_description')])
+                ->add('description','textarea',['required'=> 'required','rows'=> 10,'placeholder'=> $this->config('todo','task_description')])
                 ->end()
                 ->row()
                 ->add('due','date',['required'=>'required'])
