@@ -10,7 +10,7 @@ use Imperium\Exception\Kedavra;
 use Imperium\Html\Form\Form;
 use Imperium\Testing\Unit;
 
-class FormTests extends Unit
+class FormTest extends Unit
 {
     /**
      * @var Form
@@ -26,6 +26,7 @@ class FormTests extends Unit
     {
         $this->form = new Form('POST','admin','create',['users']);
     }
+
 
     /**
      * @throws Kedavra
@@ -50,8 +51,19 @@ class FormTests extends Unit
     {
         $this->assertNotEmpty($this->form->edit('users',50));
         $this->assertStringContainsString('50',$this->form->edit('users',50));
+        $this->assertStringContainsString('50',$this->form->edit('countries',50));
     }
 
+    public function test_generate()
+    {
+        $this->assertNotEmpty($this->form->generate('users'));
+        $this->assertNotEmpty($this->form->generate('countries'));
+    }
+
+    public function test_select()
+    {
+        $this->assertStringContainsString('user',$this->form->row()->select('user',['user'])->end()->get());
+    }
 
     /**
      * @throws Kedavra
