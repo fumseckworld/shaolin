@@ -14,6 +14,7 @@
 		use Imperium\File\File;
 		use Imperium\Routing\RouteResult;
         use Imperium\Validator\Validator;
+        use Imperium\Versioning\Git;
         use Imperium\Writing\Write;
 		use PHPUnit\Framework\TestCase;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -156,6 +157,23 @@
 			{
 				return new Crypt();
 			}
-			
+
+            /**
+             *
+             * Get an instance of git class
+             *
+             * @param string $repository
+             * @param string $owner
+             *
+             * @return Git
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             *
+             */
+			public function git(string $repository,string $owner): Git
+            {
+                return  app()->git($repository,$owner);
+            }
 		}
 	}

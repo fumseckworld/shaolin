@@ -21,6 +21,7 @@
 		use Imperium\Tables\Table;
 		use Imperium\Security\Auth\Oauth;
         use Imperium\Validator\Validator;
+        use Imperium\Versioning\Git;
         use Imperium\Writing\Write;
 		use Psr\Http\Message\ServerRequestInterface;
 		use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -491,6 +492,18 @@
              *
              */
 			public function validator(array $data): Validator;
+
+            /**
+             *
+             * Management of git
+             *
+             * @param string $repository
+             * @param string $owner
+             *
+             * @return Git
+             *
+             */
+			public function git(string $repository,string $owner): Git;
 
 		}
 	}

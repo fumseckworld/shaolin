@@ -21,6 +21,7 @@ namespace Imperium {
     use Imperium\Session\Session;
     use Imperium\Shopping\Shop;
     use Imperium\Validator\Validator;
+    use Imperium\Versioning\Git;
     use Imperium\View\View;
     use Imperium\Writing\Write;
     use Imperium\File\File;
@@ -735,6 +736,23 @@ namespace Imperium {
         public function server(string $key, $default = null)
         {
             return $this->request()->server->get($key,$default);
+        }
+
+        /**
+         *
+         * Management of git
+         *
+         * @param string $repository
+         * @param string $owner
+         *
+         * @return Git
+         *
+         * @throws Kedavra
+         *
+         */
+        public function git(string $repository, string $owner): Git
+        {
+            return new Git($repository,$owner);
         }
     }
 }

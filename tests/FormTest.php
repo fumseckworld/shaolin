@@ -42,7 +42,7 @@ class FormTest extends Unit
      */
     public function test_add()
     {
-        $form = $this->form->add('username','text')->add('email','email')->get();
+        $form = $this->form->add('username','text')->add('username','text')->add('email','email')->get();
         $this->assertStringContainsString('username',$form);
         $this->assertStringContainsString('email',$form);
     }

@@ -19,10 +19,48 @@ namespace Imperium\Cookies {
          * @param bool $httpOnly
          *
          * @return bool
+         *
          */
         public function create(string $name, string $value = null, int $expire = 0, ?string $path = '/', string $domain = null, ?bool $secure = false, bool $httpOnly = true): bool
         {
+
             return setcookie($name, $value, $expire, $path, $domain, $secure, $httpOnly);
+        }
+
+        /**
+         *
+         * Get all cookies
+         *
+         * @return array
+         *
+         */
+        public function all(): array
+        {
+            return request()->cookies->all();
+        }
+
+        /**
+         *
+         * List cookies keys
+         *
+         * @return array
+         *
+         */
+        public function keys(): array
+        {
+            return request()->cookies->keys();
+        }
+
+        /**
+         *
+         * Return the cookies size
+         *
+         * @return int
+         *
+         */
+        public function size(): int
+        {
+            return request()->cookies->count();
         }
 
         /**
@@ -36,9 +74,24 @@ namespace Imperium\Cookies {
          */
         public function has(string $key): bool
         {
-            return array_key_exists($key,$_COOKIE);
+            return request()->cookies->has($key);
+
         }
 
+        /**
+         *
+         * @param $key
+         * @param $value
+         *
+         * @param int $expire
+         * @return Cookies
+         */
+        public function add($key,$value,int $expire = 0): Cookies
+        {
+           $this->create($key,$value,$expire);
+
+            return $this;
+        }
         /**
          *
          * Check if a key is define
