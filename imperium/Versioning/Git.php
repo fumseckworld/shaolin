@@ -3,7 +3,6 @@
     namespace Imperium\Versioning;
 
     use Imperium\Collection\Collect;
-    use Imperium\Directory\Dir;
     use Imperium\Exception\Kedavra;
     use Imperium\Html\Pagination\Pagination;
     use Imperium\Redis\Redis;
@@ -173,17 +172,29 @@
             $x = collect($this->releases());
             return $this->diff($x->get(0),$x->get(1));
         }
-        public function log(int $current_page)
+
+        /**
+         *
+         * Show logs
+         *
+         * @param int $current_page
+         *
+         * @param string $branch
+         * @return string
+         *
+         * @throws Kedavra
+         */
+        public function log(int $current_page,string $branch)
         {
 
             $format = '<div class="card"><div class="card-header" id="commit-%h"><h2 class="mb-0"><button class="btn btn-link" type="button" data-toggle="collapse" data-target="#commit-%H"  aria-controls="commit-%H">%s</button></h2></div><div id="commit-%H" class="collapse" aria-labelledby="commit-%H" data-parent="#logs"><div class="card-body"><p>%s</p><div class="text-center"><a href="mailto:%ae" class="btn btn-outline-primary">%an</a></div></div><div class="card-footer text-muted">%cr</div></div></div>';
 
-            $pagination = (new Pagination($current_page,100,$this->commits_size($this->current_branch())))->paginate();
+            $pagination = (new Pagination($current_page,100,$this->commits_size($branch)))->paginate();
             $html = '<div class="accordion" id="logs">';
 
             if (equal($current_page,0))
             {
-                append($html,html_entity_decode($this->execute("git log -n 100   --pretty=format:'$format'")->join('')));
+                append($html,html_entity_decode($this->execute("git log -n 100 --pretty=format:'$format' $branch" )->join('')));
             }else{
                 $x =  100 * $current_page;
                 append($html,html_entity_decode($this->execute("git log --skip=$x -n 100   --pretty=format:'$format'")->join('')));

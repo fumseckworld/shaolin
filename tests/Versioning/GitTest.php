@@ -63,11 +63,18 @@ class GitTest extends Unit
 
     public function test_log()
     {
-        $first = $this->git->log(0);
-        $second = $this->git->log(1);
+        $first = $this->git->log(0,'master');
+        $second = $this->git->log(1,'master');
         $this->assertNotEmpty($first);
         $this->assertNotEmpty($second);
         $this->assertTrue(different($first,$second));
+        $first_develop = $this->git->log(0,'develop');
+        $second_develop = $this->git->log(1,'develop');
+        $this->assertNotEmpty($first_develop);
+        $this->assertNotEmpty($second_develop);
+        $this->assertTrue(different($first,$first_develop));
+
+
     }
 
     public function test_releases()

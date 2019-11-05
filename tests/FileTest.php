@@ -251,23 +251,7 @@ class FileTest extends Unit
    }
 
 
-    /**
-     * @throws Kedavra
-     */
-    public function test_copy()
-   {
-        $this->assertTrue($this->file('.env.example')->copy('.env'));
-        $this->assertEquals('Shaolin',env('app'));
-        $this->assertTrue($this->file('.env')->remove());
-        
-        $this->assertTrue($this->file('.env.example')->copy('.env'));
-        $this->assertEquals('Shaolin',env('app'));
-	   	$this->assertTrue($this->file('.env')->remove());
-	
-	   $this->assertTrue($this->file('.env.example')->copy('.env'));
-	   $key = Crypt::generateKey();
-	   $this->assertTrue($this->file('.env',EMPTY_AND_WRITE_FILE_MODE)->write("APP_KEY=$key")->flush());
-   }
+
    
     /**
      * @throws Kedavra
@@ -277,6 +261,13 @@ class FileTest extends Unit
        $this->assertIsString($this->file('grumphp.yml')->path());
    }
 
+   public function test_copy()
+   {
+       $this->assertTrue($this->file('README.md')->copy('TODO.md'));
+       $this->assertTrue(file_exists('TODO.md'));
+       $this->assertNotEmpty($this->file('TODO.md')->read());
+       $this->assertTrue($this->file('TODO.md')->remove());
+   }
     /**
      * @throws Kedavra
      */
