@@ -57,7 +57,7 @@
 
             $this->redis = new Redis();
 
-            $this->repository = equal($repository,'.') ? collect(explode('/',realpath($repository)))->last(): $repository;
+            $this->repository =  collect(explode(DIRECTORY_SEPARATOR,realpath($repository)))->last();
 
             $this->owner = $owner;
 

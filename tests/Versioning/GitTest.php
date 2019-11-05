@@ -22,9 +22,9 @@ class GitTest extends Unit
      */
     public function setUp(): void
     {
-      $this->git = $this->git('.','willy');
+      $this->git = $this->git('/home/willy/imperium','willy');
     }
-
+	
     public function test_base()
     {
         $this->assertEquals('imperium',$this->git->name());
@@ -42,7 +42,7 @@ class GitTest extends Unit
     }
     public function test_branch()
     {
-        $this->assertEquals('develop',$this->git->current_branch());
+        $this->assertEquals('master',$this->git->current_branch());
     }
     public function test_commit_size()
     {
