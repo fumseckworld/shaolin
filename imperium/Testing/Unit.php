@@ -6,7 +6,8 @@
 		use DI\DependencyException;
 		use DI\NotFoundException;
 		use GuzzleHttp\Psr7\ServerRequest;
-		use Imperium\Cache\Cache;
+        use Imperium\App;
+        use Imperium\Cache\Cache;
 		use Imperium\Collection\Collect;
         use Imperium\Cookies\Cookies;
 		use Imperium\Encrypt\Crypt;
@@ -52,6 +53,21 @@
 
             /**
              *
+             * Get app instance
+             *
+             * @return App
+             *
+             * @throws DependencyException
+             * @throws NotFoundException
+             *
+             */
+			public function app(): App
+            {
+                return  app();
+            }
+
+            /**
+             *
              * Get an instance of cookies
              *
              * @return Cookies
@@ -73,7 +89,6 @@
 			 */
 			public function collect(array $data = []) : Collect
 			{
-				
 				return collect($data);
 			}
 			
@@ -91,7 +106,7 @@
 			 */
 			public function validate(array $data): Validator
             {
-                return new Validator($this->collect($data));
+                return app()->validator($data);
             }
 			
 			/**
@@ -125,7 +140,6 @@
 			 */
 			public function write(string $subject, string $message, string $author_email, string $to) : Write
 			{
-				
 				return new Write($subject, $message, $author_email, $to);
 			}
 			
@@ -138,7 +152,6 @@
 			 */
 			public function cache() : Cache
 			{
-				
 				return new Cache();
 			}
 			
@@ -169,6 +182,7 @@
              *
              * @throws DependencyException
              * @throws NotFoundException
+             * @throws Kedavra
              *
              */
 			public function git(string $repository,string $owner): Git
