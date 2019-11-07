@@ -22,12 +22,12 @@ class GitTest extends Unit
      */
     public function setUp(): void
     {
-      $this->git = $this->git('/home/willy/imperium','willy');
+      $this->git = $this->git('/home/willy/bidon','willy');
     }
 	
     public function test_base()
     {
-        $this->assertEquals('imperium',$this->git->name());
+        $this->assertEquals('bidon',$this->git->name());
         $this->assertEquals('willy',$this->git->owner());
     }
 
