@@ -28,28 +28,27 @@
         private $repository;
 
         /**
-         *
-         * The repository owner
-         *
-         * @var string
-         *
-         */
-        private $owner;
-        /**
          * @var array
          */
         private $data;
+        /**
+         * @var string
+         */
+        private $branch;
+        /**
+         * @var string
+         */
+        private $directory;
 
         /**
          * Git constructor.
          *
          * @param string $repository
-         * @param string $owner
-         *
+         * @param string $branch
+         * @param string $directory
          * @throws Kedavra
-         *
          */
-        public function __construct(string $repository,string $owner)
+        public function __construct(string $repository,string $branch,string $directory='')
         {
             is_false(is_dir($repository),true,"Repository is not a directory");
 
@@ -59,20 +58,9 @@
 
             $this->repository =  collect(explode(DIRECTORY_SEPARATOR,realpath($repository)))->last();
 
-            $this->owner = $owner;
+            $this->branch = $branch;
 
-        }
-
-        /**
-         *
-         * Get the repository owner
-         *
-         * @return string
-         *
-         */
-        public function owner(): string
-        {
-            return  $this->owner;
+            $this->directory = $directory;
         }
 
         /**cd
@@ -97,7 +85,7 @@
          */
         public function status(): string
         {
-           return nl2br(html_entity_decode($this->execute('git status | aha')->join("\n")));
+            return  is_dir('.git') ? nl2br(html_entity_decode($this->execute('git status | aha')->join("\n"))) : '';
         }
 
         /**
@@ -133,13 +121,7 @@
          */
         public function branches(): array
         {
-            $x = collect();
-
-            foreach ($this->execute('git branch') as $branch)
-            {
-                $x->push(str_replace(' ','',str_replace('* ','',$branch)));
-            }
-            return $x->all();
+            return  array_diff(scandir('refs/heads'), ['..','.']);
         }
 
         /**
@@ -157,7 +139,8 @@
          */
         public function releases(): array
         {
-            return  $this->execute('git tag -l --sort=v:refname')->reverse()->all();
+            $f = function ($x){ return str_replace('refs/tags/','',$x);};
+            return  $this->execute("git for-each-ref --sort=-taggerdate --format '%(refname)' refs/tags")->for($f)->all();
         }
 
         /**
@@ -214,7 +197,7 @@
          */
         public function current_branch(): string
         {
-            return $this->execute('git branch --show-current')->get(0);
+            return $this->branch;
         }
         /**
          *

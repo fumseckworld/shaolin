@@ -176,18 +176,16 @@
              * Get an instance of git class
              *
              * @param string $repository
-             * @param string $owner
-             *
+             * @param string $branch
              * @return Git
              *
              * @throws DependencyException
-             * @throws NotFoundException
              * @throws Kedavra
-             *
+             * @throws NotFoundException
              */
-			public function git(string $repository,string $owner): Git
+			public function git(string $repository,string $branch): Git
             {
-                return  app()->git($repository,$owner);
+                return  app()->git($repository,$branch);
             }
 		}
 	}

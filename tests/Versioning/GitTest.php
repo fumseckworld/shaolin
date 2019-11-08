@@ -6,6 +6,7 @@ namespace Testing\Versioning;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use Imperium\Exception\Kedavra;
 use Imperium\Testing\Unit;
 use Imperium\Versioning\Git;
 
@@ -19,30 +20,29 @@ class GitTest extends Unit
     /**
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws Kedavra
      */
     public function setUp(): void
     {
-      $this->git = $this->git('/home/willy/bidon','willy');
+      $this->git = $this->git('/home/willy/bidon','develop');
     }
 	
     public function test_base()
     {
         $this->assertEquals('bidon',$this->git->name());
-        $this->assertEquals('willy',$this->git->owner());
     }
 
     public function test_status()
     {
-        $this->assertNotEmpty($this->git->status());
+        $this->assertEmpty($this->git->status());
     }
     public function test_diff()
     {
-        $this->assertNotEmpty($this->git->diff());
         $this->assertNotEmpty($this->git->diff('10.5.2','10.5.3'));
     }
     public function test_branch()
     {
-        $this->assertEquals('master',$this->git->current_branch());
+        $this->assertEquals('develop',$this->git->current_branch());
     }
     public function test_commit_size()
     {

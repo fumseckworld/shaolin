@@ -743,16 +743,16 @@ namespace Imperium {
          * Management of git
          *
          * @param string $repository
-         * @param string $owner
+         * @param string $branch
+         * @param string $directory
          *
          * @return Git
          *
          * @throws Kedavra
-         *
          */
-        public function git(string $repository, string $owner): Git
+        public function git(string $repository, string $branch,string $directory =''): Git
         {
-            return new Git($repository,$owner);
+            return new Git($repository,$branch,$directory);
         }
     }
 }

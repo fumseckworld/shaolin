@@ -498,12 +498,13 @@
              * Management of git
              *
              * @param string $repository
-             * @param string $owner
+             * @param string $branch
+             * @param string $directory
              *
              * @return Git
              *
              */
-			public function git(string $repository,string $owner): Git;
+			public function git(string $repository,string $branch,string $directory=''): Git;
 
 		}
 	}
