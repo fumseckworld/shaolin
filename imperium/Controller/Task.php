@@ -63,7 +63,7 @@ namespace Imperium\Controller {
          */
         public function add(): RedirectResponse
         {
-            $todo = collect($this->request()->request->all())->del(CSRF_TOKEN,'method')->all();
+            $todo = collect($this->request()->request->all())->del(CSRF_TOKEN,'_method')->all();
             return Todo::create($todo) ? $this->back($this->config('todo','todo_created')) : $this->back($this->config('todo','todo_not_created'),false);
         }
 
