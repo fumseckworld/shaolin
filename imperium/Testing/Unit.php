@@ -14,6 +14,7 @@
 		use Imperium\Exception\Kedavra;
 		use Imperium\File\File;
 		use Imperium\Routing\RouteResult;
+        use Imperium\String\Text;
         use Imperium\Validator\Validator;
         use Imperium\Versioning\Git;
         use Imperium\Writing\Write;
@@ -50,6 +51,20 @@
 				
 				return app()->router(new ServerRequest($method, $url))->search();
 			}
+
+            /**
+             *
+             * Get an instance of text
+             *
+             * @param string $text
+             *
+             * @return Text
+             *
+             */
+			public function text(string $text)
+            {
+                return new Text($text);
+            }
 
             /**
              *

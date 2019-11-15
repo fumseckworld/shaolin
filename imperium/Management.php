@@ -18,7 +18,8 @@
         use Imperium\Routing\Router;
 		use Imperium\Session\SessionInterface;
 		use Imperium\Shopping\Shop;
-		use Imperium\Tables\Table;
+        use Imperium\String\Text;
+        use Imperium\Tables\Table;
 		use Imperium\Security\Auth\Oauth;
         use Imperium\Validator\Validator;
         use Imperium\Versioning\Git;
@@ -505,6 +506,17 @@
              *
              */
 			public function git(string $repository,string $branch,string $directory=''): Git;
+
+            /**
+             *
+             * Get an instance of text
+             *
+             * @param string $text
+             *
+             * @return Text
+             *
+             */
+			public function text(string $text): Text;
 
 		}
 	}
