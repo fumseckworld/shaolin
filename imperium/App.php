@@ -20,6 +20,7 @@ namespace Imperium {
     use Imperium\Redis\Redis;
     use Imperium\Session\Session;
     use Imperium\Shopping\Shop;
+    use Imperium\String\Text;
     use Imperium\Validator\Validator;
     use Imperium\Versioning\Git;
     use Imperium\View\View;
@@ -753,6 +754,11 @@ namespace Imperium {
         public function git(string $repository, string $branch,string $directory =''): Git
         {
             return new Git($repository,$branch,$directory);
+        }
+
+        public function text(string $text): Text
+        {
+            return new Text($text);
         }
     }
 }

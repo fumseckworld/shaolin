@@ -4,8 +4,8 @@
 	{
 		
 		use Imperium\App;
-		
-		/**
+
+        /**
 		 * Class Controller
 		 *
 		 * @author  Willy Micieli
@@ -20,6 +20,6 @@
 		 */
 		class Controller extends App
 		{
-		
-		}
+
+        }
 	}
