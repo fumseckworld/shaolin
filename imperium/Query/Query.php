@@ -405,10 +405,11 @@
 			 */
 			public function find(int $id)
 			{
-				
 				return $this->where($this->key(), EQUAL, $id)->fetch(true)->all();
 			}
-			
+
+
+
 			/**
 			 *
 			 * Get values was different of expected

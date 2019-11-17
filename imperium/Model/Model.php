@@ -199,7 +199,7 @@
              * @throws NotFoundException
              *
              */
-            public static function seed(int $records): bool
+            public static function seed(int $records = 200): bool
             {
                 $table = static::query()->table();
 
@@ -538,6 +538,29 @@
 			{
 				return static::query()->find($id);
 			}
+
+
+            /**
+             *
+             * Find a record or fail
+             *
+             * @param int $id
+             *
+             * @return object
+             *
+             * @throws DependencyException
+             * @throws Kedavra
+             * @throws NotFoundException
+             *
+             */
+            public static function find_or_fail(int $id): object
+            {
+                $x = self::find($id);
+
+                is_false(def($x),true,"The record with $id id was not found in the table");
+
+                return $x;
+            }
 
             /**
              *

@@ -4,6 +4,7 @@ namespace Testing\Model;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use http\Client\Curl\User;
 use Imperium\Dump\Dump;
 use Imperium\Exception\Kedavra;
 use Imperium\Import\Import;
@@ -47,6 +48,24 @@ class ModelTest extends Unit
 		$this->assertNotEmpty(Users::between(10,50)->paginate([$this,'records'],1,10));
 		
 	}
+
+	public function test_seed()
+    {
+        $this->assertTrue(Users::seed());
+    }
+
+
+    public function test_update()
+    {
+        $this->assertTrue(Users::update(200,obj(Users::find_or_fail(200))));
+    }
+
+    public function test_update_exec()
+    {
+        $this->expectException(Kedavra::class);
+        Users::find_or_fail(20);
+
+    }
 	
 	/**
 	 * @throws Kedavra
