@@ -756,6 +756,13 @@ namespace Imperium {
             return new Git($repository,$branch,$directory);
         }
 
+        /**
+         *
+         * @param string $text
+         *
+         * @return Text
+         *
+         */
         public function text(string $text): Text
         {
             return new Text($text);

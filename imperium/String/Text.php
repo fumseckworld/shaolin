@@ -54,28 +54,42 @@ namespace Imperium\String {
 
         /**
          *
-         * Take a part of the sting
          *
-         * @param int $limit
-         * @param int $start
+         * Remove space before and after
          *
          * @return Text
          *
          */
-        public function take(int $limit,$start = 0): Text
+        public function clean(): Text
         {
-            $this->text = substr($this->text,$start,$limit);
+            return $this->trim()->rtrim();
+        }
+
+        /**
+         *
+         * Take a part of the sting
+         *
+         * @param int $limit
+         * @param int $offset
+         * @return Text
+         */
+        public function take(int $limit,$offset = 0): Text
+        {
+            $this->text = substr($this->text,$offset,$limit);
 
             return $this;
         }
 
         /**
+         *
+         * Strip whitespace (or other characters) from the end of a string.
+         *
          * @param string $chars
          *
          * @return Text
          *
          */
-        public function rtrim(string $chars): Text
+        public function rtrim(string $chars =" \t\n\r\0\x0B"): Text
         {
             $this->text = rtrim($this->text,$chars);
 
@@ -84,11 +98,9 @@ namespace Imperium\String {
 
         /**
          * @param string $chars
-         *
          * @return Text
-         *
          */
-        public function trim(string $chars): Text
+        public function trim(string $chars = " \t\n\r\0\x0B"): Text
         {
             $this->text = trim($this->text,$chars);
 
@@ -178,25 +190,6 @@ namespace Imperium\String {
             return $this;
         }
 
-
-        /**
-         *
-         * Complete the text
-         *
-         * @param int $length
-         * @param string $text
-         * @param int $type
-         *
-         * @return Text
-         *
-         */
-        public function pad(int $length,string $text ='',int $type = STR_PAD_RIGHT): Text
-        {
-            $this->text  = str_pad($this->text,$length,$text,$type);
-
-            return $this;
-        }
-
         /**
          *
          * Slit the text
@@ -263,7 +256,7 @@ namespace Imperium\String {
          * @return Text
          *
          */
-        public function wrap(int $width ,string $break,bool $cut =false): Text
+        public function wrap(int $width ,string $break ='\n',bool $cut =false): Text
         {
             $this->text = wordwrap($this->text,$width,$break,$cut);
             return $this;
@@ -401,16 +394,17 @@ namespace Imperium\String {
          *
          * Decrypt the text
          *
-         * @return string
+         * @return Text
          *
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
          *
          */
-        public function decrypt(): string
+        public function decrypt(): Text
         {
-            return (new Crypt())->decrypt($this->text);
+            $this->text = (new Crypt())->decrypt($this->text);
+            return  $this;
         }
 
         /**
@@ -449,7 +443,7 @@ namespace Imperium\String {
          * @return Text
          *
          */
-        public function convert(): Text
+        public function hash(): Text
         {
             $this->text = bin2hex($this->text);
             return  $this;
@@ -462,7 +456,7 @@ namespace Imperium\String {
          * @return Text
          *
          */
-        public function decode(): string
+        public function decode(): Text
         {
             $this->text =  hex2bin($this->text);
             return  $this;
@@ -508,8 +502,7 @@ namespace Imperium\String {
          */
         public function contains(string $text): bool
         {
-            return def($this->search($text));
-
+            return strstr($this->text,$text) !== false;
         }
 
         /**
