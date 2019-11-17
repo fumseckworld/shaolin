@@ -257,8 +257,6 @@ namespace Imperium\Html\Form {
                         $this->add($column,'textarea',['value' => $v->$column,'rows'=> 10]);
                     elseif(has($type,App::DATE_TYPES))
                         $this->add($column,'datetime',['value'=> $v->$column]);
-                    else
-                      $this->add($column,'textarea',['value' => $v->$column,'rows'=> 10]);
                 }
             }
 
@@ -294,9 +292,7 @@ namespace Imperium\Html\Form {
                     $this->add($column,'textarea',['placeholder' => $column,'rows'=> 10,'required'=>'required']);
                 elseif(has($type,App::DATE_TYPES))
                     $this->add($column,'datetime',['value'=>  date("Y-m-d H:i:s")]);
-                else
-                    $this->add($column,'textarea',['placeholder' => $column,'rows'=> 10,'required'=>'required']);
-
+               
             }
             return $this->get(config('form','create_text'));
         }
