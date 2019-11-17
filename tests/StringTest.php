@@ -170,5 +170,5 @@ class StringTest extends Unit
     {
         $this->assertNotEmpty($this->text("a'azae'abe'b")->refresh('a','A')->quote()->get());
     }
-   
+
 }

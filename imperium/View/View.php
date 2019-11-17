@@ -109,12 +109,15 @@
 				
 				$functions = collect();
 				
-				$functions->set(new TwigFunction('display', function(string $key)
+				$functions->set(new TwigFunction('flash', function(string ...$keys)
 				{
-					
+					$html = '';
 					$flash = new Flash(app()->session());
-					
-					return $flash->has($key) ? $flash->display($key) : '';
+					foreach ($keys as $key)
+				        $html .= $flash->display($key);
+
+					return $html;
+
 				}, [ 'is_safe' => [ 'html' ] ]), new TwigFunction('css', function(string $name)
 				{
 					
