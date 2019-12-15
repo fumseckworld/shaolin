@@ -39,7 +39,6 @@
     "ext-intl": "*",
     "ext-fileinfo": "*",
     "ext-json": "*",
-    "ext-memcached": "*",
     "ext-apcu": "*",
     "ext-curl": "*",
     "ext-openssl": "*",
