@@ -137,7 +137,7 @@ namespace Eywa\Database\Connexion {
          */
         public function get(array $args = []): array
         {
-            $x = collect();
+            $x = [];
 
             foreach ($this->queries as $query)
             {
@@ -146,7 +146,7 @@ namespace Eywa\Database\Connexion {
                 {
                     $result = $this->connexion->prepare($query);
                     $result->execute($args);
-                    $x->push($result->fetchAll(PDO::FETCH_OBJ));
+                    $x = $result->fetchAll(PDO::FETCH_COLUMN);
                     $result->closeCursor();
 
                     $result = null;
@@ -156,7 +156,7 @@ namespace Eywa\Database\Connexion {
                     return [];
                 }
             }
-            return $x->all();
+            return $x;
         }
 
         /**

@@ -29,15 +29,19 @@ namespace Eywa\Database\Table {
 
         /**
          * Table constructor.
-         * @param string $table
-         *
          * @throws DependencyException
          * @throws NotFoundException
          */
-        public function __construct(string $table)
+        public function __construct()
+        {
+
+            $this->connexion = ioc(Connect::class)->get();
+        }
+
+        public function from(string $table):Table
         {
             $this->table = $table;
-            $this->connexion = ioc(Connect::class)->get();
+            return $this;
         }
 
         /**
@@ -159,36 +163,29 @@ namespace Eywa\Database\Table {
          *
          * Display all tables
          *
-         * @return Collect
+         * @return array
          *
-         * @throws Kedavra
          *
          */
-        public function show(): Collect
+        public function show(): array
         {
-            $tables = collect();
+
             switch ($this->connexion->driver())
             {
                 case MYSQL :
-                    foreach ($this->connexion->set('SHOW TABLES')->get() as $table)
-                        $tables->push($table);
-
+                    return  $this->connexion->set('SHOW TABLES')->get();
                 break;
                 case POSTGRESQL :
-                    foreach ($this->connexion->set("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');")->get() as $table)
-                        $tables->push($table);
-                break;
+                   return  $this->connexion->set("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');")->get();
+               break;
                case SQLITE :
-                    foreach ($this->connexion->set("SELECT tbl_name FROM sqlite_master")->get() as $table)
-                        if ($tables->not_exist($table))
-                            $tables->push($table);
+                    return $this->connexion->set("SELECT tbl_name FROM sqlite_master")->get();
                 break;
                 case SQL_SERVER:
-                    foreach ($this->connexion->set("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")->get() as $table)
-                        $tables->push($table);
+                    return $this->connexion->set("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")->get();
                 break;
             }
-            return $tables;
+           return  [];
         }
 
         /**

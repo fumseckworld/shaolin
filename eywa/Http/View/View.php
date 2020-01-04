@@ -145,15 +145,46 @@ namespace Eywa\Http\View {
             $html = ltrim(ob_get_clean());
 
             $flash = '{{ flash }}';
+
+
             if (def(strstr($html,$flash)))
             {
                 $html = str_replace($flash,"<?= ioc('flash')->call('display'); ?>",$html);
             }
 
 
+            $this
+                ->replace('#{{ ([a-zA-Z0-9 ]+) }}#','<?= htmlentities("${1}",ENT_QUOTES,"UTF-8")  ?>',$html,$html)
+                ->replace('#{{ ([\$]+[a-zA-Z]+) }}#','<?= htmlentities(${1},ENT_QUOTES,"UTF-8")  ?>',$html,$html)
+                ->replace('#@if\(([a-z]+)\)#','<?php if($1) :?>',$html,$html)
+                ->replace('#@elseif\(([a-z]+)\)#','<?php elseif (${1}) :?>',$html,$html)
+                ->replace('#@else#','<?php else :?>',$html,$html)
+                ->replace('#@endif#','<?php endif ?>',$html,$html)
+                ->replace('#@for\(([a-zA-Z-0-9]+) as ([a-zA-Z0-9]+)\)#','<?php foreach($${1} ?? [] as $${2}) : ?>',$html,$html)
+                ->replace('#@endfor#','<?php endforeach  ?>',$html,$html)
+                ->replace('#@switch\(([a-zA-Z-0-9]+)\)#','<?php switch($${1}): ',$html,$html)
+                ->replace('#@case ([a-zA-Z]+)#','case "${1}" :  ?>',$html,$html)
+                ->replace('#@case ([0-9]+)#','case ${1} :  ?>',$html,$html)
+                ->replace('#@break#','<?php break;  ?>',$html,$html)
+                ->replace('#@default#','<?php default :   ?>',$html,$html)
+                ->replace('#@endswitch#','<?php endswitch ;  ?>',$html,$html);
+
+
             $this->set($this->cache,$html);
 
+            ob_start();
+
+            require($this->file($this->cache));
+
+            $html = ltrim(ob_get_clean());
            return (new Response($html,$status,$headers))->send();
+        }
+
+
+        private function replace(string $regex,string $new,string $html,&$content): View
+        {
+             $content = preg_replace($regex,$new,$html);
+             return $this;
         }
     }
 }
