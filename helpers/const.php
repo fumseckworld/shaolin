@@ -3,6 +3,8 @@
 
 define('GET', 'GET');
 define('POST', 'POST');
+define('PUT', 'PUT');
+define('DELETE', 'DELETE');
 
 define('BEFORE_ACTION', 'before_action');
 define('AFTER_ACTION', 'after_action');
@@ -59,27 +61,27 @@ define('LIKE', 'LIKE');
 define('MYSQL', 'mysql');
 define('POSTGRESQL', 'pgsql');
 define('SQLITE', 'sqlite');
+define('SQL_SERVER', 'sqlsrv');
+define('ORACLE', 'oci');
+define('DRIVERS',[MYSQL,POSTGRESQL,SQLITE,SQL_SERVER]);
 
-define('UNION', 12);
-define('UNION_ALL', 13);
-define('INNER_JOIN', 14);
-define('CROSS_JOIN', 15);
-define('LEFT_JOIN', 16);
-define('RIGHT_JOIN', 17);
-define('FULL_JOIN', 18);
-define('SELF_JOIN', 19);
-define('NATURAL_JOIN', 20);
-define('SELECT', 21);
-define('DELETE', 22);
-define('UPDATE', 23);
-define('INSERT', 24);
+define('UNION', 'UNION');
+define('UNION_ALL','UNION ALL');
+define('INNER_JOIN', 'INNER JOIN');
+define('CROSS_JOIN', 'CROSS JOIN');
+define('LEFT_JOIN', 'LEFT JOIN');
+define('RIGHT_JOIN', 'RIGHT JOIN');
+define('FULL_JOIN', 'FULL JOIN');
+define('SELF_JOIN', 'SELF JOIN');
+define('NATURAL_JOIN', 'NATURAL JOIN');
+
+define('SELECT', 'SELECT');
+define('UPDATE', 'UPDATE');
+define('INSERT', 'INSERT');
 
 define('MYSQL_PORT', 3306);
 define('POSTGRESQL_PORT', 5432);
 
-define('DISPLAY_TABLE', 25);
-define('DISPLAY_ARTICLE', 26);
-define('DISPLAY_CONTRIBUTORS', 27);
 
 define('QUERY_COLUMN', 'column');
 define('QUERY_CONDITION', 'condition');
@@ -105,3 +107,23 @@ define('DB_HIDDEN_TABLES', 'hidden_tables');
 
 define('DISPLAY_BUGS', 'debug');
 define('ENV', 'env');
+
+define('APCU_CACHE',1);
+define('ARRAY_CACHE',2);
+define('FILE_CACHE',3);
+define('MEMCACHED_CACHE',4);
+define('PDO_CACHE',5);
+define('PHP_FILE',7);
+define('REDIS_CACHE',8);
+define('SUPPORTED_CACHE',[APCU_CACHE,ARRAY_CACHE,FILE_CACHE,MEMCACHED_CACHE,PDO_CACHE,PHP_FILE,REDIS_CACHE]);
+
+
+define('SUCCESS','SUCCESS');
+define('FAILURE','FAILURE');
+
+define('PHP_ECHO','<?=');
+define('PHP_OPEN','<?');
+define('PHP_CLOSE','?>');
+
+define('VIEW_PHP_OPEN','{{');
+define('VIEW_PHP_CLOSE','}}');

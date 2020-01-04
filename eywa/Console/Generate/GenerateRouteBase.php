@@ -1,0 +1,43 @@
+<?php
+
+    namespace Eywa\Console\Generate {
+
+
+        use Eywa\Exception\Kedavra;
+        use Eywa\Http\Routing\Admin;
+        use Eywa\Http\Routing\Task;
+        use Eywa\Http\Routing\Web;
+        use Symfony\Component\Console\Command\Command;
+		use Symfony\Component\Console\Input\InputInterface;
+		use Symfony\Component\Console\Output\OutputInterface;
+		
+		class GenerateRouteBase extends Command
+		{
+			
+			protected static $defaultName = 'route:generate';
+			
+			protected function configure()
+			{
+				
+				$this->setDescription('Generate all routes bases');
+			}
+			
+			/**
+			 * @param  InputInterface   $input
+			 * @param  OutputInterface  $output
+			 *
+			 * @throws Kedavra
+			 * @return bool|int|null
+			 */
+			public function execute(InputInterface $input, OutputInterface $output)
+			{
+	            Web::generate();
+	            Admin::generate();
+	            Task::generate();
+
+	            return 0;
+
+			}
+			
+		}
+	}
