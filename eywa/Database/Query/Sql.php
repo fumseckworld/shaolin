@@ -7,6 +7,7 @@ namespace Eywa\Database\Query {
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Pagination\Pagination;
+    use PDO;
 
     class Sql
     {
@@ -234,16 +235,13 @@ namespace Eywa\Database\Query {
             switch($this->connexion()->driver())
             {
                 case MYSQL:
-                    foreach($this->connexion()->set("SHOW FULL COLUMNS FROM {$this->table}")->get() as $column)
-                        $fields->push($column->Field);
+                    return $this->connexion()->set("SHOW FULL COLUMNS FROM {$this->table}")->get(PDO::FETCH_COLUMN);
                 break;
                 case POSTGRESQL:
-                    foreach($this->connexion()->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get() as $column)
-                        $fields->push($column->column_name);
+                    return $this->connexion()->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(PDO::FETCH_COLUMN);
                 break;
                 case SQLITE:
-                    foreach($this->connexion()->set("PRAGMA table_info({$this->table})")->get() as $column)
-                        $fields->push($column->name);
+                  return $this->connexion()->set("PRAGMA table_info({$this->table})")->get(PDO::FETCH_COLUMN);
                 break;
             }
 
@@ -265,7 +263,7 @@ namespace Eywa\Database\Query {
         public function take(int $limit, int $offset = 0) : Sql
         {
 
-            $this->limit = $this->connexion()->driver()  === MYSQL ? "LIMIT $offset,$limit" : "LIMIT $limit OFFSET $offset";
+            $this->limit = $this->connexion()->mysql() ? "LIMIT $offset,$limit" : "LIMIT $limit OFFSET $offset";
 
             return $this;
         }
@@ -297,7 +295,7 @@ namespace Eywa\Database\Query {
          */
         public function find(int $id)
         {
-            return $this->where($this->primary(), EQUAL, $id)->fetch(true)->execute();
+            return $this->where($this->primary(), EQUAL, $id)->execute();
         }
 
         /**
@@ -509,7 +507,7 @@ namespace Eywa\Database\Query {
          */
         public function execute(string $class_name = '',array $args = []): array
         {
-            return def($class_name) ? $this->connexion->set($this->sql())->fetch($class_name,$args) : $this->connexion->set($this->sql())->get();
+            return def($class_name) ? $this->connexion->set($this->sql())->fetch($class_name,$args) : $this->connexion->set($this->sql())->get(PDO::FETCH_OBJ);
         }
 
         /**
@@ -791,26 +789,16 @@ namespace Eywa\Database\Query {
             switch($this->connexion()->driver())
             {
                 case MYSQL:
-                    foreach($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get() as $key)
-                        return $key->Field;
+                    return collect($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get(PDO::FETCH_COLUMN))->first();
                 break;
                 case POSTGRESQL:
-                    foreach($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get() as $key)
-                        return $key->column_name;
+                    return collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(PDO::FETCH_COLUMN))->first();
                 break;
                 case SQLITE:
-                    foreach($this->connexion()->set("PRAGMA table_info({$this->table})") as $field)
-                    {
-                        if(def($field->pk))
-                            return $field->name;
-                    }
+                    return  collect($this->connexion()->set("PRAGMA table_info({$this->table})")->get(PDO::FETCH_COLUMN))->first();
                 break;
                 case SQL_SERVER:
-                   foreach ($this->connexion()->set("SELECT COLUMN_NAME , CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE WHERE TABLE_NAME = '{$this->table}';")->get() as $value)
-                   {
-                       if(strpos($value->CONSTRAINT_NAME,'PK') === 0)
-                          return  $value->COLUMN_NAME;
-                   }
+                    return collect($this->connexion()->set("SELECT COLUMN_NAME , CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE WHERE TABLE_NAME = '{$this->table}';")->get(PDO::FETCH_COLUMN))->first();
                 break;
             }
             throw  new Kedavra('We have not found a primary key');

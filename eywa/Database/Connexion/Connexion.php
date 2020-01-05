@@ -69,12 +69,12 @@ namespace Eywa\Database\Connexion {
          *
          * With all records found by the query
          *
+         * @param int $style
          * @param array $args
          *
          * @return array
-         *
          */
-        public function get(array $args = []): array ;
+        public function get(int $style ,array $args = []): array ;
 
         /**
          *

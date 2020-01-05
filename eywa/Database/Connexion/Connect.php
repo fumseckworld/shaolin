@@ -135,7 +135,7 @@ namespace Eywa\Database\Connexion {
         /**
          * @inheritDoc
          */
-        public function get(array $args = []): array
+        public function get(int $style,array $args = []): array
         {
             $x = [];
 
@@ -146,7 +146,7 @@ namespace Eywa\Database\Connexion {
                 {
                     $result = $this->connexion->prepare($query);
                     $result->execute($args);
-                    $x = $result->fetchAll(PDO::FETCH_COLUMN);
+                    $x = $result->fetchAll($style);
                     $result->closeCursor();
 
                     $result = null;
