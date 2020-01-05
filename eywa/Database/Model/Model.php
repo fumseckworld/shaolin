@@ -7,10 +7,9 @@ namespace Eywa\Database\Model {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Eywa\Collection\Collect;
-    use Eywa\Database\Connection\Connect;
+    use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Zen;
 
     abstract class Model
     {
@@ -20,7 +19,7 @@ namespace Eywa\Database\Model {
          * The table associated with the model.
          *
          */
-        protected static string $table;
+        protected static string $table = '';
 
         /**
          *
@@ -137,7 +136,7 @@ namespace Eywa\Database\Model {
          */
         public static function all() : array
         {
-            return static::sql()->all();
+            return static::sql()->execute();
         }
 
         /**
@@ -150,7 +149,7 @@ namespace Eywa\Database\Model {
          * @throws Kedavra
          * @throws NotFoundException
          */
-        public static function create(array ...$records)
+        public static function create(array ...$records): bool
         {
 
             $table = static::$table;
@@ -164,7 +163,7 @@ namespace Eywa\Database\Model {
 
                 foreach ($record as $k => $v)
                 {
-                   append($sql,static::connection()->pdo()->quote($v),',');
+                   append($sql,static::connection()->secure($v),',');
                 }
 
                 $sql = trim($sql,',');
@@ -175,7 +174,7 @@ namespace Eywa\Database\Model {
             }
             $sql = trim($sql,',');
 
-            return static::connection()->execute($sql);
+            return static::connection()->set($sql)->execute();
         }
 
         /**
@@ -254,8 +253,7 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
-         * @throws NotFoundException
+         * @throws Kedavra
          *
          */
         public static function types() : array
@@ -284,16 +282,16 @@ namespace Eywa\Database\Model {
          * @param string $column
          * @param mixed $expected
          *
-         * @return object
+         * @return array
          *
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
          *
          */
-        public static function by(string $column, $expected) : object
+        public static function by(string $column, $expected) : array
         {
-            return static::sql()->where($column, EQUAL, $expected)->fetch(true)->all();
+            return static::sql()->where($column, EQUAL, $expected)->execute();
         }
 
         /**
@@ -319,16 +317,16 @@ namespace Eywa\Database\Model {
          *
          * @param string $x
          *
-         * @return mixed
+         * @return array
          *
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
          *
          */
-        public static function search(string $x)
+        public static function search(string $x): array
         {
-            return static::sql()->like($x)->all();
+            return static::sql()->like($x)->execute();
         }
 
 
@@ -362,7 +360,7 @@ namespace Eywa\Database\Model {
 
             $this->column->clear();
 
-            return static::connection()->execute($sql);
+            return static::connection()->set($sql)->execute();
         }
 
         /**
@@ -396,7 +394,7 @@ namespace Eywa\Database\Model {
 
             $this->column->clear();
 
-            return static::connection()->execute($sql);
+            return static::connection()->set($sql)->execute();
         }
 
         /**
@@ -404,14 +402,12 @@ namespace Eywa\Database\Model {
          * @param string $name
          * @param $value
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public function __set(string $name, $value)
         {
-            $this->column->put($name, static::connection()->pdo()->quote($value));
+            $this->column->put($name, static::connection()->secure($value));
 
         }
 
@@ -449,7 +445,7 @@ namespace Eywa\Database\Model {
             foreach ($values  as $k => $value)
             {
                 if (different($k,$primary))
-                    $columns->push("$k =" .static::connection()->pdo()->quote($value));
+                    $columns->push("$k =" .static::connection()->secure($value));
 
             }
 
@@ -457,7 +453,7 @@ namespace Eywa\Database\Model {
 
             $command = "UPDATE $table SET $columns WHERE $primary = $id";
 
-            return  static::connection()->execute($command);
+            return  static::connection()->set($command)->execute();
         }
 
         /**
@@ -538,16 +534,16 @@ namespace Eywa\Database\Model {
          *
          * @param int $id
          *
-         * @return object
+         * @return array
          *
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
          *
          */
-        public static function find(int $id): object
+        public static function find(int $id): array
         {
-            return static::where(static::primary(),EQUAL,$id)->fetch(true)->all();
+            return static::where(static::primary(),EQUAL,$id)->execute();
         }
 
         /**
@@ -576,9 +572,8 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function sql(): Sql
         {
@@ -589,13 +584,12 @@ namespace Eywa\Database\Model {
          *
          * Get automatic connection
          *
-         * @return Connect
+         * @return Connexion
          *
-         * @throws DependencyException
-         * @throws NotFoundException
+         * @throws Kedavra
          *
          */
-        public static function connection(): Connect
+        public static function connection(): Connexion
         {
             if (static::$admin)
                 return connect(SQLITE, base('routes') . DIRECTORY_SEPARATOR . 'admin.sqlite3');
@@ -605,7 +599,7 @@ namespace Eywa\Database\Model {
             if (static::$todo)
                 return connect(SQLITE, base('todo') . DIRECTORY_SEPARATOR . 'todo.sqlite3');
 
-            return  connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_HOST'),intval(env('DB_PORT')),'dump');
+            return  connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')),[]);
         }
 
     }

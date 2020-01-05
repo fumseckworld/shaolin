@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Database\Query {
 
-    use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Connexion\Connexion;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Pagination\Pagination;
     use PDO;
@@ -47,7 +47,7 @@ namespace Eywa\Database\Query {
          * The connection to the base
          *
          */
-        private Connect $connexion;
+        private Connexion $connexion;
 
         /**
          *
@@ -195,13 +195,13 @@ namespace Eywa\Database\Query {
          *
          * @method __construct
          *
-         * @param Connect $connect
+         * @param Connexion $connect
          * @param string $table
          *
          * @throws Kedavra
          *
          */
-        public function __construct(Connect $connect,string $table)
+        public function __construct(Connexion $connect,string $table)
         {
 
             $this->connexion =  $connect;
@@ -212,10 +212,10 @@ namespace Eywa\Database\Query {
         /**
          *
          *
-         * @return Connect
+         * @return Connexion
          *
          */
-        public function connexion() : Connect
+        public function connexion() : Connexion
         {
             return $this->connexion;
         }
@@ -508,26 +508,6 @@ namespace Eywa\Database\Query {
         public function execute(string $class_name = '',array $args = []): array
         {
             return def($class_name) ? $this->connexion->set($this->sql())->fetch($class_name,$args) : $this->connexion->set($this->sql())->get(PDO::FETCH_OBJ);
-        }
-
-        /**
-         *
-         * Disable or enable the fetch
-         *
-         *
-         * @method fetch
-         *
-         *
-         * @param  bool  $fetch
-         *
-         * @return Sql
-         *
-         */
-         function fetch(bool $fetch = false) : Sql
-        {
-            $this->use_fetch = $fetch;
-
-            return $this;
         }
 
 

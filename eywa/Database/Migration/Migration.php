@@ -7,7 +7,6 @@ namespace Eywa\Database\Migration {
 
 
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Query\Sql;
     use Eywa\Database\Table\Table;
     use Faker\Generator;
 
