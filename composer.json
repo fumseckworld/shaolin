@@ -58,6 +58,7 @@
   },
   "scripts": {
     "test": "phpunit  --coverage-html coverage",
-    "coverage" : "php -S localhost:8000 -t coverage"
+    "coverage" : "php -S localhost:8000 -t coverage",
+    "serve" : "php -S localhost:3000 -t web"
   }
 }
