@@ -5,8 +5,13 @@ namespace Eywa\Console {
 
 
     use Exception;
+    use Eywa\Console\Generate\GenerateRouteBase;
     use Eywa\Console\Lang\CreateCatalogues;
     use Eywa\Console\Lang\UpdateCatalogues;
+    use Eywa\Console\Routes\AddRoute;
+    use Eywa\Console\Routes\ListRoute;
+    use Eywa\Console\Routes\RemoveRoute;
+    use Eywa\Console\Routes\UpdateRoute;
     use Symfony\Component\Console\Application;
 
 
@@ -56,7 +61,7 @@ namespace Eywa\Console {
         {
 
            $commands = [
-                new CreateCatalogues(),new UpdateCatalogues()
+                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase()
            ];
             $this->add($commands);
 

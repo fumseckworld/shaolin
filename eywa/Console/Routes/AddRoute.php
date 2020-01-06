@@ -45,7 +45,6 @@ namespace Eywa\Console\Routes {
             $methods = collect(METHOD_SUPPORTED)->for('strtolower')->all();
 
             do {
-                $this->entry->put('id', 'id');
 
                 do {
                     clear_terminal();
@@ -83,7 +82,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('name', $name);
 
-                    } while (is_null($name) || def(Web::where('name', EQUAL, $name)->all()));
+                    } while (is_null($name) || def(Web::where('name', EQUAL, $name)->execute()));
 
                     do {
                         clear_terminal();
@@ -94,7 +93,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('url', $url);
 
-                    } while (is_null($url) || def(Web::where('url', EQUAL, $url)->all()));
+                    } while (is_null($url) || def(Web::where('url', EQUAL, $url)->execute()));
 
                     do {
 
@@ -125,7 +124,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('action', $action);
 
-                    } while (is_null($action) || def(Web::where('action', EQUAL, $action)->all()));
+                    } while (is_null($action) || def(Web::where('action', EQUAL, $action)->execute()));
 
                 } elseif($this->entry->get('route') == 'admin')
                 {
@@ -140,7 +139,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('name', $name);
 
-                    } while (is_null($name) || def(Admin::where('name', EQUAL, $name)->all()));
+                    } while (is_null($name) || def(Admin::where('name', EQUAL, $name)->execute()));
 
                     do {
                         clear_terminal();
@@ -151,7 +150,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('url', $url);
 
-                    } while (is_null($url) || def(Admin::where('url', EQUAL, $url)->all()));
+                    } while (is_null($url) || def(Admin::where('url', EQUAL, $url)->execute()));
 
 
                     do {
@@ -183,7 +182,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('action', $action);
 
-                    } while (is_null($action) || def(Admin::where('action', EQUAL, $action)->all()));
+                    } while (is_null($action) || def(Admin::where('action', EQUAL, $action)->execute()));
 
                 }else
                 {
@@ -197,7 +196,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('name', $name);
 
-                    } while (is_null($name) || def(Task::where('name', EQUAL, $name)->all()));
+                    } while (is_null($name) || def(Task::where('name', EQUAL, $name)->execute()));
 
                     do {
                         clear_terminal();
@@ -208,7 +207,7 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('url', $url);
 
-                    } while (is_null($url) || def(Task::where('url', EQUAL, $url)->all()));
+                    } while (is_null($url) || def(Task::where('url', EQUAL, $url)->execute()));
 
 
                     do {
@@ -240,20 +239,20 @@ namespace Eywa\Console\Routes {
 
                         $this->entry->put('action', $action);
 
-                    } while (is_null($action) || def(Task::where('action', EQUAL, $action)->all()));
+                    } while (is_null($action) || def(Task::where('action', EQUAL, $action)->execute()));
                 }
 
                 switch ($this->entry->get('route'))
                 {
                     case 'admin':
                         $this->routes->push(Admin::create($this->entry->all()));
-                        break;
+                    break;
                     case 'task':
                         $this->routes->push(Task::create($this->entry->all()));
-                        break;
+                    break;
                     default:
                         $this->routes->push(Web::create($this->entry->all()));
-                        break;
+                    break;
                 }
 
                 $this->entry->clear();

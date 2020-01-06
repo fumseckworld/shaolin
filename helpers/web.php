@@ -49,73 +49,7 @@ if (!function_exists('routes'))
     function routes(OutputInterface $output, array $routes): void
     {
 
-        if (def(request()->server->get('TMUX')))
-        {
-            if (def($routes))
-            {
-                $output->write("+----------+--------------------+-----------------------+-----------------------+-----------------------+\n");
 
-                foreach ($routes as $route)
-                {
-
-                    $name = "<fg=blue;options=bold>$route->name</>";
-
-                    $url = "<fg=magenta;options=bold>$route->url</>";
-                    $controller = "<fg=green;options=bold>$route->controller</>";
-                    $action = "<fg=yellow;options=bold>$route->action</>";
-                    $method = "<fg=cyan;options=bold>$route->method</>";
-
-                    if (sum($route->method) == 6)
-                        $output->write("|  $method  ");
-                    elseif (sum($route->method) == 4)
-                        $output->write("|  $method    ");
-                    elseif (sum($route->method) == 3)
-                        $output->write("|  $method     ");
-
-                    if (sum($route->name) < 5)
-                        $output->write("|  $name\t\t|");
-
-                    elseif (sum($route->name) > 10)
-                        $output->write("|  $name\t|");
-                    else
-                        $output->write("|  $name\t\t|");
-
-                    if (sum($route->url) < 5)
-                        $output->write("  $url\t\t\t|");
-                    elseif (sum($route->url) < 12)
-                        $output->write("  $url\t\t|");
-                    elseif (sum($route->url) > 18)
-                        $output->write("  $url\t|");
-                    else
-                        $output->write("  $url\t|");
-
-                    if (sum($route->controller) < 7)
-                        $output->write("  $controller\t\t|");
-                    elseif (sum($route->controller) < 10)
-                        $output->write("  $controller\t|");
-                    elseif (sum($route->controller) > 10 && sum($route->controller) < 15)
-                        $output->write("  $controller\t|");
-                    elseif (sum($route->controller) > 15)
-                        $output->write("  $controller\t|");
-                    else
-                        $output->write("  $controller\t|");
-
-                    if (sum($route->action) < 5)
-                        $output->write("  $action\t\t\t|\n");
-                    elseif (sum($route->action) < 10)
-                        $output->write("  $action\t\t|\n");
-                    elseif (sum($route->action) > 12)
-                        $output->write("  $action\t|\n");
-                    else
-                        $output->write("  $action\t|\n");
-                    $output->write("+----------+--------------------+-----------------------+-----------------------+-----------------------+\n");
-                }
-            } else
-            {
-                $output->write("<error>We have not found routes</error>\n");
-            }
-        } else
-        {
             if (def($routes))
             {
                 $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
@@ -178,7 +112,7 @@ if (!function_exists('routes'))
             {
                 $output->write("<error>We have not found routes</error>\n");
             }
-        }
+
 
     }
 }
@@ -368,13 +302,13 @@ if (!function_exists('route'))
         switch ($db)
         {
             case 'admin':
-                $x = Admin::where('name',EQUAL,$route)->fetch(true)->all();
+                $x = Admin::where('name',EQUAL,$route)->execute();
             break;
             case 'web':
-                $x = Web::where('name',EQUAL,$route)->fetch(true)->all();
+                $x = Web::where('name',EQUAL,$route)->execute();
             break;
             case 'task':
-                $x = Task::where('name',EQUAL,$route)->fetch(true)->all();
+                $x = Task::where('name',EQUAL,$route)->execute();
             break;
             default:
                 throw new Kedavra("The db parameter must be web, admin or task");
@@ -389,7 +323,7 @@ if (!function_exists('route'))
 
             $url = '';
 
-            $data = explode('/', $x->url);
+            $data = explode('/', $x['url']);
             $i = 0;
             foreach ($data as $k => $v)
             {
@@ -422,7 +356,7 @@ if (!function_exists('route'))
             foreach ($x as $url)
                 return  $url->url;
         }
-        return  $x->url;
+        return  $x['url'];
 
     }
 
@@ -617,7 +551,7 @@ if (!function_exists('clear_terminal'))
      */
     function clear_terminal(): bool
     {
-        return strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' ? is_not_false(system('cls')) : is_not_false(system('clear'));
+        return  is_not_false(system('clear'));
 
     }
 

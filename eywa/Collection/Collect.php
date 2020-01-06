@@ -16,7 +16,7 @@ namespace Eywa\Collection {
          * The data
          *
          */
-        private array $data = [];
+        private $data = [];
 
         /**
          *

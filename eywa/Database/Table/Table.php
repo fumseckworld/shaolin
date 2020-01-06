@@ -318,6 +318,13 @@ namespace Eywa\Database\Table {
             }
         }
 
+        /**
+         * @return \Generator
+         */
+        public function a()
+        {
+            yield $this;
+        }
 
         /**
          * @throws Kedavra

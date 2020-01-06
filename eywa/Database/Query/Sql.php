@@ -7,7 +7,7 @@ namespace Eywa\Database\Query {
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Pagination\Pagination;
-    use PDO;
+
 
     class Sql
     {
@@ -140,12 +140,6 @@ namespace Eywa\Database\Query {
          */
         private string $table;
 
-        /**
-         *
-         * To change fetchAll to fetch
-         *
-         */
-        private bool $use_fetch = false;
 
         /**
          *
@@ -225,7 +219,8 @@ namespace Eywa\Database\Query {
          * List all columns inside the table
          *
          * @return array
-         *
+
+         * @throws Kedavra
          *
          */
         public function columns() : array
@@ -235,13 +230,14 @@ namespace Eywa\Database\Query {
             switch($this->connexion()->driver())
             {
                 case MYSQL:
-                    return $this->connexion()->set("SHOW FULL COLUMNS FROM {$this->table}")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion()->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
                 break;
                 case POSTGRESQL:
-                    return $this->connexion()->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion()->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
                 break;
                 case SQLITE:
-                  return $this->connexion()->set("PRAGMA table_info({$this->table})")->get(PDO::FETCH_COLUMN);
+                    $x = function ($x){return $x->name ;};
+                   return collect($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS))->for($x)->all();
                 break;
             }
 
@@ -275,10 +271,29 @@ namespace Eywa\Database\Query {
          *
          * @return string
          *
+         * @throws Kedavra
+         *
          */
         public function primary(): string
         {
-            return $this->primary;
+            switch($this->connexion()->driver())
+            {
+                case MYSQL:
+                    return collect($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first();
+                    break;
+                case POSTGRESQL:
+                    return collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(COLUMNS))->first();
+                    break;
+                case SQLITE:
+                     foreach($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $value)
+                        if ($value->pk)
+                            return $value->name;
+                    break;
+                case SQL_SERVER:
+                    return collect($this->connexion()->set("SELECT COLUMN_NAME , CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE WHERE TABLE_NAME = '{$this->table}';")->get(COLUMNS))->first();
+                break;
+            }
+            throw  new Kedavra('We have not found a primary key');
         }
 
 
@@ -336,7 +351,7 @@ namespace Eywa\Database\Query {
          *
          * @return bool
          *
-         *
+         * @throws Kedavra
          */
         public function destroy() : bool
         {
@@ -344,11 +359,13 @@ namespace Eywa\Database\Query {
 
             $result = collect();
 
+
             foreach ($this->execute() as $value)
             {
                 $x = $value->$id;
 
-                $result->push($this->connexion()->set("DELETE {$this->from} WHERE {$this->primary} = ?")->execute(compact('x')));
+
+                $result->push(static::connexion()->set("DELETE {$this->from} WHERE {$this->primary} = $x")->execute());
             }
 
 
@@ -504,10 +521,11 @@ namespace Eywa\Database\Query {
          * @param string $class_name
          * @param array $args
          * @return array
+         * @throws Kedavra
          */
         public function execute(string $class_name = '',array $args = []): array
         {
-            return def($class_name) ? $this->connexion->set($this->sql())->fetch($class_name,$args) : $this->connexion->set($this->sql())->get(PDO::FETCH_OBJ);
+            return def($class_name) ? $this->connexion->set($this->sql())->fetch($class_name,$args) : $this->connexion->set($this->sql())->get(OBJECTS);
         }
 
 
@@ -744,7 +762,7 @@ namespace Eywa\Database\Query {
          * @return Sql
          *
          */
-        private function from(string $table) : Sql
+        public function from(string $table) : Sql
         {
 
             $this->from = "FROM $table";
@@ -765,23 +783,7 @@ namespace Eywa\Database\Query {
          */
         private function  find_primary_key() : string
         {
-
-            switch($this->connexion()->driver())
-            {
-                case MYSQL:
-                    return collect($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get(PDO::FETCH_COLUMN))->first();
-                break;
-                case POSTGRESQL:
-                    return collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(PDO::FETCH_COLUMN))->first();
-                break;
-                case SQLITE:
-                    return  collect($this->connexion()->set("PRAGMA table_info({$this->table})")->get(PDO::FETCH_COLUMN))->first();
-                break;
-                case SQL_SERVER:
-                    return collect($this->connexion()->set("SELECT COLUMN_NAME , CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE WHERE TABLE_NAME = '{$this->table}';")->get(PDO::FETCH_COLUMN))->first();
-                break;
-            }
-            throw  new Kedavra('We have not found a primary key');
+            return $this->primary();
         }
     }
 }

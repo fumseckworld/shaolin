@@ -5,9 +5,7 @@ namespace Eywa\Database\Connexion {
 
 
     use Eywa\Collection\Collect;
-    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
-    use stdClass;
 
 
     interface Connexion
@@ -48,6 +46,9 @@ namespace Eywa\Database\Connexion {
          * @param array $args
          *
          * @return bool
+         *
+         * @throws Kedavra
+         *
          */
         public function execute(array $args = []): bool;
 
@@ -58,6 +59,8 @@ namespace Eywa\Database\Connexion {
          * @param array $args
          *
          * @return array
+         *
+         * @throws Kedavra
          *
          */
         public function fetch(string $class = 'stdClass',array $args = []) : array ;
@@ -73,6 +76,9 @@ namespace Eywa\Database\Connexion {
          * @param array $args
          *
          * @return array
+         *
+         * @throws Kedavra
+         *
          */
         public function get(int $style ,array $args = []): array ;
 
@@ -101,10 +107,14 @@ namespace Eywa\Database\Connexion {
          *
          * Cancel the transaction
          *
+         * @param string $message
+         *
          * @return bool
          *
+         * @throws Kedavra
+         *
          */
-        public function back(): bool;
+        public function back(string $message): bool;
 
         /**
          *

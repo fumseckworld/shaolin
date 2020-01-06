@@ -2,8 +2,10 @@
 	
 	namespace Eywa\Console\Database
 	{
-		
-		use Symfony\Component\Console\Command\Command;
+
+        use Eywa\Database\Connexion\Connect;
+        use Eywa\Database\Table\Table;
+        use Symfony\Component\Console\Command\Command;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
 		
@@ -32,7 +34,7 @@
 				
 				foreach($tables as $table)
 				{
-					is_false(app()->table()->drop($table), true, "Failed to remove the $table table");
+					is_false((new Table(ioc(Connect::class)->get()))->from($table)->drop(), true, "Failed to remove the $table table");
 				}
 				$output->write("<info>The $base database was cleaned successfully\n</info>");
 				

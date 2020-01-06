@@ -39,7 +39,7 @@ namespace Testing\Database {
         public function test_queries()
         {
             $this->assertTrue($this->connect->set('SHOW TABLES')->execute());
-            $this->assertNotEmpty($this->connect->set('SHOW TABLES')->get());
+            $this->assertNotEmpty($this->connect->set('SHOW TABLES')->get(PDO::FETCH_OBJ));
             $this->assertNotEmpty($this->connect->set('SHOW TABLES')->fetch());
         }
 
@@ -67,7 +67,7 @@ namespace Testing\Database {
         public function test_error()
         {
             $this->expectException(PDOException::class);
-            $this->connect->set('SHOW')->get();
+            $this->connect->set('SHOW')->get(PDO::FETCH_OBJ);
         }
 
 

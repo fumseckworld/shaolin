@@ -28,18 +28,14 @@ if( ! function_exists('csrf_field'))
      *
      * @method csrf_field
      *
-     * @throws DependencyException
-     * @throws NotFoundException
-     *
      * @return string
      *
+     * @throws Exception
+     * 
      */
     function csrf_field() : string
     {
-
-        $value = (new Csrf(app()->session()))->token();
-
-        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $value . '">';
+        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
     }
 }
 if( ! function_exists('to'))

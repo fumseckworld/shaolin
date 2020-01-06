@@ -164,7 +164,8 @@ namespace Eywa\Console\Routes {
             switch ($this->choose)
             {
                 case 'admin':
-                    $this->id = Admin::by('name', $this->route_name)->id;
+
+                    $this->id = collect(collect(Admin::by('name', $this->route_name))->get(0))->first();
                     if (Admin::destroy($this->id))
                     {
                         $output->writeln('<info>The route was removed successfully</info>');
@@ -172,7 +173,7 @@ namespace Eywa\Console\Routes {
                     }
                 break;
                 case 'task':
-                    $this->id = Task::by('name', $this->route_name)->id;
+                    $this->id = intval(collect(Task::by('name', $this->route_name))->get('id'));
                     if (Task::destroy($this->id))
                     {
                         $output->writeln('<info>The route was removed successfully</info>');
@@ -180,7 +181,8 @@ namespace Eywa\Console\Routes {
                     }
                 break;
                 default:
-                    $this->id = Web::by('name', $this->route_name)->id;
+                    $this->id = collect(collect(Web::by('name', $this->route_name))->get(0))->first();
+
                     if (Web::destroy($this->id))
                     {
                         $output->writeln('<info>The route was removed successfully</info>');

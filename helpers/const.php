@@ -127,3 +127,7 @@ define('PHP_CLOSE','?>');
 
 define('VIEW_PHP_OPEN','{{');
 define('VIEW_PHP_CLOSE','}}');
+
+
+define('OBJECTS',PDO::FETCH_OBJ);
+define('COLUMNS',PDO::FETCH_COLUMN);

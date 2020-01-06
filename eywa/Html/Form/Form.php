@@ -18,7 +18,7 @@ namespace Eywa\Html\Form {
          * The form
          *
          */
-        private string $form;
+        private string $form = '';
 
         /**
          *
@@ -41,7 +41,7 @@ namespace Eywa\Html\Form {
          * @throws NotFoundException
          *
          */
-        public function __construct(string $method,string $db, string $route,array $route_args)
+        public function __construct(string $method,string $db, string $route,array $route_args = [])
         {
             $this->fields = collect();
 

@@ -85,7 +85,7 @@ namespace Eywa\Database\Connexion {
          */
         public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306, array $options = [], string $host = LOCALHOST)
         {
-            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Server=$host;Database=$base",$username,$password,$options) :new PDO("$driver:host=$host;port=$port;dbname=$base",$username,$password,$options);
+            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Server=$host;Database=$base",$username,$password,$options) : (equal($driver,SQLITE) ? new PDO("sqlite:$base") : new PDO("$driver:host=$host;port=$port;dbname=$base", $username, $password, $options));
 
             $this->connexion->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
@@ -127,7 +127,7 @@ namespace Eywa\Database\Connexion {
                     $x->closeCursor();
                 }catch (PDOException $exception)
                 {
-                    return $this->back();
+                    return $this->back($exception->getMessage());
                 }
             }
 
@@ -154,7 +154,7 @@ namespace Eywa\Database\Connexion {
                     $result = null;
                 }catch (PDOException $exception)
                 {
-                    $this->back();
+                    $this->back($exception->getMessage());
                     return [];
                 }
             }
@@ -180,11 +180,15 @@ namespace Eywa\Database\Connexion {
         /**
          * @inheritDoc
          */
-        public function back(): bool
+        public function back(string $message): bool
         {
             $this->queries = [];
 
-            return $this->connexion->rollBack();
+            if ($this->connexion->rollBack())
+            {
+                throw new Kedavra($message);
+            }
+            return false;
         }
 
         /**
@@ -256,7 +260,7 @@ namespace Eywa\Database\Connexion {
                     $result = null;
                 }catch (PDOException $exception)
                 {
-                    $this->back();
+                    $this->back($exception->getMessage());
                     return [];
                 }
             }

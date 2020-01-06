@@ -90,14 +90,12 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function columns() : array
         {
-            return static::sql()->columns();
+            return static::sql()->from(static::$table)->columns();
         }
 
 
@@ -144,16 +142,18 @@ namespace Eywa\Database\Model {
          * Create multiples records
          *
          * @param array ...$records
+         *
          * @return bool
-         * @throws DependencyException
+         *
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function create(array ...$records): bool
         {
 
             $table = static::$table;
             $x = collect(static::columns())->join();
+
             $sql = "INSERT INTO $table ($x) VALUES ";
 
             $id = static::connection()->postgresql() ? 'DEFAULT' : 'NULL';
@@ -161,10 +161,11 @@ namespace Eywa\Database\Model {
             {
                 append($sql,'(',$id,',');
 
-                foreach ($record as $k => $v)
+
+                foreach (static::columns() as $column)
                 {
-                   append($sql,static::connection()->secure($v),',');
-                }
+                    if (array_key_exists($column,$record))
+                        append($sql,static::connection()->secure($record[$column]),',');              }
 
                 $sql = trim($sql,',');
 
@@ -175,6 +176,7 @@ namespace Eywa\Database\Model {
             $sql = trim($sql,',');
 
             return static::connection()->set($sql)->execute();
+
         }
 
         /**
@@ -217,14 +219,12 @@ namespace Eywa\Database\Model {
          *
          * @return string
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function primary() : string
         {
-            return static::sql()->primary();
+            return static::sql()->from(static::$table)->primary();
         }
 
         /**
@@ -233,14 +233,12 @@ namespace Eywa\Database\Model {
          *
          * @param mixed $expected
          *
-         * @return object
+         * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
-        public static function get($expected) : object
+        public static function get($expected) : array
         {
             is_true(not_def($expected), true, "Missing the expected value");
 
@@ -284,9 +282,7 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function by(string $column, $expected) : array
@@ -302,9 +298,7 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public static function only(string ...$columns) : Sql
         {
@@ -598,6 +592,9 @@ namespace Eywa\Database\Model {
                 return connect(SQLITE, base('routes') . DIRECTORY_SEPARATOR . 'task.sqlite3');
             if (static::$todo)
                 return connect(SQLITE, base('todo') . DIRECTORY_SEPARATOR . 'todo.sqlite3');
+
+            if (static::$web)
+            return connect(SQLITE, base('routes') . DIRECTORY_SEPARATOR . 'web.sqlite3');
 
             return  connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')),[]);
         }
