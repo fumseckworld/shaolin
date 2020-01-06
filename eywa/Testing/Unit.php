@@ -10,6 +10,7 @@ namespace Eywa\Testing {
     use Eywa\File\File;
     use Eywa\Http\Routing\Router;
     use Eywa\Message\Email\Write;
+    use Eywa\Security\Crypt\Crypter;
     use GuzzleHttp\Psr7\ServerRequest;
     use PHPUnit\Framework\TestCase;
 
@@ -72,6 +73,17 @@ namespace Eywa\Testing {
         public function collect(array $data = []): Collect
         {
             return new Collect($data);
+        }
+
+        /**
+         * @return Crypter
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         */
+        public function crypter(): Crypter
+        {
+            return app()->crypter();
         }
     }
 }

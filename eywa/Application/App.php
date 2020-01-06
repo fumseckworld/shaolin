@@ -6,11 +6,11 @@ namespace Eywa\Application {
 
 
     use Eywa\Application\Environment\Env;
-    use Eywa\Database\Connection\Connect;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
-
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
+    use Eywa\Security\Crypt\Crypter;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
     class App extends Zen implements Eywa
@@ -70,6 +70,14 @@ namespace Eywa\Application {
         public function sql(string $table): Sql
         {
             return new Sql($this->ioc(Connect::class)->get(), $table);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function crypter(): Crypter
+        {
+            return new Crypter();
         }
     }
 }

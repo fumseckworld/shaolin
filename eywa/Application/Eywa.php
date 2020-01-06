@@ -11,6 +11,7 @@ namespace Eywa\Application {
     use Eywa\Exception\Kedavra;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
+    use Eywa\Security\Crypt\Crypter;
     use Symfony\Component\HttpFoundation\RedirectResponse;
 
     interface Eywa
@@ -76,6 +77,16 @@ namespace Eywa\Application {
          */
         public function sql(string $table): Sql;
 
+        /**
+         *
+         * Ge the encrypter instance
+         *
+         * @return Crypter
+         *
+         * @throws Kedavra
+         *
+         */
+        public function crypter(): Crypter;
 
         /**
          *

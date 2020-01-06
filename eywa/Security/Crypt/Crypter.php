@@ -38,24 +38,24 @@ namespace Eywa\Security\Crypt {
 
             $this->key = base64_decode(app()->env('APP_KEY'));
 
-            $this->cipher = strtolower(config('encrypt', 'cipher'));
+            $this->cipher = strtolower(app()->env('CIPHER'));
 
             is_true(collect(openssl_get_cipher_methods())->not_exist($this->cipher),true,"The cipher is not valid");
         }
 
 
         /**
+         *
          * Create a new encryption key for the given cipher.
          *
          * @return string
          *
-         * @throws Kedavra
          * @throws Exception
          *
          */
         public static function generateKey(): string
         {
-            return base64_encode(random_bytes(openssl_cipher_iv_length(strtolower(config('encrypt', 'cipher')))));
+            return base64_encode(random_bytes(openssl_cipher_iv_length(strtolower(app()->env('CIPHER')))));
         }
 
         /**
