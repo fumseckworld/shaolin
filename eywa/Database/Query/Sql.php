@@ -155,12 +155,6 @@ namespace Eywa\Database\Query {
          */
         private ?string $or = null;
 
-        /**
-         *
-         * The primary key
-         *
-         */
-        private ?string $primary = null;
 
         /**
          *
@@ -192,15 +186,11 @@ namespace Eywa\Database\Query {
          * @param Connexion $connect
          * @param string $table
          *
-         * @throws Kedavra
-         *
          */
         public function __construct(Connexion $connect,string $table)
         {
-
             $this->connexion =  $connect;
-
-            $this->primary = $this->from($table)->find_primary_key();
+            $this->from($table);
         }
 
         /**
@@ -219,8 +209,6 @@ namespace Eywa\Database\Query {
          * List all columns inside the table
          *
          * @return array
-
-         * @throws Kedavra
          *
          */
         public function columns() : array
@@ -365,7 +353,7 @@ namespace Eywa\Database\Query {
                 $x = $value->$id;
 
 
-                $result->push(static::connexion()->set("DELETE {$this->from} WHERE {$this->primary} = $x")->execute());
+                $result->push(static::connexion()->set("DELETE {$this->from} WHERE {$this->primary()} = $x")->execute());
             }
 
 
@@ -455,7 +443,7 @@ namespace Eywa\Database\Query {
          * @return Sql
          *
          */
-        public function only(array $columns) : Sql
+        public function only(string ...$columns) : Sql
         {
             $this->columns = collect($columns)->join(', ');
 
@@ -479,9 +467,9 @@ namespace Eywa\Database\Query {
         public function between(string $column, $begin, $last) : Sql
         {
 
-            $begin = $this->connexion()->secure($begin);
+            $begin = is_string($begin) ? $this->connexion()->secure($begin) : $begin;
 
-            $last = $this->connexion()->secure($last);
+            $last = is_string($last) ? $this->connexion()->secure($last) : $last;
 
             $this->where = "WHERE $column BETWEEN $begin AND $last";
 
@@ -667,17 +655,19 @@ namespace Eywa\Database\Query {
          *
          * Add on the where clause a n or clause
          *
-         * @param string $value
+         * @param string $column
          * @param string $condition
-         * @param string $expected
+         * @param $expected
          *
          *
          * @return Sql
-         *
          */
-        public function or(string $value, string $condition, string $expected) : Sql
+        public function or(string $column, string $condition, $expected) : Sql
         {
-            append($this->or, " OR $value $condition {$this->connexion->secure($expected)}");
+
+            $expected = is_string($expected) ? $this->connexion()->secure($expected) : $expected;
+
+            append($this->or, " OR $column $condition $expected ");
 
             return $this;
         }
@@ -695,19 +685,27 @@ namespace Eywa\Database\Query {
          */
         public function not(string $column, ...$values) : Sql
         {
+            $symbol = html_entity_decode(DIFFERENT);
+
             if(def($this->where))
             {
                 foreach($values as $value)
-                    append($this->where, " AND $column != {$this->connexion->secure($value)}");
+                {
+                    $value = is_string($value) ? $this->connexion()->secure($value) : $value;
+                    append($this->where, " AND $column $symbol $value");
+                }
+
             }
             else
             {
                 foreach($values as $k => $value)
                 {
-                    $k == 0 ? append($this->where, "WHERE $column != {$this->connexion->secure($value)} ") : append($this->where, " AND $column != {$this->connexion->secure($value)}");
+                    $value = is_string($value) ? $this->connexion()->secure($value) : $value;
+
+
+                    $k == 0 ? append($this->where, "WHERE $column $symbol $value ") : append($this->where, " AND $column $symbol $value");
                 }
             }
-
             return $this;
         }
 
@@ -770,20 +768,6 @@ namespace Eywa\Database\Query {
             $this->table = $table;
 
             return $this;
-        }
-
-        /**
-         *
-         * Found the primary key
-         *
-         * @return string
-         *
-         * @throws Kedavra
-         *
-         */
-        private function  find_primary_key() : string
-        {
-            return $this->primary();
         }
     }
 }

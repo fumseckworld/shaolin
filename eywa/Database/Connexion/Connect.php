@@ -78,6 +78,13 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
+         * The sql query args
+         *
+         */
+        private array $args = [];
+
+        /**
+         *
          * @Inject({"db.driver","db.name","db.username", "db.password","db.port","db.options","db.host"})
          *
          * @inheritDoc
@@ -117,13 +124,13 @@ namespace Eywa\Database\Connexion {
         /**
          * @inheritDoc
          */
-        public function execute(array $args = []): bool
+        public function execute(): bool
         {
             foreach ($this->queries as $query)
             {
                 try {
                     $x =  $this->connexion->prepare($query);
-                    $x->execute($args);
+                    $x->execute($this->args);
                     $x->closeCursor();
                 }catch (PDOException $exception)
                 {
@@ -137,7 +144,7 @@ namespace Eywa\Database\Connexion {
         /**
          * @inheritDoc
          */
-        public function get(int $style,array $args = []): array
+        public function get(int $style): array
         {
             $x = [];
 
@@ -146,8 +153,13 @@ namespace Eywa\Database\Connexion {
 
                 try
                 {
+
                     $result = $this->connexion->prepare($query);
-                    $result->execute($args);
+
+                    foreach ($this->args as $k => $arg)
+                        $result->bindParam($k +1,$arg);
+
+                    $result->execute();
                     $x = $result->fetchAll($style);
                     $result->closeCursor();
 
@@ -253,7 +265,7 @@ namespace Eywa\Database\Connexion {
                 try
                 {
                     $result = $this->connexion->prepare($query);
-                    $result->execute($args);
+                    $result->execute($this->args);
                     $x->push($result->fetchObject($class,$args));
                     $result->closeCursor();
 
@@ -343,6 +355,17 @@ namespace Eywa\Database\Connexion {
         public function port(): int
         {
             return $this->port;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function with(...$args): Connexion
+        {
+
+            $this->args = array_merge($this->args,$args);
+
+            return  $this;
         }
     }
 }

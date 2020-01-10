@@ -39,18 +39,25 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
+         * Add arguments
+         *
+         * @param mixed ...$args
+         *
+         * @return Connexion
+         *
+         */
+        public function with(...$args): Connexion;
+
+        /**
+         *
          * Execute the sql query
          *
          * Return true on success or false in failure
          *
-         * @param array $args
-         *
          * @return bool
          *
-         * @throws Kedavra
-         *
          */
-        public function execute(array $args = []): bool;
+        public function execute(): bool;
 
         /**
          *
@@ -73,14 +80,11 @@ namespace Eywa\Database\Connexion {
          * With all records found by the query
          *
          * @param int $style
-         * @param array $args
          *
          * @return array
          *
-         * @throws Kedavra
-         *
          */
-        public function get(int $style ,array $args = []): array ;
+        public function get(int $style ): array ;
 
         /**
          *

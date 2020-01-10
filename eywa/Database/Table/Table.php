@@ -6,7 +6,7 @@ namespace Eywa\Database\Table {
 
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Exception\Kedavra;
-    use PDO;
+
 
     class Table
     {
@@ -87,16 +87,14 @@ namespace Eywa\Database\Table {
          *
          * Check if the table exist
          *
+         * @param string $table
+         *
          * @return bool
          *
-         * @throws Kedavra
-         *
          */
-        public function exist(): bool
+        public function exist(string $table): bool
         {
-            $this->check();
-
-            return collect($this->show())->exist($this->table);
+            return collect($this->show())->exist($table);
         }
 
         /**
@@ -189,16 +187,16 @@ namespace Eywa\Database\Table {
             switch ($this->connexion->driver())
             {
                 case MYSQL :
-                    return  $this->connexion->set('SHOW TABLES')->get(PDO::FETCH_COLUMN);
+                    return  $this->connexion->set('SHOW TABLES')->get(COLUMNS);
                 break;
                 case POSTGRESQL :
-                   return  $this->connexion->set("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');")->get(PDO::FETCH_COLUMN);
+                   return  $this->connexion->set("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');")->get(COLUMNS);
                break;
                case SQLITE :
-                    return $this->connexion->set("SELECT tbl_name FROM sqlite_master")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion->set("SELECT tbl_name FROM sqlite_master")->get(COLUMNS);
                 break;
                 case SQL_SERVER:
-                    return $this->connexion->set("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion->set("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")->get(COLUMNS);
                 break;
             }
            return  [];
@@ -264,19 +262,23 @@ namespace Eywa\Database\Table {
 
             $this->check();
 
+            $x =  collect();
             switch ($this->connexion->driver())
             {
                 case MYSQL:
-                    return $this->connexion->set("SHOW FULL COLUMNS FROM {$this->table}")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
                 break;
                 case POSTGRESQL:
-                    return $this->connexion->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
                 break;
                 case SQLITE:
-                    return $this->connexion->set("PRAGMA table_info({$this->table})")->get(PDO::FETCH_COLUMN);
+                    foreach ($this->connexion->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $c)
+                        $x->push($c->name);
+
+                    return $x->all();
                 break;
                 case SQL_SERVER:
-                    return $this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$this->table}'")->get(PDO::FETCH_COLUMN);
+                    return $this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$this->table}'")->get(COLUMNS);
                 break;
                 default:
                     return  [];
@@ -301,29 +303,24 @@ namespace Eywa\Database\Table {
             switch ($this->connexion->driver())
             {
                 case MYSQL:
-                    return collect($this->connexion->set("show columns from {$this->table} where `Key` = 'PRI';")->get(PDO::FETCH_COLUMN))->first();
+                    return collect($this->connexion->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first();
                 break;
                 case POSTGRESQL:
-                    return collect($this->connexion->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(PDO::FETCH_COLUMN))->first();
+                    return collect($this->connexion->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(COLUMNS))->first();
                 break;
                 case SQLITE:
-                    return collect($this->connexion->set("PRAGMA table_info({$this->table})")->get(PDO::FETCH_COLUMN))->first();
+                    foreach ($this->connexion->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $column)
+                        if ($column->pk)
+                            return $column->name;
+
                 break;
                 case SQL_SERVER:
-                  return  collect($this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME  ='{$this->table}'  AND CONSTRAINT_NAME LIKE 'PK%'")->get(PDO::FETCH_COLUMN))->first();
+                  return  collect($this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME  ='{$this->table}'  AND CONSTRAINT_NAME LIKE 'PK%'")->get(COLUMNS))->first();
                 break;
                 default:
                     return '';
                 break;
             }
-        }
-
-        /**
-         * @return \Generator
-         */
-        public function a()
-        {
-            yield $this;
         }
 
         /**
