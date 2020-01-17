@@ -28,7 +28,7 @@ class ViewTest extends Unit
         $this->assertStringContainsString('<title>Linux</title>',$x->getContent());
         $this->assertStringContainsString('<meta name="description" content="An os simple and easy to use">',$x->getContent());
         $this->assertEquals(200,$x->getStatusCode());
-        $this->assertStringContainsString('<h1>bienvenue</h1>',$x->getContent());
+        $this->assertStringContainsString('<h1>welcome</h1>',$x->getContent());
     }
 
     public function test_change_code()
@@ -37,7 +37,7 @@ class ViewTest extends Unit
         $this->assertStringContainsString('<title>Linux</title>',$x->getContent());
         $this->assertStringContainsString('<meta name="description" content="An os simple and easy to use">',$x->getContent());
         $this->assertEquals(404,$x->getStatusCode());
-        $this->assertStringContainsString('<h1>bienvenue</h1>',$x->getContent());
+        $this->assertStringContainsString('<h1>welcome</h1>',$x->getContent());
     }
 
     public function test_view()

@@ -11,6 +11,8 @@ namespace Eywa\Ioc {
     use DI\NotFoundException;
     use Exception;
     use Eywa\Application\Environment\Env;
+    use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Table\Table;
     use Eywa\Session\Flash;
     use Faker\Generator;
 
@@ -49,7 +51,8 @@ namespace Eywa\Ioc {
                 $c->set('db.dump',base('db') .DIRECTORY_SEPARATOR .'dump' );
                 $c->set("views.path",base('app'). DIRECTORY_SEPARATOR . 'views') ;
                 $c->set("flash",new Flash()) ;
-                $c->set(Generator::class,faker(config('lang','locale'))) ;
+                $c->set('faker',faker(config('lang','locale'))) ;
+                $c->set('table',new Table($c->get(Connect::class))) ;
                 self::$ioc = $c;
 
             }

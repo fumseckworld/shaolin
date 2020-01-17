@@ -24,6 +24,20 @@ namespace Eywa\Database\Table {
          */
         private Connexion $connexion;
 
+        /**
+         *
+         * The primary key of the table
+         *
+         */
+        private ?string $primary = null;
+
+        /**
+         *
+         * The table columns
+         *
+         */
+        private array $columns = [];
+
 
         /**
          *
@@ -261,29 +275,33 @@ namespace Eywa\Database\Table {
         {
 
             $this->check();
+            if (def($this->columns))
+                return $this->columns;
+
 
             $x =  collect();
             switch ($this->connexion->driver())
             {
                 case MYSQL:
-                    return $this->connexion->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
+                    $this->columns =  $this->connexion->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
                 break;
                 case POSTGRESQL:
-                    return $this->connexion->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
+                    $this->columns = $this->connexion->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
                 break;
                 case SQLITE:
                     foreach ($this->connexion->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $c)
                         $x->push($c->name);
 
-                    return $x->all();
+                    $this->columns =  $x->all();
                 break;
                 case SQL_SERVER:
-                    return $this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$this->table}'")->get(COLUMNS);
+                    $this->columns =  $this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$this->table}'")->get(COLUMNS);
                 break;
                 default:
                     return  [];
                 break;
             }
+            return  $this->columns;
         }
 
         /**
@@ -300,18 +318,20 @@ namespace Eywa\Database\Table {
         {
             $this->check();
 
+            if (def($this->primary))
+                return $this->primary;
             switch ($this->connexion->driver())
             {
                 case MYSQL:
-                    return collect($this->connexion->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first();
+                    $this->primary =  collect($this->connexion->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first();
                 break;
                 case POSTGRESQL:
-                    return collect($this->connexion->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(COLUMNS))->first();
+                    $this->primary = collect($this->connexion->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(COLUMNS))->first();
                 break;
                 case SQLITE:
                     foreach ($this->connexion->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $column)
                         if ($column->pk)
-                            return $column->name;
+                            $this->primary = $column->name;
 
                 break;
                 case SQL_SERVER:
@@ -321,6 +341,7 @@ namespace Eywa\Database\Table {
                     return '';
                 break;
             }
+            return  $this->primary;
         }
 
         /**
