@@ -10,12 +10,8 @@ use Eywa\Exception\Kedavra;
 use Eywa\File\File;
 
 use Eywa\Ioc\Container;
-use Eywa\Security\Csrf\Csrf;
 use Eywa\Security\Hashing\Hash;
-use Eywa\Session\Flash;
 use Faker\Factory;
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -38,80 +34,8 @@ if( ! function_exists('csrf_field'))
         return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
     }
 }
-if( ! function_exists('to'))
-{
-    /**
-     *
-     * Redirect to a url
-     *
-     * @method to
-     *
-     * @param  string  $url
-     * @param  string  $message
-     * @param  bool    $success
-     *
-     * @return RedirectResponse
-     *
-     */
-    function to(string $url, string $message = '', bool $success = true) : RedirectResponse
-    {
 
-        if(def($message))
-        {
-            $flash = new Flash();
-            $success ? $flash->set(SUCCESS,$message) : $flash->set(FAILURE,$message);
-        }
 
-        return (new RedirectResponse($url))->send();
-    }
-}
-if( ! function_exists('back'))
-{
-    /**
-     * @param  string  $message
-     * @param  bool    $success
-     *
-     * @throws DependencyException
-     * @throws NotFoundException
-     * @return RedirectResponse
-     */
-    function back(string $message = '', bool $success = true) : RedirectResponse
-    {
-
-        $back = request()->server->get('HTTP_REFERER');
-        if(is_null($back))
-            $back = '/';
-
-        return to($back, $message, $success);
-    }
-}
-if( ! function_exists('redirect'))
-{
-    /**
-     *
-     * Redirect to a route
-     *
-     * @param string $url
-     * @param string $message
-     * @param bool $success
-     *
-     * @return RedirectResponse
-     *
-     * @throws DependencyException
-     * @throws NotFoundException
-     */
-    function redirect(string $url, string $message = '', bool $success = true) : RedirectResponse
-    {
-
-        if(def($message))
-        {
-            $flash = new Flash(app()->session());
-            $success ? $flash->success($message) : $flash->failure($message);
-        }
-
-        return (new RedirectResponse($url))->send();
-    }
-}
 if( ! function_exists('base'))
 {
     /**
@@ -166,7 +90,7 @@ if( ! function_exists('message'))
      */
     function message(string $filename) : string
     {
-        return (new File(base('app') . DIRECTORY_SEPARATOR . 'Email' . DIRECTORY_SEPARATOR . $filename))->read();
+        return (new File(base('app','Email',$filename)))->read();
     }
 }
 
@@ -174,10 +98,14 @@ if( ! function_exists('message'))
 if( ! function_exists('app'))
 {
     /**
+     *
+     * Get the application instance
+     *
      * @return App
      *
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws Exception
      *
      */
     function app(): App
@@ -202,19 +130,6 @@ if (!function_exists('ioc'))
     }
 }
 
-if (!function_exists('quote'))
-{
-    /**
-     * @param string $x
-     *
-     * @return string
-     *
-     */
-    function quote(string $x)
-    {
-        return "'".addslashes($x)."'";
-    }
-}
 if( ! function_exists('faker'))
 {
     /**
@@ -363,28 +278,6 @@ if( ! function_exists('instance'))
 
 }
 
-if( ! function_exists('is_not_connected'))
-{
-    /**
-     *
-     * @return bool
-     *
-     * @throws Kedavra
-     *
-     */
-    function is_not_connected() : bool
-    {
-        try{
-
-            return ! instance()->pdo() instanceof PDO;
-        }catch (Kedavra $exception)
-        {
-
-            return  true;
-        }
-
-    }
-}
 if( ! function_exists('assign'))
 {
     /**
@@ -430,37 +323,8 @@ if( ! function_exists('not_def'))
         return true;
     }
 }
-if( ! function_exists('request'))
-{
-    /**
-     *
-     * Return an instance of the request
-     *
-     * @return Request
-     *
-     */
-    function request() : Request
-    {
-        return Request::createFromGlobals();
-    }
-}
-if( ! function_exists('https'))
-{
-    /**
-     *
-     * Check if the request is secure
-     *
-     * @method https
-     *
-     * @return bool
-     *
-     */
-    function https() : bool
-    {
 
-        return request()->isSecure();
-    }
-}
+
 if( ! function_exists('equal'))
 {
     /**
@@ -634,16 +498,15 @@ if( ! function_exists('server'))
      *
      * @method server
      *
-     * @param  string  $key
+     * @param string $key
+     * @param null $default
      *
-     * @param  string  $value
-     *
-     * @return string
+     * @return string|null
      *
      */
-    function server(string $key, string $value = '') : string
+    function server(string $key, $default = null): ?string
     {
-        return array_key_exists($key,$_SERVER) ? $_SERVER[$key] : $value;
+        return array_key_exists($key,$_SERVER) ? htmlspecialchars($_SERVER[$key],ENT_QUOTES) : $default;
     }
 }
 
@@ -667,37 +530,68 @@ if( ! function_exists('post'))
      *
      * @method post
      *
-     * @param  string  $key
+     * @param string $key
+     * @param null $default
      *
-     * @param  string  $value
-     *
-     * @return string
+     * @return string|null
      *
      */
-    function post(string $key, string $value = '') : string
+    function post(string $key, $default = null): ?string
     {
-        return request()->request->get($key,$value);
+       return  array_key_exists($key,$_POST) ? htmlspecialchars($_POST[$key],ENT_QUOTES) : $default;
     }
 }
+
 if( ! function_exists('get'))
 {
     /**
+     * Get a $_GET value
      *
-     * Get a get value
+     * @param string $key
+     * @param null $default
      *
-     * @method get
-     *
-     * @param  string  $key
-     *
-     * @param  string  $value
-     *
-     * @return string
+     * @return string|null
      *
      */
-    function get(string $key, string $value = '') : string
+    function get(string $key, $default = null):?string
     {
-        return  request()->query->get($key,$value);
+        return  array_key_exists($key,$_GET) ? htmlspecialchars($_GET[$key],ENT_QUOTES) : $default;
 
+    }
+}
+
+if( ! function_exists('cookie'))
+{
+    /**
+     * Get a $_GET value
+     *
+     * @param string $key
+     * @param null $default
+     *
+     * @return string|null
+     *
+     */
+    function cookie(string $key, $default = null):?string
+    {
+        return  array_key_exists($key,$_COOKIE) ? htmlspecialchars($_COOKIE[$key],ENT_QUOTES) : $default;
+    }
+}
+
+if( ! function_exists('file'))
+{
+    /**
+     * Get a $_GET value
+     *
+     * @param string $key
+     * @param null $default
+     *
+     * @return string|null
+     *
+     */
+    function file(string $key, $default = null):?string
+    {
+
+        return  array_key_exists($key,$_FILES) ? htmlspecialchars($_FILES[$key],ENT_QUOTES) : $default;
     }
 }
 if( ! function_exists('connect'))
@@ -848,25 +742,7 @@ if( ! function_exists('whoops'))
         return (new Run())->appendHandler(new PrettyPageHandler)->register();
     }
 }
-if( ! function_exists('os'))
-{
-    /**
-     *
-     * Return an instance of Os or os name
-     *
-     * @method os
-     *
-     * @param  bool  $get_name
-     *
-     * @return Os|string
-     *
-     */
-    function os(bool $get_name = false)
-    {
 
-        return $get_name ? (new Os())->getName() : new Os();
-    }
-}
 if( ! function_exists('commands'))
 {
     /**
