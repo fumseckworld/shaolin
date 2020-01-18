@@ -643,7 +643,7 @@ if( ! function_exists('server'))
      */
     function server(string $key, string $value = '') : string
     {
-        return request()->server->get($key,$value);
+        return array_key_exists($key,$_SERVER) ? $_SERVER[$key] : $value;
     }
 }
 

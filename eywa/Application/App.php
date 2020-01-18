@@ -8,10 +8,11 @@ namespace Eywa\Application {
     use Eywa\Application\Environment\Env;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
+    use Eywa\Http\Response\Response;
+    use Eywa\Http\View\View;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Crypt\Crypter;
-    use Symfony\Component\HttpFoundation\RedirectResponse;
 
     class App extends Zen implements Eywa
     {
@@ -47,15 +48,9 @@ namespace Eywa\Application {
             return new Write($subject, $message, $author_email, $to);
         }
 
-        /**
-         * @inheritDoc
-         */
-        public function to(string $url, string $message = '', bool $success = true): RedirectResponse
-        {
-            return to($url, $message, $success);
-        }
 
         /**
+         *
          * @inheritDoc
          *
          */
@@ -78,6 +73,14 @@ namespace Eywa\Application {
         public function crypter(): Crypter
         {
             return new Crypter();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function view(string $view, string $title, string $description, array $args = [], string $layout = 'layout.php'): Response
+        {
+            return  new Response(new View($view,$title,$description,$args,$layout));
         }
     }
 }

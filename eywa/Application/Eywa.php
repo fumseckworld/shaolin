@@ -9,6 +9,7 @@ namespace Eywa\Application {
     use Exception;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Response\Response;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Crypt\Crypter;
@@ -79,6 +80,23 @@ namespace Eywa\Application {
 
         /**
          *
+         * Render a view
+         *
+         * @param string $view
+         * @param string $title
+         * @param string $description
+         * @param array $args
+         * @param string $layout
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function view(string $view,string $title,string $description,array $args =[],string $layout = 'layout.php'): Response;
+
+        /**
+         *
          * Ge the encrypter instance
          *
          * @return Crypter
@@ -87,18 +105,5 @@ namespace Eywa\Application {
          *
          */
         public function crypter(): Crypter;
-
-        /**
-         *
-         * Redirect user to a url
-         *
-         * @param string $url
-         * @param string $message
-         * @param bool $success
-         *
-         * @return RedirectResponse
-         *
-         */
-        public function to(string $url, string $message ='', bool $success = true): RedirectResponse;
-    }
+  }
 }
