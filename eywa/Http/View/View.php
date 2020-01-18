@@ -6,7 +6,6 @@ namespace Eywa\Http\View {
 
     use Eywa\Cache\Filecache;
     use Eywa\Exception\Kedavra;
-    use Symfony\Component\HttpFoundation\Response;
 
 
     class View extends Filecache
@@ -87,7 +86,7 @@ namespace Eywa\Http\View {
             $this->title = $title;
             $this->description = $description;
             $this->args = $args;
-            $this->layout = base('app','Views') .DIRECTORY_SEPARATOR .$layout;
+            $this->layout = base('app','Views',$layout);
 
             $this->locale  = config('lang','locale');
 
@@ -98,15 +97,12 @@ namespace Eywa\Http\View {
          *
          * Render a view
          *
-         * @param int $status
-         * @param array $headers
-         *
-         * @return Response
+         * @return string
          *
          * @throws Kedavra
          *
          */
-        public function render(int $status = 200,array $headers = []): Response
+        public function render(): string
         {
             if ($this->has($this->cache))
             {
@@ -116,8 +112,7 @@ namespace Eywa\Http\View {
 
                 require($this->file($this->cache));
 
-                $html = ltrim(ob_get_clean());
-                return (new Response($html,$status,$headers))->send();
+                return  ltrim(ob_get_clean());
             }
 
 
@@ -176,11 +171,18 @@ namespace Eywa\Http\View {
 
             require($this->file($this->cache));
 
-            $html = ltrim(ob_get_clean());
-           return (new Response($html,$status,$headers))->send();
+            return  ltrim(ob_get_clean());
+
         }
 
 
+        /**
+         * @param string $regex
+         * @param string $new
+         * @param string $html
+         * @param $content
+         * @return View
+         */
         private function replace(string $regex,string $new,string $html,&$content): View
         {
              $content = preg_replace($regex,$new,$html);

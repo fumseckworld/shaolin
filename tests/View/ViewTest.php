@@ -4,6 +4,9 @@
 namespace Testing\View;
 
 
+use Eywa\Exception\Kedavra;
+use Eywa\File\File;
+use Eywa\Http\Response\Response;
 use Eywa\Http\View\View;
 use Eywa\Testing\Unit;
 
@@ -15,34 +18,44 @@ class ViewTest extends Unit
      * The view instance
      *
      */
-    private View $view;
+    private Response $view;
 
+    /**
+     * @throws Kedavra
+     */
     public function setUp(): void
     {
-       $this->view = new View('welcome','Linux','An os simple and easy to use');
+       $this->view = new Response(new View('linux','Linux','An os simple and easy to use'));
+    }
+
+    public function tearDown(): void
+    {
+        $this->assertTrue(File::delete(base('app','Views','linux.php')));
+        $this->assertTrue(File::delete(base('cache','linux.php')));
     }
 
     public function test_success()
     {
-        $x = $this->view->render();
-        $this->assertStringContainsString('<title>Linux</title>',$x->getContent());
-        $this->assertStringContainsString('<meta name="description" content="An os simple and easy to use">',$x->getContent());
-        $this->assertEquals(200,$x->getStatusCode());
-        $this->assertStringContainsString('<h1>welcome</h1>',$x->getContent());
+        $x = $this->view->send();
+        $this->assertStringContainsString('<title>Linux</title>',$x->content());
+        $this->assertStringContainsString('<meta name="description" content="An os simple and easy to use">',$x->content());
+        $this->assertEquals(200,$x->status());
     }
 
     public function test_change_code()
     {
-        $x = $this->view->render(404);
-        $this->assertStringContainsString('<title>Linux</title>',$x->getContent());
-        $this->assertStringContainsString('<meta name="description" content="An os simple and easy to use">',$x->getContent());
-        $this->assertEquals(404,$x->getStatusCode());
-        $this->assertStringContainsString('<h1>welcome</h1>',$x->getContent());
+        $x = $this->view->set_status(404)->send();
+        $this->assertStringContainsString('<title>Linux</title>',$x->content());
+        $this->assertStringContainsString('<meta name="description" content="An os simple and easy to use">',$x->content());
+        $this->assertEquals(404,$x->status());
     }
 
+    /**
+     * @throws Kedavra
+     */
     public function test_view()
     {
-        $this->assertTrue((new View('bidon','a','a'))->render()->isOk());
+        $this->assertTrue((new Response(new View('bidon','a','a')))->success());
         $this->assertTrue($this->file(base('app','Views') .DIRECTORY_SEPARATOR .'bidon.php')->remove());
     }
 }

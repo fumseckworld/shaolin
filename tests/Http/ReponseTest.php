@@ -4,7 +4,9 @@
 namespace Testing\Http;
 
 
+use Eywa\Exception\Kedavra;
 use Eywa\Http\Response\Response;
+use Eywa\Http\View\View;
 use PHPUnit\Framework\TestCase;
 
 class ReponseTest extends TestCase
@@ -17,9 +19,13 @@ class ReponseTest extends TestCase
      */
     private Response $response;
 
+    /**
+     * @throws Kedavra
+     */
     public function setUp(): void
     {
-        $this->response = new Response();
+        $view = new View('welcome','welcome', 'welcome');
+        $this->response = new Response($view);
     }
 
     public function test_resonse_ok()
