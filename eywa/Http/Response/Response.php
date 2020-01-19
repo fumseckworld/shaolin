@@ -136,6 +136,11 @@ namespace Eywa\Http\Response {
             if (headers_sent())
                 return $this;
 
+            foreach ($this->headers as $k => $v)
+            {
+                $replace = strcasecmp($k, 'Content-Type') === 0;
+                header("$k:$v",$replace,$this->status());
+            }
 
             // status
             header(sprintf('HTTP/%s %s %s', '1.1', $this->status, $this->status_text[$this->status]));
