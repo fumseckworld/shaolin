@@ -251,7 +251,7 @@ define('HTTP_PRECONDITION_REQUIRED_TEXT', 'Precondition Required');
 define('HTTP_TOO_MANY_REQUESTS_TEXT', 'Too Many Requests');
 define('HTTP_REQUEST_HEADER_FIELD_TOO_LARGE_TEXT', 'Request Header Fields Too Large');
 define('HTTP_UNAVAILABLE_FOR_LEGAL_REASONS_TEXT', 'Unavailable For Legal Reasons');
-define('HTTP_INTERNAL_SERVER_ERROR_TEXT', 'Internal Server Error');
+define('HTTP_INTERNAL_SERVER_ERROR_TEXT', 'Internal Serve Error');
 define('HTTP_NOT_IMPLEMENTED_TEXT', 'Not Implemented');
 define('HTTP_BAD_GATEWAY_TEXT', 'Bad Gateway');
 define('HTTP_SERVICE_UNAVAILABLE_TEXT', 'Service Unavailable');

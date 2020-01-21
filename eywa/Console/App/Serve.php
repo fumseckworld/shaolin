@@ -27,7 +27,7 @@
 			 */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
-				$output->writeln("<info>Server is running : </info>http://localhost:3000 ");
+				$output->writeln("<info>Serve is running : </info>http://localhost:3000 ");
 				return shell_exec("php -S localhost:3000 -d display_errors=1 -t web");
 			}
 			

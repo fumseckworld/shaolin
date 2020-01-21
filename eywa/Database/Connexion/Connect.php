@@ -92,7 +92,7 @@ namespace Eywa\Database\Connexion {
          */
         public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306, array $options = [], string $host = LOCALHOST)
         {
-            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Server=$host;Database=$base",$username,$password,$options) : (equal($driver,SQLITE) ? new PDO("sqlite:$base") : new PDO("$driver:host=$host;port=$port;dbname=$base", $username, $password, $options));
+            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Serve=$host;Database=$base",$username,$password,$options) : (equal($driver,SQLITE) ? new PDO("sqlite:$base") : new PDO("$driver:host=$host;port=$port;dbname=$base", $username, $password, $options));
 
             $this->connexion->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
