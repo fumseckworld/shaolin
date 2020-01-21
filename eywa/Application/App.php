@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Application {
 
@@ -9,7 +10,9 @@ namespace Eywa\Application {
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
     use Eywa\Http\Request\Request;
+    use Eywa\Http\Request\Server;
     use Eywa\Http\Response\Response;
+    use Eywa\Http\Routing\Router;
     use Eywa\Http\View\View;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
@@ -130,6 +133,14 @@ namespace Eywa\Application {
         public function request(): Request
         {
             return Request::generate();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function run(): Response
+        {
+            return (new Router(Server::generate()))->run();
         }
     }
 }

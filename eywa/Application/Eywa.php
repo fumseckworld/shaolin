@@ -167,6 +167,19 @@ namespace Eywa\Application {
 
         /**
          *
+         * Run the application
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         */
+        public function run(): Response;
+
+        /**
+         *
          * Ge the encrypter instance
          *
          * @return Crypter
