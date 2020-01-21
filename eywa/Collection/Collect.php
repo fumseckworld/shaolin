@@ -367,7 +367,7 @@ namespace Eywa\Collection {
          */
         public function get($key)
         {
-          return $this->has($key) ? $this->data[$key] : '';
+            return $this->has($key) ? $this->data[$key] : '';
         }
 
         /**
