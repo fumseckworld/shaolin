@@ -28,7 +28,7 @@ namespace Eywa\Http\Request {
          * the request
          *
          */
-        private ?Request $request = null;
+        private Request $request;
 
         /**
          *
@@ -37,18 +37,19 @@ namespace Eywa\Http\Request {
          * @param string $url
          * @param string $method
          *
-         * @param Request|null $request
          * @throws Kedavra
+         *
          */
-        public function __construct(string $url,string $method = GET,Request $request = null)
+        public function __construct(string $url,string $method = GET)
         {
             not_in(METHOD_SUPPORTED,$method,true,"The method used is not supported");
 
-            $this->method = different($method,GET) ? $request->request()->get('_method',GET) : GET;
-
             $this->url = $url;
 
-            $this->request = $request;
+            $this->request = php_sapi_name() == 'cli' ? new Request() : Request::generate();
+
+            $this->method = $method;
+
         }
 
 
@@ -63,8 +64,7 @@ namespace Eywa\Http\Request {
          */
         public static function generate(): Server
         {
-            $request = php_sapi_name() !== 'cli' ? Request::generate() : new Request();
-            return new static($request->server()->get('REQUEST_URI','/'),$request->server()->get('REQUEST_METHOD',GET),$request);
+            return new static($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
         }
 
         /***

@@ -107,7 +107,7 @@ namespace Eywa\Http\Response {
          */
         public function send(): Response
         {
-           return $this->send_headers()->send_content();
+            return $this->send_headers()->send_content();
         }
 
         /**

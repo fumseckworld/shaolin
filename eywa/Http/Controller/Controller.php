@@ -47,7 +47,7 @@ namespace Eywa\Http\Controller {
          */
         public function view(string $view,string $title,string $description,array $args = [],string $layout = 'layout.php'): Response
         {
-            return new Response(new View($view,$title,$description,$args,$layout));
+                return (new Response(new View($view,$title,$description,$args,$layout)))->send();
         }
 
     }

@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace Eywa\Http\Routing {
 
+
     use DI\DependencyException;
     use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
-    use Psr\Http\Message\ServerRequestInterface;
+    use Eywa\Http\Request\Server;
+    use Eywa\Http\Response\RedirectResponse;
+    use Eywa\Http\Response\Response;
     use stdClass;
-    use Symfony\Component\HttpFoundation\RedirectResponse;
+
 
     class Router
     {
@@ -34,13 +37,6 @@ namespace Eywa\Http\Routing {
          */
         private string $regex;
 
-        /**
-         *
-         * The route found
-     * aza0aaaa
-         *
-         */
-        private stdClass $route;
 
         /**
          *
@@ -49,44 +45,46 @@ namespace Eywa\Http\Routing {
          */
         private array $parameters = [];
 
+        private ?stdClass $route = null;
+
         /**
          *
          * Router constructor.
          *
-         * @param ServerRequestInterface $request
+         * @param Server $request
          *
          */
-        public function __construct(ServerRequestInterface $request)
+        public function __construct(Server $request)
         {
-            $this->url = $request->getUri()->getPath();
-            $this->method = $request->getMethod() !== GET ? def($request->getParsedBody()) ? strtoupper(collect($request->getParsedBody())->get('_method')) : $request->getMethod() : GET;
+            $this->url = $request->url();
+            $this->method = $request->method();
         }
 
         /**
          *
          * Call the callable
          *
-         * @return RouteResult | RedirectResponse
+
          *
          * @throws DependencyException
-         * @throws NotFoundException*@throws \DI\DependencyException
+         * @throws NotFoundException
          * @throws Kedavra
-         * @throws DependencyException
+         *
          */
-        public function search()
+        public function run()
         {
 
             if (equal(config('mode', 'mode'), 'admin'))
             {
 
-                foreach(Admin::where('method', EQUAL, $this->method)->all() as $route)
+                foreach(Admin::where('method', EQUAL, $this->method)->execute() as $route)
                 {
 
                     if($this->match($route->url))
                     {
                         $this->route = $route;
 
-                        return $this->result();
+                        return $this->result()->call();
                     }
                 }
 
@@ -95,31 +93,34 @@ namespace Eywa\Http\Routing {
             if (equal(config('mode', 'mode'), 'todo'))
             {
 
-                foreach (Task::where('method',EQUAL,$this->method)->all() as $route)
+                foreach (Task::where('method',EQUAL,$this->method)->execute() as $route)
                 {
                     if($this->match($route->url))
                     {
                         $this->route = $route;
 
-                        return $this->result();
+                        return $this->result()->call();
                     }
                 }
             }
+
 
             if (equal(config('mode','mode'),'up'))
             {
-                foreach(Web::where('method', EQUAL, $this->method)->all() as $route)
+                foreach(Web::where('method', EQUAL, $this->method)->execute() as $route)
                 {
                     if($this->match($route->url))
                     {
                         $this->route = $route;
 
-                        return $this->result();
+                        return  $this->result()->call();
                     }
+
                 }
+
             }
 
-            return to(route('web','404'));
+          return  $this->not_found();
         }
 
         /**
@@ -139,40 +140,6 @@ namespace Eywa\Http\Routing {
 
         /**
          *
-         * @param  ServerRequestInterface  $request
-         *
-         * @throws Kedavra
-         *
-         */
-        private function call_middleware(ServerRequestInterface $request) : void
-        {
-
-            $middleware_dir = 'Middleware';
-
-            $namespace = 'App' . '\\' . $middleware_dir . '\\';
-
-            $dir = base('app'). DIRECTORY_SEPARATOR . $middleware_dir;
-
-            is_false(is_dir($dir), true, "The $dir directory was not found");
-
-            $middle = glob("$dir/*php");
-
-            call_user_func_array([ new CsrfMiddleware(), 'handle' ], [ $request ]);
-
-            foreach($middle as $middleware)
-            {
-                $middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
-
-                $middleware = collect(explode('.', $middle))->first();
-
-                $class = "$namespace$middleware";
-
-                call_user_func_array([ new $class(), 'handle' ], [ $request ]);
-            }
-        }
-
-        /**
-         *
          * @param $match
          *
          * @return string
@@ -185,10 +152,7 @@ namespace Eywa\Http\Routing {
         }
 
         /**
-         *
          * @return RouteResult
-         *
-         *
          */
         public function result() : RouteResult
         {
@@ -203,7 +167,7 @@ namespace Eywa\Http\Routing {
                 is_numeric($match) ? $params->set(intval($match)) : $params->set($match);
             }
 
-            return new RouteResult('App\Controllers', $this->route->name, $this->route->url, $this->route->controller, $this->route->action, $params->all());
+            return new RouteResult('App\Controllers', $this->route->name, $this->route->url, $this->route->controller, $this->route->action, $this->method, $params->all());
         }
 
         /**
@@ -223,6 +187,22 @@ namespace Eywa\Http\Routing {
             $regex = "#^$path$#";
 
             return preg_match($regex, $this->url, $this->parameters) === 1;
+        }
+
+        /**
+         *
+         * Return 404 page
+         *
+         * @return Response
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         *
+         */
+        private function not_found(): Response
+        {
+            return (new RedirectResponse(route('web','404')))->send();
         }
     }
 }
