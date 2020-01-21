@@ -9,6 +9,7 @@ namespace Eywa\Application {
     use Exception;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
@@ -77,6 +78,75 @@ namespace Eywa\Application {
          * @throws Exception
          */
         public function sql(string $table): Sql;
+
+        /**
+         *
+         * Retrive a $_GET value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function get(string $key,$default = null);
+
+        /**
+         *
+         * Retrive a $_POST value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function post(string $key,$default = null);
+
+        /**
+         *
+         * Retrive a $_COOKIE value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function cookie(string $key,$default = null);
+
+        /**
+         *
+         * Retrive a $_SERVER value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function server(string $key,$default = null);
+
+        /**
+         *
+         * Get a $_FILE value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function file(string $key,$default = null);
+
+        /**
+         *
+         * Get a request instance
+         *
+         * @return Request
+         *
+         */
+        public function request(): Request;
 
         /**
          *

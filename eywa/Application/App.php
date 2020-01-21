@@ -8,6 +8,7 @@ namespace Eywa\Application {
     use Eywa\Application\Environment\Env;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
+    use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Http\View\View;
     use Eywa\Ioc\Container;
@@ -81,6 +82,54 @@ namespace Eywa\Application {
         public function view(string $view, string $title, string $description, array $args = [], string $layout = 'layout.php'): Response
         {
             return  new Response(new View($view,$title,$description,$args,$layout));
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function get(string $key, $default = null)
+        {
+            return $this->request()->query()->get($key,$default);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function post(string $key, $default = null)
+        {
+            return $this->request()->request()->get($key,$default);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function cookie(string $key, $default = null)
+        {
+            return $this->request()->cookie()->get($key,$default);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function server(string $key, $default = null)
+        {
+           return $this->request()->server()->get($key,$default);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function file(string $key, $default = null)
+        {
+            return $this->request()->file()->get($key,$default);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function request(): Request
+        {
+            return Request::generate();
         }
     }
 }
