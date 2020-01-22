@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Eywa\Database\Model {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
@@ -109,9 +107,7 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function between(int $begin, int $end, string $column = '') : Sql
@@ -127,9 +123,7 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function all() : array
@@ -187,10 +181,7 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
-         *
          */
         public static function remove(int ...$ids): bool
         {
@@ -247,34 +238,6 @@ namespace Eywa\Database\Model {
 
         /**
          *
-         * Get all available types for current driver
-         *
-         * @return array
-         *
-         * @throws Kedavra
-         *
-         */
-        public static function types() : array
-        {
-            switch (static::connection()->driver())
-            {
-                case MYSQL:
-                    return Zen::MYSQL_TYPES;
-                break;
-                case POSTGRESQL:
-                    return Zen::POSTGRESQL_TYPES;
-                break;
-                case SQLITE:
-                    return Zen::SQLITE_TYPES;
-                break;
-                default:
-                    return Zen::ALL_TYPES;
-                break;
-            }
-        }
-
-        /**
-         *
          * Get a record by a column
          *
          * @param string $column
@@ -313,9 +276,7 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function search(string $x): array
@@ -330,9 +291,7 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public function save() : bool
@@ -365,9 +324,7 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public function refresh(int $id): bool
@@ -423,9 +380,7 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function update(int $id,array $values): bool
@@ -459,9 +414,8 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function paginate($callable, int $current_page) : Sql
         {
@@ -476,9 +430,7 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function destroy(int $id) : bool
@@ -492,12 +444,10 @@ namespace Eywa\Database\Model {
          *
          * @return int
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
-        public static function count() : int
+        public static function sum() : int
         {
             return static::sql()->sum();
         }
@@ -512,9 +462,7 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function where(string $column, string $condition, $expected) : Sql
@@ -530,9 +478,7 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function find(int $id): array
@@ -550,9 +496,7 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         public static function different($expected, string $column = '') : Sql

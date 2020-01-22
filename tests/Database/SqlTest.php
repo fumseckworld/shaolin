@@ -108,9 +108,9 @@ namespace Testing\Database {
          */
         public function test_only()
         {
-            $this->assertNotEmpty($this->mysql->where('id', EQUAL, 1)->only('id')->execute());
-            $this->assertNotEmpty($this->pgsql->where('id', EQUAL, 1)->only('id')->execute());
-            $this->assertNotEmpty($this->sqlite->where('id', EQUAL, 1)->only('id')->execute());
+            $this->assertNotEmpty($this->mysql->where('id', EQUAL, 1)->only(['id'])->execute());
+            $this->assertNotEmpty($this->pgsql->where('id', EQUAL, 1)->only(['id'])->execute());
+            $this->assertNotEmpty($this->sqlite->where('id', EQUAL, 1)->only(['id'])->execute());
         }
 
         /**

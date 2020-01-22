@@ -443,7 +443,7 @@ namespace Eywa\Database\Query {
          * @return Sql
          *
          */
-        public function only(string ...$columns) : Sql
+        public function only(array $columns) : Sql
         {
             $this->columns = collect($columns)->join(', ');
 
