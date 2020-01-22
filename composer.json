@@ -26,7 +26,8 @@
     "gettext/gettext": "^5.2",
     "ext-gettext": "*",
     "ext-apcu": "*",
-    "symfony/process": "^5.0"
+    "symfony/process": "^5.0",
+    "phpunit/phpunit": "^8.5"
   },
   "authors": [
     {
