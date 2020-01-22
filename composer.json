@@ -13,7 +13,6 @@
     "filp/whoops": "^2.5",
     "doctrine/annotations": "^1.8",
     "ocramius/proxy-manager": "^2.2",
-    "guzzlehttp/guzzle": "^6.5",
     "php-di/php-di": "^6.0",
     "erusev/parsedown": "^1.7",
     "scrivo/highlight.php": "^9.17",
@@ -28,9 +27,6 @@
     "ext-gettext": "*",
     "ext-apcu": "*",
     "symfony/process": "^5.0"
-  },
-  "require-dev": {
-    "kahlan/kahlan": "^4.6"
   },
   "authors": [
     {
