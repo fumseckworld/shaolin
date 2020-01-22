@@ -56,6 +56,7 @@ namespace Eywa\Database\Connexion {
          *
          * @return bool
          *
+         * @throws Kedavra
          */
         public function execute(): bool;
 
@@ -82,6 +83,8 @@ namespace Eywa\Database\Connexion {
          * @param int $style
          *
          * @return array
+         *
+         * @throws Kedavra
          *
          */
         public function get(int $style ): array ;

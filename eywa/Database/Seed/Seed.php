@@ -60,6 +60,7 @@ namespace Eywa\Database\Seed {
          *
          */
         private Connexion $connexion;
+
         /**
          *
          * The set columns
@@ -133,19 +134,39 @@ namespace Eywa\Database\Seed {
         {
             for ($i=0;different($i,$this->limit());$i++)
             {
-                append($this->values,'( ',);
+
                 call_user_func_array($callback,[$this->faker,$this->table,$this]);
-                $this->values = trim($this->set->join(),', ');
-                append($this->values,'),');
+
+                $tmp = collect();
+
+                foreach ($this->table->columns() as $column)
+                    $tmp->set($this->set->get($column));
+
+                append($this->values, '('. trim($tmp->join(),', ') . '),');
+
                 $this->set->clear();
+
+                $tmp->clear();
             }
 
             return  $this;
         }
 
+        /**
+         *
+         * Set a column value
+         *
+         * @param string $column
+         * @param $value
+         *
+         * @return Seed
+         *
+         * @throws Kedavra
+         *
+         */
         public function set(string $column,$value): Seed
         {
-            $this->set->put($column,$this->connexion->secure($value));
+            equal($column,$this->table->primary()) ? $this->set->put($column,$value) :   $this->set->put($column,$this->connexion->secure($value));
 
             return $this;
         }
@@ -157,6 +178,7 @@ namespace Eywa\Database\Seed {
          * @return bool
          *
          * @throws Kedavra
+         *
          */
         public function seed() : bool
         {
@@ -164,8 +186,8 @@ namespace Eywa\Database\Seed {
 
             $sql = trim("INSERT INTO {$this->from} ($x) VALUES {$this->values}",', ') ;
 
-            d($sql);
             return $this->connexion->set($sql)->execute();
+
         }
 
     }
