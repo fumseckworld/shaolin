@@ -210,6 +210,7 @@ namespace Eywa\Database\Query {
          *
          * @return array
          *
+         * @throws Kedavra
          */
         public function columns() : array
         {

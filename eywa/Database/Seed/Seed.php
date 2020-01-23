@@ -81,7 +81,7 @@ namespace Eywa\Database\Seed {
         {
             $this->from = $from;
             $this->limit = $records;
-            $this->connexion = ioc(Connect::class)->get();
+            $this->connexion = new Connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')));
             $this->faker = ioc('faker')->get();
             $this->table = ioc('table')->get();
 
