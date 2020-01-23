@@ -55,6 +55,6 @@
     "test": "phpunit  --coverage-html coverage",
     "coverage" : "php -S localhost:8000 -t coverage",
     "serve" : "php -S localhost:3000 -t web",
-    "send" : "git push origin --all && git push origin --tags"
+    "send" : "git push origin --all && git push origin --tags && cd coverage && git add . && git commit -m 'send' && git push origin --all"
   }
 }
