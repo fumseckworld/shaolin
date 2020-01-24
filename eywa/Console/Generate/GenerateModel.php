@@ -40,15 +40,15 @@ namespace Eywa\Console\Generate {
 
             $namespace = 'App\Models';
 
-            $file = 'app' . DIRECTORY_SEPARATOR . 'Models' . DIRECTORY_SEPARATOR . $model . '.php';
+            $file = base( 'app' , 'Models' , "$model.php");
 
             if (file_exists($file))
             {
-                $output->write("<bg=red;fg=white>The $model model already exist\n");
+                $output->writeln("<error>The $model model already exist</error>");
 
                 return 1;
             }
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace { \n\n\tuse Imperium\Model\Model;\n\n\tClass $x extends Model\n\t{\n\n\t\tprotected  \$table = '$table';\n\n\t\tprotected static  \$by = 'id';\n\n\t\tprotected static  \$limit = 20;\n\n}\n\n}\n")->flush()) {
+            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace\n{ \n\n\tuse Eywa\Database\Model\Model;\n\n\tClass $model extends Model\n\t{\n\n\t\tprotected static string \$table = '$table';\n\n\t\tprotected static string \$by = 'id';\n\n\t\tprotected static int \$limit = 20;\n\n\t}\n\n}\n")->flush()) {
                 $output->write("<info>The $model model was generated successfully</info>\n");
 
                 return 0;

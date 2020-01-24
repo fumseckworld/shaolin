@@ -47,11 +47,17 @@ if( ! function_exists('base'))
      */
     function base(string ...$dirs) : string
     {
+
         $base = str_replace(DIRECTORY_SEPARATOR.'web','',realpath('./')) ;
+
         if (def($dirs))
         {
             foreach ($dirs as $dir)
-               append($base,DIRECTORY_SEPARATOR,$dir);
+                if (def($dir))
+                {
+                    append($base,DIRECTORY_SEPARATOR,$dir);
+                }
+
 
         }
         return $base ;

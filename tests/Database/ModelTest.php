@@ -4,7 +4,7 @@
 namespace Testing\Database;
 
 
-use App\Model\User;
+use App\Models\User;
 use PHPUnit\Framework\TestCase;
 
 class ModelTest extends TestCase

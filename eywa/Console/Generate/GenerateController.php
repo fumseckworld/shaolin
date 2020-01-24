@@ -38,16 +38,21 @@ namespace Eywa\Console\Generate {
 
             $controller = ucfirst(str_replace('Controller', '', $input->getArgument('controller')));
             append($controller, 'Controller');
-            $controllers = 'app' . DIRECTORY_SEPARATOR . 'Controllers';
+
+
+            $file = $controller ;
+
+            $controller  =  base('app','Controllers',"$controller.php");
             $namespace = 'App' . '\\' . 'Controllers';
-            $file = $controllers . DIRECTORY_SEPARATOR . $controller . '.php';
-            if (file_exists($file)) {
-                $output->write("<bg=red;fg=white>The $controller controller already exist\n");
+            if (file_exists($controller))
+            {
+                $output->writeln("<error>The $controller controller already exist</error>");
 
                 return 1;
             }
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace { \n\n\tuse Imperium\Controller\Controller;\n\n\tClass $controller extends Controller\n\t{\n\n\t\tpublic function before_action()\n\t\t{\n\n\t\t}\n\n\t\tpublic function after_action()\n\t\t{\n\n\t\t}\n\n\t}\n\n}\n")->flush()) {
-                $output->write("<info>The $controller controller was generated successfully</info>\n");
+            chdir(base('app','Controllers'));
+            if ((new File("$file.php", EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace { \n\n\tuse  Eywa\Http\Controller\Controller;\n\n\tClass $file extends Controller\n\t{\n\n\t\tpublic function before_action()\n\t\t{\n\n\t\t}\n\n\t\tpublic function after_action()\n\t\t{\n\n\t\t}\n\n\t}\n\n}\n")->flush()) {
+                $output->write("<info>The $file controller was generated successfully</info>\n");
 
                 return 0;
             }

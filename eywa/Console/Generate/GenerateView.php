@@ -1,11 +1,9 @@
 <?php
 	
-	namespace Imperium\Command;
+	namespace Eywa\Console\Generate;
 	
-	use Imperium\Directory\Dir;
-	use Imperium\Exception\Kedavra;
-	use Imperium\File\File;
-	use Symfony\Component\Console\Command\Command;
+
+    use Symfony\Component\Console\Command\Command;
 	use Symfony\Component\Console\Input\InputArgument;
 	use Symfony\Component\Console\Input\InputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
@@ -25,47 +23,44 @@
 		 * @param  InputInterface   $input
 		 * @param  OutputInterface  $output
 		 *
-		 * @throws Kedavra
-		 * @return int|void|null
+         * @return int|void|null
 		 */
 		public function execute(InputInterface $input, OutputInterface $output)
 		{
 			
-			$dir = $input->getArgument('dir');
+			$dir = $input->getArgument('dir') ?? '';
+
+			if (def($dir))
+            {
+
+                if (!is_dir(base('app','Views',$dir)))
+                    mkdir(base('app','Views',$dir));
+
+            }
 			
-			$view = collect(explode('.', $input->getArgument('view')))->first();
+			$view =  collect(explode('.', $input->getArgument('view')))->first();
 			
-			append($view, '.twig');
-			
-			$path = base('app') . DIRECTORY_SEPARATOR . 'Views';
-			
-			if(def($dir))
+			append($view, '.php');
+			$view = def($dir) ? base('app','Views',$dir,$view) : base('app','Views',$view);
+
+			if (file_exists($view))
+            {
+
+                $output->writeln("<error>The view already exist</error>");
+                return 1;
+            }
+
+			if (touch($view))
 			{
-				Dir::checkout($path);
-				
-				if( ! Dir::exist($dir))
-					Dir::create($dir);
-				
-				Dir::checkout($dir);
-			}
-			else
-			{
-				Dir::checkout($path);
-			}
-			
-			if( ! file_exists($view))
-			{
-				if((new File($view, EMPTY_AND_WRITE_FILE_MODE))->write("{% extends 'layout.twig' %}\n\n{% block title '' %}\n\n{% block description '' %}\n\n{% block css %}\n\n{% endblock %}\n\n{% block content %}\n\n\n\n{% endblock %}\n\n{% block js %}\n\n\n\n{% endblock %}\n")->flush())
-					$output->writeln('<info>The view has been generated successfully</info>');
-				
-				return 0;
-			}
-			else
-			{
-				$output->writeln('<bg=red;fg=white>The view already exist </>');
-				
-				return 1;
-			}
-		}
+
+                $output->writeln("<info>The view was generated successfully</info>");
+                return 0;
+
+            }
+
+			return 1;
+
+
+        }
 		
 	}

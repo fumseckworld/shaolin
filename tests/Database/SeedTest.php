@@ -4,7 +4,7 @@
 namespace Testing\Database;
 
 
-use App\Model\User;
+use App\Models\User;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Database\Seed\Seed;
