@@ -8,7 +8,6 @@ use Eywa\Database\Connexion\Connect;
 use Eywa\Debug\Dumper;
 use Eywa\Exception\Kedavra;
 use Eywa\File\File;
-
 use Eywa\Ioc\Container;
 use Eywa\Security\Hashing\Hash;
 use Faker\Factory;

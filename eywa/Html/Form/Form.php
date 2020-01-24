@@ -6,6 +6,7 @@ namespace Eywa\Html\Form {
 
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
 
@@ -39,9 +40,10 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Exception
          *
          */
-        public function __construct(string $method,string $db, string $route,array $route_args = [])
+        public function __construct(string  $route,array $route_args = [],string $method = POST,string $db = 'web')
         {
             $this->fields = collect();
 

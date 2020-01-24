@@ -21,6 +21,8 @@ namespace Eywa\Session {
          */
         public function set(string $key, $value): SessionInterface
         {
+            not_in([SUCCESS,FAILURE],$key,true,"The key is not valid");
+
             $this->start();
             $_SESSION[$key] = $value;
             return $this;
@@ -38,14 +40,23 @@ namespace Eywa\Session {
         /**
          * @inheritDoc
          */
-        public function destroy(string $key): bool
+        public function destroy(string ...$keys): bool
         {
-           if ($this->has($key))
-           {
-               unset($_SESSION[$key]);
-               return true;
-           }
-           return  false;
+            $x = collect();
+
+            foreach ($keys as $key)
+            {
+                if ($this->has($key))
+                {
+                    unset($_SESSION[$key]);
+                    $x->push(true);
+                }else
+                {
+                    $x->push(false);
+                }
+
+            }
+           return $x->ok();
         }
 
         /**

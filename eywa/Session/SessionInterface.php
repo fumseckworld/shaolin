@@ -4,6 +4,8 @@
 namespace Eywa\Session;
 
 
+use Eywa\Exception\Kedavra;
+
 interface SessionInterface
 {
     /**
@@ -26,6 +28,8 @@ interface SessionInterface
      *
      * @return $this
      *
+     * @throws Kedavra
+     *
      */
     public function set(string $key, $value): self;
 
@@ -44,12 +48,10 @@ interface SessionInterface
      *
      * Remove a key
      *
-     * @param string $key
-     *
+     * @param string[] $keys
      * @return bool
-     *
      */
-    public function destroy(string $key): bool;
+    public function destroy(string ...$keys): bool;
 
     /**
      *

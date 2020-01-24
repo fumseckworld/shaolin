@@ -26,7 +26,7 @@ namespace Testing\Html {
          */
     public function setUp(): void
     {
-        $this->form = new Form('POST','web','send');
+        $this->form = new Form('send');
     }
 
 

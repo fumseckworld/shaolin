@@ -114,6 +114,7 @@ namespace Eywa\Security\Crypt {
          *
          * @throws Kedavra
          * @throws Exception
+         *
          */
         public function decrypt(string $payload, bool $unserialize = true)
         {

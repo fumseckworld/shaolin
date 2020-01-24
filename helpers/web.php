@@ -293,9 +293,8 @@ if (!function_exists('route'))
      *
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
+     *
      */
     function route(string $db,string $route,array $args =[]): string
     {

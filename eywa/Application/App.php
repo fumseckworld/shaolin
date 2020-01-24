@@ -7,16 +7,23 @@ namespace Eywa\Application {
 
 
     use Eywa\Application\Environment\Env;
+    use Eywa\Cache\Filecache;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
+    use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\Server;
+    use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use Eywa\Http\Routing\Router;
     use Eywa\Http\View\View;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
+    use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
+    use Eywa\Session\Flash;
+    use Eywa\Session\Session;
+    use Redis;
 
     class App extends Zen implements Eywa
     {
@@ -68,7 +75,7 @@ namespace Eywa\Application {
          */
         public function sql(string $table): Sql
         {
-            return new Sql($this->ioc(Connect::class)->get(), $table);
+            return new Sql(new Connect($this->env('DB_DRIVER'),$this->env('DB_NAME'),$this->env('DB_USERNAME'),$this->env('DB_PASSWORD'),intval($this->env('DB_PORT'))), $table);
         }
 
         /**
@@ -141,6 +148,85 @@ namespace Eywa\Application {
         public function run(): Response
         {
             return (new Router(Server::generate()))->run();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function form(string  $route,array $route_args = [],string $method = POST,string $db = 'web'): Form
+        {
+            return new Form($route,$route_args,$method,$db);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function redis(): Redis
+        {
+            return new Redis();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function back(string $message = '', bool $success = true): Response
+        {
+            if (def($message))
+                $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+
+            return (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send();
+
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function to(string $route, string $message = '', bool $success = true): Response
+        {
+            if (def($message))
+                $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+
+            return (new RedirectResponse(route('web',$route)))->send();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function cache(): Filecache
+        {
+            return new Filecache();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function decrypt(string $x, bool $unzerialize = true): string
+        {
+            return (new Crypter())->decrypt($x,$unzerialize);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function crypt(string $x, bool $unzerialize = true): string
+        {
+            return (new Crypter())->encrypt($x,$unzerialize);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function flash(string $key, string $message): void
+        {
+            (new Flash())->set($key,$message);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function auth(): Auth
+        {
+           return  new Auth(new Session());
         }
     }
 }

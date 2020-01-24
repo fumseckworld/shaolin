@@ -7,14 +7,17 @@ namespace Eywa\Application {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Eywa\Cache\Filecache;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
+    use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
+    use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
-    use Symfony\Component\HttpFoundation\RedirectResponse;
+    use Redis;
 
     interface Eywa
     {
@@ -76,8 +79,54 @@ namespace Eywa\Application {
          * @throws DependencyException
          * @throws NotFoundException
          * @throws Exception
+         *
          */
         public function sql(string $table): Sql;
+
+        /**
+         *
+         *
+         * Get and instance of autentication
+         *
+         * @return Auth
+         *
+         */
+        public function auth(): Auth;
+
+        /**
+         *
+         * Set a flash message
+         *
+         * @param string $key
+         * @param string $message
+         *
+         * @return void
+         *
+         * @throws Kedavra
+         *
+         */
+        public function flash(string $key,string $message): void;
+
+
+        /**
+         *
+         * Get the form instance
+         *
+        * @param string $route
+        * @param array $route_args
+        * @param string $method
+        * @param string $db
+        *
+         * @return Form
+         *
+         *
+         * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Exception
+         *
+        */
+        public function form(string $route,array $route_args = [],string $method = POST,string $db = 'web'): Form;
 
         /**
          *
@@ -188,5 +237,83 @@ namespace Eywa\Application {
          *
          */
         public function crypter(): Crypter;
+
+        /**
+         *
+         * Get and instance of redis
+         *
+         * @return Redis
+         *
+         */
+        public function redis(): Redis;
+
+        /**
+         *
+         * Go back
+         *
+         * @param string $message
+         * @param bool $success
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function back(string $message ='',bool $success = true): Response;
+
+        /**
+         *
+         * Go to a specific url by a route it's route name
+         *
+         * @param string $route
+         * @param string $message
+         * @param bool $success
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function to(string $route,string $message ='',bool $success = true): Response;
+
+        /**
+         *
+         * Get an instance of file cache
+         *
+         * @return Filecache
+         *
+         */
+        public function cache(): Filecache;
+
+        /**
+         *
+         * Decrypt a string
+         *
+         * @param string $x
+         * @param bool $unzerialize
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         */
+        public function decrypt(string $x,bool $unzerialize = true): string;
+
+        /**
+         *
+         * Crypt a string
+         *
+         * @param string $x
+         * @param bool $unzerialize
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         *
+         */
+        public function crypt(string $x,bool $unzerialize = true): string;
   }
 }

@@ -79,7 +79,6 @@ namespace Eywa\Security\Hashing
          */
         public function valid(string $value) : bool
         {
-
             return hash_equals($this->valid, $value);
         }
 
@@ -92,7 +91,6 @@ namespace Eywa\Security\Hashing
          */
         public function generate() : string
         {
-
             return $this->valid;
         }
 
