@@ -2,9 +2,6 @@
 
 namespace Eywa\Console\Routes {
 
-
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Routing\Admin;
@@ -47,12 +44,11 @@ namespace Eywa\Console\Routes {
          *
          */
         private string $choose;
-       
-        private $helper;
+
+
 
         protected function configure()
         {
-
             $this->setDescription('Update a route');
         }
 
@@ -60,31 +56,15 @@ namespace Eywa\Console\Routes {
          * @param bool $web
          * @param bool $admin
          * @return array
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         private function name(bool $web = true, bool $admin = false)
         {
             $x = \collect();
-            if ($web)
-            {
+
                 foreach (Web::all() as $v)
                     $x->push($v->name);
                 return $x->all();
-            }
-
-            if ($admin)
-            {
-                foreach (Admin::all() as $v)
-                    $x->push($v->name);
-
-                return $x->all();
-            }
-            foreach (Task::all() as $v)
-                $x->push($v->name);
-
-            return $x->all();
         }
 
         /**
@@ -124,6 +104,7 @@ namespace Eywa\Console\Routes {
          *
          * @return int|null
          *
+         * @throws Kedavra
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
@@ -132,11 +113,10 @@ namespace Eywa\Console\Routes {
 
                 $this->ask($output,$input);
 
-
-
+                $helper = $this->getHelper('question');
                 $question = new Question("<info>Continue [Y/n] : </info>", 'Y');
 
-                $continue = strtoupper($this->helper->ask($input, $output, $question)) === 'Y';
+                $continue = strtoupper($helper->ask($input, $output, $question)) === 'Y';
 
             } while ($continue);
 
@@ -150,6 +130,12 @@ namespace Eywa\Console\Routes {
             return 1;
         }
 
+        /**
+         * @param OutputInterface $output
+         * @param InputInterface $input
+         * @return int
+         * @throws Kedavra
+         */
         private function ask(OutputInterface $output,InputInterface $input)
         {
 
@@ -177,67 +163,75 @@ namespace Eywa\Console\Routes {
 
             $route = Web::by('name', $this->search);
 
-            do
+            foreach ($route as $value)
             {
-                $question = new Question("<info>Change the method</info> <comment>[{$route['method']}]</comment> : ", $route['method']);
-
-                $question->setAutocompleterValues(collect(METHOD_SUPPORTED)->for('strtolower')->all());
-
-                $method = strtoupper($helper->ask($input, $output, $question));
-
-                $this->entry->put('method', $method);
-
-            } while (is_null($method));
-
-            do
-            {
-                $question = new Question("<info>Change the name</info> <comment>[{$route['name']}]</comment> : ", $route['name']);
-
-                $name = $helper->ask($input, $output, $question);
-
-                $this->entry->put('name', $name);
-
-            } while (def(Web::where('name', EQUAL, $name)->execute()) && different($route['name'], $name));
 
 
-            do
-            {
-                $question = new Question("<info>Change the url</info> <comment>[{$route['url']}]</comment> : ", $route['url']);
+                do
+                {
+                    $question = new Question("<info>Change the method</info> <comment>[{$value->method}]</comment> : ", $value->method);
 
-                $url = $helper->ask($input, $output, $question);
+                    $question->setAutocompleterValues(collect(METHOD_SUPPORTED)->for('strtolower')->all());
 
-                $this->entry->put('url', $url);
+                    $method = strtoupper($helper->ask($input, $output, $question));
 
-            } while (def(Web::where('url', EQUAL, $url)->execute()) && different($route['url'], $url));
+                    $this->entry->put('method', $method);
 
-            do
-            {
-                $question = new Question("<info>Change the controller</info> <comment>[{$route['controller']}]</comment> : ", $route['controller']);
-                $question->setAutocompleterValues(controllers());
-                $controller = $helper->ask($input, $output, $question);
+                } while (is_null($method));
 
-                $this->entry->put('controller', $controller);
+                do
+                {
+                    $question = new Question("<info>Change the name</info> <comment>[{$value->name}]</comment> : ", $value->name);
 
-            } while (is_null($controller));
+                    $name = $helper->ask($input, $output, $question);
 
-            do
-            {
-                $question = new Question("<info>Change the action</info> <comment>[{$route['action']}]</comment> : ", $route['action']);
-                $x = "App\Controllers\\{$this->entry->get('controller')}";
+                    $this->entry->put('name', $name);
 
-                if (class_exists($x))
-                    $question->setAutocompleterValues(get_class_methods(new $x));
+                } while (def(Web::where('name', EQUAL, $name)->execute()) && different($value->name, $name));
 
-                $action = $helper->ask($input, $output, $question);
 
-                $this->entry->put('action', $action);
+                do
+                {
+                    $question = new Question("<info>Change the url</info> <comment>[{$value->url}]</comment> : ", $value->url);
 
-            } while (is_null($action));
+                    $url = $helper->ask($input, $output, $question);
 
-            $this->entry->put('id', $route['id']);
-            $this->save();
+                    $this->entry->put('url', $url);
+
+                } while (def(Web::where('url', EQUAL, $url)->execute()) && different($value->url, $url));
+
+                do
+                {
+                    $question = new Question("<info>Change the controller</info> <comment>[{$value->controller}]</comment> : ", $value->controller);
+                    $question->setAutocompleterValues(controllers());
+                    $controller = $helper->ask($input, $output, $question);
+
+                    $this->entry->put('controller', $controller);
+
+                } while (is_null($controller));
+
+                do
+                {
+                    $question = new Question("<info>Change the action</info> <comment>[{$value->action}]</comment> : ", $value->action);
+                    $x = "App\Controllers\\{$this->entry->get('controller')}";
+
+                    if (class_exists($x))
+                        $question->setAutocompleterValues(get_class_methods(new $x));
+
+                    $action = $helper->ask($input, $output, $question);
+
+                    $this->entry->put('action', $action);
+
+                } while (is_null($action));
+
+                $this->entry->put('id', $value->id);
+                $this->save();
+            }
         }
-        
+
+        /**
+         * @throws Kedavra
+         */
         public function save()
         {
 
