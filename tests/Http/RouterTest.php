@@ -8,10 +8,8 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Request\Server;
-use Eywa\Http\Response\RedirectResponse;
 use Eywa\Http\Response\Response;
 use Eywa\Http\Routing\Router;
-use Eywa\Http\Routing\RouteResult;
 use PHPUnit\Framework\TestCase;
 
 class RouterTest extends TestCase
@@ -62,10 +60,19 @@ class RouterTest extends TestCase
     public function test_404()
     {
         $router = (new Router(new Server('/sens','POST')))->run();
-
-
         $this->assertInstanceOf(Response::class,$router);
+    }
 
+    /**
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
+     */
+    public function test_param()
+    {
+        $router = (new Router(new Server('/hello/marc')))->run();
+        $this->assertTrue($router->success());
+        $this->assertStringContainsString('bonjour marc',$router->content());
 
     }
 }

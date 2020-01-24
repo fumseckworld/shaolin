@@ -16,19 +16,6 @@ namespace Eywa\Http\Routing {
          */
         private string $namesapce;
 
-        /**
-         *
-         * The route name
-         *
-         */
-        private string $name;
-
-        /**
-         *
-         * The route url
-         *
-         */
-        private string $url;
 
         /**
          *
@@ -54,45 +41,22 @@ namespace Eywa\Http\Routing {
 
         /**
          *
-         * The route method
-         *
-         */
-        private string $method;
-
-        /**
-         *
          * RouteResult constructor.
          *
-         * @param string $namesapce
-         * @param string $name
-         * @param string $url
          * @param string $controller
-         * @param string $acton
-         * @param string $method
+         * @param string $action
          * @param array $args
+         *
+         * @throws Kedavra
          */
-        public function __construct(string $namesapce, string $name, string $url, string $controller, string $acton,string $method,array $args = [])
+        public function __construct( string $controller, string $action,array $args = [])
         {
-            $this->namesapce = $namesapce;
-            $this->name = $name;
-            $this->url = $url;
+            $this->namesapce = config('app','namespace') . '\Controllers';
             $this->controller = $controller;
-            $this->acton = $acton;
+            $this->acton = $action;
             $this->args = $args;
-            $this->method = $method;
         }
 
-        /**
-         *
-         * Get the controller name
-         *
-         * @return string
-         *
-         */
-        public function name(): string
-        {
-            return $this->name;
-        }
         /**
          *
          * Get the controller name
@@ -153,30 +117,6 @@ namespace Eywa\Http\Routing {
             return $this->acton;
         }
 
-        /**
-         *
-         *
-         * Get the route method
-         *
-         * @return string
-         *
-         */
-        public function method()
-        {
-            return $this->method;
-        }
-
-        /**
-         *
-         * Get the controller name
-         *
-         * @return string
-         *
-         */
-        public function url(): string
-        {
-            return $this->url;
-        }
 
         /**
          *
