@@ -41,6 +41,8 @@ namespace Eywa\Html\Form {
          */
         public function __construct(string $route,string $method,array $params = [],array $route_args = [])
         {
+            not_in(METHOD_SUPPORTED,strtoupper($method),true,"The $method method is not supported");
+
             $this->fields = collect();
 
             $this->append('<form action="'.route('web',$route,$route_args).'" method="POST" ');

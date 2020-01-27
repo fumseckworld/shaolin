@@ -63,7 +63,7 @@ define('POSTGRESQL', 'pgsql');
 define('SQLITE', 'sqlite');
 define('SQL_SERVER', 'sqlsrv');
 define('ORACLE', 'oci');
-define('DRIVERS', [MYSQL, POSTGRESQL, SQLITE, SQL_SERVER]);
+define('DRIVERS', [MYSQL, POSTGRESQL, SQLITE]);
 
 define('UNION', 'UNION');
 define('UNION_ALL', 'UNION ALL');
