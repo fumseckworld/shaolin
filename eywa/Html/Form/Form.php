@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Html\Form {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
+
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
@@ -32,30 +31,23 @@ namespace Eywa\Html\Form {
          *
          * Form constructor.
          *
-         * @param string $method
-         * @param string $db
          * @param string $route
          * @param array $route_args
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Exception
          *
          */
-        public function __construct(string  $route,array $route_args = [],string $method = POST,string $db = 'web')
+        public function __construct(string $route,...$route_args)
         {
             $this->fields = collect();
 
-            $method = strtoupper($method);
-
-            $this->append('<form action="'.route($db,$route,$route_args).'" method="POST">');
+            $this->append('<form action="'.route('web',$route,$route_args).'" method="POST">');
 
             $this->append(csrf_field());
 
-            $this->add('_method','hidden',['value' => $method]);
-
         }
+
 
         /**
          *

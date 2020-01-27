@@ -8,8 +8,11 @@ use Eywa\Database\Connexion\Connect;
 use Eywa\Debug\Dumper;
 use Eywa\Exception\Kedavra;
 use Eywa\File\File;
+use Eywa\Http\Request\Request;
 use Eywa\Ioc\Container;
+use Eywa\Security\Crypt\Crypter;
 use Eywa\Security\Hashing\Hash;
+use Eywa\Session\Session;
 use Faker\Factory;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -30,7 +33,44 @@ if( ! function_exists('csrf_field'))
      */
     function csrf_field() : string
     {
-        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
+        if (php_sapi_name() == 'cli')
+        {
+            return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
+        }
+        $session = new Session();
+
+        $server = $session->has('server') ?  $session->get('server') :  $session->set('server',(new Crypter())->encrypt(Request::generate()->server()->get('SERVER_NAME','eywa')))->get('server');
+
+        $x = bin2hex(random_bytes(16));
+        $csrf = $session->set('csrf',$x)->get('csrf');
+        $token = "$server==$csrf";
+
+        $session->set(CSRF_TOKEN,$token);
+
+        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $token.'">';
+    }
+}
+
+if (!function_exists('form_invalid'))
+{
+    /**
+     *
+     * Check if the form was submited in the correct server
+     *
+     * @return bool
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
+     */
+    function form_invalid(): bool
+    {
+        $session = new Eywa\Session\Session();
+        if ($session->has(CSRF_TOKEN))
+        {
+            return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+        }
+        throw new Kedavra('Csrf token was not found');
+
     }
 }
 

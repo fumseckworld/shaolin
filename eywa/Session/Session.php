@@ -21,8 +21,6 @@ namespace Eywa\Session {
          */
         public function set(string $key, $value): SessionInterface
         {
-            not_in([SUCCESS,FAILURE],$key,true,"The key is not valid");
-
             $this->start();
             $_SESSION[$key] = $value;
             return $this;

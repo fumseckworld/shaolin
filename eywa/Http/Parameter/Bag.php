@@ -38,7 +38,7 @@ namespace Eywa\Http\Parameter {
          */
         public function get(string $key,$default = null)
         {
-            return $this->has($key) ? $this->data->get($key) : $default;
+            return $this->has($key) ? $this->secure($this->data->get($key)) : $default;
         }
 
         /**
@@ -67,7 +67,7 @@ namespace Eywa\Http\Parameter {
          */
         public function secure($x): string
         {
-            return htmlentities($x,ENT_QUOTES);
+            return htmlentities($x,ENT_QUOTES,'UTF-8');
         }
 
     }
