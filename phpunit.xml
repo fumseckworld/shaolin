@@ -7,8 +7,14 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
+
          stopOnFailure="true"
-         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer">
+         stopOnError="true"
+         stopOnIncomplete="true"
+         stopOnSkipped="true"
+         stopOnRisky="true"
+         printerClass="Codedungeon\PHPUnitPrettyResultPrinter\Printer"
+>
     <testsuites>
         <testsuite name="Application Test Suite">
             <directory suffix="Test.php">./tests</directory>
@@ -17,7 +23,7 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">imperium/</directory>
+            <directory suffix=".php">eywa/</directory>
             <directory suffix=".php">helpers/</directory>
         </whitelist>
     </filter>
