@@ -17,6 +17,7 @@ namespace Eywa\Application {
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
+    use Eywa\Session\Session;
     use Redis;
 
     interface Eywa
@@ -82,6 +83,29 @@ namespace Eywa\Application {
          *
          */
         public function sql(string $table): Sql;
+
+
+        /**
+         *
+         * Check if the form is invalid
+         *
+         * @return bool
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         *
+         */
+        public function check_form(): bool;
+
+        /**
+         *
+         * Get an instance of session
+         *
+         * @return Session
+         *
+         */
+        public function session(): Session;
 
         /**
          *

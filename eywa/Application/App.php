@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace Eywa\Application {
 
-
-
     use Eywa\Application\Environment\Env;
     use Eywa\Cache\Filecache;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
+    use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\Server;
@@ -31,7 +30,9 @@ namespace Eywa\Application {
         private Env $env;
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function __construct()
         {
@@ -44,7 +45,9 @@ namespace Eywa\Application {
 
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function env(string $key)
         {
@@ -52,7 +55,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
         {
@@ -71,7 +76,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function sql(string $table): Sql
         {
@@ -79,7 +86,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function crypter(): Crypter
         {
@@ -87,7 +96,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function view(string $view, string $title, string $description, array $args = [], string $layout = 'layout.php'): Response
         {
@@ -95,7 +106,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function get(string $key, $default = null)
         {
@@ -103,7 +116,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function post(string $key, $default = null)
         {
@@ -111,7 +126,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function cookie(string $key, $default = null)
         {
@@ -119,7 +136,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function server(string $key, $default = null)
         {
@@ -127,7 +146,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function file(string $key, $default = null)
         {
@@ -135,7 +156,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function request(): Request
         {
@@ -143,7 +166,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function run(): Response
         {
@@ -151,7 +176,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function form(string  $route,array $route_args = [],string $method = POST,string $db = 'web'): Form
         {
@@ -159,7 +186,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function redis(): Redis
         {
@@ -167,7 +196,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function back(string $message = '', bool $success = true): Response
         {
@@ -179,7 +210,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function to(string $route, string $message = '', bool $success = true): Response
         {
@@ -190,7 +223,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function cache(): Filecache
         {
@@ -198,7 +233,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function decrypt(string $x, bool $unzerialize = true): string
         {
@@ -206,7 +243,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function crypt(string $x, bool $unzerialize = true): string
         {
@@ -214,7 +253,9 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function flash(string $key, string $message): void
         {
@@ -222,11 +263,38 @@ namespace Eywa\Application {
         }
 
         /**
+         *
          * @inheritDoc
+         *
          */
         public function auth(): Auth
         {
            return  new Auth(new Session());
+        }
+
+        /**
+         *
+         * @inheritDoc
+         *
+         */
+        public function check_form(): bool
+        {
+            $session = $this->session();
+            if ($session->has(CSRF_TOKEN))
+            {
+                return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+            }
+            throw new Kedavra('Csrf token was not found');
+        }
+
+        /**
+         *
+         * @inheritDoc
+         *
+         */
+        public function session(): Session
+        {
+            return  new Session();
         }
     }
 }

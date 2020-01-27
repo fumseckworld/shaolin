@@ -70,7 +70,6 @@ if (!function_exists('form_invalid'))
             return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
         }
         throw new Kedavra('Csrf token was not found');
-
     }
 }
 
