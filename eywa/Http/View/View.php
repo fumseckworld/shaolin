@@ -149,19 +149,24 @@ namespace Eywa\Http\View {
 
 
             $this
-                ->replace('#{{ ([a-zA-Z0-9 ]+) }}#','<?= htmlentities("${1}",ENT_QUOTES,"UTF-8")  ?>',$html,$html)
-                ->replace('#{{ ([\$]+[a-zA-Z]+) }}#','<?= htmlentities(${1},ENT_QUOTES,"UTF-8")  ?>',$html,$html)
-                ->replace('#@if\(([a-z]+)\)#','<?php if($1) :?>',$html,$html)
-                ->replace('#@elseif\(([a-z]+)\)#','<?php elseif (${1}) :?>',$html,$html)
+                ->replace('#{{ ([\$a-zA-Z-0-9]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
+                ->replace('#{{ ([\$a-zA-Z-0-9]+).([\$a-zA-Z0-9]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
+                ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
+                ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#','<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>',$html,$html)
+                ->replace('#@if\(([\$a-zA-Z0-9]+)\)#','<?php if($${1}) :?>',$html,$html)
+                ->replace('#@elseif\(([\$a-zA-Z0-9]+)\)#','<?php elseif ($${1}) :?>',$html,$html)
                 ->replace('#@else#','<?php else :?>',$html,$html)
-                ->replace('#@endif#','<?php endif ?>',$html,$html)
-                ->replace('#@for\(([a-zA-Z-0-9]+) as ([a-zA-Z0-9]+)\)#','<?php foreach($${1} ?? [] as $${2}) : ?>',$html,$html)
-                ->replace('#@endfor#','<?php endforeach  ?>',$html,$html)
-                ->replace('#@switch\(([a-zA-Z-0-9]+)\)#','<?php switch($${1}): ',$html,$html)
-                ->replace('#@case ([a-zA-Z]+)#','case "${1}" :  ?>',$html,$html)
-                ->replace('#@case ([0-9]+)#','case ${1} :  ?>',$html,$html)
+                ->replace('#@endif#','<?php endif;?>',$html,$html)
+                ->replace('#@for ([\$a-zA-Z-0-9]+) in ([\$a-zA-Z0-9]+)#','<?php foreach($${1} ?? [] as $${2}) : ?>',$html,$html)
+                ->replace('#@endfor#','<?php endforeach;  ?>',$html,$html)
+                ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
+                ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
+                ->replace('#@flash#','<?=  ioc(\'flash\')->call(\'display\'); ?>',$html,$html)
+                ->replace('#@case\(([0-9]+)\)#','case ${1} :  ?>',$html,$html)
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
                 ->replace('#@default#','<?php default :   ?>',$html,$html)
+                ->replace('#@css\(([a-zA-Z0-9]+)\)#','<link rel="stylesheet"  href="/css/${1}.css">',$html,$html)
+                ->replace('#@js\(([a-zA-Z0-9]+)\)#','<script src="/js/${1}.js"></script>',$html,$html)
                 ->replace('#@endswitch#','<?php endswitch ;  ?>',$html,$html);
 
 

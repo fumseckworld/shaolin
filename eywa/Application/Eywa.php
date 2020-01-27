@@ -133,24 +133,18 @@ namespace Eywa\Application {
 
 
         /**
+         * @param string $route
+         * @param string $method
+         * @param array $params
+         * @param array $route_args
          *
-         * Get the form instance
-         *
-        * @param string $route
-        * @param array $route_args
-        * @param string $method
-        * @param string $db
-        *
          * @return Form
          *
-         *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Exception
          *
-        */
-        public function form(string $route,array $route_args = [],string $method = POST,string $db = 'web'): Form;
+         */
+        public function form(string $route,string $method,array $params = [],array $route_args = []) : Form;
 
         /**
          *

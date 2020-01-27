@@ -180,9 +180,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function form(string  $route,array $route_args = [],string $method = POST,string $db = 'web'): Form
+        public function form(string $route,string $method,array $params = [],array $route_args = []): Form
         {
-            return new Form($route,$route_args,$method,$db);
+            return new Form($route,$method,$params,$route_args);
         }
 
         /**

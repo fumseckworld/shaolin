@@ -93,7 +93,7 @@ namespace Eywa\Cache {
         public function clear(): bool
         {
            $x = function (){ return glob($this->directory() .DIRECTORY_SEPARATOR . '*');};
-           foreach ($x() as $file )
+           foreach ($x() as $file)
                unlink($file);
 
            return  not_def($x());

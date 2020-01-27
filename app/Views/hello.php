@@ -1,1 +1,1 @@
-bonjour {{ $name }}
+bonjour {{ name }}

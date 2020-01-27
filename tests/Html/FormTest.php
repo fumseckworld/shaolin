@@ -4,8 +4,6 @@
 namespace Testing\Html {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
     use Eywa\Testing\Unit;
@@ -21,12 +19,10 @@ namespace Testing\Html {
 
         /**
          * @throws Kedavra
-         * @throws NotFoundException
-         * @throws DependencyException
          */
     public function setUp(): void
     {
-        $this->form = new Form('send');
+        $this->form = new Form('send',GET);
     }
 
 
@@ -77,7 +73,8 @@ namespace Testing\Html {
         $this->assertStringContainsString('send',$form);
         $this->assertStringContainsString('submit',$form);
         $this->assertStringContainsString('name="_method"',$form);
-        $this->assertStringContainsString('value="POST"',$form);
+        $this->assertStringContainsString('method="POST"',$form);
+        $this->assertStringContainsString('value="GET"',$form);
         $this->assertStringContainsString('min="3"',$form);
         $this->assertStringContainsString('required="required"',$form);
         $this->assertStringContainsString('cols="10"',$form);

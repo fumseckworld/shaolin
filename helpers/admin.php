@@ -43,7 +43,7 @@ if( ! function_exists('csrf_field'))
 
         $x = bin2hex(random_bytes(16));
         $csrf = $session->set('csrf',$x)->get('csrf');
-        $token = "$server==$csrf";
+        $token = "$server@$csrf";
 
         $session->set(CSRF_TOKEN,$token);
 
@@ -67,7 +67,7 @@ if (!function_exists('form_invalid'))
         $session = new Eywa\Session\Session();
         if ($session->has(CSRF_TOKEN))
         {
-            return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+            return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('@',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
         }
         throw new Kedavra('Csrf token was not found');
     }

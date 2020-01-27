@@ -301,66 +301,61 @@ if (!function_exists('route'))
         switch ($db)
         {
             case 'admin':
-                $x = Admin::where('name',EQUAL,$route)->execute();
+                foreach ( Admin::where('name',EQUAL,$route)->execute() as $route)
+                    $x = $route;
             break;
             case 'web':
-                $x = Web::where('name',EQUAL,$route)->execute();
+
+                foreach (Web::where('name',EQUAL,$route)->execute() as $route)
+                   $x = $route;
             break;
             case 'task':
-                $x = Task::where('name',EQUAL,$route)->execute();
+                foreach ( Task::where('name',EQUAL,$route)->execute() as $route)
+                    $x = $route;
             break;
             default:
                 throw new Kedavra("The db parameter must be web, admin or task");
             break;
         }
 
-        is_true(not_def($x),true,"The $route route was not found inside $db base");
 
 
+        $url = $x->url;
         if (def($args))
         {
 
-            $url = '';
 
-            $data = explode('/', $x['url']);
-            $i = 0;
-            foreach ($data as $k => $v)
-            {
+            $x = '';
 
-                if (def($v))
-                {
+            foreach ($args as $k => $v) {
 
-                    if (strpos($v, ':') === 0)
-                    {
+                append($x, str_replace(":$k", "$v", $url));
 
-                        if (collect($args)->has($i))
-                        {
-                            append($url, '/' . $args[$i]);
-                            $i++;
-                        }
-
-                    } else
-                    {
-
-                        append($url, "/$v");
-                    }
-                }
             }
-
-            return url(trim($url, '/'));
+            return trim($x, '/');
 
         }
-        if (is_array($x))
-        {
-            foreach ($x as $url)
-                return  $url->url;
-        }
-        return  $x['url'];
-
+        return  $url;
     }
 
 }
 
+if(!function_exists('block'))
+{
+    /**
+     * @param string ...$values
+     * @return string
+     */
+    function block(string ...$values): string
+    {
+        $html = '';
+        foreach ($values as $value)
+            append($html,html_entity_decode($value,ENT_QUOTES,'UTF-8'));
+
+        return $html;
+
+    }
+}
 if(!function_exists('fa'))
 {
     /**

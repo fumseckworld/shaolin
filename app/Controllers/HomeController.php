@@ -4,6 +4,7 @@
 namespace App\Controllers;
 
 
+use App\Models\User;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
 use Eywa\Http\Response\Response;
@@ -27,7 +28,11 @@ class HomeController extends Controller
      */
     public function home(): Response
     {
-       return $this->view('cache','cache','cache');
+        $form = $this->form('hello',GET,[],['name'=> 'marc'])->add('name','textarea',['placeholder'=> 'type your name'])->get();
+
+        $users = User::all();
+
+       return $this->view('welcome','welcome','welcome',compact('form','users'));
     }
 
     /**

@@ -48,7 +48,11 @@ namespace Eywa\Http\Request {
 
             $this->request = php_sapi_name() == 'cli' ? new Request() : Request::generate();
 
-            $this->method = $method;
+            if (php_sapi_name() !== 'cli')
+                $this->method = different($method,GET) ? $this->request->request()->get('_method',GET) : $method;
+            else
+                $this->method = $method;
+
 
         }
 

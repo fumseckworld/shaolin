@@ -28,23 +28,34 @@ namespace Eywa\Html\Form {
         private Collect $fields;
 
         /**
-         *
          * Form constructor.
          *
          * @param string $route
          * @param array $route_args
+         * @param array $params
+         * @param string $method
          *
          * @throws Kedavra
          * @throws Exception
          *
          */
-        public function __construct(string $route,...$route_args)
+        public function __construct(string $route,string $method,array $params = [],array $route_args = [])
         {
             $this->fields = collect();
 
-            $this->append('<form action="'.route('web',$route,$route_args).'" method="POST">');
+            $this->append('<form action="'.route('web',$route,$route_args).'" method="POST" ');
+
+            foreach ($params as $k => $v)
+            {
+                $x = $k.'='.'"'.$v.'"';
+                $this->append($x);
+            }
+
+            $this->append('>');
 
             $this->append(csrf_field());
+
+            $this->add('_method','hidden',['value'=> strtoupper($method)]);
 
         }
 
