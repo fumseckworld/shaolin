@@ -6,7 +6,7 @@ namespace Eywa\Http\Request {
 
     use Eywa\Exception\Kedavra;
 
-    class Server
+    class ServerRequest
     {
 
         /**
@@ -32,7 +32,7 @@ namespace Eywa\Http\Request {
 
         /**
          *
-         * Server constructor.
+         * ServerRequest constructor.
          *
          * @param string $url
          * @param string $method
@@ -61,12 +61,12 @@ namespace Eywa\Http\Request {
          *
          * Generate request from global
          *
-         * @return Server
+         * @return ServerRequest
          *
          * @throws Kedavra
          *
          */
-        public static function generate(): Server
+        public static function generate(): ServerRequest
         {
             return new static($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
         }

@@ -11,7 +11,7 @@ namespace Eywa\Application {
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
-    use Eywa\Http\Request\Server;
+    use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use Eywa\Http\Routing\Router;
@@ -172,7 +172,7 @@ namespace Eywa\Application {
          */
         public function run(): Response
         {
-            return (new Router(Server::generate()))->run();
+            return (new Router(ServerRequest::generate()))->run();
         }
 
         /**

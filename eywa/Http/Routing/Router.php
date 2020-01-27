@@ -8,7 +8,7 @@ namespace Eywa\Http\Routing {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Request\Server;
+    use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use stdClass;
@@ -49,10 +49,10 @@ namespace Eywa\Http\Routing {
          *
          * Router constructor.
          *
-         * @param Server $request
+         * @param ServerRequest $request
          *
          */
-        public function __construct(Server $request)
+        public function __construct(ServerRequest $request)
         {
             $this->url = $request->url();
             $this->method = $request->method();
