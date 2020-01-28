@@ -4,6 +4,7 @@
 namespace Testing\Http;
 
 
+use App\Models\User;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Response\Response;
 use Eywa\Http\View\View;
@@ -24,7 +25,7 @@ class ReponseTest extends TestCase
      */
     public function setUp(): void
     {
-        $view = new View('welcome','welcome', 'welcome');
+        $view = (new View('welcome','welcome', 'welcome',['connected'=> true,'users' => User::all()]))->render();
         $this->response = new Response($view);
     }
 

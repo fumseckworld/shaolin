@@ -32,10 +32,9 @@ class HomeController extends Controller
 
         $users = User::all();
 
-        $connected = $this->auth()->connected();
 
 
-       return $this->view('welcome','welcome','welcome',compact('form','users','connected'));
+       return $this->view('welcome','welcome','welcome',compact('form','users'));
     }
 
     /**

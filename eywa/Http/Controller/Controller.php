@@ -17,38 +17,5 @@ namespace Eywa\Http\Controller {
     abstract class Controller extends App
     {
 
-        /**
-         * @param string $table
-         *
-         * @return Sql
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         * @throws Exception
-         */
-        public function sql(string $table): Sql
-        {
-            return new Sql(ioc(Connect::class)->get(),$table);
-        }
-
-        /**
-         *
-         * Initialise a view
-         *
-         * @param string $view
-         * @param string $title
-         * @param string $description
-         * @param array $args
-         * @param string $layout
-         *
-         * @return Response
-         *
-         * @throws Kedavra
-         */
-        public function view(string $view,string $title,string $description,array $args = [],string $layout = 'layout.php'): Response
-        {
-                return (new Response(new View($view,$title,$description,$args,$layout)))->send();
-        }
-
     }
 }

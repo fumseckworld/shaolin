@@ -18,9 +18,10 @@ namespace Eywa\Application {
     use Eywa\Http\View\View;
     use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
+    use Eywa\Message\Flash\Flash;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
-    use Eywa\Session\Flash;
+    use Eywa\Security\Validator\Validator;
     use Eywa\Session\Session;
     use Redis;
 
@@ -102,7 +103,7 @@ namespace Eywa\Application {
          */
         public function view(string $view, string $title, string $description, array $args = [], string $layout = 'layout.php'): Response
         {
-            return  new Response(new View($view,$title,$description,$args,$layout));
+            return new Response((new View($view,$title,$description,$args,$layout))->render());
         }
 
         /**
@@ -205,7 +206,7 @@ namespace Eywa\Application {
             if (def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
-            return (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send();
+            return (new RedirectResponse($this->request()->server()->get('c')))->send();
 
         }
 
@@ -295,6 +296,16 @@ namespace Eywa\Application {
         public function session(): Session
         {
             return  new Session();
+        }
+
+        /**
+         *
+         * @inheritDoc
+         *
+         */
+        public function validator(array $data, string $lang = 'en'): Validator
+        {
+            return new Validator(collect($data),$lang);
         }
     }
 }

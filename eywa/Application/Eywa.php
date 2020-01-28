@@ -17,6 +17,7 @@ namespace Eywa\Application {
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
+    use Eywa\Security\Validator\Validator;
     use Eywa\Session\Session;
     use Redis;
 
@@ -67,6 +68,21 @@ namespace Eywa\Application {
          *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write;
+
+        /**
+         *
+         * Get the validator
+         *
+         * @param array $data
+         * @param string $lang
+         *
+         * @return Validator
+         *
+         * @throws Kedavra
+         *
+         *
+         */
+        public function validator(array $data,string $lang = 'en'): Validator;
 
         /**
          *

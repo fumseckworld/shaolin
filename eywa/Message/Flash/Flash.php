@@ -1,26 +1,22 @@
 <?php
 
 
-namespace Eywa\Session {
+namespace Eywa\Message\Flash {
 
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Session\Session;
 
     class Flash extends Session
     {
-
         /**
-         * Diplay
-         *
          * @return string
          *
-         * @throws Kedavra .
+         * @throws Kedavra
          *
          */
         public function display(): string
         {
-
-
             if (php_sapi_name() !== 'cli')
             {
                 $success_class = config('flash','success_class');

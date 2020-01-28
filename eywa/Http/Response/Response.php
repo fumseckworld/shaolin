@@ -5,7 +5,6 @@ namespace Eywa\Http\Response {
 
 
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\View\View;
 
     class Response
     {
@@ -36,15 +35,15 @@ namespace Eywa\Http\Response {
         /**
          * Response constructor.
          *
-         * @param View $view
+         * @param string $content
          * @param int $status
          * @param array $headers
          *
          * @throws Kedavra
          */
-        public function __construct(View $view, int $status = 200, array $headers = [])
+        public function __construct(string $content, int $status = 200, array $headers = [])
         {
-            $this->set_content($view->render())->set_status($status)->set_headers($headers);
+            $this->set_content($content)->set_status($status)->set_headers($headers);
         }
 
         /**
@@ -98,6 +97,7 @@ namespace Eywa\Http\Response {
 
             return $this;
         }
+
         /**
          *
          * Send content

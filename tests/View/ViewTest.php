@@ -25,7 +25,7 @@ class ViewTest extends Unit
      */
     public function setUp(): void
     {
-       $this->view = new Response(new View('linux','Linux','An os simple and easy to use'));
+       $this->view = new Response((new View('linux','Linux','An os simple and easy to use'))->render());
     }
 
     public function tearDown(): void
@@ -42,6 +42,9 @@ class ViewTest extends Unit
         $this->assertEquals(200,$x->status());
     }
 
+    /**
+     * @throws Kedavra
+     */
     public function test_change_code()
     {
         $x = $this->view->set_status(404)->send();
@@ -55,7 +58,7 @@ class ViewTest extends Unit
      */
     public function test_view()
     {
-        $this->assertTrue((new Response(new View('bidon','a','a')))->success());
+        $this->assertTrue((new Response((new View('bidon','a','a'))->render()))->success());
         $this->assertTrue($this->file(base('app','Views') .DIRECTORY_SEPARATOR .'bidon.php')->remove());
     }
 }

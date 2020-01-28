@@ -165,14 +165,14 @@ namespace Eywa\Http\View {
                 ->replace('#@case\(([0-9]+)\)#','case ${1} :  ?>',$html,$html)
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
                 ->replace('#@default#','<?php default :   ?>',$html,$html)
-                ->replace('#@css\(([a-zA-Z0-9]+)\)#','<link rel="stylesheet"  href="/css/${1}.css">',$html,$html)
-                ->replace('#@js\(([a-zA-Z0-9]+)\)#','<script src="/js/${1}.js"></script>',$html,$html)
                 ->replace('#@logged#','<?php if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->connected()) :?>',$html,$html)
                 ->replace('#@guest#','<?php if(!(new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->connected()) :?>',$html,$html)
                 ->replace('#@endlogged#','<?php endif;?>',$html,$html)
                 ->replace('#@endguest#','<?php endif;?>',$html,$html)
                 ->replace('#@unless\(([\$a-zA-Z0-9]+)\)#','<?php if(is_false($${1})) :?>',$html,$html)
                 ->replace('#@endunless#','<?php endif;?>',$html,$html)
+                ->replace('#@css\(([a-zA-Z0-9]+)\)#','<link rel="stylesheet"  href="/css/${1}.css">',$html,$html)
+                ->replace('#@js\(([a-zA-Z0-9]+)\)#','<script src="/js/${1}.js"></script>',$html,$html)
                 ->replace('#@endswitch#','<?php endswitch ;  ?>',$html,$html);
 
 

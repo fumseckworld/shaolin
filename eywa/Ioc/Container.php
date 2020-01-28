@@ -13,9 +13,7 @@ namespace Eywa\Ioc {
     use Eywa\Application\Environment\Env;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Table\Table;
-    use Eywa\Session\Flash;
-    use Faker\Generator;
-
+    use Eywa\Message\Flash\Flash;
 
     class Container
     {
