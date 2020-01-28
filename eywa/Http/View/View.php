@@ -80,8 +80,8 @@ namespace Eywa\Http\View {
         {
 
             $x =  collect(explode('.',$view))->first() .'.php';
-            $this->view = def($directory) ? base('app','Views',$directory,$x) : base('app','Views',$x)  ;
 
+            $this->view = def($directory) ? base('app','Views',$directory,$x) : base('app','Views',$x)  ;
 
             $this->cache = $x;
 
