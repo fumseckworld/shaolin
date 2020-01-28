@@ -31,6 +31,12 @@ namespace Eywa\Application {
         private Env $env;
 
         /**
+         * @var string
+         */
+        protected static string $layout = 'layout.php';
+
+        protected static string $directory = '';
+        /**
          *
          * @inheritDoc
          *
@@ -101,9 +107,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function view(string $view, string $title, string $description, array $args = [], string $layout = 'layout.php'): Response
+        public function view(string $view, string $title, string $description, array $args = []): Response
         {
-            return new Response((new View($view,$title,$description,$args,$layout))->render());
+            return (new Response((new View($view,$title,$description,$args,static::$layout,static::$directory))->render()))->send();
         }
 
         /**

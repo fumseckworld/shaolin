@@ -12,6 +12,10 @@ use Eywa\Http\Response\Response;
 class HomeController extends Controller
 {
 
+    protected static string $layout = "layout.php" ;
+
+    protected static string $directory = "home";
+
     public function before_action()
     {
 
@@ -31,8 +35,6 @@ class HomeController extends Controller
         $form = $this->form('hello',GET,[],['name'=> 'marc'])->add('name','textarea',['placeholder'=> 'type your name'])->get();
 
         $users = User::all();
-
-
 
        return $this->view('welcome','welcome','welcome',compact('form','users'));
     }

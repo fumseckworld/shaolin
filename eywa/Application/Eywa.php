@@ -239,14 +239,13 @@ namespace Eywa\Application {
          * @param string $title
          * @param string $description
          * @param array $args
-         * @param string $layout
          *
          * @return Response
          *
          * @throws Kedavra
          *
          */
-        public function view(string $view,string $title,string $description,array $args =[],string $layout = 'layout.php'): Response;
+        public function view(string $view,string $title,string $description,array $args =[]): Response;
 
         /**
          *

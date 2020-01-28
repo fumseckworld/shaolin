@@ -6,6 +6,7 @@ namespace Eywa\Http\View {
 
     use Eywa\Cache\Filecache;
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Request\Request;
 
 
     class View extends Filecache
@@ -58,6 +59,10 @@ namespace Eywa\Http\View {
          *
          */
         private string $cache;
+        /**
+         * @var string
+         */
+        private string $directory;
 
         /**
          * View constructor.
@@ -66,17 +71,19 @@ namespace Eywa\Http\View {
          * @param string $description
          * @param array $args
          * @param string $layout
+         * @param string $directory
          *
          * @throws Kedavra
          *
          */
-        public function __construct(string $view, string $title, string $description, array $args = [],string $layout = 'layout.php')
+        public function __construct(string $view, string $title, string $description, array $args = [],string $layout = 'layout.php',string $directory='')
         {
 
-            $this->view = base('app','Views') .DIRECTORY_SEPARATOR . collect(explode('.',$view))->first() .'.php';
+            $x =  collect(explode('.',$view))->first() .'.php';
+            $this->view = def($directory) ? base('app','Views',$directory,$x) : base('app','Views',$x)  ;
 
 
-            $this->cache = collect(explode('.',$view))->first() .'.php';
+            $this->cache = $x;
 
             is_true(not_def($view,$title,$description),true,"You must have defined the view name, the view title and the view desccription");
 
@@ -88,9 +95,11 @@ namespace Eywa\Http\View {
             $this->args = $args;
             $this->layout = base('app','Views',$layout);
 
-            $this->locale  = config('lang','locale');
+            $this->locale  = not_cli() ? Request::generate()->cookie()->get('locale',config('lang','locale')) : config('lang','locale');
 
             i18n($this->locale);
+
+            $this->directory = $directory;
         }
 
         /**
@@ -162,7 +171,7 @@ namespace Eywa\Http\View {
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
                 ->replace('#@flash#','<?=  ioc(\'flash\')->call(\'display\'); ?>',$html,$html)
-                ->replace('#@alert\(([a-zA-Z0-9]+),([\$a-zA-Z0-9\_ ]+)\)#','<div class="alert ${1}">${2}</div>',$html,$html)
+                ->replace('#@alert\(([a-zA-Z0-9\_ ]+),([\$a-zA-Z0-9\_ ]+)\)#','<div class="alert ${1}">${2}</div>',$html,$html)
                 ->replace('#@case\(([0-9]+)\)#','case ${1} :  ?>',$html,$html)
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
                 ->replace('#@default#','<?php default :   ?>',$html,$html)
