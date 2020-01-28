@@ -83,6 +83,8 @@ interface CacheInterface
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
     public function clear(): bool;
 }

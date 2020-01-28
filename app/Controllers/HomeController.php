@@ -5,6 +5,7 @@ namespace App\Controllers;
 
 
 use App\Models\User;
+use Eywa\Cache\RedisCache;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
 use Eywa\Http\Response\Response;
