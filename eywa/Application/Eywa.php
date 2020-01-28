@@ -7,7 +7,7 @@ namespace Eywa\Application {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
-    use Eywa\Cache\Filecache;
+    use Eywa\Cache\CacheInterface;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
@@ -313,10 +313,14 @@ namespace Eywa\Application {
          *
          * Get an instance of file cache
          *
-         * @return Filecache
+         * @param int $type
+         *
+         * @return CacheInterface
+         *
+         * @throws Kedavra
          *
          */
-        public function cache(): Filecache;
+        public function cache(int $type = FILE_CACHE): CacheInterface;
 
         /**
          *

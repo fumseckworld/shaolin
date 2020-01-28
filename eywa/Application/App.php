@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace Eywa\Application {
 
     use Eywa\Application\Environment\Env;
+    use Eywa\Cache\ApcuCache;
+    use Eywa\Cache\CacheInterface;
     use Eywa\Cache\Filecache;
+    use Eywa\Cache\MemcacheCache;
+    use Eywa\Cache\RedisCache;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
@@ -235,9 +239,27 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function cache(): Filecache
+        public function cache(int $type = FILE_CACHE): CacheInterface
         {
-            return new Filecache();
+            switch ($type)
+            {
+                case APCU_CACHE:
+                    return  new ApcuCache();
+                break;
+                case FILE_CACHE:
+                    return  new Filecache();
+                break;
+                case MEMCACHE_CACHE:
+                    return  new MemcacheCache();
+                break;
+                case REDIS_CACHE:
+                    return  new RedisCache();
+                break;
+                default:
+                    throw new Kedavra('The apdater is not supported');
+                break;
+            }
+
         }
 
         /**
