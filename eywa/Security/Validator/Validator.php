@@ -11,7 +11,7 @@ namespace Eywa\Security\Validator {
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
-    use Eywa\Session\Flash;
+    use Eywa\Message\Flash\Flash;
 
     class Validator
     {
@@ -289,10 +289,13 @@ namespace Eywa\Security\Validator {
 
             append($msg, '</ul>');
 
-            (new Flash())->set(FAILURE,$msg);
+            if(not_cli())
+            {
+                (new Flash())->set(FAILURE,$msg);
 
-            return (new RedirectResponse(Request::generate()->server()->get('HTTP_REFERER','/')))->send();
-
+                return (new RedirectResponse(Request::generate()->server()->get('HTTP_REFERER','/')))->send();
+            }
+            return (new RedirectResponse('/'))->send();
         }
 
         /**

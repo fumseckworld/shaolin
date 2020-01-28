@@ -149,8 +149,8 @@ namespace Eywa\Http\View {
 
 
             $this
-                ->replace('#{{ ([\$a-zA-Z-0-9]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
-                ->replace('#{{ ([\$a-zA-Z-0-9]+).([\$a-zA-Z0-9]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
+                ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
+                ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#','<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>',$html,$html)
                 ->replace('#@if\(([\$a-zA-Z0-9]+)\)#','<?php if($${1}) :?>',$html,$html)
@@ -162,11 +162,12 @@ namespace Eywa\Http\View {
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
                 ->replace('#@flash#','<?=  ioc(\'flash\')->call(\'display\'); ?>',$html,$html)
+                ->replace('#@alert\(([a-zA-Z0-9]+),([\$a-zA-Z0-9\_ ]+)\)#','<div class="alert ${1}">${2}</div>',$html,$html)
                 ->replace('#@case\(([0-9]+)\)#','case ${1} :  ?>',$html,$html)
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
                 ->replace('#@default#','<?php default :   ?>',$html,$html)
-                ->replace('#@logged#','<?php if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->connected()) :?>',$html,$html)
-                ->replace('#@guest#','<?php if(!(new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->connected()) :?>',$html,$html)
+                ->replace('#@logged#','<?php if(logged()) :?>',$html,$html)
+                ->replace('#@guest#','<?php if(guest()) :?>',$html,$html)
                 ->replace('#@endlogged#','<?php endif;?>',$html,$html)
                 ->replace('#@endguest#','<?php endif;?>',$html,$html)
                 ->replace('#@unless\(([\$a-zA-Z0-9]+)\)#','<?php if(is_false($${1})) :?>',$html,$html)

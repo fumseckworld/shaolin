@@ -6,6 +6,8 @@ namespace Eywa\Http\Request {
 
     use Eywa\Collection\Collect;
     use Eywa\Http\Parameter\Bag;
+    use Eywa\Http\Response\Response;
+    use Eywa\Security\Validator\Validator;
 
 
     class Request
@@ -171,9 +173,9 @@ namespace Eywa\Http\Request {
         }
 
 
+
         private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, $content)
         {
-
             $this->query = new Bag($query);
             $this->request = new Bag($request);
             $this->attribute = collect($attributes)->for([$this,'secure']);

@@ -13,8 +13,8 @@ fr:
   required: 'Le champ %s est requis'
   empty: 'Le %s ne peux pas être vide'
   between: 'Le %s doit être compris entre %d et %d'
-  email: 'L\'email' n\'est pas valide'
-  digits: 'L`\argument %s n\'est pas un nombre'
-  alpha: 'L`\argument %s n\'est pas un alpha'
-  alphanumeric: 'L`\argument %s n\'est pas alphanumeric'
-  boolean: 'The %s argument n'est pas un booleen'
+  email: "L'email n'est pas valide"
+  digits: "Largument %s n'est pas un nombre"
+  alpha: "L'argument %s n'est pas un alpha"
+  alphanumeric: "L'argument %s n'est pas alphanumeric"
+  boolean: "The %s argument n'est pas un booleen"

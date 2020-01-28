@@ -31,19 +31,26 @@ namespace Eywa\Http\Response {
 
         private array $status_text = STATUS;
 
+        /**
+         *
+         * The redirect url
+         *
+         */
+        private string $url;
+
 
         /**
          * Response constructor.
          *
          * @param string $content
+         * @param string $url
          * @param int $status
          * @param array $headers
-         *
          * @throws Kedavra
          */
-        public function __construct(string $content, int $status = 200, array $headers = [])
+        public function __construct(string $content,string $url = '',int $status = 200, array $headers = [])
         {
-            $this->set_content($content)->set_status($status)->set_headers($headers);
+            $this->set_content($content)->set_status($status)->set_headers($headers)->set_url($url);
         }
 
         /**
@@ -80,6 +87,22 @@ namespace Eywa\Http\Response {
         {
             $this->headers = $headers;
             return $this;
+        }
+
+        /**
+         *
+         * Check if the redirect url equal the url
+         *
+         * @param string $url
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function url(string $url):bool
+        {
+            return  equal($url,$this->url);
         }
 
         /**
@@ -205,6 +228,12 @@ namespace Eywa\Http\Response {
         public function redirect(): bool
         {
             return $this->status >= 300 && $this->status < 400;
+        }
+
+        private function set_url(string $url)
+        {
+            $this->url = def($url) ? $url : '';
+            return $this;
         }
 
 

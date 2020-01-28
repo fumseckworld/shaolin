@@ -28,6 +28,18 @@ namespace Eywa\Http\Parameter {
 
         /**
          *
+         * Get all results
+         *
+         * @return array
+         *
+         */
+        public function all(): array
+        {
+            return $this->data->all();
+        }
+
+        /**
+         *
          * Get a value by a key
          *
          * @param string $key

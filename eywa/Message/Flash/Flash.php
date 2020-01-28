@@ -17,8 +17,10 @@ namespace Eywa\Message\Flash {
          */
         public function display(): string
         {
-            if (php_sapi_name() !== 'cli')
-            {
+            if (cli())
+                return  '';
+
+
                 $success_class = config('flash','success_class');
 
                 $failure_class = config('flash','failure_class');
@@ -36,13 +38,8 @@ namespace Eywa\Message\Flash {
                     {
                         return $success ? '<div class="'.$success_class.'" role="alert">'.$message.'</div>':'<div class="'.$failure_class.'" role="alert">'.$message.'</div>';
                     }
-
-
                 }
-                return $result;
-            }
-            return  '';
-
+            return  $result;
         }
     }
 }

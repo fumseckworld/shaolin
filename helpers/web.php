@@ -278,6 +278,35 @@ if (!function_exists('root'))
 
 }
 
+if (!function_exists('cli'))
+{
+    /**
+     *
+     * Check if the code is executed in cli
+     *
+     * @return bool
+     *
+     */
+    function cli():bool
+    {
+        return  php_sapi_name() === 'cli';
+    }
+}
+
+if (!function_exists('not_cli'))
+{
+    /**
+     *
+     * Check if the code is executed in cli
+     *
+     * @return bool
+     *
+     */
+    function not_cli():bool
+    {
+        return ! cli();
+    }
+}
 if (!function_exists('route'))
 {
 

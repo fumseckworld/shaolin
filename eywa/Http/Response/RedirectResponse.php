@@ -32,7 +32,7 @@ namespace Eywa\Http\Response {
          */
         public function __construct(string $url, int $status = 301)
         {
-            $this->response = new Response((new View('redirect','redirect','redirect',compact('url')))->render(),$status,['Location' => $url]);
+            $this->response = new Response((new View('redirect','redirect','redirect',compact('url')))->render(),$url,$status,['Location' => $url]);
         }
 
 

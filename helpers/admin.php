@@ -904,6 +904,29 @@ if( ! function_exists('bcrypt'))
         return (new Hash($value))->generate();
     }
 }
+if( ! function_exists('logged'))
+{
+    /**
+     * @return bool
+     */
+    function logged(): bool
+    {
+        return  cli() ? false: (new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->connected();
+    }
+
+}
+
+if( ! function_exists('guest'))
+{
+    /**
+     * @return string
+     */
+    function guest(): string
+    {
+        return  ! logged();
+    }
+
+}
 if( ! function_exists('check'))
 {
     /**

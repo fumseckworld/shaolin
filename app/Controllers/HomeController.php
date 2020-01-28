@@ -43,6 +43,10 @@ class HomeController extends Controller
      * @throws Kedavra
      *
      */
+    public function success(): Response
+    {
+        return  $this->view('a','a','a');
+    }
     public function not_found(): Response
     {
        return $this->view('a','cache','cache');

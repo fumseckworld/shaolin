@@ -8,10 +8,11 @@ namespace Eywa\Testing {
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
+    use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Routing\Router;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Crypt\Crypter;
-    use GuzzleHttp\Psr7\ServerRequest;
+    use Eywa\Security\Validator\Validator;
     use PHPUnit\Framework\TestCase;
 
     class Unit extends TestCase
@@ -25,12 +26,29 @@ namespace Eywa\Testing {
          *
          * @return Router
          *
+         * @throws Kedavra
+         *
          */
         public function visit(string $url,string  $method = GET): Router
         {
-            return new Router(new ServerRequest($method,$url));
+            return new Router(new ServerRequest($url,$method));
         }
 
+        /**
+         *
+         * Get a validator instance
+         *
+         * @param array $array
+         *
+         * @return Validator
+         *
+         * @throws Kedavra
+         *
+         */
+        public function validate(array $array): Validator
+        {
+            return new Validator($this->collect($array));
+        }
         /**
          * @param string $filename
          * @param string $mode

@@ -217,8 +217,9 @@ namespace Eywa\Application {
          */
         public function to(string $route, string $message = '', bool $success = true): Response
         {
-            if (def($message))
+            if (not_cli() && def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+
 
             return (new RedirectResponse(route('web',$route)))->send();
         }
