@@ -171,7 +171,7 @@ namespace Eywa\Http\View {
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
                 ->replace('#@flash#','<?=  ioc(\'flash\')->call(\'display\'); ?>',$html,$html)
-                ->replace('#@alert\(([a-zA-Z0-9\_ ]+),([\$a-zA-Z0-9\_ ]+)\)#','<div class="alert ${1}">${2}</div>',$html,$html)
+                ->replace('#@alert\(([a-zA-Z0-9\_\- ]+),([\$a-zA-Z0-9\_ ]+)\)#','<div class="alert ${1}">${2}</div>',$html,$html)
                 ->replace('#@case\(([0-9]+)\)#','case ${1} :  ?>',$html,$html)
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
                 ->replace('#@default#','<?php default :   ?>',$html,$html)

@@ -24,6 +24,6 @@
     @unless(connected)
         you must be logged
     @else
-        @alert(success,you are logged successfully)
+        @alert(success mt-5 mb-5,you are logged successfully)
         you are logged
     @endunless

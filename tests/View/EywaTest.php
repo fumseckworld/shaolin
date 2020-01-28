@@ -46,6 +46,7 @@ class EywaTest extends TestCase
             $this->assertStringContainsString('mailto:',$this->logged->content());
             $this->assertStringContainsString('login',$this->logged->content());
             $this->assertStringContainsString('you are logged',$this->logged->content());
+            $this->assertStringContainsString('<div class="alert success mt-5 mb-5">you are logged successfully</div>',$this->logged->content());
             $this->assertStringContainsString('<div class="alert danger">you must be logged</div>',$this->logged->content());
             $this->assertStringContainsString('<h1>A la une</h1>',$this->logged->content());
 
