@@ -148,15 +148,6 @@ namespace Eywa\Http\View {
 
             $html = ltrim(ob_get_clean());
 
-            $flash = '{{ flash }}';
-
-
-            if (def(strstr($html,$flash)))
-            {
-                $html = str_replace($flash,"<?= ioc('flash')->call('display'); ?>",$html);
-            }
-
-
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
