@@ -5,6 +5,7 @@ namespace Eywa\Console {
 
 
     use Exception;
+    use Eywa\Console\Cache\ClearCache;
     use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateModel;
     use Eywa\Console\Generate\GenerateRouteBase;
@@ -64,7 +65,8 @@ namespace Eywa\Console {
         {
 
            $commands = [
-                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel()
+               new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),
+               new ClearCache()
 
            ];
 
