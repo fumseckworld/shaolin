@@ -12,3 +12,19 @@
         @endfor
     </div>
 </div>
+
+@unless(connected)
+    Please login
+@else
+    you are logged
+@endunless
+
+@guest
+    welcome
+@endguest
+
+@logged
+    connected
+@else
+    connection
+@endlogged
