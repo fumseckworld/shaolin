@@ -16,6 +16,7 @@ class HomeController extends Controller
 
     protected static string $directory = "home";
 
+
     public function before_action()
     {
 

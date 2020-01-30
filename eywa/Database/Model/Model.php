@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Eywa\Database\Model {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
@@ -88,8 +90,9 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function columns() : array
         {
@@ -107,8 +110,9 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function between(int $begin, int $end, string $column = '') : Sql
         {
@@ -123,8 +127,9 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function all() : array
         {
@@ -139,8 +144,9 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function create(array ...$records): bool
         {
@@ -181,7 +187,9 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public static function remove(int ...$ids): bool
         {
@@ -210,8 +218,9 @@ namespace Eywa\Database\Model {
          *
          * @return string
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function primary() : string
         {
@@ -226,8 +235,9 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function get($expected) : array
         {
@@ -245,8 +255,9 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function by(string $column, $expected) : array
         {
@@ -261,7 +272,9 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public static function only(string ...$columns) : Sql
         {
@@ -276,8 +289,9 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function search(string $x): array
         {
@@ -291,8 +305,9 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function save() : bool
         {
@@ -324,8 +339,9 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function refresh(int $id): bool
         {
@@ -353,8 +369,9 @@ namespace Eywa\Database\Model {
          * @param string $name
          * @param $value
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function __set(string $name, $value)
         {
@@ -380,8 +397,9 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function update(int $id,array $values): bool
         {
@@ -414,8 +432,9 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function paginate($callable, int $current_page) : Sql
         {
@@ -430,8 +449,9 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function destroy(int $id) : bool
         {
@@ -444,8 +464,9 @@ namespace Eywa\Database\Model {
          *
          * @return int
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function sum() : int
         {
@@ -462,8 +483,9 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function where(string $column, string $condition, $expected) : Sql
         {
@@ -478,8 +500,9 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function find(int $id): array
         {
@@ -496,8 +519,9 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function different($expected, string $column = '') : Sql
         {
@@ -510,8 +534,9 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public static function sql(): Sql
         {
@@ -525,7 +550,8 @@ namespace Eywa\Database\Model {
          * @return Connexion
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public static function connection(): Connexion
         {

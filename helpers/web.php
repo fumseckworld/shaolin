@@ -124,10 +124,12 @@ if (!function_exists('env'))
      * @param $variable
      *
      * @return array|false|string
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function env($variable)
     {
-        return(new Env())->get($variable);
+        return app()->env($variable);
     }
 
 }

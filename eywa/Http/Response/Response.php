@@ -29,6 +29,11 @@ namespace Eywa\Http\Response {
          */
         private array $headers = [];
 
+        /**
+         *
+         * The status text and codes
+         *
+         */
         private array $status_text = STATUS;
 
         /**
@@ -46,7 +51,9 @@ namespace Eywa\Http\Response {
          * @param string $url
          * @param int $status
          * @param array $headers
+         *
          * @throws Kedavra
+         *
          */
         public function __construct(string $content,string $url = '',int $status = 200, array $headers = [])
         {
@@ -86,6 +93,7 @@ namespace Eywa\Http\Response {
         public function set_headers(array $headers): Response
         {
             $this->headers = $headers;
+
             return $this;
         }
 
@@ -100,7 +108,7 @@ namespace Eywa\Http\Response {
          * @throws Kedavra
          *
          */
-        public function url(string $url):bool
+        public function url(string $url): bool
         {
             return  equal($url,$this->url);
         }
@@ -140,7 +148,7 @@ namespace Eywa\Http\Response {
          */
         public function send_content()
         {
-            if (php_sapi_name() !== 'cli')
+            if (not_cli())
                 echo $this->content();
 
             return $this;
@@ -230,7 +238,16 @@ namespace Eywa\Http\Response {
             return $this->status >= 300 && $this->status < 400;
         }
 
-        private function set_url(string $url)
+        /**
+         *
+         * Set the redirect url
+         *
+         * @param string $url
+         *
+         * @return Response
+         *
+         */
+        private function set_url(string $url): Response
         {
             $this->url = def($url) ? $url : '';
             return $this;

@@ -35,11 +35,19 @@ namespace Eywa\Application {
         private Env $env;
 
         /**
-         * @var string
+         *
+         * The layout name for all views in the controller
+         *
          */
         protected static string $layout = 'layout.php';
 
+        /**
+         *
+         * The directory for all views inside the controller
+         *
+         */
         protected static string $directory = '';
+
         /**
          *
          * @inheritDoc
@@ -227,7 +235,7 @@ namespace Eywa\Application {
          */
         public function to(string $route, string $message = '', bool $success = true): Response
         {
-            if (not_cli() && def($message))
+            if (def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
 
@@ -289,7 +297,8 @@ namespace Eywa\Application {
          */
         public function flash(string $key, string $message): void
         {
-            (new Flash())->set($key,$message);
+            if(not_cli())
+                (new Flash())->set($key,$message);
         }
 
         /**
@@ -309,22 +318,25 @@ namespace Eywa\Application {
          */
         public function check_form(): bool
         {
-            $session = $this->session();
-            if ($session->has(CSRF_TOKEN))
+            if (not_cli())
             {
-                return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+                $session = $this->session();
+                if ($session->has(CSRF_TOKEN))
+                {
+                    return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+                }
             }
             throw new Kedavra('Csrf token was not found');
         }
-
         /**
+
          *
          * @inheritDoc
          *
          */
         public function session(): Session
         {
-            return  new Session();
+            return new Session();
         }
 
         /**

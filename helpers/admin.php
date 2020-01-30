@@ -10,6 +10,7 @@ use Eywa\Exception\Kedavra;
 use Eywa\File\File;
 use Eywa\Http\Request\Request;
 use Eywa\Ioc\Container;
+use Eywa\Security\Authentication\Auth;
 use Eywa\Security\Crypt\Crypter;
 use Eywa\Security\Hashing\Hash;
 use Eywa\Session\Session;
@@ -200,7 +201,8 @@ if( ! function_exists('db'))
      *
      * @return mixed
      *
-     *
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function db(string $key)
     {
@@ -310,10 +312,10 @@ if( ! function_exists('instance'))
 {
     /**
      *
-     * @throws Kedavra
-     *
      * @return Connect
-     *
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
      */
     function instance() : Connect
     {
@@ -900,7 +902,6 @@ if( ! function_exists('bcrypt'))
      */
     function bcrypt(string $value) : string
     {
-
         return (new Hash($value))->generate();
     }
 }
@@ -911,7 +912,7 @@ if( ! function_exists('logged'))
      */
     function logged(): bool
     {
-        return  cli() ? false: (new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->connected();
+        return  cli() ? false: (new Auth(new Session()))->connected();
     }
 
 }
@@ -944,7 +945,6 @@ if( ! function_exists('check'))
      */
     function check(string $plain_text_password, string $hash_value) : bool
     {
-
         return (new Hash($plain_text_password))->valid($hash_value);
     }
 }
