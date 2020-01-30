@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Eywa\Http\Routing {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
@@ -64,8 +62,6 @@ namespace Eywa\Http\Routing {
          *
          * @return Response
          *
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Kedavra
          *
          */
@@ -121,9 +117,7 @@ namespace Eywa\Http\Routing {
          *
          * @return Response
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         private function not_found(): Response
