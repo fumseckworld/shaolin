@@ -173,7 +173,7 @@ namespace Eywa\Application {
          */
         public function request(): Request
         {
-            return php_sapi_name() == 'cli' ? new Request() :  Request::generate();
+            return cli() ? new Request() :  Request::generate();
         }
 
         /**

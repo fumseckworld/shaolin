@@ -81,7 +81,7 @@ namespace Eywa\Http\View {
 
             $x =  collect(explode('.',$view))->first() .'.php';
 
-            $this->view = def($directory) ? base('app','Views',$directory,$x) : base('app','Views',$x)  ;
+            $this->view = def($directory) ? base('app','Views',$directory,$x) : base('app','Views',$x);
 
             $this->cache = $x;
 
@@ -91,8 +91,11 @@ namespace Eywa\Http\View {
                 touch($this->view);
 
             $this->title = $title;
+
             $this->description = $description;
+
             $this->args = $args;
+
             $this->layout = base('app','Views',$layout);
 
             $this->locale  = not_cli() ? Request::generate()->cookie()->get('locale',config('lang','locale')) : config('lang','locale');
@@ -115,6 +118,7 @@ namespace Eywa\Http\View {
         {
             if ($this->has($this->cache))
             {
+
                 ob_start();
 
                 extract($this->args);
@@ -180,6 +184,8 @@ namespace Eywa\Http\View {
             $this->set($this->cache,$html);
 
             ob_start();
+
+            extract($this->args);
 
             require($this->file($this->cache));
 

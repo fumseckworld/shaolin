@@ -84,7 +84,7 @@ namespace Eywa\Cache {
          */
         public function file(string $key): string
         {
-            return  base($this->directory()) . DIRECTORY_SEPARATOR . $key;
+            return  base($this->directory(),$key);
         }
 
         /**
