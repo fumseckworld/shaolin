@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace Eywa\Http\Routing {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use stdClass;
-
 
     class Router
     {
@@ -63,7 +64,8 @@ namespace Eywa\Http\Routing {
          * @return Response
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function run(): Response
         {
@@ -73,7 +75,8 @@ namespace Eywa\Http\Routing {
                 {
                     $this->route = $route;
 
-                    return $this->result()->call();
+                    return  $this->result()->call();
+
                 }
             }
 

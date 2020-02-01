@@ -6,6 +6,7 @@ namespace Eywa\Cache;
 
 use DI\DependencyException;
 use DI\NotFoundException;
+use Exception;
 use Eywa\Exception\Kedavra;
 
 interface CacheInterface
@@ -73,6 +74,7 @@ interface CacheInterface
      * @return int
      *
      * @throws Kedavra
+     * @throws Exception
      *
      */
     public function ttl(): int;

@@ -3,7 +3,6 @@
 
 namespace Eywa\Cache {
 
-
     use Memcache;
 
     class MemcacheCache implements CacheInterface
