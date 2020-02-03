@@ -1,12 +1,14 @@
 <?php
 	
-	namespace Imperium\Command
+	namespace Eywa\Console\App
 	{
-		
-		use Symfony\Component\Console\Input\InputInterface;
+
+        use Symfony\Component\Console\Command\Command;
+        use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
+
 		
-		class Serve extends \Symfony\Component\Console\Command\Command
+		class Serve extends Command
 		{
 			
 			protected static $defaultName = "app:run";
@@ -14,8 +16,7 @@
 			
 			protected function configure()
 			{
-				
-				$this->setDescription('Run a development server')->setAliases(['serve']);
+				$this->setDescription('Run a development server');
 			}
 		
 			

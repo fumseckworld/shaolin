@@ -5,6 +5,9 @@ namespace Eywa\Console {
 
 
     use Exception;
+    use Eywa\Console\App\Dkim;
+    use Eywa\Console\App\Key;
+    use Eywa\Console\App\Serve;
     use Eywa\Console\Cache\ClearCache;
     use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateModel;
@@ -26,11 +29,7 @@ namespace Eywa\Console {
 
         public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN')
         {
-
-            clear_terminal();
-
             $this->command = new Application($name, $version);
-
         }
 
         /**
@@ -65,7 +64,7 @@ namespace Eywa\Console {
 
            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),
-               new ClearCache()
+               new ClearCache(), new Dkim(), new Serve(),new Key()
 
            ];
 

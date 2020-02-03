@@ -1,10 +1,11 @@
 <?php
 	
-	namespace Imperium\Command
+	namespace Eywa\Console\App
 	{
-		
-		use Imperium\File\File;
-		use Symfony\Component\Console\Command\Command;
+
+
+        use Eywa\File\File;
+        use Symfony\Component\Console\Command\Command;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
 		
