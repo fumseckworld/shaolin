@@ -809,7 +809,7 @@ if( ! function_exists('commands'))
         $commands = collect();
         foreach($data as $c)
         {
-            $command = collect(explode('/', $c))->last();
+            $command = collect(explode(DIRECTORY_SEPARATOR, $c))->last();
             $command = collect(explode('.', $command))->first();
             $command = "$namespace\\$command";
             $commands->set(new $command());

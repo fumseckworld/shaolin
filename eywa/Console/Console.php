@@ -44,7 +44,6 @@ namespace Eywa\Console {
          */
         public function add(array $commands): Console
         {
-
             foreach ($commands as $command)
 
                 $this->command->add($command);
@@ -70,7 +69,7 @@ namespace Eywa\Console {
 
            ];
 
-            $this->add($commands);
+            $this->add($commands)->add(commands());
 
             return $this->command->run();
         }
