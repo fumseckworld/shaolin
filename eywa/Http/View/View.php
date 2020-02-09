@@ -98,7 +98,7 @@ namespace Eywa\Http\View {
 
             $this->layout = base('app','Views',$layout);
 
-            $this->locale  = not_cli() ? Request::generate()->cookie()->get('locale',config('lang','locale')) : config('lang','locale');
+            $this->locale  = not_cli() ? Request::generate()->cookie()->get('locale',config('i18n','locale')) : config('i18n','locale');
 
             i18n($this->locale);
 

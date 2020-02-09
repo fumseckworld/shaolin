@@ -2,5 +2,7 @@ locales:
   - fr_FR
   - en_US
 locale: fr_FR
-domain: messages
+domain:
+  - admin
+  - web
 pot: eywa

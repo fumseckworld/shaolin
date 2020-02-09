@@ -120,7 +120,9 @@ namespace Eywa\Http\Routing {
          *
          * @return Response
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          *
          */
         private function not_found(): Response

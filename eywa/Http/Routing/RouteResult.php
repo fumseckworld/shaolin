@@ -14,7 +14,7 @@ namespace Eywa\Http\Routing {
          * The controller namespace
          *
          */
-        private string $namesapce;
+        private string $namespace;
 
 
         /**
@@ -26,7 +26,7 @@ namespace Eywa\Http\Routing {
 
         /**
          *
-         * The route action
+         * The route action&
          *
          */
         private string $acton;
@@ -51,7 +51,7 @@ namespace Eywa\Http\Routing {
          */
         public function __construct( string $controller, string $action,array $args = [])
         {
-            $this->namesapce = config('app','namespace') . '\Controllers';
+            $this->namespace = config('app','namespace') . '\Controllers';
             $this->controller = $controller;
             $this->acton = $action;
             $this->args = $args;
@@ -127,7 +127,7 @@ namespace Eywa\Http\Routing {
          */
          public function namespace(): string
         {
-            return $this->namesapce;
+            return $this->namespace;
         }
 
         /**

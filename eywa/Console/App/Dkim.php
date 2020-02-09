@@ -27,7 +27,7 @@
 				
 				shell_exec('openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM');
 				
-				return File::exist('dkim.private.key', 'dkim.public.key');
+				return File::exist('dkim.private.key', 'dkim.public.key') ? 0 : 1 ;
 			}
 			
 		}

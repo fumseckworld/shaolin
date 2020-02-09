@@ -43,7 +43,7 @@ class RouterTest extends TestCase
      */
     public function test_post()
     {
-        $router = (new Router(new ServerRequest('/send','POST')))->run();
+        $router = (new Router(new ServerRequest('/server','POST')))->run();
 
         $this->assertNotEmpty($router->content());
         $this->assertTrue($router->success());
@@ -73,6 +73,21 @@ class RouterTest extends TestCase
         $router = (new Router(new ServerRequest('/hello/marc')))->run();
         $this->assertTrue($router->success());
         $this->assertStringContainsString('bonjour marc',$router->content());
+
+    }
+
+
+    /**
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
+     */
+    public function test()
+    {
+        $this->expectException(Kedavra::class);
+        $this->expectExceptionMessage("The g route was not found in the web base");
+
+        route('web','g');
 
     }
 }

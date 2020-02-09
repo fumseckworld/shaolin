@@ -49,7 +49,7 @@ namespace Eywa\Ioc {
                 $c->set('db.dump',base('db') .DIRECTORY_SEPARATOR .'dump' );
                 $c->set("views.path",base('app'). DIRECTORY_SEPARATOR . 'views') ;
                 $c->set("flash",new Flash()) ;
-                $c->set('faker',faker(config('lang','locale'))) ;
+                $c->set('faker',faker(config('i18n','locale'))) ;
                 $c->set('table',new Table($c->get(Connect::class))) ;
                 self::$ioc = $c;
 

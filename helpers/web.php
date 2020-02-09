@@ -324,11 +324,13 @@ if (!function_exists('route'))
      *
      * @return string
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     function route(string $db,string $route,array $args =[]): string
     {
+        $x = '';
         switch ($db)
         {
             case 'admin':
@@ -349,7 +351,8 @@ if (!function_exists('route'))
             break;
         }
 
-
+        if (not_def($x))
+            throw new Kedavra("The $route route was not found in the $db base");
 
         $url = $x->url;
         if (def($args))

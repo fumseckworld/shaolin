@@ -87,7 +87,8 @@ if( ! function_exists('base'))
     function base(string ...$dirs) : string
     {
 
-        $base = str_replace(DIRECTORY_SEPARATOR.'web','',realpath('./')) ;
+        $base = realpath('./') ;
+
 
         if (def($dirs))
         {
@@ -113,12 +114,16 @@ if (!function_exists('i18n'))
      */
     function i18n(string $locale)
     {
-        $domain = config('lang','domain');
+        $domains = config('i18n','domain');
 
-        putenv("LC_ALL=$locale");
-        setlocale(LC_ALL, $locale);
-        bindtextdomain($domain,base('po'));
-        textdomain($domain);
+        putenv("LC_COLLATE=$locale");
+        setlocale(LC_COLLATE, $locale);
+
+        foreach ($domains as $domain)
+        {
+            bindtextdomain($domain,base('po'));
+            textdomain($domain);
+        }
     }
 }
 if( ! function_exists('message'))

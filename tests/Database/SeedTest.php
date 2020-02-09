@@ -18,7 +18,8 @@ class SeedTest extends TestCase
 
     public function tearDown(): void
     {
-        shell_exec('mysql -ueywa -peywa eywa < sql\mysql\users.sql');
+        $file = base('sql','mysql','users.sql');
+        shell_exec("mysql -ueywa -peywa eywa < $file");
     }
 
     /**

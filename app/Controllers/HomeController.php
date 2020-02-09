@@ -5,6 +5,8 @@ namespace App\Controllers;
 
 
 use App\Models\User;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
 use Eywa\Http\Response\Response;
@@ -30,6 +32,8 @@ class HomeController extends Controller
     /**
      * @return Response
      * @throws Kedavra
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function home(): Response
     {
@@ -47,6 +51,17 @@ class HomeController extends Controller
      *
      */
     public function success(): Response
+    {
+        return  $this->view('a','a','a');
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws Kedavra
+     *
+     */
+    public function show_server(): Response
     {
         return  $this->view('a','a','a');
     }
