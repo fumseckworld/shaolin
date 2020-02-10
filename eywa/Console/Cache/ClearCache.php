@@ -5,7 +5,8 @@ namespace Eywa\Console\Cache {
 
 
     use Eywa\Cache\ApcuCache;
-    use Eywa\Cache\Filecache;
+
+    use Eywa\Cache\FileCache;
     use Eywa\Cache\MemcacheCache;
     use Eywa\Cache\RedisCache;
     use Eywa\Exception\Kedavra;
@@ -30,7 +31,7 @@ namespace Eywa\Console\Cache {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            if ((new Filecache())->clear() && (new ApcuCache())->clear() && (new RedisCache())->clear() && (new MemcacheCache())->clear())
+            if ((new FileCache())->clear() && (new ApcuCache())->clear() && (new RedisCache())->clear() && (new MemcacheCache())->clear())
             {
                 $output->writeln("<info>Cache has been reset successfully</info>");
 
