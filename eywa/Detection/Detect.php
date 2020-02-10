@@ -3,6 +3,7 @@
 
 namespace Eywa\Detection {
 
+    use Mobile_Detect;
     use Sinergi\BrowserDetector\Browser;
     use Sinergi\BrowserDetector\Device;
     use Sinergi\BrowserDetector\Os;
@@ -31,7 +32,7 @@ namespace Eywa\Detection {
          */
         public function mobile(): bool
         {
-            return (new Os())->isMobile();
+            return (new Mobile_Detect())->isMobile();
         }
 
         /**
@@ -43,7 +44,7 @@ namespace Eywa\Detection {
          */
         public function tablet(): bool
         {
-            return $this->ios() || $this->android();
+            return (new Mobile_Detect())->isTablet();
         }
 
 
@@ -56,7 +57,7 @@ namespace Eywa\Detection {
          */
         public function desktop(): bool
         {
-            return $this->device() === Device::UNKNOWN && $this->mobile() === false;
+            return ! $this->mobile() && ! $this->tablet();
         }
 
         /**

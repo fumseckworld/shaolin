@@ -114,10 +114,17 @@ if (!function_exists('i18n'))
      */
     function i18n(string $locale)
     {
-        $domain = 'message';
+        $domain = 'messages';
 
-        putenv("LC_COLLATE=$locale");
-        setlocale(LC_COLLATE, $locale);
+        if (defined('LC_MESSAGES'))
+        {
+            putenv("LC_COLLATE={$locale}");
+            setlocale(LC_COLLATE, $locale);
+        } else {
+            putenv("LC_ALL={$locale}"); // windows
+            setlocale(LC_ALL, $locale);
+        }
+
         bindtextdomain($domain,base('po'));
         textdomain($domain);
   }

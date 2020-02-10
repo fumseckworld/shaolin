@@ -1,4 +1,4 @@
-<h1>welcome</h1>
+<h1>@trans(welcome)</h1>
 
 @print(form)
 

@@ -48,11 +48,12 @@ namespace Eywa\Application {
          * Get an environment value
          *
          * @param string $key
+         * @param string $default
          *
          * @return mixed
          *
          */
-        public function env(string $key);
+        public function env(string $key,$default = '');
 
         /**
          *

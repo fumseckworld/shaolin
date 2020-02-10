@@ -69,9 +69,11 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function env(string $key)
+        public function env(string $key,$default ='')
         {
-            return $this->env->get($key);
+            $x =  $this->env->get($key);
+
+            return def($x) ? $x : $default;
         }
 
         /**
@@ -356,6 +358,20 @@ namespace Eywa\Application {
         public function detect(): Detect
         {
             return new Detect();
+        }
+
+        /**
+         *
+         * Get the lang
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function lang(): string
+        {
+            return $this->request()->cookie()->get('locale',collect(explode('_',config('i18n','locale')))->first());
         }
     }
 }

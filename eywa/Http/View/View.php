@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Eywa\Http\View {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Cache\FileCache;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Request\Request;
 
 
     class View extends FileCache
@@ -75,7 +76,8 @@ namespace Eywa\Http\View {
          * @param string $directory
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function __construct(string $view, string $title, string $description, array $args = [],string $layout = 'layout.php',string $directory='')
         {
@@ -99,7 +101,7 @@ namespace Eywa\Http\View {
 
             $this->layout = base('app','Views',$layout);
 
-            $this->locale  = not_cli() ? Request::generate()->cookie()->get('locale',config('i18n','locale')) : config('i18n','locale');
+            $this->locale  = not_cli() ? app()->lang() : config('i18n','locale');
 
             i18n($this->locale);
 
@@ -158,6 +160,8 @@ namespace Eywa\Http\View {
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#','<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>',$html,$html)
+                ->replace('#@trans\(([a-zA-Z0-9 ]+)\)#','<?=  _("${1}");?>',$html,$html)
+                ->replace('#@trans\(([\$a-zA-Z0-9 ]+)\)#','<?=  _(${1});?>',$html,$html)
                 ->replace('#@if\(([\$a-zA-Z0-9]+)\)#','<?php if($${1}) :?>',$html,$html)
                 ->replace('#@elseif\(([\$a-zA-Z0-9]+)\)#','<?php elseif ($${1}) :?>',$html,$html)
                 ->replace('#@else#','<?php else :?>',$html,$html)

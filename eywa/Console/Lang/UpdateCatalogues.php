@@ -32,7 +32,7 @@ namespace Eywa\Console\Lang {
             {
                 $files = collect(glob(base('app','views') .DIRECTORY_SEPARATOR.'*.php'))->merge(glob(base('app','views').DIRECTORY_SEPARATOR. '*'.DIRECTORY_SEPARATOR.'*.php'))->join(' ');
                 $app_name = env('APP_NAME');
-                $po = base('po',$locale,'LC_MESSAGES') .DIRECTORY_SEPARATOR . config('i18n','domain').'.po';
+                $po = base('po',$locale,'LC_MESSAGES') .DIRECTORY_SEPARATOR . 'messages.po';
                 $pot = base('po') . DIRECTORY_SEPARATOR . $app_name. '.pot';
                 system("xgettext --language=PHP --add-comments --sort-output -o $pot  --sort-output  $po $pot $files");
                 system("msgmerge --update $po $pot");

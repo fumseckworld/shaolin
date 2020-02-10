@@ -4,14 +4,13 @@
 use Carbon\Carbon;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Eywa\Application\Environment\Env;
 use Eywa\Collection\Collect;
 use Eywa\Exception\Kedavra;
 use Eywa\Html\Pagination\Pagination;
 use Eywa\Http\Routing\Admin;
 use Eywa\Http\Routing\Task;
 use Eywa\Http\Routing\Web;
-use Eywa\Session\Flash;
+use Eywa\Message\Flash\Flash;
 use Symfony\Component\Console\Output\OutputInterface;
 
 if (!function_exists('collect'))
@@ -123,13 +122,16 @@ if (!function_exists('env'))
      *
      * @param $variable
      *
+     * @param string $default
      * @return array|false|string
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws Exception
      */
-    function env($variable)
+    function env($variable,$default = '')
     {
-        return app()->env($variable);
+        $x =  app()->env($variable);
+        return  def($x) ? $x : $default;
     }
 
 }
@@ -590,16 +592,14 @@ if (!function_exists('flash'))
      *
      * Display flash message
      *
-     * @param string ...$keys
-     *
      * @return string
      *
      * @throws Kedavra
      *
      */
-    function flash(string ...$keys):string
+    function flash():string
     {
-        return (new Flash())->display($keys);
+        return (new Flash())->display();
     }
 
 }
@@ -613,12 +613,13 @@ if (!function_exists('is_mobile'))
      * @method is_mobile
      *
      * @return bool
-     *
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function is_mobile(): bool
     {
 
-        return (new Os())->isMobile();
+        return app()->detect()->mobile();
     }
 }
 
@@ -636,67 +637,6 @@ if (!function_exists('is_pair'))
      */
     function is_pair(int $x): bool
     {
-
         return $x % 2 === 0;
-    }
-}
-if (!function_exists('css'))
-{
-    /**
-     *
-     * Generate a css link
-     *
-     * @param string $filename
-     *
-     * @return string
-     * @throws NotFoundException
-     * @throws DependencyException
-     */
-    function css(string $filename): string
-    {
-
-        return app()->assets($filename)->css();
-    }
-}
-
-if (!function_exists('img'))
-{
-    /**
-     *
-     * Generate a image link
-     *
-     * @param string $filename
-     * @param string $alt
-     *
-     * @return string
-     * @throws NotFoundException
-     * @throws DependencyException
-     */
-    function img(string $filename, string $alt): string
-    {
-
-        return app()->assets($filename)->img($alt);
-    }
-}
-
-if (!function_exists('js'))
-{
-    /**
-     *
-     * Generate a js link
-     *
-     * @param string $filename
-     *
-     * @param string $type
-     *
-     * @return string
-     * @throws NotFoundException
-     * @throws DependencyException
-     */
-    function js(string $filename, string $type = ''): string
-    {
-
-        return app()->assets($filename)->js($type);
-
     }
 }
