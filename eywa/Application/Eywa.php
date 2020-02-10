@@ -9,6 +9,7 @@ namespace Eywa\Application {
     use Exception;
     use Eywa\Cache\CacheInterface;
     use Eywa\Database\Query\Sql;
+    use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
@@ -233,6 +234,15 @@ namespace Eywa\Application {
 
         /**
          *
+         * Get an instance of detection
+         *
+         * @return Detect
+         *
+         */
+        public function detect(): Detect;
+
+        /**
+         *
          * Render a view
          *
          * @param string $view
@@ -305,6 +315,7 @@ namespace Eywa\Application {
          * @return Response
          *
          * @throws Kedavra
+         * @throws Exception
          *
          */
         public function to(string $route,string $message ='',bool $success = true): Response;

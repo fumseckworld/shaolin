@@ -437,7 +437,7 @@ if (!function_exists('detect_method'))
 {
     /**
      *
-     * Detect a route method
+     * Detection a route method
      *
      * @param string $db
      * @param string $route

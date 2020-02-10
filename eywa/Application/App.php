@@ -12,6 +12,7 @@ namespace Eywa\Application {
     use Eywa\Cache\RedisCache;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
+    use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
@@ -347,6 +348,14 @@ namespace Eywa\Application {
         public function validator(array $data, string $lang = 'en'): Validator
         {
             return new Validator(collect($data),$lang);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function detect(): Detect
+        {
+            return new Detect();
         }
     }
 }

@@ -29,7 +29,8 @@
     "ext-pdo": "*",
     "ext-openssl": "*",
     "ext-json": "*",
-    "ext-memcache": "*"
+    "ext-memcache": "*",
+    "sinergi/browser-detector": "^6.1"
   },
   "authors": [
     {
