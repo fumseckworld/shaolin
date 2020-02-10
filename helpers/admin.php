@@ -30,7 +30,7 @@ if( ! function_exists('csrf_field'))
      * @return string
      *
      * @throws Exception
-     * 
+     *
      */
     function csrf_field() : string
     {
@@ -111,21 +111,16 @@ if (!function_exists('i18n'))
      *
      * @param string $locale
      *
-     * @throws Kedavra
      */
     function i18n(string $locale)
     {
-        $domains = config('i18n','domain');
+        $domain = 'message';
 
         putenv("LC_COLLATE=$locale");
         setlocale(LC_COLLATE, $locale);
-
-        foreach ($domains as $domain)
-        {
-            bindtextdomain($domain,base('po'));
-            textdomain($domain);
-        }
-    }
+        bindtextdomain($domain,base('po'));
+        textdomain($domain);
+  }
 }
 if( ! function_exists('message'))
 {

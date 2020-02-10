@@ -20,7 +20,7 @@ namespace Eywa\Console\Lang {
         }
         public function execute(InputInterface $input, OutputInterface $output)
         {
-           collect(config('lang','locales'))->for([$this,'generate'])->ok();
+           collect(config('i18n','locales'))->for([$this,'generate'])->ok();
            return 0;
         }
 
@@ -32,7 +32,7 @@ namespace Eywa\Console\Lang {
             if (!is_dir("po/$locale"))
             {
                 $files = collect(glob(base('app','views') .DIRECTORY_SEPARATOR.'*.php'))->merge(glob(base('app','views').DIRECTORY_SEPARATOR. '*'.DIRECTORY_SEPARATOR.'*.php'))->join(' ');
-                $domain = config('lang','domain');
+                $domain = config('i18n','domain');
                 $app_name = env('APP_NAME');
                 $app_version = env('APP_VERSION');
                 $translator_email = env('TRANSLATOR_EMAIL');

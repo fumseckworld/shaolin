@@ -21,7 +21,7 @@ namespace Eywa\Console\Lang {
         }
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            collect(config('lang','locales'))->for([$this,'update'])->ok();
+            collect(config('i18n','locales'))->for([$this,'update'])->ok();
             return 0;
 
         }
@@ -32,7 +32,7 @@ namespace Eywa\Console\Lang {
             {
                 $files = collect(glob(base('app','views') .DIRECTORY_SEPARATOR.'*.php'))->merge(glob(base('app','views').DIRECTORY_SEPARATOR. '*'.DIRECTORY_SEPARATOR.'*.php'))->join(' ');
                 $app_name = env('APP_NAME');
-                $po = base('po',$locale,'LC_MESSAGES') .DIRECTORY_SEPARATOR . $locale.'.po';
+                $po = base('po',$locale,'LC_MESSAGES') .DIRECTORY_SEPARATOR . config('i18n','domain').'.po';
                 $pot = base('po') . DIRECTORY_SEPARATOR . $app_name. '.pot';
                 system("xgettext --language=PHP --add-comments --sort-output -o $pot  --sort-output  $po $pot $files");
                 system("msgmerge --update $po $pot");
