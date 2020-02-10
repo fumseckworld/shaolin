@@ -105,12 +105,10 @@ namespace Eywa\Http\Response {
          *
          * @return bool
          *
-         * @throws Kedavra
-         *
          */
-        public function url(string $url): bool
+        public function to(string $url): bool
         {
-            return  equal($url,$this->url);
+            return  $this->url === $url;
         }
 
         /**

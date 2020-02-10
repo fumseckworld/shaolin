@@ -157,7 +157,7 @@ class ValidatorTest extends Unit
                 return app()->to('success');
             })  ;
 
-        $this->assertTrue($response->url('/success'));
+        $this->assertTrue($response->to('/success'));
     }
 
     /**
@@ -171,7 +171,7 @@ class ValidatorTest extends Unit
                 return app()->to('success');
             })  ;
 
-        $this->assertTrue($response->url('/'));
+        $this->assertTrue($response->to('/'));
     }
 
 

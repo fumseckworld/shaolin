@@ -5,6 +5,8 @@ namespace Testing\Http;
 
 
 use App\Models\User;
+use DI\DependencyException;
+use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Response\Response;
 use Eywa\Http\View\View;
@@ -22,12 +24,15 @@ class ReponseTest extends TestCase
 
     /**
      * @throws Kedavra
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function setUp(): void
     {
         $view = (new View('welcome','welcome', 'welcome',['connected'=> true,'users' => User::all()]))->render();
         $this->response = new Response($view);
     }
+
 
     public function test_resonse_ok()
     {
@@ -43,6 +48,9 @@ class ReponseTest extends TestCase
         $this->assertFalse($this->response->redirect());
     }
 
+    /**
+     * @throws Kedavra
+     */
     public function test()
     {
         $this->assertFalse($this->response->set_status(404)->success());
