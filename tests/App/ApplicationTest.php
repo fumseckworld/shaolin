@@ -18,6 +18,7 @@ class ApplicationTest extends Unit
         $this->assertInstanceOf(Response::class,app()->view('a','a','a'));
         $this->assertInstanceOf(Sql::class,app()->sql('users'));
         $this->assertInstanceOf(Request::class,app()->request());
+        $this->assertEquals([],app()->request()->query()->all());
         $this->assertNull(app()->get('a'));
         $this->assertNull(app()->post('a'));
         $this->assertNull(app()->cookie('a'));
@@ -25,4 +26,6 @@ class ApplicationTest extends Unit
         $this->assertNull(app()->file('a'));
         $this->assertNull(app()->file('a'));
     }
+
+
 }
