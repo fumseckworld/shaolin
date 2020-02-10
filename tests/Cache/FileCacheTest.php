@@ -6,7 +6,6 @@ namespace Testing\Cache;
 
 use Eywa\Cache\Filecache;
 use Eywa\Testing\Unit;
-use http\Env\Response;
 
 class FileCacheTest extends Unit
 {

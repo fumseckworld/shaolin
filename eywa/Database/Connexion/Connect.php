@@ -367,5 +367,15 @@ namespace Eywa\Database\Connexion {
 
             return  $this;
         }
+
+        /**
+         * @inheritDoc
+         */
+        public function query(string $query)
+        {
+            $x = $this->connexion->query($query);
+
+            return $x->fetch(PDO::FETCH_COLUMN);
+        }
     }
 }

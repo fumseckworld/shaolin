@@ -8,7 +8,7 @@ namespace App\Models
 	Class User extends Model
 	{
 
-		protected static string $table = 'users';
+		protected static string $table = 'auth';
 
 		protected static string $by = 'id';
 

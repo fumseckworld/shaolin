@@ -4,12 +4,14 @@
 	{
 
         use App\Models\User;
+        use DI\DependencyException;
+        use DI\NotFoundException;
         use Eywa\Collection\Collect;
         use Eywa\Exception\Kedavra;
         use Eywa\Http\Request\Request;
         use Eywa\Http\Response\RedirectResponse;
         use Eywa\Http\Response\Response;
-        use Eywa\Session\Flash;
+        use Eywa\Message\Flash\Flash;
         use Eywa\Session\SessionInterface;
 
 
@@ -84,7 +86,6 @@
              */
 			public function logout() : Response
 			{
-				
 				$this->clean_session();
 				
 				return $this->to('/', $this->messages()->get('bye'));
@@ -95,9 +96,9 @@
              * Get the current user values
              *
              * @return array
-             *
              * @throws Kedavra
-             *
+             * @throws DependencyException
+             * @throws NotFoundException
              */
 			public function current(): array
 			{
@@ -115,20 +116,6 @@
 			{
 				return $this->session->has(self::CONNECTED) && $this->session->has(self::ID) && $this->session->has(self::USERNAME) && $this->session->get(self::CONNECTED) === true;
 			}
-			
-			/**
-			 *
-			 * Count users found
-			 *
-			 * @throws Kedavra
-			 *
-			 * @return int
-			 *
-			 */
-			public function count() : int
-			{
-				return User::sum();
-			}
 
             /**
              *
@@ -138,8 +125,9 @@
              *
              * @return array
              *
+             * @throws DependencyException
              * @throws Kedavra
-             *
+             * @throws NotFoundException
              */
 			public function find(string $expected): array
 			{
@@ -151,25 +139,26 @@
              * Connect an user on success
              *
              * @param string $password
-             * @param          $user_value
-             *
+             * @param $expected
              * @return Response
              *
+             * @throws DependencyException
              * @throws Kedavra
-             *
+             * @throws NotFoundException
              */
-			public function login(string $password, $user_value) : Response
+			public function login(string $password, $expected) : Response
 			{
 				
 				$request = Request::generate();
-				$user = $this->find($user_value);
+				$user = $this->find($expected);
 				$password_column = $this->columns()->get('password');
 
 				if(def($user))
 				{
-					if(check($password, $user->$password_column))
+
+					if(check($password, $user[0]->$password_column))
 					{
-						$this->session->set(self::USERNAME, $request->request()->get($this->column(),'id'))->set(self::CONNECTED, true)->set(self::ID, $user['id']);
+						$this->session->set(self::USERNAME, $request->request()->get($this->column(),'id'))->set(self::CONNECTED, true)->set(self::ID, $user[0]->id);
 						
 						return $this->redirect();
 					}
@@ -242,8 +231,9 @@
              *
              * @return Response
              *
+             * @throws DependencyException
              * @throws Kedavra
-             *
+             * @throws NotFoundException
              */
 			public function remove_account(): Response
 			{

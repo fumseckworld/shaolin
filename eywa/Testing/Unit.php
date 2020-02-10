@@ -11,8 +11,10 @@ namespace Eywa\Testing {
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Routing\Router;
     use Eywa\Message\Email\Write;
+    use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Security\Validator\Validator;
+    use Eywa\Session\ArraySession;
     use PHPUnit\Framework\TestCase;
 
     class Unit extends TestCase
@@ -91,6 +93,18 @@ namespace Eywa\Testing {
         public function collect(array $data = []): Collect
         {
             return new Collect($data);
+        }
+
+        /**
+         *
+         * Get an instance of auth
+         *
+         * @return Auth
+         *
+         */
+        public function auth(): Auth
+        {
+            return new Auth(new ArraySession());
         }
 
         /**

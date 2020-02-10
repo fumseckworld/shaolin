@@ -5,9 +5,6 @@ namespace Testing\Database {
 
     use Eywa\Application\App;
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Exception\Kedavra;
-    use Eywa\File\File;
-
     use PDO;
     use PDOException;
     use PHPUnit\Framework\TestCase;

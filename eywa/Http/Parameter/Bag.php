@@ -79,6 +79,8 @@ namespace Eywa\Http\Parameter {
          */
         public function secure($x): string
         {
+            if (!is_string($x))
+              return  '';
             return htmlentities($x,ENT_QUOTES,'UTF-8');
         }
 

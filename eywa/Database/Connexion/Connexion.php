@@ -39,6 +39,16 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
+         *
+         * @param string $query
+         *
+         * @return mixed
+         *
+         */
+        public function query(string $query);
+
+        /**
+         *
          * Add arguments
          *
          * @param mixed ...$args

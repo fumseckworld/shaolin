@@ -51,7 +51,7 @@ class SeedTest extends TestCase
 
         $this->assertEquals(100,$x->limit());
         $this->assertTrue($x->seed());
-        $this->assertEquals(200,User::sum());
+        $this->assertEquals(200,connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
 
     }
 }

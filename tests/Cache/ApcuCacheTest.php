@@ -5,9 +5,7 @@ namespace Testing\Cache;
 
 
 use Eywa\Cache\ApcuCache;
-use Eywa\Cache\Filecache;
 use Eywa\Testing\Unit;
-use http\Env\Response;
 
 class ApcuCacheTest extends Unit
 {
