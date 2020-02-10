@@ -73,14 +73,10 @@ namespace Eywa\Testing {
          * @return Write
          *
          * @throws Kedavra
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
         {
-            return app()->write($subject,$message,$author_email,$to);
+            return new Write($subject,$message,$author_email,$to);
         }
 
         /**

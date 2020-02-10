@@ -128,6 +128,15 @@ if (!function_exists('i18n'))
         if (app()->detect()->linux())
         {
 
+
+            putenv("LANG={$locale}");
+
+            bindtextdomain('messages', base('po'));
+
+            bind_textdomain_codeset('messages', 'UTF-8');
+
+            textdomain('messages');
+
         }
     }
 }

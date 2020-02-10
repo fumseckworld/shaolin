@@ -4,6 +4,8 @@
 namespace Eywa\Security\Validator {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Egulias\EmailValidator\EmailValidator;
     use Egulias\EmailValidator\Validation\RFCValidation;
     use Eywa\Collection\Collect;
@@ -263,8 +265,9 @@ namespace Eywa\Security\Validator {
          *
          * @return Response
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function do($callable): Response
         {
@@ -278,7 +281,8 @@ namespace Eywa\Security\Validator {
          * @return Response
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function display(): Response
         {

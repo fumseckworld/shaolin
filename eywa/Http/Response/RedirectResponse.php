@@ -6,6 +6,8 @@ declare(strict_types=1);
 namespace Eywa\Http\Response {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\View\View;
 
@@ -28,7 +30,8 @@ namespace Eywa\Http\Response {
          * @param int $status
          *
          * @throws Kedavra
-         *
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function __construct(string $url, int $status = 301)
         {
