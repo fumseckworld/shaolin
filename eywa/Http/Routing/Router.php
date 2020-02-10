@@ -11,6 +11,8 @@ namespace Eywa\Http\Routing {
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
+    use Eywa\Session\Session;
+    use Eywa\Time\Timing;
     use stdClass;
 
     class Router
@@ -44,15 +46,20 @@ namespace Eywa\Http\Routing {
          */
         private ?stdClass $route = null;
 
+
         /**
          *
          * Router constructor.
          *
          * @param ServerRequest $request
          *
+         * @throws Kedavra
+         *
          */
         public function __construct(ServerRequest $request)
         {
+
+            cli() ? new Timing() : (new Session())->set('time',new Timing());
             $this->url = $request->url();
             $this->method = $request->method();
         }

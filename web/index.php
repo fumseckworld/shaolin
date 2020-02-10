@@ -2,4 +2,6 @@
 
 	require '../vendor/autoload.php';
 
-	app()->run();
+	$response = app()->run();
+
+    echo  $response->time();

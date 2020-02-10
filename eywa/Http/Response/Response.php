@@ -5,6 +5,8 @@ namespace Eywa\Http\Response {
 
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Session\Session;
+
 
     class Response
     {
@@ -51,9 +53,7 @@ namespace Eywa\Http\Response {
          * @param string $url
          * @param int $status
          * @param array $headers
-         *
          * @throws Kedavra
-         *
          */
         public function __construct(string $content,string $url = '',int $status = 200, array $headers = [])
         {
@@ -79,6 +79,21 @@ namespace Eywa\Http\Response {
             $this->status = $status;
 
             return $this;
+        }
+
+
+        /**
+         *
+         * Display the request time
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        public function time(): string
+        {
+            return '<div class="'.config('alert','container').'"><div class="'.config('alert','success_class').'">'. intval((new Session())->get('time')->check()). ' ms</div></div>';
         }
 
         /**
@@ -250,6 +265,8 @@ namespace Eywa\Http\Response {
             $this->url = def($url) ? $url : '';
             return $this;
         }
+
+
 
 
     }

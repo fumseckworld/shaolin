@@ -6,6 +6,7 @@ namespace Eywa\Http\Routing {
 
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Response\Response;
 
     class RouteResult
     {
@@ -48,8 +49,9 @@ namespace Eywa\Http\Routing {
          * @param array $args
          *
          * @throws Kedavra
+         *
          */
-        public function __construct( string $controller, string $action,array $args = [])
+        public function __construct( string $controller, string $action,array $args)
         {
             $this->namespace = config('app','namespace') . '\Controllers';
             $this->controller = $controller;
@@ -78,10 +80,10 @@ namespace Eywa\Http\Routing {
         }
 
         /**
-         * @return mixed
+         * @return Response
          * @throws Kedavra
          */
-        public function call()
+        public function call(): Response
         {
 
             $class = $this->class();

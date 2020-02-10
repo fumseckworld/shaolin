@@ -28,6 +28,7 @@ namespace Eywa\Application {
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Security\Validator\Validator;
     use Eywa\Session\Session;
+    use Eywa\Time\Timing;
     use Redis;
 
     class App extends Zen implements Eywa
