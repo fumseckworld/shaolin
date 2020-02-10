@@ -36,6 +36,31 @@ namespace Eywa\Detection {
 
         /**
          *
+         * CHeck if the os is a tablet
+         *
+         * @return bool
+         *
+         */
+        public function tablet(): bool
+        {
+            return $this->ios() || $this->android();
+        }
+
+
+        /**
+         *
+         * CHeck if the os is a desktop
+         *
+         * @return bool
+         *
+         */
+        public function desktop(): bool
+        {
+            return $this->device() === Device::UNKNOWN && $this->mobile() === false;
+        }
+
+        /**
+         *
          * Check if the os is linux
          *
          * @return bool
@@ -585,6 +610,7 @@ namespace Eywa\Detection {
         {
             return $this->device() === Device::IPHONE;
         }
+
         /**
          *
          * Check if the device is Windows Phone
