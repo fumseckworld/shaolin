@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace Eywa\Http\View {
 
-    use Eywa\Cache\Filecache;
+
+    use Eywa\Cache\FileCache;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
 
 
-    class View extends Filecache
+    class View extends FileCache
     {
         /**
          *

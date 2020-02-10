@@ -3,7 +3,6 @@ composer.lock
 vendor
 .phpunit.result.cache
 .env
-web
 coverage
 *.key
 *sqlite3*

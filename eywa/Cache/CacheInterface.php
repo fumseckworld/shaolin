@@ -63,6 +63,7 @@ interface CacheInterface
      * @return bool
      *
      * @throws Kedavra
+     * @throws Exception
      *
      */
     public function has(string $key): bool;

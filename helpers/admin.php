@@ -87,7 +87,8 @@ if( ! function_exists('base'))
     function base(string ...$dirs) : string
     {
 
-        $base = realpath('./') ;
+
+        $base = cli() ? realpath('./')  : dirname(realpath('./'));
 
 
         if (def($dirs))

@@ -4,10 +4,12 @@
 namespace Eywa\Cache {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
 
-    class Filecache implements CacheInterface
+    class FileCache implements CacheInterface
     {
 
         /**
@@ -57,6 +59,8 @@ namespace Eywa\Cache {
          * @return int
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         public function ttl(): int
         {
