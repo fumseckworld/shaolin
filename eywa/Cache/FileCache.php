@@ -1,8 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Cache {
-
 
     use DI\DependencyException;
     use DI\NotFoundException;
@@ -30,7 +30,6 @@ namespace Eywa\Cache {
          */
         public function set(string $key, $value): CacheInterface
         {
-
             (new File($this->file($key),EMPTY_AND_WRITE_FILE_MODE))->write($value)->flush();
 
             return $this;

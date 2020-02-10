@@ -15,32 +15,32 @@ namespace Testing\Ioc {
 
         public function test_has()
         {
-            $this->assertTrue(Container::ioc(Connect::class)->has());
-            $this->assertTrue(Container::ioc(Router::class)->has());
+            $this->assertTrue(Container::ioc()->has(Connect::class));
+            $this->assertTrue(Container::ioc()->has(Router::class));
         }
 
         public function test_get()
         {
-            $this->assertInstanceOf(Connect::class,Container::ioc(Connect::class)->get());
+            $this->assertInstanceOf(Connect::class,Container::ioc()->get(Connect::class));
         }
 
         public function test_make()
         {
-            $this->assertInstanceOf(View::class,Container::ioc(View::class)->make(['view' => 'a','title'=>'a','description'=>'a']));
+            $this->assertInstanceOf(View::class,Container::ioc()->make(View::class,['view' => 'a','title'=>'a','description'=>'a']));
         }
         public function test_set()
         {
-            $this->assertInstanceOf(View::class,Container::ioc(View::class)->set(new View('a','a','description'))->get());
+            $this->assertInstanceOf(View::class,Container::ioc()->set(View::class,new View('a','a','description'))->get(View::class));
         }
 
         public function test_debug()
         {
-            $this->assertNotEmpty(Container::ioc(Connect::class)->debug());
+            $this->assertNotEmpty(Container::ioc()->debug(Connect::class));
         }
 
         public function test_call()
         {
-            $this->assertEquals(3306,Container::ioc(Connect::class)->call('port'));
+            $this->assertEquals(3306,Container::ioc()->call(Connect::class,'port'));
         }
     }
 }

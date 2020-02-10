@@ -1,13 +1,12 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Http\Request {
 
 
     use Eywa\Collection\Collect;
     use Eywa\Http\Parameter\Bag;
-    use Eywa\Http\Response\Response;
-    use Eywa\Security\Validator\Validator;
 
 
     class Request

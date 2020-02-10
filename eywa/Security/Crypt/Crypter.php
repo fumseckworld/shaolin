@@ -1,11 +1,8 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Eywa\Security\Crypt {
 
-
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Eywa\Exception\Kedavra;
 
@@ -28,10 +25,8 @@ namespace Eywa\Security\Crypt {
         /**
          * Create a new encrypter instance.
          *
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Kedavra
-         *
+         * @throws Exception
          */
         public function __construct()
         {
@@ -84,7 +79,10 @@ namespace Eywa\Security\Crypt {
 
             $json = json_encode(compact('iv', 'value', 'mac'));
 
-            different(json_last_error(), JSON_ERROR_NONE, true, 'Could not encrypt the data.');
+            if(json_last_error() !== JSON_ERROR_NONE)
+            {
+                throw new Kedavra('Could not encrypt the data.');
+            }
 
             return base64_encode($json);
         }

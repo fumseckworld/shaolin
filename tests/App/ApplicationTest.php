@@ -14,7 +14,7 @@ class ApplicationTest extends Unit
 {
     public function test_ioc()
     {
-        $this->assertInstanceOf(Connect::class,app()->ioc(Connect::class)->get());
+        $this->assertInstanceOf(Connect::class,app()->ioc(Connect::class));
         $this->assertInstanceOf(Response::class,app()->view('a','a','a'));
         $this->assertInstanceOf(Sql::class,app()->sql('users'));
         $this->assertInstanceOf(Request::class,app()->request());

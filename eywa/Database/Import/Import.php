@@ -7,7 +7,7 @@ namespace Eywa\Database\Import {
 
 
     use Eywa\Console\Shell;
-    use Eywa\Database\Connection\Connect;
+    use Eywa\Database\Connexion\Connexion;
     use Eywa\Exception\Kedavra;
 
     class Import
@@ -18,7 +18,7 @@ namespace Eywa\Database\Import {
          * The connection to the base
          *
          */
-        private Connect $connect;
+        private Connexion $connect;
         /**
          * @var array|string[]
          */
@@ -26,10 +26,10 @@ namespace Eywa\Database\Import {
 
         /**
          * Import constructor.
-         * @param Connect $connect
+         * @param Connexion $connect
          * @param string ...$files
          */
-        public function __construct(Connect $connect,string ...$files)
+        public function __construct(Connexion $connect,string ...$files)
         {
             $this->connect = $connect;
             $this->files = $files;
@@ -49,8 +49,8 @@ namespace Eywa\Database\Import {
         {
 
             $password = $this->connect->password();
-            $username = $this->connect->user();
-            $host = $this->connect->host();
+            $username = $this->connect->username();
+            $host = $this->connect->hostname();
             $base = $this->connect->base();
             $result = collect();
             $x =[];
@@ -60,7 +60,6 @@ namespace Eywa\Database\Import {
                 switch($this->connect->driver())
                 {
                     case MYSQL:
-
 
                         return (new Shell("mysqldump -u $username -p $base > sql/tmp.sql"))->run();
                     break;

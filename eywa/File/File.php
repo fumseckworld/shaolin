@@ -1,12 +1,11 @@
 <?php
-
+declare(strict_types=1);
 namespace Eywa\File {
 
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Parsedown;
     use SplFileObject;
-    use Symfony\Component\HttpFoundation\Response;
 
     /**
      *
@@ -253,7 +252,9 @@ namespace Eywa\File {
          */
         public function char(): string
         {
-            return $this->instance()->fgetc();
+            $x= $this->instance()->fgetc();
+
+            return  $x !== false ? $x :'';
         }
 
         /**
@@ -360,7 +361,7 @@ namespace Eywa\File {
         {
             if ($this->writable()) 
             {
-                is_true(equal($this->instance()->fwrite($text, sum($text)), 0, true, "Fail to write data"));
+                is_true($this->instance()->fwrite($text, sum($text)) === 0, true, "Fail to write data");
             }
 
             return $this;
@@ -559,7 +560,7 @@ namespace Eywa\File {
          * @return string
          *
          */
-        public function base_name(string $suffix = null): string
+        public function base_name(string $suffix = ''): string
         {
             return $this->instance()->getBasename($suffix);
         }
@@ -782,7 +783,8 @@ namespace Eywa\File {
         public function change_values(array $keys, array $values, string $delimiter = ':'): bool
         {
 
-            different(sum($keys), sum($values), true, 'The keys and values size are different');
+            if (sum($keys) !==  sum($values))
+                throw new Kedavra('The keys and values size are different');
             $keys = collect($keys);
             $values = collect($values);
             foreach ($keys->all() as $k => $v)

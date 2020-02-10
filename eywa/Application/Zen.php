@@ -1,13 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Application {
-
-
-    use DI\ContainerBuilder;
-    use DI\DependencyException;
-    use DI\NotFoundException;
-    use Exception;
 
     class Zen
     {

@@ -29,7 +29,7 @@ namespace Eywa\Action {
          */
         public static function generate(): bool
         {
-            return static::connection()->execute(static::$create_todo);
+            return static::connection()->set(static::$create_todo)->execute();
         }
     }
 }

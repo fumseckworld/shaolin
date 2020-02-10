@@ -13,23 +13,24 @@ namespace Eywa\Ioc {
     use Eywa\Application\Environment\Env;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Table\Table;
+    use Eywa\Exception\Kedavra;
     use Eywa\Message\Flash\Flash;
 
     class Container
     {
 
-        private static string $key;
-
         private static ?\DI\Container  $ioc = null;
 
         /**
-         * @param string $key
          * @return Container
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
          * @throws Exception
          */
-        public static function ioc(string $key): Container
+        public static function ioc(): Container
         {
-            self::$key = $key;
+
 
             if (is_null(static::$ioc))
             {
@@ -46,8 +47,8 @@ namespace Eywa\Ioc {
                 $c->set('db.host',$env->get('DB_HOST'));
                 $c->set('db.port',intval($env->get('DB_PORT')));
                 $c->set('db.options',[]);
-                $c->set('db.dump',base('db') .DIRECTORY_SEPARATOR .'dump' );
-                $c->set("views.path",base('app'). DIRECTORY_SEPARATOR . 'views') ;
+                $c->set('db.dump',base('db','dump'));
+                $c->set("views.path",base('app','Views')) ;
                 $c->set("flash",new Flash()) ;
                 $c->set('faker',faker(config('i18n','locale'))) ;
                 $c->set('table',new Table($c->get(Connect::class))) ;
@@ -58,19 +59,19 @@ namespace Eywa\Ioc {
         }
 
 
-
         /**
          *
          * Get the value
          *
+         * @param string $key
          * @return mixed
          *
          * @throws DependencyException
          * @throws NotFoundException
          */
-        public function get()
+        public function get(string $key)
         {
-            return self::container()->get(self::$key);
+            return self::container()->get($key);
         }
 
 
@@ -78,25 +79,26 @@ namespace Eywa\Ioc {
          *
          * Check if key is define
          *
+         * @param string $key
          * @return bool
          */
-        public function has(): bool
+        public function has(string $key): bool
         {
-            return self::container()->has(self::$key);
+            return self::container()->has($key);
         }
 
         /**
          *
          * Set a new value
          *
+         * @param string $key
          * @param $value
          *
          * @return Container
-         *
          */
-        public function set($value): Container
+        public function set(string $key,$value): Container
         {
-            self::container()->set(self::$key,$value);
+            self::container()->set($key,$value);
 
             return $this;
         }
@@ -105,45 +107,47 @@ namespace Eywa\Ioc {
          *
          * Call the callback
          *
+         * @param string $key
          * @param string $method
          * @param array $args
          *
          * @return mixed
          */
-        public function call(string $method,array $args =[])
+        public function call(string $key,string $method,array $args =[])
         {
-            return self::container()->call([self::$key,$method],$args);
+            return self::container()->call([$key,$method],$args);
         }
 
         /**
          *
          * Debug an entry
          *
+         * @param string $key
          * @return string
          *
-         * @throws NotFoundException
          * @throws InvalidDefinition
+         * @throws NotFoundException
          */
-        public function debug()
+        public function debug(string $key)
         {
-            return self::container()->debugEntry(self::$key);
+            return self::container()->debugEntry($key);
         }
 
         /**
          *
          * Build an entry of the container by its name
          *
+         * @param string $key
          * @param array $args
          *
          * @return mixed
          *
          * @throws DependencyException
          * @throws NotFoundException
-         *
          */
-        public function make(array $args = [])
+        public function make(string $key,array $args = [])
         {
-            return self::container()->make(self::$key,$args);
+            return self::container()->make($key,$args);
         }
 
         /**

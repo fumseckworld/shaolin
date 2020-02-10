@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Application\App;
@@ -34,7 +36,7 @@ if( ! function_exists('csrf_field'))
      */
     function csrf_field() : string
     {
-        if (php_sapi_name() == 'cli')
+        if (cli())
         {
             return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
         }
@@ -65,10 +67,13 @@ if (!function_exists('form_invalid'))
      */
     function form_invalid(): bool
     {
-        $session = new Eywa\Session\Session();
-        if ($session->has(CSRF_TOKEN))
+        if (not_cli())
         {
-            return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('@',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+            $session = new Eywa\Session\Session();
+            if ($session->has(CSRF_TOKEN))
+            {
+                return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('@',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+            }
         }
         throw new Kedavra('Csrf token was not found');
     }
@@ -86,10 +91,7 @@ if( ! function_exists('base'))
      */
     function base(string ...$dirs) : string
     {
-
-
         $base = cli() ? realpath('./')  : dirname(realpath('./'));
-
 
         if (def($dirs))
         {
@@ -110,15 +112,12 @@ if (!function_exists('i18n'))
     /**
      *
      * @param string $locale
-     * @throws DependencyException
-     * @throws NotFoundException
+     *
+     * @throws Exception
+     *
      */
     function i18n(string $locale)
     {
-        $domain = 'messages';
-
-        textdomain($domain);
-        bindtextdomain($domain,base('po'));
 
         if (app()->detect()->windows())
         {
@@ -167,14 +166,12 @@ if( ! function_exists('app'))
      *
      * @return App
      *
-     * @throws DependencyException
-     * @throws NotFoundException
      * @throws Exception
      *
      */
     function app(): App
     {
-        return ioc(App::class)->get();
+        return ioc(App::class);
     }
 }
 
@@ -183,14 +180,14 @@ if (!function_exists('ioc'))
     /**
      * @param string $key
      *
-     * @return Container
+     * @return mixed
      *
      * @throws Exception
      *
      */
-    function ioc(string $key): Container
+    function ioc(string $key)
     {
-        return Container::ioc($key);
+        return Container::ioc()->get($key);
     }
 }
 
@@ -279,12 +276,12 @@ if( ! function_exists('update_file_values'))
      *
      * Update a value in a file
      *
-     * @param  string    $filename
-     * @param  string    $delimiter
-     * @param  string[]  ...$values
+     * @param string $filename
+     * @param string $delimiter
+     * @param string ...$values
      *
-     * @throws Kedavra
      * @return bool
+     * @throws Kedavra
      */
     function update_file_values(string $filename, string $delimiter, string ...$values) : bool
     {
@@ -398,8 +395,8 @@ if( ! function_exists('equal'))
      *
      * @method equal
      *
-     * @param  mixed   $parameter
-     * @param  mixed   $expected
+     * @param  string  $parameter
+     * @param  string  $expected
      * @param  bool    $run_exception
      * @param  string  $message
      *
@@ -408,7 +405,7 @@ if( ! function_exists('equal'))
      * @return bool
      *
      */
-    function equal($parameter, $expected, bool $run_exception = false, string $message = '') : bool
+    function equal(string $parameter,string $expected, bool $run_exception = false, string $message = '') : bool
     {
 
         $x = strcmp($parameter, $expected) === 0;
@@ -535,8 +532,8 @@ if( ! function_exists('different'))
      *
      * @method different
      *
-     * @param  mixed   $parameter
-     * @param  mixed   $expected
+     * @param  string  $parameter
+     * @param  string   $expected
      * @param  bool    $run_exception
      * @param  string  $message
      *
@@ -545,7 +542,7 @@ if( ! function_exists('different'))
      * @return bool
      *
      */
-    function different($parameter, $expected, $run_exception = false, string $message = '') : bool
+    function different(string $parameter,string $expected, $run_exception = false, string $message = '') : bool
     {
 
         $x = strcmp($parameter, $expected) !== 0;
@@ -939,9 +936,9 @@ if( ! function_exists('logged'))
 if( ! function_exists('guest'))
 {
     /**
-     * @return string
+     * @return bool
      */
-    function guest(): string
+    function guest(): bool
     {
         return  ! logged();
     }

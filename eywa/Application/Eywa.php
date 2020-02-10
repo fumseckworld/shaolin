@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Application {
 
@@ -14,7 +15,6 @@ namespace Eywa\Application {
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
-    use Eywa\Ioc\Container;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
@@ -29,12 +29,12 @@ namespace Eywa\Application {
         /**
          * @param string $key
          *
-         * @return Container
+         * @return mixed
          *
          * @throws Exception
          *
          */
-        public function ioc(string $key): Container;
+        public function ioc(string $key);
 
         /**
          *
@@ -254,6 +254,8 @@ namespace Eywa\Application {
          * @return Response
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          */
         public function view(string $view,string $title,string $description,array $args =[]): Response;
@@ -301,6 +303,8 @@ namespace Eywa\Application {
          * @return Response
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          */
         public function back(string $message ='',bool $success = true): Response;

@@ -23,7 +23,7 @@ class AuthTest extends Unit
      */
     public function test_success()
     {
-        $this->assertTrue($this->auth()->login('00000000',1)->to('/home'));
+        $this->assertTrue($this->auth()->login('00000000','1')->to('/home'));
         $this->assertFalse($this->auth()->connected());
     }
 
@@ -34,8 +34,8 @@ class AuthTest extends Unit
      */
     public function test_fail()
     {
-        $this->assertTrue($this->auth()->login('00adsza000000',1)->to('/'));
-        $this->assertTrue($this->auth()->login('00adsza000000',20001)->to('/'));
+        $this->assertTrue($this->auth()->login('00adsza000000','1')->to('/'));
+        $this->assertTrue($this->auth()->login('00adsza000000','20001')->to('/'));
     }
 
 

@@ -1,5 +1,5 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Eywa\Database\Seed {
 
@@ -82,8 +82,8 @@ namespace Eywa\Database\Seed {
             $this->from = $from;
             $this->limit = $records;
             $this->connexion = new Connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')));
-            $this->faker = ioc('faker')->get();
-            $this->table = ioc('table')->get();
+            $this->faker = ioc('faker');
+            $this->table = ioc('table');
 
             $this->set = collect();
             $this->table->from($from);
@@ -132,7 +132,7 @@ namespace Eywa\Database\Seed {
          */
         public function each(callable $callback): Seed
         {
-            for ($i=0;different($i,$this->limit());$i++)
+            for ($i=0;$i !== $this->limit();$i++)
             {
 
                 call_user_func_array($callback,[$this->faker,$this->table,$this]);

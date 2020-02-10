@@ -105,6 +105,8 @@ namespace Eywa\Database\Table {
          *
          * @return bool
          *
+         * @throws Kedavra
+         *
          */
         public function exist(string $table): bool
         {
@@ -164,20 +166,20 @@ namespace Eywa\Database\Table {
             switch ($this->connexion->driver())
             {
                 case MYSQL :
-                    $data = $this->connexion->set("RENAME TABLE {$this->table} TO ?")->execute(compact('new_name'));
+                    $data = $this->connexion->set("RENAME TABLE {$this->table} TO ?")->with(compact('new_name'))->execute();
                     assign($data, $this->table, $new_name);
 
                     return $data;
                 break;
                 case POSTGRESQL :
                 case SQLITE :
-                    $data = $this->connexion->set("ALTER TABLE {$this->table} RENAME TO ?")->execute(compact('new_name'));
+                    $data = $this->connexion->set("ALTER TABLE {$this->table} RENAME TO ?")->with(compact('new_name'))->execute();
                     assign($data, $this->table, $new_name);
 
                     return $data;
                 break;
                 case SQL_SERVER :
-                    $data = $this->connexion->set("EXEC sp_rename '{$this->table}', '?'")->execute(compact('new_name'));
+                    $data = $this->connexion->set("EXEC sp_rename '{$this->table}', '?'")->with(compact('new_name'))->execute();
                     assign($data, $this->table, $new_name);
 
                     return $data;
@@ -194,7 +196,7 @@ namespace Eywa\Database\Table {
          *
          * @return array
          *
-         *
+         * @throws Kedavra
          */
         public function show(): array
         {

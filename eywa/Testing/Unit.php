@@ -1,10 +1,8 @@
 <?php
 
-
+declare(strict_types=1);
 namespace Eywa\Testing {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
@@ -105,13 +103,11 @@ namespace Eywa\Testing {
 
         /**
          * @return Crypter
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Kedavra
          */
         public function crypter(): Crypter
         {
-            return app()->crypter();
+            return new Crypter();
         }
     }
 }

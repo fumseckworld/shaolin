@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Http\View {
 
-
-    use DI\DependencyException;
-    use DI\NotFoundException;
+    use Exception;
     use Eywa\Cache\FileCache;
     use Eywa\Exception\Kedavra;
 
@@ -76,8 +74,8 @@ namespace Eywa\Http\View {
          * @param string $directory
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
+         * @throws Exception
+         *
          */
         public function __construct(string $view, string $title, string $description, array $args = [],string $layout = 'layout.php',string $directory='')
         {
@@ -121,7 +119,13 @@ namespace Eywa\Http\View {
         {
             if ($this->has($this->cache))
             {
-                return  file_get_contents($this->file($this->cache));
+                ob_start();
+
+                extract($this->args);
+
+                require($this->file($this->cache));
+
+                return ltrim(ob_get_clean());
             }
 
 
@@ -147,7 +151,6 @@ namespace Eywa\Http\View {
              require($this->layout);
 
             $html = ltrim(ob_get_clean());
-
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
@@ -163,7 +166,7 @@ namespace Eywa\Http\View {
                 ->replace('#@endfor#','<?php endforeach;  ?>',$html,$html)
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
-                ->replace('#@flash#','<?=  ioc(\'flash\')->call(\'display\'); ?>',$html,$html)
+                ->replace('#@flash#','<?=  ioc(\'flash\')->display(); ?>',$html,$html)
                 ->replace('#@alert\(([a-zA-Z0-9\_\- ]+),([\$a-zA-Z0-9\_ ]+)\)#','<div class="alert ${1}">${2}</div>',$html,$html)
                 ->replace('#@case\(([0-9]+)\)#','case ${1} :  ?>',$html,$html)
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
@@ -185,6 +188,7 @@ namespace Eywa\Http\View {
                 ->replace('#@endswitch#','<?php endswitch ;  ?>',$html,$html);
 
 
+
             $this->set($this->cache,$html);
 
             ob_start();
@@ -193,12 +197,7 @@ namespace Eywa\Http\View {
 
             require($this->file($this->cache));
 
-            $result = ltrim(ob_get_clean());
-
-            $this->set($this->cache,$result);
-
-            return $result;
-
+            return  ltrim(ob_get_clean());
         }
 
 

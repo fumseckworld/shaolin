@@ -1,51 +1,52 @@
 <?php
 
+declare(strict_types=1);
+namespace Eywa\Application\Environment {
 
-namespace Eywa\Application\Environment;
 
+    use Dotenv\Dotenv;
+    use Dotenv\Repository\Adapter\EnvConstAdapter;
+    use Dotenv\Repository\Adapter\PutenvAdapter;
+    use Dotenv\Repository\RepositoryBuilder;
 
-use Dotenv\Dotenv;
-use Dotenv\Repository\Adapter\EnvConstAdapter;
-use Dotenv\Repository\Adapter\PutenvAdapter;
-use Dotenv\Repository\RepositoryBuilder;
-
-class Env
-{
-    /**
-     * @var Dotenv
-     */
-    private Dotenv $env;
-
-    public function __construct()
+    class Env
     {
+        /**
+         * @var Dotenv
+         */
+        private Dotenv $env;
 
-        $repository = RepositoryBuilder::create()
-            ->withReaders([
-                new EnvConstAdapter(),
-            ])
-            ->withWriters([
-                new EnvConstAdapter(),
-                new PutenvAdapter(),
-            ])
-            ->immutable()
-            ->make();
+        public function __construct()
+        {
 
-        $this->env =   Dotenv::create($repository, base(),'.env');
-        $this->env->load();
-        $this->env->required(['DB_DRIVER','DB_HOST','DB_PORT','DB_NAME', 'DB_USERNAME', 'DB_PASSWORD','APP_NAME','APP_KEY','CIPHER','APP_MODE','TRANSLATOR_EMAIL']);
-    }
+            $repository = RepositoryBuilder::create()
+                ->withReaders([
+                    new EnvConstAdapter(),
+                ])
+                ->withWriters([
+                    new EnvConstAdapter(),
+                    new PutenvAdapter(),
+                ])
+                ->immutable()
+                ->make();
 
-    /**
-     *
-     * Get an environement variable
-     *
-     * @param $variable
-     *
-     * @return array|false|string
-     *
-     */
-    public function get($variable)
-    {
-        return getenv($variable);
+            $this->env =   Dotenv::create($repository, base(),'.env');
+            $this->env->load();
+            $this->env->required(['DB_DRIVER','DB_HOST','DB_PORT','DB_NAME', 'DB_USERNAME', 'DB_PASSWORD','APP_NAME','APP_KEY','CIPHER','APP_MODE','TRANSLATOR_EMAIL']);
+        }
+
+        /**
+         *
+         * Get an environement variable
+         *
+         * @param $variable
+         *
+         * @return array|false|string
+         *
+         */
+        public function get($variable)
+        {
+            return getenv($variable);
+        }
     }
 }

@@ -56,10 +56,11 @@ namespace Eywa\Application {
          */
         public function __construct()
         {
-            if (server(DISPLAY_BUGS, false))
-                whoops();
 
             $this->env = new Env();
+
+            if ($this->env->get(DISPLAY_BUGS)) { whoops(); }
+
 
         }
 
@@ -69,7 +70,7 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function env(string $key,$default ='')
+        public function env(string $key,$default = '')
         {
             $x =  $this->env->get($key);
 
@@ -92,9 +93,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function ioc(string $key): Container
+        public function ioc(string $key)
         {
-            return Container::ioc($key);
+            return Container::ioc()->get($key);
         }
 
         /**
@@ -227,7 +228,7 @@ namespace Eywa\Application {
             if (def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
-            return (new RedirectResponse($this->request()->server()->get('c')))->send();
+            return (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send();
 
         }
 
@@ -240,7 +241,6 @@ namespace Eywa\Application {
         {
             if (def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
-
 
             return (new RedirectResponse(route('web',$route)))->send();
         }

@@ -1,6 +1,6 @@
     <div class="mt-5">
         <div class="row mb-5">
-            @for users in user
+            @for user in users
                 <div class="col-6 mt-5">
                     <div class="card">
                         <div class="card-body">

@@ -1,10 +1,9 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Cache {
-
-
-    use Eywa\Exception\Kedavra;
+    
     use Redis;
 
     class RedisCache implements CacheInterface
@@ -52,7 +51,7 @@ namespace Eywa\Cache {
          */
         public function has(string $key): bool
         {
-            return $this->redis->exists($key);
+            return $this->redis->exists($key) !== 0;
         }
 
         /**

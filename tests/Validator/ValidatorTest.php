@@ -4,8 +4,9 @@
 namespace Testing\Validator;
 
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
-use Eywa\Security\Validator\Validator;
 use Eywa\Testing\Unit;
 
 /**
@@ -14,20 +15,6 @@ use Eywa\Testing\Unit;
  */
 class ValidatorTest extends Unit
 {
-    /**
-     *
-     * The validator
-     *
-     */
-    private Validator $validator;
-
-    /**
-     * @throws Kedavra
-     */
-    public function setUp(): void
-    {
-        $this->validator = new Validator(collect([]));
-    }
 
     /**
      * @throws Kedavra
@@ -147,7 +134,9 @@ class ValidatorTest extends Unit
     }
 
     /**
+     * @throws DependencyException
      * @throws Kedavra
+     * @throws NotFoundException
      */
     public function test_do()
     {
@@ -162,13 +151,15 @@ class ValidatorTest extends Unit
 
     /**
      * @throws Kedavra
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     public function test_do_error()
     {
         $response =  $this->validate(['email'=>'micieli.laposte.net','username' => 'will','lastname'=> 'micieli','age'=>30])
             ->email('email')->alphanumeric('username','lastname')->between('age',0,100)
             ->do(function (){
-                return app()->to('success');
+                return  app()->to('success');
             })  ;
 
         $this->assertTrue($response->to('/'));

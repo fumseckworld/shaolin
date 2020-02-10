@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 use Carbon\Carbon;
 use DI\DependencyException;
@@ -232,7 +233,7 @@ if (!function_exists('sum'))
         if (is_array($data))
             return count($data);
         elseif (is_string($data))
-            return strlen($data);
+            return mb_strlen($data);
         elseif (is_integer($data) || is_numeric($data) || is_float($data) || is_int($data))
             return intval($data);
         else

@@ -57,7 +57,7 @@ namespace Eywa\Html\Pagination {
         public function __construct(int $current_page, int $limit, int $total)
         {
 
-            $limit = equal($limit, 0) ? 1 : $limit;
+            $limit = $limit ===  0 ? 1 : $limit;
 
             $this->current_page = $current_page;
 

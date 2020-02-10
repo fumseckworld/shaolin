@@ -1,6 +1,7 @@
 <?php
 
 
+declare(strict_types=1);
 
 namespace Eywa\Time {
 
@@ -31,11 +32,11 @@ namespace Eywa\Time {
             $this->end_time = now();
         }
 
-        public function check()
+        public function check():int
         {
             $this->end();
-            d($this->started_time->diffInMilliseconds($this->end_time));
-            d($this->end_time - $this->started_time);
+
+            return $this->started_time->diffInMilliseconds($this->end_time);
         }
     }
 }

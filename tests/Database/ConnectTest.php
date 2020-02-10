@@ -18,7 +18,7 @@ namespace Testing\Database {
 
         public function setUp(): void
         {
-            $this->connect = ioc(Connect::class)->get();
+            $this->connect = ioc(Connect::class);
             $this->app = app();
         }
 
