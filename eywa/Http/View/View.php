@@ -121,14 +121,7 @@ namespace Eywa\Http\View {
         {
             if ($this->has($this->cache))
             {
-
-                ob_start();
-
-                extract($this->args);
-
-                require($this->file($this->cache));
-
-                return  ltrim(ob_get_clean());
+                return  file_get_contents($this->file($this->cache));
             }
 
 
@@ -166,7 +159,7 @@ namespace Eywa\Http\View {
                 ->replace('#@elseif\(([\$a-zA-Z0-9]+)\)#','<?php elseif ($${1}) :?>',$html,$html)
                 ->replace('#@else#','<?php else :?>',$html,$html)
                 ->replace('#@endif#','<?php endif;?>',$html,$html)
-                ->replace('#@for ([\$a-zA-Z-0-9]+) in ([\$a-zA-Z0-9]+)#','<?php foreach($${1} ?? [] as $${2}) : ?>',$html,$html)
+                ->replace('#@for ([a-zA-Z-0-9]+) in ([a-zA-Z0-9]+)#','<?php foreach($${2} ?? [] as $${1}) : ?>',$html,$html)
                 ->replace('#@endfor#','<?php endforeach;  ?>',$html,$html)
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
@@ -200,7 +193,11 @@ namespace Eywa\Http\View {
 
             require($this->file($this->cache));
 
-            return  ltrim(ob_get_clean());
+            $result = ltrim(ob_get_clean());
+
+            $this->set($this->cache,$result);
+
+            return $result;
 
         }
 
