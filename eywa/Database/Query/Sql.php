@@ -197,14 +197,14 @@ namespace Eywa\Database\Query {
          *
          * Get once result
          *
+         * @param int $offset
          * @return array
          *
          * @throws Kedavra
-         *
          */
-        public function once(): array
+        public function once(int $offset = 0): array
         {
-            return $this->take(1)->execute();
+            return $this->take(1,$offset)->execute();
         }
 
         /**
