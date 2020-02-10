@@ -43,6 +43,13 @@ class RedisCacheTest extends TestCase
     }
 
     /**
+     * @throws Kedavra
+     */
+    public function test_ttl()
+    {
+        $this->assertIsInt($this->cache->ttl());
+    }
+    /**
      * @throws DependencyException
      * @throws NotFoundException
      * @throws Kedavra
