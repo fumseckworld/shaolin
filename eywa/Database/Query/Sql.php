@@ -195,6 +195,20 @@ namespace Eywa\Database\Query {
 
         /**
          *
+         * Get once result
+         *
+         * @return array
+         *
+         * @throws Kedavra
+         *
+         */
+        public function once(): array
+        {
+            return $this->take(1)->execute();
+        }
+
+        /**
+         *
          *
          * @return Connexion
          *
