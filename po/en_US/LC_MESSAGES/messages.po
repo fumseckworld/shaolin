@@ -1,0 +1,22 @@
+# English translations for eywa package.
+# Copyright (C) 2020 THE eywa'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the eywa package.
+# Willy Micieli <willy@underworld>, 2020.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: eywa 1.0\n"
+"Report-Msgid-Bugs-To: micieli@laposte.net\n"
+"POT-Creation-Date: 2020-02-10 12:13+0000\n"
+"PO-Revision-Date: 2020-02-10 12:13+0000\n"
+"Last-Translator: Willy Micieli <willy@underworld>\n"
+"Language-Team: English\n"
+"Language: en_US\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ASCII\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: /home/willy/dev/web/eywa/app/Views/home/welcome.php:1
+msgid "welcome"
+msgstr "welcome"

@@ -53,8 +53,7 @@ namespace Eywa\Console\Lang {
                 mkdir("po/$locale");
                 mkdir("po/$locale/LC_MESSAGES");
 
-                system("xgettext --keyword=_ --language=PHP --add-comments --sort-output -o po/$app_name.pot -f $files");
-              //  system("xgettext -k_ -j  -o po/$app_name.pot $files --package-name=$app_name --msgid-bugs-address=$translator_email --package-version=$app_version --language=PHP");
+                system("xgettext --keyword=_ --language=PHP --add-comments --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name --sort-output -o po/$app_name.pot -f $files");
                 system("msginit --locale=$locale -i po/$app_name.pot -o po/$locale/LC_MESSAGES/messages.po");
             }
 

@@ -103,7 +103,7 @@ namespace Eywa\Http\View {
 
             $this->locale  = not_cli() ? app()->lang() : config('i18n','locale');
 
-            i18n($this->locale);
+            i18n(config('i18n','locale'));
 
             $this->directory = $directory;
         }

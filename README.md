@@ -2,6 +2,10 @@
 
 `composer require eywa/eywa`
 
+# Documentation
+
+`composer create-project shaolin/zen zen && cd zen && php shaolin app:run`
+
 * [**Source code**](https://git.fumseck.eu/cgit/eywa)
     * [**Code coverage**](https://eywa.fumseck.eu)
     * [**Bug reports**](mailto:bugzilla@laposte.net)

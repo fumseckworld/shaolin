@@ -110,24 +110,26 @@ if (!function_exists('i18n'))
     /**
      *
      * @param string $locale
-     *
+     * @throws DependencyException
+     * @throws NotFoundException
      */
     function i18n(string $locale)
     {
         $domain = 'messages';
 
-        if (defined('LC_MESSAGES'))
+        textdomain($domain);
+        bindtextdomain($domain,base('po'));
+
+        if (app()->detect()->windows())
         {
-            putenv("LC_COLLATE={$locale}");
-            setlocale(LC_COLLATE, $locale);
-        } else {
-            putenv("LC_ALL={$locale}"); // windows
-            setlocale(LC_ALL, $locale);
+
         }
 
-        bindtextdomain($domain,base('po'));
-        textdomain($domain);
-  }
+        if (app()->detect()->linux())
+        {
+
+        }
+    }
 }
 if( ! function_exists('message'))
 {

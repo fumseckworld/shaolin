@@ -30,11 +30,15 @@ namespace Eywa\Console\Lang {
         {
             if (is_dir("po/$locale"))
             {
-                $files = collect(glob(base('app','views') .DIRECTORY_SEPARATOR.'*.php'))->merge(glob(base('app','views').DIRECTORY_SEPARATOR. '*'.DIRECTORY_SEPARATOR.'*.php'))->join(' ');
-                $app_name = env('APP_NAME');
-                $po = base('po',$locale,'LC_MESSAGES') .DIRECTORY_SEPARATOR . 'messages.po';
-                $pot = base('po') . DIRECTORY_SEPARATOR . $app_name. '.pot';
-                system("xgettext --language=PHP --add-comments --sort-output -o $pot  --sort-output  $po $pot $files");
+                $files = collect(glob(base('app','Views','*.php')))->merge(glob(base('app','Views','*','*.php')))->join(' ');
+
+                $app_name = env('APP_NAME','eywa');
+                $po = base('po',$locale,'LC_MESSAGES','messages.po');
+                $pot = base('po',"$app_name.pot");
+                $app_version = env('APP_VERSION','1.0');
+                $translator_email = env('TRANSLATOR_EMAIL','translator@free.fr');
+
+                system("xgettext --keyword=_ --language=PHP --add-comments  --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name  --sort-output -o $pot $files");
                 system("msgmerge --update $po $pot");
 
 

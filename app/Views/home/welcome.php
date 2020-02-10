@@ -1,4 +1,5 @@
-<h1>@trans(welcome)</h1>
+<h1><?= _('welcome')?></h1>
+
 
 @print(form)
 
