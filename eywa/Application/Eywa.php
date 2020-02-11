@@ -269,6 +269,18 @@ namespace Eywa\Application {
 
         /**
          *
+         * Get a $_FILES value
+         *
+         * @param string $key
+         * @param null $default
+         *
+         * @return mixed
+         *
+         */
+        public function files(string $key,$default = null);
+
+        /**
+         *
          * Retrive a $_SERVER value
          *
          * @param string $key

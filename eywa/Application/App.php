@@ -419,5 +419,13 @@ namespace Eywa\Application {
 
             return (new RedirectResponse(route('web',$route,$route_args),$status))->send();
         }
+
+        /**
+         * @inheritDoc
+         */
+        public function files(string $key, $default = null)
+        {
+            return $this->request()->file()->get($key,$default);
+        }
     }
 }
