@@ -7,6 +7,8 @@ namespace Eywa\Http\View {
     use Exception;
     use Eywa\Cache\FileCache;
     use Eywa\Exception\Kedavra;
+    use Eywa\Security\Authentication\Auth;
+    use Eywa\Session\Session;
 
 
     class View extends FileCache
@@ -150,10 +152,14 @@ namespace Eywa\Http\View {
 
              require($this->layout);
 
+
             $html = ltrim(ob_get_clean());
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
+                ->replace('#@admin#','<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'admin\')) : ?>',$html,$html)
+                ->replace('#@url\(\'([a-zA-Z0-9\-\/]+)\'\)#','<?php  if(equal(\Eywa\Http\Request\ServerRequest::generate()->url(),\'${1}\')) : ?>',$html,$html)
+                ->replace('#@redac#','<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'redac\')) :?>',$html,$html)
                 ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#','<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>',$html,$html)
                 ->replace('#@if\(([\$a-zA-Z0-9]+)\)#','<?php if($${1}) :?>',$html,$html)
@@ -175,6 +181,9 @@ namespace Eywa\Http\View {
                 ->replace('#@desktop#','<?php if(app()->detect()->desktop()) :?>',$html,$html)
                 ->replace('#@guest#','<?php if(guest()) :?>',$html,$html)
                 ->replace('#@endlogged#','<?php endif;?>',$html,$html)
+                ->replace('#@endadmin#','<?php endif;?>',$html,$html)
+                ->replace('#@endurl#','<?php endif;?>',$html,$html)
+                ->replace('#@endredac#','<?php endif;?>',$html,$html)
                 ->replace('#@endguest#','<?php endif;?>',$html,$html)
                 ->replace('#@unless\(([\$a-zA-Z0-9]+)\)#','<?php if(is_false($${1})) :?>',$html,$html)
                 ->replace('#@endunless#','<?php endif;?>',$html,$html)

@@ -1,7 +1,7 @@
 <?php
 
-	require '../vendor/autoload.php';
+    require '../vendor/autoload.php';
 
-	$response = app()->run();
+    $response = app()->run();
 
     echo  $response->time();

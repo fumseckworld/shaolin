@@ -12,6 +12,7 @@
         use Eywa\Http\Response\RedirectResponse;
         use Eywa\Http\Response\Response;
         use Eywa\Message\Flash\Flash;
+        use Eywa\Session\Session;
         use Eywa\Session\SessionInterface;
 
 
@@ -294,6 +295,33 @@
             private function back()
             {
                 return Request::generate()->server()->get('HTTP_REFERER', '/');
+            }
+
+            /**
+             *
+             * Check if the current user has role
+             *
+             * Based on it's id only
+             *
+             * @param string $role
+             *
+             * @return bool
+             *
+             */
+            public function is(string $role): bool
+            {
+                switch ($role)
+                {
+                    case 'admin':
+                       return $this->connected() ? (new Session())->get(self::ID) == 1 : false;
+                    break;
+                    case 'redac':
+                       return $this->connected() ? in_array((new Session())->get(self::ID),[1,2])  : false;
+                    break;
+                    default:
+                        return false;
+                    break;
+                }
             }
         }
 	}
