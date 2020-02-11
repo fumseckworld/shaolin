@@ -156,8 +156,6 @@ namespace Eywa\Http\View {
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#','<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>',$html,$html)
-                ->replace('#@trans\(([a-zA-Z0-9 ]+)\)#','<?=  _("${1}");?>',$html,$html)
-                ->replace('#@trans\(([\$a-zA-Z0-9 ]+)\)#','<?=  _(${1});?>',$html,$html)
                 ->replace('#@if\(([\$a-zA-Z0-9]+)\)#','<?php if($${1}) :?>',$html,$html)
                 ->replace('#@elseif\(([\$a-zA-Z0-9]+)\)#','<?php elseif ($${1}) :?>',$html,$html)
                 ->replace('#@else#','<?php else :?>',$html,$html)
