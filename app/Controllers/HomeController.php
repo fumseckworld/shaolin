@@ -7,10 +7,8 @@ namespace App\Controllers;
 use App\Models\User;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Eywa\Detection\Detect;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
-use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
 
 class HomeController extends Controller
@@ -39,7 +37,7 @@ class HomeController extends Controller
      */
     public function home(): Response
     {
-        $form = $this->form('hello', GET, [], ['name' => 'marc'])->add('name', 'textarea', ['placeholder' => 'type your name'])->get();
+        $form = $this->form('hello', GET,  ['name' => 'marc'])->add('name', 'textarea', ['placeholder' => 'type your name'])->get();
 
         $users = User::all();
 
@@ -49,8 +47,9 @@ class HomeController extends Controller
     /**
      * @return Response
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     public function success(): Response
     {
@@ -60,14 +59,21 @@ class HomeController extends Controller
     /**
      * @return Response
      *
+     * @throws DependencyException
      * @throws Kedavra
-     *
+     * @throws NotFoundException
      */
     public function show_server(): Response
     {
         return $this->view('a', 'a', 'a');
     }
 
+    /**
+     * @return Response
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
+     */
     public function not_found(): Response
     {
         return $this->view('a', 'cache', 'cache');
@@ -76,7 +82,9 @@ class HomeController extends Controller
     /**
      * @param string $name
      * @return Response
+     * @throws DependencyException
      * @throws Kedavra
+     * @throws NotFoundException
      */
     public function hello(string $name): Response
     {
