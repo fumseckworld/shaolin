@@ -15,142 +15,66 @@ namespace Eywa\Database\Seed {
     use Faker\Generator;
 
 
-    class Seed
+    abstract class Seed
     {
-        /**
-         *
-         * The table name
-         *
-         */
-        private string $from = '';
 
         /**
          *
-         * The number of records
+         * An intance of faker
          *
          */
-        private int $limit = 100;
+        protected static Generator $faker;
 
         /**
          *
-         * The data generator
+         * An instance of table
          *
          */
-        private Generator $faker;
-
+        protected static Table $table;
 
         /**
          *
-         * An instance of application table
+         * An instance of collect
          *
          */
-        private Table $table;
-
-        /**
-         *
-         * The seeding values
-         *
-         */
-
-        private string $values = '';
+        protected static Collect $set;
 
         /**
          *
          * The connexion to the base
          *
          */
-        private Connexion $connexion;
+        protected static Connexion $connexion;
 
         /**
          *
-         * The set columns
+         * The table name
          *
          */
-        private Collect $set;
-
-
-        /**
-         * Seed constructor.
-         * @param string $from
-         * @param int $records
-         * @throws DependencyException
-         * @throws NotFoundException
-         * @throws Exception
-         */
-        public function __construct(string $from, int $records = 100)
-        {
-            $this->from = $from;
-            $this->limit = $records;
-            $this->connexion = new Connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')));
-            $this->faker = ioc('faker');
-            $this->table = ioc('table');
-
-            $this->set = collect();
-            $this->table->from($from);
-        }
+        protected static string $from = '';
 
         /**
          *
-         * Call the seeding
-         *
-         * @param string $from
-         * @param int $records
-         *
-         * @return Seed
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
+         * The number of record to generate
          *
          */
-        public static function from(string $from, int $records = 100): Seed
-        {
-            return  new static($from,$records);
-        }
+        protected static int $generate = 100;
+
 
         /**
          *
-         * Get the seeding limit
+         * To generate one record
          *
-         * @return int
-         *
-         */
-        public function limit(): int
-        {
-           return $this->limit;
-        }
-
-        /**
-         *
-         * Build the seed value for a record
-         *
-         * @param callable $callback
+         * @param Generator $generator
+         * @param Table $table
+         * @param Seed $seed
          *
          * @return Seed
          *
          * @throws Kedavra
          *
          */
-        public function each(callable $callback): Seed
-        {
-            for ($i=0;$i !== $this->limit();$i++)
-            {
-
-                call_user_func_array($callback,[$this->faker,$this->table,$this]);
-
-                $tmp = collect();
-
-                foreach ($this->table->columns() as $column)
-                    $tmp->set($this->set->get($column));
-
-                append($this->values, '('. trim($tmp->join(),', ') . '),');
-
-                $this->set->clear();
-
-                $tmp->clear();
-            }
-
-            return  $this;
-        }
+        abstract public function each(Generator $generator,Table $table,Seed $seed): self;
 
         /**
          *
@@ -166,7 +90,7 @@ namespace Eywa\Database\Seed {
          */
         public function set(string $column,$value): Seed
         {
-            equal($column,$this->table->primary()) ? $this->set->put($column,$value) :   $this->set->put($column,$this->connexion->secure($value));
+            equal($column,static::$table->primary()) ? static::$set->put($column,$value) :   static::$set->put($column,static::$connexion->secure($value));
 
             return $this;
         }
@@ -177,16 +101,43 @@ namespace Eywa\Database\Seed {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
+         * @throws Exception
          */
         public function seed() : bool
         {
-            $x = collect($this->table->columns())->join();
+            static::$connexion = new Connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')));
+            static::$faker = ioc('faker');
+            static::$table = ioc('table')->from(static::$from);
+            static::$set = collect();
 
-            $sql = trim("INSERT INTO {$this->from} ($x) VALUES {$this->values}",', ') ;
+            $values = '';
 
-            return $this->connexion->set($sql)->execute();
+            for ($i=0;$i<static::$generate;$i++)
+            {
+                static::each(static::$faker,static::$table,new static());
+
+                $tmp = collect();
+
+                foreach (static::$table->columns() as $column)
+                    $tmp->set(static::$set->get($column));
+
+                append($values, '('. trim($tmp->join(),', ') . '),');
+
+                static::$set->clear();
+
+                $tmp->clear();
+            }
+
+            $x = collect(static::$table->columns())->join();
+
+            $table = static::$from;
+
+            $sql = trim("INSERT INTO {$table} ($x) VALUES {$values}",', ') ;
+
+            return static::$connexion->set($sql)->execute();
 
         }
 
