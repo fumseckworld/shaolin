@@ -4,7 +4,8 @@
 namespace Testing\Database;
 
 
-use App\Seeders\UserSeeder;
+
+use App\Database\Seeds\UserSeeder;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;

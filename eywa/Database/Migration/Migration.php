@@ -10,7 +10,7 @@ namespace Eywa\Database\Migration {
     use Eywa\Database\Table\Table;
     use Faker\Generator;
 
-    class Migration  implements   Migrate
+    abstract class Migration  implements   Migrate
     {
 
         /**

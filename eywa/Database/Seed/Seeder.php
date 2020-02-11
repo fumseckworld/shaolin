@@ -15,7 +15,7 @@ namespace Eywa\Database\Seed {
     use Faker\Generator;
 
 
-    abstract class Seed
+    abstract class Seeder
     {
 
         /**
@@ -67,14 +67,12 @@ namespace Eywa\Database\Seed {
          *
          * @param Generator $generator
          * @param Table $table
-         * @param Seed $seed
-         *
-         * @return Seed
+         * @param Seeder $seeder
          *
          * @throws Kedavra
          *
          */
-        abstract public function each(Generator $generator,Table $table,Seed $seed): self;
+        abstract public function each(Generator $generator,Table $table,Seeder $seeder): void;
 
         /**
          *
@@ -83,12 +81,12 @@ namespace Eywa\Database\Seed {
          * @param string $column
          * @param $value
          *
-         * @return Seed
+         * @return Seeder
          *
          * @throws Kedavra
          *
          */
-        public function set(string $column,$value): Seed
+        public function set(string $column,$value): Seeder
         {
             equal($column,static::$table->primary()) ? static::$set->put($column,$value) :   static::$set->put($column,static::$connexion->secure($value));
 
