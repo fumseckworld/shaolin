@@ -39,7 +39,7 @@ namespace Eywa\Application {
         /**
          *
          * Eywa constructor
-         *
+         * @throws Kedavra
          */
         public function __construct();
 

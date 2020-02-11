@@ -53,13 +53,9 @@ namespace Eywa\Http\Routing {
          *
          * @param ServerRequest $request
          *
-         * @throws Kedavra
-         *
          */
         public function __construct(ServerRequest $request)
         {
-
-            cli() ? new Timing() : (new Session())->set('time',new Timing());
             $this->url = $request->url();
             $this->method = $request->method();
         }

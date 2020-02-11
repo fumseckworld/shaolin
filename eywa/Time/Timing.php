@@ -36,7 +36,7 @@ namespace Eywa\Time {
         {
             $this->end();
 
-            return $this->started_time->diffInMilliseconds($this->end_time);
+            return $this->end_time->diffInMilliseconds($this->started_time);
         }
     }
 }

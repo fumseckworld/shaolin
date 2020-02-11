@@ -57,6 +57,7 @@ namespace Eywa\Application {
          */
         public function __construct()
         {
+            cli() ? new Timing() : (new Session())->set('time',new Timing());
 
             $this->env = new Env();
 
