@@ -65,8 +65,7 @@ namespace Eywa\Application {
 
             $this->env = new Env();
 
-            if ($this->env->get(DISPLAY_BUGS)) { whoops(); }
-
+            only($this->env->get(DISPLAY_BUGS) === 'true','whoops');
         }
 
 

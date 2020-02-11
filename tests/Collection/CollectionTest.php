@@ -241,8 +241,8 @@ namespace Testing\Collection {
          */
         public function test_max_and_min()
         {
-            $this->assertNotEmpty($this->collect([ [ 'id' => 1, 'username' => 'willy', 'password', bcrypt('bcrypt') ], [ 'id' => 2, 'username' => 'alxandra', 'password', bcrypt('a') ] ])->only('id')->min());
-            $this->assertNotEmpty($this->collect([ [ 'id' => 1, 'username' => 'willy', 'password', bcrypt('bcrypt') ], [ 'id' => 2, 'username' => 'alxandra', 'password', bcrypt('a') ] ])->only('id')->max());
+            $this->assertNotEmpty($this->collect([ [ 'id' => 1, 'username' => 'willy', 'password', secure_password('secure_password') ], [ 'id' => 2, 'username' => 'alxandra', 'password', secure_password('a') ] ])->only('id')->min());
+            $this->assertNotEmpty($this->collect([ [ 'id' => 1, 'username' => 'willy', 'password', secure_password('secure_password') ], [ 'id' => 2, 'username' => 'alxandra', 'password', secure_password('a') ] ])->only('id')->max());
         }
 
         public function for_all($param) : string

@@ -105,7 +105,7 @@ define('DB_PASSWORD', 'password');
 define('DB_HIDDEN_TABLES', 'hidden_tables');
 
 
-define('DISPLAY_BUGS', 'debug');
+define('DISPLAY_BUGS', 'DEBUG');
 define('ENV', 'env');
 
 define('APCU_CACHE', 1);

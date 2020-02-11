@@ -21,7 +21,15 @@ use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
 
-if( ! function_exists('csrf_field'))
+if (!function_exists('only'))
+{
+    function only(bool $condition, callable $callback)
+    {
+        if ($condition)
+            call_user_func($callback);
+    }
+}
+if (!function_exists('csrf_field'))
 {
     /**
      *
@@ -34,7 +42,7 @@ if( ! function_exists('csrf_field'))
      * @throws Exception
      *
      */
-    function csrf_field() : string
+    function csrf_field(): string
     {
         if (cli())
         {
@@ -42,15 +50,15 @@ if( ! function_exists('csrf_field'))
         }
         $session = new Session();
 
-        $server = $session->has('server') ?  $session->get('server') :  $session->set('server',(new Crypter())->encrypt(Request::generate()->server()->get('SERVER_NAME','eywa')))->get('server');
+        $server = $session->has('server') ? $session->get('server') : $session->set('server', (new Crypter())->encrypt(Request::generate()->server()->get('SERVER_NAME', 'eywa')))->get('server');
 
         $x = bin2hex(random_bytes(16));
-        $csrf = $session->set('csrf',$x)->get('csrf');
+        $csrf = $session->set('csrf', $x)->get('csrf');
         $token = "$server@$csrf";
 
-        $session->set(CSRF_TOKEN,$token);
+        $session->set(CSRF_TOKEN, $token);
 
-        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $token.'">';
+        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $token . '">';
     }
 }
 
@@ -61,9 +69,9 @@ if (!function_exists('form_invalid'))
      * Check if the form was submited in the correct server
      *
      * @return bool
-     * @throws DependencyException
+     *
      * @throws Kedavra
-     * @throws NotFoundException
+     *
      */
     function form_invalid(): bool
     {
@@ -72,7 +80,7 @@ if (!function_exists('form_invalid'))
             $session = new Eywa\Session\Session();
             if ($session->has(CSRF_TOKEN))
             {
-                return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('@',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
+                return different((new Crypter())->decrypt($session->get('server')), Request::generate()->server()->get('SERVER_NAME', 'eywa'), true, "Form is not valid") || different($session->get('csrf'), collect(explode('@', $session->get(CSRF_TOKEN)))->last(), true, "Csrf token was not found");
             }
         }
         throw new Kedavra('Csrf token was not found');
@@ -80,7 +88,7 @@ if (!function_exists('form_invalid'))
 }
 
 
-if( ! function_exists('base'))
+if (!function_exists('base'))
 {
     /**
      *
@@ -89,21 +97,19 @@ if( ! function_exists('base'))
      * @param string[] $dirs
      * @return string
      */
-    function base(string ...$dirs) : string
+    function base(string ...$dirs): string
     {
-        $base = cli() ? realpath('./')  : dirname(realpath('./'));
+        $base = cli() ? realpath('./') : dirname(realpath('./'));
 
         if (def($dirs))
         {
             foreach ($dirs as $dir)
                 if (def($dir))
                 {
-                    append($base,DIRECTORY_SEPARATOR,$dir);
+                    append($base, DIRECTORY_SEPARATOR, $dir);
                 }
-
-
         }
-        return $base ;
+        return $base;
     }
 }
 
@@ -119,13 +125,11 @@ if (!function_exists('i18n'))
     function i18n(string $locale)
     {
 
-        if (app()->detect()->windows())
-        {
+        if (app()->detect()->windows()) {
 
         }
 
-        if (app()->detect()->linux())
-        {
+        if (app()->detect()->linux()) {
 
 
             putenv("LANG={$locale}");
@@ -139,26 +143,26 @@ if (!function_exists('i18n'))
         }
     }
 }
-if( ! function_exists('message'))
+if (!function_exists('message'))
 {
     /**
      *
      * Load a html email content
      *
-     * @param  string  $filename
+     * @param string $filename
      *
-     * @throws Kedavra
      * @return string
      *
+     * @throws Kedavra
      */
-    function message(string $filename) : string
+    function message(string $filename): string
     {
-        return (new File(base('app','Email',$filename)))->read();
+        return (new File(base('app', 'Email', $filename)))->read();
     }
 }
 
 
-if( ! function_exists('app'))
+if (!function_exists('app'))
 {
     /**
      *
@@ -191,21 +195,21 @@ if (!function_exists('ioc'))
     }
 }
 
-if( ! function_exists('faker'))
+if (!function_exists('faker'))
 {
     /**
      * faker
      *
      * @param mixed $locale
      *
-     * @return \Faker\Generator
+     * @return Faker\Generator
      */
-    function faker(string $locale = 'en_US') : \Faker\Generator
+    function faker(string $locale = 'en_US'): Faker\Generator
     {
-       return  Factory::create($locale);
+        return Factory::create($locale);
     }
 }
-if( ! function_exists('db'))
+if (!function_exists('db'))
 {
     /**
      *
@@ -225,7 +229,7 @@ if( ! function_exists('db'))
         return env($key);
     }
 }
-if( ! function_exists('config'))
+if (!function_exists('config'))
 {
     /**
      *
@@ -233,12 +237,12 @@ if( ! function_exists('config'))
      *
      * @method config.yaml
      *
-     * @param  string  $file
-     * @param  mixed   $key
-     *
-     * @throws Kedavra
+     * @param string $file
+     * @param mixed $key
      *
      * @return mixed
+     *
+     * @throws Kedavra
      *
      */
     function config(string $file, $key)
@@ -246,32 +250,30 @@ if( ! function_exists('config'))
         return (new Config($file, $key))->value();
     }
 }
-if( ! function_exists('def'))
-{
+if (!function_exists('def')) {
     /**
      *
      * Check if all values are define
      *
      * @method def
      *
-     * @param  mixed  $values
+     * @param mixed $values
      *
      * @return bool
      *
      */
-    function def(...$values) : bool
+    function def(...$values): bool
     {
-        foreach($values as $value)
+        foreach ($values as $value)
         {
-            if( ! isset($value) || empty($value))
+            if (!isset($value) || empty($value))
                 return false;
         }
 
         return true;
     }
 }
-if( ! function_exists('update_file_values'))
-{
+if (!function_exists('update_file_values')) {
     /**
      *
      * Update a value in a file
@@ -283,64 +285,47 @@ if( ! function_exists('update_file_values'))
      * @return bool
      * @throws Kedavra
      */
-    function update_file_values(string $filename, string $delimiter, string ...$values) : bool
+    function update_file_values(string $filename, string $delimiter, string ...$values): bool
     {
-
         $keys = (new File($filename))->keys($delimiter);
 
         return (new File($filename, EMPTY_AND_WRITE_FILE_MODE))->change_values($keys, $values, $delimiter);
     }
 }
-if( ! function_exists('history'))
+if (!function_exists('history'))
 {
     /**
      *
      * Go to last page
      *
-     * @throws Kedavra
-     *
      * @return string
+     *
+     * @throws Kedavra
      *
      */
     function history(): string
     {
-        return  '<button onclick="window.history.back()" class="'.config('history','class').'">'.config('history','text').'</button>';
+        return '<button onclick="window.history.back()" class="' . config('history', 'class') . '">' . config('history', 'text') . '</button>';
     }
 }
-if( ! function_exists('string_parse'))
+if (!function_exists('string_parse'))
 {
     /**
      *
      * Split a sing to array
      *
-     * @param  string  $data
+     * @param string $data
      *
      * @return array
      *
      */
-    function string_parse(string $data) : array
+    function string_parse(string $data): array
     {
-
         return preg_split('/\s+/', $data);
     }
 }
-if( ! function_exists('instance'))
-{
-    /**
-     *
-     * @return Connect
-     * @throws DependencyException
-     * @throws Kedavra
-     * @throws NotFoundException
-     */
-    function instance() : Connect
-    {
-        return connect(db('driver'), db('base'), db('username'), db('password'), db('host'), db('dump'));
-    }
 
-}
-
-if( ! function_exists('assign'))
+if (!function_exists('assign'))
 {
     /**
      *
@@ -348,21 +333,21 @@ if( ! function_exists('assign'))
      *
      * @method assign
      *
-     * @param  bool   $condition
-     * @param  mixed  $variable
-     * @param  mixed  $value
+     * @param bool $condition
+     * @param mixed $variable
+     * @param mixed $value
      *
      */
     function assign(bool $condition, &$variable, $value)
     {
 
-        if($condition)
+        if ($condition)
         {
             $variable = $value;
         }
     }
 }
-if( ! function_exists('not_def'))
+if (!function_exists('not_def'))
 {
     /**
      *
@@ -370,16 +355,15 @@ if( ! function_exists('not_def'))
      *
      * @method not_def
      *
-     * @param  mixed  $values
+     * @param mixed $values
      *
      * @return bool
      *
      */
-    function not_def(...$values) : bool
+    function not_def(...$values): bool
     {
-
-        foreach($values as $value)
-            if(def($value))
+        foreach ($values as $value)
+            if (def($value))
                 return false;
 
         return true;
@@ -387,7 +371,7 @@ if( ! function_exists('not_def'))
 }
 
 
-if( ! function_exists('equal'))
+if (!function_exists('equal'))
 {
     /**
      *
@@ -395,26 +379,25 @@ if( ! function_exists('equal'))
      *
      * @method equal
      *
-     * @param  string  $parameter
-     * @param  string  $expected
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param string $parameter
+     * @param string $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function equal(string $parameter,string $expected, bool $run_exception = false, string $message = '') : bool
+    function equal(string $parameter, string $expected, bool $run_exception = false, string $message = ''): bool
     {
-
         $x = strcmp($parameter, $expected) === 0;
         is_true($x, $run_exception, $message);
 
         return $x;
     }
 }
-if( ! function_exists('is_not_false'))
+if (!function_exists('is_not_false'))
 {
     /**
      *
@@ -423,18 +406,17 @@ if( ! function_exists('is_not_false'))
      *
      * @method is_not_false
      *
-     * @param  mixed   $data
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $data
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function is_not_false($data, bool $run_exception = false, string $message = '') : bool
+    function is_not_false($data, bool $run_exception = false, string $message = ''): bool
     {
-
         $x = $data !== false;
 
         is_true($x, $run_exception, $message);
@@ -442,7 +424,7 @@ if( ! function_exists('is_not_false'))
         return $x;
     }
 }
-if( ! function_exists('is_not_true'))
+if (!function_exists('is_not_true'))
 {
     /**
      *
@@ -450,16 +432,16 @@ if( ! function_exists('is_not_true'))
      *
      * @method is_not_true
      *
-     * @param  mixed   $data
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $data
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function is_not_true($data, bool $run_exception = false, string $message = '') : bool
+    function is_not_true($data, bool $run_exception = false, string $message = ''): bool
     {
 
         $x = $data !== true;
@@ -469,7 +451,7 @@ if( ! function_exists('is_not_true'))
         return $x;
     }
 }
-if( ! function_exists('is_false'))
+if (!function_exists('is_false'))
 {
     /**
      *
@@ -477,18 +459,17 @@ if( ! function_exists('is_false'))
      *
      * @method is_false
      *
-     * @param  mixed   $data
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $data
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function is_false($data, bool $run_exception = false, string $message = '') : bool
+    function is_false($data, bool $run_exception = false, string $message = ''): bool
     {
-
         $x = $data === false;
 
         is_true($x, $run_exception, $message);
@@ -496,7 +477,7 @@ if( ! function_exists('is_false'))
         return $x;
     }
 }
-if( ! function_exists('is_true'))
+if (!function_exists('is_true'))
 {
     /**
      *
@@ -504,27 +485,27 @@ if( ! function_exists('is_true'))
      *
      * @method is_true
      *
-     * @param  mixed   $data
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $data
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function is_true($data, bool $run_exception = false, string $message = '') : bool
+    function is_true($data, bool $run_exception = false, string $message = ''): bool
     {
 
         $x = $data === true;
 
-        if($run_exception && $x)
+        if ($run_exception && $x)
             throw new Kedavra($message);
 
         return $x;
     }
 }
-if( ! function_exists('different'))
+if (!function_exists('different'))
 {
     /**
      *
@@ -532,19 +513,18 @@ if( ! function_exists('different'))
      *
      * @method different
      *
-     * @param  string  $parameter
-     * @param  string   $expected
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param string $parameter
+     * @param string $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function different(string $parameter,string $expected, $run_exception = false, string $message = '') : bool
+    function different(string $parameter, string $expected, $run_exception = false, string $message = ''): bool
     {
-
         $x = strcmp($parameter, $expected) !== 0;
 
         is_true($x, $run_exception, $message);
@@ -552,7 +532,7 @@ if( ! function_exists('different'))
         return $x;
     }
 }
-if( ! function_exists('server'))
+if (!function_exists('server'))
 {
     /**
      *
@@ -568,7 +548,7 @@ if( ! function_exists('server'))
      */
     function server(string $key, $default = null): ?string
     {
-        return array_key_exists($key,$_SERVER) ? htmlspecialchars($_SERVER[$key],ENT_QUOTES) : $default;
+        return array_key_exists($key, $_SERVER) ? htmlspecialchars($_SERVER[$key], ENT_QUOTES) : $default;
     }
 }
 
@@ -577,14 +557,13 @@ if (!function_exists('obj'))
     function obj($obj): array
     {
         $x = collect();
-        foreach ($obj as $k => $v)
-        {
-            $x->put($k,$v);
+        foreach ($obj as $k => $v) {
+            $x->put($k, $v);
         }
         return $x->all();
     }
 }
-if( ! function_exists('post'))
+if (!function_exists('post'))
 {
     /**
      *
@@ -600,11 +579,11 @@ if( ! function_exists('post'))
      */
     function post(string $key, $default = null): ?string
     {
-       return  array_key_exists($key,$_POST) ? htmlspecialchars($_POST[$key],ENT_QUOTES) : $default;
+        return array_key_exists($key, $_POST) ? htmlspecialchars($_POST[$key], ENT_QUOTES) : $default;
     }
 }
 
-if( ! function_exists('get'))
+if (!function_exists('get'))
 {
     /**
      * Get a $_GET value
@@ -615,14 +594,14 @@ if( ! function_exists('get'))
      * @return string|null
      *
      */
-    function get(string $key, $default = null):?string
+    function get(string $key, $default = null): ?string
     {
-        return  array_key_exists($key,$_GET) ? htmlspecialchars($_GET[$key],ENT_QUOTES) : $default;
+        return array_key_exists($key, $_GET) ? htmlspecialchars($_GET[$key], ENT_QUOTES) : $default;
 
     }
 }
 
-if( ! function_exists('cookie'))
+if (!function_exists('cookie'))
 {
     /**
      * Get a $_GET value
@@ -633,13 +612,13 @@ if( ! function_exists('cookie'))
      * @return string|null
      *
      */
-    function cookie(string $key, $default = null):?string
+    function cookie(string $key, $default = null): ?string
     {
-        return  array_key_exists($key,$_COOKIE) ? htmlspecialchars($_COOKIE[$key],ENT_QUOTES) : $default;
+        return array_key_exists($key, $_COOKIE) ? htmlspecialchars($_COOKIE[$key], ENT_QUOTES) : $default;
     }
 }
 
-if( ! function_exists('file'))
+if (!function_exists('file'))
 {
     /**
      * Get a $_GET value
@@ -650,13 +629,13 @@ if( ! function_exists('file'))
      * @return string|null
      *
      */
-    function file(string $key, $default = null):?string
+    function file(string $key, $default = null): ?string
     {
 
-        return  array_key_exists($key,$_FILES) ? htmlspecialchars($_FILES[$key],ENT_QUOTES) : $default;
+        return array_key_exists($key, $_FILES) ? htmlspecialchars($_FILES[$key], ENT_QUOTES) : $default;
     }
 }
-if( ! function_exists('connect'))
+if (!function_exists('connect'))
 {
     /**
      *
@@ -673,12 +652,12 @@ if( ! function_exists('connect'))
      * @throws Kedavra
      *
      */
-    function connect(string $driver, string $base, string $user = '', string $password = '', int $port= 3306,array $options = [], string $host = 'localhost') : Connect
+    function connect(string $driver, string $base, string $user = '', string $password = '', int $port = 3306, array $options = [], string $host = 'localhost'): Connect
     {
-        return new Connect($driver,$base,$user,$password,$port,$options,$host);
+        return new Connect($driver, $base, $user, $password, $port, $options, $host);
     }
 }
-if( ! function_exists('superior'))
+if (!function_exists('superior'))
 {
     /**
      *
@@ -687,19 +666,18 @@ if( ! function_exists('superior'))
      *
      * @method superior
      *
-     * @param  mixed   $parameter
-     * @param  mixed   $expected
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $parameter
+     * @param mixed $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function superior($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
+    function superior($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
     {
-
         $x = is_array($parameter) ? count($parameter) > $expected : $parameter > $expected;
 
         is_true($x, $run_exception, $message);
@@ -707,7 +685,7 @@ if( ! function_exists('superior'))
         return $x;
     }
 }
-if( ! function_exists('superior_or_equal'))
+if (!function_exists('superior_or_equal'))
 {
     /**
      *
@@ -716,17 +694,17 @@ if( ! function_exists('superior_or_equal'))
      *
      * @method superior_or_equal
      *
-     * @param  mixed   $parameter
-     * @param  mixed   $expected
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $parameter
+     * @param mixed $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function superior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
+    function superior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
     {
 
         $x = is_array($parameter) ? count($parameter) >= $expected : $parameter >= $expected;
@@ -736,7 +714,7 @@ if( ! function_exists('superior_or_equal'))
         return $x;
     }
 }
-if( ! function_exists('inferior'))
+if (!function_exists('inferior'))
 {
     /**
      *
@@ -744,17 +722,17 @@ if( ! function_exists('inferior'))
      *
      * @method inferior
      *
-     * @param  mixed   $parameter
-     * @param  mixed   $expected
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $parameter
+     * @param mixed $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function inferior($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
+    function inferior($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
     {
 
         $x = is_array($parameter) ? count($parameter) < $expected : $parameter < $expected;
@@ -764,7 +742,7 @@ if( ! function_exists('inferior'))
         return $x;
     }
 }
-if( ! function_exists('inferior_or_equal'))
+if (!function_exists('inferior_or_equal'))
 {
     /**
      *
@@ -772,17 +750,17 @@ if( ! function_exists('inferior_or_equal'))
      *
      * @method inferior_or_equal
      *
-     * @param  mixed   $parameter
-     * @param  mixed   $expected
-     * @param  bool    $run_exception
-     * @param  string  $message
-     *
-     * @throws Kedavra
+     * @param mixed $parameter
+     * @param mixed $expected
+     * @param bool $run_exception
+     * @param string $message
      *
      * @return bool
      *
+     * @throws Kedavra
+     *
      */
-    function inferior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = '') : bool
+    function inferior_or_equal($parameter, int $expected, bool $run_exception = false, string $message = ''): bool
     {
 
         $x = is_array($parameter) ? count($parameter) <= $expected : $parameter <= $expected;
@@ -792,20 +770,19 @@ if( ! function_exists('inferior_or_equal'))
         return $x;
     }
 }
-if( ! function_exists('whoops'))
+if (!function_exists('whoops'))
 {
     /**
      *
      * @return Run
      */
-    function whoops() : Run
+    function whoops(): Run
     {
-
         return (new Run())->appendHandler(new PrettyPageHandler)->register();
     }
 }
 
-if( ! function_exists('commands'))
+if (!function_exists('commands'))
 {
     /**
      *
@@ -816,15 +793,13 @@ if( ! function_exists('commands'))
      * @return array
      *
      */
-    function commands() : array
+    function commands(): array
     {
-
-        $commands = 'app' . DIRECTORY_SEPARATOR . 'Console';
+        $commands = base('app','Console');
         $namespace = 'App\Console';
         $data = glob($commands . DIRECTORY_SEPARATOR . '*.php');
         $commands = collect();
-        foreach($data as $c)
-        {
+        foreach ($data as $c) {
             $command = collect(explode(DIRECTORY_SEPARATOR, $c))->last();
             $command = collect(explode('.', $command))->first();
             $command = "$namespace\\$command";
@@ -834,7 +809,7 @@ if( ! function_exists('commands'))
         return $commands->all();
     }
 }
-if( ! function_exists('controllers'))
+if (!function_exists('controllers'))
 {
     /**
      *
@@ -845,22 +820,22 @@ if( ! function_exists('controllers'))
      * @return array
      *
      */
-    function controllers() : array
+    function controllers(): array
     {
 
-        $dir = 'app' . DIRECTORY_SEPARATOR . 'Controllers';
+        $dir = base('app', 'Controllers');
         $controllers = collect(File::search("$dir" . DIRECTORY_SEPARATOR . '*.php'));
         $data = collect();
-        if($controllers)
+        if ($controllers)
         {
-            foreach($controllers as $controller)
+            foreach ($controllers as $controller)
                 $data->push(collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, $controller))->last()))->first());
         }
 
         return $data->all();
     }
 }
-if( ! function_exists('d'))
+if (!function_exists('d'))
 {
     /**
      *
@@ -868,19 +843,18 @@ if( ! function_exists('d'))
      *
      * @method d
      *
-     * @param  mixed  $values  The values to debug
+     * @param mixed $values The values to debug
      *
      */
     function d(...$values)
     {
-
         $dumper = new Dumper();
-        foreach($values as $value)
+        foreach ($values as $value)
             $dumper->dump($value);
         die();
     }
 }
-if( ! function_exists('debug'))
+if (!function_exists('debug'))
 {
     /**
      *
@@ -888,8 +862,8 @@ if( ! function_exists('debug'))
      *
      * @method debug
      *
-     * @param  bool   $condition
-     * @param  mixed  $values
+     * @param bool $condition
+     * @param mixed $values
      *
      * @return void
      *
@@ -897,54 +871,54 @@ if( ! function_exists('debug'))
     function debug(bool $condition, ...$values)
     {
 
-        if($condition)
+        if ($condition)
         {
             d($values);
         }
     }
 }
-if( ! function_exists('bcrypt'))
+if (!function_exists('secure_password'))
 {
     /**
      *
      * Hash a value
      *
-     * @param  string  $value
-     *
-     * @throws Kedavra
+     * @param string $value
      *
      * @return string
      *
+     * @throws Kedavra
+     *
      */
-    function bcrypt(string $value) : string
+    function secure_password(string $value): string
     {
         return (new Hash($value))->generate();
     }
 }
-if( ! function_exists('logged'))
+if (!function_exists('logged'))
 {
     /**
      * @return bool
      */
     function logged(): bool
     {
-        return  cli() ? false: (new Auth(new Session()))->connected();
+        return cli() ? false : (new Auth(new Session()))->connected();
     }
 
 }
 
-if( ! function_exists('guest'))
+if (!function_exists('guest'))
 {
     /**
      * @return bool
      */
     function guest(): bool
     {
-        return  ! logged();
+        return !logged();
     }
 
 }
-if( ! function_exists('check'))
+if (!function_exists('check'))
 {
     /**
      *
@@ -952,14 +926,14 @@ if( ! function_exists('check'))
      *
      * @method check
      *
-     * @param  mixed  $plain_text_password
-     * @param  mixed  $hash_value
+     * @param mixed $plain_text_password
+     * @param mixed $hash_value
      *
-     * @throws Kedavra
      * @return bool
      *
+     * @throws Kedavra
      */
-    function check(string $plain_text_password, string $hash_value) : bool
+    function check(string $plain_text_password, string $hash_value): bool
     {
         return (new Hash($plain_text_password))->valid($hash_value);
     }
