@@ -23,8 +23,6 @@ class ApplicationTest extends Unit
         $this->assertNull(app()->post('a'));
         $this->assertNull(app()->cookie('a'));
         $this->assertNull(app()->server('a'));
-        $this->assertNull(app()->file('a'));
-        $this->assertNull(app()->file('a'));
     }
 
 

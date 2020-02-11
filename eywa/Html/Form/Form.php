@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Eywa\Html\Form {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
@@ -28,18 +30,21 @@ namespace Eywa\Html\Form {
         private Collect $fields;
 
         /**
+         *
          * Form constructor.
          *
          * @param string $route
+         * @param string $method
          * @param array $route_args
          * @param array $params
-         * @param string $method
          *
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          * @throws Exception
          *
          */
-        public function __construct(string $route,string $method,array $params = [],array $route_args = [])
+        public function __construct(string $route,string $method,$route_args = [],array $params = [])
         {
             not_in(METHOD_SUPPORTED,strtoupper($method),true,"The $method method is not supported");
 

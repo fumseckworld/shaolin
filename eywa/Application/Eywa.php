@@ -9,9 +9,12 @@ namespace Eywa\Application {
     use DI\NotFoundException;
     use Exception;
     use Eywa\Cache\CacheInterface;
+    use Eywa\Collection\Collect;
+    use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
+    use Eywa\File\File;
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
@@ -57,6 +60,20 @@ namespace Eywa\Application {
 
         /**
          *
+         * Get a config value
+         *
+         * @param string $file
+         * @param string $key
+         *
+         * @return mixed
+         *
+         * @throws Kedavra
+         *
+         */
+        public function config(string $file,string $key);
+
+        /**
+         *
          * To write and send an email
          *
          * @param string $subject
@@ -70,6 +87,53 @@ namespace Eywa\Application {
          *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write;
+
+
+        /**
+         *
+         * Generate a response
+         *
+         * @param string $content
+         * @param int $status
+         * @param array $headers
+         * @param string $url
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function response(string $content, int $status = 200, array $headers = [], string $url =''): Response;
+
+        /**
+         *
+         * Redirect user to an another route
+         *
+         * @param string $route
+         * @param array $route_args
+         * @param string $message
+         * @param bool $success
+         * @param int $status
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         */
+        public function redirect(string $route,array $route_args,string $message,bool $success,int $status = 301): Response;
+
+
+        /**
+         *
+         * Get an instance of collect
+         *
+         * @param array $data
+         *
+         * @return Collect
+         *
+         */
+        public function collect(array $data): Collect;
 
         /**
          *
@@ -151,6 +215,9 @@ namespace Eywa\Application {
 
 
         /**
+         *
+         * Get the form builder instance
+         *
          * @param string $route
          * @param string $method
          * @param array $params
@@ -162,7 +229,7 @@ namespace Eywa\Application {
          * @throws Exception
          *
          */
-        public function form(string $route,string $method,array $params = [],array $route_args = []) : Form;
+        public function form(string $route,string $method,array $route_args = [],array $params = []) : Form;
 
         /**
          *
@@ -216,13 +283,15 @@ namespace Eywa\Application {
          *
          * Get a $_FILE value
          *
-         * @param string $key
-         * @param null $default
+         * @param string $filename
+         * @param string $mode
          *
-         * @return mixed
+         * @return File
+         *
+         * @throws Kedavra
          *
          */
-        public function file(string $key,$default = null);
+        public function file(string $filename,string $mode = READ_FILE_MODE): File;
 
         /**
          *
@@ -272,6 +341,17 @@ namespace Eywa\Application {
          *
          */
         public function run(): Response;
+
+        /**
+         *
+         * Get an instance of connexion (PDO)
+         *
+         * @return Connexion
+         *
+         * @throws Kedavra
+         *
+         */
+        public function connexion(): Connexion;
 
         /**
          *

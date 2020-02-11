@@ -4,6 +4,8 @@
 namespace Testing\Html {
 
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Form\Form;
     use Eywa\Testing\Unit;
@@ -19,6 +21,8 @@ namespace Testing\Html {
 
         /**
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
     public function setUp(): void
     {

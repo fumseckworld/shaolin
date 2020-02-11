@@ -10,10 +10,14 @@ namespace Eywa\Application {
     use Eywa\Cache\Filecache;
     use Eywa\Cache\MemcacheCache;
     use Eywa\Cache\RedisCache;
+    use Eywa\Collection\Collect;
+    use Eywa\Configuration\Config;
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
+    use Eywa\File\File;
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\ServerRequest;
@@ -63,7 +67,6 @@ namespace Eywa\Application {
 
             if ($this->env->get(DISPLAY_BUGS)) { whoops(); }
 
-
         }
 
 
@@ -107,7 +110,7 @@ namespace Eywa\Application {
          */
         public function sql(string $table): Sql
         {
-            return new Sql(new Connect($this->env('DB_DRIVER'),$this->env('DB_NAME'),$this->env('DB_USERNAME'),$this->env('DB_PASSWORD'),intval($this->env('DB_PORT'))), $table);
+            return new Sql($this->connexion(),$table);
         }
 
         /**
@@ -175,9 +178,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function file(string $key, $default = null)
+        public function file(string $filename,string $mode = READ_FILE_MODE): File
         {
-            return $this->request()->file()->get($key,$default);
+            return new File($filename,$mode);
         }
 
         /**
@@ -205,9 +208,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function form(string $route,string $method,array $params = [],array $route_args = []): Form
+        public function form(string $route,string $method,array $route_args = [],array $params = []): Form
         {
-            return new Form($route,$method,$params,$route_args);
+            return new Form($route,$method,$route_args,$params);
         }
 
         /**
@@ -230,8 +233,7 @@ namespace Eywa\Application {
             if (def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
-            return (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send();
-
+           return  not_cli() ? (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send() : (new RedirectResponse('/'))->send();
         }
 
         /**
@@ -374,6 +376,48 @@ namespace Eywa\Application {
         public function lang(): string
         {
             return $this->request()->cookie()->get('locale',collect(explode('_',config('i18n','locale')))->first());
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function config(string $file, string $key)
+        {
+            return (new Config($file,$key))->value();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function collect(array $data): Collect
+        {
+            return new Collect($data);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function connexion(): Connexion
+        {
+            return new Connect($this->env('DB_DRIVER','mysql'),$this->env('DB_NAME','eywa'),$this->env('DB_USERNAME','eywa'),$this->env('DB_PASSWORD','eywa'),intval($this->env('DB_PORT',3306)),$this->config('connection','options'),$this->env('DB_HOST','localhost'));
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function response(string $content, int $status = 200, array $headers = [], string $url = ''): Response
+        {
+           return new Response($content,$url,$status,$headers);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function redirect(string $route,array $route_args,string $message,bool $success,int $status = 301): Response
+        {
+            $success ? $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+
+            return (new RedirectResponse(route('web',$route,$route_args),$status))->send();
         }
     }
 }
