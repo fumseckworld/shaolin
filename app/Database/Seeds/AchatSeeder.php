@@ -8,12 +8,11 @@ namespace App\Database\Seeds {
     use Eywa\Database\Table\Table;
     use Faker\Generator;
 
-    class UserSeeder extends Seeder
+    class AchatSeeder extends Seeder
     {
-
         protected static int $generate = 100;
 
-        protected static string $from = 'users';
+        protected static string $from = 'achats';
 
         /**
          * @inheritDoc
@@ -26,16 +25,16 @@ namespace App\Database\Seeds {
                 {
                     case 'name':
                         $seeder->set($column,$generator->name());
-                    break;
+                        break;
                     case 'email':
                         $seeder->set($column,$generator->email);
-                    break;
+                        break;
                     case 'phone':
                         $seeder->set($column,$generator->phoneNumber);
-                    break;
+                        break;
                     case 'created_at':
                         $seeder->set($column,now()->toDateTimeString());
-                    break;
+                        break;
                     default:
                         $seeder->set($column,'NULL');
                     break;

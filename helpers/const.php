@@ -465,3 +465,7 @@ define('STATUS', [
 
 ]);
 
+
+define('NOT_NULL',['NOT_NULLABLE'=> 'NOT NULL']);
+define('UNIQUE',['UNIQUE'=> 'UNIQUE']);
+define('NULL',['NULLABLE'=>'NULL']);

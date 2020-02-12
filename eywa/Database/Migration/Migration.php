@@ -1,106 +1,166 @@
 <?php
 
-declare(strict_types=1);
-
 
 namespace Eywa\Database\Migration {
 
 
-    use Eywa\Database\Connexion\Connect;
+    use Exception;
+    use Eywa\Collection\Collect;
+    use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Table\Table;
-    use Faker\Generator;
+    use Eywa\Exception\Kedavra;
 
-    abstract class Migration  implements   Migrate
+
+    abstract class Migration
     {
 
         /**
-         * @inheritDoc
+         *
+         * The current table to manage
+         *
          */
-        public function for(string $table): Migrate
+        public static string $table = '';
+
+        /**
+         *
+         * The generated migration date
+         *
+         */
+        public static string $generared_at = '';
+
+        /**
+         *
+         * All constrait for a column
+         *
+         */
+        protected static array $constraint = [];
+
+        /**
+         *
+         * Used to store the current column to save correct constraints
+         *
+         */
+        protected static string $current_column ='';
+
+        /**
+         *
+         * The connexion to the base
+         *
+         */
+        protected static Connexion $connexion;
+
+        /**
+         *
+         * All added columns
+         *
+         */
+        protected static Collect $columns;
+
+        /**
+         *
+         * The method to updagrade table
+         *
+         * @return bool
+         *
+         */
+        abstract public function up(): bool;
+
+        /**
+         *
+         * The method to reset change
+         *
+         * @return bool
+         *
+         */
+        abstract public function down(): bool;
+
+
+
+        /**
+         * Migration constructor.
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         */
+        public function __construct()
         {
-            // TODO: Implement for() method.
+            static::$columns = collect();
+            static::$connexion = app()->connexion();
         }
 
         /**
-         * @inheritDoc
+         *
+         * Add a new column
+         *
+         * @param string $column
+         * @param string $type
+         * @param int $size
+         *
+         * @return Migration
+         *
          */
-        public function add(string $column, string $type, array $options = []): Migrate
+        public function add(string $column,string $type,int $size = 0): Migration
         {
-            // TODO: Implement add() method.
+            static::$current_column = $column;
+
+            static::$columns->push(compact('column', 'type', 'size'));
+
+            return  $this;
         }
 
         /**
-         * @inheritDoc
+         *
+         * Remove columns
+         *
+         * @param string ...$columns
+         *
+         * @return bool
+         *
          */
-        public function drop(): bool
+        public function remove(string ...$columns): bool
         {
-            // TODO: Implement drop() method.
+            $remove = collect();
+            foreach ($columns as $column)
+            {
+                $remove->push($column);
+            }
+            return $remove->ok();
         }
 
         /**
-         * @inheritDoc
+         *
+         *
+         *
+         *
+         * @param string $table
+         * @return bool
+         * @throws Kedavra
          */
-        public function rename_table(string $new_name): bool
+        public function drop(string $table): bool
         {
-            // TODO: Implement rename_table() method.
+            return (new Table(static::$connexion))->from($table)->drop();
         }
 
         /**
-         * @inheritDoc
+         *
+         * Add column constraint
+         *
+         * @param string ...$constraints
+         *
+         * @return Migration
          */
-        public function rename_column(string $new_name): bool
+        public function constraint(string ...$constraints): Migration
         {
-            // TODO: Implement rename_column() method.
+            static::$constraint[static::$current_column] = collect($constraints)->join(' ');
+
+            return  $this;
         }
 
-        /**
-         * @inheritDoc
-         */
-        public function connect(): Connect
+        public function check()
         {
-            // TODO: Implement connect() method.
+            d(static::$columns,static::$constraint,static::$connexion);
         }
 
-        /**
-         * @inheritDoc
-         */
-        public function del(string ...$columns): bool
-        {
-            // TODO: Implement del() method.
-        }
-
-        public function up(): bool
-        {
-            // TODO: Implement up() method.
-        }
-
-        public function down(): bool
-        {
-            // TODO: Implement down() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function columns(): array
-        {
-            // TODO: Implement columns() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function seed(int $records): bool
-        {
-            // TODO: Implement seed() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function generate(Generator $generator, Table $table): string
-        {
-            // TODO: Implement generate() method.
-        }
     }
 }

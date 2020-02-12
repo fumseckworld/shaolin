@@ -2,11 +2,11 @@
 
 
 namespace App\Controllers;
-
-
 use App\Models\User;
 use DI\DependencyException;
 use DI\NotFoundException;
+use Eywa\Database\Migration\Migrate;
+use Eywa\Database\Seed\Seeding;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
 use Eywa\Http\Response\Response;
@@ -21,7 +21,8 @@ class HomeController extends Controller
 
     public function before_action()
     {
-
+        d(Seeding::run());
+        d(Migrate::execute('down'));
     }
 
     public function after_action()

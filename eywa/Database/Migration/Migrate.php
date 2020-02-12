@@ -1,127 +1,59 @@
 <?php
 
-declare(strict_types=1);
+
 namespace Eywa\Database\Migration {
 
 
-    use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Table\Table;
-    use Faker\Generator;
+    use Eywa\Exception\Kedavra;
 
-    interface Migrate
+    class Migrate
     {
-        /**
-         *
-         * select a table
-         *
-         * @param string $table
-         *
-         * @return Migrate
-         *
-         */
-        public function for(string $table): Migrate;
 
         /**
          *
-         * Add a column in a table
+         * List all migrations class sorted by generated date
          *
-         * @param string $column
-         * @param string $type
-         * @param array $options
-         *
-         * @return Migrate
-         *
-         */
-        public function add(string $column, string $type, array $options = []): Migrate;
-
-
-        /**
-         *
-         * Remove the table
-         *
-         * @return bool
-         *
-         */
-        public function drop(): bool;
-
-
-        /**
-         *
-         * Change the table name
-         *
-         * @param string $new_name
-         *
-         * @return bool
-         *
-         */
-        public function rename_table(string $new_name): bool;
-
-        /**
-         *
-         * Rename a column
-         *
-         * @param string $new_name
-         *
-         * @return bool
-         *
-         */
-        public function rename_column(string $new_name): bool;
-
-        /**
-         *
-         * Get an instance of database
-         *
-         * @return Connect
-         *
-         */
-        public function connect(): Connect;
-
-        /***
-         *
-         * Remove columns
-         *
-         * @param string ...$columns
-         *
-         * @return bool
-         *
-         */
-        public function del(string ...$columns): bool;
-
-        public function up(): bool;
-
-        public function down(): bool;
-
-        /**
-         *
-         * Get the columns
-         *
+         * @param string $mode
          * @return array
-         *
          */
-        public function columns(): array ;
+        public static function list(string $mode = 'up'): array
+        {
+            $x = [];
+            foreach (glob(base('app','Database','Migrations','*.php')) as $k => $v)
+            {
+                $item = collect(explode(DIRECTORY_SEPARATOR,$v))->last();
+
+
+                $item = collect(explode('.',$item))->first();
+
+
+                $class = '\App\Database\Migrations\\' .$item;
+
+                $x[$class] = $class::$generared_at;
+            }
+            return $mode === 'up' ?  collect($x)->asort()->all() : collect($x)->arsort()->all();
+        }
 
         /**
          *
-         * Seed the base
+         * Execute the migrations
          *
-         * @param int $records
+         * @param string $mode
          *
          * @return bool
-         */
-        public function seed(int $records): bool;
-
-        /**
          *
-         * Generate records
-         *
-         * @param Generator $generator
-         * @param Table $table
-         *
-         * @return string
+         * @throws Kedavra
          *
          */
-        public function generate(Generator $generator,Table $table) : string;
-
-
+        public static function run(string $mode):bool
+        {
+            not_in(['up','down'],$mode,true,"The mode must be is up or down");
+            $x = collect();
+            foreach (static::list($mode) as $class => $date)
+            {
+                $x->push(call_user_func([$class,$mode]));
+            }
+            return $x->ok();
+        }
     }
 }

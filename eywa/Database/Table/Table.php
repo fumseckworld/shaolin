@@ -38,6 +38,8 @@ namespace Eywa\Database\Table {
          */
         private array $columns = [];
 
+        private string $saved_table = '';
+
 
         /**
          *
@@ -112,6 +114,7 @@ namespace Eywa\Database\Table {
         {
             return collect($this->show())->exist($table);
         }
+
 
         /**
          *
@@ -277,7 +280,8 @@ namespace Eywa\Database\Table {
         {
 
             $this->check();
-            if (def($this->columns))
+
+            if (def($this->columns) && equal($this->table,$this->saved_table))
                 return $this->columns;
 
 
@@ -286,17 +290,20 @@ namespace Eywa\Database\Table {
             {
                 case MYSQL:
                     $this->columns =  $this->connexion->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
+                    $this->saved_table = $this->table;
                 break;
                 case POSTGRESQL:
                     $this->columns = $this->connexion->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
+                    $this->saved_table = $this->table;
                 break;
                 case SQLITE:
                     foreach ($this->connexion->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $c)
                         $x->push($c->name);
-
+                    $this->saved_table = $this->table;
                     $this->columns =  $x->all();
                 break;
                 case SQL_SERVER:
+                    $this->saved_table = $this->table;
                     $this->columns =  $this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{$this->table}'")->get(COLUMNS);
                 break;
                 default:
