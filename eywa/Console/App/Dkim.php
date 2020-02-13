@@ -4,7 +4,7 @@
 	{
 
 
-        use Eywa\File\File;
+        use Eywa\Console\Shell;
         use Symfony\Component\Console\Command\Command;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
@@ -26,17 +26,20 @@
 
                 $io->title('Generation of the dkim key');
 
-                shell_exec("openssl genrsa -out dkim.private.key 1024");
 
-                shell_exec('openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM');
+                if (file_exists('dkim.private.key'))
+                {
+                    $io->error('The dkim keys already exist');
+                    return 1;
+                }
 
-                if (File::exist('dkim.private.key', 'dkim.public.key'))
+                if((new Shell('openssl genrsa -out dkim.private.key 1024 && openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM'))->run())
                 {
                     $io->success('The dkim keys will be used to sign all emails');
                     return 0;
                 }
 
-                $io->error("Sorry generation has failed");
+                $io->error("Generation has failed");
                 return 1;
             }
 			
