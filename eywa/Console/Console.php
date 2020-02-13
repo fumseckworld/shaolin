@@ -5,6 +5,7 @@ namespace Eywa\Console {
 
 
     use Exception;
+    use Eywa\Console\App\Coverage;
     use Eywa\Console\App\Dkim;
     use Eywa\Console\App\Key;
     use Eywa\Console\App\Serve;
@@ -68,7 +69,7 @@ namespace Eywa\Console {
 
            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),
-               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new MigrateDatabase()
+               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new MigrateDatabase(),new Coverage()
 
            ];
 

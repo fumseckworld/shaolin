@@ -2,8 +2,6 @@
 	
 	namespace Eywa\Console\Mode
 	{
-
-
         use Eywa\Exception\Kedavra;
         use Eywa\File\File;
         use Symfony\Component\Console\Command\Command;
@@ -18,7 +16,6 @@
 			
 			protected function configure()
 			{
-				
 				$this->setDescription('Turn application in maintenance mode');
 			}
 

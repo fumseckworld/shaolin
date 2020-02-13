@@ -10,10 +10,10 @@
         use Symfony\Component\Console\Style\SymfonyStyle;
 
 
-        class Serve extends Command
+        class Coverage extends Command
 		{
 			
-			protected static $defaultName = "app:run";
+			protected static $defaultName = "app:coverage";
 			
 			
 			protected function configure()
@@ -32,10 +32,10 @@
 			{
                 $io = new SymfonyStyle($input,$output);
 
-                $io->title('Started development server');
-				$io->success("The server is running at : http://localhost:3000");
+                $io->title('Started coverage server');
+				$io->success("The server is running at : http://localhost:8000");
 
-                (new Shell("php -S localhost:3000 -d display_errors=1 -t web"))->run();
+                (new Shell("php -S localhost:8000 -t coverage"))->run();
 
                return 0;
 

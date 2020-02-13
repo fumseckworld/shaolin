@@ -363,7 +363,6 @@ namespace Eywa\Database\Connexion {
          */
         public function with(...$args): Connexion
         {
-
             $this->args = array_merge($this->args,$args);
 
             return  $this;
