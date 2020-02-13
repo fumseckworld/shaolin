@@ -5,7 +5,6 @@ namespace Eywa\Console\Cache {
 
 
     use Eywa\Cache\ApcuCache;
-
     use Eywa\Cache\FileCache;
     use Eywa\Cache\MemcacheCache;
     use Eywa\Cache\RedisCache;
@@ -14,6 +13,7 @@ namespace Eywa\Console\Cache {
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class ClearCache extends Command
     {
@@ -32,6 +32,9 @@ namespace Eywa\Console\Cache {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
+
+            $io->title('We clearing the cache');
             $x =  $input->getArgument('system');
             if (def($x))
             {
@@ -39,38 +42,40 @@ namespace Eywa\Console\Cache {
                 {
                     case 'redis':
                         (new RedisCache())->clear();
-                        $output->writeln("<info>The $x cache has been reset successfully</info>");
+                        $io->success("The $x cache has been reset successfully");
                         return 0;
                     break;
                     case 'file':
                         (new FileCache())->clear();
-                        $output->writeln("<info>The $x cache has been reset successfully</info>");
+                        $io->success("The $x cache has been reset successfully");
                         return 0;
                     break;
                     case 'apcu':
                         (new ApcuCache())->clear();
-                        $output->writeln("<info>The $x cache has been reset successfully</info>");
+                        $io->success("The $x cache has been reset successfully");
                         return 0;
                     break;
                     case 'memcache':
                         (new MemcacheCache())->clear();
-                        $output->writeln("<info>The $x cache has been reset successfully</info>");
+                        $io->success("The $x cache has been reset successfully");
                         return 0;
                     break;
                     default:
-                        throw new Kedavra('The cache system used is not a valid system');
+                        $io->error('The cache system used is not a valid system');
                     break;
                 }
             }else{
                 if ((new FileCache())->clear() && (new ApcuCache())->clear() && (new RedisCache())->clear() && (new MemcacheCache())->clear())
                 {
-                    $output->writeln("<info>Cache has been reset successfully</info>");
+                    $io->success("All cache systems has been reset successfully");
 
                     return 0;
                 }
-                $output->writeln("<error>Clear cache has been fail</error>");
+                $io->error("Clear cache has been fail");
+
                 return 1;
             }
+            return  1;
         }
     }
 }

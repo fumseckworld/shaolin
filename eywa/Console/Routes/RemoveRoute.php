@@ -13,6 +13,7 @@ namespace Eywa\Console\Routes {
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
 
     class RemoveRoute extends \Symfony\Component\Console\Command\Command
@@ -100,19 +101,11 @@ namespace Eywa\Console\Routes {
         public function interact(InputInterface $input, OutputInterface $output)
         {
 
+
             $this->helper = $this->getHelper('question');
 
-            do {
-                clear_terminal();
 
-                $question = new Question("<info>Route for admin, web or task ?</info> : ");
-
-                $question->setAutocompleterValues(['admin', 'web', 'task']);
-
-                $this->choose = $this->helper->ask($input, $output, $question);
-
-            } while (is_null($this->choose) || not_in(['admin', 'web', 'task'], $this->choose));
-
+            $this->choose = 'web';
             switch ($this->choose)
             {
                 case 'admin':
@@ -140,7 +133,9 @@ namespace Eywa\Console\Routes {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
 
+            $io->title('Removing the route');
             if (not_def($this->names))
             {
                 clear_terminal();
@@ -168,7 +163,7 @@ namespace Eywa\Console\Routes {
                     $this->id = collect(collect(Admin::by('name', $this->route_name))->get(0))->first();
                     if (Admin::destroy($this->id))
                     {
-                        $output->writeln('<info>The route was removed successfully</info>');
+                        $io->success('The route was removed successfully');
                         return 0;
                     }
                 break;
@@ -176,7 +171,7 @@ namespace Eywa\Console\Routes {
                     $this->id = intval(collect(Task::by('name', $this->route_name))->get('id'));
                     if (Task::destroy($this->id))
                     {
-                        $output->writeln('<info>The route was removed successfully</info>');
+                        $io->success('The route was removed successfully');
                         return 0;
                     }
                 break;
@@ -185,13 +180,13 @@ namespace Eywa\Console\Routes {
 
                     if (Web::destroy($this->id))
                     {
-                        $output->writeln('<info>The route was removed successfully</info>');
+                        $io->success('The route was removed successfully');
+
                         return 0;
                     }
                     break;
             }
-
-            $output->writeln('<bg=red;fg=white>Fail to remove route</>');
+            $io->error('Fail to remove the route');
             return 1;
         }
 

@@ -12,11 +12,12 @@
         use Symfony\Component\Console\Command\Command;
 		use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
-		
-		class GenerateRouteBase extends Command
+        use Symfony\Component\Console\Style\SymfonyStyle;
+
+        class GenerateRouteBase extends Command
 		{
 			
-			protected static $defaultName = 'make:routes';
+			protected static $defaultName = 'route:configure';
 			
 			protected function configure()
 			{
@@ -29,19 +30,34 @@
              * @param OutputInterface $output
              *
              * @return bool|int|null
+             * @throws DependencyException
              * @throws Kedavra
-             *
+             * @throws NotFoundException
              */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
-			    if (!is_dir(base('routes')))
+                $io = new SymfonyStyle($input,$output);
+
+                $io->title('Starting route configuration');
+
+                if (!is_dir(base('routes')))
 			        mkdir(base('routes'));
 
-	            Web::generate();
-	            Admin::generate();
-	            Task::generate();
 
-	            return 0;
+                if (file_exists(base('routes','web.sqlite3')))
+                {
+                    $io->error('The configuration wizard has been already executed');
+                    return 1;
+                }
+                if (Web::generate())
+                {
+                    $io->success('The configuration has been generated successfully');
+                    return  0;
+                }
+
+                $io->error('The base generation failed');
+
+                return 1;
 
 			}
 			

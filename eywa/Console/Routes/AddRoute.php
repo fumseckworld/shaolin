@@ -14,6 +14,7 @@ namespace Eywa\Console\Routes {
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class AddRoute extends Command
     {
@@ -46,19 +47,7 @@ namespace Eywa\Console\Routes {
 
             do {
 
-                do {
-                    clear_terminal();
-
-                    $question = new Question("<info>Route for admin, web or task ?</info> : ");
-
-                    $question->setAutocompleterValues(['admin', 'web','task']);
-
-                    $route = $helper->ask($input, $output, $question);
-
-                    $this->entry->put('route', $route);
-
-                } while (is_null($route) || not_in(['admin', 'web' ,'task'], $route));
-
+                $this->entry->put('route', 'web');
                 do {
                     clear_terminal();
 
@@ -274,13 +263,17 @@ namespace Eywa\Console\Routes {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
+
+            $io->title('Appending the routes');
             if ($this->routes->ok())
             {
-                $output->writeln('<info>All routes was successfully created</info>');
+                $io->success('The routes was generated successfully');
+
                 return 0;
             }
-            $output->writeln('<bg=red;fg=white>Fail to create routes</>');
-            return 0;
+            $io->error('Fail to create routes');
+            return 1;
         }
 
     }

@@ -2,6 +2,8 @@
 
 namespace Eywa\Console\Routes {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Routing\Admin;
@@ -11,6 +13,7 @@ namespace Eywa\Console\Routes {
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class UpdateRoute extends Command
     {
@@ -57,6 +60,8 @@ namespace Eywa\Console\Routes {
          * @param bool $admin
          * @return array
          * @throws Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
          */
         private function name(bool $web = true, bool $admin = false)
         {
@@ -73,7 +78,6 @@ namespace Eywa\Console\Routes {
          * @param OutputInterface $output
          *
          *
-         * @throws Kedavra
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {
@@ -83,18 +87,9 @@ namespace Eywa\Console\Routes {
             $this->entry = collect();
 
             $this->routes = collect();
-            do
-            {
-                clear_terminal();
 
-                $question = new Question("<info>Route for admin, web or task ?</info> : ");
 
-                $question->setAutocompleterValues(['admin', 'web', 'task']);
-
-                $this->choose = $helper->ask($input, $output, $question);
-
-            } while (is_null($this->choose) || not_in(['admin', 'web', 'task'], $this->choose));
-
+            $this->choose = 'web';
 
         }
 
@@ -104,11 +99,15 @@ namespace Eywa\Console\Routes {
          *
          * @return int|null
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
 
+            $io->title('Updating the routes');
             do {
 
                 $this->ask($output,$input);
@@ -122,11 +121,11 @@ namespace Eywa\Console\Routes {
 
             if ($this->routes->ok())
             {
-                $output->writeln("<info>All routes was updated successfully</info>");
+                $io->success('All routes was updated successfully');
 
                 return 0;
             }
-            $output->writeln("<error>Fail to update routes</error>");
+            $io->error('Fail to update the routes');
             return 1;
         }
 
@@ -134,7 +133,9 @@ namespace Eywa\Console\Routes {
          * @param OutputInterface $output
          * @param InputInterface $input
          * @return int
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         private function ask(OutputInterface $output,InputInterface $input)
         {
@@ -230,7 +231,9 @@ namespace Eywa\Console\Routes {
         }
 
         /**
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function save()
         {

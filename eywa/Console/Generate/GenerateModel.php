@@ -8,6 +8,7 @@ namespace Eywa\Console\Generate {
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class GenerateModel extends Command
     {
@@ -34,6 +35,10 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
+
+            $io->title('Generation of the model');
+
             $x = $input->getArgument('model');
             $table = $input->getArgument('table');
             $model = ucfirst(strtolower($x));
@@ -44,12 +49,12 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($file))
             {
-                $output->writeln("<error>The $model model already exist</error>");
+                $io->error("The $model model already exist");
 
                 return 1;
             }
             if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace\n{ \n\n\tuse Eywa\Database\Model\Model;\n\n\tClass $model extends Model\n\t{\n\n\t\tprotected static string \$table = '$table';\n\n\t\tprotected static string \$by = 'id';\n\n\t\tprotected static int \$limit = 20;\n\n\t}\n\n}\n")->flush()) {
-                $output->write("<info>The $model model was generated successfully</info>\n");
+                $io->success("The $model model was generated successfully");
 
                 return 0;
             }

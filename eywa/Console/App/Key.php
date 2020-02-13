@@ -3,12 +3,11 @@
 
 namespace Eywa\Console\App;
 
-
-use Eywa\File\File;
 use Eywa\Security\Crypt\Crypter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Key extends Command
 {
@@ -23,11 +22,19 @@ class Key extends Command
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
+        $io = new SymfonyStyle($input,$output);
 
+        $io->title('Generation of the app key');
+
+        if (!file_exists('.env'))
+        {
+            $io->error('The .env file not exist');
+            return 1;
+        }
         $f = fopen('.env','r');
         if (!$f)
         {
-            $output->writeln("Failed to open the .env file");
+            $io->error("Failed to open the .env file");
             return 1;
         }
         $app_key = Crypter::generateKey();
@@ -44,7 +51,7 @@ class Key extends Command
         $f = fopen('.env','w+');
         if (!$f)
         {
-            $output->writeln("Failed to open the .env file");
+            $io->error("Failed to open the .env file");
             return 1;
         }
 
@@ -56,6 +63,7 @@ class Key extends Command
             else
                 fputs($f,$line);
         }
+        $io->success("The app key has been defined successfully");
         return fclose($f) ? 0 : 1;
     }
 }

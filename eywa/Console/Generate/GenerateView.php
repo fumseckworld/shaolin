@@ -7,8 +7,9 @@
 	use Symfony\Component\Console\Input\InputArgument;
 	use Symfony\Component\Console\Input\InputInterface;
 	use Symfony\Component\Console\Output\OutputInterface;
-	
-	class GenerateView extends Command
+    use Symfony\Component\Console\Style\SymfonyStyle;
+
+    class GenerateView extends Command
 	{
 		
 		protected static $defaultName = "make:view";
@@ -27,7 +28,9 @@
 		 */
 		public function execute(InputInterface $input, OutputInterface $output)
 		{
-			
+            $io = new SymfonyStyle($input,$output);
+
+            $io->title('Generation of the view');
 			$dir = $input->getArgument('dir') ?? '';
 
 			if (def($dir))
@@ -45,19 +48,17 @@
 
 			if (file_exists($view))
             {
-
-                $output->writeln("<error>The view already exist</error>");
+                $io->error('The view already exist');
                 return 1;
             }
 
 			if (touch($view))
 			{
-
-                $output->writeln("<info>The view was generated successfully</info>");
+                $io->success('The view was generated successfully');
                 return 0;
 
             }
-
+            $io->error('Failed to generate the view');
 			return 1;
 
 

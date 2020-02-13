@@ -9,6 +9,7 @@ namespace Eywa\Console\Generate {
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class GenerateController extends Command
     {
@@ -35,6 +36,9 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
+
+            $io->title('Generation of the controller');
 
             $controller = ucfirst(str_replace('Controller', '', $input->getArgument('controller')));
             append($controller, 'Controller');
@@ -46,13 +50,13 @@ namespace Eywa\Console\Generate {
             $namespace = 'App' . '\\' . 'Controllers';
             if (file_exists($controller))
             {
-                $output->writeln("<error>The $controller controller already exist</error>");
+                $io->error("The $file controller already exist");
 
                 return 1;
             }
             chdir(base('app','Controllers'));
             if ((new File("$file.php", EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace { \n\n\tuse  Eywa\Http\Controller\Controller;\n\n\tClass $file extends Controller\n\t{\n\n\t\tpublic function before_action()\n\t\t{\n\n\t\t}\n\n\t\tpublic function after_action()\n\t\t{\n\n\t\t}\n\n\t}\n\n}\n")->flush()) {
-                $output->write("<info>The $file controller was generated successfully</info>\n");
+                $io->success("The $file controller was generated successfully");
 
                 return 0;
             }
