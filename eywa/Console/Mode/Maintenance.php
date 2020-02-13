@@ -1,14 +1,17 @@
 <?php
 	
-	namespace Imperium\Command
+	namespace Eywa\Console\Mode
 	{
-		
-		use Imperium\File\File;
-		use Symfony\Component\Console\Command\Command;
-		use Symfony\Component\Console\Input\InputInterface;
-		use Symfony\Component\Console\Output\OutputInterface;
-		
-		class Maintenance extends Command
+
+
+        use Eywa\Exception\Kedavra;
+        use Eywa\File\File;
+        use Symfony\Component\Console\Command\Command;
+        use Symfony\Component\Console\Input\InputInterface;
+        use Symfony\Component\Console\Output\OutputInterface;
+        use Symfony\Component\Console\Style\SymfonyStyle;
+
+        class Maintenance extends Command
 		{
 			
 			protected static $defaultName = 'app:down';
@@ -18,11 +21,26 @@
 				
 				$this->setDescription('Turn application in maintenance mode')->setAliases(['down']);
 			}
-			
+
+            /**
+             * @param InputInterface $input
+             * @param OutputInterface $output
+             * @return int|void
+             * @throws Kedavra
+             */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
-				if((new File(base('config.yaml') .DIRECTORY_SEPARATOR . 'mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: down")->flush())
-					$output->writeln("<info>Aplication is now in maintenance mode</info>");
+                $io = new SymfonyStyle($input,$output);
+
+                $io->title('Activating the maintenance mode');
+				if((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: down")->flush())
+                {
+                    $io->success('The application is now in maintenance mode');
+                    return 0;
+                }
+
+				$io->error('Checkout mode has failed');
+				return 1;
 			}
 			
 		}

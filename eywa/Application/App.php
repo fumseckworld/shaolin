@@ -199,7 +199,15 @@ namespace Eywa\Application {
          */
         public function run(): Response
         {
+
+            if (equal($this->config('mode','mode'),'down'))
+                return (new Response((new View('maintenance',HTTP_SERVICE_UNAVAILABLE_TEXT,'Site in maintenance we comming soon'))->render(),'',503,['Retry-After'=> 600]))->send();
+
             return (new Router(ServerRequest::generate()))->run();
+
+
+
+
         }
 
         /**
