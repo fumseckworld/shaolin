@@ -21,8 +21,7 @@ class HomeController extends Controller
 
     public function before_action()
     {
-        d(Seeding::run());
-        d(Migrate::execute('down'));
+        
     }
 
     public function after_action()

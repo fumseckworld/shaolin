@@ -3,12 +3,14 @@
 	namespace Eywa\Console\App
 	{
 
+        use Eywa\Console\Shell;
         use Symfony\Component\Console\Command\Command;
         use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
+        use Symfony\Component\Console\Style\SymfonyStyle;
 
-		
-		class Serve extends Command
+
+        class Serve extends Command
 		{
 			
 			protected static $defaultName = "app:run";
@@ -28,8 +30,15 @@
 			 */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
-				$output->writeln("<info>Serve is running : </info>http://localhost:3000 ");
-				return shell_exec("php -S localhost:3000 -d display_errors=1 -t web");
+                $io = new SymfonyStyle($input,$output);
+
+                $io->title('Started development server');
+				$io->success("The server is running : http://localhost:3000");
+
+                (new Shell("php -S localhost:3000 -d display_errors=1 -t web"))->run();
+
+               return 0;
+
 			}
 			
 		}
