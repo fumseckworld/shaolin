@@ -16,9 +16,7 @@
 			
 			protected function configure()
 			{
-				
-				$base = env('DB_NAME','eywa');
-				$this->setDescription("Seed the $base database");
+				$this->setDescription("Seed the development database");
 			}
 			
 			public function execute(InputInterface $input,  OutputInterface $output)

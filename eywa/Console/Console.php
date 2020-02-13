@@ -9,6 +9,7 @@ namespace Eywa\Console {
     use Eywa\Console\App\Key;
     use Eywa\Console\App\Serve;
     use Eywa\Console\Cache\ClearCache;
+    use Eywa\Console\Database\MigrateDatabase;
     use Eywa\Console\Database\SeedDatabase;
     use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateModel;
@@ -67,7 +68,7 @@ namespace Eywa\Console {
 
            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),
-               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode()
+               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new MigrateDatabase()
 
            ];
 

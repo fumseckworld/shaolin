@@ -7,6 +7,7 @@ namespace App\Console;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 class Hello extends Command
 {
@@ -20,7 +21,10 @@ class Hello extends Command
     }
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln("<info>Hello</info>");
+        $io = new SymfonyStyle($input,$output);
+
+        $io->success('Welcome at shaolin');
+
         return 0;
     }
 

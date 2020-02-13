@@ -17,7 +17,7 @@ namespace Eywa\Console\Mode {
         protected function configure()
         {
 
-            $this->setDescription('Turn application in production mode')->setAliases(['up']);
+            $this->setDescription('Turn application in production mode');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)

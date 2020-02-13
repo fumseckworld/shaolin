@@ -19,7 +19,7 @@
 			protected function configure()
 			{
 				
-				$this->setDescription('Turn application in maintenance mode')->setAliases(['down']);
+				$this->setDescription('Turn application in maintenance mode');
 			}
 
             /**
