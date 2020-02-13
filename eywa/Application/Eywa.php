@@ -356,6 +356,20 @@ namespace Eywa\Application {
 
         /**
          *
+         * Return a json response
+         *
+         * @param array $data
+         * @param int $status
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function json(array $data,int $status = 200): Response;
+
+        /**
+         *
          * Get an instance of connexion (PDO)
          *
          * @return Connexion

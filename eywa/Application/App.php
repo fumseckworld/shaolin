@@ -21,6 +21,7 @@ namespace Eywa\Application {
     use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\ServerRequest;
+    use Eywa\Http\Response\JsonResponse;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use Eywa\Http\Routing\Router;
@@ -433,6 +434,14 @@ namespace Eywa\Application {
         public function files(string $key, $default = null)
         {
             return $this->request()->file()->get($key,$default);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function json(array $data,int $status = 200): Response
+        {
+            return  (new JsonResponse($data,$status))->send();
         }
     }
 }
