@@ -6,10 +6,12 @@ namespace Eywa\Console\Lang {
 
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Eywa\Console\Shell;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class CreateCatalogues extends Command
     {
@@ -25,16 +27,42 @@ namespace Eywa\Console\Lang {
          * @param InputInterface $input
          * @param OutputInterface $output
          * @return int
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-           collect(config('i18n','locales'))->for([$this,'generate'])->ok();
-           return 0;
+            $io = new SymfonyStyle($input,$output);
+
+            $io->title('Create localization catalog');
+            $x = collect();
+
+            foreach (config('i18n','locales') as $locale)
+            {
+                if ($this->generate($locale))
+                {
+                    $io->title("Generating the $locale catalog");
+                    $io->success("The $locale catalog was successfully generated");
+                    $x->push(true);
+                }else{
+                    $io->warning("The $locale catalog already exist");
+                    $x->push(false);
+                }
+            }
+            if ($x->ok())
+            {
+                $io->success("All catalogs was successfully generated");
+                return 0;
+            }
+
+            $io->error('Catalogs already exist');
+            return  1;
         }
 
         /**
          * @param $locale
+         * @return bool
          * @throws DependencyException
          * @throws NotFoundException
          */
@@ -52,10 +80,11 @@ namespace Eywa\Console\Lang {
 
                 mkdir("po/$locale");
                 mkdir("po/$locale/LC_MESSAGES");
-
-                system("xgettext --keyword=_ --language=PHP --add-comments --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name --sort-output -o po/$app_name.pot -f $files");
-                system("msginit --locale=$locale -i po/$app_name.pot -o po/$locale/LC_MESSAGES/messages.po");
+                (new Shell("xgettext --keyword=_ --language=PHP --add-comments --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name --sort-output -o po/$app_name.pot -f $files"))->run();
+                (new Shell("msginit --locale=$locale -i po/$app_name.pot -o po/$locale/LC_MESSAGES/messages.po"))->run();
+                return true;
             }
+            return false;
 
         }
     }
