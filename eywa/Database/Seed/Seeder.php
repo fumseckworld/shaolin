@@ -106,7 +106,7 @@ namespace Eywa\Database\Seed {
          */
         public function seed() : bool
         {
-            static::$connexion = new Connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'),intval(env('DB_PORT')));
+            static::$connexion = new Connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'),intval(env('DEVELOP_DB_PORT')));
             static::$faker = ioc('faker');
             static::$table = ioc('table')->from(static::$from);
             static::$set = collect();

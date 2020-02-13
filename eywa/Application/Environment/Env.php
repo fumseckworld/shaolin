@@ -32,7 +32,7 @@ namespace Eywa\Application\Environment {
 
             $this->env =   Dotenv::create($repository, base(),'.env');
             $this->env->load();
-            $this->env->required(['DEBUG','DB_DRIVER','DB_HOST','DB_PORT','DB_NAME', 'DB_USERNAME', 'DB_PASSWORD','APP_NAME','APP_KEY','CIPHER','APP_MODE','TRANSLATOR_EMAIL']);
+            $this->env->required(['DEBUG','DB_DRIVER','DB_HOST','DB_PORT','DB_NAME', 'DB_USERNAME', 'DB_PASSWORD','DEVELOP_DB_DRIVER','DEVELOP_DB_HOST','DEVELOP_DB_PORT','DEVELOP_DB_NAME', 'DEVELOP_DB_USERNAME', 'DEVELOP_DB_PASSWORD','APP_NAME','APP_KEY','CIPHER','APP_MODE','TRANSLATOR_EMAIL']);
         }
 
         /**
