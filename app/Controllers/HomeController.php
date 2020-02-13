@@ -9,6 +9,7 @@ use Eywa\Database\Migration\Migrate;
 use Eywa\Database\Seed\Seeding;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
+use Eywa\Http\Response\JsonResponse;
 use Eywa\Http\Response\Response;
 
 class HomeController extends Controller
@@ -37,6 +38,7 @@ class HomeController extends Controller
      */
     public function home(): Response
     {
+
         $form = $this->form('hello', GET,  ['name' => 'marc'])->add('name', 'textarea', ['placeholder' => 'type your name'])->get();
 
         $users = User::all();
