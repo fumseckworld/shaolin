@@ -32,7 +32,9 @@ namespace Eywa\Application {
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Security\Validator\Validator;
+    use Eywa\Session\ArraySession;
     use Eywa\Session\Session;
+    use Eywa\Session\SessionInterface;
     use Eywa\Time\Timing;
     use Redis;
 
@@ -200,15 +202,13 @@ namespace Eywa\Application {
          */
         public function run(): Response
         {
+            if (cli())
+                return (new Router((new ServerRequest('/',GET))))->run();
 
             if (equal($this->config('mode','mode'),'down'))
                 return (new Response((new View('maintenance',HTTP_SERVICE_UNAVAILABLE_TEXT,'Site in maintenance we comming soon'))->render(),'',503,['Retry-After'=> 600]))->send();
 
             return (new Router(ServerRequest::generate()))->run();
-
-
-
-
         }
 
         /**
@@ -349,9 +349,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function session(): Session
+        public function session(): SessionInterface
         {
-            return new Session();
+            return cli() ? new ArraySession() : new Session();
         }
 
         /**
@@ -397,7 +397,7 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function collect(array $data): Collect
+        public function collect(array $data = []): Collect
         {
             return new Collect($data);
         }

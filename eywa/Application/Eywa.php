@@ -23,6 +23,7 @@ namespace Eywa\Application {
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Security\Validator\Validator;
     use Eywa\Session\Session;
+    use Eywa\Session\SessionInterface;
     use Redis;
 
     interface Eywa
@@ -133,7 +134,7 @@ namespace Eywa\Application {
          * @return Collect
          *
          */
-        public function collect(array $data): Collect;
+        public function collect(array $data = []): Collect;
 
         /**
          *
@@ -184,10 +185,10 @@ namespace Eywa\Application {
          *
          * Get an instance of session
          *
-         * @return Session
+         * @return SessionInterface
          *
          */
-        public function session(): Session;
+        public function session(): SessionInterface;
 
         /**
          *
