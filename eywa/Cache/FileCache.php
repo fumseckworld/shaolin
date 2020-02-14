@@ -58,12 +58,11 @@ namespace Eywa\Cache {
          * @return int
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
+         *
          */
         public function ttl(): int
         {
-            return  env('APP_MODE') !== 'dev' ? intval(config('cache','ttl')) * 1440 : intval(config('cache','ttl'));
+            return  intval(config('cache','ttl'));
         }
 
         /**
