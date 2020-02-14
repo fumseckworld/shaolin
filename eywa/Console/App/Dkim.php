@@ -33,7 +33,7 @@
                     return 1;
                 }
 
-                if((new Shell('openssl genrsa -out dkim.private.key 1024 && openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM'))->run())
+                if ((new Shell('openssl genrsa -out dkim.private.key 1024'))->run() && (new Shell('openssl rsa -in dkim.private.key -out dkim.public.key -pubout -outform PEM'))->run())
                 {
                     $io->success('The dkim keys will be used to sign all emails');
                     return 0;
