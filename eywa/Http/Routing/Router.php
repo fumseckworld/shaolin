@@ -11,8 +11,6 @@ namespace Eywa\Http\Routing {
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
-    use Eywa\Session\Session;
-    use Eywa\Time\Timing;
     use stdClass;
 
     class Router
