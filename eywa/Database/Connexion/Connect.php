@@ -377,5 +377,13 @@ namespace Eywa\Database\Connexion {
 
             return $x->fetch(PDO::FETCH_COLUMN);
         }
+
+        /**
+         * @inheritDoc
+         */
+        public function development(): Connexion
+        {
+            return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),config('connection','options'),env('DB_HOST'));
+        }
     }
 }

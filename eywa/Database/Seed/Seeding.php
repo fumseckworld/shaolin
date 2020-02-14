@@ -50,10 +50,10 @@ namespace Eywa\Database\Seed {
         {
             $bool = collect();
 
+            $io = new SymfonyStyle($input,$output);
+
             foreach (self::list() as $file => $class)
             {
-                $io = new SymfonyStyle($input,$output);
-
                 if (!is_null($output))
                 {
                     $io->title("Started the $file seeding");
@@ -65,7 +65,6 @@ namespace Eywa\Database\Seed {
                     $io->success("The $file seeding has been executed successfully");
 
             }
-
             return $bool->ok();
 
         }

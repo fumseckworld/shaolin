@@ -4,11 +4,8 @@ declare(strict_types=1);
 namespace Eywa\Database\Seed {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Eywa\Collection\Collect;
-    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
@@ -99,14 +96,13 @@ namespace Eywa\Database\Seed {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          * @throws Exception
+         *
          */
         public function seed() : bool
         {
-            static::$connexion = new Connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'),intval(env('DEVELOP_DB_PORT')));
+            static::$connexion = app()->connexion()->development();
             static::$faker = ioc('faker');
             static::$table = ioc('table')->from(static::$from);
             static::$set = collect();

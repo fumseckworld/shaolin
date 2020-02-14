@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Eywa\Database\Connexion {
 
 
+    use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
 
@@ -37,6 +38,19 @@ namespace Eywa\Database\Connexion {
          *
          */
         public function set(string ...$queries): Connexion;
+
+        /**
+         *
+         * Get an instance of the development base
+         *
+         * @return Connexion
+         *
+         * @throws Kedavra
+         *
+         * @throws Exception
+         *
+         */
+        public function development(): Connexion;
 
         /**
          *
