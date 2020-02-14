@@ -9,15 +9,14 @@ namespace Eywa\Console\Mode {
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
-    class ProductionMode extends Command
+    class DevMode extends Command
     {
 
-        protected static $defaultName = 'app:prod';
+        protected static $defaultName = 'app:dev';
 
         protected function configure()
         {
-
-            $this->setDescription('Turn application in production mode');
+            $this->setDescription('Turn application in development mode');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
@@ -25,10 +24,10 @@ namespace Eywa\Console\Mode {
 
             $io = new SymfonyStyle($input,$output);
 
-            $io->title('Activating the production mode');
-            if ((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: up\nconnexion: prod")->flush())
+            $io->title('Activating the development mode');
+            if ((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: up\nconnexion: dev")->flush())
             {
-                $io->success('The application is now in production mode');
+                $io->success('The application is now in development mode');
                 return 0;
             }
             $io->error('The change mode command has fail');

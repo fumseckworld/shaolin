@@ -407,7 +407,8 @@ namespace Eywa\Application {
          */
         public function connexion(): Connexion
         {
-            return new Connect($this->env('DB_DRIVER','mysql'),$this->env('DB_NAME','eywa'),$this->env('DB_USERNAME','eywa'),$this->env('DB_PASSWORD','eywa'),intval($this->env('DB_PORT',3306)),$this->config('connection','options'),$this->env('DB_HOST','localhost'));
+            $prod = new Connect($this->env('DB_DRIVER','mysql'),$this->env('DB_NAME','eywa'),$this->env('DB_USERNAME','eywa'),$this->env('DB_PASSWORD','eywa'),intval($this->env('DB_PORT',3306)),$this->config('connection','options'),$this->env('DB_HOST','localhost'));
+            return equal($this->config('mode','connexion'),'prod') ? $prod : $prod->development();
         }
 
         /**

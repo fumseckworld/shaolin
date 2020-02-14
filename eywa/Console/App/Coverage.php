@@ -18,7 +18,7 @@
 			
 			protected function configure()
 			{
-				$this->setDescription('Run a development server');
+				$this->setDescription('Run a server to show the code coverage');
 			}
 		
 			
