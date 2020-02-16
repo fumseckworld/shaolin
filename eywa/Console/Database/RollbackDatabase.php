@@ -11,13 +11,13 @@ namespace Eywa\Console\Database {
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
-    class MigrateDatabase extends Command
+    class RollbackDatabase extends Command
     {
-        protected static $defaultName = 'db:migrate';
+        protected static $defaultName = 'db:rollback';
 
         protected function configure()
         {
-            $this->setDescription('Run the migrations')
+            $this->setDescription('Rollback the migrations')
                 ->setHelp('php shaolin db:migrate env');
             ;
         }
@@ -26,14 +26,14 @@ namespace Eywa\Console\Database {
         {
             $io = new SymfonyStyle($input,$output);
             $time = (new Timing());
-            if (Migrate::run('up'))
+            if (Migrate::run('down'))
             {
                 $x = $time->check();
-                $io->success("The migration has been executed successfully : $x ms");
+                $io->success("The rollback task has been executed successfully : $x ms");
                 return 0;
             }
 
-            $io->error('The migration task has failed');
+            $io->error('The rollback task has failed');
             return 1;
         }
     }

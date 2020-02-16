@@ -22,7 +22,7 @@ class HomeController extends Controller
 
     public function before_action()
     {
-        
+
     }
 
     public function after_action()
