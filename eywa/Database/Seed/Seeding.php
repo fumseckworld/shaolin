@@ -22,7 +22,7 @@ namespace Eywa\Database\Seed {
         public static function list():array
         {
             $x = [];
-            foreach (glob(base('app','Database','Seeds','*.php')) as $seed)
+            foreach (glob(base('db','Seeds','*.php')) as $seed)
             {
                 $item = collect(explode(DIRECTORY_SEPARATOR,$seed))->last();
 
@@ -30,7 +30,7 @@ namespace Eywa\Database\Seed {
                 $item = collect(explode('.',$item))->first();
 
 
-                $class = '\App\Database\Seeds\\' .$item;
+                $class = '\Base\Seeds\\' .$item;
 
                 $x[$item] = $class;
             }

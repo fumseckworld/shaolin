@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Database\Seeds {
+namespace Base\Seeds {
 
     use Eywa\Database\Seed\Seeder;
     use Eywa\Database\Table\Table;

@@ -19,7 +19,7 @@ namespace Eywa\Database\Migration {
         public static function list(string $mode = 'up'): array
         {
             $x = [];
-            foreach (glob(base('app','Database','Migrations','*.php')) as $k => $v)
+            foreach (glob(base('db','Migrations','*.php')) as $k => $v)
             {
                 $item = collect(explode(DIRECTORY_SEPARATOR,$v))->last();
 
@@ -27,7 +27,7 @@ namespace Eywa\Database\Migration {
                 $item = collect(explode('.',$item))->first();
 
 
-                $class = '\App\Database\Migrations\\' .$item;
+                $class = '\Base\Migrations\\' .$item;
 
                 $x[$class] = $class::$generared_at;
             }

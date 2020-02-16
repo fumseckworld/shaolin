@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Database\Migrations;
+namespace Base\Migrations;
 
 
 use Eywa\Database\Migration\Migration;;

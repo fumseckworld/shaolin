@@ -22,8 +22,7 @@ class HomeController extends Controller
 
     public function before_action()
     {
-
-        d(app()->connexion());
+        
     }
 
     public function after_action()
