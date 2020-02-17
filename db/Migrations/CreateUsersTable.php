@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
 
     public static string $down_success_message = 'The users table was removed successfully';
 
-    public static string $down_error_message = 'The users table deletion has fail';
+    public static string $down_error_message = 'The users table not exist';
 
     public static string $up_title = 'Creation of the users table';
 
