@@ -26,7 +26,7 @@ class CreateAuthTable extends Migration
 
     public function up(): bool
     {
-      return  $this->add('id','primary')->add('name','string',25,'NOT NULL')->add('email','text',255,'NOT NULL')->add('password','text',255,'NOT NULL')->create();
+      return  $this->add('id','primary')->add('name','string',255,'UNIQUE','NOT NULL')->add('email','string',255,'UNIQUE','NOT NULL')->add('password','string',255,'NOT NULL')->create();
     }
 
     public function down(): bool

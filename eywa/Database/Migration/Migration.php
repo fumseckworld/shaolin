@@ -3,8 +3,6 @@
 
 namespace Eywa\Database\Migration {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
@@ -148,8 +146,7 @@ namespace Eywa\Database\Migration {
          * @param string $column
          * @param string $type
          * @param int $size
-         * @param string ...$constraints
-         *
+         * @param string[] $constraints
          * @return Migration
          *
          * @throws Kedavra
@@ -208,19 +205,21 @@ namespace Eywa\Database\Migration {
             switch ($this->driver())
             {
                 case MYSQL:
-                    $constraint = 'PRIMARY KEY NOT NULL AUTO_INCREMENT';
+                    $type = 'INT';
+                    $constraints = ['PRIMARY KEY NOT NULL AUTO_INCREMENT'];
                 break;
                 case POSTGRESQL:
-                    $constraint = 'SERIAL PRIMARY KEY';
+                    $type = 'SERIAL';
+                    $constraints =  ['PRIMARY KEY NOT NULL'];
                 break;
                 case SQLITE:
-                    $constraint = 'PRIMARY KEY AUTOINCREMENT';
+                    $type = 'INTEGER';
+                    $constraints = ['PRIMARY KEY AUTOINCREMENT'];
                 break;
             }
+            $size = 0;
 
-            $type = config('migrations','primary_key_type');
-
-            static::$columns->push(compact('column', 'type', 'constraint'));
+            static::$columns->push(compact('column', 'type','size','constraints'));
 
 
             return $this;
@@ -233,31 +232,35 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function create(): bool
         {
             $table = static::$table;
+
             $sql = "CREATE TABLE IF NOT EXISTS $table  (";
+
 
             foreach (static::$columns->all() as $column)
             {
                 $x = collect($column);
 
-                $constraint = $x->get('constraint');
-
                 $column = $x->get('column');
+
+                $constraint = collect($x->get('constraints'))->join(' ');
+
+
 
                 $type = $x->get('type');
 
+                $size = $x->get('size') ?? 0;
 
-                $size = $x->get('size');
+
 
                 switch ($type)
                 {
                     case 'string':
+
                         append($sql, "$column {$this->text()} ");
                     break;
                     case 'longtext':
@@ -266,8 +269,9 @@ namespace Eywa\Database\Migration {
                     case 'datetime':
                         append($sql, "$column {$this->datetime()} ");
                     break;
+
                     default:
-                        append($sql,$column, " $type ");
+                        append($sql,"$column $type ");
                     break;
                 }
 
@@ -275,8 +279,7 @@ namespace Eywa\Database\Migration {
                 if ($size != 0)
                     append($sql," ($size) ");
 
-                append($sql,$constraint);
-                append($sql,', ');
+                append($sql," $constraint , ");
 
             }
 
@@ -294,11 +297,11 @@ namespace Eywa\Database\Migration {
             static::$foreign->clear();
 
             $sql = trim($sql,', ');
+
             append($sql, ')');
 
             return $this->connexion()->set($sql)->execute();
         }
-
 
 
         /**
@@ -307,15 +310,15 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function update(): bool
         {
             $table = static::$table;
 
             $result = collect();
+
+
 
             foreach (static::$columns->all() as $column)
             {
@@ -353,7 +356,8 @@ namespace Eywa\Database\Migration {
                 if ($size !== 0)
                     append($x,"($size)");
 
-                $result->push($this->connexion()->set("ALTER TABLE $table ADD COLUMN $x")->execute());
+
+                $result->push($this->connexion()->set("ALTER TABLE $table ADD COLUMN $x;")->execute());
             }
 
             static::$columns->clear();
@@ -371,9 +375,7 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function drop_columns(string ...$columns): bool
         {
@@ -386,7 +388,7 @@ namespace Eywa\Database\Migration {
             foreach (static::$columns->all() as $column)
             {
                 $x = $column['column'];
-                $result->push($connexion->set("ALTER TABLE $table DROP  $x")->execute());
+                $result->push($connexion->set("ALTER TABLE $table DROP $x")->execute());
             }
 
             static::$columns->clear();
@@ -402,9 +404,7 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function drop(string $table): bool
         {
@@ -425,9 +425,7 @@ namespace Eywa\Database\Migration {
 
         /**
          * @return string
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         private function datetime()
         {
@@ -450,17 +448,30 @@ namespace Eywa\Database\Migration {
 
         /**
          * @return string
+         *
+         * @throws Kedavra
          */
         private function text()
         {
-            return 'VARCHAR';
+            switch ($this->driver())
+            {
+                case MYSQL:
+                    return  'VARCHAR';
+                break;
+                case POSTGRESQL:
+                    return 'character varying';
+                break;
+                case SQLITE:
+                break;
+                default:
+                    return  '';
+                break;
+            }
         }
 
         /**
          * @return string
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         private function long_text()
         {
