@@ -26,15 +26,8 @@ namespace Eywa\Console\Database {
         {
             $io = new SymfonyStyle($input,$output);
             $time = (new Timing());
-            if (Migrate::run('up'))
-            {
-                $x = $time->check();
-                $io->success("The migration has been executed successfully : $x ms");
-                return 0;
-            }
+            return Migrate::run('up',$io);
 
-            $io->error('The migration task has failed');
-            return 1;
         }
     }
 }

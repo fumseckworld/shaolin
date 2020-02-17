@@ -8,23 +8,30 @@ use Eywa\Database\Migration\Migration;;
 
 class CreateUsersTable extends Migration
 {
-    public static string $generared_at = '2020-02-12-12-20-42';
+    public static string $created_at = '2020-02-12-12-20-42';
 
     public static string $table = 'users';
 
+    public static string $up_success_message = 'The users table has been created successfully';
+
+    public static string $up_error_message = 'The table users has not been created';
+
+    public static string $down_success_message = 'The users table was removed successfully';
+
+    public static string $down_error_message = 'The users table deletion has fail';
+
+    public static string $up_title = 'Creation of the users table';
+
+    public static string $down_title = 'Removing the users table';
+
     public function up(): bool
     {
-
-        echo '<p>create user table</p>';
-        return true;
-
-
-
+      return  $this->add('id','primary')->add('username','longtext')->add('email','string',255)->create();
     }
 
     public function down(): bool
     {
-        echo '<p>remove user table</p>';
-        return  true;
+        return $this->drop('users');
+
     }
 }

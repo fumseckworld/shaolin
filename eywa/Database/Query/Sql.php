@@ -195,6 +195,54 @@ namespace Eywa\Database\Query {
 
         /**
          *
+         * Check if record exist
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function exist(): bool
+        {
+            return  def($this->execute());
+        }
+
+        /**
+         * @param array $records
+         * @return bool
+         * @throws Kedavra
+         */
+        public function save(array $records): bool
+        {
+
+            $x = collect($this->columns())->join();
+
+            $sql = "INSERT INTO {$this->table} ($x) VALUES ";
+
+            $id = $this->connexion()->postgresql() ? 'DEFAULT' : 'NULL';
+            foreach ($records as $record)
+            {
+                append($sql,'(',$id,',');
+
+
+                foreach ($this->columns() as $column)
+                {
+                    if (array_key_exists($column,$record))
+                        append($sql,$this->connexion()->secure($record[$column]),',');
+                }
+
+                $sql = trim($sql,',');
+
+                append($sql,')',',');
+
+
+            }
+            $sql = trim($sql,',');
+
+            return $this->connexion()->set($sql)->execute();
+        }
+        /**
+         *
          * Get once result
          *
          * @param int $offset

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Eywa\Database\Model {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connexion;
@@ -142,39 +140,12 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function create(array ...$records): bool
         {
-
-            $table = static::$table;
-            $x = collect(static::columns())->join();
-
-            $sql = "INSERT INTO $table ($x) VALUES ";
-
-            $id = static::connection()->postgresql() ? 'DEFAULT' : 'NULL';
-            foreach ($records as $record)
-            {
-                append($sql,'(',$id,',');
-
-
-                foreach (static::columns() as $column)
-                {
-                    if (array_key_exists($column,$record))
-                        append($sql,static::connection()->secure($record[$column]),',');              }
-
-                $sql = trim($sql,',');
-
-                append($sql,')',',');
-
-
-            }
-            $sql = trim($sql,',');
-
-            return static::connection()->set($sql)->execute();
-
+            return static::sql()->from(static::$table)->save($records);
         }
 
         /**
@@ -262,7 +233,7 @@ namespace Eywa\Database\Model {
          *
          * Get only column values
          *
-         * @param string ...$columns
+         * @param $columns
          *
          * @return Sql
          *
@@ -297,9 +268,8 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function save() : bool
         {
@@ -331,9 +301,8 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public function refresh(int $id): bool
         {
@@ -388,9 +357,8 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function update(int $id,array $values): bool
         {
@@ -439,9 +407,8 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function destroy(int $id) : bool
         {
@@ -488,9 +455,8 @@ namespace Eywa\Database\Model {
          *
          * @return array
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function find(int $id): array
         {
@@ -507,9 +473,8 @@ namespace Eywa\Database\Model {
          *
          * @return Sql
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         *
          */
         public static function different($expected, string $column = '') : Sql
         {

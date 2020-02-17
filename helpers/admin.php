@@ -7,6 +7,7 @@ use DI\NotFoundException;
 use Eywa\Application\App;
 use Eywa\Configuration\Config;
 use Eywa\Database\Connexion\Connect;
+use Eywa\Database\Query\Sql;
 use Eywa\Debug\Dumper;
 use Eywa\Exception\Kedavra;
 use Eywa\File\File;
@@ -179,6 +180,24 @@ if (!function_exists('app'))
     }
 }
 
+if (!function_exists('sql'))
+{
+    /**
+     *
+     * Get an instance of sql
+     *
+     * @param string $table
+     *
+     * @return Sql
+     *
+     * @throws Kedavra
+     * @throws Exception
+     */
+    function sql(string $table): Sql
+    {
+        return (new Sql(app()->connexion(),$table));
+    }
+}
 if (!function_exists('ioc'))
 {
     /**

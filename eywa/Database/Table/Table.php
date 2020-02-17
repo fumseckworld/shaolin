@@ -234,7 +234,7 @@ namespace Eywa\Database\Table {
         {
             $this->check();
 
-            return $this->connexion->set("DROP TABLE {$this->table}")->execute();
+            return $this->exist($this->table) ?  $this->connexion->set("DROP TABLE {$this->table}")->execute() : false;
         }
 
         /**
