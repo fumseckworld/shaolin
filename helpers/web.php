@@ -125,8 +125,6 @@ if (!function_exists('env'))
      *
      * @param string $default
      * @return array|false|string
-     * @throws DependencyException
-     * @throws NotFoundException
      * @throws Exception
      */
     function env($variable,$default = '')

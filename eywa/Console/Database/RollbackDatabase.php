@@ -26,6 +26,11 @@ namespace Eywa\Console\Database {
         {
             $io = new SymfonyStyle($input,$output);
 
+            if (Migrate::check_rollback())
+            {
+                $io->warning('Nothing to rollback');
+                return 0;
+            }
             return Migrate::run('down',$io);
 
         }

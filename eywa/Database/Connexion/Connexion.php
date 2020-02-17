@@ -43,14 +43,14 @@ namespace Eywa\Database\Connexion {
          *
          * Get an instance of the development base
          *
-         * @return Connexion
+         * @return Connect
          *
          * @throws Kedavra
          *
          * @throws Exception
          *
          */
-        public function development(): Connexion;
+        public function development(): Connect;
 
         /**
          *

@@ -1,5 +1,4 @@
 <?php
 
-    require '../vendor/autoload.php';
-
-    app()->run();
+require '../vendor/autoload.php';
+app()->run();

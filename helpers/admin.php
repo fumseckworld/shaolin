@@ -195,7 +195,11 @@ if (!function_exists('sql'))
      */
     function sql(string $table): Sql
     {
-        return (new Sql(app()->connexion(),$table));
+        $prod = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),config('connection','options'),env('DB_HOST','localhost'));
+
+        $connexion = equal(config('mode','connexion'),'prod') ? $prod : $prod->development();
+
+        return (new Sql($connexion,$table));
     }
 }
 if (!function_exists('ioc'))

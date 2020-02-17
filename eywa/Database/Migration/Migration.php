@@ -3,13 +3,21 @@
 
 namespace Eywa\Database\Migration {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Exception;
     use Eywa\Collection\Collect;
-    use Eywa\Database\Connexion\Connexion;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
 
 
+    /**
+     * Class Migration
+     *
+     * @package Eywa\Database\Migration
+     *
+     */
     abstract class Migration
     {
 
@@ -85,18 +93,14 @@ namespace Eywa\Database\Migration {
 
         /**
          *
-         * The connexion to the base
-         *
-         */
-        protected static Connexion $connexion;
-
-        /**
-         *
          * All added columns
          *
          */
         protected static Collect $columns;
 
+        /**
+         * @var Collect
+         */
         private static Collect $foreign;
 
         /**
@@ -106,6 +110,7 @@ namespace Eywa\Database\Migration {
          * @return bool
          *
          * @throws Kedavra
+         * @throws Exception
          *
          */
         abstract public function up(): bool;
@@ -117,6 +122,7 @@ namespace Eywa\Database\Migration {
          * @return bool
          *
          * @throws Kedavra
+         * @throws Exception
          *
          */
         abstract public function down(): bool;
@@ -126,7 +132,6 @@ namespace Eywa\Database\Migration {
         /**
          * Migration constructor.
          *
-         * @throws Kedavra
          * @throws Exception
          *
          */
@@ -134,7 +139,6 @@ namespace Eywa\Database\Migration {
         {
             static::$columns = collect();
             static::$foreign = collect();
-            static::$connexion = app()->connexion();
         }
 
         /**
@@ -144,7 +148,7 @@ namespace Eywa\Database\Migration {
          * @param string $column
          * @param string $type
          * @param int $size
-         * @param string[] $constraints
+         * @param string ...$constraints
          *
          * @return Migration
          *
@@ -181,6 +185,10 @@ namespace Eywa\Database\Migration {
             return $this;
         }
 
+        /**
+         * @param string ...$names
+         * @return bool
+         */
         public function drop_foreign(string ...$names): bool
         {
 
@@ -192,13 +200,12 @@ namespace Eywa\Database\Migration {
          * @return Migration
          *
          * @throws Kedavra
-         *
          */
         private function primary(string $column): Migration
         {
             static::$current_column = $column;
 
-            switch (static::$connexion->driver())
+            switch ($this->driver())
             {
                 case MYSQL:
                     $constraint = 'PRIMARY KEY NOT NULL AUTO_INCREMENT';
@@ -211,7 +218,6 @@ namespace Eywa\Database\Migration {
                 break;
             }
 
-
             $type = config('migrations','primary_key_type');
 
             static::$columns->push(compact('column', 'type', 'constraint'));
@@ -220,13 +226,16 @@ namespace Eywa\Database\Migration {
             return $this;
         }
 
+
         /***
          *
          * Create the table
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function create(): bool
         {
@@ -271,6 +280,8 @@ namespace Eywa\Database\Migration {
 
             }
 
+            static::$columns->clear();
+
             foreach (static::$foreign->all() as $foreign)
             {
                 $x = collect($foreign);
@@ -279,11 +290,16 @@ namespace Eywa\Database\Migration {
 
                 append($sql," $constraint, ");
             }
+
+            static::$foreign->clear();
+
             $sql = trim($sql,', ');
             append($sql, ')');
 
-            return static::$connexion->set($sql)->execute();
+            return $this->connexion()->set($sql)->execute();
         }
+
+
 
         /**
          *
@@ -291,10 +307,60 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          */
-       public function update(): bool
+        public function update(): bool
         {
+            $table = static::$table;
 
+            $result = collect();
+
+            foreach (static::$columns->all() as $column)
+            {
+
+                if ((new Table($this->connexion()))->from($table)->has($column['column']))
+                    return false;
+
+                $type  = $column['type'];
+
+                $size = $column['size'];
+
+                $column = $column['column'];
+
+
+                $column_type = '';
+
+                switch ($type)
+                {
+                    case 'string':
+                        append($column_type, "$column {$this->text()} ");
+                    break;
+                    case 'longtext':
+                        append($column_type, "$column {$this->long_text()} ");
+                    break;
+                    case 'datetime':
+                        append($column_type, "$column {$this->datetime()} ");
+                    break;
+                    default:
+                        append($column_type,$column, " $type ");
+                    break;
+                }
+
+                $x = " $column_type";
+
+                if ($size !== 0)
+                    append($x,"($size)");
+
+                $result->push($this->connexion()->set("ALTER TABLE $table ADD COLUMN $x")->execute());
+            }
+
+            static::$columns->clear();
+
+
+
+            return  $result->ok();
         }
 
         /**
@@ -305,14 +371,27 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public function drop_columns(string ...$columns): bool
         {
             if ($this->columns() === $columns)
               return $this->drop(static::$table);
 
-            return true;
+            $connexion = $this->connexion();
+            $result = collect();
+            $table = static::$table;
+            foreach (static::$columns->all() as $column)
+            {
+                $x = $column['column'];
+                $result->push($connexion->set("ALTER TABLE $table DROP  $x")->execute());
+            }
+
+            static::$columns->clear();
+
+            return $result->ok();
         }
 
         /**
@@ -323,18 +402,13 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          */
         public function drop(string $table): bool
         {
-            return (new Table(static::$connexion))->from($table)->drop();
-        }
-
-
-        public function check()
-        {
-            d(static::$columns,static::$constraint,static::$connexion);
+            return (new Table($this->connexion()))->from($table)->drop();
         }
 
         /**
@@ -349,9 +423,15 @@ namespace Eywa\Database\Migration {
             return sql(static::$table)->columns();
         }
 
+        /**
+         * @return string
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
         private function datetime()
         {
-            switch (static::$connexion->driver())
+            switch ($this->driver())
             {
                 case MYSQL:
                     return 'DATETIME';
@@ -368,14 +448,23 @@ namespace Eywa\Database\Migration {
             }
         }
 
+        /**
+         * @return string
+         */
         private function text()
         {
             return 'VARCHAR';
         }
 
+        /**
+         * @return string
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         */
         private function long_text()
         {
-            switch (static::$connexion->driver())
+            switch ($this->driver())
             {
                 case MYSQL:
                     return 'LONGTEXT';
@@ -390,9 +479,29 @@ namespace Eywa\Database\Migration {
             }
         }
 
-        private function is(string $x,string $expected): bool
+        /**
+         * @return Connect
+         *
+         * @throws Kedavra
+         *
+         */
+        private function connexion(): Connect
         {
-            return  $x === $expected;
+            $prod = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),config('connection','options'),env('DB_HOST','localhost'));
+
+            return  equal(config('mode','connexion'),'prod') ? $prod : $prod->development();
+        }
+
+        /**
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         *
+         */
+        private function driver(): string
+        {
+            return $this->connexion()->driver();
         }
 
     }

@@ -217,26 +217,19 @@ namespace Eywa\Database\Query {
 
             $x = collect($this->columns())->join();
 
-            $sql = "INSERT INTO {$this->table} ($x) VALUES ";
-
+            $sql = "INSERT INTO {$this->table} ($x) VALUES( ";
             $id = $this->connexion()->postgresql() ? 'DEFAULT' : 'NULL';
-            foreach ($records as $record)
+            append($sql,$id,', ');
+            foreach ($this->columns() as $column)
             {
-                append($sql,'(',$id,',');
-
-
-                foreach ($this->columns() as $column)
-                {
-                    if (array_key_exists($column,$record))
-                        append($sql,$this->connexion()->secure($record[$column]),',');
-                }
-
-                $sql = trim($sql,',');
-
-                append($sql,')',',');
-
-
+                if (array_key_exists($column,$records))
+                    append($sql,$this->connexion()->secure($records[$column]),',');
             }
+
+            $sql = trim($sql,',');
+
+            append($sql,')',',');
+
             $sql = trim($sql,',');
 
             return $this->connexion()->set($sql)->execute();

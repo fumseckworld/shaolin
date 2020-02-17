@@ -25,8 +25,23 @@ namespace Eywa\Console\Database {
         public function execute(InputInterface $input,  OutputInterface $output)
         {
             $io = new SymfonyStyle($input,$output);
-            $time = (new Timing());
-            return Migrate::run('up',$io);
+
+            if (Migrate::check_migrate())
+            {
+                $io->warning('Nothing to migrate');
+                return 0;
+            }
+            $listes = Migrate::list();
+
+            $end = sum($listes);
+            $i = 0;
+
+            do{
+                Migrate::run('up',$io);
+                $i++;
+            }while($i!==$end);
+            $io->success('All migration has been executed successfully');
+            return 0;
 
         }
     }

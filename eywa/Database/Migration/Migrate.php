@@ -50,51 +50,201 @@ namespace Eywa\Database\Migration {
         {
             not_in(['up','down'],$mode,true,"The mode must be is up or down");
 
-            $return = collect();
-
-            foreach (static::list($mode) as $class => $date)
-            {
-                $migration = static::file($class);
-
-                $created_at = $class::$created_at;
-
-                $down_success_message = $class::$down_success_message;
-
-                $down_error_message = $class::$down_error_message;
-
-                $up_success_message = $class::$up_success_message;
-
-                $up_error_message = $class::$up_error_message;
-
-                $up_title = $class::$up_title;
-
-                $down_title = $class::$down_title;
-
-                $x = new $class;
-
-                equal($mode,'up') ?    $io->title($up_title) : $io->title($down_title);
-
-                $return->push(call_user_func_array([$x, $mode], []));
-
-                if ($return->ok())
-                {
-                    equal($mode,'up') ?    $io->success($up_success_message) : $io->success($down_success_message);
-                }else
-                {
-                    equal($mode,'up') ?    $io->error($up_error_message) : $io->error($down_error_message);
-
-                    return  1;
-                }
-                $return->clear();
-            }
-            equal($mode,'up') ? $io->success('All migrations has been excuted successfully') : $io->success('The rollback command has been executed successfully');
-
-            return 0;
+            return  equal($mode,'up') ? static::migrate($io,$mode) :  static::rollback($io,$mode);
         }
 
         private static function file(string $class)
         {
             return collect(explode('\\',$class))->last();
+        }
+
+        /**
+         * @param SymfonyStyle $io
+         * @param string $mode
+         * @return int
+         * @throws Kedavra
+         */
+        private static function migrate(SymfonyStyle $io,string $mode = 'up'): int
+        {
+
+            $return = collect();
+            $all = collect(static::list($mode));
+            $sql = sql('migrations');
+
+            if (def($sql->execute()))
+            {
+                foreach ($all->all() as $class => $date)
+                {
+
+                    $migration = static::file($class);
+
+                    $created_at = $class::$created_at;
+
+                    $down_success_message = $class::$down_success_message;
+
+                    $down_error_message = $class::$down_error_message;
+
+                    $up_success_message = $class::$up_success_message;
+
+                    $up_error_message = $class::$up_error_message;
+
+                    $up_title = $class::$up_title;
+
+                    $down_title = $class::$down_title;
+
+                    $exist = $sql->where('version',EQUAL,$date)->exist() && $sql->where('migration',EQUAL,$migration)->exist();
+
+
+                    if (!$exist)
+                    {
+                        $x = new $class;
+
+                        $io->title($up_title);
+
+                        $return->push(call_user_func_array([$x, $mode], []));
+
+                        if ($return->ok())
+                        {
+                            $io->success($up_success_message);
+                            $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            return  0;
+                        }
+
+                        $sql->where('version',EQUAL,$date)->destroy();
+                        $io->error($up_error_message);
+                        return 1;
+                    }
+
+                }
+            }else
+            {
+                foreach ($all->all() as $class => $date)
+                {
+
+                    $migration = static::file($class);
+
+                    $created_at = $class::$created_at;
+
+                    $down_success_message = $class::$down_success_message;
+
+                    $down_error_message = $class::$down_error_message;
+
+                    $up_success_message = $class::$up_success_message;
+
+                    $up_error_message = $class::$up_error_message;
+
+                    $up_title = $class::$up_title;
+
+                    $down_title = $class::$down_title;
+
+                    $exist = $sql->where('version',EQUAL,$created_at)->exist();
+
+                    if (!$exist)
+                    {
+                        $x = new $class;
+                        $io->title($up_title);
+                        $return->push(call_user_func_array([$x, $mode], []));
+
+                        if ($return->ok())
+                        {
+                            $io->success($up_success_message);
+                            $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            return  0;
+                        }
+                        $io->error($up_error_message);
+                        return 1;
+                    }
+                }
+            }
+
+            return 0;
+        }
+
+        /**
+         * @param SymfonyStyle $io
+         * @param string $mode
+         * @return int
+         * @throws Kedavra
+         */
+        private static function rollback(SymfonyStyle $io,string $mode = 'down'): int
+        {
+
+            $return = collect();
+            $all = collect(static::list($mode));
+            $sql = sql('migrations');
+
+            if (def($sql->execute()))
+            {
+                foreach ($all->all() as $class => $date)
+                {
+
+                    $migration = static::file($class);
+
+                    $created_at = $class::$created_at;
+
+                    $down_success_message = $class::$down_success_message;
+
+                    $down_error_message = $class::$down_error_message;
+
+                    $up_success_message = $class::$up_success_message;
+
+                    $up_error_message = $class::$up_error_message;
+
+                    $up_title = $class::$up_title;
+
+                    $down_title = $class::$down_title;
+
+                    $exist = $sql->where('version',EQUAL,$date)->exist() && $sql->where('migration',EQUAL,$migration)->exist();
+
+
+                    if ($exist)
+                    {
+                        $x = new $class;
+
+                        $io->title($down_title);
+
+                        $return->push(call_user_func_array([$x, $mode], []));
+
+                        if ($return->ok())
+                        {
+                            $io->success($down_success_message);
+                            $sql->where('version',EQUAL,$date)->destroy();
+                            return  0;
+                        }
+                        $io->error($down_error_message);
+                        return 1;
+                    }
+
+                }
+            }
+
+              return 0;
+        }
+
+        /**
+         * @return bool
+         * @throws Kedavra
+         */
+        public static function check_migrate(): bool
+        {
+            $sql = sql('migrations');
+            $return = collect();
+            foreach (static::list('up') as $class => $date)
+            {
+                $return->push($sql->where('version',EQUAL,$date)->exist());
+            }
+            return $return->ok();
+        }
+
+
+        /**
+         * @return bool
+         * @throws Kedavra
+         */
+        public static function check_rollback(): bool
+        {
+            return not_def(sql('migrations')->execute());
+
         }
     }
 }

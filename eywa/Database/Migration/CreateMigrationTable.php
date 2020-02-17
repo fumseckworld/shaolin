@@ -9,16 +9,18 @@ namespace Eywa\Database\Migration {
 
         public static string $table = 'migrations';
 
-        public static string $success_message = 'The migrations table has been created successfully';
+        public static string $up_title = 'Creating the migrations table';
 
-        public static string $error_message = 'The creation of the migrations table has fail';
+        public static string $up_success_message = 'The migrations table has been created successfully';
+
+        public static string $up_error_message = 'The migrations table creation has failed';
 
         /**
          * @inheritDoc
          */
         public function up(): bool
         {
-           return  $this->add('version','primary')->add('migration','string',255)->add('time','datetime')->create();
+           return  $this->add('id','primary')->add('version','string',255)->add('migration','string',255)->add('time','datetime')->create();
         }
 
         /**

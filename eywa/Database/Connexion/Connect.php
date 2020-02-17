@@ -381,9 +381,9 @@ namespace Eywa\Database\Connexion {
         /**
          * @inheritDoc
          */
-        public function development(): Connexion
+        public function development(): Connect
         {
-            return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),config('connection','options'),env('DB_HOST'));
+            return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),config('connection','options'),env('DEVELOP_DB_HOST','localhost'));
         }
     }
 }
