@@ -4,6 +4,7 @@
 namespace Eywa\Database\Migration {
 
 
+    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -48,9 +49,7 @@ namespace Eywa\Database\Migration {
          */
         public static function run(string $mode,SymfonyStyle $io):int
         {
-            not_in(['up','down'],$mode,true,"The mode must be is up or down");
-
-            return  equal($mode,'up') ? static::migrate($io,$mode) :  static::rollback($io,$mode);
+            return  equal($mode,'up') ? static::migrate($io) :  static::rollback($io);
         }
 
         private static function file(string $class)
@@ -60,69 +59,192 @@ namespace Eywa\Database\Migration {
 
         /**
          * @param SymfonyStyle $io
-         * @param string $mode
          * @return int
          * @throws Kedavra
          */
-        private static function migrate(SymfonyStyle $io,string $mode = 'up'): int
+        private static function migrate(SymfonyStyle $io): int
+        {
+            static::do('dev','up',$io) ;
+            static::do('prod','up',$io);
+            return 0;
+        }
+
+        /**
+         * @param SymfonyStyle $io
+         * @return int
+         * @throws Kedavra
+         */
+        private static function rollback(SymfonyStyle $io): int
+        {
+            static::do('dev','down',$io);
+            static::do('prod','down',$io);
+            return 0;
+        }
+
+        /**
+         * @return bool
+         * @throws Kedavra
+         */
+        public static function check_migrate(): bool
+        {
+            $prod = static::sql('prod');
+            $dev =  static::sql('dev');
+            $return = collect();
+            foreach (static::list('up') as $class => $date)
+            {
+                $return->push($prod->where('version',EQUAL,$date)->exist() && $dev->where('version',EQUAL,$date)->exist());
+            }
+            return $return->ok();
+        }
+
+
+        /**
+         * @param string $mode
+         * @param string $table
+         * @return Sql
+         * @throws Kedavra
+         */
+        private static function sql(string $mode,string $table = 'migrations'): Sql
+        {
+            return equal($mode,'dev') ? new Sql(development(),$table) : new Sql(production(), $table);
+        }
+
+        /**
+         * @return bool
+         * @throws Kedavra
+         */
+        public static function check_rollback(): bool
+        {
+            return not_def(static::sql('dev')->execute()) && not_def(static::sql('prod')->execute());
+
+        }
+
+        /**
+         * @param string $env
+         * @param string $mode
+         * @param SymfonyStyle $io
+         * @return bool|int
+         * @throws Kedavra
+         */
+        private static function do(string $env,string $mode,SymfonyStyle $io)
         {
 
-            $return = collect();
-            $all = collect(static::list($mode));
-            $sql = sql('migrations');
+            not_in(['up','down'],$mode,true,"Mode must be up or down");
+            not_in(['dev','prod'],$env,true,"Env must be dev or prod");
+
+            $sql = static::sql($env);
+
+            $all = static::list($mode);
+
+            $result = collect();
 
             if (def($sql->execute()))
             {
-                foreach ($all->all() as $class => $date)
+                if (equal($mode,'up'))
+                {
+                    foreach ($all as $class => $date)
+                    {
+
+                        $migration = static::file($class);
+
+                        $created_at = $class::$created_at;
+
+                        $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
+
+                        $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
+
+                        $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
+
+                        $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
+
+                        $up_title = str_replace('%s',$class::$table,$class::$up_title);
+
+                        $down_title = str_replace('%s',$class::$table,$class::$down_title);
+
+                        $exist = $sql->where('version',EQUAL,$date)->exist();
+
+                        if (!$exist)
+                        {
+                            $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
+
+                            $io->title("$up_title ($env)");
+
+                            $result->push(call_user_func_array([$x, $mode], []));
+
+                            if ($result->ok())
+                            {
+                                $io->success($up_success_message);
+                                $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                                return  0;
+                            }else
+                            {
+
+                                $sql->where('version',EQUAL,$date)->destroy();
+                                $io->error($up_error_message);
+                                return 1;
+                            }
+
+                        }
+                    }
+                }
+
+                if (equal($mode,'down'))
+                {
+                    foreach ($all as $class => $date)
+                    {
+
+                        $migration = static::file($class);
+
+                        $created_at = $class::$created_at;
+
+                        $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
+
+                        $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
+
+                        $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
+
+                        $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
+
+                        $up_title = str_replace('%s',$class::$table,$class::$up_title);
+
+                        $down_title = str_replace('%s',$class::$table,$class::$down_title);
+
+                        $exist = $sql->where('version',EQUAL,$date)->exist();
+
+                        if ($exist)
+                        {
+                            $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
+
+                            $io->title("$down_title ($env)");
+
+                            $result->push(call_user_func_array([$x, $mode], []));
+
+                            if ($result->ok())
+                            {
+                                $io->success($down_success_message);
+                                $sql->where('version',EQUAL,$date)->destroy();
+
+                                return  0;
+                            }else
+                            {
+                                $io->error($down_error_message);
+                                return 1;
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+            if (equal($mode,'up'))
+            {
+                foreach ($all as $class => $date)
                 {
 
                     $migration = static::file($class);
 
                     $created_at = $class::$created_at;
-
-                    $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
-
-                    $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
-
-                    $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
-
-                    $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
-
-                    $up_title = str_replace('%s',$class::$table,$class::$up_title);
-
-                    $down_title = str_replace('%s',$class::$table,$class::$down_title);
-
-                    $exist = $sql->where('version',EQUAL,$date)->exist() && $sql->where('migration',EQUAL,$migration)->exist();
-
-
-                    if (!$exist)
-                    {
-                        $x = new $class;
-
-                        $io->title($up_title);
-
-                        $return->push(call_user_func_array([$x, $mode], []));
-
-                        if ($return->ok())
-                        {
-                            $io->success($up_success_message);
-                            $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
-                            return  0;
-                        }
-
-                        $sql->where('version',EQUAL,$date)->destroy();
-                        $io->error($up_error_message);
-                        return 1;
-                    }
-
-                }
-            }else
-            {
-                foreach ($all->all() as $class => $date)
-                {
-
-                    $migration = static::file($class);
-
 
                     $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
 
@@ -140,47 +262,37 @@ namespace Eywa\Database\Migration {
 
                     if (!$exist)
                     {
-                        $x = new $class;
-                        $io->title($up_title);
-                        $return->push(call_user_func_array([$x, $mode], []));
+                        $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
 
-                        if ($return->ok())
+                        $io->title("$up_title ($env)");
+
+                        $result->push(call_user_func_array([$x, $mode], []));
+
+                        if ($result->ok())
                         {
                             $io->success($up_success_message);
-                            $sql->save(['version'=> $date,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
                             return  0;
+                        }else
+                        {
+
+                            $sql->where('version',EQUAL,$date)->destroy();
+                            $io->error($up_error_message);
+                            return 1;
                         }
-                        $io->error($up_error_message);
-                        return 1;
+
                     }
                 }
             }
 
-            return 0;
-        }
-
-        /**
-         * @param SymfonyStyle $io
-         * @param string $mode
-         * @return int
-         * @throws Kedavra
-         */
-        private static function rollback(SymfonyStyle $io,string $mode = 'down'): int
-        {
-
-            $return = collect();
-            $all = collect(static::list($mode));
-            $sql = sql('migrations');
-
-            if (def($sql->execute()))
+            if (equal($mode,'down'))
             {
-                foreach ($all->all() as $class => $date)
+                foreach ($all as $class => $date)
                 {
 
                     $migration = static::file($class);
 
                     $created_at = $class::$created_at;
-
 
                     $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
 
@@ -194,56 +306,32 @@ namespace Eywa\Database\Migration {
 
                     $down_title = str_replace('%s',$class::$table,$class::$down_title);
 
-                    $exist = $sql->where('version',EQUAL,$date)->exist() && $sql->where('migration',EQUAL,$migration)->exist();
-
+                    $exist = $sql->where('version',EQUAL,$date)->exist();
 
                     if ($exist)
                     {
-                        $x = new $class;
+                        $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
 
-                        $io->title($down_title);
+                        $io->title("$down_title ($env)");
 
-                        $return->push(call_user_func_array([$x, $mode], []));
+                        $result->push(call_user_func_array([$x, $mode], []));
 
-                        if ($return->ok())
+                        if ($result->ok())
                         {
                             $io->success($down_success_message);
                             $sql->where('version',EQUAL,$date)->destroy();
-                            return  0;
-                        }
-                        $io->error($down_error_message);
-                        return 1;
-                    }
 
+                            return  0;
+                        }else
+                        {
+                            $io->error($down_error_message);
+                            return 1;
+                        }
+
+                    }
                 }
             }
-
-              return 0;
-        }
-
-        /**
-         * @return bool
-         * @throws Kedavra
-         */
-        public static function check_migrate(): bool
-        {
-            $sql = sql('migrations');
-            $return = collect();
-            foreach (static::list('up') as $class => $date)
-            {
-                $return->push($sql->where('version',EQUAL,$date)->exist());
-            }
-            return $return->ok();
-        }
-
-
-        /**
-         * @return bool
-         * @throws Kedavra
-         */
-        public static function check_rollback(): bool
-        {
-            return not_def(sql('migrations')->execute());
+            return  0;
 
         }
     }

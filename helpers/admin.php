@@ -178,7 +178,32 @@ if (!function_exists('app'))
         return ioc(App::class);
     }
 }
+if (!function_exists('production'))
+{
+    /**
+     * @return Connect
+     * @throws Kedavra
+     * @throws Exception
+     */
+    function production(): Connect
+    {
+        return new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),env('DB_HOST','localhost'));
 
+    }
+}
+
+if (!function_exists('development'))
+{
+    /**
+     * @return Connect
+     * @throws Kedavra
+     * @throws Exception
+     */
+    function development(): Connect
+    {
+        return new Connect(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),env('DEVELOP_DB_HOST','localhost'));
+    }
+}
 if (!function_exists('sql'))
 {
     /**
@@ -194,13 +219,12 @@ if (!function_exists('sql'))
      */
     function sql(string $table): Sql
     {
-        $prod = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),config('connection','options'),env('DB_HOST','localhost'));
-
-        $connexion = equal(config('mode','connexion'),'prod') ? $prod : $prod->development();
+        $connexion = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),env('DB_HOST','localhost'));
 
         return (new Sql($connexion,$table));
     }
 }
+
 if (!function_exists('ioc'))
 {
     /**
@@ -271,7 +295,8 @@ if (!function_exists('config'))
         return (new Config($file, $key))->value();
     }
 }
-if (!function_exists('def')) {
+if (!function_exists('def'))
+{
     /**
      *
      * Check if all values are define
@@ -294,7 +319,8 @@ if (!function_exists('def')) {
         return true;
     }
 }
-if (!function_exists('update_file_values')) {
+if (!function_exists('update_file_values'))
+{
     /**
      *
      * Update a value in a file
@@ -665,17 +691,15 @@ if (!function_exists('connect'))
      * @param string $user
      * @param string $password
      * @param int $port
-     * @param array $options
      * @param string $host
      *
      * @return Connect
      *
      * @throws Kedavra
-     *
      */
-    function connect(string $driver, string $base, string $user = '', string $password = '', int $port = 3306, array $options = [], string $host = 'localhost'): Connect
+    function connect(string $driver, string $base, string $user = '', string $password = '', int $port = 3306, string $host = 'localhost'): Connect
     {
-        return new Connect($driver, $base, $user, $password, $port, $options, $host);
+        return new Connect($driver, $base, $user, $password, $port, $host);
     }
 }
 if (!function_exists('superior'))

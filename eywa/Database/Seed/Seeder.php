@@ -123,11 +123,11 @@ namespace Eywa\Database\Seed {
          */
         public function seed() : bool
         {
-            static::$connexion = app()->connexion()->development();
+            static::$connexion = development();
 
             static::$faker = ioc('faker');
 
-            static::$table = (new Table());
+            static::$table = (new Table(development()));
 
             $table = static::$from;
 

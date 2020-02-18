@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
-require 'vendor/autoload.php';
 
-exit((new \Eywa\Console\Console())->run());
+use Eywa\Console\Console;
+
+require __DIR__.'/vendor/autoload.php';
+
+exit((new Console('EYWA','11'))->run());

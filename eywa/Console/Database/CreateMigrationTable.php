@@ -22,14 +22,24 @@ namespace Eywa\Console\Database {
         public function execute(InputInterface $input,  OutputInterface $output)
         {
             $io = new SymfonyStyle($input,$output);
-            if((new \Eywa\Database\Migration\CreateMigrationTable())->up())
+            if((new \Eywa\Database\Migration\CreateMigrationTable(production()))->up())
             {
-                $io->success('The migration table has been created successfully');
+                $io->success('The production migration table has been created successfully');
 
-                return 0;
+            }else{
+                $io->error('The migrations table generation has failed');
+                return 1;
             }
-            $io->error('The migrations table generation has failed');
-            return 1;
+            if((new \Eywa\Database\Migration\CreateMigrationTable(development()))->up())
+            {
+                $io->success('The development migration table has been created successfully');
+
+            }else{
+                $io->error('The migrations table generation has failed');
+                return 1;
+
+            }
+            return 0;
         }
     }
 }

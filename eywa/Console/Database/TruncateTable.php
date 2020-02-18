@@ -18,15 +18,26 @@
 			
 			protected function configure()
 			{
-				$this->setDescription("Truncate a table")->addArgument('table',InputArgument::REQUIRED,'The table name');
+				$this->setDescription("Truncate a table")->addArgument('table',InputArgument::REQUIRED,'The table name')->addArgument('env',InputArgument::REQUIRED,'The base environment');
 			}
 			
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
 		        $io = new SymfonyStyle($input,$output);
 
-		        $table = $input->getArgument('table');
-		        $success = (new Table())->from($table)->truncate();
+                $env = $input->getArgument('env');
+                $table = $input->getArgument('table');
+                not_in(['dev','prod'],$env,true,'The environement used is not valid');
+
+                if (equal($env,'dev'))
+                {
+                    $success = (new Table(development()))->from($table)->truncate();
+                }else{
+
+                    $success = (new Table(production()))->from($table)->truncate();
+                }
+
+
 		        if ($success)
                 {
                     $io->success("The $table table has been successfully truncated");

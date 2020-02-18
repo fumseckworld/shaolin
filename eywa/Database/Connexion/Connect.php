@@ -86,14 +86,14 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
-         * @Inject({"db.driver","db.name","db.username", "db.password","db.port","db.options","db.host"})
+         * @Inject({"db.driver","db.name","db.username", "db.password","db.port","db.host"})
          *
          * @inheritDoc
          * 
          */
-        public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306, array $options = [], string $host = LOCALHOST)
+        public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306,string $host = LOCALHOST)
         {
-            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Serve=$host;Database=$base",$username,$password,$options) : (equal($driver,SQLITE) ? new PDO("sqlite:$base") : new PDO("$driver:host=$host;port=$port;dbname=$base", $username, $password, $options));
+            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Serve=$host;Database=$base",$username,$password,config('connexion','options')) : (equal($driver,SQLITE) ? new PDO("sqlite:$base") : new PDO("$driver:host=$host;port=$port;dbname=$base", $username, $password, config('connexion','options')));
 
             $this->connexion->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
 
@@ -109,7 +109,7 @@ namespace Eywa\Database\Connexion {
             $this->port = $port;
             $this->username = $username;
             $this->password = $password;
-            $this->options = $options;
+            $this->options =  config('connexion','options');
             $this->host = $host;
         }
 
@@ -383,7 +383,7 @@ namespace Eywa\Database\Connexion {
          */
         public function development(): Connect
         {
-            return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),config('connection','options'),env('DEVELOP_DB_HOST','localhost'));
+            return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),env('DEVELOP_DB_HOST','localhost'));
         }
     }
 }

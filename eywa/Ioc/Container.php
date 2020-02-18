@@ -10,6 +10,7 @@ namespace Eywa\Ioc {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Eywa\Application\Environment\Env;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
     use Eywa\Message\Flash\Flash;
@@ -46,7 +47,7 @@ namespace Eywa\Ioc {
                 $c->set("views.path",base('app','Views')) ;
                 $c->set("flash",new Flash()) ;
                 $c->set('faker',faker(config('i18n','locale'))) ;
-                $c->set('table',new Table()) ;
+                $c->set('table',new Table($c->get(Connect::class))) ;
                 self::$ioc = $c;
 
             }

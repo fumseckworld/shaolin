@@ -22,12 +22,11 @@ namespace Eywa\Database\Connexion {
          * @param int $port
          * @param string $username
          * @param string $password
-         * @param array $options
          * @param string $host
          *
          * @throws Kedavra
          */
-        public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306, array $options = [], string $host = LOCALHOST);
+        public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306, string $host = LOCALHOST);
         /**
          *
          * Set the sql queries to execute

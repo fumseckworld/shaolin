@@ -5,7 +5,6 @@ namespace Eywa\Console\Database {
 
 
     use Eywa\Database\Migration\Migrate;
-    use Eywa\Time\Timing;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -37,7 +36,12 @@ namespace Eywa\Console\Database {
             $i = 0;
 
             do{
-                Migrate::run('up',$io);
+                if(Migrate::run('up',$io) !== 0)
+                {
+                    $io->error('A migration has fail');
+                    die();
+                }
+
                 $i++;
             }while($i!==$end);
             $io->success('All migration has been executed successfully');

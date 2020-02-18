@@ -6,6 +6,7 @@ namespace Eywa\Database\Migration {
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Query\Sql;
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
 
@@ -102,6 +103,18 @@ namespace Eywa\Database\Migration {
         private static Collect $foreign;
 
         /**
+         * @var Connect
+         */
+        private static Connect $connect;
+
+        /**
+         * @var string
+         */
+        private static string $mode;
+        private static string $env;
+
+
+        /**
          *
          * The method to updagrade table
          *
@@ -126,17 +139,20 @@ namespace Eywa\Database\Migration {
         abstract public function down(): bool;
 
 
-
         /**
          * Migration constructor.
          *
-         * @throws Exception
-         *
+         * @param Connect $connect
+         * @param string $mode
+         * @param string $env
          */
-        public function __construct()
+        public function __construct(Connect $connect,string $mode,string $env)
         {
             static::$columns = collect();
             static::$foreign = collect();
+            static::$connect = $connect;
+            static::$env   = $env;
+            static::$mode  = $mode;
         }
 
         /**
@@ -177,6 +193,9 @@ namespace Eywa\Database\Migration {
         {
             $constraint = " FOREIGN KEY ($column) REFERENCES $table($table_column)";
 
+            if (def($on,$do))
+                append($constraint," ON $on $do");
+
             static::$foreign->push(compact('column', 'constraint'));
 
             return $this;
@@ -197,6 +216,7 @@ namespace Eywa\Database\Migration {
          * @return Migration
          *
          * @throws Kedavra
+         *
          */
         private function primary(string $column): Migration
         {
@@ -249,13 +269,9 @@ namespace Eywa\Database\Migration {
 
                 $constraint = collect($x->get('constraints'))->join(' ');
 
-
-
                 $type = $x->get('type');
 
                 $size = $x->get('size') ?? 0;
-
-
 
                 switch ($type)
                 {
@@ -280,8 +296,6 @@ namespace Eywa\Database\Migration {
 
             }
 
-            static::$columns->clear();
-
             foreach (static::$foreign->all() as $foreign)
             {
                 $x = collect($foreign);
@@ -291,13 +305,15 @@ namespace Eywa\Database\Migration {
                 append($sql," $constraint, ");
             }
 
-            static::$foreign->clear();
-
             $sql = trim($sql,', ');
 
             append($sql, ')');
 
-            return $this->connexion()->set($sql)->execute();
+            static::$foreign->clear();
+
+            static::$columns->clear();
+
+            return static::connexion()->set($sql)->execute();
         }
 
 
@@ -313,15 +329,12 @@ namespace Eywa\Database\Migration {
         {
             $table = static::$table;
 
-            $result = collect();
 
 
 
+            $sql = '';
             foreach (static::$columns->all() as $column)
             {
-
-                if ((new Table())->from($table)->has($column['column']))
-                    return false;
 
                 $type  = $column['type'];
 
@@ -354,14 +367,13 @@ namespace Eywa\Database\Migration {
                     append($x,"($size)");
 
 
-                $result->push($this->connexion()->set("ALTER TABLE $table ADD COLUMN $x;")->execute());
+                append($sql,$x);
             }
 
-            static::$columns->clear();
+              return  static::connexion()->set("ALTER TABLE $table ADD COLUMN $sql;")->execute();
 
 
 
-            return  $result->ok();
         }
 
         /**
@@ -405,7 +417,7 @@ namespace Eywa\Database\Migration {
          */
         public function drop(string $table): bool
         {
-            return (new Table())->from($table)->drop();
+            return equal(static::$env,'dev') ? (new Table(development()))->from($table)->drop() : (new Table(production()))->from($table)->drop() ;
         }
 
         /**
@@ -417,7 +429,7 @@ namespace Eywa\Database\Migration {
          */
         public function columns()
         {
-            return sql(static::$table)->columns();
+            return static::$env === 'dev' ? (new Sql(development(),static::$table))->columns() : (new Sql(production(),static::$table))->columns();
         }
 
         /**
@@ -491,21 +503,18 @@ namespace Eywa\Database\Migration {
          * @return Connect
          *
          * @throws Kedavra
-         *
          */
         private function connexion(): Connect
         {
-            $prod = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),config('connection','options'),env('DB_HOST','localhost'));
-
-            return  equal(config('mode','connexion'),'prod') ? $prod : $prod->development();
+           return static::$env == 'dev' ? development() : production();
         }
 
         /**
+         *
+         *
          * @return string
          *
          * @throws Kedavra
-         *
-         *
          */
         private function driver(): string
         {

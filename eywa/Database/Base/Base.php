@@ -6,27 +6,60 @@ declare(strict_types=1);
 namespace Eywa\Database\Base {
 
     use Eywa\Database\Table\Table;
+    use Eywa\Exception\Kedavra;
 
     class Base
     {
-        /**
-         * @var Table
-         */
-        private Table $table;
 
-        public function __construct()
+        /**
+         * @var string
+         */
+        private string $env;
+
+        /**
+         * Base constructor.
+         * @param string $env
+         */
+        public function __construct(string $env)
         {
-            $this->table = new Table();
+            $this->env = $env;
+
         }
 
+        /**
+         * @return bool
+         * @throws Kedavra
+         */
         public function clean()
         {
-            foreach ($this->table->show() as $table)
+            if (equal($this->env,'dev'))
             {
-                if (different($table,'migrations'))
-                    is_false((new Table())->from($table)->truncate(),true,"Error");
-
+                foreach ((new Table(development()))->show() as $table)
+                    if (different($table,'migrations'))
+                        is_false((new Table(development()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                return  true;
             }
+
+            if (equal($this->env,'prod'))
+            {
+                foreach ((new Table(production()))->show() as $table)
+                    if (different($table,'migrations'))
+                        is_false((new Table(production()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                return  true;
+            }
+
+            if (equal($this->env,'any'))
+            {
+                foreach ((new Table(production()))->show() as $table)
+                    if (different($table,'migrations'))
+                        is_false((new Table(production()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+
+                foreach ((new Table(development()))->show() as $table)
+                    if (different($table,'migrations'))
+                        is_false((new Table(development()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                return  true;
+            }
+
 
             return true;
         }

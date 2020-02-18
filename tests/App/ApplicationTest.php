@@ -28,6 +28,8 @@ class ApplicationTest extends Unit
     public function test_ioc()
     {
         $this->assertInstanceOf(Connexion::class,app()->ioc(Connect::class));
+        $this->assertInstanceOf(Connexion::class,development());
+        $this->assertInstanceOf(Connexion::class,production());
         $this->assertInstanceOf(Write::class,app()->write('subject','message','micieli@laposte.net','micieli@laposte.net'));
         $this->assertInstanceOf(Response::class,app()->response('i am a view')->send());
         $this->assertInstanceOf(Response::class,app()->redirect('root',[],'',true)->send());
@@ -66,8 +68,6 @@ class ApplicationTest extends Unit
         $this->assertNull(app()->cookie('a',null));
         $this->assertNull(app()->server('a',null));
 
-        $this->assertEquals([],app()->config('connection','options'));
-        $this->assertEquals([],app()->config('connection','options'));
     }
 
 

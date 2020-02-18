@@ -45,12 +45,12 @@ namespace Eywa\Database\Table {
          *
          * Table constructor.
          *
-         * @throws Kedavra
+         * @param Connect $connect
          */
-        public function __construct()
+        public function __construct(Connect $connect)
         {
-            $prod = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),config('connection','options'),env('DB_HOST','localhost'));
-            $this->connexion = equal(config('mode','connexion'),'prod') ? $prod : $prod->development();
+
+            $this->connexion = $connect;
 
         }
 

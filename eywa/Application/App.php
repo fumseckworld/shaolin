@@ -12,7 +12,6 @@ namespace Eywa\Application {
     use Eywa\Cache\RedisCache;
     use Eywa\Collection\Collect;
     use Eywa\Configuration\Config;
-    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
@@ -407,8 +406,7 @@ namespace Eywa\Application {
          */
         public function connexion(): Connexion
         {
-            $prod = new Connect($this->env('DB_DRIVER','mysql'),$this->env('DB_NAME','eywa'),$this->env('DB_USERNAME','eywa'),$this->env('DB_PASSWORD','eywa'),intval($this->env('DB_PORT',3306)),$this->config('connection','options'),$this->env('DB_HOST','localhost'));
-            return equal($this->config('mode','connexion'),'prod') ? $prod : $prod->development();
+            return equal($this->config('mode','connexion'),'prod') ? production() : development();
         }
 
         /**
