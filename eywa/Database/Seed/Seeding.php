@@ -56,13 +56,28 @@ namespace Eywa\Database\Seed {
             {
                 if (!is_null($output))
                 {
-                    $io->title("Started the $file seeding");
+                    $title = str_replace('%s',$class::$from,$class::$title);
+
+                    $io->title($title);
                 }
 
-                $bool->push(call_user_func([$class,'seed']));
+                $i = new $class;
+                $bool->push(call_user_func_array([$i,'seed'],[]));
 
                 if ($bool->ok() && ! is_null($output))
-                    $io->success("The $file seeding has been executed successfully");
+                {
+                    $success_message = $class::$success_message;
+                    $success_message = str_replace('%s',$class::$from,$success_message);
+                    $success_message = str_replace('%d',$class::$generate,$success_message);
+
+                    $io->success($success_message);
+                }else{
+                    $error_message = $class::$error_message;
+                    $error_message = str_replace('%s',$class::$from,$error_message);
+                    $error_message = str_replace('%d',$class::$generate,$error_message);
+                    $io->error($error_message);
+                    return false;
+                }
 
             }
             return $bool->ok();

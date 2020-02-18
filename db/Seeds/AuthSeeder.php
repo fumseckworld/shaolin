@@ -9,9 +9,15 @@ namespace Base\Seeds {
 
     class AuthSeeder extends Seeder
     {
-        protected static int $generate = 100;
+        public static int $generate = 100;
 
-        protected static string $from = 'auth';
+        public static string $from = 'auth';
+
+        public static string $title = 'Starting the %s seeding';
+
+        public static string $success_message = 'We have added %d records in the %s table';
+
+        public static string $error_message = 'Sorry the seed has fail';
 
         /**
          * @inheritDoc

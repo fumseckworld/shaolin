@@ -48,14 +48,36 @@ namespace Eywa\Database\Seed {
          * The table name
          *
          */
-        protected static string $from = '';
+        public static string $from = '';
 
         /**
          *
          * The number of record to generate
          *
          */
-        protected static int $generate = 100;
+        public static int $generate = 100;
+
+        /**
+         *
+         * The seeding title
+         *
+         */
+        public static string $title = '';
+
+
+        /**
+         *
+         * The seeding success message
+         *
+         */
+        public static string $success_message = '';
+
+        /**
+         *
+         * The seeding success message
+         *
+         */
+        public static string $error_message = '';
 
 
         /**
@@ -104,7 +126,7 @@ namespace Eywa\Database\Seed {
         {
             static::$connexion = app()->connexion()->development();
             static::$faker = ioc('faker');
-            static::$table = ioc('table')->from(static::$from);
+            static::$table = (new Table(static::$connexion))->from(static::$from);
             static::$set = collect();
 
             $values = '';

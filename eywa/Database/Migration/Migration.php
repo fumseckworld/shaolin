@@ -260,7 +260,6 @@ namespace Eywa\Database\Migration {
                 switch ($type)
                 {
                     case 'string':
-
                         append($sql, "$column {$this->text()} ");
                     break;
                     case 'longtext':
@@ -269,12 +268,10 @@ namespace Eywa\Database\Migration {
                     case 'datetime':
                         append($sql, "$column {$this->datetime()} ");
                     break;
-
                     default:
                         append($sql,"$column $type ");
                     break;
                 }
-
 
                 if ($size != 0)
                     append($sql," ($size) ");
