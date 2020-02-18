@@ -27,7 +27,7 @@
 
 		        $x = $input->getArgument('table');
 
-		        $table = new Table(app()->connexion());
+		        $table = new Table();
 
 		        if (not_def($table->show()))
                 {

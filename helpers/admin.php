@@ -2,8 +2,7 @@
 
 declare(strict_types=1);
 
-use DI\DependencyException;
-use DI\NotFoundException;
+
 use Eywa\Application\App;
 use Eywa\Configuration\Config;
 use Eywa\Database\Connexion\Connect;
@@ -244,8 +243,7 @@ if (!function_exists('db'))
      *
      * @return mixed
      *
-     * @throws DependencyException
-     * @throws NotFoundException
+     * @throws Exception
      */
     function db(string $key)
     {

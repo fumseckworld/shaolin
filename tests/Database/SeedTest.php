@@ -5,6 +5,7 @@ namespace Testing\Database;
 
 
 
+use App\Models\User;
 use Base\Seeds\UserSeeder;
 use DI\DependencyException;
 use DI\NotFoundException;
@@ -30,8 +31,9 @@ class SeedTest extends TestCase
     {
 
         $this->assertTrue($this->driver(MYSQL));
-        $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $sum = User::sum();
+        $this->assertTrue(call_user_func_array([UserSeeder::class,'seed'],[]));
+        $this->assertNotEquals($sum,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
 
     }
 
@@ -41,8 +43,9 @@ class SeedTest extends TestCase
     public function test_pgsql()
     {
         $this->assertTrue($this->driver(POSTGRESQL));
+        $sum = User::sum();
         $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $this->assertNotEquals(  $sum,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
 
     }
     /**
@@ -53,8 +56,10 @@ class SeedTest extends TestCase
     public function test_sqlite()
     {
         $this->assertTrue($this->driver(SQLITE));
+        $sum = User::sum();
         $this->assertTrue(call_user_func([UserSeeder::class, 'seed']));
-        $this->assertEquals(200, connect(env('DEVELOP_DB_DRIVER'), env('DEVELOP_DB_NAME'), env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+
+        $this->assertNotEquals(  $sum , connect(env('DEVELOP_DB_DRIVER'), env('DEVELOP_DB_NAME'), env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
     }
 
     /**
@@ -64,9 +69,10 @@ class SeedTest extends TestCase
      */
     public function test()
     {
+        $sum = User::sum();
         $this->assertTrue($this->driver(MYSQL));
         $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $this->assertNotEquals(  $sum,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
     }
 
     private function driver(string $driver)

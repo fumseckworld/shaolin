@@ -18,19 +18,19 @@ namespace Testing\Database {
 
         public function setUp(): void
         {
-            $this->connect = ioc(Connect::class);
+            $this->connect = app()->connexion();
             $this->app = app();
         }
 
 
         public function test_env()
         {
-            $this->assertEquals($this->app->env('DB_DRIVER'),$this->connect->driver());
-            $this->assertEquals($this->app->env('DB_HOST'),$this->connect->hostname());
-            $this->assertEquals($this->app->env('DB_NAME'),$this->connect->base());
-            $this->assertEquals($this->app->env('DB_PORT'),$this->connect->port());
-            $this->assertEquals($this->app->env('DB_USERNAME'),$this->connect->username());
-            $this->assertEquals($this->app->env('DB_PASSWORD'),$this->connect->password());
+            $this->assertEquals($this->app->env('DEVELOP_DB_DRIVER'),$this->connect->driver());
+            $this->assertEquals($this->app->env('DEVELOP_DB_HOST'),$this->connect->hostname());
+            $this->assertEquals($this->app->env('DEVELOP_DB_NAME'),$this->connect->base());
+            $this->assertEquals($this->app->env('DEVELOP_DB_PORT'),$this->connect->port());
+            $this->assertEquals($this->app->env('DEVELOP_DB_USERNAME'),$this->connect->username());
+            $this->assertEquals($this->app->env('DEVELOP_DB_PASSWORD'),$this->connect->password());
         }
 
         public function test_queries()
@@ -53,25 +53,6 @@ namespace Testing\Database {
             $this->assertTrue($this->connect->not(POSTGRESQL));
             $this->assertTrue($this->connect->not(SQLITE));
             $this->assertTrue($this->connect->not(SQL_SERVER));
-        }
-
-
-        public function test_exception()
-        {
-            $this->expectException(PDOException::class);
-            connect(POSTGRESQL,'zen');
-        }
-        public function test_error()
-        {
-            $this->expectException(PDOException::class);
-            $this->connect->set('SHOW')->get(PDO::FETCH_OBJ);
-        }
-
-
-        public function test_postgresql_exception()
-        {
-            $this->expectException(PDOException::class);
-            connect(POSTGRESQL,'');
         }
     }
 }

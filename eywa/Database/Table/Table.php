@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Eywa\Database\Table {
 
 
-    use Eywa\Database\Connexion\Connexion;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
 
 
@@ -22,7 +22,7 @@ namespace Eywa\Database\Table {
          * The connexion
          *
          */
-        private Connexion $connexion;
+        private Connect $connexion;
 
         /**
          *
@@ -45,11 +45,13 @@ namespace Eywa\Database\Table {
          *
          * Table constructor.
          *
-         * @param Connexion $connect
+         * @throws Kedavra
          */
-        public function __construct(Connexion $connect)
+        public function __construct()
         {
-            $this->connexion = $connect;
+            $prod = new Connect(env('DB_DRIVER','mysql'),env('DB_NAME','eywa'),env('DB_USERNAME','eywa'),env('DB_PASSWORD','eywa'),intval(env('DB_PORT',3306)),config('connection','options'),env('DB_HOST','localhost'));
+            $this->connexion = equal(config('mode','connexion'),'prod') ? $prod : $prod->development();
+
         }
 
         /**
@@ -359,6 +361,28 @@ namespace Eywa\Database\Table {
         private function check()
         {
             is_true(not_def($this->table),true,"Select a table");
+        }
+
+        /**
+         *
+         * Count the tables
+         *
+         * @return int
+         *
+         * @throws Kedavra
+         *
+         */
+        public function sum():int
+        {
+            return count($this->show());
+        }
+
+        /**
+         * @return string|null
+         */
+        public function current(): ?string
+        {
+            return $this->table;
         }
     }
 }

@@ -27,6 +27,7 @@ namespace Base\Seeds {
         public function each(Generator $generator, Table $table, Seeder $seeder): void
         {
 
+
             foreach ($table->columns() as $column)
             {
                 switch ($column)
@@ -41,7 +42,7 @@ namespace Base\Seeds {
                         $seeder->set($column,$generator->phoneNumber);
                     break;
                     default:
-                       $this->primary($column);
+                       $seeder->primary($column);
                     break;
 
                 }

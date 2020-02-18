@@ -8,7 +8,6 @@ namespace Eywa\Database\Import {
 
     use Eywa\Console\Shell;
     use Eywa\Database\Connexion\Connexion;
-    use Eywa\Exception\Kedavra;
 
     class Import
     {
@@ -19,20 +18,15 @@ namespace Eywa\Database\Import {
          *
          */
         private Connexion $connect;
-        /**
-         * @var array|string[]
-         */
-        private array $files;
+
 
         /**
          * Import constructor.
          * @param Connexion $connect
-         * @param string ...$files
          */
-        public function __construct(Connexion $connect,string ...$files)
+        public function __construct(Connexion $connect)
         {
             $this->connect = $connect;
-            $this->files = $files;
 
         }
 

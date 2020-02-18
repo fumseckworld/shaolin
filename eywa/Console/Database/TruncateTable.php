@@ -26,7 +26,7 @@
 		        $io = new SymfonyStyle($input,$output);
 
 		        $table = $input->getArgument('table');
-		        $success = (new Table(app()->connexion()))->from($table)->truncate();
+		        $success = (new Table())->from($table)->truncate();
 		        if ($success)
                 {
                     $io->success("The $table table has been successfully truncated");

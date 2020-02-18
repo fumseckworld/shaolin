@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Carbon\Carbon;
 use DI\DependencyException;
 use DI\NotFoundException;
+use Eywa\Application\Environment\Env;
 use Eywa\Collection\Collect;
 use Eywa\Exception\Kedavra;
 use Eywa\Html\Pagination\Pagination;
@@ -129,7 +130,7 @@ if (!function_exists('env'))
      */
     function env($variable,$default = '')
     {
-        $x =  app()->env($variable);
+        $x =  (new Env())->get($variable);
         return  def($x) ? $x : $default;
     }
 

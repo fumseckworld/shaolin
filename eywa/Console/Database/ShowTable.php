@@ -5,7 +5,6 @@
 
         use Eywa\Database\Table\Table;
         use Symfony\Component\Console\Command\Command;
-        use Symfony\Component\Console\Input\InputArgument;
         use Symfony\Component\Console\Input\InputInterface;
 		use Symfony\Component\Console\Output\OutputInterface;
         use Symfony\Component\Console\Style\SymfonyStyle;
@@ -25,7 +24,7 @@
 		        $io = new SymfonyStyle($input,$output);
 
 
-		        $x = (new Table(app()->connexion()))->show();
+		        $x = (new Table())->show();
 		        if (not_def($x))
                 {
                     $io->error("No tables found");

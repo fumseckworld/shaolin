@@ -320,7 +320,7 @@ namespace Eywa\Database\Migration {
             foreach (static::$columns->all() as $column)
             {
 
-                if ((new Table($this->connexion()))->from($table)->has($column['column']))
+                if ((new Table())->from($table)->has($column['column']))
                     return false;
 
                 $type  = $column['type'];
@@ -405,7 +405,7 @@ namespace Eywa\Database\Migration {
          */
         public function drop(string $table): bool
         {
-            return (new Table($this->connexion()))->from($table)->drop();
+            return (new Table())->from($table)->drop();
         }
 
         /**

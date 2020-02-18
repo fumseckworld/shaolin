@@ -22,7 +22,6 @@ namespace Eywa\Application {
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Security\Validator\Validator;
-    use Eywa\Session\Session;
     use Eywa\Session\SessionInterface;
     use Redis;
 

@@ -29,7 +29,7 @@ namespace Base\Seeds {
                 switch ($column)
                 {
                     case 'name':
-                        $seeder->set($column, $generator->name);
+                        $seeder->set($column, $generator->name());
                     break;
                     case 'email':
                         $seeder->set($column, $generator->email);
