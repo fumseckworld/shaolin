@@ -42,8 +42,6 @@ namespace Eywa\Database\Import {
          *
          * @return bool
          *
-         * @throws Kedavra
-         *
          */
         public function import() : bool
         {
@@ -52,34 +50,28 @@ namespace Eywa\Database\Import {
             $username = $this->connect->username();
             $host = $this->connect->hostname();
             $base = $this->connect->base();
-            $result = collect();
-            $x =[];
+            $file = base('db','dump',"$base.sql");
 
-            foreach ($this->files as $file)
+
+            if (!file_exists($file))
+                return  false;
+
+            switch($this->connect->driver())
             {
-                switch($this->connect->driver())
-                {
-                    case MYSQL:
-
-                        return (new Shell("mysqldump -u $username -p $base > sql/tmp.sql"))->run();
-                    break;
-                    case POSTGRESQL:
-                        $result->push(is_not_false(system(" psql  -h $host  -U $username $base < $file",$x)));
-                    break;
-                    case SQLITE:
-                        $result->push(is_not_false(system("sqlite3 $base < $file",$x)));
-                    break;
-
-                    case SQL_SERVER:
-                        $result->push(is_not_false(system("sqlcmd -S $host -d $base -i $file",$x)));
-                    break;
-                    default:
-                        return false;
-                    break;
-                }
+                case MYSQL:
+                    return (new Shell("mysqldump  -h $host -u $username -p$password $base < $file"))->run();
+                break;
+                case POSTGRESQL:
+                    return (new Shell("psql -h $host -U $username $base < $file"))->run();
+                break;
+                case SQLITE:
+                    return (new Shell("sqlite3  $base < $file"))->run();
+                break;
+                default:
+                    return false;
+                break;
             }
-            $x ='';
-            return $result->ok();
+
         }
     }
 }
