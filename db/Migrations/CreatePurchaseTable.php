@@ -12,17 +12,17 @@ class CreatePurchaseTable extends Migration
 
     public static string $table = 'achats';
 
-    public static string $up_success_message = 'The achats table has been created successfully';
+    public static string $up_success_message = 'The %s table has been created successfully';
 
-    public static string $up_error_message = 'The achats table creation has fail';
+    public static string $up_error_message = 'The %s table creation has fail';
 
-    public static string $down_success_message = 'The achats table has been deleted successfully';
+    public static string $down_success_message = 'The %s table has been deleted successfully';
 
-    public static string $down_error_message = 'The deletion of the achats table has fail';
+    public static string $down_error_message = 'The deletion of the %s table has fail';
 
-    public static string $up_title = 'Creating the achats table';
+    public static string $up_title = 'Creating the %s table';
 
-    public static string $down_title = 'Removing the achats table';
+    public static string $down_title = 'Removing the %s table';
 
     public function up(): bool
     {

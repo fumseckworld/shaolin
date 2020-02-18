@@ -12,17 +12,17 @@ class CreateUsersTable extends Migration
 
     public static string $table = 'users';
 
-    public static string $up_success_message = 'The users table has been created successfully';
+    public static string $up_success_message = 'The %s table has been created successfully';
 
-    public static string $up_error_message = 'The table users has not been created';
+    public static string $up_error_message = 'The table %s has not been created';
 
-    public static string $down_success_message = 'The users table was removed successfully';
+    public static string $down_success_message = 'The %s table was removed successfully';
 
-    public static string $down_error_message = 'The users table not exist';
+    public static string $down_error_message = 'The %s table not exist';
 
-    public static string $up_title = 'Creation of the users table';
+    public static string $up_title = 'Creation of the %s table';
 
-    public static string $down_title = 'Removing the users table';
+    public static string $down_title = 'Removing the %s table';
 
     public function up(): bool
     {
@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
 
     public function down(): bool
     {
-        return $this->drop('users');
+        return $this->drop(static::$table);
 
     }
 }

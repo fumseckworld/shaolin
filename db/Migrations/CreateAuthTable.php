@@ -12,17 +12,17 @@ class CreateAuthTable extends Migration
 
     public static string $table = 'auth';
 
-    public static string $up_success_message = 'The auth table has been created successfully';
+    public static string $up_success_message = 'The %s table has been created successfully';
 
-    public static string $up_error_message = 'The auth table creation has fail';
+    public static string $up_error_message = 'The %s table creation has fail';
 
-    public static string $down_success_message = 'The auth table has been deleted successfully';
+    public static string $down_success_message = 'The %s table has been deleted successfully';
 
-    public static string $down_error_message = 'The deletion of the auth table has fail';
+    public static string $down_error_message = 'The deletion of the %s table has fail';
 
-    public static string $up_title = 'Creating the auth table';
+    public static string $up_title = 'Creating the %s table';
 
-    public static string $down_title = 'Removing the auth table';
+    public static string $down_title = 'Removing the %s table';
 
     public function up(): bool
     {

@@ -80,17 +80,17 @@ namespace Eywa\Database\Migration {
 
                     $created_at = $class::$created_at;
 
-                    $down_success_message = $class::$down_success_message;
+                    $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
 
-                    $down_error_message = $class::$down_error_message;
+                    $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
 
-                    $up_success_message = $class::$up_success_message;
+                    $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
 
-                    $up_error_message = $class::$up_error_message;
+                    $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
 
-                    $up_title = $class::$up_title;
+                    $up_title = str_replace('%s',$class::$table,$class::$up_title);
 
-                    $down_title = $class::$down_title;
+                    $down_title = str_replace('%s',$class::$table,$class::$down_title);
 
                     $exist = $sql->where('version',EQUAL,$date)->exist() && $sql->where('migration',EQUAL,$migration)->exist();
 
@@ -123,21 +123,20 @@ namespace Eywa\Database\Migration {
 
                     $migration = static::file($class);
 
-                    $created_at = $class::$created_at;
 
-                    $down_success_message = $class::$down_success_message;
+                    $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
 
-                    $down_error_message = $class::$down_error_message;
+                    $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
 
-                    $up_success_message = $class::$up_success_message;
+                    $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
 
-                    $up_error_message = $class::$up_error_message;
+                    $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
 
-                    $up_title = $class::$up_title;
+                    $up_title = str_replace('%s',$class::$table,$class::$up_title);
 
-                    $down_title = $class::$down_title;
+                    $down_title = str_replace('%s',$class::$table,$class::$down_title);
 
-                    $exist = $sql->where('version',EQUAL,$created_at)->exist();
+                    $exist = $sql->where('version',EQUAL,$date)->exist();
 
                     if (!$exist)
                     {
@@ -148,7 +147,7 @@ namespace Eywa\Database\Migration {
                         if ($return->ok())
                         {
                             $io->success($up_success_message);
-                            $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            $sql->save(['version'=> $date,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
                             return  0;
                         }
                         $io->error($up_error_message);
@@ -182,17 +181,18 @@ namespace Eywa\Database\Migration {
 
                     $created_at = $class::$created_at;
 
-                    $down_success_message = $class::$down_success_message;
 
-                    $down_error_message = $class::$down_error_message;
+                    $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
 
-                    $up_success_message = $class::$up_success_message;
+                    $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
 
-                    $up_error_message = $class::$up_error_message;
+                    $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
 
-                    $up_title = $class::$up_title;
+                    $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
 
-                    $down_title = $class::$down_title;
+                    $up_title = str_replace('%s',$class::$table,$class::$up_title);
+
+                    $down_title = str_replace('%s',$class::$table,$class::$down_title);
 
                     $exist = $sql->where('version',EQUAL,$date)->exist() && $sql->where('migration',EQUAL,$migration)->exist();
 
