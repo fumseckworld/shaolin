@@ -5,11 +5,10 @@ namespace Testing\Database;
 
 
 
-use App\Database\Seeds\UserSeeder;
+use Base\Seeds\UserSeeder;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
-
 use PHPUnit\Framework\TestCase;
 
 class SeedTest extends TestCase
@@ -25,8 +24,6 @@ class SeedTest extends TestCase
     }
 
     /**
-     * @throws DependencyException
-     * @throws NotFoundException
      * @throws Kedavra
      */
     public function test_mysql()
@@ -34,19 +31,18 @@ class SeedTest extends TestCase
 
         $this->assertTrue($this->driver(MYSQL));
         $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $this->assertEquals(200,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
 
     }
-   /**
-     * @throws DependencyException
-     * @throws NotFoundException
+
+    /**
      * @throws Kedavra
      */
     public function test_pgsql()
     {
         $this->assertTrue($this->driver(POSTGRESQL));
         $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $this->assertEquals(200,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
 
     }
     /**
@@ -57,9 +53,10 @@ class SeedTest extends TestCase
     public function test_sqlite()
     {
         $this->assertTrue($this->driver(SQLITE));
-        $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $this->assertTrue(call_user_func([UserSeeder::class, 'seed']));
+        $this->assertEquals(200, connect(env('DEVELOP_DB_DRIVER'), env('DEVELOP_DB_NAME'), env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
     }
+
     /**
      * @throws DependencyException
      * @throws NotFoundException
@@ -69,7 +66,7 @@ class SeedTest extends TestCase
     {
         $this->assertTrue($this->driver(MYSQL));
         $this->assertTrue(call_user_func([UserSeeder::class,'seed']));
-        $this->assertEquals(200,connect(env('DB_DRIVER'),env('DB_NAME'),env('DB_USERNAME'),env('DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
+        $this->assertEquals(200,connect(env('DEVELOP_DB_DRIVER'),env('DEVELOP_DB_NAME'),env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'))->query('SELECT COUNT("id") from users'));
     }
 
     private function driver(string $driver)

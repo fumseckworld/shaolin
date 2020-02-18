@@ -26,11 +26,12 @@ namespace Base\Seeds {
          */
         public function each(Generator $generator, Table $table, Seeder $seeder): void
         {
+
             foreach ($table->columns() as $column)
             {
                 switch ($column)
                 {
-                    case 'name':
+                    case 'username':
                         $seeder->set($column,$generator->name());
                     break;
                     case 'email':
@@ -39,12 +40,10 @@ namespace Base\Seeds {
                     case 'phone':
                         $seeder->set($column,$generator->phoneNumber);
                     break;
-                    case 'created_at':
-                        $seeder->set($column,now()->toDateTimeString());
-                    break;
                     default:
-                        $seeder->set($column,'NULL');
+                       $this->primary($column);
                     break;
+
                 }
             }
         }

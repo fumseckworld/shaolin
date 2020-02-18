@@ -102,12 +102,11 @@ namespace Eywa\Database\Seed {
          *
          * @return Seeder
          *
-         * @throws Kedavra
          *
          */
         public function set(string $column,$value): Seeder
         {
-            equal($column,static::$table->primary()) ? static::$set->put($column,$value) :   static::$set->put($column,static::$connexion->secure($value));
+            static::$set->put($column,static::$connexion->secure($value));
 
             return $this;
         }
@@ -125,11 +124,24 @@ namespace Eywa\Database\Seed {
         public function seed() : bool
         {
             static::$connexion = app()->connexion()->development();
+
             static::$faker = ioc('faker');
-            static::$table = (new Table(static::$connexion))->from(static::$from);
+
+            static::$table = (new Table(static::$connexion));
+
+            $table = static::$from;
+
+            $db = static::$connexion->base();
+
+            is_false(static::$table->exist(static::$from),true,"The $table table not exist in the $db base");
+
+            static::$table = static::$table->from($table);
+
             static::$set = collect();
 
             $values = '';
+
+            $columns = static::$table->columns();
 
             for ($i=0;$i<static::$generate;$i++)
             {
@@ -137,7 +149,7 @@ namespace Eywa\Database\Seed {
 
                 $tmp = collect();
 
-                foreach (static::$table->columns() as $column)
+                foreach ($columns as $column)
                     $tmp->set(static::$set->get($column));
 
                 append($values, '('. trim($tmp->join(),', ') . '),');
@@ -147,7 +159,7 @@ namespace Eywa\Database\Seed {
                 $tmp->clear();
             }
 
-            $x = collect(static::$table->columns())->join();
+            $x = collect($columns)->join();
 
             $table = static::$from;
 
@@ -155,6 +167,24 @@ namespace Eywa\Database\Seed {
 
             return static::$connexion->set($sql)->execute();
 
+        }
+
+        /**
+         *
+         * Add the value to the primary key
+         *
+         * @param string $column
+         *
+         * @return Seeder
+         *
+         */
+        public function primary(string $column): Seeder
+        {
+            $value =  in_array(static::$connexion->driver(),[MYSQL, SQLITE]) ? 'NULL' : 'DEFAULT';
+
+            static::$set->put($column,$value);
+
+            return  $this;
         }
 
     }

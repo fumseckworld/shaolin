@@ -29,7 +29,7 @@ namespace Base\Seeds {
                 switch ($column)
                 {
                     case 'name':
-                        $seeder->set($column, $generator->name());
+                        $seeder->set($column, $generator->name);
                     break;
                     case 'email':
                         $seeder->set($column, $generator->email);
@@ -38,8 +38,9 @@ namespace Base\Seeds {
                         $seeder->set($column, secure_password('00000000'));
                     break;
                     default:
-                        $seeder->set($column, 'NULL');
+                        $seeder->primary($column);
                     break;
+
                 }
             }
         }

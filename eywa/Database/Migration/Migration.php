@@ -210,7 +210,7 @@ namespace Eywa\Database\Migration {
                 break;
                 case POSTGRESQL:
                     $type = 'SERIAL';
-                    $constraints =  ['PRIMARY KEY NOT NULL'];
+                    $constraints =  ['PRIMARY KEY'];
                 break;
                 case SQLITE:
                     $type = 'INTEGER';
