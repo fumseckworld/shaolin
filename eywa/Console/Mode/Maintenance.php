@@ -30,7 +30,7 @@
                 $io = new SymfonyStyle($input,$output);
 
                 $io->title('Activating the maintenance mode');
-				if((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: down")->flush())
+				if((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: down\nconnexion: prod")->flush())
                 {
                     $io->success('The application is now in maintenance mode');
                     return 0;
