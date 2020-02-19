@@ -1,16 +1,16 @@
 <p align="center"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></p>
 
+# What it's ?
+
+It's a library to make mvc website morer simply and is the core of [Shaolin](https://github.com/fumseckworld/shaolin)
 
 # Installation
 
 `composer require eywa/eywa`
 
-# Documentation
-
-`composer create-project shaolin/zen zen && cd zen && php shaolin app:run`
-
-* [**Source code**](https://git.fumseck.eu/cgit/eywa)
+* [**Source code**](https://github.com/fumseckworld/eywa)
     * [**Code coverage**](https://eywa.fumseck.eu)
-    * [**Bug reports**](mailto:bugzilla@laposte.net)
-    * [**Download**](https://git.fumseck.eu/cgit/eywa/snapshot/eywa-10.7.zip)
-    * [**Show diff**](https://git.fumseck.eu/cgit/eywa/diff/?id=10.7&id2=10.6&dt=2)
+    * [**Bug reports**](https://github.com/fumseckworld/eywa/issues)
+    * [**Download**](https://github.com/fumseckworld/eywa/archive/10.7.zip)
+    * [**Show diff**](https://github.com/fumseckworld/eywa/compare/10.6...10.7)
+    * [**Documentation**](https://github.com/fumseckworld/documentation/blob/master/DOCUMENTATION.md)
