@@ -21,8 +21,11 @@ namespace Eywa\Console {
     use Eywa\Console\Database\ShowTable;
     use Eywa\Console\Database\TruncateTable;
     use Eywa\Console\Generate\GenerateController;
+    use Eywa\Console\Generate\GenerateMigration;
     use Eywa\Console\Generate\GenerateModel;
     use Eywa\Console\Generate\GenerateRouteBase;
+    use Eywa\Console\Generate\GenerateSeeds;
+    use Eywa\Console\Generate\GenerateTest;
     use Eywa\Console\Generate\GenerateView;
     use Eywa\Console\Lang\CreateCatalogues;
     use Eywa\Console\Lang\UpdateCatalogues;
@@ -77,7 +80,7 @@ namespace Eywa\Console {
         {
 
            $commands = [
-               new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),
+               new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),
                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new CreateMigrationTable(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase()
 
            ];
