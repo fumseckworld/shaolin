@@ -16,7 +16,7 @@ namespace Eywa\Console\Mode {
 
         protected function configure()
         {
-            $this->setDescription('Turn application in development mode');
+            $this->setDescription('Put the application in development mode');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
@@ -24,7 +24,7 @@ namespace Eywa\Console\Mode {
 
             $io = new SymfonyStyle($input,$output);
 
-            $io->title('Activating the development mode');
+            $io->title('Enabling the development mode');
             if ((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: up\nconnexion: dev")->flush())
             {
                 $io->success('The application is now in development mode');

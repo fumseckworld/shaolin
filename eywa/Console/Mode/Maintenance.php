@@ -16,7 +16,7 @@
 			
 			protected function configure()
 			{
-				$this->setDescription('Turn application in maintenance mode');
+				$this->setDescription('Put the application in maintenance mode');
 			}
 
             /**
@@ -29,7 +29,7 @@
 			{
                 $io = new SymfonyStyle($input,$output);
 
-                $io->title('Activating the maintenance mode');
+                $io->title('Enabling the maintenance mode');
 				if((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: down\nconnexion: prod")->flush())
                 {
                     $io->success('The application is now in maintenance mode');

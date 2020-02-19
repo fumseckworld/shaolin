@@ -17,7 +17,7 @@ namespace Eywa\Console\Mode {
         protected function configure()
         {
 
-            $this->setDescription('Turn application in production mode');
+            $this->setDescription('Put the application in production mode');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)
@@ -25,7 +25,8 @@ namespace Eywa\Console\Mode {
 
             $io = new SymfonyStyle($input,$output);
 
-            $io->title('Activating the production mode');
+            $io->title('Enabling the production mode');
+
             if ((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: up\nconnexion: prod")->flush())
             {
                 $io->success('The application is now in production mode');
