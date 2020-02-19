@@ -136,14 +136,14 @@ namespace Eywa\Database\Model {
          *
          * Create multiples records
          *
-         * @param array ...$records
+         * @param array $records
          *
          * @return bool
          *
          * @throws Kedavra
          *
          */
-        public static function create(array ...$records): bool
+        public static function create(array $records): bool
         {
             return static::sql()->from(static::$table)->save($records);
         }

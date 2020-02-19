@@ -35,8 +35,6 @@ namespace Eywa\Console\Routes {
          * @param OutputInterface $output
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {

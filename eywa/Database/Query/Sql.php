@@ -215,6 +215,7 @@ namespace Eywa\Database\Query {
         public function save(array $records): bool
         {
 
+
             $x = collect($this->columns())->join();
 
             $sql = "INSERT INTO {$this->table} ($x) VALUES( ";
@@ -231,7 +232,7 @@ namespace Eywa\Database\Query {
             append($sql,')',',');
 
             $sql = trim($sql,',');
-
+            
             return $this->connexion()->set($sql)->execute();
         }
         /**
