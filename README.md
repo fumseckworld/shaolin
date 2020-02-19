@@ -2,7 +2,7 @@
 
 # What it's ?
 
-It's a library to make mvc website morer simply and is the core of [Shaolin](https://github.com/fumseckworld/shaolin)
+It's a library to make mvc website morer simply and is the core of [**Shaolin**](https://github.com/fumseckworld/shaolin)
 
 # Installation
 
@@ -12,5 +12,6 @@ It's a library to make mvc website morer simply and is the core of [Shaolin](htt
     * [**Code coverage**](https://eywa.fumseck.eu)
     * [**Bug reports**](https://github.com/fumseckworld/eywa/issues)
     * [**Download**](https://github.com/fumseckworld/eywa/archive/10.7.zip)
-    * [**Show diff**](https://github.com/fumseckworld/eywa/compare/10.6...10.7)
+    * [**Show stable version diff**](https://github.com/fumseckworld/eywa/compare/10.6...10.7)
+    * [**Show next version changes**](https://github.com/fumseckworld/eywa/compare/master...develop)
     * [**Documentation**](https://github.com/fumseckworld/documentation/blob/master/DOCUMENTATION.md)
