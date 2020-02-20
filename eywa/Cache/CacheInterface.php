@@ -4,11 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Cache {
 
-
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
-    use Eywa\Exception\Kedavra;
 
     interface CacheInterface
     {
@@ -22,9 +18,8 @@ namespace Eywa\Cache {
          *
          * @return mixed
          *
-         * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
+         *
+         * @throws Exception
          *
          */
         public function get(string $key);
@@ -37,7 +32,7 @@ namespace Eywa\Cache {
          *
          * @return $this
          *
-         * @throws Kedavra
+         * @throws Exception
          *
          */
         public function set(string $key, $value): self;
@@ -50,7 +45,7 @@ namespace Eywa\Cache {
          *
          * @return bool
          *
-         * @throws Kedavra
+         * @throws Exception
          *
          */
         public function destroy(string $key): bool;
@@ -63,7 +58,6 @@ namespace Eywa\Cache {
          *
          * @return bool
          *
-         * @throws Kedavra
          * @throws Exception
          *
          */
@@ -75,7 +69,6 @@ namespace Eywa\Cache {
          *
          * @return int
          *
-         * @throws Kedavra
          * @throws Exception
          *
          */
@@ -86,8 +79,6 @@ namespace Eywa\Cache {
          * Clear all cache
          *
          * @return bool
-         *
-         * @throws Kedavra
          *
          */
         public function clear(): bool;

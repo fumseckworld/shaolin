@@ -42,10 +42,8 @@ class ApplicationTest extends Unit
         $this->assertInstanceOf(Form::class,app()->form('root',GET));
         $this->assertInstanceOf(Request::class,app()->request());
         $this->assertInstanceOf(Detect::class,app()->detect());
-        $this->assertInstanceOf(Response::class,app()->view('welcome','welcome','welcome'));
         $this->assertInstanceOf(Response::class,app()->back());
         $this->assertInstanceOf(Response::class,app()->to('root'));
-        $this->assertInstanceOf(Response::class,app()->run());
         $this->assertInstanceOf(Response::class,app()->json(['os'=> 'linux']));
         $this->assertInstanceOf(Connexion::class,app()->connexion());
         $this->assertInstanceOf(Connexion::class,app()->connexion()->development());

@@ -47,7 +47,7 @@ namespace Eywa\Cache {
          */
         public function ttl(): int
         {
-            return  intval(config('cache','ttl'));
+            return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
         }
 
         /**

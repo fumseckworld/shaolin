@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Cache {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
-    use Eywa\Exception\Kedavra;
+    use Exception;
     use Eywa\File\File;
 
     class FileCache implements CacheInterface
@@ -48,21 +46,18 @@ namespace Eywa\Cache {
          */
         public function has(string $key): bool
         {
-            return file_exists($this->file($key)) &&   (time() - filemtime($this->file($key))) / 60  < $this->ttl();
+            $x = env('CACHE_TIME_DIVISER',60);
+            $x = $x <= 0 ? 1 : $x;
+
+            return file_exists($this->file($key)) &&   (time() - filemtime($this->file($key))) / $x  < $this->ttl();
         }
 
         /**
-         *
-         * Get the time to live
-         *
-         * @return int
-         *
-         * @throws Kedavra
-         *
+         * @inheritDoc
          */
         public function ttl(): int
         {
-            return  intval(config('cache','ttl'));
+            return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
         }
 
         /**
@@ -71,18 +66,20 @@ namespace Eywa\Cache {
          *
          * @return string
          *
-         * @throws Kedavra
+         * @throws Exception
          *
          */
         public function directory(): string
         {
-            return config('cache','directory');
+            return env('CACHE_DIRECTORY','cache');
         }
 
         /**
          * @param string $key
          * @return string
-         * @throws Kedavra
+         *
+         * @throws Exception
+         *
          */
         public function file(string $key): string
         {
