@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Html\Form {
 
+    use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
 
@@ -35,6 +36,8 @@ namespace Eywa\Html\Form {
          * @param array $params
          *
          * @throws Kedavra
+         * @throws Exception
+         *
          */
         public function __construct(string $route,string $method,$route_args = [],array $params = [])
         {
@@ -54,7 +57,7 @@ namespace Eywa\Html\Form {
 
             $this->append(csrf_field());
 
-            $this->add('_method','hidden',['value'=> strtoupper($method)]);
+            $this->add('_method','hidden','method',['value'=> strtoupper($method)]);
 
         }
 
@@ -65,14 +68,14 @@ namespace Eywa\Html\Form {
          *
          * @param string $name
          * @param string $type
+         * @param string $label_text
          * @param array $options
          *
          * @return Form
          *
          * @throws Kedavra
-         *
          */
-        public function add(string $name,string $type,array $options = []): Form
+        public function add(string $name,string $type,string $label_text,array $options = []): Form
         {
             if ($this->has($name))
                 return  $this;
@@ -103,29 +106,34 @@ namespace Eywa\Html\Form {
                 case 'week':
                 case 'datetime':
 
-                    $this->append('<div class="'.$this->class('separator').'">');
+                    $this->append('<div class="'.$this->class('separator','form-group').'">');
 
-                    $input = '<input type="'.$type.'" name="'.$name.'" class="'.$this->class('base').'" ';
+                    $options = collect($options)->each(function ($k,$v){
+                        return $k.'='.'"'.$v.'"';
+                    })->join('');
 
-                    foreach ($options as $k => $v)
-                        append($input,$k,'=','"'.$v.'" ');
-
-                    append($input,'>');
+                    if (equal($type,'hidden'))
+                        $input = '<input id="'.$name.'" type="'.$type.'" name="'.$name.'" '.$options.'">';
+                    else
+                        $input = '<label for="'.$name.'" class="'.$this->class('label','form-label').'">  '.$label_text.'</label><input id="'.$name.'" type="'.$type.'" name="'.$name.'" '.$options.'>';
 
                     $this->append($input);
                     $this->end();
                 break;
                 case 'textarea':
 
-                    $this->append('<div class="'.$this->class('separator').'">');
+                    $this->append('<div class="'.$this->class('separator','form-group').'">');
 
-                    $input = '<textarea  name="'.$name.'" class="'.$this->class('base').'" ';
+                    $x = collect($options)->each(function ($k,$v){
+                        return $k.'='.'"'.$v.'"';
+                    })->join('');
 
-                    foreach ($options as $k => $v)
-                        if (different($k,'value'))
-                            append($input,$k,'=','"'.$v.'" ');
+                    $value = array_key_exists('value',$options) ? $options['value'] :  '';
 
-                    collect($options)->has('value') ? append($input,'>'.$options["value"].'</textarea>') : append($input,'></textarea>') ;
+                    if (def($value))
+                        $input = '<label for="'.$name.'" class="'.$this->class('label','form-label').'">  '.$label_text.'</label><textarea id="'.$name.'" type="'.$type.'"  class="'.$this->class('base','form-control').'" name="'.$name.'" '.$x.'>'.$value .'</textarea>';
+                    else
+                        $input = '<label for="'.$name.'" class="'.$this->class('label','form-label').'">  '.$label_text.'</label><textarea id="'.$name.'" type="'.$type.'"  class="'.$this->class('base','form-control').'" name="'.$name.'" '.$x.'></textarea>';
 
                     $this->append($input);
 
@@ -156,16 +164,16 @@ namespace Eywa\Html\Form {
          * @param bool $condition
          * @param string $name
          * @param string $type
+         * @param string $label_text
          * @param array $options
          *
          * @return Form
          *
          * @throws Kedavra
-         *
          */
-        public function only(bool $condition,string $name,string $type,array $options =[]): Form
+        public function only(bool $condition,string $name,string $type,string $label_text,array $options =[]): Form
         {
-            return $condition ?  $this->add($name,$type,$options) : $this;
+            return $condition ?  $this->add($name,$type,$label_text,$options) : $this;
         }
 
         /**
@@ -179,7 +187,7 @@ namespace Eywa\Html\Form {
          */
         public function row(): Form
         {
-            return $this->append('<div class="'.$this->class('row').'">');
+            return $this->append('<div class="'.$this->class('row','row').'">');
         }
 
 
@@ -210,7 +218,7 @@ namespace Eywa\Html\Form {
         public function get(string $submit_text ='submit'): string
         {
 
-            $this->append('<button type="submit" class="'.$this->class('submit').'">'.$submit_text.'</button>');
+            $this->append('<button type="submit" class="'.$this->class('submit','btn btn-submit').'">'.$submit_text.'</button>');
 
             return def($this->form) ? $this->form . '</form>' : '</form>';
         }
@@ -236,14 +244,15 @@ namespace Eywa\Html\Form {
          *
          * @param string $x
          *
+         * @param string $value
          * @return string
          *
          * @throws Kedavra
-         *
          */
-        private function class(string $x):string
+        private function class(string $x,string $value =''):string
         {
-            return  collect(config('form','class'))->get($x);
+            $x = collect(config('form','class'))->get($x);
+            return def($x) ? $x : $value;
         }
 
         /**
@@ -261,7 +270,7 @@ namespace Eywa\Html\Form {
         public function select(string $name,array $options): Form
         {
 
-            $this->append( '<div class="' . $this->class('separator').'"><select class="' . $this->class('base').'" name="'.$name.'" required="required"><option value=""> ' . config('form','choice_option') . '</option>');
+            $this->append( '<div class="' . $this->class('separator','form-group').'"><select class="' . $this->class('base','form-control').'" name="'.$name.'" required="required"><option value=""> ' . config('form','choice_option') . '</option>');
 
             foreach($options as $k => $option)
                 is_integer($k) ? append($this->form,'<option value="' . $option . '"> ' . $option . '</option>'): append($this->form, '<option value="' . $k . '"> ' . $option . '</option>');
