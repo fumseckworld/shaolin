@@ -407,16 +407,14 @@ namespace Eywa\Application {
          * Go to a specific url by a route it's route name
          *
          * @param string $route
+         * @param array $route_args
          * @param string $message
          * @param bool $success
          *
          * @return Response
-         *
          * @throws Kedavra
-         * @throws Exception
-         *
          */
-        public function to(string $route,string $message ='',bool $success = true): Response;
+        public function to(string $route,array $route_args = [],string $message ='',bool $success = true): Response;
 
         /**
          *

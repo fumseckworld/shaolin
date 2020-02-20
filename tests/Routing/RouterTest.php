@@ -7,9 +7,10 @@ namespace Testing\Routing {
     
     class RouterTest extends Unit
     {
-        public function test()
+        public function test_post()
         {
-            $this->assertTrue(true);
+         $this->assertTrue($this->visit(route('server'),POST)->run()->success());
+
         }
     }
 }

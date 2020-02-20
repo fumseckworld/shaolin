@@ -9,7 +9,6 @@ use Eywa\Application\Environment\Env;
 use Eywa\Collection\Collect;
 use Eywa\Exception\Kedavra;
 use Eywa\Html\Pagination\Pagination;
-use Eywa\Http\Routing\Admin;
 use Eywa\Http\Routing\Task;
 use Eywa\Http\Routing\Web;
 use Eywa\Message\Flash\Flash;
@@ -320,43 +319,15 @@ if (!function_exists('route'))
      *
      * @method route
      *
-     * @param string $db
      * @param string $route
-     * @param mixed $args
-     *
+     * @param array $args
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
      */
-    function route(string $db,string $route,array $args =[]): string
+    function route(string $route,array $args = []): string
     {
-        $x = '';
-        switch ($db)
-        {
-            case 'admin':
-                foreach ( Admin::where('name',EQUAL,$route)->execute() as $route)
-                    $x = $route;
-            break;
-            case 'web':
-
-                foreach (Web::where('name',EQUAL,$route)->execute() as $route)
-                   $x = $route;
-            break;
-            case 'task':
-                foreach ( Task::where('name',EQUAL,$route)->execute() as $route)
-                    $x = $route;
-            break;
-            default:
-                throw new Kedavra("The db parameter must be web, admin or task");
-            break;
-        }
-
-        if (not_def($x))
-            throw new Kedavra("The $route route was not found in the $db base");
-
-        $url = $x->url;
+        $route =  Web::where('name',EQUAL,$route)->execute()[0]->url;
         if (def($args))
         {
 
@@ -365,15 +336,14 @@ if (!function_exists('route'))
 
             foreach ($args as $k => $v) {
 
-                append($x, str_replace(":$k", "$v", $url));
+                append($x, str_replace(":$k", "$v", $route));
 
             }
             return trim($x, '/');
 
         }
-        return  $url;
+        return  $route;
     }
-
 }
 
 if(!function_exists('block'))

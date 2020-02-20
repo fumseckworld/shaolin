@@ -247,13 +247,14 @@ namespace Eywa\Application {
          *
          * @inheritDoc
          *
+         *
          */
-        public function to(string $route, string $message = '', bool $success = true): Response
+        public function to(string $route,array $route_args= [],string $message = '', bool $success = true): Response
         {
             if (def($message))
                 $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
-            return (new RedirectResponse(route('web',$route)))->send();
+            return (new RedirectResponse(route($route,$route_args)))->send();
         }
 
         /**
@@ -406,7 +407,7 @@ namespace Eywa\Application {
         {
             $success ? $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
-            return (new RedirectResponse(route('web',$route,$route_args),$status))->send();
+            return (new RedirectResponse(route($route,$route_args),$status))->send();
         }
 
         /**
