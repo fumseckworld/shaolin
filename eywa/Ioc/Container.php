@@ -22,7 +22,9 @@ namespace Eywa\Ioc {
 
         /**
          * @return Container
+         * @throws DependencyException
          * @throws Kedavra
+         * @throws NotFoundException
          */
         public static function ioc(): Container
         {
@@ -35,7 +37,9 @@ namespace Eywa\Ioc {
                 $c = new ContainerBuilder();
                 $c->useAnnotations(true);
                 $c->useAutowiring(true);
+                $c->addDefinitions(base('ioc','admin.php'),base('ioc','web.php'));
                 $c = $c->build();
+
                 $c->set('db.driver',$env->get('DB_DRIVER'));
                 $c->set('db.name', $env->get('DB_NAME'));
                 $c->set('db.username', $env->get('DB_USERNAME'));
