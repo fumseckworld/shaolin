@@ -29,7 +29,6 @@
     "ext-pdo": "*",
     "ext-openssl": "*",
     "ext-json": "*",
-    "ext-memcache": "*",
     "sinergi/browser-detector": "^6.1",
     "mobiledetect/mobiledetectlib": "^2.8"
   },
