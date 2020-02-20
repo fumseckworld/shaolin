@@ -465,4 +465,4 @@ define('STATUS', [
 
 ]);
 
-define('CACHE_DEFAULT_TTL',1440);
+define('CACHE_DEFAULT_TTL',7200); // 120m | 2h | 7200s
