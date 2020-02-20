@@ -36,7 +36,7 @@ class HomeController extends Controller
     public function home(): Response
     {
 
-        $form = $this->form('server')->add('name', 'text','Type your name', ['placeholder' => 'type your name'])->add('username','text','your name')->add('bio','textarea','your story',['value'=>'r'])->get();
+        $form = $this->form('server')->add('name', 'text','Type your name', ['placeholder' => 'type your name'])->add('username','text','your name')->add('bio','textarea','your story')->get();
 
         $users = User::all();
         
