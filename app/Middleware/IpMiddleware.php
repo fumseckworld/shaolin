@@ -5,7 +5,6 @@ namespace App\Middleware {
 
     use Eywa\Http\Middleware\Middleware;
     use Eywa\Http\Request\ServerRequest;
-    use Eywa\Http\Response\Response;
 
     class IpMiddleware extends Middleware
     {
@@ -13,14 +12,10 @@ namespace App\Middleware {
         /**
          * @inheritDoc
          */
-        public function check(ServerRequest $request): Response
+        public function check(ServerRequest $request): void
         {
-            if (cli())
-                return $this->next();
-
-            is_false($request->local(),true,"You must be in localhost");
-
-            return  $this->next();
+            if (not_cli())
+                is_false($request->local(),true,"You must be in localhost");
 
         }
     }

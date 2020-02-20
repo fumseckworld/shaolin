@@ -3,10 +3,8 @@
 declare(strict_types=1);
 namespace Eywa\Http\Middleware {
 
-
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\ServerRequest;
-    use Eywa\Http\Response\Response;
 
     abstract class Middleware
     {
@@ -16,26 +14,11 @@ namespace Eywa\Http\Middleware {
          *
          * @param ServerRequest $request
          *
-         * @return Response
+         * @return void
          *
          * @throws Kedavra
          *
          */
-        abstract public function check(ServerRequest $request): Response;
-
-        /**
-         *
-         * Execute the next middleware
-         *
-         * @return Response
-         *
-         * @throws Kedavra
-         *
-         */
-        public function next(): Response
-        {
-            return (new Response(''))->send();
-        }
-
+        abstract public function check(ServerRequest $request): void;
     }
 }
