@@ -14,4 +14,5 @@ It's a library to make mvc website morer simply and is the core of [**Shaolin**]
     * [**Download**](https://github.com/fumseckworld/eywa/archive/10.7.zip)
     * [**Show stable version diff**](https://github.com/fumseckworld/eywa/compare/10.6...10.7)
     * [**Show next version changes**](https://github.com/fumseckworld/eywa/compare/master...develop)
+    * [**List of tasks**](https://trello.com/b/ZMKB0OiD)
     * [**Documentation**](https://github.com/fumseckworld/documentation/blob/master/DOCUMENTATION.md)
