@@ -169,19 +169,6 @@ namespace Eywa\Application {
 
         /**
          *
-         * Check if the form is invalid
-         *
-         * @return bool
-         *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         *
-         */
-        public function check_form(): bool;
-
-        /**
-         *
          * Get an instance of session
          *
          * @return SessionInterface

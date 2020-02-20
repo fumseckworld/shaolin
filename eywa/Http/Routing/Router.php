@@ -11,6 +11,7 @@ namespace Eywa\Http\Routing {
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
+    use Eywa\Security\Middleware\CsrfMiddleware;
     use stdClass;
 
     class Router
@@ -55,7 +56,10 @@ namespace Eywa\Http\Routing {
         public function __construct(ServerRequest $request)
         {
             $this->url = $request->url();
+
             $this->method = $request->method();
+
+            $this->call_middleware($request);
         }
 
         /**
@@ -129,6 +133,32 @@ namespace Eywa\Http\Routing {
         private function not_found(): Response
         {
             return (new RedirectResponse(route('web', '404')))->send();
+        }
+
+        private function call_middleware(ServerRequest $request)
+        {
+            $middleware_dir = 'Middleware';
+
+            $namespace = 'App' . '\\' . $middleware_dir . '\\';
+
+            $dir = base('app'). DIRECTORY_SEPARATOR . $middleware_dir;
+
+            is_false(is_dir($dir), true, "The $dir directory was not found");
+
+            $middle = glob("$dir/*php");
+
+            call_user_func_array([ new CsrfMiddleware(), 'check' ], [ $request ]);
+
+            foreach($middle as $middleware)
+            {
+                $middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
+
+                $middleware = collect(explode('.', $middle))->first();
+
+                $class = "$namespace$middleware";
+
+                call_user_func_array([ new $class(), 'check' ], [ $request ]);
+            }
         }
     }
 }

@@ -215,7 +215,7 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function form(string $route,string $method,array $route_args = [],array $params = []): Form
+        public function form(string $route,string $method = POST,array $route_args = [],array $params = []): Form
         {
             return new Form($route,$method,$route_args,$params);
         }
@@ -326,24 +326,6 @@ namespace Eywa\Application {
         }
 
         /**
-         *
-         * @inheritDoc
-         *
-         */
-        public function check_form(): bool
-        {
-            if (not_cli())
-            {
-                $session = $this->session();
-                if ($session->has(CSRF_TOKEN))
-                {
-                    return different((new Crypter())->decrypt($session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa'),true,"Form is not valid") || different($session->get('csrf'),collect(explode('==',$session->get(CSRF_TOKEN)))->last(),true,"Csrf token was not found");
-                }
-            }
-            throw new Kedavra('Csrf token was not found');
-        }
-        /**
-
          *
          * @inheritDoc
          *

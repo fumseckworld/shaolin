@@ -5,6 +5,7 @@ namespace Eywa\Http\Request {
 
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Parameter\Bag;
 
     class ServerRequest
     {
@@ -102,14 +103,87 @@ namespace Eywa\Http\Request {
 
         /**
          *
-         * Get the request
+         * $_POST
          *
-         * @return Request
+         * @return Bag
          *
          */
-        public function request():Request
+        public function request():Bag
         {
-            return $this->request;
+            return $this->request->request();
         }
+
+        /**
+         *
+         * Check if the request is submited by a form
+         *
+         * @return bool
+         *
+         */
+        public function submited(): bool
+        {
+            return !in_array($this->method(),[GET]);
+        }
+
+        /**
+         *
+         * Check if the request is submited by a form
+         *
+         * @return bool
+         *
+         */
+        public function local(): bool
+        {
+            return $this->request->server()->get('SERVER_ADDR') === '127.0.0.1';
+        }
+
+        /**
+         *
+         * $_GET
+         *
+         * @return Bag
+         *
+         */
+        public function query(): Bag
+        {
+            return $this->request->query();
+        }
+
+        /**
+         *
+         * $_COOKIE
+         *
+         * @return Bag
+         *
+         */
+        public function cookie(): Bag
+        {
+            return $this->request->cookie();
+        }
+
+        /**
+         *
+         * $_SERVER
+         *
+         * @return Bag
+         *
+         */
+        public function server(): Bag
+        {
+            return $this->request->server();
+        }
+
+        /**
+         *
+         * $_FILES
+         *
+         * @return Bag
+         *
+         */
+        public function file(): Bag
+        {
+            return $this->request->file();
+        }
+
     }
 }

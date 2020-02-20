@@ -48,17 +48,9 @@ if (!function_exists('csrf_field'))
         {
             return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
         }
-        $session = new Session();
 
-        $server = $session->has('server') ? $session->get('server') : $session->set('server', (new Crypter())->encrypt(Request::generate()->server()->get('SERVER_NAME', 'eywa')))->get('server');
+        return (new Eywa\Security\Csrf\Csrf(new Session()))->token();
 
-        $x = bin2hex(random_bytes(16));
-        $csrf = $session->set('csrf', $x)->get('csrf');
-        $token = "$server@$csrf";
-
-        $session->set(CSRF_TOKEN, $token);
-
-        return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $token . '">';
     }
 }
 

@@ -8,6 +8,7 @@ namespace Eywa\Console\Generate {
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class GenerateMiddleware extends Command
     {
@@ -34,24 +35,55 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $x = ucfirst($input->getArgument('middleware'));
 
 
-            $namespace = 'App\Middleware';
+            $io = new SymfonyStyle($input,$output);
 
-            $file = 'app' . DIRECTORY_SEPARATOR . 'Middleware' . DIRECTORY_SEPARATOR . $x . '.php';
+            $middleware = $input->getArgument('middleware');
 
-            if (file_exists($file)) {
-                $output->write("<bg=red;fg=white>The $x middleware already exist\n</>");
+            if(preg_match("#^[a-z]([a-z_]+)$#",$middleware) !== 1)
+            {
+                $io->error('You must use snake case syntax to generate the middleware');
+                return  1;
+            }
+
+            $class = collect(explode('_',$middleware))->for('ucfirst')->join('');
+
+            $file  =  base('app','Middleware',"$class.php");
+
+            if (file_exists($file))
+            {
+                $io->error('The middleware already exist');
 
                 return 1;
             }
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace;\n\n\tuse GuzzleHttp\Psr7\Response;\n\tuse Imperium\Middleware\Middleware;\n\tuse Psr\Http\Message\ResponseInterface;\n\tuse Psr\Http\Message\ServerRequestInterface;\n\n\tclass AppMiddleware implements Middleware\n\t{\n\n\t\tpublic function handle(ServerRequestInterface \$request) : ResponseInterface\n\t\t{\n\n\t\t}\n\t}\n")->flush()) {
-                $output->write("<info>The $x middleware was generated successfully</info>\n");
+            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+
+
+namespace App\Middleware {
+
+    use Eywa\Http\Middleware\Middleware;
+    use Eywa\Http\Request\ServerRequest;
+    use Eywa\Http\Response\Response;
+
+    class $class extends Middleware
+    {
+    
+        /**
+         * @inheritDoc
+         */
+        public function check(ServerRequest \$request): Response
+        {
+            // TODO: Implement check() method.
+        }
+    }
+}")->flush()) {
+                $io->success('The middleware was generated successfully');
 
                 return 0;
             }
 
+            $io->error('Failed to generate the middleware');
             return 1;
         }
 

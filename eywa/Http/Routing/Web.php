@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Eywa\Http\Routing {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Database\Model\Model;
     use Eywa\Exception\Kedavra;
 
@@ -24,8 +22,6 @@ namespace Eywa\Http\Routing {
          * @return bool
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         public static function generate(): bool
         {
