@@ -37,6 +37,7 @@ namespace Eywa\Security\Csrf {
             is_true(different((new Crypter())->decrypt($this->session->get('server')),Request::generate()->server()->get('SERVER_NAME','eywa')),true,'Server is invalid');
 
             $this->session->destroy(CSRF_TOKEN);
+
             return true;
         }
 
@@ -64,8 +65,11 @@ namespace Eywa\Security\Csrf {
                 return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $this->session->get(CSRF_TOKEN) . '">';
 
             $server = $this->session->has('server') ? $this->session->get('server') : $this->session->set('server', (new Crypter())->encrypt(Request::generate()->server()->get('SERVER_NAME', 'eywa')))->get('server');            $x = bin2hex(random_bytes(16));
+
             $csrf = $this->session->set('csrf', $x)->get('csrf');
+
             $token = "$server@$csrf";
+
             $this->session->set(CSRF_TOKEN, $token);
 
             return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $token . '">';
