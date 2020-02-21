@@ -11,13 +11,13 @@ namespace Eywa\Console {
     use Eywa\Console\App\Serve;
     use Eywa\Console\Cache\ClearCache;
     use Eywa\Console\Database\CleanDatabase;
-    use Eywa\Console\Database\CreateMigrationTable;
     use Eywa\Console\Database\DropTable;
     use Eywa\Console\Database\ExportDatabase;
     use Eywa\Console\Database\ImportDatabase;
     use Eywa\Console\Database\MigrateDatabase;
     use Eywa\Console\Database\RollbackDatabase;
     use Eywa\Console\Database\SeedDatabase;
+    use Eywa\Console\Database\SetupDatabase;
     use Eywa\Console\Database\ShowTable;
     use Eywa\Console\Database\TruncateTable;
     use Eywa\Console\Generate\GenerateController;
@@ -82,7 +82,7 @@ namespace Eywa\Console {
 
            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
-               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new CreateMigrationTable(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase()
+               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new SetupDatabase(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase()
 
            ];
 

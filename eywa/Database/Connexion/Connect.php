@@ -18,7 +18,7 @@ namespace Eywa\Database\Connexion {
          * The connection to the base
          *
          */
-        private PDO $connexion;
+        private ?PDO $connexion = null;
 
         /**
          *
@@ -93,16 +93,6 @@ namespace Eywa\Database\Connexion {
          */
         public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306,string $host = LOCALHOST)
         {
-            $this->connexion = equal($driver,SQL_SERVER) ? new PDO("$driver:Serve=$host;Database=$base",$username,$password,config('connexion','options')) : (equal($driver,SQLITE) ? new PDO("sqlite:$base") : new PDO("$driver:host=$host;port=$port;dbname=$base", $username, $password, config('connexion','options')));
-
-            $this->connexion->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
-
-            try {
-                $this->connexion->beginTransaction();
-            }catch (PDOException $e)
-            {
-                throw new Kedavra($e->getMessage());
-            }
 
             $this->driver = $driver;
             $this->base = $base;
@@ -130,7 +120,7 @@ namespace Eywa\Database\Connexion {
             foreach ($this->queries as $query)
             {
                 try {
-                    $x =  $this->connexion->prepare($query);
+                    $x =  $this->pdo()->prepare($query);
                     $x->execute($this->args);
                     $x->closeCursor();
                 }catch (PDOException $exception)
@@ -140,6 +130,13 @@ namespace Eywa\Database\Connexion {
             }
 
             return $this->commit();
+        }
+        /**
+         * @inheritDoc
+         */
+        public function setup(): bool
+        {
+            return  true;
         }
 
         /**
@@ -155,7 +152,7 @@ namespace Eywa\Database\Connexion {
                 try
                 {
 
-                    $result = $this->connexion->prepare($query);
+                    $result = $this->pdo()->prepare($query);
 
                     foreach ($this->args as $k => $arg)
                         $result->bindParam($k +1,$arg);
@@ -179,7 +176,7 @@ namespace Eywa\Database\Connexion {
          */
         public function secure(string $x): string
         {
-            return $this->connexion->quote($x);
+            return $this->pdo()->quote($x);
         }
 
         /**
@@ -187,7 +184,7 @@ namespace Eywa\Database\Connexion {
          */
         public function commit(): bool
         {
-            return $this->connexion->commit();
+            return $this->pdo()->commit();
         }
 
         /**
@@ -197,7 +194,7 @@ namespace Eywa\Database\Connexion {
         {
             $this->queries = [];
 
-            if ($this->connexion->rollBack())
+            if ($this->pdo()->rollBack())
             {
                 throw new Kedavra($message);
             }
@@ -265,7 +262,7 @@ namespace Eywa\Database\Connexion {
 
                 try
                 {
-                    $result = $this->connexion->prepare($query);
+                    $result = $this->pdo()->prepare($query);
                     $result->execute($this->args);
                     $x->push($result->fetchObject($class,$args));
                     $result->closeCursor();
@@ -318,18 +315,6 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
-         * Check if the driver is sql server
-         *
-         * @return bool
-         *
-         */
-        public function sql_server(): bool
-        {
-            return $this->driver() === SQL_SERVER;
-        }
-
-        /**
-         *
          * Check if the driver is not the driver
          *
          * @param string $driver
@@ -373,7 +358,7 @@ namespace Eywa\Database\Connexion {
          */
         public function query(string $query)
         {
-            $x = $this->connexion->query($query);
+            $x = $this->pdo()->query($query);
 
             return $x->fetch(PDO::FETCH_COLUMN);
         }
@@ -384,6 +369,27 @@ namespace Eywa\Database\Connexion {
         public function development(): Connect
         {
             return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),env('DEVELOP_DB_HOST','localhost'));
+        }
+
+        /**
+         * @return PDO
+         * @throws Kedavra
+         */
+        private function pdo(): PDO
+        {
+            if (is_null($this->connexion))
+            {
+                $this->connexion = equal($this->driver,SQL_SERVER) ? new PDO("{$this->driver}:Serve={$this->host};Database={$this->base}",$this->username,$this->password,config('connexion','options')) : (equal($this->driver,SQLITE) ? new PDO("sqlite:{$this->base}") : new PDO("{$this->driver}:host={$this->host};port={$this->port};dbname={$this->base}", $this->username, $this->password, config('connexion','options')));
+
+                $this->connexion->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+                try {
+                    $this->connexion->beginTransaction();
+                }catch (PDOException $e)
+                {
+                    throw new Kedavra($e->getMessage());
+                }
+            }
+            return $this->connexion;
         }
     }
 }

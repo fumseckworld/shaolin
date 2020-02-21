@@ -58,6 +58,8 @@ namespace Eywa\Database\Connexion {
          *
          * @return mixed
          *
+         * @throws Kedavra
+         *
          */
         public function query(string $query);
 
@@ -115,11 +117,25 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
+         * Create all users and database for an environement
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         */
+        public function setup(): bool;
+
+        /**
+         *
          * Secure a string
          *
          * @param string $x
          *
          * @return string
+         *
+         * @throws Kedavra
          *
          */
         public function secure(string $x): string;
@@ -130,6 +146,8 @@ namespace Eywa\Database\Connexion {
          * Commit the transaction
          *
          * @return bool
+         *
+         * @throws Kedavra
          *
          */
         public function commit(): bool;
