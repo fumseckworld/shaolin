@@ -47,7 +47,6 @@ namespace Eywa\Console\Database {
         {
             $io = new SymfonyStyle($input, $output);
 
-            $helper = $this->getHelper('question');
 
             $dev_base_created_successfully = 'The development database has been removed successfully';
             $prod_base_created_successfully = 'The production database has been removed successfully';
