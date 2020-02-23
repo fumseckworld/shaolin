@@ -7,6 +7,7 @@ namespace Eywa\Database\Connexion {
 
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
+    use Eywa\File\File;
     use PDO;
     use PDOException;
 
@@ -171,6 +172,108 @@ namespace Eywa\Database\Connexion {
             return $x;
         }
 
+        /**
+         *
+         * Check if class it's connected to the base
+         *
+         * @return bool
+         *
+         */
+        public function connected(): bool
+        {
+            try {
+                return  $this->pdo() instanceof PDO;
+            }catch (Kedavra | PDOException $exception)
+            {
+                return false;
+
+            }
+        }
+
+        /**
+         * @param string ...$bases
+         * @return bool
+         * @throws Kedavra
+         */
+        public function create_database(string ...$bases): bool
+        {
+            $x = collect();
+            foreach ($bases as $base)
+                $x->push($this->set("CREATE DATABASE IF NOT EXISTS $base")->execute());
+
+            return  $x->ok();
+        }
+
+        /**
+         * @param string ...$bases
+         * @return bool
+         * @throws Kedavra
+         */
+        public function remove_database(string ...$bases): bool
+        {
+            $x = collect();
+            if (in_array($this->driver(),[MYSQL,POSTGRESQL]))
+            {
+                foreach ($bases as $base)
+                    $x->push($this->set("DROP DATABASE IF EXISTS $base")->execute());
+
+
+            }else
+            {
+                foreach ($bases as $base)
+                 $x->push(File::delete($base));
+            }
+            return  $x->ok();
+        }
+
+        /**
+         * @param string[] $users
+         * @return bool
+         * @throws Kedavra
+         */
+        public function remove_user(string ...$users): bool
+        {
+            $x = collect();
+            if (in_array($this->driver(),[MYSQL,POSTGRESQL]))
+            {
+                foreach ($users as $user)
+                   $this->mysql() ? $x->push($this->set("DROP USER IF EXISTS '$user'@'{$this->host}'")->execute()) : $x->push($this->set("DROP USER IF EXISTS $user")->execute());
+            }
+            return  $x->ok();
+        }
+
+        public function create_root()
+        {
+            if (collect($this->set('select rolname from pg_roles')->execute())->not_exist('root') && $this->postgresql())
+                return $this->set("CREATE USER root WITH PASSWORD 'root' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN")->execute();
+
+            return false;
+        }
+
+        /**
+         * @param string $user
+         * @param string $password
+         * @param string $base
+         * @return bool
+         * @throws Kedavra
+         */
+        public function create_user(string $user,string $password,string $base): bool
+        {
+
+            switch ($this->driver())
+            {
+                case MYSQL:
+                    return $this->set("CREATE USER IF NOT EXISTS '$user'@'localhost' IDENTIFIED BY '$password';")->set("GRANT ALL PRIVILEGES ON $base.* TO '$user'@'localhost';")->execute();
+                break;
+                case POSTGRESQL:
+                   return $this->set("CREATE USER $user WITH PASSWORD '$password' LOGIN;")->set("GRANT ALL PRIVILEGES ON DATABASE $base TO $user")->execute();
+                break;
+                default:
+                    return false;
+                break;
+            }
+
+        }
         /**
          * @inheritDoc
          */
