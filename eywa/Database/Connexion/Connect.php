@@ -290,6 +290,15 @@ namespace Eywa\Database\Connexion {
             return $this->pdo()->commit();
         }
 
+        public function info()
+        {
+
+            return collect(get_object_vars($this))->del('connexion','queries','args','options')->each(function ($k,$v){
+                return "\$$k=$v;";
+            })->join('');
+
+        }
+
         /**
          * @inheritDoc
          */
