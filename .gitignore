@@ -7,3 +7,4 @@ coverage
 *.key
 *sqlite3*
 config/mode.yaml
+doc
