@@ -8,6 +8,7 @@ namespace Eywa\Validate {
     use Egulias\EmailValidator\EmailValidator;
     use Egulias\EmailValidator\Validation\RFCValidation;
     use Eywa\Collection\Collect;
+    use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
 
     class Validator
@@ -41,6 +42,7 @@ namespace Eywa\Validate {
         {
 
             $this->rules = $rules;
+
             $this->errors = collect();
 
             $this->request = $request;
@@ -94,10 +96,13 @@ namespace Eywa\Validate {
          *
          * @return Validator
          *
+         * @throws Kedavra
+         *
          */
         public function capture(): Validator
         {
             $request = $this->request->request();
+
             foreach ($this->rules as $k => $v)
             {
 
