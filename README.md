@@ -1,4 +1,5 @@
 <p align="center"><img src="https://zupimages.net/up/18/08/rd2u.png" width="300" alt="imperium"></p>
+<p align="center"><img src="https://travis-ci.com/fumseckworld/eywa.svg?branch=master" alt="Build Status"></p>
 
 # What it's ?
 
