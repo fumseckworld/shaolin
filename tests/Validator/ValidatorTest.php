@@ -3,7 +3,7 @@
 
 namespace Testing\Validator {
 
-    use App\Validator\UsersValidator;
+    use App\Validators\Users\UsersValidator;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
     use Eywa\Testing\Unit;

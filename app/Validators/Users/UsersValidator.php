@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Validator {
+namespace App\Validators\Users {
 
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
@@ -13,6 +13,7 @@ namespace App\Validator {
 
         public static array $rules =
         [
+
             'email' => 'email|required',
             'name' => 'required|unique:auth',
             'age'     => 'numeric|between:0,100'
@@ -27,3 +28,4 @@ namespace App\Validator {
         }
     }
 }
+            
