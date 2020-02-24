@@ -464,6 +464,8 @@ namespace Eywa\Database\Query {
         public function where(string $column, string $condition, $expected) : Sql
         {
 
+            not_in($this->columns(),$column,true,"The $column column not exist in the {$this->table} table");
+
             $condition = html_entity_decode($condition);
 
             $this->where_param = $column;

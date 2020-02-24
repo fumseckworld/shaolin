@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Eywa\Http\Routing {
 
-
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
@@ -52,6 +49,8 @@ namespace Eywa\Http\Routing {
          *
          * @param ServerRequest $request
          *
+         * @throws Kedavra
+         *
          */
         public function __construct(ServerRequest $request)
         {
@@ -69,19 +68,16 @@ namespace Eywa\Http\Routing {
          * @return Response
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
         public function run(): Response
         {
             foreach (Web::where('method', EQUAL, $this->method)->execute() as $route)
             {
-                if ($this->match($route->url))
+                if ($this->match($route->url,$route))
                 {
                     $this->route = $route;
 
                     return  $this->result()->call();
-
                 }
             }
 
@@ -95,8 +91,6 @@ namespace Eywa\Http\Routing {
          */
         public function result(): RouteResult
         {
-            array_shift($this->parameters);
-
             return new RouteResult($this->route->controller,$this->route->action,$this->parameters);
         }
 
@@ -106,17 +100,41 @@ namespace Eywa\Http\Routing {
          *
          * @param string $url
          *
+         * @param $route
          * @return bool
-         *
          */
-        private function match(string $url): bool
+        private function match(string $url,$route): bool
         {
 
             $path = preg_replace('#:([\w]+)#','([^/]+)',$url);
 
             $regex = "#^$path$#";
 
-            return preg_match($regex, $this->url, $this->parameters) === 1;
+            if(preg_match($regex, $this->url, $this->parameters) === 1)
+            {
+
+                $url = $route->url;
+
+                $args = substr($url,strpos($url,':'));
+
+                $args = collect(explode(':',$args))->for(function ($x){
+                    return trim($x,'/');
+                })->shift()->all();
+
+                $result = collect();
+
+                array_shift($this->parameters);
+
+                foreach ($this->parameters as $k => $v)
+                    $result->put($args[$k],$v);
+
+                $this->parameters = $result->all();
+
+                return true;
+            }
+
+
+            return false;
         }
 
         /**
@@ -125,17 +143,25 @@ namespace Eywa\Http\Routing {
          *
          * @return Response
          *
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          *
          */
         private function not_found(): Response
         {
-            return (new RedirectResponse(route('web', '404')))->send();
+            return (new RedirectResponse(route('web', ['404'])))->send();
         }
 
-        private function call_middleware(ServerRequest $request)
+        /**
+         *
+         * Call all middleware
+         *
+         * @param ServerRequest $request
+         *
+         * @return void
+         *
+         * @throws Kedavra
+         */
+        private function call_middleware(ServerRequest $request): void
         {
             $middleware_dir = 'Middleware';
 

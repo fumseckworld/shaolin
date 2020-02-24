@@ -15,7 +15,7 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
-    use Eywa\Html\Form\Form;
+    use Eywa\Html\Form\FormBuilder;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Email\Write;
@@ -210,13 +210,13 @@ namespace Eywa\Application {
          * @param array $params
          * @param array $route_args
          *
-         * @return Form
+         * @return FormBuilder
          *
          * @throws Kedavra
          * @throws Exception
          *
          */
-        public function form(string $route,string $method,array $route_args = [],array $params = []) : Form;
+        public function form(string $route,string $method,array $route_args = [],array $params = []) : FormBuilder;
 
         /**
          *

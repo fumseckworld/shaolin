@@ -6,6 +6,7 @@ namespace Eywa\Http\Routing {
 
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
 
     class RouteResult
@@ -85,25 +86,39 @@ namespace Eywa\Http\Routing {
          */
         public function call(): Response
         {
-
             $class = $this->class();
+
             $instance = new $class();
 
             is_false(class_exists($class), true, "The class {$this->controller()} not exist inside the Controllers directory");
 
             is_false(method_exists($class, $this->action()), true, "The action {$this->action()} not exist inside the {$this->controller()} controller");
 
+            if (cli())
+            {
+                if(method_exists($class, BEFORE_ACTION))
+                    call_user_func_array([ $instance, BEFORE_ACTION ], [new Request([],[],[],[],[],[],$this->args())]);
+
+                if(method_exists($class, AFTER_ACTION))
+                {
+                    $x = call_user_func_array([ $instance, $this->action() ], [new Request([],[],[],[],[],[],$this->args())]);
+                    call_user_func_array([ $instance, AFTER_ACTION ], [new Request([],[],[],[],[],[],$this->args())]);
+
+                    return $x;
+                }
+                return  call_user_func_array([ $instance, $this->action() ],[new Request([],[],[],[],[],[],$this->args())]);
+            }
             if(method_exists($class, BEFORE_ACTION))
-                call_user_func_array([ $instance, BEFORE_ACTION ], $this->args());
+                call_user_func_array([ $instance, BEFORE_ACTION ], [Request::generate($this->args())]);
 
             if(method_exists($class, AFTER_ACTION))
             {
-                $x = call_user_func_array([ $instance, $this->action() ], $this->args());
-                call_user_func_array([ $instance, AFTER_ACTION ], $this->args());
+                $x = call_user_func_array([ $instance, $this->action() ], [Request::generate($this->args())]);
+                call_user_func_array([ $instance, AFTER_ACTION ], [Request::generate($this->args())]);
 
                 return $x;
             }
-            return  call_user_func_array([ $instance, $this->action() ], $this->args());
+            return  call_user_func_array([ $instance, $this->action() ], [Request::generate($this->args())]);
 
         }
 

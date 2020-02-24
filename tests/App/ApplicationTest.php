@@ -11,7 +11,7 @@ use Eywa\Database\Connexion\Connexion;
 use Eywa\Database\Query\Sql;
 use Eywa\Detection\Detect;
 use Eywa\File\File;
-use Eywa\Html\Form\Form;
+use Eywa\Html\Form\FormBuilder;
 use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
 use Eywa\Message\Email\Write;
@@ -39,7 +39,7 @@ class ApplicationTest extends Unit
         $this->assertInstanceOf(SessionInterface::class,app()->session());
         $this->assertInstanceOf(Auth::class,app()->auth());
         $this->assertInstanceOf(File::class,app()->file('README.md'));
-        $this->assertInstanceOf(Form::class,app()->form('root',GET));
+        $this->assertInstanceOf(FormBuilder::class,app()->form('root',GET));
         $this->assertInstanceOf(Request::class,app()->request());
         $this->assertInstanceOf(Detect::class,app()->detect());
         $this->assertInstanceOf(Response::class,app()->back());

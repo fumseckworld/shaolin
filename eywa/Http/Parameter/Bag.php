@@ -24,7 +24,7 @@ namespace Eywa\Http\Parameter {
          */
         public function __construct(array $data)
         {
-            $this->data = collect($data)->for([$this,'secure']);
+            $this->data = collect($data);
         }
 
         /**
@@ -51,7 +51,7 @@ namespace Eywa\Http\Parameter {
          */
         public function get(string $key,$default = null)
         {
-            return $this->has($key) ? $this->secure($this->data->get($key)) : $default;
+            return $this->has($key) ? $this->data->get($key) : $default;
         }
 
         /**
@@ -66,23 +66,6 @@ namespace Eywa\Http\Parameter {
         public function has(string $key): bool
         {
             return $this->data->has($key);
-        }
-
-
-        /**
-         *
-         * Secure a string
-         *
-         * @param mixed $x
-         *
-         * @return string
-         *
-         */
-        public function secure($x): string
-        {
-            if (!is_string($x))
-              return  '';
-            return htmlentities($x,ENT_QUOTES,'UTF-8');
         }
 
     }

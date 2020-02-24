@@ -7,6 +7,7 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
+use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
 
 class HomeController extends Controller
@@ -79,14 +80,16 @@ class HomeController extends Controller
     }
 
     /**
-     * @param string $name
+     * @param Request $request
      * @return Response
      * @throws DependencyException
      * @throws Kedavra
      * @throws NotFoundException
      */
-    public function hello(string $name): Response
+    public function hello(Request $request): Response
     {
+        $name = $request->args()->get('name');
+
         return $this->view('hello', 'name', $name, compact('name'));
     }
 }

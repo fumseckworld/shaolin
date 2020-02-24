@@ -5,7 +5,7 @@ namespace Testing\Html {
 
 
     use Eywa\Exception\Kedavra;
-    use Eywa\Html\Form\Form;
+    use Eywa\Html\Form\FormBuilder;
     use Eywa\Testing\Unit;
 
     class FormTest extends Unit
@@ -15,14 +15,14 @@ namespace Testing\Html {
          * The form query builder
          *
          */
-        private Form $form;
+        private FormBuilder $form;
 
         /**
          * @throws Kedavra
          */
         public function setUp(): void
         {
-            $this->form = new Form('send', GET);
+            $this->form = new FormBuilder('send', GET);
         }
 
 

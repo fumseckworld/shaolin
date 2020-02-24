@@ -55,38 +55,48 @@ namespace Eywa\Http\Request {
 
         /**
          *
-         * The request content
+         * All router args
          *
          */
-        private $content = null;
+        private Bag $args;
 
         /**
          * Request constructor.
          *
-         * @param array $query
          * @param array $request
+         * @param array $query
          * @param array $attributes
          * @param array $cookies
          * @param array $files
          * @param array $server
+         * @param array $router_args
          * @param null $content
          */
-        public function __construct(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
+        public function __construct(array $request = [], array  $query = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [],$content = null)
         {
-            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args,$content);
         }
+
+        /**
+         *
+         * The request content
+         *
+         */
+        private $content = null;
 
 
         /**
          *
          * Creates a new request with values from PHP's super globals.
          *
+         * @param array $args
+         *
          * @return Request
          *
          */
-        public static function generate(): Request
+        public static function generate(array $args = []): Request
         {
-            return new static($_GET,$_POST,[],$_COOKIE,$_FILES,$_SERVER);
+            return new static($_POST,$_GET,[],$_COOKIE,$_FILES,$_SERVER,$args);
         }
 
         /**
@@ -99,6 +109,17 @@ namespace Eywa\Http\Request {
         public function query(): Bag
         {
             return $this->query;
+        }
+        /**
+         *
+         * Get routes args
+         *
+         * @return Bag
+         *
+         */
+        public function args(): Bag
+        {
+            return $this->args;
         }
 
         /**
@@ -172,8 +193,17 @@ namespace Eywa\Http\Request {
         }
 
 
-
-        private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, $content)
+        /**
+         * @param array $query
+         * @param array $request
+         * @param array $attributes
+         * @param array $cookies
+         * @param array $files
+         * @param array $server
+         * @param array $router_args
+         * @param $content
+         */
+        private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, array $router_args, $content)
         {
             $this->query = new Bag($query);
             $this->request = new Bag($request);
@@ -182,6 +212,7 @@ namespace Eywa\Http\Request {
             $this->file = new Bag($files);
             $this->server = new Bag($server);
             $this->content = $content;
+            $this->args = new Bag($router_args);
         }
     }
 }
