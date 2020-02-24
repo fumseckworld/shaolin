@@ -327,7 +327,12 @@ if (!function_exists('route'))
      */
     function route(string $route,array $args = []): string
     {
-        $route =  Web::where('name',EQUAL,$route)->execute()[0]->url;
+        $x =  Web::where('name',EQUAL,$route)->execute();
+
+        is_true(not_def($x),true,"The $route route was not found");
+
+        $route = $x[0]->url;
+
         if (def($args))
         {
 
