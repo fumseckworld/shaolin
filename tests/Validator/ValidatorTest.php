@@ -3,10 +3,10 @@
 
 namespace Testing\Validator {
 
+    use App\Validator\UsersValidator;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
     use Eywa\Testing\Unit;
-    use Eywa\Validate\Validator;
 
     class ValidatorTest extends Unit
     {
@@ -15,11 +15,6 @@ namespace Testing\Validator {
          */
         public function test_valid()
         {
-            $rules = [
-               'age' => 'required|between:1,100' ,
-               'name' => 'required|unique:auth' ,
-               'email' => 'required|email' ,
-            ];
 
             $request = new Request([
                 'name' => 'willy',
@@ -27,7 +22,7 @@ namespace Testing\Validator {
                 'email' => 'micieli@laposte.net',
             ]);
 
-            $this->assertTrue((new Validator($rules,$request))->capture()->valid());
+            $this->assertEquals('valid',UsersValidator::check($request)->content());
         }
 
         /**
@@ -35,11 +30,6 @@ namespace Testing\Validator {
          */
         public function test_fail()
         {
-            $rules = [
-               'age' => 'required|between:1,100' ,
-               'name' => 'required|unique:auth' ,
-               'email' => 'required|email' ,
-            ];
 
             $request = new Request([
                 'name' => 'willy',
@@ -47,9 +37,9 @@ namespace Testing\Validator {
                 'email' => 'micieli',
             ]);
 
-            $this->assertFalse((new Validator($rules,$request))->capture()->valid());
-            $this->assertTrue((new Validator($rules,$request))->capture()->has('email'));
-            $this->assertNotEmpty((new Validator($rules,$request))->capture()->message('email'));
+            $this->assertFalse(UsersValidator::check($request)->success());
+            $this->assertTrue(UsersValidator::check($request)->to(UsersValidator::$redirect_url));
+            $this->assertNotEmpty((UsersValidator::message('email')));
         }
     }
 }

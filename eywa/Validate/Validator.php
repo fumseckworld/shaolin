@@ -10,59 +10,40 @@ namespace Eywa\Validate {
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
+    use Eywa\Http\Response\RedirectResponse;
+    use Eywa\Http\Response\Response;
 
-    class Validator
+    abstract class Validator
     {
 
-        /**
-         *
-         * All errors
-         *
-         */
-        private Collect $errors;
-        /**
-         *
-         * All validations requirement
-         *
-         */
-        private array $rules;
-
 
         /**
-         * @var Request
+         *
+         * The validator rules
+         *
          */
-        private Request $request;
+        protected static array $rules = [];
 
         /**
-         * Validator constructor.
-         * @param array $rules
+         *
+         * All errors founds
+         *
+         */
+        private static Collect $errors;
+
+        /**
+         *
+         * The redirect url on error
+         *
+         */
+        public static string $redirect_url = '';
+
+        /**
+         *
          * @param Request $request
+         * @return Response
          */
-        public function __construct(array $rules,Request $request)
-        {
-
-            $this->rules = $rules;
-
-            $this->errors = collect();
-
-            $this->request = $request;
-        }
-
-        /**
-         *
-         * Add an error
-         *
-         * @param string $key
-         * @param string $message
-         *
-         * @return Validator
-         *
-         */
-        public function add(string $key,string $message): Validator
-        {
-            $this->errors->put($key,$message);
-            return $this;
-        }
+        abstract protected static function do(Request $request): Response;
 
         /**
          *
@@ -73,37 +54,26 @@ namespace Eywa\Validate {
          * @return bool
          *
          */
-        public function has(string $key): bool
+        public static function has(string $key): bool
         {
-            return  $this->errors->has($key);
-        }
-
-        /**
-         *
-         * Check if is valid
-         *
-         * @return bool
-         *
-         */
-        public function valid()
-        {
-            return $this->errors->sum() === 0;
+            return  static::$errors->has($key);
         }
 
         /**
          *
          * Capture the errors
          *
-         * @return Validator
+         * @param Request $request
+         * @return Response
          *
          * @throws Kedavra
-         *
          */
-        public function capture(): Validator
+        public static function check(Request $request): Response
         {
-            $request = $this->request->request();
 
-            foreach ($this->rules as $k => $v)
+            static::$errors = collect();
+
+            foreach (static::$rules as $k => $v)
             {
 
                 $rules = explode('|',$v);
@@ -113,40 +83,45 @@ namespace Eywa\Validate {
                     switch ($rule)
                     {
                         case 'email':
-                            if (!(new EmailValidator())->isValid($request->get($k),new RFCValidation()))
-                                $this->errors->put($k,'Email not valide');
+                            if (!(new EmailValidator())->isValid($request->request()->get($k),new RFCValidation()))
+                                static::$errors->put($k,'Email not valide');
                         break;
                         case 'required':
-                            if (not_def($request->get($k)))
-                                $this->errors->put($k,'Is not define');
+                            if (not_def($request->request()->get($k)))
+                                static::$errors->put($k,'Is not define');
                         break;
                         case 'numeric':
-                            if(!is_numeric($request->get($k)))
-                                $this->errors->put($k,'Is not numeric');
+                            if(!is_numeric($request->request()->get($k)))
+                                static::$errors->put($k,'Is not numeric');
                         break;
 
                         case preg_match('#unique:([a-zA-Z]+)#',$rule) === 1:
                             $x = explode(':',$rule);
                             $table = $x[1];
 
-                            if (sql($table)->where($k,EQUAL,$request->get($k))->exist())
-                                $this->errors->put($k,'Is not unique');
+                            if (sql($table)->where($k,EQUAL,$request->request()->get($k))->exist())
+                                static::$errors->put($k,'Is not unique');
 
                         break;
                         case preg_match('#between:([0-9]+),([0-9]+)#',$rule) === 1:
                             $x = explode(',',$rule);
                             $min = str_replace('between:','',$x[0]);
                             $max = $x[1];
-                            $value = $request->get($k);
+                            $value = $request->request()->get($k);
                             if ($value <  $min || $value > $max)
-                                $this->errors->put($k,'Is not between');
+                                static::$errors->put($k,'Is not between');
                         break;
                     }
 
                 }
 
             }
-            return $this;
+
+            if (static::$errors->sum() === 0)
+                return static::do($request)->send();
+
+
+            return  (new RedirectResponse(static::$redirect_url))->send();
         }
         /**
          *
@@ -157,9 +132,10 @@ namespace Eywa\Validate {
          * @return string
          *
          */
-        public function message(string $key): string
+        public static function message(string $key): string
         {
-            return  $this->has($key) ? $this->errors->get($key) : '';
+            return  static::has($key) ? static::$errors->get($key) : '';
         }
+
     }
 }

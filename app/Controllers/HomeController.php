@@ -70,6 +70,18 @@ class HomeController extends Controller
 
     /**
      * @return Response
+     *
+     * @throws DependencyException
+     * @throws Kedavra
+     * @throws NotFoundException
+     */
+    public function error(): Response
+    {
+        return $this->view('error', 'error', 'error');
+    }
+
+    /**
+     * @return Response
      * @throws DependencyException
      * @throws Kedavra
      * @throws NotFoundException
