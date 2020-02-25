@@ -1,0 +1,194 @@
+<?php
+
+
+namespace Eywa\Http\Parameter\Uploaded {
+
+
+    use Exception;
+    use Eywa\Collection\Collect;
+    use SplFileInfo;
+    use wapmorgan\FileTypeDetector\Detector;
+
+    class UploadedFile implements UploadedFileInterface
+    {
+        /**
+         *
+         * All uploaded files
+         */
+        private array $files;
+
+
+        /**
+         *
+         */
+        private Collect $filename;
+        /**
+         * @var Collect
+         */
+        private Collect $types;
+
+
+        private Collect $errors;
+
+        private Collect $size;
+
+        private Collect $temporary;
+        private int $sum = 0;
+
+        /**
+         * @inheritDoc
+         */
+        public function __construct(array $files = [])
+        {
+
+            if (def($files))
+            {
+
+                $this->filename = collect();
+                $this->types = collect();
+                $this->temporary = collect();
+                $this->errors = collect();
+                $this->size = collect();
+
+                $i= 0;
+                $this->sum = collect($files['files']['name'])->sum();
+
+                do
+                {
+
+                    $file = $files['files'];
+
+                    $current = $file['name'][$i];
+
+                    $x = new SplFileInfo($current);
+
+
+                    try {
+                        $type = Detector::getMimeType($current);
+
+                    }catch (Exception $exception)
+                    {
+
+                      $type = false;
+
+                    }
+
+
+                    if(
+                        $type  && ! in_array($x->getExtension(),['exe','php','c','rb','bat','js','perl','bash','sh','py','ts',''])
+                        && ! $x->isExecutable()
+                        && ! in_array($type,['application/javascript','application/typescript','application/java-archive','application/x-msdownload','text/plain']))
+                    {
+                        $this->filename->put($i,$current);
+
+                        $this->types->put($this->filename->get($i),$file['type'][$i]);
+                        $this->temporary->put($i,$file['tmp_name'][$i]);
+
+                        $this->errors->put($this->filename->get($i),$file['error'][$i]);
+                        $this->size->put($this->filename->get($i),$file['size'][$i]);
+                    }
+                    $i++;
+               }while($i <$this->sum);
+
+            }
+
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function move(string ...$dirs): bool
+        {
+            $path = base('web');
+
+            foreach ($dirs as $dir)
+            {
+                append($path,DIRECTORY_SEPARATOR. $dir);
+
+                if (!is_dir($path))
+                    mkdir($path);
+            }
+
+            is_true(! is_dir($path) ,true,"The directory has been not found");
+
+            $result = collect();
+
+
+            $countfiles = count($_FILES['files']['name']);
+
+            // Looping all files
+            for($i=0;$i<$countfiles;$i++)
+            {
+                $filename = $_FILES['files']['name'][$i];
+
+                // Upload file
+                $result->push(move_uploaded_file($_FILES['files']['tmp_name'][$i],$path.DIRECTORY_SEPARATOR.$filename));
+
+            }
+            return  $result->ok();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function valid(): bool
+        {
+            foreach ($this->errors() as $error)
+                if ($error !== UPLOAD_ERR_OK)
+                    return  false;
+
+
+            return  true;
+        }
+
+
+
+        /**
+         * @inheritDoc
+         */
+        public function all(): array
+        {
+            return  $this->files;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function files(): array
+        {
+            return  $this->filename->all();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function types(): array
+        {
+           return $this->types->all();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function size(): array
+        {
+            return $this->size->all();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function errors(): array
+        {
+           return $this->errors->all();
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function temporary(): array
+        {
+            return $this->temporary->all();
+        }
+    }
+}

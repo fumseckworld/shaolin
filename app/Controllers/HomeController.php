@@ -8,6 +8,7 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
 use Eywa\Http\Controller\Controller;
+use Eywa\Http\Parameter\Uploaded\UploadedFile;
 use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
 
@@ -38,13 +39,21 @@ class HomeController extends Controller
     public function home(): Response
     {
 
-        $form = $this->form('server')->add('name', 'text','Type your name', ['placeholder' => 'type your name'])->add('username','text','your name')->add('bio','textarea','your story')->get();
+        //$form = $this->form('server')->add('name', 'text','Type your name', ['placeholder' => 'type your name'])->add('username','text','your name')->add('bio','textarea','your story')->get();
 
         $users = User::all();
         
-        return $this->view('welcome', 'welcome', 'welcome', compact('form', 'users'));
+        return $this->view('welcome', 'welcome', 'welcome', compact( 'users'));
     }
 
+    public function upload(Request $request)
+    {
+       if($request->file()->move('uploads'))
+           return $this->back('Uploaded successfully');
+
+       return $this->back('Uploaded fail',false);
+
+    }
     /**
      * @return Response
      *
@@ -101,6 +110,8 @@ class HomeController extends Controller
      */
     public function hello(Request $request): Response
     {
+
+
 
         $name = $request->args()->get('name','jean');
 

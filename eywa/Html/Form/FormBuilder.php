@@ -105,18 +105,18 @@ namespace Eywa\Html\Form {
 
                     $this->append('<div class="'.$this->class('separator','form-group').'">');
 
-                    $options = collect($options)->each(function ($k,$v){
+                    $x = collect($options)->each(function ($k,$v){
                         return $k.'='.'"'.$v.'"';
                     })->join('');
 
-                $help_id = def($help_text) ? "help-$name" : '';
+                    $help_id = def($help_text) ? "help-$name" : '';
 
                     $help_input = def($help_text) ? '<small id="'.$help_id.'" class="'.$this->class('help','form-help').'">'.$help_text.'</small>' : '';
 
                     $help_atribute = def($help_text) ? ' aria-describedby="'.$help_id.'" ': '';
 
                     if (equal($type,'hidden'))
-                        $input = '<input id="'.$name.'" type="'.$type.'" name="'.$name.'" '.$options.'>';
+                        $input = '<input id="'.$name.'" type="'.$type.'" name="'.$name.'" '.$x.'>';
                     else
                         $input = '<div class="'.$this->class('separator','form-group').'">
                                         <label for="'.$name.'">'.$label_text.'</label>
@@ -145,10 +145,31 @@ namespace Eywa\Html\Form {
 
                     $input = '<div class="'.$this->class('separator','form-group').'">
                                     <label for="'.$name.'">'.$label_text.'</label>
-                                    <textarea name="'.$name.'" '.$options.' class="'.$this->class('input','form-control').'" id="'.$name.'" '.$help_atribute.' '.$x.' >'.$value.'</textarea>
+                                    <textarea name="'.$name.'" class="'.$this->class('input','form-control').'" id="'.$name.'" '.$help_atribute.' '.$x.' >'.$value.'</textarea>
                                      '.$help_input.'
                               </div>';
                     
+                    $this->append($input);
+
+                    $this->end();
+                break;
+                case 'file':
+                    $this->append('<div class="'.$this->class('separator','form-group').'">');
+
+                    $help_id = def($help_text) ? "help-$name" : '';
+
+                    $help_input = def($help_text) ? '<small id="'.$help_id.' " class="text-muted">'.$help_text.'</small>' : '';
+
+                    $help_atribute = def($help_text) ? ' aria-describedby="'.$help_id.'" ': '';
+                    $x = collect($options)->each(function ($k,$v){
+                        return $k.'='.'"'.$v.'"';
+                    })->join('');
+
+                    $input = '<div class="'.$this->class('separator','form-group').'">
+                                    <label for="'.$name.'">'.$label_text.'</label>
+                                    <input name="files[]"  class="'.$this->class('input','form-control').'" id="'.$name.'" '.$help_atribute.' '.$x.' multiple>
+                                     '.$help_input.'
+                              </div>';
                     $this->append($input);
 
                     $this->end();

@@ -8,6 +8,7 @@ namespace Eywa\Http\Request {
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Parameter\Bag;
+    use Eywa\Http\Parameter\Uploaded\UploadedFile;
     use Eywa\Http\Response\Response;
     use Eywa\Validate\Validator;
 
@@ -47,7 +48,7 @@ namespace Eywa\Http\Request {
          * $_FILES value
          *
          */
-        private Bag $file;
+        private UploadedFile $file;
 
         /**
          *
@@ -74,6 +75,7 @@ namespace Eywa\Http\Request {
          * @param array $server
          * @param array $router_args
          * @param null $content
+         * @throws Kedavra
          */
         public function __construct(array $request = [], array  $query = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [],$content = null)
         {
@@ -96,6 +98,7 @@ namespace Eywa\Http\Request {
          *
          * @return Request
          *
+         * @throws Kedavra
          */
         public static function generate(array $args = []): Request
         {
@@ -176,10 +179,10 @@ namespace Eywa\Http\Request {
          *
          * Get $_GET value
          *
-         * @return Bag
+         * @return UploadedFile
          *
          */
-        public function file(): Bag
+        public function file(): UploadedFile
         {
             return $this->file;
         }
@@ -228,6 +231,7 @@ namespace Eywa\Http\Request {
          * @param array $server
          * @param array $router_args
          * @param $content
+         * @throws Kedavra
          */
         private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, array $router_args, $content)
         {
@@ -235,7 +239,7 @@ namespace Eywa\Http\Request {
             $this->request = new Bag($request);
             $this->attribute = collect($attributes)->for([$this,'secure']);
             $this->cookie = new Bag($cookies);
-            $this->file = new Bag($files);
+            $this->file = new UploadedFile($files);
             $this->server = new Bag($server);
             $this->content = $content;
             $this->args = new Bag($router_args);

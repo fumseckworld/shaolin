@@ -1,5 +1,11 @@
 <h1><?= _('welcome')?></h1>
 
+<form action="@route(server:post)" method="post"    enctype="multipart/form-data">
+    @csrf
+
+    <button type="submit" >envoyer</button>
+
+</form>
 
 @url('/')
 root
@@ -17,9 +23,6 @@ root
 @else
     not redac
 @endredac
-
-@print(form)
-
 @for user in users
     {{ user.name }}
 @endfor

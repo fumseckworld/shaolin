@@ -23,10 +23,10 @@ use Whoops\Run;
 
 if (!function_exists('only'))
 {
-    function only(bool $condition, callable $callback)
+    function only(bool $condition, callable $callback,array $args = [])
     {
         if ($condition)
-            call_user_func($callback);
+            call_user_func_array($callback,$args);
     }
 }
 if (!function_exists('csrf_field'))

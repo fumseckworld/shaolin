@@ -7,7 +7,7 @@ namespace Eywa\Http\View {
     use Exception;
     use Eywa\Cache\FileCache;
     use Eywa\Exception\Kedavra;
-    use Eywa\Security\Authentication\Auth;
+
     use Eywa\Session\Session;
 
 
@@ -153,11 +153,13 @@ namespace Eywa\Http\View {
              require($this->layout);
 
 
+
             $html = ltrim(ob_get_clean());
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@admin#','<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'admin\')) : ?>',$html,$html)
+                ->replace('#@csrf#','<?= (new \Eywa\Security\Csrf\Csrf(new \Eywa\Session\Session()))->token(); ?>',$html,$html)
                 ->replace('#@url\(\'([a-zA-Z0-9\-\/]+)\'\)#','<?php  if(equal(\Eywa\Http\Request\ServerRequest::generate()->url(),\'${1}\')) : ?>',$html,$html)
                 ->replace('#@redac#','<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'redac\')) :?>',$html,$html)
                 ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
@@ -167,6 +169,7 @@ namespace Eywa\Http\View {
                 ->replace('#@else#','<?php else :?>',$html,$html)
                 ->replace('#@endif#','<?php endif;?>',$html,$html)
                 ->replace('#@for ([a-zA-Z-0-9]+) in ([a-zA-Z0-9]+)#','<?php foreach($${2} ?? [] as $${1}) : ?>',$html,$html)
+                ->replace('#@route\(([a-zA-Z-0-9]+):([a-zA-Z0-9]+)\)#','<?= route("${1}",["${2}"]); ?>',$html,$html)
                 ->replace('#@endfor#','<?php endforeach;  ?>',$html,$html)
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#','<?php switch($${1}): ',$html,$html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#','case "${1}" :  ?>',$html,$html)
