@@ -1,6 +1,6 @@
 <?php
 	
-	namespace Eywa\Console\App
+	namespace Eywa\Console\Get
 	{
 
         use Eywa\Console\Shell;
@@ -11,15 +11,15 @@
         use Symfony\Component\Console\Style\SymfonyStyle;
 
 
-        class Documentation extends Command
+        class Wanted extends Command
 		{
 			
-			protected static $defaultName = "app:doc";
+			protected static $defaultName = "get:wanted";
 			
 			
 			protected function configure()
 			{
-				$this->setDescription('Get the eywa and shaolin documentation')->addArgument('directory',InputArgument::REQUIRED,'The documentation directory name');
+				$this->setDescription('Get the wanted style')->addArgument('directory',InputArgument::REQUIRED,'The documentation directory name');
 			}
 		
 			
@@ -33,25 +33,18 @@
 			{
                 $io = new SymfonyStyle($input,$output);
 
-                $io->title('Downlaoding or updating the documentation');
+                $io->title('Downlaoding wanted');
                 $dir = $input->getArgument('directory');
 				if(is_dir($dir))
                 {
-                    if(chdir($dir))
-                        $io->success('Checkout inside the documentation directory');
 
-                    if ((new Shell('git pull origin master'))->run())
-                    {
-                        $io->success('Documentation is up to date');
-                        return 0;
-                    }else{
-                        $io->error('We have not found git');
+                        $io->error('Wanted already exist');
                         return 1;
-                    }
+
                 }else{
-                    if ((new Shell("git clone https://github.com/fumseckworld/documentation.git $dir"))->run())
+                    if ((new Shell("git clone https://github.com/fumseckworld/wanted.git $dir"))->run())
                     {
-                        $io->success('Documentation has been downloaded successfully');
+                        $io->success('Wanted has been downloaded successfully');
                         return 0;
                     }else{
                         $io->error('We have not found git');

@@ -7,7 +7,6 @@ namespace Eywa\Console {
     use Exception;
     use Eywa\Console\App\Coverage;
     use Eywa\Console\App\Dkim;
-    use Eywa\Console\App\Documentation;
     use Eywa\Console\App\Key;
     use Eywa\Console\App\Serve;
     use Eywa\Console\Cache\ClearCache;
@@ -32,6 +31,8 @@ namespace Eywa\Console {
     use Eywa\Console\Generate\GenerateTest;
     use Eywa\Console\Generate\GenerateValidator;
     use Eywa\Console\Generate\GenerateView;
+    use Eywa\Console\Get\Documentation;
+    use Eywa\Console\Get\Wanted;
     use Eywa\Console\Lang\CreateCatalogues;
     use Eywa\Console\Lang\UpdateCatalogues;
     use Eywa\Console\Mode\DevMode;
@@ -87,7 +88,7 @@ namespace Eywa\Console {
            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase(),
-                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new GenerateValidator()
+                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator()
            ];
 
             $this->add($commands)->add(commands());
