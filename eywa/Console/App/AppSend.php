@@ -39,6 +39,7 @@
                     }
                     $all = collect();
 
+
                     foreach ($remotes as $remote)
                     {
                        $x = collect(explode("\t",$remote));
@@ -47,11 +48,12 @@
                        if ($all->has_not($name))
                            $all->put($name,$url);
                     }
-                    
+
                     foreach ($all->all() as $name => $url)
                     {
-                        $io->title("Sending the app at the remote server : $url");
-                        if((new Shell("git push $name --all && git push $name --tags"))->success())
+
+                        $io->section("Sending the app at the remote server : $url");
+                        if((new Shell("git push $name --all && git push $name --tags"))->run())
                         {
                             $io->success("The remote server called $name has been updated successfully");
                         }else{
