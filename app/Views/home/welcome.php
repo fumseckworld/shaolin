@@ -2,7 +2,7 @@
 
 <form action="@route(server:post)" method="post"    enctype="multipart/form-data">
     @csrf
-
+    <input type="file" name="files[]" multiple>
     <button type="submit" >envoyer</button>
 
 </form>

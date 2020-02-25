@@ -114,15 +114,15 @@ namespace Eywa\Http\Parameter\Uploaded {
             $result = collect();
 
 
-            $countfiles = count($_FILES['files']['name']);
+            $countfiles = $this->filename->sum();
 
             // Looping all files
             for($i=0;$i<$countfiles;$i++)
             {
-                $filename = $_FILES['files']['name'][$i];
+                $filename = $this->filename->get($i);
 
                 // Upload file
-                $result->push(move_uploaded_file($_FILES['files']['tmp_name'][$i],$path.DIRECTORY_SEPARATOR.$filename));
+                $result->push(move_uploaded_file($this->temporary->get($i),$path.DIRECTORY_SEPARATOR.$filename));
 
             }
             return  $result->ok();
