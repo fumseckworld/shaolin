@@ -122,14 +122,14 @@ namespace Eywa\Database\Model {
          *
          * Get all records
          *
+         * @param int $pdo_style
          * @return array
          *
          * @throws Kedavra
-         *
          */
-        public static function all() : array
+        public static function all(int $pdo_style = \PDO::FETCH_OBJ) : array
         {
-            return static::sql()->execute();
+            return static::sql()->execute($pdo_style);
         }
 
         /**

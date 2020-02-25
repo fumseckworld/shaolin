@@ -24,6 +24,9 @@
 			{
 		        $io = new SymfonyStyle($input,$output);
 
+		        $table = new \Symfony\Component\Console\Helper\Table($output);
+		        $table->setStyle('box')->setHeaders(['name','records']);
+
                 $env = $input->getArgument('env');
 
                 not_in(['dev','prod'],$env,true,'The env must be dev or prod');
@@ -32,7 +35,9 @@
                 {
                     $x = (new Table(development()))->show();
 
+
                 }else{
+
                     $x = (new Table(production()))->show();
 
                 }
@@ -41,10 +46,11 @@
                     $io->error("No tables found");
                     return 1;
                 }
-		        foreach ($x as $table)
-                {
-                    $io->success($table);
-                }
+
+
+		        $table->setRows($x);
+
+		    $table->render();
 
 		        return 0;
             }

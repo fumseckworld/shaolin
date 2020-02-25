@@ -11,9 +11,12 @@ namespace Eywa\Console\Routes {
     use Eywa\Http\Routing\Task;
     use Eywa\Http\Routing\Web;
     use Symfony\Component\Console\Command\Command;
+    use Symfony\Component\Console\Helper\Table;
+    use Symfony\Component\Console\Helper\TableStyle;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class ListRoute extends Command
     {
@@ -29,31 +32,7 @@ namespace Eywa\Console\Routes {
 
         protected function configure()
         {
-
             $this->setDescription('List all routes');
-        }
-
-        /**
-         * @param InputInterface $input
-         * @param OutputInterface $output
-         *
-         * @throws Kedavra
-         */
-        public function interact(InputInterface $input, OutputInterface $output)
-        {
-            $helper = $this->getHelper('question');
-            do
-            {
-                clear_terminal();
-
-                $question = new Question("<info>Route for admin, web or task ?</info> : ");
-
-                $question->setAutocompleterValues(['admin', 'web', 'task']);
-
-                $this->choose = $helper->ask($input, $output, $question);
-
-            } while (is_null($this->choose) || not_in(['admin', 'web', 'task'], $this->choose));
-
         }
 
         /**
@@ -64,24 +43,23 @@ namespace Eywa\Console\Routes {
          * @param OutputInterface $output
          *
          * @return int|null
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            switch ($this->choose)
-            {
-                case 'admin':
-                    routes($output, Admin::all());
-                break;
-                case 'task':
-                    routes($output, Task::all());
-                break;
-                default:
-                    routes($output, Web::all());
-                break;
-            }
+
+            $table = new Table($output);
+       
+            $table
+                ->setStyle('box')
+
+                ->setHeaders(['id', 'name', 'url','controller','action','method'])
+                ->setRows(
+                    Web::all(\PDO::FETCH_ASSOC)
+                )
+            ;
+            $table->render();
+
             return 0;
         }
 

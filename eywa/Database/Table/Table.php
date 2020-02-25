@@ -6,6 +6,7 @@ namespace Eywa\Database\Table {
 
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
+    use wapmorgan\FileTypeDetector\Detector;
 
 
     class Table
@@ -208,7 +209,11 @@ namespace Eywa\Database\Table {
             switch ($this->connexion->driver())
             {
                 case MYSQL :
-                    return  $this->connexion->set('SHOW TABLES')->get(COLUMNS);
+
+                  return $this->connexion->set('SELECT Table_name AS TablesInDatabase ,table_rows AS NumberOfRows 
+FROM information_schema.tables 
+WHERE Table_schema=DATABASE();')->get(\PDO::FETCH_ASSOC);
+
                 break;
                 case POSTGRESQL :
                    return  $this->connexion->set("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');")->get(COLUMNS);

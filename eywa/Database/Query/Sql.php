@@ -7,6 +7,7 @@ namespace Eywa\Database\Query {
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Pagination\Pagination;
+    use PDO;
 
 
     class Sql
@@ -565,14 +566,13 @@ namespace Eywa\Database\Query {
          *
          *
          *
-         * @param string $class_name
-         * @param array $args
+         * @param int $pdo_mode
          * @return array
          * @throws Kedavra
          */
-        public function execute(string $class_name = '',array $args = []): array
+        public function execute(int $pdo_mode = PDO::FETCH_OBJ): array
         {
-            return def($class_name) ? $this->connexion->set($this->sql())->fetch($class_name,$args) : $this->connexion->set($this->sql())->get(OBJECTS);
+            return $this->connexion->set($this->sql())->get($pdo_mode);
         }
 
 
