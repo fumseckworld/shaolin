@@ -118,16 +118,22 @@ namespace Eywa\Http\Request {
          *
          * Check if the request match the validator rules
          *
-         * @param Validator $validator
+         * @param string<Validator> $validator
          *
          * @return Response
          *
          * @throws Kedavra
          *
          */
-        public function validate(Validator $validator): Response
+        public function validate(string $validator): Response
         {
-            return $validator::check($this);
+            is_false(class_exists($validator),true,"The validator was not found");
+
+            is_false(new $validator instanceof  Validator,true,"The class was not a validator");
+
+            is_false(method_exists($validator,'validate'),true,"The class has not a validate method");
+
+            return $validator::validate($this);
         }
 
         /**

@@ -24,6 +24,7 @@ namespace Eywa\Validate {
          */
         protected static array $rules = [];
 
+
         /**
          *
          * All errors founds
@@ -64,11 +65,13 @@ namespace Eywa\Validate {
          * Capture the errors
          *
          * @param Request $request
+         *
          * @return Response
          *
          * @throws Kedavra
+         *
          */
-        public static function check(Request $request): Response
+        public static function validate(Request $request): Response
         {
 
             if (not_def($request->request()->all()))
@@ -113,6 +116,27 @@ namespace Eywa\Validate {
                             $value = $request->request()->get($k);
                             if ($value <  $min || $value > $max)
                                 static::$errors->put($k,'Is not between');
+                        break;
+
+                        case preg_match('#max:([0-9]+)#',$rule) === 1:
+
+                            $max = collect(explode(':',$rule))->last();
+
+                            $value = $request->request()->get($k);
+
+                            $length = mb_strlen($value);
+                            if ($length >  $max)
+                                static::$errors->put($k,'Value superio to maximum value');
+                        break;
+
+                        case preg_match('#min:([0-9]+)#',$rule) === 1:
+                            $min = collect(explode(':',$rule))->last();
+
+                            $value = $request->request()->get($k);
+
+                            $length = mb_strlen($value);
+                            if ($length <  $min)
+                                static::$errors->put($k,'Value inferior of the minimum value');
                         break;
                     }
 

@@ -3,6 +3,7 @@
 
 namespace App\Controllers;
 use App\Models\User;
+use App\Validators\Users\UsersValidator;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
@@ -101,7 +102,7 @@ class HomeController extends Controller
     public function hello(Request $request): Response
     {
 
-        $name = $request->args()->get('name',"jean");
+        $name = $request->args()->get('name','jean');
 
         return $this->view('hello', 'name', $name, compact('name'));
     }
