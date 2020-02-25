@@ -45,14 +45,18 @@
                        $x = collect(explode("\t",$remote));
                        $name = $x->first();
                        $url = collect(explode(' ',$x->get(1)))->first();
+
+                      $host = collect(explode(':',collect(explode('@',$url))->last()))->first();
+
                        if ($all->has_not($name))
-                           $all->put($name,$url);
+                           $all->put($name,$host);
                     }
 
                     foreach ($all->all() as $name => $url)
                     {
 
-                        $io->section("Sending the app at the remote server : $url");
+                        $io->warning("Sending the application at the remote server called $name hosted at $url");
+
                         if((new Shell("git push $name --all && git push $name --tags"))->run())
                         {
                             $io->success("The remote server called $name has been updated successfully");
@@ -63,7 +67,8 @@
 
                     }
 
-                    $io->success('All remote server was updated successfully');
+                    $io->warning('End of all remote servers found');
+                    $io->success('All remote servers has been updated successfully');
                     return 0;
 
                 }else{
