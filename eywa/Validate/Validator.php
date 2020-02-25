@@ -71,6 +71,9 @@ namespace Eywa\Validate {
         public static function check(Request $request): Response
         {
 
+            if (not_def($request->request()->all()))
+                return  (new RedirectResponse(static::$redirect_url))->send();
+
             static::$errors = collect();
 
             foreach (static::$rules as $k => $v)

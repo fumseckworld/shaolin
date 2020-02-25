@@ -115,25 +115,31 @@ namespace Eywa\Http\Routing {
 
                 $url = $route->url;
 
-                $args = substr($url,strpos($url,':'));
 
-                $args = collect(explode(':',$args))->for(function ($x){
-                    return trim($x,'/');
-                })->shift()->all();
+                if (def(strstr($url,':')))
+                {
+                    $args = substr($url,strpos($url,':'));
 
-                $result = collect();
+                    $args = collect(explode(':',$args))->for(function ($x){
+                        return trim($x,'/');
+                    })->shift()->all();
 
+                    $result = collect();
+
+
+                    array_shift($this->parameters);
+
+                    foreach ($this->parameters as $k => $v)
+                        $result->put($args[$k],$v);
+
+                    $this->parameters = $result->all();
+
+                    return true;
+                }
                 array_shift($this->parameters);
-
-                foreach ($this->parameters as $k => $v)
-                    $result->put($args[$k],$v);
-
-                $this->parameters = $result->all();
 
                 return true;
             }
-
-
             return false;
         }
 

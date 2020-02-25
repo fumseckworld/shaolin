@@ -6,7 +6,10 @@ namespace Eywa\Http\Request {
 
 
     use Eywa\Collection\Collect;
+    use Eywa\Exception\Kedavra;
     use Eywa\Http\Parameter\Bag;
+    use Eywa\Http\Response\Response;
+    use Eywa\Validate\Validator;
 
 
     class Request
@@ -110,6 +113,23 @@ namespace Eywa\Http\Request {
         {
             return $this->query;
         }
+
+        /**
+         *
+         * Check if the request match the validator rules
+         *
+         * @param Validator $validator
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function validate(Validator $validator): Response
+        {
+            return $validator::check($this);
+        }
+
         /**
          *
          * Get routes args

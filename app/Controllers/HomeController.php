@@ -100,7 +100,8 @@ class HomeController extends Controller
      */
     public function hello(Request $request): Response
     {
-        $name = $request->args()->get('name');
+
+        $name = $request->args()->get('name',"jean");
 
         return $this->view('hello', 'name', $name, compact('name'));
     }
