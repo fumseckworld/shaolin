@@ -8,8 +8,6 @@ namespace Eywa\Http\View {
     use Eywa\Cache\FileCache;
     use Eywa\Exception\Kedavra;
 
-    use Eywa\Session\Session;
-
 
     class View extends FileCache
     {
@@ -114,7 +112,7 @@ namespace Eywa\Http\View {
          *
          * @return string
          *
-         * @throws Kedavra
+         * @throws Exception
          *
          */
         public function render(): string
