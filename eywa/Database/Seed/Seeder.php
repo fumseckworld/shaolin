@@ -102,6 +102,7 @@ namespace Eywa\Database\Seed {
          *
          * @return Seeder
          *
+         * @throws Kedavra
          *
          */
         public function set(string $column,$value): Seeder

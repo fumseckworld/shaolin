@@ -210,9 +210,7 @@ namespace Eywa\Database\Table {
             {
                 case MYSQL :
 
-                  return $this->connexion->set('SELECT Table_name AS TablesInDatabase ,table_rows AS NumberOfRows 
-FROM information_schema.tables 
-WHERE Table_schema=DATABASE();')->get(\PDO::FETCH_ASSOC);
+                    return $this->connexion->set('SHOW TABLES')->get(\PDO::FETCH_COLUMN);
 
                 break;
                 case POSTGRESQL :
