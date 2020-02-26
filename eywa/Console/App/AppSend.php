@@ -22,62 +22,66 @@
 			{
 				$io = new SymfonyStyle($input,$output);
 
+                $io->success('Starting all tests');
 
-
-                if (is_dir('.git'))
+                if((new Shell( base('vendor','bin','phpunit') . ' --coverage-html coverage'))->run())
                 {
-                    $io->success('Sending the application');
+                    $io->success('Success ! No errors detected');
 
-                    $remotes  = [];
-
-                    exec('git remote -v',$remotes);
-
-                    if (not_def($remotes))
+                    if (is_dir('.git'))
                     {
-                        $io->error('No server remote has been found');
-                        return 1;
-                    }
-                    $all = collect();
+                        $io->success('Sending the application');
 
+                        $remotes  = [];
 
-                    foreach ($remotes as $remote)
-                    {
-                       $x = collect(explode("\t",$remote));
-                       $name = $x->first();
-                       $url = collect(explode(' ',$x->get(1)))->first();
+                        exec('git remote -v',$remotes);
 
-                      $host = collect(explode(':',collect(explode('@',$url))->last()))->first();
-
-                       if ($all->has_not($name))
-                           $all->put($name,$host);
-                    }
-
-                    foreach ($all->all() as $name => $url)
-                    {
-
-                        $io->warning("Sending the application at the remote server called $name hosted at $url");
-
-                        if((new Shell("git push $name --all && git push $name --tags"))->run())
+                        if (not_def($remotes))
                         {
-                            $io->success("The remote server called $name has been updated successfully");
-                        }else{
-                            $io->error("Please make sure you have the correct access rights and the repository exists");
+                            $io->error('No server remote has been found');
                             return 1;
                         }
+                        $all = collect();
 
+
+                        foreach ($remotes as $remote)
+                        {
+                            $x = collect(explode("\t",$remote));
+                            $name = $x->first();
+                            $url = collect(explode(' ',$x->get(1)))->first();
+
+                            $host = collect(explode(':',collect(explode('@',$url))->last()))->first();
+
+                            if ($all->has_not($name))
+                                $all->put($name,$host);
+                        }
+
+                        foreach ($all->all() as $name => $url)
+                        {
+
+                            $io->warning("Sending the application at the remote server called $name hosted at $url");
+
+                            if((new Shell("git push $name --all && git push $name --tags"))->run())
+                            {
+                                $io->success("The remote server called $name has been updated successfully");
+                            }else{
+                                $io->error("Please make sure you have the correct access rights and the repository exists");
+                                return 1;
+                            }
+
+                        }
+
+                        $io->warning('End of all remote servers found');
+                        $io->success('All remote servers has been updated successfully');
+                        return 0;
+
+                    }else{
+                        $io->error('We have not found git');
+                        return 1;
                     }
-
-                    $io->warning('End of all remote servers found');
-                    $io->success('All remote servers has been updated successfully');
-                    return 0;
-
-                }else{
-                    $io->error('We have not found git');
-                    return 1;
                 }
-
-
-
+                $io->error('One error has been found check your code');
+                return 1;
             }
 			
 		}

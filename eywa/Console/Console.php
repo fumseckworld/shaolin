@@ -10,6 +10,7 @@ namespace Eywa\Console {
     use Eywa\Console\App\Dkim;
     use Eywa\Console\App\Key;
     use Eywa\Console\App\Serve;
+    use Eywa\Console\App\TestCommand;
     use Eywa\Console\Cache\ClearCache;
     use Eywa\Console\Database\CleanDatabase;
     use Eywa\Console\Database\DropTable;
@@ -89,7 +90,7 @@ namespace Eywa\Console {
            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase(),
-                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend()
+                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand()
            ];
 
             $this->add($commands)->add(commands());
