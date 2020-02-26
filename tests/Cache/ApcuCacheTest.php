@@ -21,8 +21,8 @@ class ApcuCacheTest extends Unit
 
     public function test_empty()
     {
-        $this->assertFalse($this->cache->get('a'));
-        $this->assertFalse($this->cache->get('b'));
+        $this->assertEmpty($this->cache->get('a'));
+        $this->assertEmpty($this->cache->get('b'));
     }
 
     public function test_create()

@@ -310,6 +310,21 @@ namespace Eywa\Database\Query {
             return $this;
         }
 
+        public function nullable(string $column)
+        {
+            switch ($this->connexion->driver())
+            {
+                case MYSQL:
+                    return $this->connexion->set("SELECT IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS   WHERE table_name = '{$this->table}' AND COLUMN_NAME = '$column' LIMIT 1;")->get(PDO::FETCH_COLUMN) === 'YES';
+                break;
+                case POSTGRESQL:
+                    return $this->connexion->set("select is_nullable from information_schema.columns where table_name = '{$this->table}' and column_name = '$column' ")->get(PDO::FETCH_COLUMN) === 'YES';
+                break;
+                default:
+                    return false;
+                break;
+            }
+        }
 
         /**
          *
@@ -328,8 +343,8 @@ namespace Eywa\Database\Query {
                     return collect($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first();
                     break;
                 case POSTGRESQL:
-                    return collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}';")->get(COLUMNS))->first();
-                    break;
+                    return collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}' and constraint_name ='{$this->table}_pkey';")->get(PDO::FETCH_COLUMN))->first();
+                break;
                 case SQLITE:
                      foreach($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $value)
                         if ($value->pk)
@@ -522,6 +537,7 @@ namespace Eywa\Database\Query {
          *
          * @return Sql
          *
+         * @throws Kedavra
          *
          */
         public function between(string $column, $begin, $last) : Sql
@@ -702,6 +718,7 @@ namespace Eywa\Database\Query {
          *
          * @return Sql
          *
+         * @throws Kedavra
          */
         public function and(string $column, string $condition, string $expected) : Sql
         {
@@ -720,6 +737,7 @@ namespace Eywa\Database\Query {
          *
          *
          * @return Sql
+         * @throws Kedavra
          */
         public function or(string $column, string $condition, $expected) : Sql
         {
@@ -741,6 +759,7 @@ namespace Eywa\Database\Query {
          * @return Sql
          *
          *
+         * @throws Kedavra
          */
         public function not(string $column, ...$values) : Sql
         {

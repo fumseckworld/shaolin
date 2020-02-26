@@ -1,11 +1,6 @@
 <h1><?= _('welcome')?></h1>
 
-<form action="@route(server:post)" method="post"    enctype="multipart/form-data">
-    @csrf
-    <input type="file" name="files[]" multiple>
-    <button type="submit" >envoyer</button>
-
-</form>
+@print(form)
 
 @url('/')
 root

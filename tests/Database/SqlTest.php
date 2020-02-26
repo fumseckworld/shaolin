@@ -30,11 +30,16 @@ namespace Testing\Database {
          */
         public function setUp(): void
         {
-            $this->mysql = (new Sql(connect(MYSQL,'eywa','eywa','eywa'),'users'));
-            $this->pgsql = (new Sql(connect(POSTGRESQL,'eywa','eywa','eywa',5432),'users'));
+            $this->mysql = new Sql(connect('mysql','ikran','ikran','ikran'),'auth');
+            $this->pgsql = (new Sql(connect(POSTGRESQL,'ikran','ikran','ikran',5432),'auth'));
             $this->sqlite = (new Sql(connect(SQLITE,'eywa.sqlite3'),'users'));
         }
-
+        public function test_is_nullable()
+        {
+            $this->assertFalse($this->mysql->nullable('name'));
+            $this->assertFalse($this->pgsql->nullable('name'));
+            $this->assertFalse($this->sqlite->nullable('name'));
+        }
         /**
          * @throws Kedavra
          */
@@ -42,7 +47,6 @@ namespace Testing\Database {
         {
             $this->assertNotEmpty($this->mysql->find(1));
             $this->assertNotEmpty($this->pgsql->find(1));
-            $this->assertNotEmpty($this->sqlite->find(1));
         }
 
         /**
@@ -125,8 +129,8 @@ namespace Testing\Database {
 
         public function test_get_table()
         {
-            $this->assertEquals('users',$this->mysql->table());
-            $this->assertEquals('users',$this->pgsql->table());
+            $this->assertEquals('auth',$this->mysql->table());
+            $this->assertEquals('auth',$this->pgsql->table());
             $this->assertEquals('users',$this->sqlite->table());
         }
 

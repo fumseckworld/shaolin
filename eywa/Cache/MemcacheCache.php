@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Cache {
 
-    use Memcache;
+    use \Memcache;
 
     class MemcacheCache implements CacheInterface
     {

@@ -15,13 +15,12 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
-    use Eywa\Html\Form\FormBuilder;
+    use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
-    use Eywa\Security\Validator\Validator;
     use Eywa\Session\SessionInterface;
     use Redis;
 
@@ -139,16 +138,14 @@ namespace Eywa\Application {
          *
          * Get the validator
          *
-         * @param array $data
-         * @param string $lang
+         * @param string $validator
          *
-         * @return Validator
+         * @return Response
          *
          * @throws Kedavra
          *
-         *
          */
-        public function validator(array $data,string $lang = 'en'): Validator;
+        public function validator(string $validator): Response;
 
         /**
          *
@@ -205,18 +202,16 @@ namespace Eywa\Application {
          *
          * Get the form builder instance
          *
-         * @param string $route
+         * @param string $url
          * @param string $method
-         * @param array $params
-         * @param array $route_args
+         * @param array $options
          *
-         * @return FormBuilder
-         *
-         * @throws Kedavra
+         * @return Form
          * @throws Exception
          *
+         *
          */
-        public function form(string $route,string $method,array $route_args = [],array $params = []) : FormBuilder;
+        public function form(string $url,string $method = POST,array $options = []) : Form;
 
         /**
          *
@@ -254,17 +249,6 @@ namespace Eywa\Application {
          */
         public function cookie(string $key,$default = null);
 
-        /**
-         *
-         * Get a $_FILES value
-         *
-         * @param string $key
-         * @param null $default
-         *
-         * @return mixed
-         *
-         */
-        public function files(string $key,$default = null);
 
         /**
          *

@@ -7,7 +7,7 @@ namespace Eywa\Application {
     use Eywa\Application\Environment\Env;
     use Eywa\Cache\ApcuCache;
     use Eywa\Cache\CacheInterface;
-    use Eywa\Cache\Filecache;
+    use Eywa\Cache\FileCache;
     use Eywa\Cache\MemcacheCache;
     use Eywa\Cache\RedisCache;
     use Eywa\Collection\Collect;
@@ -17,7 +17,7 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
-    use Eywa\Html\Form\FormBuilder;
+    use Eywa\Html\Form\Form;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\JsonResponse;
@@ -30,7 +30,6 @@ namespace Eywa\Application {
     use Eywa\Message\Flash\Flash;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
-    use Eywa\Security\Validator\Validator;
     use Eywa\Session\ArraySession;
     use Eywa\Session\Session;
     use Eywa\Session\SessionInterface;
@@ -211,13 +210,11 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
-        public function form(string $route,string $method = POST,array $route_args = [],array $params = []): FormBuilder
+        public function form(string $url,string $method = POST,array $options = []): Form
         {
-            return new FormBuilder($route,$method,$route_args,$params);
+            return new Form($url,$method,$options);
         }
 
         /**
@@ -270,7 +267,7 @@ namespace Eywa\Application {
                     return  new ApcuCache();
                 break;
                 case FILE_CACHE:
-                    return  new Filecache();
+                    return  new FileCache();
                 break;
                 case MEMCACHE_CACHE:
                     return  new MemcacheCache();
@@ -341,9 +338,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function validator(array $data, string $lang = 'en'): Validator
+        public function validator(string $validator): Response
         {
-            return new Validator(collect($data),$lang);
+            return $this->request()->validate($validator);
         }
 
         /**
@@ -408,14 +405,6 @@ namespace Eywa\Application {
             $success ? $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
 
             return (new RedirectResponse(route($route,$route_args),$status))->send();
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function files(string $key, $default = null)
-        {
-            return $this->request()->file()->get($key,$default);
         }
 
         /**

@@ -9,7 +9,7 @@ namespace Testing\Routing {
     {
         public function test_post()
         {
-         $this->assertTrue($this->visit(route('server'),POST)->run()->success());
+         $this->assertTrue($this->visit(route('send'),POST)->run()->success());
 
         }
     }

@@ -14,7 +14,6 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * @param array $file
          *
-         * @throws Kedavra
          */
         public function __construct(array $file = []);
 

@@ -75,11 +75,11 @@ namespace Eywa\Http\Request {
          * @param array $server
          * @param array $router_args
          * @param null $content
-         * @throws Kedavra
+
          */
         public function __construct(array $request = [], array  $query = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [],$content = null)
         {
-            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args,$content);
+            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args,$content);;
         }
 
         /**
@@ -98,7 +98,6 @@ namespace Eywa\Http\Request {
          *
          * @return Request
          *
-         * @throws Kedavra
          */
         public static function generate(array $args = []): Request
         {
@@ -231,7 +230,7 @@ namespace Eywa\Http\Request {
          * @param array $server
          * @param array $router_args
          * @param $content
-         * @throws Kedavra
+         *
          */
         private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, array $router_args, $content)
         {

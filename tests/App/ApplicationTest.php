@@ -4,6 +4,7 @@
 namespace Testing\App;
 
 
+use App\Validators\Users\UsersValidator;
 use Eywa\Cache\CacheInterface;
 use Eywa\Collection\Collect;
 use Eywa\Database\Connexion\Connect;
@@ -11,13 +12,12 @@ use Eywa\Database\Connexion\Connexion;
 use Eywa\Database\Query\Sql;
 use Eywa\Detection\Detect;
 use Eywa\File\File;
-use Eywa\Html\Form\FormBuilder;
+use Eywa\Html\Form\Form;
 use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
 use Eywa\Message\Email\Write;
 use Eywa\Security\Authentication\Auth;
 use Eywa\Security\Crypt\Crypter;
-use Eywa\Security\Validator\Validator;
 use Eywa\Session\SessionInterface;
 use Eywa\Testing\Unit;
 use Redis;
@@ -34,12 +34,12 @@ class ApplicationTest extends Unit
         $this->assertInstanceOf(Response::class,app()->response('i am a view')->send());
         $this->assertInstanceOf(Response::class,app()->redirect('root',[],'',true)->send());
         $this->assertInstanceOf(Collect::class,app()->collect());
-        $this->assertInstanceOf(Validator::class,app()->validator(['id' => 36]));
+        $this->assertTrue(app()->validator(UsersValidator::class)->to(UsersValidator::$redirect_url));
         $this->assertInstanceOf(Sql::class,app()->sql('users'));
         $this->assertInstanceOf(SessionInterface::class,app()->session());
         $this->assertInstanceOf(Auth::class,app()->auth());
         $this->assertInstanceOf(File::class,app()->file('README.md'));
-        $this->assertInstanceOf(FormBuilder::class,app()->form('root',GET));
+        $this->assertInstanceOf(Form::class,app()->form('root',GET));
         $this->assertInstanceOf(Request::class,app()->request());
         $this->assertInstanceOf(Detect::class,app()->detect());
         $this->assertInstanceOf(Response::class,app()->back());
@@ -62,7 +62,6 @@ class ApplicationTest extends Unit
         $this->assertEquals('linux',app()->decrypt($A));
         $this->assertNull(app()->get('a',null));
         $this->assertNull(app()->post('a',null));
-        $this->assertNull(app()->files('a',null));
         $this->assertNull(app()->cookie('a',null));
         $this->assertNull(app()->server('a',null));
 

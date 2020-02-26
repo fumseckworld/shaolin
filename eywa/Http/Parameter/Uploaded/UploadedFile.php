@@ -40,15 +40,15 @@ namespace Eywa\Http\Parameter\Uploaded {
          */
         public function __construct(array $files = [])
         {
-
+            $this->filename = collect();
+            $this->types = collect();
+            $this->temporary = collect();
+            $this->errors = collect();
+            $this->size = collect();
             if (def($files))
             {
 
-                $this->filename = collect();
-                $this->types = collect();
-                $this->temporary = collect();
-                $this->errors = collect();
-                $this->size = collect();
+
 
                 $i= 0;
                 $this->sum = collect($files['files']['name'])->sum();

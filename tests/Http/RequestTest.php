@@ -27,7 +27,7 @@ namespace Testing\Http {
             $this->assertEmpty($this->request->attribute()->get('a'));
             $this->assertNull($this->request->cookie()->get('a'));
             $this->assertNull($this->request->server()->get('a'));
-            $this->assertNull($this->request->file()->get('a'));
+            $this->assertEmpty($this->request->file()->files());
             $this->assertEmpty($this->request->content());
         }
     }

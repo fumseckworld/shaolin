@@ -7,6 +7,7 @@ use App\Validators\Users\UsersValidator;
 use DI\DependencyException;
 use DI\NotFoundException;
 use Eywa\Exception\Kedavra;
+use Eywa\Html\Form\Form;
 use Eywa\Http\Controller\Controller;
 use Eywa\Http\Parameter\Uploaded\UploadedFile;
 use Eywa\Http\Request\Request;
@@ -38,12 +39,28 @@ class HomeController extends Controller
      */
     public function home(): Response
     {
-
+        $form=  (new Form('/'))->add('bio','textarea' ,'votre cv','entre your curilculom vitae',['placeholder'=>'voe'])->get();
         //$form = $this->form('server')->add('name', 'text','Type your name', ['placeholder' => 'type your name'])->add('username','text','your name')->add('bio','textarea','your story')->get();
 
         $users = User::all();
         
-        return $this->view('welcome', 'welcome', 'welcome', compact( 'users'));
+        return $this->view('welcome', 'welcome', 'welcome', compact( 'users','form'));
+    }
+
+    /**
+     * @return Response
+     * @throws Kedavra
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
+    public function send(): Response
+    {
+        $form=  (new Form('/'))->add('bio','textarea' ,'votre cv','entre your curilculom vitae',['placeholder'=>'voe'])->get();
+        //$form = $this->form('server')->add('name', 'text','Type your name', ['placeholder' => 'type your name'])->add('username','text','your name')->add('bio','textarea','your story')->get();
+
+        $users = User::all();
+
+        return $this->view('welcome', 'welcome', 'welcome', compact( 'users','form'));
     }
 
     public function upload(Request $request)
