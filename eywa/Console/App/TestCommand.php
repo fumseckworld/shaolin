@@ -20,7 +20,9 @@
 			
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
+
 				$io = new SymfonyStyle($input,$output);
+
 
                 if (is_dir('vendor'))
                 {
@@ -30,10 +32,10 @@
                         $io->success('Starting all tests');
                         if((new Shell( base('vendor','bin','phpunit') . ' --coverage-html coverage'))->run())
                         {
-                            $io->success('Success ! No errors detected');
+                            $io->success('Congratulations no errors has been found');
                             return 0;
                         }
-                        $io->error('One error has been found check your code');
+                        $io->error('Errors has been found, please check your code before send your application');
                         return 1;
 
 

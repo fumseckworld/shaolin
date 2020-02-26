@@ -26,7 +26,7 @@
 
                 if((new Shell( base('vendor','bin','phpunit') . ' --coverage-html coverage'))->run())
                 {
-                    $io->success('Success ! No errors detected');
+                    $io->success('Congratulations no errors has been found');
 
                     if (is_dir('.git'))
                     {
@@ -80,7 +80,7 @@
                         return 1;
                     }
                 }
-                $io->error('One error has been found check your code');
+                $io->error('Errors has been found, please check your code before send your application');
                 return 1;
             }
 			
