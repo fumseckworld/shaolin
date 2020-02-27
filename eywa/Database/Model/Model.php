@@ -39,7 +39,7 @@ namespace Eywa\Database\Model {
          * The sql Sql to create the table
          *
          */
-        protected static string $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL,method TEXT(255) NOT NULL);";
+        protected static string $create_route_table_query = "CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, method TEXT(255) NOT NULL, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL,action TEXT(255) NOT NULL, directory TEXT(255) NOT NULL,created_at DATETIME ,updated_at DATETIME);";
 
         /**
          *

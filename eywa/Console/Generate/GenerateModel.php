@@ -37,11 +37,19 @@ namespace Eywa\Console\Generate {
         {
             $io = new SymfonyStyle($input,$output);
 
+            $x = $input->getArgument('model');
+
+            if(preg_match("#^[a-z]([a-z_]+)$#",$x) !== 1)
+            {
+                $io->error('You must use snake case syntax to generate the model');
+                return  1;
+            }
+
             $io->title('Generation of the model');
 
-            $x = $input->getArgument('model');
             $table = $input->getArgument('table');
-            $model = ucfirst(strtolower($x));
+
+            $model = collect(explode('_',$x))->for('ucfirst')->join('');
 
             $namespace = 'App\Models';
 
@@ -54,11 +62,11 @@ namespace Eywa\Console\Generate {
                 return 1;
             }
             if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace\n{ \n\n\tuse Eywa\Database\Model\Model;\n\n\tClass $model extends Model\n\t{\n\n\t\tprotected static string \$table = '$table';\n\n\t\tprotected static string \$by = 'id';\n\n\t\tprotected static int \$limit = 20;\n\n\t}\n\n}\n")->flush()) {
-                $io->success("The $model model was generated successfully");
+                $io->success("The $model model has been generated successfully");
 
                 return 0;
             }
-
+            $io->error("The $model generation has failed");
             return 1;
         }
 

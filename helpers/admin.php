@@ -854,14 +854,16 @@ if (!function_exists('controllers'))
      *
      * @method controller
      *
+     * @param string $directory
      * @return array
-     *
      */
-    function controllers(): array
+    function controllers(string $directory): array
     {
 
-        $dir = base('app', 'Controllers');
-        $controllers = collect(File::search("$dir" . DIRECTORY_SEPARATOR . '*.php'));
+        if ($directory !== 'Controllers')
+            $controllers =glob(base('app', 'Controllers',$directory,'*.php'));
+        else
+            $controllers = glob(base('app', 'Controllers','*.php'));
         $data = collect();
         if ($controllers)
         {

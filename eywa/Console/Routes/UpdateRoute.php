@@ -2,12 +2,8 @@
 
 namespace Eywa\Console\Routes {
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Routing\Admin;
-    use Eywa\Http\Routing\Task;
     use Eywa\Http\Routing\Web;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -22,13 +18,6 @@ namespace Eywa\Console\Routes {
 
         /**
          *
-         * All routes
-         *
-         */
-        private Collect $routes;
-
-        /**
-         *
          * The result asked
          *
          */
@@ -39,16 +28,7 @@ namespace Eywa\Console\Routes {
          * The value to find
          *
          */
-        private string $search;
-
-        /**
-         *
-         * The db choose
-         *
-         */
-        private string $choose;
-
-
+        private string $search = '';
 
         protected function configure()
         {
@@ -56,16 +36,12 @@ namespace Eywa\Console\Routes {
         }
 
         /**
-         * @param bool $web
-         * @param bool $admin
          * @return array
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
-        private function name(bool $web = true, bool $admin = false)
+        private function name()
         {
-            $x = \collect();
+            $x = collect();
 
                 foreach (Web::all() as $v)
                     $x->push($v->name);
@@ -78,180 +54,82 @@ namespace Eywa\Console\Routes {
          * @param OutputInterface $output
          *
          *
+         * @return int
+         * @throws Kedavra
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {
-
-            $helper = $this->getHelper('question');
-
+            $io = new SymfonyStyle($input,$output);
             $this->entry = collect();
 
-            $this->routes = collect();
+            do
+            {
+
+                do{
+                    $this->search = $io->askQuestion((new Question('What is the name of the route to update ?','root'))->setAutocompleterValues($this->name()));
+                }while(not_def(Web::by('name',$this->search)));
 
 
-            $this->choose = 'web';
+                $route = Web::by('name', $this->search)[0];
 
+
+                do
+                {
+                    $this->entry->put('name', $io->askQuestion((new Question('Change the route name ? ',$route->name))));
+                }while(not_def($this->entry->get('name')) || def(Web::by('name',$this->entry->get('name'))) && $this->entry->get('name') !== $route->name);
+
+                do
+                {
+                    $this->entry->put('method', strtoupper($io->askQuestion((new Question('Change the route method ? ',$route->method)))));
+                }while(not_def($this->entry->get('method')) || not_in(METHOD_SUPPORTED,$this->entry->get('method')));
+
+                do
+                {
+                    $this->entry->put('url', $io->askQuestion((new Question('Change the route url ? ',$route->url))));
+                }while(not_def($this->entry->get('url')) || def(Web::by('url',$this->entry->get('url'))) && $this->entry->get('url') !== $route->url);
+
+                do
+                {
+                    $this->entry->put('controller', $io->askQuestion((new Question('Change the route controller ? ',$route->controller))));
+                }while(not_def($this->entry->get('controller')));
+                do
+                {
+                    $this->entry->put('action', $io->askQuestion((new Question('Change the route action ? ',$route->action))));
+                }while(not_def($this->entry->get('action')) || def(Web::by('action',$this->entry->get('action'))) && $this->entry->get('action') !== $route->action);
+                do
+                {
+                    $this->entry->put('directory', $io->askQuestion((new Question('Change the route namespace ? ',$route->directory))));
+                }while(not_def($this->entry->get('directory')));
+
+                $this->entry->put('created_at',$route->created_at);
+                $this->entry->put('updated_at',now()->toDateTimeString());
+
+
+                if(Web::update(intval($route->id),$this->entry->all()))
+                {
+                    $io->success('The route has been updated successfully');
+                }else{
+                    $io->error('The route has not been updated');
+                    return 1;
+                }
+
+                $this->entry->clear();
+
+            }while($io->confirm('Continue to update routes ?',true));
+            return 0;
         }
+
 
         /**
          * @param InputInterface $input
          * @param OutputInterface $output
-         *
-         * @return int|null
-         *
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
+         * @return int
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
             $io = new SymfonyStyle($input,$output);
-
-            $io->title('Updating the routes');
-            do {
-
-                $this->ask($output,$input);
-
-                $helper = $this->getHelper('question');
-                $question = new Question("<info>Continue [Y/n] : </info>", 'Y');
-
-                $continue = strtoupper($helper->ask($input, $output, $question)) === 'Y';
-
-            } while ($continue);
-
-            if ($this->routes->ok())
-            {
-                $io->success('All routes was updated successfully');
-
-                return 0;
-            }
-            $io->error('Fail to update the routes');
-            return 1;
-        }
-
-        /**
-         * @param OutputInterface $output
-         * @param InputInterface $input
-         * @return int
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         */
-        private function ask(OutputInterface $output,InputInterface $input)
-        {
-
-
-            $helper = $this->getHelper('question');
-            if ($this->choose == 'web' && not_def(Web::all()) || $this->choose == 'admin' && not_def(Admin::all()) || $this->choose === 'task' && not_def(Task::all())) {
-                clear_terminal();
-
-                $output->writeln("<error>The table is empty</error>");
-
-                return 1;
-            }
-
-            do
-            {
-                clear_terminal();
-
-                $question = new Question("<info>Please enter the route name : </info>");
-
-                $question->setAutocompleterValues($this->name());
-
-                $this->search = $helper->ask($input, $output, $question);
-
-            } while (is_null($this->search) && not_def(Web::where('name', EQUAL, $this->search)->execute()));
-
-            $route = Web::by('name', $this->search);
-
-            foreach ($route as $value)
-            {
-
-
-                do
-                {
-                    $question = new Question("<info>Change the method</info> <comment>[{$value->method}]</comment> : ", $value->method);
-
-                    $question->setAutocompleterValues(collect(METHOD_SUPPORTED)->for('strtolower')->all());
-
-                    $method = strtoupper($helper->ask($input, $output, $question));
-
-                    $this->entry->put('method', $method);
-
-                } while (is_null($method));
-
-                do
-                {
-                    $question = new Question("<info>Change the name</info> <comment>[{$value->name}]</comment> : ", $value->name);
-
-                    $name = $helper->ask($input, $output, $question);
-
-                    $this->entry->put('name', $name);
-
-                } while (def(Web::where('name', EQUAL, $name)->execute()) && different($value->name, $name));
-
-
-                do
-                {
-                    $question = new Question("<info>Change the url</info> <comment>[{$value->url}]</comment> : ", $value->url);
-
-                    $url = $helper->ask($input, $output, $question);
-
-                    $this->entry->put('url', $url);
-
-                } while (def(Web::where('url', EQUAL, $url)->execute()) && different($value->url, $url));
-
-                do
-                {
-                    $question = new Question("<info>Change the controller</info> <comment>[{$value->controller}]</comment> : ", $value->controller);
-                    $question->setAutocompleterValues(controllers());
-                    $controller = $helper->ask($input, $output, $question);
-
-                    $this->entry->put('controller', $controller);
-
-                } while (is_null($controller));
-
-                do
-                {
-                    $question = new Question("<info>Change the action</info> <comment>[{$value->action}]</comment> : ", $value->action);
-                    $x = "App\Controllers\\{$this->entry->get('controller')}";
-
-                    if (class_exists($x))
-                        $question->setAutocompleterValues(get_class_methods(new $x));
-
-                    $action = $helper->ask($input, $output, $question);
-
-                    $this->entry->put('action', $action);
-
-                } while (is_null($action));
-
-                $this->entry->put('id', $value->id);
-                $this->save();
-            }
-        }
-
-        /**
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         */
-        public function save()
-        {
-
-            switch ($this->choose)
-            {
-                case 'admin':
-                    $this->routes->push(Admin::update($this->entry->get('id'), $this->entry->all()));
-                break;
-                case 'task':
-                    $this->routes->push(Task::update($this->entry->get('id'), $this->entry->all()));
-                break;
-                default:
-                    $this->routes->push(Web::update($this->entry->get('id'), $this->entry->all()));
-                break;
-            }
-
-            $this->entry->clear();
+            $io->success('Bye');
+            return 0;
         }
     }
 }

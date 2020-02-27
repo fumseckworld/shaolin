@@ -46,7 +46,7 @@ namespace Eywa\Application {
          * The layout name for all views in the controller
          *
          */
-        protected static string $layout = 'layout.php';
+        protected static string $layout = 'layout';
 
         /**
          *

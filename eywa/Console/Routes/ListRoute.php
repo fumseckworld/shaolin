@@ -53,7 +53,7 @@ namespace Eywa\Console\Routes {
             $table
                 ->setStyle('box')
 
-                ->setHeaders(['id', 'name', 'url','controller','action','method'])
+                ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                 ->setRows(
                     Web::all(\PDO::FETCH_ASSOC)
                 )

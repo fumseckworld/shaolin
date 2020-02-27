@@ -24,7 +24,7 @@ namespace Eywa\Console\Generate {
                 ->setDescription('Create a new controller')
                 // the full command description shown when running the command with
                 // the "--help" option
-                ->setHelp('php shaolin make:controller controller_name')->addArgument('controller', InputArgument::REQUIRED, 'The controller name.');
+                ->setHelp('php shaolin make:controller controller_name')->addArgument('controller', InputArgument::REQUIRED, 'The controller name.')->addArgument('directory',InputArgument::OPTIONAL,'The controller directory')->addArgument('layout',InputArgument::OPTIONAL,'the layout to use');
         }
 
         /**
@@ -38,29 +38,172 @@ namespace Eywa\Console\Generate {
         {
             $io = new SymfonyStyle($input,$output);
 
-            $io->title('Generation of the controller');
+            $controller = $input->getArgument('controller');
+            $layout = $input->getArgument('layout');
+            $directory = ucfirst($input->getArgument('directory'));
 
-            $controller = ucfirst(str_replace('Controller', '', $input->getArgument('controller')));
-            append($controller, 'Controller');
-
-
-            $file = $controller ;
-
-            $controller  =  base('app','Controllers',"$controller.php");
-            $namespace = 'App' . '\\' . 'Controllers';
-            if (file_exists($controller))
+            if(preg_match("#^[a-z]([a-z_]+)$#",$controller) !== 1)
             {
-                $io->error("The $file controller already exist");
+                $io->error('You must use snake case syntax to generate the controller');
+                return  1;
+            }
+
+            if (def($directory) && ! is_dir(base('app','Controllers',$directory)))
+                mkdir(base('app','Controllers',$directory));
+
+
+            $controller_class = collect(explode('_',$controller))->for('ucfirst')->join('');
+
+            $controller_file  = def($directory)?  base('app','Controllers',$directory,"$controller_class.php"): base('app','Controllers',"$controller_class.php");
+
+            if (file_exists($controller_file))
+            {
+                $io->error("The $controller_class controller already exist");
 
                 return 1;
             }
-            chdir(base('app','Controllers'));
-            if ((new File("$file.php", EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace { \n\n\tuse  Eywa\Http\Controller\Controller;\n\n\tClass $file extends Controller\n\t{\n\n\t\tpublic function before_action()\n\t\t{\n\n\t\t}\n\n\t\tpublic function after_action()\n\t\t{\n\n\t\t}\n\n\t}\n\n}\n")->flush()) {
-                $io->success("The $file controller was generated successfully");
+            $io->title('Generation of the controller');
+
+            $namespace = def($directory) ? "App\Controllers\\$directory" : 'App\Controllers';
+
+            $layout = def($layout) ? "protected static string \$layout = '$layout'" :  "protected static string \$layout = 'layout';";
+
+            $directory = def($directory) ? "protected static string \$directory = '$directory';" : '';
+
+            if ((new File($controller_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+
+namespace $namespace { 
+
+	use Eywa\Http\Controller\Controller;
+    use Eywa\Http\Request\Request;
+    
+	Class $controller_class extends Controller
+	{
+
+        $layout
+    
+        $directory
+        
+        
+        /**
+         * @inheritDoc
+         */
+        public function before_validation(Request \$request)
+        {
+            // TODO: Implement before_validation() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_validation(Request \$request)
+        {
+            // TODO: Implement after_validation() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function before_save(Request \$request)
+        {
+            // TODO: Implement before_save() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_save(Request \$request)
+        {
+            // TODO: Implement after_save() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_commit(Request \$request)
+        {
+            // TODO: Implement after_commit() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_rollback(Request \$request)
+        {
+            // TODO: Implement after_rollback() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function before_update(Request \$request)
+        {
+            // TODO: Implement before_update() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_update(Request \$request)
+        {
+            // TODO: Implement after_update() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function before_action(Request \$request)
+        {
+            // TODO: Implement before_action() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_action(Request \$request)
+        {
+            // TODO: Implement after_action() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function before_create(Request \$request)
+        {
+            // TODO: Implement before_create() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_create(Request \$request)
+        {
+            // TODO: Implement after_create() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function before_destroy(Request \$request)
+        {
+            // TODO: Implement before_destroy() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after_destroy(Request \$request)
+        {
+            // TODO: Implement after_destroy() method.
+        }
+        
+    }
+}")->flush()) {
+                $io->success("The $controller_class controller has been generated successfully");
 
                 return 0;
             }
-
+            $io->error("The $controller_class controller generation has failed");
             return 1;
         }
 

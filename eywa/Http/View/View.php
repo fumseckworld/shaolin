@@ -6,6 +6,7 @@ namespace Eywa\Http\View {
 
     use Exception;
     use Eywa\Cache\FileCache;
+    use Eywa\Database\User\User;
     use Eywa\Exception\Kedavra;
 
 
@@ -97,7 +98,7 @@ namespace Eywa\Http\View {
 
             $this->args = $args;
 
-            $this->layout = base('app','Views',$layout);
+            $this->layout = base('app','Views',"$layout.php");
 
             $this->locale  = not_cli() ? app()->lang() : config('i18n','locale');
 

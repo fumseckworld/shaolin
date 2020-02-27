@@ -215,13 +215,10 @@ namespace Eywa\Database\Query {
          */
         public function save(array $records): bool
         {
-
-
-            $x = collect($this->columns())->join();
+            $x = collect(collect($this->columns())->del($this->primary())->all())->join();
 
             $sql = "INSERT INTO {$this->table} ($x) VALUES( ";
-            $id = $this->connexion()->postgresql() ? 'DEFAULT' : 'NULL';
-            append($sql,$id,', ');
+
             foreach ($this->columns() as $column)
             {
                 if (array_key_exists($column,$records))
@@ -233,7 +230,7 @@ namespace Eywa\Database\Query {
             append($sql,')',',');
 
             $sql = trim($sql,',');
-            
+
             return $this->connexion()->set($sql)->execute();
         }
         /**

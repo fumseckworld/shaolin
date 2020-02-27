@@ -87,11 +87,10 @@ namespace Eywa\Http\Routing {
 
         /**
          * @return RouteResult
-         * @throws Kedavra
          */
         public function result(): RouteResult
         {
-            return new RouteResult($this->route->controller,$this->route->action,$this->parameters);
+            return new RouteResult($this->route->controller,$this->route->directory,$this->route->action,$this->parameters,$this->method);
         }
 
         /**

@@ -3,12 +3,8 @@
 namespace Eywa\Console\Routes {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Routing\Admin;
-    use Eywa\Http\Routing\Task;
     use Eywa\Http\Routing\Web;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -34,223 +30,82 @@ namespace Eywa\Console\Routes {
          * @param InputInterface $input
          * @param OutputInterface $output
          *
+         * @return int
          * @throws Kedavra
          */
         public function interact(InputInterface $input, OutputInterface $output)
         {
-            $helper = $this->getHelper('question');
+            $io = new SymfonyStyle($input,$output);
+
             $this->routes = collect();
+
             $this->entry = collect();
+
             $methods = collect(METHOD_SUPPORTED)->for('strtolower')->all();
 
             do {
 
-                $this->entry->put('route', 'web');
-                do {
-                    clear_terminal();
-
-                    $question = new Question("<info>Define the route method</info> : ");
-
-                    $question->setAutocompleterValues($methods);
-
-                    $method = strtoupper($helper->ask($input, $output, $question));
-
-                    $this->entry->put('method', $method);
-                } while (is_null($method) || not_in(METHOD_SUPPORTED, $method));
-
-                if ($this->entry->get('route') == 'web')
+                do
                 {
-                    do {
-                        clear_terminal();
+                    $this->entry->put('name',$io->askQuestion((new Question('What name should be used for represent the new route url ?'))));
+                } while (not_def($this->entry->get('name')) || def(Web::where('name',EQUAL,$this->entry->get('name'))->execute()));
 
-                        $question = new Question("<info>Define the route name</info> : ");
-
-                        $name = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('name', $name);
-
-                    } while (is_null($name) || def(Web::where('name', EQUAL, $name)->execute()));
-
-                    do {
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the route url</info> : ");
-
-                        $url = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('url', $url);
-
-                    } while (is_null($url) || def(Web::where('url', EQUAL, $url)->execute()));
-
-                    do {
-
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the controller to call</info> : ");
-
-                        $question->setAutocompleterValues(controllers());
-
-                        $controller = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('controller', $controller);
-
-                    } while (is_null($controller));
-
-                    do {
-
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the action to call</info> : ");
-
-                        $x = "App\Controllers\\{$this->entry->get('controller')}";
-
-                        if (class_exists($x))
-                            $question->setAutocompleterValues(get_class_methods(new $x));
-
-                        $action = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('action', $action);
-
-                    } while (is_null($action) || def(Web::where('action', EQUAL, $action)->execute()));
-
-                } elseif($this->entry->get('route') == 'admin')
+                do
                 {
+                    $route = $this->entry->get('name');
+                    $this->entry->put('method',strtoupper($io->askQuestion((new Question("What method should be used for the new $route route ?", GET))->setAutocompleterValues($methods))));
+                } while (not_in(METHOD_SUPPORTED, $this->entry->get('method')));
+
+                do
+                {
+                    $route = $this->entry->get('name');
+                    $this->entry->put('url',$io->askQuestion((new Question("What url should be used by the $route route for accessing the controller ?"))));
+                } while (def(Web::where('url',EQUAL,$this->entry->get('url'))->execute()) || not_def($this->entry->get('url')));
+
+                do
+                {
+                    $this->entry->put('directory',$io->askQuestion((new Question('Place the controller in a special directory ?','Controllers'))));
+                } while ( is_null($this->entry->get('directory')));
 
 
-                    do {
-                        clear_terminal();
+                do
+                {
+                    $route = $this->entry->get('name');
+                    $this->entry->put('controller',$io->askQuestion((new Question("What controller name should be called by the $route route ?"))->setAutocompleterValues(controllers($this->entry->get('directory')))));
+                } while (is_null($this->entry->get('controller')));
 
-                        $question = new Question("<info>Define the route name</info> : ");
-
-                        $name = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('name', $name);
-
-                    } while (is_null($name) || def(Admin::where('name', EQUAL, $name)->execute()));
-
-                    do {
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the route url</info> : ");
-
-                        $url = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('url', $url);
-
-                    } while (is_null($url) || def(Admin::where('url', EQUAL, $url)->execute()));
+                if ($this->entry->get('directory') !== 'Controllers')
+                    $class = '\App\Controllers\\' . $this->entry->get('directory') . '\\' .$this->entry->get('controller');
+                else
+                    $class = '\App\Controllers\\'  .$this->entry->get('controller');
 
 
-                    do {
+                do
+                {
+                    $class = new $class;
+                    $controller = $this->entry->get('controller');
+                    $route = $this->entry->get('name');
+                    $this->entry->put('action',$io->askQuestion((new Question("What action in the $controller controller should be executed by the $route route ?"))->setAutocompleterValues(get_class_methods($class))));
+                } while (def(Web::where('action',EQUAL,$this->entry->get('action'))->execute()) || not_def($this->entry->get('action')));
 
-                        clear_terminal();
+                $this->entry->put('created_at',now()->toDateTimeString())->put('updated_at',now()->toDateTimeString());
 
-                        $question = new Question("<info>Define the controller to call</info> : ");
 
-                        $question->setAutocompleterValues(controllers());
 
-                        $controller = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('controller', $controller);
-
-                    } while (is_null($controller));
-
-                    do {
-
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the action to call</info> : ");
-
-                        $x = "App\Controllers\\{$this->entry->get('controller')}";
-
-                        if (class_exists($x))
-                            $question->setAutocompleterValues(get_class_methods(new $x));
-
-                        $action = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('action', $action);
-
-                    } while (is_null($action) || def(Admin::where('action', EQUAL, $action)->execute()));
-
+                if($this->routes->push(Web::create($this->entry->all())))
+                {
+                    $route = $this->entry->get('route');
+                    $io->success("The $route route has been created successfully");
                 }else
                 {
-                    do
-                    {
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the route name</info> : ");
-
-                        $name = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('name', $name);
-
-                    } while (is_null($name) || def(Task::where('name', EQUAL, $name)->execute()));
-
-                    do {
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the route url</info> : ");
-
-                        $url = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('url', $url);
-
-                    } while (is_null($url) || def(Task::where('url', EQUAL, $url)->execute()));
-
-
-                    do {
-
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the controller to call</info> : ");
-
-                        $question->setAutocompleterValues(controllers());
-
-                        $controller = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('controller', $controller);
-
-                    } while (is_null($controller));
-
-                    do {
-
-                        clear_terminal();
-
-                        $question = new Question("<info>Define the action to call</info> : ");
-
-                        $x = "App\Controllers\\{$this->entry->get('controller')}";
-
-                        if (class_exists($x))
-                            $question->setAutocompleterValues(get_class_methods(new $x));
-
-                        $action = $helper->ask($input, $output, $question);
-
-                        $this->entry->put('action', $action);
-
-                    } while (is_null($action) || def(Task::where('action', EQUAL, $action)->execute()));
-                }
-
-                switch ($this->entry->get('route'))
-                {
-                    case 'admin':
-                        $this->routes->push(Admin::create($this->entry->all()));
-                    break;
-                    case 'task':
-                        $this->routes->push(Task::create($this->entry->all()));
-                    break;
-                    default:
-                        $this->routes->push(Web::create($this->entry->all()));
-                    break;
+                    $io->error("Failed to create the $route route");
+                    return 1;
                 }
 
                 $this->entry->clear();
-
-                $question = new Question("<info>Create a new route [Y/n] : </info>", 'Y');
-
-                $continue = strtoupper($helper->ask($input, $output, $question));
-
-                $continue = $continue === 'Y';
-
-            } while ($continue);
+                
+            } while ($io->confirm('Do you want continue to create new routes ? ',true));
+            return 0;
         }
 
         /**
@@ -263,15 +118,8 @@ namespace Eywa\Console\Routes {
         {
             $io = new SymfonyStyle($input,$output);
 
-            $io->title('Appending the routes');
-            if ($this->routes->ok())
-            {
-                $io->success('The routes was generated successfully');
-
-                return 0;
-            }
-            $io->error('Fail to create routes');
-            return 1;
+            $io->success('Bye');
+            return 0;
         }
 
     }
