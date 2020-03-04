@@ -24,11 +24,11 @@ namespace Eywa\Console {
     use Eywa\Console\Database\ShowUsers;
     use Eywa\Console\Database\TruncateTable;
     use Eywa\Console\Database\UninstallDatabase;
+    use Eywa\Console\Generate\GenerateCommand;
     use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateMiddleware;
     use Eywa\Console\Generate\GenerateMigration;
     use Eywa\Console\Generate\GenerateModel;
-    use Eywa\Console\Generate\GenerateRouteBase;
     use Eywa\Console\Generate\GenerateSeeds;
     use Eywa\Console\Generate\GenerateTest;
     use Eywa\Console\Generate\GenerateValidator;
@@ -41,10 +41,12 @@ namespace Eywa\Console {
     use Eywa\Console\Mode\Maintenance;
     use Eywa\Console\Mode\ProductionMode;
     use Eywa\Console\Routes\AddRoute;
+    use Eywa\Console\Routes\FindRoute;
     use Eywa\Console\Routes\ListRoute;
     use Eywa\Console\Routes\RemoveRoute;
     use Eywa\Console\Routes\UpdateRoute;
     use Symfony\Component\Console\Application;
+    use Symfony\Component\Console\Command\Command;
 
 
     class Console
@@ -61,7 +63,7 @@ namespace Eywa\Console {
          *
          * Add a command
          *
-         * @param  array $commands
+         * @param array<mixed> $commands
          *
          * @return Console
          *
@@ -88,9 +90,9 @@ namespace Eywa\Console {
         {
 
            $commands = [
-               new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(), new GenerateRouteBase(), new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
+               new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(),new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase(),
-                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand()
+               new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute()
            ];
 
             $this->add($commands)->add(commands());

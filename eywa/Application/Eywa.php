@@ -10,18 +10,21 @@ namespace Eywa\Application {
     use Exception;
     use Eywa\Cache\CacheInterface;
     use Eywa\Collection\Collect;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
     use Eywa\Html\Form\Form;
+    use Eywa\Http\Request\FormRequest;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Session\SessionInterface;
+    use Eywa\Validate\Validator;
     use Redis;
 
     interface Eywa
@@ -94,7 +97,7 @@ namespace Eywa\Application {
          *
          * @param string $content
          * @param int $status
-         * @param array $headers
+         * @param array<string> $headers
          * @param string $url
          *
          * @return Response
@@ -109,7 +112,7 @@ namespace Eywa\Application {
          * Redirect user to an another route
          *
          * @param string $route
-         * @param array $route_args
+         * @param array<mixed> $route_args
          * @param string $message
          * @param bool $success
          * @param int $status
@@ -127,7 +130,7 @@ namespace Eywa\Application {
          *
          * Get an instance of collect
          *
-         * @param array $data
+         * @param array<mixed> $data
          *
          * @return Collect
          *
@@ -138,14 +141,14 @@ namespace Eywa\Application {
          *
          * Get the validator
          *
-         * @param string $validator
+         * @param Validator $validator
          *
          * @return Response
          *
          * @throws Kedavra
          *
          */
-        public function validator(string $validator): Response;
+        public function validator(Validator $validator): Response;
 
         /**
          *
@@ -156,8 +159,6 @@ namespace Eywa\Application {
          * @return Sql
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          * @throws Exception
          *
          */
@@ -202,16 +203,15 @@ namespace Eywa\Application {
          *
          * Get the form builder instance
          *
-         * @param string $url
-         * @param string $method
-         * @param array $options
+         * @param FormRequest $request
          *
          * @return Form
+         *
+         * @throws Kedavra
          * @throws Exception
          *
-         *
          */
-        public function form(string $url,string $method = POST,array $options = []) : Form;
+        public function form(FormRequest $request) : Form;
 
         /**
          *
@@ -221,6 +221,9 @@ namespace Eywa\Application {
          * @param null $default
          *
          * @return mixed
+         *
+         * @throws Kedavra
+         *
          *
          */
         public function get(string $key,$default = null);
@@ -234,6 +237,8 @@ namespace Eywa\Application {
          *
          * @return mixed
          *
+         * @throws Kedavra
+         *
          */
         public function post(string $key,$default = null);
 
@@ -245,6 +250,8 @@ namespace Eywa\Application {
          * @param null $default
          *
          * @return mixed
+         *
+         * @throws Kedavra
          *
          */
         public function cookie(string $key,$default = null);
@@ -258,6 +265,8 @@ namespace Eywa\Application {
          * @param null $default
          *
          * @return mixed
+         *
+         * @throws Kedavra
          *
          */
         public function server(string $key,$default = null);
@@ -280,10 +289,15 @@ namespace Eywa\Application {
          *
          * Get a request instance
          *
+         * @param array<mixed> $args
+         *
          * @return Request
          *
+         * @throws Kedavra
+         *
+         *
          */
-        public function request(): Request;
+        public function request(array $args = []): Request;
 
         /**
          *
@@ -301,13 +315,13 @@ namespace Eywa\Application {
          * @param string $view
          * @param string $title
          * @param string $description
-         * @param array $args
+         * @param array<mixed> $args
          *
          * @return Response
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
+         * @throws Exception
+         *
          *
          */
         public function view(string $view,string $title,string $description,array $args =[]): Response;
@@ -319,8 +333,7 @@ namespace Eywa\Application {
          * @return Response
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
+         * @throws Exception
          *
          */
         public function run(): Response;
@@ -329,7 +342,7 @@ namespace Eywa\Application {
          *
          * Return a json response
          *
-         * @param array $data
+         * @param array<mixed> $data
          * @param int $status
          *
          * @return Response
@@ -343,12 +356,13 @@ namespace Eywa\Application {
          *
          * Get an instance of connexion (PDO)
          *
-         * @return Connexion
+         * @return Connect
          *
          * @throws Kedavra
+         * @throws Exception
          *
          */
-        public function connexion(): Connexion;
+        public function connexion(): Connect;
 
         /**
          *
@@ -380,8 +394,6 @@ namespace Eywa\Application {
          * @return Response
          *
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          *
          */
         public function back(string $message ='',bool $success = true): Response;
@@ -391,7 +403,7 @@ namespace Eywa\Application {
          * Go to a specific url by a route it's route name
          *
          * @param string $route
-         * @param array $route_args
+         * @param array<mixed> $route_args
          * @param string $message
          * @param bool $success
          *

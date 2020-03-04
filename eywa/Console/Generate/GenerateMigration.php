@@ -16,7 +16,7 @@ namespace Eywa\Console\Generate {
 
         protected static $defaultName = 'make:migration';
 
-        protected function configure()
+        protected function configure():void
         {
 
             $this
@@ -37,7 +37,7 @@ namespace Eywa\Console\Generate {
         {
             $io = new SymfonyStyle($input,$output);
 
-            $migration = $input->getArgument('migration');
+            $migration = strval($input->getArgument('migration'));
 
             if(preg_match("#^[a-z]([a-z_]+)$#",$migration) !== 1)
             {
@@ -51,11 +51,11 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($file))
             {
-                $io->error('The migration already exist');
+                $io->error(sprintf('The %s migration already exist',$class));
                 return 1;
             }
             $io->title('Generation of the migration');
-            $table  = $input->getArgument('table');
+            $table  = strval($input->getArgument('table'));
             $time = date('Y-m-d-H-i-s');
 
 
@@ -97,7 +97,7 @@ namespace Base\Migrations {
     }
 }")->flush())
             {
-                $io->success('The migration was successfully generated');
+                $io->success(sprintf('The %s migration was successfully generated',$class));
                 return 0;
             }
 

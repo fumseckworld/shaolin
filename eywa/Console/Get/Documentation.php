@@ -17,7 +17,7 @@
 			protected static $defaultName = "get:doc";
 			
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription('Get the eywa and shaolin documentation')->addArgument('directory',InputArgument::REQUIRED,'The documentation directory name');
 			}
@@ -34,7 +34,7 @@
                 $io = new SymfonyStyle($input,$output);
 
                 $io->title('Downlaoding or updating the documentation');
-                $dir = $input->getArgument('directory');
+                $dir = strval($input->getArgument('directory'));
 				if(is_dir($dir))
                 {
                     if(chdir($dir))

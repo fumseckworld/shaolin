@@ -32,7 +32,7 @@ namespace Eywa\Console\Database {
          */
         private string $pgsql_pass;
 
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription('Create all databases and users rights');
         }
@@ -89,7 +89,7 @@ namespace Eywa\Console\Database {
                         $prod = connect(MYSQL,'','root',$this->pass);
 
 
-                        if ($dev->create_database(env('DEVELOP_DB_NAME')))
+                        if ($dev->create_database(strval(strval(env('DEVELOP_DB_NAME')))))
                         {
                             $io->success($dev_base_created_successfully);
                         } else {
@@ -97,7 +97,7 @@ namespace Eywa\Console\Database {
                             return 1;
                         }
 
-                        if ($prod->create_database(env('DB_NAME')))
+                        if ($prod->create_database(strval(strval(env('DB_NAME')))))
                         {
 
                             $io->success($prod_base_created_successfully);
@@ -111,7 +111,7 @@ namespace Eywa\Console\Database {
 
                         $prod = connect(MYSQL,'','root',$this->pass);
 
-                        if ($prod->create_user(env('DB_USERNAME'), env('DB_PASSWORD'), env('DB_NAME')))
+                        if ($prod->create_user(strval(strval(env('DB_USERNAME'))), strval(strval(env('DB_PASSWORD'))), strval(strval(env('DB_NAME')))))
                         {
 
                             $io->success($prod_user_created_successfully);
@@ -120,7 +120,7 @@ namespace Eywa\Console\Database {
                             $io->error($prod_user_created_fail);
                             return 1;
                         }
-                        if ($dev->create_user(env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'), env('DEVELOP_DB_NAME')))
+                        if ($dev->create_user(strval(strval(env('DEVELOP_DB_USERNAME'))), strval(strval(env('DEVELOP_DB_PASSWORD'))), strval(strval(env('DEVELOP_DB_NAME')))))
                         {
                             $io->success($dev_user_created_successfully);
                         } else {
@@ -149,7 +149,7 @@ namespace Eywa\Console\Database {
                         $dev = connect(MYSQL, '', 'root', $this->mysql_pass);
                         $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
 
-                        if ($dev->create_database(env('DEVELOP_DB_NAME')))
+                        if ($dev->create_database(strval(strval(env('DEVELOP_DB_NAME')))))
                         {
                             $io->success($dev_base_created_successfully);
                         } else {
@@ -157,7 +157,7 @@ namespace Eywa\Console\Database {
                             return 1;
                         }
 
-                        if ($prod->create_database(env('DB_NAME')))
+                        if ($prod->create_database(strval(strval(env('DB_NAME')))))
                         {
                             $io->success($prod_base_created_successfully);
                         } else {
@@ -168,7 +168,7 @@ namespace Eywa\Console\Database {
                         $dev = connect(MYSQL, '', 'root', $this->mysql_pass);
                         $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
 
-                        if ($dev->create_user(env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'), env('DEVELOP_DB_NAME')))
+                        if ($dev->create_user(strval(strval(env('DEVELOP_DB_USERNAME'))), strval(strval(env('DEVELOP_DB_PASSWORD'))), strval(strval(env('DEVELOP_DB_NAME')))))
                         {
                             $io->success($dev_user_created_successfully);
                         } else {
@@ -179,7 +179,7 @@ namespace Eywa\Console\Database {
 
 
 
-                        if ($prod->create_user(env('DB_USERNAME'), env('DB_PASSWORD'), env('DB_NAME')))
+                        if ($prod->create_user(strval(strval(env('DB_USERNAME'))), strval(strval(env('DB_PASSWORD'))),strval(strval(env('DB_NAME')))))
                         {
                             $io->success($prod_user_created_successfully);
                         } else {
@@ -209,7 +209,7 @@ namespace Eywa\Console\Database {
                         $dev =  connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
                         $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
 
-                        if ($dev->create_database(env('DEVELOP_DB_NAME')))
+                        if ($dev->create_database(strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_base_created_successfully);
                         } else {
@@ -217,7 +217,7 @@ namespace Eywa\Console\Database {
                             return 1;
                         }
 
-                        if ($prod->create_database(env('DB_NAME')))
+                        if ($prod->create_database(strval(env('DB_NAME'))))
                         {
                             $io->success($prod_base_created_successfully);
                         } else {
@@ -227,7 +227,7 @@ namespace Eywa\Console\Database {
                         $dev =  connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
                         $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
 
-                        if ($prod->create_user(env('DB_USERNAME'), env('DB_PASSWORD'), env('DB_NAME')))
+                        if ($prod->create_user(strval(env('DB_USERNAME')), strval(env('DB_PASSWORD')), strval(env('DB_NAME'))))
                         {
                             $io->success($prod_user_created_successfully);
                         } else {
@@ -235,7 +235,7 @@ namespace Eywa\Console\Database {
                             return 1;
 
                         }
-                        if ($dev->create_user(env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'), env('DEVELOP_DB_NAME')))
+                        if ($dev->create_user(strval(env('DEVELOP_DB_USERNAME')), strval(env('DEVELOP_DB_PASSWORD')), strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_user_created_successfully);
                         } else {
@@ -260,7 +260,7 @@ namespace Eywa\Console\Database {
 
                         $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
 
-                        if ($dev->create_database(env('DEVELOP_DB_NAME')))
+                        if ($dev->create_database(strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_base_created_successfully);
                         } else {
@@ -268,7 +268,7 @@ namespace Eywa\Console\Database {
                             return 1;
                         }
 
-                        if ($prod->create_database(env('DB_NAME')))
+                        if ($prod->create_database(strval(env('DB_NAME'))))
                         {
                             $io->success($prod_base_created_successfully);
                         } else {
@@ -280,7 +280,7 @@ namespace Eywa\Console\Database {
 
                         $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
 
-                        if ($prod->create_user(env('DB_USERNAME'), env('DB_PASSWORD'), env('DB_NAME')))
+                        if ($prod->create_user(strval(env('DB_USERNAME')), strval(env('DB_PASSWORD')), strval(env('DB_NAME'))))
                         {
                             $io->success($prod_user_created_successfully);
                         } else {
@@ -289,7 +289,7 @@ namespace Eywa\Console\Database {
 
                         }
 
-                        if ($dev->create_user(env('DEVELOP_DB_USERNAME'), env('DEVELOP_DB_PASSWORD'), env('DEVELOP_DB_NAME')))
+                        if ($dev->create_user(strval(env('DEVELOP_DB_USERNAME')), strval(env('DEVELOP_DB_PASSWORD')), strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_user_created_successfully);
                         } else {
@@ -313,7 +313,7 @@ namespace Eywa\Console\Database {
 
 
 
-                        $dev = connect(SQLITE, env('DEVELOP_DB_NAME'));
+                        $dev = connect(SQLITE, strval(env('DEVELOP_DB_NAME')));
 
                         $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
 
@@ -324,7 +324,7 @@ namespace Eywa\Console\Database {
                             $io->error($dev_base_created_fail);
                         }
 
-                        if ($prod->create_database(env('DB_NAME')))
+                        if ($prod->create_database(strval(env('DB_NAME'))))
                         {
                             $io->success($prod_base_created_successfully);
                         }else{
@@ -332,7 +332,7 @@ namespace Eywa\Console\Database {
                         }
 
                         $prod = connect(MYSQL, '', 'root', $this->pass);
-                        if ($prod->create_user(env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_NAME')))
+                        if ($prod->create_user(strval(env('DB_USERNAME')),strval(env('DB_PASSWORD')),strval(env('DB_NAME'))))
                         {
                             $io->success($prod_user_created_successfully);
                         }else{
@@ -351,7 +351,7 @@ namespace Eywa\Console\Database {
 
 
                         $dev = connect(MYSQL,'','root',$this->mysql_pass);
-                        $prod = connect(SQLITE, env('DB_NAME'));
+                        $prod = connect(SQLITE, strval(env('DB_NAME')));
 
                         if ($prod->connected())
                         {
@@ -360,14 +360,14 @@ namespace Eywa\Console\Database {
                             $io->error($prod_base_created_fail);
                         }
 
-                        if ($dev->create_database(env('DEVELOP_DB_NAME')))
+                        if ($dev->create_database(strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_base_created_successfully);
                         }else{
                             $io->error($dev_base_created_fail);
                         }
                         $dev = connect(MYSQL,'','root',$this->pass);
-                        if ($dev->create_user(env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'),env('DEVELOP_DB_NAME')))
+                        if ($dev->create_user(strval(env('DEVELOP_DB_USERNAME')),strval(env('DEVELOP_DB_PASSWORD')),strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_user_created_successfully);
                         }else{
@@ -388,7 +388,7 @@ namespace Eywa\Console\Database {
 
                         $prod = connect(POSTGRESQL,'','postgres',$this->pgsql_pass,5432);
 
-                        $dev = connect(SQLITE, env('DEVELOP_DB_NAME'));
+                        $dev = connect(SQLITE, strval(env('DEVELOP_DB_NAME')));
 
                         if ($dev->connected())
                         {
@@ -397,14 +397,14 @@ namespace Eywa\Console\Database {
                             $io->error($dev_base_created_fail);
                         }
 
-                        if ($prod->create_database(env('DB_NAME')))
+                        if ($prod->create_database(strval(env('DB_NAME'))))
                         {
                             $io->success($prod_base_created_successfully);
                         }else{
                             $io->error($prod_base_created_fail);
                         }
                         $prod = connect(POSTGRESQL,'','postgres',$this->pass,5432);
-                        if ($prod->create_user(env('DB_USERNAME'),env('DB_PASSWORD'),env('DB_NAME')))
+                        if ($prod->create_user(strval(env('DB_USERNAME')),strval(env('DB_PASSWORD')),strval(env('DB_NAME'))))
                         {
                             $io->success($dev_user_created_successfully);
                         }else{
@@ -422,7 +422,7 @@ namespace Eywa\Console\Database {
                         } while (!connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432)->connected());
 
 
-                        $prod = connect(SQLITE,env('DB_NAME'));
+                        $prod = connect(SQLITE,strval(env('DB_NAME')));
                         $dev = connect(POSTGRESQL, '','postgres',$this->pgsql_pass,5432);
 
                         if ($prod->connected())
@@ -432,14 +432,14 @@ namespace Eywa\Console\Database {
                             $io->error($prod_base_created_fail);
                         }
 
-                        if ($dev->create_database(env('DEVELOP_DB_NAME')))
+                        if ($dev->create_database(strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_base_created_successfully);
                         }else{
                             $io->error($dev_base_created_fail);
                         }
                         $dev = connect(POSTGRESQL, '','postgres',$this->pass,5432);
-                        if ($dev->create_user(env('DEVELOP_DB_USERNAME'),env('DEVELOP_DB_PASSWORD'),env('DEVELOP_DB_NAME')))
+                        if ($dev->create_user(strval(env('DEVELOP_DB_USERNAME')),strval(env('DEVELOP_DB_PASSWORD')),strval(env('DEVELOP_DB_NAME'))))
                         {
                             $io->success($dev_user_created_successfully);
                         }else{
@@ -449,8 +449,8 @@ namespace Eywa\Console\Database {
                     }
                     if (development()->driver() ===  SQLITE && production()->driver() === SQLITE)
                     {
-                        $prod = connect(SQLITE,env('DB_NAME'));
-                        $dev =  connect(SQLITE,env('DEVELOP_DB_NAME'));
+                        $prod = connect(SQLITE,strval(env('DB_NAME')));
+                        $dev =  connect(SQLITE,strval(env('DEVELOP_DB_NAME')));
 
                         if ($prod->connected())
                         {

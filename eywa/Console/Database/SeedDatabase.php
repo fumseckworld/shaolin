@@ -14,7 +14,7 @@
 			
 			protected static $defaultName = 'db:seed';
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription("Seed the development database");
 			}
@@ -26,9 +26,12 @@
                 if (Seeding::run($input,$output))
                 {
                     $io->success("The database has been seeded");
+                    return 0;
                 }
+                $io->error('The database seeder has been failed');
+                return 1;
 
-				return 0;
+
 			}
 			
 		}

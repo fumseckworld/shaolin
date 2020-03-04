@@ -7,6 +7,7 @@ namespace Eywa\Html\Form {
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Request\FormRequest;
 
     class Form
     {
@@ -26,35 +27,61 @@ namespace Eywa\Html\Form {
         private Collect $inputs;
 
         /**
-         * @var string
+         *
+         * The form url
+         *
          */
         private string $url;
+
         /**
-         * @var string
+         *
+         * The form method
+         *
          */
         private string $method;
+
+
+        /**
+         *
+         * The form request
+         *
+         */
+        private FormRequest $request;
 
         /**
          * Form constructor.
          *
-         * @param string $url
-         * @param string $method
-         * @param array $options
+         * @param FormRequest $request
          *
+         * @throws Kedavra
          * @throws Exception
          *
          */
-        public function __construct(string $url,string $method = POST,array $options = [])
+        public function __construct(FormRequest $request)
         {
-            $this->form = '<form action="'.$url.'" method="POST" '. collect($options)->each(function ($k,$v){
+            $this->form = '<form action="'.$request->url().'" method="POST" '. collect($request->options())->each(function ($k,$v){
                     return $k.'='.'"'.$v.'"';
                 })->join('').'>';
 
             $this->inputs = collect();
-            $this->url = $url;
-            $this->method = $method;
+            $this->url = $request->url();
+            $this->method = $request->method();
             $this->append(csrf_field());
-            $this->add('_method','hidden','','',['value'=> $method]);
+
+            $this->add('_method','hidden','','',['value'=> $request->method()]);
+            $this->request = $request;
+        }
+
+        /**
+         *
+         * Get all errors
+         *
+         * @return Collect
+         *
+         */
+        public function errors(): Collect
+        {
+           return $this->request->errors();
         }
 
         /**
@@ -65,7 +92,7 @@ namespace Eywa\Html\Form {
          * @param string $type
          * @param string $label_text
          * @param string $help_text
-         * @param array $options
+         * @param array<string> $options
          *
          * @return Form
          *

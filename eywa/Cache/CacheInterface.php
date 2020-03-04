@@ -28,7 +28,7 @@ namespace Eywa\Cache {
          * Set a value
          *
          * @param string $key
-         * @param $value
+         * @param mixed $value
          *
          * @return $this
          *

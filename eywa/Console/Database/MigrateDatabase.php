@@ -14,7 +14,7 @@ namespace Eywa\Console\Database {
     {
         protected static $defaultName = 'db:migrate';
 
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription('Run the migrations')
                 ->setHelp('php shaolin db:migrate env');

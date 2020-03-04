@@ -9,10 +9,13 @@ namespace Eywa\Http\Parameter\Uploaded {
     interface UploadedFileInterface
     {
 
+
         /**
-         * UploadedInterface constructor.
+         * UploadedFileInterface constructor.
          *
-         * @param array $file
+         * @param array<mixed> $file
+         *
+         * @throws Kedavra
          *
          */
         public function __construct(array $file = []);
@@ -21,7 +24,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * Get all uploaded file
          *
-         * @return array
+         * @return array<string>
          *
          */
         public function all(): array;
@@ -30,22 +33,21 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * Move files to dirs
          *
-         * @param string ...$dirs
+         * @param string $path
          *
          * @return bool
          *
          * @throws Kedavra
          *
-         *
          */
-        public function move(string ...$dirs): bool;
+        public function move(string $path): bool;
 
 
         /**
          *
          * Get all uploaded filename
          *
-         * @return array
+         * @return array<string>
          *
          */
         public function files():array;
@@ -54,7 +56,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * Get all uploaded files types
          *
-         * @return array
+         * @return array<string>
          *
          */
         public function types():array;
@@ -63,7 +65,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * Get all uploaded files size
          *
-         * @return array
+         * @return array<int>
          *
          */
         public function size():array;
@@ -72,7 +74,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * Get all uploaded files errors
          *
-         * @return array
+         * @return array<int>
          */
         public function errors():array;
 
@@ -80,7 +82,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * Get all uploaded files tmp name
          *
-         * @return array
+         * @return array<string>
          *
          */
         public function temporary():array;

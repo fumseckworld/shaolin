@@ -15,7 +15,7 @@
 			
 			protected static $defaultName = 'dkim:generate';
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription('Generate dkim keys');
 			}

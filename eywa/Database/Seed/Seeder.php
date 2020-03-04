@@ -98,7 +98,7 @@ namespace Eywa\Database\Seed {
          * Set a column value
          *
          * @param string $column
-         * @param $value
+         * @param mixed $value
          *
          * @return Seeder
          *
@@ -146,7 +146,7 @@ namespace Eywa\Database\Seed {
 
             for ($i=0;$i<static::$generate;$i++)
             {
-                static::each(static::$faker,static::$table,new static());
+                static::each(static::$faker,static::$table,$this);
 
                 $tmp = collect();
 

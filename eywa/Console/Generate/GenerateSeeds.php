@@ -16,7 +16,7 @@ namespace Eywa\Console\Generate {
 
         protected static $defaultName = 'make:seed';
 
-        protected function configure()
+        protected function configure():void
         {
 
             $this
@@ -37,7 +37,7 @@ namespace Eywa\Console\Generate {
         {
             $io = new SymfonyStyle($input,$output);
 
-            $seed = $input->getArgument('seed');
+            $seed = strval($input->getArgument('seed'));
 
             if(preg_match("#^[a-z]([a-z_]+)$#",$seed) !== 1)
             {
@@ -51,13 +51,13 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($file))
             {
-                $io->error('The seeder already exist');
+                $io->error(sprintf('The %s seeder already exist',$class));
                 return 1;
             }
 
             $io->title('Generation of the seeder');
 
-            $table  = $input->getArgument('table');
+            $table  = strval($input->getArgument('table'));
 
 
             if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
@@ -101,11 +101,11 @@ namespace Base\Seeds {
     }
 }")->flush())
             {
-                $io->success('The seeder was successfully generated');
+                $io->success(sprintf('The %s seeder was successfully generated',$class));
                 return 0;
             }
 
-            $io->error('The creation of the seeder has failed');
+            $io->error(sprintf('The %s seeder creation has failed',$class));
             return 1;
 
 

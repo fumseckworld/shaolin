@@ -14,7 +14,7 @@
 			
 			protected static $defaultName = 'app:down';
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription('Put the application in maintenance mode');
 			}

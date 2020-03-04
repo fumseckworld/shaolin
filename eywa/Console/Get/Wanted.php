@@ -17,7 +17,7 @@
 			protected static $defaultName = "get:wanted";
 			
 			
-			protected function configure()
+			protected function configure(): void
 			{
 				$this->setDescription('Get the wanted style')->addArgument('directory',InputArgument::REQUIRED,'The documentation directory name');
 			}
@@ -34,7 +34,7 @@
                 $io = new SymfonyStyle($input,$output);
 
                 $io->title('Downlaoding wanted');
-                $dir = $input->getArgument('directory');
+                $dir = strval($input->getArgument('directory'));
 				if(is_dir($dir))
                 {
 

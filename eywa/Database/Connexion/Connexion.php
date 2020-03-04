@@ -27,16 +27,17 @@ namespace Eywa\Database\Connexion {
          * @throws Kedavra
          */
         public function __construct(string $driver, string $base,string $username ='',string $password ='',int $port = 3306, string $host = LOCALHOST);
+
         /**
          *
          * Set the sql queries to execute
          *
-         * @param string[] $queries
+         * @param string $query
          *
          * @return Connexion
          *
          */
-        public function set(string ...$queries): Connexion;
+        public function set(string $query): Connexion;
 
         /**
          *
@@ -90,9 +91,9 @@ namespace Eywa\Database\Connexion {
          *
          *
          * @param string $class
-         * @param array $args
+         * @param array<mixed> $args
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          *
@@ -108,7 +109,7 @@ namespace Eywa\Database\Connexion {
          *
          * @param int $style
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          *

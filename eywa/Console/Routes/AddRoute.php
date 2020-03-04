@@ -20,7 +20,7 @@ namespace Eywa\Console\Routes {
 
         private Collect $entry;
 
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription('Create a new route');
         }
@@ -90,15 +90,13 @@ namespace Eywa\Console\Routes {
 
                 $this->entry->put('created_at',now()->toDateTimeString())->put('updated_at',now()->toDateTimeString());
 
-
-
-                if($this->routes->push(Web::create($this->entry->all())))
+                if(Web::create($this->entry->all()))
                 {
-                    $route = $this->entry->get('route');
-                    $io->success("The $route route has been created successfully");
+                    $route = $this->entry->get('name');
+                    $io->success(sprintf('The %s route  has been created successfully',$route));
                 }else
                 {
-                    $io->error("Failed to create the $route route");
+                    $io->error(sprintf('Failed to create the %s route',$route));
                     return 1;
                 }
 

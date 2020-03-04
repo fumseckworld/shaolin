@@ -6,37 +6,71 @@ namespace Eywa\Http\Parameter\Uploaded {
 
     use Exception;
     use Eywa\Collection\Collect;
+    use Eywa\Exception\Kedavra;
     use SplFileInfo;
     use wapmorgan\FileTypeDetector\Detector;
 
     class UploadedFile implements UploadedFileInterface
     {
+
+
         /**
+         * All files uploaded
          *
-         * All uploaded files
+         * @var array<string>
          */
         private array $files;
 
-
         /**
+         *
+         * All valid files
          *
          */
         private Collect $filename;
+
         /**
-         * @var Collect
+         *
+         * All valid types
+         *
          */
         private Collect $types;
 
-
+        /**
+         *
+         * All valid file errors
+         *
+         */
         private Collect $errors;
 
+        /**
+         *
+         * All valid files size
+         *
+         */
         private Collect $size;
 
+        /**
+         *
+         * Tempory filename
+         *
+         */
         private Collect $temporary;
+
+        /**
+         *
+         * The sum of all uploaded files
+         *
+         */
         private int $sum = 0;
 
         /**
-         * @inheritDoc
+         *
+         * constructor.
+         *
+         * @param array<mixed> $files
+         *
+         * @throws Kedavra
+         *
          */
         public function __construct(array $files = [])
         {
@@ -97,11 +131,11 @@ namespace Eywa\Http\Parameter\Uploaded {
         /**
          * @inheritDoc
          */
-        public function move(string ...$dirs): bool
+        public function move(string $path): bool
         {
             $path = base('web');
 
-            foreach ($dirs as $dir)
+            foreach (explode(DIRECTORY_SEPARATOR,$path) as $dir)
             {
                 append($path,DIRECTORY_SEPARATOR. $dir);
 
@@ -109,10 +143,9 @@ namespace Eywa\Http\Parameter\Uploaded {
                     mkdir($path);
             }
 
-            is_true(! is_dir($path) ,true,"The directory has been not found");
+            is_false(is_dir($path) ,true,"The directory has been not found");
 
             $result = collect();
-
 
             $countfiles = $this->filename->sum();
 
@@ -134,7 +167,7 @@ namespace Eywa\Http\Parameter\Uploaded {
         public function valid(): bool
         {
             foreach ($this->errors() as $error)
-                if ($error !== UPLOAD_ERR_OK)
+                if ($error != UPLOAD_ERR_OK)
                     return  false;
 
 

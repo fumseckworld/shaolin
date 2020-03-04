@@ -3,191 +3,86 @@
 namespace Eywa\Console\Routes {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Routing\Admin;
-    use Eywa\Http\Routing\Task;
     use Eywa\Http\Routing\Web;
-    use Symfony\Component\Console\Helper\Helper;
+    use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
-
-    class RemoveRoute extends \Symfony\Component\Console\Command\Command
+    class RemoveRoute extends Command
     {
         protected static $defaultName = "route:destroy";
+
 
         /**
          *
          * The route name
          *
          */
-        private string $route_name;
+        private string $route = '';
 
-        /**
-         *
-         * The route id
-         *
-         */
-        private int $id = 0;
 
-        /**
-         *
-         * The base choose
-         *
-         */
-        private string $choose;
-
-        /**
-         *
-         * The routes names
-         *
-         */
-        private array $names;
-
-        /**
-         *
-         * Instance of question helper
-         *
-         */
-        private Helper $helper;
-
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription('Delete a route');
         }
 
         /**
-         * @param bool $web
-         * @param bool $admin
-         * @return array
-         * @throws DependencyException
+         * @return array<string>
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        public function name(bool $web = true, $admin = false)
+        public function name():array
         {
             $x = collect();
-            if ($web)
-            {
+
                 foreach (Web::all() as $v)
                     $x->push($v->name);
                 return $x->all();
-            }
-            if ($admin)
-            {
-                foreach (Admin::all() as $v)
-                    $x->push($v->name);
-
-                return $x->all();
-            }
-            foreach (Task::all() as $v)
-                $x->push($v->name);
-
-            return $x->all();
         }
+
 
         /**
          * @param InputInterface $input
          * @param OutputInterface $output
-         *
-         * @throws DependencyException
+         * @return int
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        public function interact(InputInterface $input, OutputInterface $output)
-        {
-
-
-            $this->helper = $this->getHelper('question');
-
-
-            $this->choose = 'web';
-            switch ($this->choose)
-            {
-                case 'admin':
-                    $this->names = $this->name(false);
-                break;
-                case 'task':
-                    $this->names = $this->name(false, false);
-                break;
-                default:
-                    $this->names = $this->name();
-                break;
-            }
-
-
-        }
-
-        /**
-         * @param InputInterface $input
-         * @param OutputInterface $output
-         *
-         * @return int|void|null
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         */
-        public function execute(InputInterface $input, OutputInterface $output)
+        public function execute(InputInterface $input, OutputInterface $output):int
         {
             $io = new SymfonyStyle($input,$output);
 
-            $io->title('Removing the route');
-            if (not_def($this->names))
+            if (def(Web::all()))
             {
-                clear_terminal();
-                $output->writeln("<error>The table is empty</error>");
-                return 1;
+                do
+                {
+                    do
+                    {
+                        $names = $this->name();
+                        $default = strval(reset($names));
+                        $this->route = $io->askQuestion((new Question('Wath is the name of the route to delete',$default))->setAutocompleterValues($this->name()));
+                    } while (not_def($this->route) || not_def(Web::by('name',$this->route)));
+
+
+                    $route = intval(Web::by('name',$this->route)[0]->id);
+
+                    $name = strval(Web::by('name',$this->route)[0]->name);
+
+
+                    if (Web::destroy($route))
+                        $io->success(sprintf('The %s route has been deleted successfully',$name));
+                    else
+                        $io->error(sprintf('The %s route has not been deleted',$name));
+
+                }while($io->confirm('Continue ?',true));
+                $io->success('Bye');
+                return 0;
             }
 
-            do {
-                clear_terminal();
+            $io->warning('No routes has been found');
 
-                $question = new Question("<info>Enter the route name</info> : ");
-
-                $question->setAutocompleterValues($this->names);
-
-                $x = $this->helper->ask($input, $output, $question);
-
-                $this->route_name = $x;
-
-            } while (is_null($x) || collect($this->names)->not_exist($x));
-
-            switch ($this->choose)
-            {
-                case 'admin':
-
-                    $this->id = collect(collect(Admin::by('name', $this->route_name))->get(0))->first();
-                    if (Admin::destroy($this->id))
-                    {
-                        $io->success('The route was removed successfully');
-                        return 0;
-                    }
-                break;
-                case 'task':
-                    $this->id = intval(collect(Task::by('name', $this->route_name))->get('id'));
-                    if (Task::destroy($this->id))
-                    {
-                        $io->success('The route was removed successfully');
-                        return 0;
-                    }
-                break;
-                default:
-                    $this->id = collect(collect(Web::by('name', $this->route_name))->get(0))->first();
-
-                    if (Web::destroy($this->id))
-                    {
-                        $io->success('The route was removed successfully');
-
-                        return 0;
-                    }
-                    break;
-            }
-            $io->error('Fail to remove the route');
-            return 1;
+            return  0;
         }
 
     }

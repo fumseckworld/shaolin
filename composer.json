@@ -11,9 +11,7 @@
     "swiftmailer/swiftmailer": "^6.2",
     "symfony/var-dumper": "^5.0",
     "filp/whoops": "^2.5",
-    "doctrine/annotations": "^1.8",
     "ocramius/proxy-manager": "^2.2",
-    "php-di/php-di": "^6.0",
     "erusev/parsedown": "^1.7",
     "scrivo/highlight.php": "^9.17",
     "fzaninotto/faker": "^1.9",
@@ -31,8 +29,7 @@
     "sinergi/browser-detector": "^6.1",
     "mobiledetect/mobiledetectlib": "^2.8",
     "vlucas/phpdotenv": "^4.1",
-    "wapmorgan/file-type-detector": "^1.1",
-    "phpstan/phpstan": "^0.12.11"
+    "wapmorgan/file-type-detector": "^1.1"
   },
   "authors": [
     {
@@ -44,7 +41,8 @@
     "psr-4": {
       "Testing\\": "tests/",
       "Base\\": "db/",
-      "App\\": "app/"
+      "App\\": "app/",
+      "Ioc\\": "ioc/"
     }
   },
   "autoload": {
@@ -62,5 +60,7 @@
     "coverage" : "php -S localhost:8000 -t coverage",
     "serve" : "php -S localhost:3000 -t web",
     "send" : "git push origin --all && git push origin --tags && cd coverage && git add . && git commit -m 'send' && git push origin --all"
+  },
+  "require-dev": {
   }
 }

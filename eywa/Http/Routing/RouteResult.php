@@ -103,44 +103,11 @@ namespace Eywa\Http\Routing {
 
             is_false(method_exists($class, $this->action()), true, "The action {$this->action()} not exist inside the {$this->controller()} controller");
 
+             cli() ? call_user_func_array([ $instance, 'before_action' ], [new Request([],[],[],[],[],[],$this->args())]) :  call_user_func_array([ $instance, 'before_action' ], [Request::make($this->args())]);
+             cli() ? call_user_func_array([ $instance, 'after_action' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_action' ], [Request::make($this->args())]);
 
-            if (equal($this->method,'POST'))
-            {
-                 cli() ? call_user_func_array([ $instance, 'before_validation' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_validation' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_validation' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_validation' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'before_save' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_save' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'before_create' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_create' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_create' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_create' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_save' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_save' ], [Request::generate($this->args())]);
 
-            }
-
-            if (equal($this->method,'PUT'))
-            {
-                 cli() ? call_user_func_array([ $instance, 'before_validation' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_validation' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_validation' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_validation' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'before_save' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_save' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'before_update' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_update' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_update' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_update' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_save' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_save' ], [Request::generate($this->args())]);
-
-            }
-
-            if (equal($this->method,'DELETE'))
-            {
-                cli() ? call_user_func_array([ $instance, 'before_destroy' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'before_destroy' ], [Request::generate($this->args())]);
-                cli() ? call_user_func_array([ $instance, 'after_destroy' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_destroy' ], [Request::generate($this->args())]);
-
-            }
-
-            if (equal($this->method,'GET'))
-            {
-                 cli() ? call_user_func_array([ $instance, 'before_action' ], [new Request([],[],[],[],[],[],$this->args())]) :  call_user_func_array([ $instance, 'before_action' ], [Request::generate($this->args())]);
-                 cli() ? call_user_func_array([ $instance, 'after_action' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_action' ], [Request::generate($this->args())]);
-
-            }
-
-            return  cli() ?  call_user_func_array([ $instance, $this->action() ], [new Request([],[],[],[],[],[],$this->args())]) :  call_user_func_array([ $instance, $this->action() ], [Request::generate($this->args())]);
+            return  cli() ?  call_user_func_array([ $instance, $this->action() ], [new Request([],[],[],[],[],[],$this->args())]) :  call_user_func_array([ $instance, $this->action() ], [Request::make($this->args())]);
         }
 
         /**

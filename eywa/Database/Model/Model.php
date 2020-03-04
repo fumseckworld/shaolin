@@ -6,9 +6,12 @@ namespace Eywa\Database\Model {
 
     use Exception;
     use Eywa\Collection\Collect;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
+    use Eywa\Http\Request\Request;
+    use PDO;
 
     abstract class Model
     {
@@ -48,32 +51,13 @@ namespace Eywa\Database\Model {
          */
         protected static string $create_todo = "CREATE TABLE IF NOT EXISTS  todo ( id INTEGER PRIMARY KEY AUTOINCREMENT , task TEXT(255) NOT NULL UNIQUE , description TEXT(255) NOT NULL , priority TEXT(255) NOT NULL ,due TEXT(255) NOT NULL);";
 
+
         /**
          *
-         * Web routes
+         * For router web routes
          *
          */
         protected static bool $web = false;
-
-        /**
-         *
-         * Admin routes
-         *
-         */
-        protected static bool $admin = false;
-
-        /**
-         *
-         * Task routes
-         *
-         */
-        protected static bool $task = false;
-
-        /**
-         *
-         * The project task
-         */
-        protected static bool $todo = false;
 
         /**
          *
@@ -82,12 +66,146 @@ namespace Eywa\Database\Model {
          */
         private Collect $column;
 
+        /**
+         * Model constructor.
+         */
+        public function __construct()
+        {
+            $this->column = collect();
+        }
+
+        /**
+         *
+         * Function executed before the validator
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function before_validation(Request $request): bool;
+
+        /**
+         *
+         * Function executed after the validation
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_validation(Request $request):bool ;
+
+
+        /**
+         *
+         * Function executed before save a new reoord
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function before_save(Request $request): bool;
+
+        /**
+         *
+         * Function executed after data has been saved
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_save(Request $request): bool;
+
+        /**
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_commit(Request $request): bool;
+
+        /**
+         *
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_rollback(Request $request): bool;
+
+
+        /**
+         *
+         * Function executed executed before update a record
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function before_update(Request $request): bool;
+
+        /**
+         *
+         * Function executed after record has been updated
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_update(Request $request):bool;
+
+        /**
+         *
+         * Function executed before create a new record
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function before_create(Request $request): bool;
+
+        /**
+         *
+         * Function executed after create a new record
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_create(Request $request): bool;
+
+        /**
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function before_destroy(Request $request): bool;
+
+        /**
+         *
+         * @param Request $request
+         *
+         * @return bool
+         *
+         */
+        abstract public function after_destroy(Request $request): bool;
 
         /**
          *
          * Display all columns
          *
-         * @return array
+         * @return array<string>
          *
          * @throws Kedavra
          *
@@ -96,7 +214,6 @@ namespace Eywa\Database\Model {
         {
             return static::sql()->from(static::$table)->columns();
         }
-
 
         /**
          *
@@ -123,11 +240,12 @@ namespace Eywa\Database\Model {
          * Get all records
          *
          * @param int $pdo_style
-         * @return array
+         *
+         * @return array<mixed>
          *
          * @throws Kedavra
          */
-        public static function all(int $pdo_style = \PDO::FETCH_OBJ) : array
+        public static function all(int $pdo_style = PDO::FETCH_OBJ) : array
         {
             return static::sql()->execute($pdo_style);
         }
@@ -136,7 +254,7 @@ namespace Eywa\Database\Model {
          *
          * Create multiples records
          *
-         * @param array $records
+         * @param array<mixed> $records
          *
          * @return bool
          *
@@ -200,7 +318,7 @@ namespace Eywa\Database\Model {
          *
          * @param mixed $expected
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          *
@@ -219,7 +337,7 @@ namespace Eywa\Database\Model {
          * @param string $column
          * @param mixed $expected
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          *
@@ -233,7 +351,7 @@ namespace Eywa\Database\Model {
          *
          * Get only column values
          *
-         * @param $columns
+         * @param array<int,string> $columns
          *
          * @return Sql
          *
@@ -251,7 +369,7 @@ namespace Eywa\Database\Model {
          *
          * @param string $x
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          *
@@ -328,24 +446,17 @@ namespace Eywa\Database\Model {
         /**
          *
          * @param string $name
-         * @param $value
+         * @param mixed $value
          *
          * @throws Kedavra
          *
          */
-        public function __set(string $name, $value)
+        public function __set(string $name, $value): void
         {
             $this->column->put($name, static::connection()->secure($value));
 
         }
 
-        /**
-         * Model constructor.
-         */
-        public function __construct()
-        {
-            $this->column = collect();
-        }
 
 
         /**
@@ -353,7 +464,7 @@ namespace Eywa\Database\Model {
          * Update a record
          *
          * @param int $id
-         * @param array $values
+         * @param array<mixed> $values
          *
          * @return bool
          *
@@ -394,7 +505,7 @@ namespace Eywa\Database\Model {
          * @throws Kedavra
          *
          */
-        public static function paginate($callable, int $current_page) : Sql
+        public static function paginate(callable $callable, int $current_page) : Sql
         {
             return static::sql()->paginate($callable, $current_page, static::$limit);
         }
@@ -452,15 +563,15 @@ namespace Eywa\Database\Model {
          * Find a record by an id
          *
          * @param int $id
+         * @param int $pdo_fetch_mode
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
-         *
          */
-        public static function find(int $id): array
+        public static function find(int $id,int $pdo_fetch_mode = PDO::FETCH_OBJ): array
         {
-            return static::where(static::primary(),EQUAL,$id)->execute();
+            return static::where(static::primary(),EQUAL,$id)->execute($pdo_fetch_mode);
         }
 
         /**
@@ -497,23 +608,19 @@ namespace Eywa\Database\Model {
 
 
         /**
-         * @return Connexion
+         *
+         * @return Connect
+         *
          * @throws Kedavra
          *
          * @throws Exception
+         *
          */
-        public static function connection(): Connexion
+        public static function connection(): Connect
         {
-            if (static::$admin)
-                return connect(SQLITE, base('routes','admin.sqlite3'));
-
-            if (static::$task)
-                return connect(SQLITE, base('routes','task.sqlite3'));
-            if (static::$todo)
-                return connect(SQLITE, base('todo','todo.sqlite3'));
 
             if (static::$web)
-                return connect(SQLITE, base('routes','web.sqlite3') );
+                return connect(SQLITE, base('routes','web.sqlite3'));
 
             return app()->connexion();
         }

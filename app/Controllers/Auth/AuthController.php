@@ -80,7 +80,7 @@ namespace App\Controllers\Auth {
         /**
          * @inheritDoc
          */
-        public function before_action(Request $request)
+        public function before_action(Request $request):void
         {
             // TODO: Implement before_action() method.
         }
@@ -88,7 +88,7 @@ namespace App\Controllers\Auth {
         /**
          * @inheritDoc
          */
-        public function after_action(Request $request)
+        public function after_action(Request $request):void
         {
             // TODO: Implement after_action() method.
         }

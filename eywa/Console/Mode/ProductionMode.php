@@ -14,9 +14,8 @@ namespace Eywa\Console\Mode {
 
         protected static $defaultName = 'app:prod';
 
-        protected function configure()
+        protected function configure():void 
         {
-
             $this->setDescription('Put the application in production mode');
         }
 

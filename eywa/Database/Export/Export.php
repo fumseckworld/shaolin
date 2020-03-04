@@ -6,16 +6,21 @@ namespace Eywa\Database\Export {
 
 
     use Eywa\Console\Shell;
-    use Eywa\Database\Connexion\Connexion;
+    use Eywa\Database\Connexion\Connect;
 
     class Export
     {
         /**
          *
          */
-        private Connexion $connexion;
+        private Connect $connexion;
 
-        public function __construct(Connexion $connexion)
+        /**
+         * Export constructor.
+         *
+         * @param Connect $connexion
+         */
+        public function __construct(Connect $connexion)
         {
             $this->connexion = $connexion;
         }
@@ -32,16 +37,12 @@ namespace Eywa\Database\Export {
             {
                 case MYSQL:
                     return (new Shell("mysqldump -u $username -p$password $base > $file"))->run();
-                break;
                 case POSTGRESQL:
                     return (new Shell("pg_dump -h $host  -U $username $base > $file"))->run();
-                break;
                 case SQLITE:
                     return (new Shell("sqlite3 $base  > $file"))->run();
-                break;
                 default:
                     return false;
-                break;
             }
 
 

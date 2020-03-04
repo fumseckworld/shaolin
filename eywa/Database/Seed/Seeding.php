@@ -5,24 +5,24 @@ declare(strict_types=1);
 namespace Eywa\Database\Seed {
 
 
-    use Symfony\Component\Console\Input\Input;
-    use Symfony\Component\Console\Output\Output;
+    use Symfony\Component\Console\Input\InputInterface;
+    use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
     class Seeding
     {
 
-
         /**
          *
          * List all migrations class sorted by generated date
          *
-         * @return array
+         * @return array<string>
+         *
          */
-        public static function list():array
+        public static function list(): array
         {
             $x = [];
-            foreach (glob(base('db','Seeds','*.php')) as $seed)
+            foreach (files(base('db','Seeds','*.php')) as $seed)
             {
                 $item = collect(explode(DIRECTORY_SEPARATOR,$seed))->last();
 
@@ -41,12 +41,15 @@ namespace Eywa\Database\Seed {
          *
          * Run the seeding
          *
-         * @param Input|null $input
-         * @param Output|null $output
+         * @param InputInterface $input
+         * @param OutputInterface $output
          *
          * @return bool
+         *
+         * @throws \ReflectionException
+         *
          */
-        public static function run(?Input $input = null,?Output $output = null): bool
+        public static function run(InputInterface $input,OutputInterface $output): bool
         {
             $bool = collect();
 
@@ -54,27 +57,29 @@ namespace Eywa\Database\Seed {
 
             foreach (self::list() as $file => $class)
             {
-                if (!is_null($output))
-                {
-                    $title = str_replace('%s',$class::$from,$class::$title);
+
+                    $x = new \ReflectionClass(new $class);
+
+                    $title = str_replace('%s',$x->getStaticPropertyValue('from'),$x->getStaticPropertyValue('title'));
 
                     $io->title($title);
-                }
 
-                $i = new $class;
-                $bool->push(call_user_func_array([$i,'seed'],[]));
 
-                if ($bool->ok() && ! is_null($output))
+                    $bool->push($x->getMethod('seed')->getClosure($x->newInstance()));
+
+
+                if ($bool->ok())
                 {
-                    $success_message = $class::$success_message;
-                    $success_message = str_replace('%s',$class::$from,$success_message);
-                    $success_message = str_replace('%d',$class::$generate,$success_message);
+                    $success_message =  $x->getStaticPropertyValue('success_message');
+                    $success_message = str_replace('%s',$x->getStaticPropertyValue('from'),$success_message);
+                    $success_message = str_replace('%d',$x->getStaticPropertyValue('generate'),$success_message);
 
                     $io->success($success_message);
                 }else{
-                    $error_message = $class::$error_message;
-                    $error_message = str_replace('%s',$class::$from,$error_message);
-                    $error_message = str_replace('%d',$class::$generate,$error_message);
+                    $error_message =  $x->getStaticPropertyValue('error_message');
+                    $error_message = str_replace('%s',$x->getStaticPropertyValue('from'),$error_message);
+                    $error_message = str_replace('%d',$x->getStaticPropertyValue('generate'),$error_message);
+
                     $io->error($error_message);
                     return false;
                 }

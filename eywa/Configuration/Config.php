@@ -7,7 +7,6 @@ namespace Eywa\Configuration {
 
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
-    use Eywa\File\File;
     use Symfony\Component\Yaml\Yaml;
 
     class Config extends Yaml
@@ -65,11 +64,11 @@ namespace Eywa\Configuration {
 
             $file = $this->path() . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
 
-            is_false(File::exist($file), true, "The $file file  was not found at " . $this->path());
+            is_false(file_exists($file), true, sprintf('The %s file has not been found in the %s directory',$file, $this->path()));
 
             $this->values = collect(self::parseFile($file));
 
-            is_false($this->values->has($key), true, "The $key key was not found in the  $file at " . $this->path());
+            is_false($this->values->has($key), true, sprintf('The %s key has not been found in the %s file in the %s directory', $key,$file,$this->path()));
 
             $this->filename = $file;
 
@@ -79,7 +78,6 @@ namespace Eywa\Configuration {
         /**
          * Get config.yaml path
          *
-         * @method path
          *
          * @return string
          *
@@ -93,7 +91,6 @@ namespace Eywa\Configuration {
          *
          * Get the config.yaml value
          *
-         * @method value
          *
          * @return mixed
          *

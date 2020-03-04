@@ -12,10 +12,12 @@
 		{
 			
 			protected static $defaultName = 'app:send';
-			
-			protected function configure()
+
+
+			protected function configure():void
 			{
 				$this->setDescription('Send the application to the server');
+
 			}
 			
 			public function execute(InputInterface $input, OutputInterface $output)

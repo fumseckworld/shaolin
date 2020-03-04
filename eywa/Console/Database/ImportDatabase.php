@@ -20,7 +20,7 @@ namespace Eywa\Console\Database {
          * @throws Kedavra
          * @throws Exception
          */
-        protected function configure()
+        protected function configure():void
         {
             $base = app()->connexion()->base();
             $this->setDescription("Import sql file content into the $base database");

@@ -131,6 +131,7 @@ define('VIEW_PHP_CLOSE', '}}');
 
 define('OBJECTS', PDO::FETCH_OBJ);
 define('COLUMNS', PDO::FETCH_COLUMN);
+define('ARRAY', PDO::FETCH_ASSOC);
 
 
 define('HTTP_REDIRECTION', 301);
@@ -466,3 +467,5 @@ define('STATUS', [
 ]);
 
 define('CACHE_DEFAULT_TTL',7200); // 120m | 2h | 7200s
+
+define('LOCALHOST_IP','127.0.0.1');

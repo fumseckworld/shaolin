@@ -12,12 +12,13 @@ namespace Eywa\Application {
     use Eywa\Cache\RedisCache;
     use Eywa\Collection\Collect;
     use Eywa\Configuration\Config;
-    use Eywa\Database\Connexion\Connexion;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
     use Eywa\Html\Form\Form;
+    use Eywa\Http\Request\FormRequest;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\JsonResponse;
@@ -25,7 +26,7 @@ namespace Eywa\Application {
     use Eywa\Http\Response\Response;
     use Eywa\Http\Routing\Router;
     use Eywa\Http\View\View;
-    use Eywa\Ioc\Container;
+    use Eywa\Ioc\Ioc;
     use Eywa\Message\Email\Write;
     use Eywa\Message\Flash\Flash;
     use Eywa\Security\Authentication\Auth;
@@ -34,6 +35,7 @@ namespace Eywa\Application {
     use Eywa\Session\Session;
     use Eywa\Session\SessionInterface;
     use Eywa\Time\Timing;
+    use Eywa\Validate\Validator;
     use Redis;
 
     class App extends Zen implements Eywa
@@ -100,7 +102,7 @@ namespace Eywa\Application {
          */
         public function ioc(string $key)
         {
-            return Container::ioc()->get($key);
+            return (new Ioc())->get($key);
         }
 
         /**
@@ -188,9 +190,9 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function request(): Request
+        public function request(array $args = []): Request
         {
-            return cli() ? new Request() :  Request::generate();
+            return cli() ? new Request() :  Request::make($args);
         }
 
         /**
@@ -212,9 +214,9 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function form(string $url,string $method = POST,array $options = []): Form
+        public function form(FormRequest $request) : Form
         {
-            return new Form($url,$method,$options);
+            return new Form($request);
         }
 
         /**
@@ -265,19 +267,14 @@ namespace Eywa\Application {
             {
                 case APCU_CACHE:
                     return  new ApcuCache();
-                break;
                 case FILE_CACHE:
                     return  new FileCache();
-                break;
                 case MEMCACHE_CACHE:
                     return  new MemcacheCache();
-                break;
                 case REDIS_CACHE:
                     return  new RedisCache();
-                break;
                 default:
                     throw new Kedavra('The apdater is not supported');
-                break;
             }
 
         }
@@ -338,7 +335,7 @@ namespace Eywa\Application {
          * @inheritDoc
          *
          */
-        public function validator(string $validator): Response
+        public function validator(Validator $validator): Response
         {
             return $this->request()->validate($validator);
         }
@@ -384,9 +381,9 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function connexion(): Connexion
+        public function connexion(): Connect
         {
-            return equal($this->config('mode','connexion'),'prod') ? production() : development();
+            return $this->ioc(Connect::class);
         }
 
         /**

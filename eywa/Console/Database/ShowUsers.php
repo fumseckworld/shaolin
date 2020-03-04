@@ -16,7 +16,7 @@
 			
 			protected static $defaultName = 'users:show';
 			
-			protected function configure()
+			protected function configure():void 
 			{
 				$this->setDescription("List all users found in the base")->addArgument('env',InputArgument::REQUIRED,'The base environment');
 			}
@@ -31,7 +31,7 @@
 			{
 		        $io = new SymfonyStyle($input,$output);
 
-                $env = $input->getArgument('env');
+                $env = strval($input->getArgument('env'));
 
                 not_in(['dev','prod'],$env,true,'The env must be dev or prod');
 

@@ -16,7 +16,7 @@ namespace Eywa\Console\Generate {
 
         protected static $defaultName = 'make:validator';
 
-        protected function configure()
+        protected function configure():void
         {
 
             $this
@@ -38,7 +38,7 @@ namespace Eywa\Console\Generate {
             $io = new SymfonyStyle($input,$output);
 
 
-            $validator = $input->getArgument('validator');
+            $validator = strval($input->getArgument('validator'));
 
             if(preg_match("#^[a-z]([a-z_]+)$#",$validator) !== 1)
             {
@@ -49,7 +49,7 @@ namespace Eywa\Console\Generate {
             $class = collect(explode('_',$validator))->for('ucfirst')->join('');
 
 
-            $dir = ucfirst($input->getArgument('directory')) ?? '';
+            $dir = ucfirst(strval($input->getArgument('directory'))) ?? '';
 
             $namespace = def($dir) ? "App\Validators\\$dir" : 'App\Validators';
 
@@ -59,7 +59,7 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($file))
             {
-                $io->error('The validator already exist');
+                $io->error(sprintf('The %s validator already exist',$class));
                 return 1;
             }
 
@@ -75,7 +75,7 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($file))
             {
-                $io->error("The $class validator already exist");
+                $io->error(sprintf('The %s validator already exist',$class));
 
                 return 1;
             }
@@ -108,11 +108,11 @@ namespace $namespace {
     }
 }
             ")->flush()) {
-                $io->success("The validator has been generated successfully");
+                $io->success(sprintf('The %s validator has been generated successfully',$class));
 
                 return 0;
             }
-            $io->error("Generation of the validator has failed");
+            $io->error(sprintf('The %s validator generation has failed',$class));
             return 1;
         }
 

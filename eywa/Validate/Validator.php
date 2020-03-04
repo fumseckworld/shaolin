@@ -150,6 +150,7 @@ namespace Eywa\Validate {
 
             return  (new RedirectResponse(static::$redirect_url))->send();
         }
+
         /**
          *
          * Get the error message for a key
@@ -157,6 +158,8 @@ namespace Eywa\Validate {
          * @param string $key
          *
          * @return string
+         *
+         * @throws Kedavra
          *
          */
         public static function message(string $key): string

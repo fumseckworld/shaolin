@@ -7,7 +7,7 @@ namespace Eywa\Database\Import {
 
 
     use Eywa\Console\Shell;
-    use Eywa\Database\Connexion\Connexion;
+    use Eywa\Database\Connexion\Connect;
 
     class Import
     {
@@ -17,14 +17,17 @@ namespace Eywa\Database\Import {
          * The connection to the base
          *
          */
-        private Connexion $connect;
+        private Connect $connect;
 
 
         /**
+         *
          * Import constructor.
-         * @param Connexion $connect
+         *
+         * @param Connect $connect
+         *
          */
-        public function __construct(Connexion $connect)
+        public function __construct(Connect $connect)
         {
             $this->connect = $connect;
 
@@ -54,16 +57,12 @@ namespace Eywa\Database\Import {
             {
                 case MYSQL:
                     return (new Shell("mysqldump  -h $host -u $username -p$password $base < $file"))->run();
-                break;
                 case POSTGRESQL:
                     return (new Shell("psql -h $host -U $username $base < $file"))->run();
-                break;
                 case SQLITE:
                     return (new Shell("sqlite3  $base < $file"))->run();
-                break;
                 default:
                     return false;
-                break;
             }
 
         }

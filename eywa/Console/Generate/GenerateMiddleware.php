@@ -15,7 +15,7 @@ namespace Eywa\Console\Generate {
 
         protected static $defaultName = 'make:middleware';
 
-        protected function configure()
+        protected function configure():void
         {
 
             $this
@@ -35,11 +35,9 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
-
             $io = new SymfonyStyle($input,$output);
 
-            $middleware = $input->getArgument('middleware');
+            $middleware = strval($input->getArgument('middleware'));
 
             if(preg_match("#^[a-z]([a-z_]+)$#",$middleware) !== 1)
             {
@@ -53,7 +51,7 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($file))
             {
-                $io->error('The middleware already exist');
+                $io->error(sprintf('The %s middleware already exist',$class));
 
                 return 1;
             }
@@ -72,13 +70,13 @@ namespace App\Middleware {
         /**
          * @inheritDoc
          */
-        public function check(ServerRequest \$request): Response
+        public function check(ServerRequest \$request): void
         {
             // TODO: Implement check() method.
         }
     }
 }")->flush()) {
-                $io->success('The middleware was generated successfully');
+                $io->success(sprintf('The %s middleware was generated successfully',$class));
 
                 return 0;
             }

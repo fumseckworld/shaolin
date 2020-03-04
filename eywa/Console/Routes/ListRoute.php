@@ -3,34 +3,21 @@
 namespace Eywa\Console\Routes {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
-
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Routing\Admin;
-    use Eywa\Http\Routing\Task;
     use Eywa\Http\Routing\Web;
+    use PDO;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Helper\Table;
-    use Symfony\Component\Console\Helper\TableStyle;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
-    use Symfony\Component\Console\Question\Question;
-    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class ListRoute extends Command
     {
 
         protected static $defaultName = "route:list";
 
-        /**
-         *
-         * The base choose
-         *
-         */
-        private string $choose;
 
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription('List all routes');
         }
@@ -49,13 +36,13 @@ namespace Eywa\Console\Routes {
         {
 
             $table = new Table($output);
-       
+
             $table
                 ->setStyle('box')
 
                 ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                 ->setRows(
-                    Web::all(\PDO::FETCH_ASSOC)
+                    Web::all(PDO::FETCH_ASSOC)
                 )
             ;
             $table->render();

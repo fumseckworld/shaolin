@@ -16,7 +16,7 @@
 			protected static $defaultName = "app:coverage";
 			
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription('Run a server to show the code coverage');
 			}

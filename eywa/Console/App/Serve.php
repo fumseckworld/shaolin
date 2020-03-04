@@ -16,7 +16,7 @@
 			protected static $defaultName = "app:run";
 			
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription('Run a development server');
 			}

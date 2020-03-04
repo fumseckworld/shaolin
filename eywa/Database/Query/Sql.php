@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Database\Query {
 
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Connexion\Connexion;
     use Eywa\Exception\Kedavra;
     use Eywa\Html\Pagination\Pagination;
@@ -48,7 +49,7 @@ namespace Eywa\Database\Query {
          * The connection to the base
          *
          */
-        private Connexion $connexion;
+        private Connect $connexion;
 
         /**
          *
@@ -104,7 +105,7 @@ namespace Eywa\Database\Query {
          * The where expected value
          *
          */
-        private $where_expected = null;
+        private string $where_expected = '';
 
         /**
          *
@@ -182,13 +183,12 @@ namespace Eywa\Database\Query {
          *
          * The constructor
          *
-         * @method __construct
          *
-         * @param Connexion $connect
+         * @param Connect $connect
          * @param string $table
          *
          */
-        public function __construct(Connexion $connect,string $table)
+        public function __construct(Connect $connect,string $table)
         {
             $this->connexion =  $connect;
             $this->from($table);
@@ -209,17 +209,23 @@ namespace Eywa\Database\Query {
         }
 
         /**
-         * @param array $records
+         *
+         * Create a new record
+         *
+         * @param array<mixed> $records
+         *
          * @return bool
+         *
          * @throws Kedavra
+         *
          */
         public function save(array $records): bool
         {
-            $x = collect(collect($this->columns())->del($this->primary())->all())->join();
+            $x = collect(collect($this->columns())->del([$this->primary()])->all())->join();
 
             $sql = "INSERT INTO {$this->table} ($x) VALUES( ";
 
-            foreach ($this->columns() as $column)
+            foreach ($this->columns() as $column) // modify it
             {
                 if (array_key_exists($column,$records))
                     append($sql,$this->connexion()->secure($records[$column]),',');
@@ -233,12 +239,13 @@ namespace Eywa\Database\Query {
 
             return $this->connexion()->set($sql)->execute();
         }
+
         /**
          *
          * Get once result
          *
          * @param int $offset
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          */
@@ -250,10 +257,10 @@ namespace Eywa\Database\Query {
         /**
          *
          *
-         * @return Connexion
+         * @return Connect
          *
          */
-        public function connexion() : Connexion
+        public function connexion() : Connect
         {
             return $this->connexion;
         }
@@ -262,7 +269,7 @@ namespace Eywa\Database\Query {
          *
          * List all columns inside the table
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          */
@@ -274,17 +281,15 @@ namespace Eywa\Database\Query {
             {
                 case MYSQL:
                     return $this->connexion()->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
-                break;
                 case POSTGRESQL:
                     return $this->connexion()->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
-                break;
                 case SQLITE:
                     $x = function ($x){return $x->name ;};
                    return collect($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS))->for($x)->all();
-                break;
+                default:
+                    return $fields->all();
             }
 
-            return $fields->all();
         }
 
 
@@ -307,19 +312,29 @@ namespace Eywa\Database\Query {
             return $this;
         }
 
-        public function nullable(string $column)
+
+
+        /**
+         *
+         * Check if a column can be null
+         *
+         * @param string $column
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function nullable(string $column): bool
         {
             switch ($this->connexion->driver())
             {
                 case MYSQL:
-                    return $this->connexion->set("SELECT IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS   WHERE table_name = '{$this->table}' AND COLUMN_NAME = '$column' LIMIT 1;")->get(PDO::FETCH_COLUMN) === 'YES';
-                break;
+                    return $this->connexion->set("SELECT IS_NULLABLE FROM INFORMATION_SCHEMA.COLUMNS   WHERE table_name = '{$this->table}' AND COLUMN_NAME = '$column' LIMIT 1;")->get(PDO::FETCH_COLUMN)[0] === 'YES';
                 case POSTGRESQL:
-                    return $this->connexion->set("select is_nullable from information_schema.columns where table_name = '{$this->table}' and column_name = '$column' ")->get(PDO::FETCH_COLUMN) === 'YES';
-                break;
+                    return $this->connexion->set("select is_nullable from information_schema.columns where table_name = '{$this->table}' and column_name = '$column' ")->get(PDO::FETCH_COLUMN)[0] === 'YES';
                 default:
                     return false;
-                break;
             }
         }
 
@@ -338,18 +353,19 @@ namespace Eywa\Database\Query {
             {
                 case MYSQL:
                     return collect($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first();
-                    break;
                 case POSTGRESQL:
                     return collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}' and constraint_name ='{$this->table}_pkey';")->get(PDO::FETCH_COLUMN))->first();
-                break;
                 case SQLITE:
                      foreach($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $value)
-                        if ($value->pk)
-                            return $value->name;
-                    break;
+                     {
+                         if ($value->pk)
+                             return $value->name;
+
+                     }
+                 break;
                 case SQL_SERVER:
                     return collect($this->connexion()->set("SELECT COLUMN_NAME , CONSTRAINT_NAME FROM INFORMATION_SCHEMA.CONSTRAINT_COLUMN_USAGE WHERE TABLE_NAME = '{$this->table}';")->get(COLUMNS))->first();
-                break;
+
             }
             throw  new Kedavra('We have not found a primary key');
         }
@@ -357,18 +373,38 @@ namespace Eywa\Database\Query {
 
         /**
          *
+         * Find a record
+         *
          * @param int $id
+         * @param int $pdo_fetch_mode
          *
-         *
-         *
-         * @return array|object
+         * @return array<mixed>
          *
          * @throws Kedavra
          *
          */
-        public function find(int $id)
+        public function find(int $id,int $pdo_fetch_mode= PDO::FETCH_OBJ): array
         {
-            return $this->where($this->primary(), EQUAL, $id)->execute();
+            return $this->where($this->primary(), EQUAL, $id)->execute($pdo_fetch_mode);
+        }
+
+        /**
+         *
+         * Throw excecption if not found
+         *
+         * @param int $id
+         * @param int $pdo_fetch_mode
+         *
+         * @return array<mixed>
+         *
+         * @throws Kedavra
+         */
+        public function find_or_fail(int $id,int $pdo_fetch_mode = PDO::FETCH_OBJ): array
+        {
+            $x = $this->find($id,$pdo_fetch_mode);
+            is_false(def($x),true,'The record has not been found');
+
+            return $x;
         }
 
         /**
@@ -376,7 +412,7 @@ namespace Eywa\Database\Query {
          * Get values was different of expected
          *
          * @param  string  $column
-         * @param          $expected
+         * @param  mixed   $expected
          *
          * @throws Kedavra
          *
@@ -406,10 +442,10 @@ namespace Eywa\Database\Query {
          *
          * Destroy a record by id
          *
-         *
          * @return bool
          *
          * @throws Kedavra
+         *
          */
         public function destroy() : bool
         {
@@ -417,15 +453,12 @@ namespace Eywa\Database\Query {
 
             $result = collect();
 
-
             foreach ($this->execute() as $value)
             {
                 $x = $value->$id;
 
-
                 $result->push(static::connexion()->set("DELETE {$this->from} WHERE {$this->primary()} = $x")->execute());
             }
-
 
             return $result->ok();
         }
@@ -453,17 +486,22 @@ namespace Eywa\Database\Query {
             $or = def($this->or) ? $this->or : '';
 
             $and = def($this->and) ? $this->and : '';
+            $delete = def($this->delete) ? $this->delete : '';
 
             $columns = def($this->columns) ? $this->columns : "*";
 
-            return ((def($this->union) ? "$union $where $and $or $order $limit" : def($this->join)) ? "$join $and $or $order $limit" : def($this->delete)) ? $this->delete : "SELECT $columns {$this->from} $where $and $or $order $limit ";
+            if (def($union))
+                return "$union $where $and $or $order $limit";
+            elseif (def($join))
+                return "$join $and $or $order $limit";
+            elseif(def($delete))
+                return "$delete";
+            return "SELECT $columns {$this->from} $where $and $or $order $limit ";
         }
 
         /**
          *
          * Generate a where clause
-         *
-         * @method where
          *
          * @param  string  $column     The column name
          * @param  string  $condition  The condition
@@ -510,7 +548,7 @@ namespace Eywa\Database\Query {
          *
          * Select only column
          *
-         * @param string ...$columns
+         * @param array<mixed> $columns
          *
          * @return Sql
          *
@@ -525,8 +563,6 @@ namespace Eywa\Database\Query {
         /**
          *
          * Generate a between clause
-         *
-         * @method between
          *
          * @param string $column The column name
          * @param mixed $begin The begin value
@@ -553,8 +589,6 @@ namespace Eywa\Database\Query {
          *
          * Generate an order by clause
          *
-         * @method by
-         *
          * @param  string  $column  The column name
          * @param  string  $order   The order by option
          *
@@ -580,8 +614,11 @@ namespace Eywa\Database\Query {
          *
          *
          * @param int $pdo_mode
-         * @return array
+         *
+         * @return array<mixed>
+         *
          * @throws Kedavra
+         *
          */
         public function execute(int $pdo_mode = PDO::FETCH_OBJ): array
         {
@@ -593,22 +630,20 @@ namespace Eywa\Database\Query {
          *
          * Generate a join clause
          *
-         * @method join
-         *
          * @param string $type
          * @param string $condition
          * @param string $first_table The first table name
          * @param string $second_table The second table name
          * @param string $first_param The first parameter
          * @param string $second_param The second parameter
-         * @param string ...$columns
+         * @param array<string> $columns
          *
          * @return Sql
          *
          * @throws Kedavra
          *
          */
-        public function join(string $type,string $condition, string $first_table, string $second_table, string $first_param, string $second_param, string ...$columns) : Sql
+        public function join(string $type,string $condition, string $first_table, string $second_table, string $first_param, string $second_param, array $columns) : Sql
         {
 
             not_in([LEFT_JOIN,RIGHT_JOIN,CROSS_JOIN,NATURAL_JOIN,INNER_JOIN,FULL_JOIN],$type,true,"The type is invalid");
@@ -640,8 +675,6 @@ namespace Eywa\Database\Query {
          *
          * Generate an union clause
          *
-         * @method union
-         *
          * @param string $type
          * @param string $first_table The first table name
          * @param string $second_table The second table name
@@ -666,8 +699,6 @@ namespace Eywa\Database\Query {
          *
          * Generate a like clause
          *
-         * @method like
-         *
          * @param  string  $value  [description]
          *
          * @throws Kedavra
@@ -677,7 +708,6 @@ namespace Eywa\Database\Query {
          */
         public function like(string $value) : Sql
         {
-
             if($this->connexion()->mysql() || $this->connexion()->postgresql())
             {
                 $columns = collect($this->columns())->join();
@@ -716,6 +746,7 @@ namespace Eywa\Database\Query {
          * @return Sql
          *
          * @throws Kedavra
+         *
          */
         public function and(string $column, string $condition, string $expected) : Sql
         {
@@ -730,11 +761,12 @@ namespace Eywa\Database\Query {
          *
          * @param string $column
          * @param string $condition
-         * @param $expected
-         *
+         * @param mixed $expected
          *
          * @return Sql
+         *
          * @throws Kedavra
+         *
          */
         public function or(string $column, string $condition, $expected) : Sql
         {
@@ -750,15 +782,14 @@ namespace Eywa\Database\Query {
          *
          *
          * @param string $column
-         * @param mixed ...$values
-         *
+         * @param array<mixed> $values
          *
          * @return Sql
          *
-         *
          * @throws Kedavra
+         *
          */
-        public function not(string $column, ...$values) : Sql
+        public function not(string $column, array $values) : Sql
         {
             $symbol = html_entity_decode(DIFFERENT);
 
@@ -785,7 +816,7 @@ namespace Eywa\Database\Query {
         }
 
         /**
-         * @param       $callable
+         * @param  callable $callable
          * @param  int  $page
          * @param  int  $limit
          *
@@ -794,7 +825,7 @@ namespace Eywa\Database\Query {
          * @return Sql
          *
          */
-        public function paginate($callable, int $page, int $limit) : Sql
+        public function paginate(callable $callable, int $page, int $limit) : Sql
         {
 
             $this->pagination = (new Pagination($page, $limit, $this->sum()))->paginate();
@@ -812,7 +843,7 @@ namespace Eywa\Database\Query {
          */
         public function pagination(): string
         {
-            return $this->pagination;
+            return def($this->pagination) ? strval($this->pagination) : '';
         }
         /**
          *
@@ -823,12 +854,12 @@ namespace Eywa\Database\Query {
          */
         public function content(): string
         {
-            return $this->content;
+            return def($this->content) ? strval($this->content) :'';
         }
 
         /**
          *
-         *
+         * Select the table
          *
          * @param  string  $table
          *
@@ -837,7 +868,6 @@ namespace Eywa\Database\Query {
          */
         public function from(string $table) : Sql
         {
-
             $this->from = "FROM $table";
 
             $this->table = $table;

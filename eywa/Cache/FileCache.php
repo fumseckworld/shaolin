@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Eywa\Cache {
 
-    use Exception;
     use Eywa\File\File;
 
     class FileCache implements CacheInterface
@@ -60,26 +59,18 @@ namespace Eywa\Cache {
             return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
         }
 
+
         /**
-         *
-         * Get the directory path
-         *
-         * @return string
-         *
-         * @throws Exception
-         *
+         * @inheritDoc
          */
         public function directory(): string
         {
-            return env('CACHE_DIRECTORY','cache');
+            return 'cache';
         }
 
+
         /**
-         * @param string $key
-         * @return string
-         *
-         * @throws Exception
-         *
+         * @inheritDoc
          */
         public function file(string $key): string
         {

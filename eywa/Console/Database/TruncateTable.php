@@ -16,7 +16,7 @@
 			
 			protected static $defaultName = 'table:clear';
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription("Truncate a table")->addArgument('table',InputArgument::REQUIRED,'The table name')->addArgument('env',InputArgument::REQUIRED,'The base environment');
 			}
@@ -25,8 +25,8 @@
 			{
 		        $io = new SymfonyStyle($input,$output);
 
-                $env = $input->getArgument('env');
-                $table = $input->getArgument('table');
+                $env = strval($input->getArgument('env'));
+                $table = strval($input->getArgument('table'));
                 not_in(['dev','prod'],$env,true,'The environement used is not valid');
 
                 if (equal($env,'dev'))

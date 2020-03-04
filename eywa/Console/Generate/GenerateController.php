@@ -16,7 +16,7 @@ namespace Eywa\Console\Generate {
 
         protected static $defaultName = 'make:controller';
 
-        protected function configure()
+        protected function configure():void
         {
 
             $this
@@ -38,9 +38,9 @@ namespace Eywa\Console\Generate {
         {
             $io = new SymfonyStyle($input,$output);
 
-            $controller = $input->getArgument('controller');
-            $layout = $input->getArgument('layout');
-            $directory = ucfirst($input->getArgument('directory'));
+            $controller = strval($input->getArgument('controller'));
+            $layout = strval($input->getArgument('layout'));
+            $directory = ucfirst(strval($input->getArgument('directory')));
 
             if(preg_match("#^[a-z]([a-z_]+)$#",$controller) !== 1)
             {
@@ -58,7 +58,7 @@ namespace Eywa\Console\Generate {
 
             if (file_exists($controller_file))
             {
-                $io->error("The $controller_class controller already exist");
+                $io->error(sprintf('The %s controller already exist',$controller_class));
 
                 return 1;
             }
@@ -84,118 +84,7 @@ namespace $namespace {
     
         $directory
         
-        
-        /**
-         * @inheritDoc
-         */
-        public function before_validation(Request \$request)
-        {
-            // TODO: Implement before_validation() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_validation(Request \$request)
-        {
-            // TODO: Implement after_validation() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_save(Request \$request)
-        {
-            // TODO: Implement before_save() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_save(Request \$request)
-        {
-            // TODO: Implement after_save() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_commit(Request \$request)
-        {
-            // TODO: Implement after_commit() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_rollback(Request \$request)
-        {
-            // TODO: Implement after_rollback() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_update(Request \$request)
-        {
-            // TODO: Implement before_update() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_update(Request \$request)
-        {
-            // TODO: Implement after_update() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_action(Request \$request)
-        {
-            // TODO: Implement before_action() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_action(Request \$request)
-        {
-            // TODO: Implement after_action() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_create(Request \$request)
-        {
-            // TODO: Implement before_create() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_create(Request \$request)
-        {
-            // TODO: Implement after_create() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_destroy(Request \$request)
-        {
-            // TODO: Implement before_destroy() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_destroy(Request \$request)
-        {
-            // TODO: Implement after_destroy() method.
-        }
+     
         
     }
 }")->flush()) {

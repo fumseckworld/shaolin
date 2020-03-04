@@ -16,12 +16,16 @@ namespace Eywa\Database\Migration {
          * List all migrations class sorted by generated date
          *
          * @param string $mode
-         * @return array
+         *
+         * @return array<string>
+         *
+         * @throws \ReflectionException
          */
         public static function list(string $mode = 'up'): array
         {
             $x = [];
-            foreach (glob(base('db','Migrations','*.php')) as $k => $v)
+
+            foreach (files(base('db','Migrations','*.php')) as $k => $v)
             {
                 $item = collect(explode(DIRECTORY_SEPARATOR,$v))->last();
 
@@ -31,7 +35,7 @@ namespace Eywa\Database\Migration {
 
                 $class = '\Base\Migrations\\' .$item;
 
-                $x[$class] = $class::$created_at;
+                $x[$class] = (new \ReflectionClass(new $class))->getStaticPropertyValue('created_at');
             }
             return $mode === 'up' ?  collect($x)->asort()->all() : collect($x)->arsort()->all();
         }
@@ -41,18 +45,29 @@ namespace Eywa\Database\Migration {
          * Execute the migrations
          *
          * @param string $mode
-         *
          * @param SymfonyStyle $io
+         *
          * @return int
          *
          * @throws Kedavra
+         * @throws \ReflectionException
+         *
          */
         public static function run(string $mode,SymfonyStyle $io):int
         {
             return  equal($mode,'up') ? static::migrate($io) :  static::rollback($io);
         }
 
-        private static function file(string $class)
+        /**
+         *
+         * Get the class name
+         *
+         * @param string $class
+         *
+         * @return string
+         *
+         */
+        private static function file(string $class): string
         {
             return collect(explode('\\',$class))->last();
         }
@@ -61,6 +76,7 @@ namespace Eywa\Database\Migration {
          * @param SymfonyStyle $io
          * @return int
          * @throws Kedavra
+         * @throws \ReflectionException
          */
         private static function migrate(SymfonyStyle $io): int
         {
@@ -70,9 +86,15 @@ namespace Eywa\Database\Migration {
         }
 
         /**
+         *
+         * Rollback the database
+         *
          * @param SymfonyStyle $io
+         *
          * @return int
+         *
          * @throws Kedavra
+         * @throws \ReflectionException
          */
         private static function rollback(SymfonyStyle $io): int
         {
@@ -82,8 +104,14 @@ namespace Eywa\Database\Migration {
         }
 
         /**
+         *
+         * Check if new migrations are available
+         *
          * @return bool
+         *
          * @throws Kedavra
+         * @throws \ReflectionException
+         *
          */
         public static function check_migrate(): bool
         {
@@ -99,10 +127,16 @@ namespace Eywa\Database\Migration {
 
 
         /**
+         *
+         * Get an instance of the queri builder
+         *
          * @param string $mode
          * @param string $table
+         *
          * @return Sql
+         *
          * @throws Kedavra
+         *
          */
         private static function sql(string $mode,string $table = 'migrations'): Sql
         {
@@ -110,8 +144,13 @@ namespace Eywa\Database\Migration {
         }
 
         /**
+         *
+         * Check if migrations has been executed
+         *
          * @return bool
+         *
          * @throws Kedavra
+         *
          */
         public static function check_rollback(): bool
         {
@@ -120,13 +159,20 @@ namespace Eywa\Database\Migration {
         }
 
         /**
+         *
+         * Execute the command
+         *
          * @param string $env
          * @param string $mode
          * @param SymfonyStyle $io
-         * @return bool|int
+         *
+         * @return int
+         *
          * @throws Kedavra
+         * @throws \ReflectionException
+         *
          */
-        private static function do(string $env,string $mode,SymfonyStyle $io)
+        private static function do(string $env,string $mode,SymfonyStyle $io): int
         {
 
             not_in(['up','down'],$mode,true,"Mode must be up or down");
@@ -145,31 +191,33 @@ namespace Eywa\Database\Migration {
                     foreach ($all as $class => $date)
                     {
 
+                        $x = new \ReflectionClass(new $class);
+
+                        $table = $x->getStaticPropertyValue('table');
+
                         $migration = static::file($class);
 
-                        $created_at = $class::$created_at;
+                        $created_at = $x->getStaticPropertyValue('created_at');
 
-                        $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
+                        $up_success_message = str_replace('%s',$table,$x->getStaticPropertyValue('up_success_message'));
 
-                        $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
+                        $up_error_message = str_replace('%s',$table,$x->getStaticPropertyValue('up_error_message'));
 
-                        $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
+                        $up_title = str_replace('%s',$table,$x->getStaticPropertyValue('up_title'));
 
-                        $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
-
-                        $up_title = str_replace('%s',$class::$table,$class::$up_title);
-
-                        $down_title = str_replace('%s',$class::$table,$class::$down_title);
 
                         $exist = $sql->where('version',EQUAL,$date)->exist();
 
                         if (!$exist)
                         {
-                            $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
+
+                           $i = equal($env,'prod') ?   $x->newInstance(production(),$mode,$env) : $x->newInstance(development(),$mode,$env);
 
                             $io->title("$up_title ($env)");
 
-                            $result->push(call_user_func_array([$x, $mode], []));
+
+                            $result->push($x->getMethod('up')->getClosure($i));
+
 
                             if ($result->ok())
                             {
@@ -193,31 +241,27 @@ namespace Eywa\Database\Migration {
                     foreach ($all as $class => $date)
                     {
 
-                        $migration = static::file($class);
 
-                        $created_at = $class::$created_at;
+                        $x = new \ReflectionClass(new $class);
 
-                        $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
+                        $table = $x->getStaticPropertyValue('table');
 
-                        $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
+                        $down_success_message = str_replace('%s',$table,$x->getStaticPropertyValue('down_success_message'));
 
-                        $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
+                        $down_error_message = str_replace('%s',$table,$x->getStaticPropertyValue('down_error_message'));
 
-                        $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
-
-                        $up_title = str_replace('%s',$class::$table,$class::$up_title);
-
-                        $down_title = str_replace('%s',$class::$table,$class::$down_title);
+                        $down_title = str_replace('%s',$table,$x->getStaticPropertyValue('down_title'));
 
                         $exist = $sql->where('version',EQUAL,$date)->exist();
 
+
                         if ($exist)
                         {
-                            $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
+                            $i = equal($env,'prod') ?   $x->newInstance(production(),$mode,$env) : $x->newInstance(development(),$mode,$env);
 
                             $io->title("$down_title ($env)");
 
-                            $result->push(call_user_func_array([$x, $mode], []));
+                            $result->push($x->getMethod('up')->getClosure($i));
 
                             if ($result->ok())
                             {
@@ -242,31 +286,29 @@ namespace Eywa\Database\Migration {
                 foreach ($all as $class => $date)
                 {
 
+                    $x = new \ReflectionClass(new $class);
+
+                    $table = $x->getStaticPropertyValue('table');
+
                     $migration = static::file($class);
 
-                    $created_at = $class::$created_at;
+                    $created_at = $x->getStaticPropertyValue('created_at');
 
-                    $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
+                    $up_success_message = str_replace('%s',$table,$x->getStaticPropertyValue('up_success_message'));
 
-                    $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
+                    $up_error_message = str_replace('%s',$table,$x->getStaticPropertyValue('up_error_message'));
 
-                    $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
-
-                    $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
-
-                    $up_title = str_replace('%s',$class::$table,$class::$up_title);
-
-                    $down_title = str_replace('%s',$class::$table,$class::$down_title);
+                    $up_title = str_replace('%s',$table,$x->getStaticPropertyValue('up_title'));
 
                     $exist = $sql->where('version',EQUAL,$date)->exist();
 
                     if (!$exist)
                     {
-                        $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
+                        $i= equal($env,'prod') ?   $x->newInstance(production(),$mode,$env) : $x->newInstance(development(),$mode,$env);
 
                         $io->title("$up_title ($env)");
 
-                        $result->push(call_user_func_array([$x, $mode], []));
+                        $result->push($x->getMethod('up')->getClosure($i));
 
                         if ($result->ok())
                         {
@@ -290,31 +332,26 @@ namespace Eywa\Database\Migration {
                 foreach ($all as $class => $date)
                 {
 
-                    $migration = static::file($class);
 
-                    $created_at = $class::$created_at;
+                    $x = new \ReflectionClass(new $class);
 
-                    $down_success_message = str_replace('%s',$class::$table,$class::$down_success_message);
+                    $table = $x->getStaticPropertyValue('table');
 
-                    $down_error_message = str_replace('%s',$class::$table,$class::$down_error_message);
+                    $down_success_message = str_replace('%s',$table,$x->getStaticPropertyValue('down_success_message'));
 
-                    $up_success_message = str_replace('%s',$class::$table,$class::$up_success_message);
+                    $down_error_message = str_replace('%s',$table,$x->getStaticPropertyValue('down_error_message'));
 
-                    $up_error_message = str_replace('%s',$class::$table,$class::$up_error_message);
-
-                    $up_title = str_replace('%s',$class::$table,$class::$up_title);
-
-                    $down_title = str_replace('%s',$class::$table,$class::$down_title);
+                    $down_title = str_replace('%s',$table,$x->getStaticPropertyValue('down_title'));
 
                     $exist = $sql->where('version',EQUAL,$date)->exist();
 
                     if ($exist)
                     {
-                        $x = equal($env,'prod') ?  new $class(production(),$mode,$env) : new $class(development(),$mode,$env);
+                        $i = equal($env,'prod') ?   $x->newInstance(production(),$mode,$env) : $x->newInstance(development(),$mode,$env);
 
                         $io->title("$down_title ($env)");
 
-                        $result->push(call_user_func_array([$x, $mode], []));
+                        $result->push($x->getMethod('up')->getClosure($i));
 
                         if ($result->ok())
                         {

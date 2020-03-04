@@ -6,6 +6,7 @@ namespace Eywa\Http\Request {
 
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Parameter\Bag;
+    use Eywa\Http\Parameter\Uploaded\UploadedFile;
 
     class ServerRequest
     {
@@ -49,7 +50,7 @@ namespace Eywa\Http\Request {
 
             if (not_cli())
             {
-                $this->request = Request::generate();
+                $this->request = Request::make();
 
                 $this->method = different($method,GET) ? $this->request->request()->get('_method',POST) : $method;
 
@@ -74,7 +75,7 @@ namespace Eywa\Http\Request {
          */
         public static function generate(): ServerRequest
         {
-            return new static($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
+            return new self($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
         }
 
         /***
@@ -137,6 +138,7 @@ namespace Eywa\Http\Request {
             return $this->request->server()->get('SERVER_ADDR') === '127.0.0.1';
         }
 
+
         /**
          *
          * $_GET
@@ -177,10 +179,10 @@ namespace Eywa\Http\Request {
          *
          * $_FILES
          *
-         * @return Bag
+         * @return UploadedFile
          *
          */
-        public function file(): Bag
+        public function file(): UploadedFile
         {
             return $this->request->file();
         }

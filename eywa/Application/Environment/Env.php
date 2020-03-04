@@ -40,12 +40,12 @@ namespace Eywa\Application\Environment {
          *
          * Get an environement variable
          *
-         * @param $variable
+         * @param string $variable
          *
-         * @return array|false|string
+         * @return array<mixed>|false|string
          *
          */
-        public function get($variable)
+        public function get(string $variable)
         {
             return getenv($variable);
         }

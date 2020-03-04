@@ -19,7 +19,7 @@ namespace Eywa\Http\Parameter {
          *
          * Bag constructor.
          *
-         * @param array $data
+         * @param array<mixed> $data
          *
          */
         public function __construct(array $data)
@@ -31,7 +31,7 @@ namespace Eywa\Http\Parameter {
          *
          * Get all results
          *
-         * @return array
+         * @return array<mixed>
          *
          */
         public function all(): array
@@ -44,12 +44,13 @@ namespace Eywa\Http\Parameter {
          * Get a value by a key
          *
          * @param string $key
-         * @param null $default
+         * @param mixed $default
          *
          * @return mixed|string|null
          *
+         *
          */
-        public function get(string $key,$default = null)
+        public function get(string $key,$default = '')
         {
             return $this->has($key) ? $this->data->get($key) : $default;
         }

@@ -16,7 +16,7 @@ namespace Eywa\Console\Generate {
 
         protected static $defaultName = 'make:test';
 
-        protected function configure()
+        protected function configure():void
         {
 
             $this
@@ -37,24 +37,24 @@ namespace Eywa\Console\Generate {
         {
             $io = new SymfonyStyle($input,$output);
 
-            $migration = $input->getArgument('test');
+            $test = strval($input->getArgument('test'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$migration) !== 1)
+            if(preg_match("#^[a-z]([a-z_]+)$#",$test) !== 1)
             {
                 $io->error('You must use snake case syntax to generate the test');
                 return  1;
             }
 
-            $class = collect(explode('_',$migration))->for('ucfirst')->join('');
+            $class = collect(explode('_',$test))->for('ucfirst')->join('');
 
-            $file  =  base('tests',ucfirst($input->getArgument('directory')),"$class.php");
+            $file  =  base('tests',ucfirst(strval($input->getArgument('directory'))),"$class.php");
 
             if (file_exists($file))
             {
-                $io->error('The tests already exist');
+                $io->error(sprintf('The %s tests already exist',$class));
                 return 1;
             }
-            $x= ucfirst($input->getArgument('directory'));
+            $x= ucfirst(strval($input->getArgument('directory')));
 
             if (def($x) && !is_dir(base('tests',$x)))
             {
@@ -78,11 +78,11 @@ namespace $namespace {
 }
 ")->flush())
             {
-                $io->success('The test was successfully generated');
+                $io->success(sprintf('The %s test has been created successfully',$class));
                 return 0;
             }
 
-            $io->error('The creation of the test has failed');
+            $io->error(sprintf('The creation of the %s test has failed',$class));
             return 1;
 
 

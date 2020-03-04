@@ -5,42 +5,56 @@ namespace Testing\Ioc {
 
 
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Table\Table;
+    use Eywa\Exception\Kedavra;
     use Eywa\Http\Routing\Router;
     use Eywa\Http\View\View;
-    use Eywa\Ioc\Container;
+    use Eywa\Ioc\Ioc;
+    use Eywa\Message\Flash\Flash;
     use PHPUnit\Framework\TestCase;
+    use ReflectionException;
 
     class ContainerTest extends TestCase
     {
 
+        /**
+         * @var Ioc
+         */
+        private Ioc $ioc;
+
+        public function setUp(): void
+        {
+           $this->ioc = new Ioc();
+        }
+
+        /**
+         * @throws Kedavra
+         * @throws ReflectionException
+         */
         public function test_has()
         {
-            $this->assertTrue(Container::ioc()->has(Connect::class));
-            $this->assertTrue(Container::ioc()->has(Router::class));
+
+            $this->assertTrue($this->ioc->has(Connect::class));
+            $this->assertFalse($this->ioc->has(Table::class));
+            $this->assertFalse($this->ioc->has(Router::class));
+
         }
 
+        /**
+         * @throws Kedavra
+         * @throws ReflectionException
+         */
         public function test_get()
         {
-            $this->assertInstanceOf(Connect::class,Container::ioc()->get(Connect::class));
+            $this->assertInstanceOf(Connect::class,$this->ioc->get(Connect::class));
+            $this->assertInstanceOf(Table::class,$this->ioc->get(Table::class));
+
         }
 
-        public function test_make()
+        public function test_get_variable()
         {
-            $this->assertInstanceOf(View::class,Container::ioc()->make(View::class,['view' => 'a','title'=>'a','description'=>'a']));
-        }
-        public function test_set()
-        {
-            $this->assertInstanceOf(View::class,Container::ioc()->set(View::class,new View('a','a','description'))->get(View::class));
+            $this->assertInstanceOf(Flash::class,$this->ioc->get('flash'));
         }
 
-        public function test_debug()
-        {
-            $this->assertNotEmpty(Container::ioc()->debug(Connect::class));
-        }
-
-        public function test_call()
-        {
-            $this->assertEquals(3306,Container::ioc()->call(Connect::class,'port'));
-        }
     }
 }

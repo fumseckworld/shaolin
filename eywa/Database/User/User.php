@@ -5,7 +5,7 @@ namespace Eywa\Database\User {
 
 
     use Eywa\Collection\Collect;
-    use Eywa\Database\Connexion\Connexion;
+    use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
 
     class User
@@ -16,9 +16,9 @@ namespace Eywa\Database\User {
          * The connection to the base
          *
          */
-        private Connexion $connexion;
+        private Connect $connexion;
 
-        public function __construct(Connexion $connexion)
+        public function __construct(Connect $connexion)
         {
             $this->connexion = $connexion;
         }
@@ -38,13 +38,10 @@ namespace Eywa\Database\User {
             {
                 case MYSQL:
                     return collect($this->connexion->set('SELECT User from mysql.user')->get(COLUMNS));
-                break;
                 case POSTGRESQL:
                     return collect($this->connexion->set('SELECT rolname FROM pg_roles;')->get(COLUMNS));
-                break;
                 default:
                     return collect();
-                break;
             }
         }
     }

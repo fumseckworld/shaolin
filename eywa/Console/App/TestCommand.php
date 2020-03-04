@@ -13,7 +13,7 @@
 			
 			protected static $defaultName = 'app:test';
 			
-			protected function configure()
+			protected function configure():void
 			{
 				$this->setDescription('Test the application');
 			}

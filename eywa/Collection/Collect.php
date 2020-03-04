@@ -15,8 +15,10 @@ namespace Eywa\Collection {
          *
          * The data
          *
+         * @var array<mixed>
+         *
          */
-        private $data = [];
+        private array $data = [];
 
         /**
          *
@@ -38,31 +40,31 @@ namespace Eywa\Collection {
          *
          * Collection constructor
          *
-         * @method __construct
-         *
-         * @param mixed $data
+         * @param array<mixed> $data
          *
          */
-        public function __construct($data)
+        public function __construct(array $data)
         {
 
-            $this->data = (is_object($data) ? obj($data) : is_array($data)) ? $data : [];
-
+            $this->data = $data;
 
             $this->position();
         }
 
         /**
          *
-         * @param array $keys
-         * @param array $values
+         * @param array<mixed> $keys
+         * @param array<mixed> $values
          *
          * @return Collect
          *
          */
         public function combine(array $keys, array $values): Collect
         {
-            return $this->checkout(array_combine($keys, $values));
+            $x = array_combine($keys, $values);
+
+            return is_bool($x) ? $this : $this->checkout($x);
+
         }
 
         /**
@@ -93,7 +95,6 @@ namespace Eywa\Collection {
         /**
          *
          *
-         *
          * @return int|mixed|string
          *
          */
@@ -106,8 +107,6 @@ namespace Eywa\Collection {
          *
          * Count all values found
          *
-         * @method count
-         *
          * @return Collect
          *
          */
@@ -119,8 +118,6 @@ namespace Eywa\Collection {
         /**
          *
          * Initialise position counter
-         *
-         * @method init
          *
          * @param int $i
          *
@@ -137,8 +134,6 @@ namespace Eywa\Collection {
          *
          * Extract a slice of the array
          *
-         * @method slice
-         *
          * @param int $offset
          * @param int|null $limit
          *
@@ -154,8 +149,6 @@ namespace Eywa\Collection {
          *
          *
          * Chunk the array in separate array
-         *
-         * @method chunk
          *
          * @param int $x
          *
@@ -179,9 +172,7 @@ namespace Eywa\Collection {
          *
          * Return the array generated
          *
-         * @method all
-         *
-         * @return array
+         * @return array<mixed>
          *
          **/
         public function all(): array
@@ -193,14 +184,13 @@ namespace Eywa\Collection {
          *
          * Get specifics keys
          *
-         * @method only
          *
-         * @param mixed ...$keys
+         * @param array<mixed> $keys
          *
          * @return Collect
          *
          */
-        public function only(...$keys): Collect
+        public function only(array $keys): Collect
         {
             $x = collect();
             foreach ($this->all() as $k => $v)
@@ -216,9 +206,7 @@ namespace Eywa\Collection {
          *
          * Compare the array with the x array
          *
-         * @method diff
-         *
-         * @param array $x
+         * @param array<mixed> $x
          *
          * @return Collect
          *
@@ -232,8 +220,6 @@ namespace Eywa\Collection {
          *
          * Return the last element of the array
          *
-         * @method last
-         *
          * @return mixed
          *
          */
@@ -246,7 +232,6 @@ namespace Eywa\Collection {
          *
          * Return the first element of the array
          *
-         * @method first
          *
          * @return mixed
          *
@@ -260,7 +245,6 @@ namespace Eywa\Collection {
          *
          * Return the reverse of the array
          *
-         * @method reverse
          *
          * @return Collect
          *
@@ -274,14 +258,13 @@ namespace Eywa\Collection {
          *
          * Return a value before a key
          *
-         * @method value_before_key
          *
-         * @param mixed $key The next value key
+         * @param string $key The next value key
          *
          * @return mixed
          *
          */
-        public function value_before_key($key)
+        public function value_before_key(string $key)
         {
             if ($this->has($key))
             {
@@ -298,8 +281,6 @@ namespace Eywa\Collection {
          *
          * Collect all values
          *
-         * @method values
-         *
          * @return Collect
          *
          */
@@ -311,8 +292,6 @@ namespace Eywa\Collection {
         /**
          *
          * Collect all keys
-         *
-         * @method keys
          *
          * @return Collect
          *
@@ -326,8 +305,6 @@ namespace Eywa\Collection {
          *
          * Move pointer to the before position
          * and return the current value
-         *
-         * @method before
          *
          * @return mixed
          *
@@ -343,7 +320,6 @@ namespace Eywa\Collection {
          * Move pointer to the after position
          * and return the current value
          *
-         * @method after
          *
          * @return mixed
          *
@@ -358,23 +334,21 @@ namespace Eywa\Collection {
          *
          * Get a value in the array by a key
          *
-         * @method get
          *
          * @param mixed $key
          *
-         * @return mixed|string
+         * @return mixed
+         *
          *
          */
         public function get($key)
         {
-            return $this->has($key) ? $this->data[$key] : '';
+            return $this->data[$key];
         }
 
         /**
          *
          * Return the max value in the array
-         *
-         * @method max
          *
          * @return mixed
          *
@@ -388,7 +362,6 @@ namespace Eywa\Collection {
          *
          * Get the min value in the array
          *
-         * @method min
          *
          * @return mixed
          *
@@ -402,9 +375,7 @@ namespace Eywa\Collection {
          *
          * Check if the array has not a key
          *
-         * @method has_not
-         *
-         * @param $key
+         * @param mixed $key
          *
          * @return bool
          *
@@ -479,8 +450,6 @@ namespace Eywa\Collection {
          *
          * Check if array is empty
          *
-         * @method empty
-         *
          * @return bool
          *
          */
@@ -493,9 +462,7 @@ namespace Eywa\Collection {
          *
          * Computes the intersection of arrays
          *
-         * @method intersect
-         *
-         * @param array $x
+         * @param array<mixed> $x
          *
          * @return Collect
          *
@@ -509,9 +476,8 @@ namespace Eywa\Collection {
          *
          * Replaces elements in the array
          *
-         * @method refresh
          *
-         * @param array ...$data
+         * @param array<mixed> ...$data
          *
          * @return Collect
          *
@@ -525,8 +491,6 @@ namespace Eywa\Collection {
          *
          * Sort an array in reverse order and maintain index association
          *
-         * @method arsort
-         *
          * @return Collect
          *
          */
@@ -539,8 +503,6 @@ namespace Eywa\Collection {
         /**
          *
          * Sort the array and maintain index association
-         *
-         * @method asort
          *
          * @param int $flag
          *
@@ -557,14 +519,13 @@ namespace Eywa\Collection {
          *
          * Removes an item from the collection by its key
          *
-         * @method forget
          *
-         * @param mixed ...$keys
+         * @param array<mixed> $keys
          *
          * @return Collect
          *
          */
-        public function forget(...$keys): Collect
+        public function forget(array $keys): Collect
         {
             foreach ($keys as $key)
                 $this->del($key);
@@ -574,8 +535,6 @@ namespace Eywa\Collection {
         /**
          *
          * Removes duplicate values from an array
-         *
-         * @method unique
          *
          * @return Collect
          *
@@ -588,8 +547,6 @@ namespace Eywa\Collection {
         /**
          *
          * Take specified items in the array
-         *
-         * @method take
          *
          * @param int $x
          *
@@ -605,20 +562,37 @@ namespace Eywa\Collection {
          *
          * Calculate the product of values in an array
          *
-         * @return int
+         * @return int|float
          *
          */
-        public function product(): int
+        public function product()
         {
             return array_product($this->all());
         }
 
+        /**
+         *
+         *
+         * @param callable $callable
+         *
+         * @return Collect
+         *
+         */
         public function map($callable)
         {
             return $this->checkout(array_map($callable, $this->all()));
         }
 
-        public function reduce($callable)
+        /**
+         *
+         *
+         *
+         * @param callable $callable
+         *
+         * @return Collect
+         *
+         */
+        public function reduce($callable): Collect
         {
             return $this->checkout(array_reduce($this->all(), $callable));
         }
@@ -627,10 +601,9 @@ namespace Eywa\Collection {
          *
          * Filters elements of the array
          *
-         * @method filter
          *
-         * @param       $callable
-         * @param int $flag
+         * @param callable $callable
+         * @param int      $flag
          *
          * @return Collect
          *
@@ -644,7 +617,6 @@ namespace Eywa\Collection {
          *
          * Display element for a page
          *
-         * @method display
          *
          * @param int $page
          * @param int $limit
@@ -660,8 +632,6 @@ namespace Eywa\Collection {
         /**
          *
          * Sort the array
-         *
-         * @method sort
          *
          * @param int $flag
          *
@@ -679,7 +649,6 @@ namespace Eywa\Collection {
          *
          * Exchanges all keys with their associated values in an array
          *
-         * @method flip
          *
          * @return Collect
          *
@@ -693,7 +662,6 @@ namespace Eywa\Collection {
          *
          * Shuffle an array
          *
-         * @method shuffle
          *
          * @return Collect
          *
@@ -704,6 +672,13 @@ namespace Eywa\Collection {
             return $this->checkout($this->all());
         }
 
+        /**
+         *
+         * @param int $flag
+         *
+         * @return Collect
+         *
+         */
         public function krsort(int $flag = SORT_REGULAR): Collect
         {
             krsort($this->data, $flag);
@@ -711,6 +686,7 @@ namespace Eywa\Collection {
         }
 
         /**
+         *
          * @param int $flag
          *
          * @return Collect
@@ -726,7 +702,6 @@ namespace Eywa\Collection {
          *
          * Create an array containing a range of elements
          *
-         * @method range
          *
          * @param int $start
          * @param int $end
@@ -744,10 +719,9 @@ namespace Eywa\Collection {
          *
          * Assign a new value to an existing value
          *
-         * @method refresh
          *
-         * @param $old_value
-         * @param $new_value
+         * @param mixed $old_value
+         * @param mixed $new_value
          *
          * @return Collect
          *
@@ -769,84 +743,68 @@ namespace Eywa\Collection {
          *
          * Add values to the end of the array
          *
-         * @method push
          *
-         * @param mixed[] $values The values to add
+         * @param mixed $value
          *
          * @return Collect
          *
          */
-        public function push(...$values): Collect
+        public function push($value): Collect
         {
-            foreach ($values as $value)
-            {
-                array_push($this->data,$value);
-
-            }
+             array_push($this->data,$value);
 
             return $this->checkout($this->data);
         }
-
 
 
         /**
          *
          * Add the values to the begin ot the array
          *
-         * @method stack
-         *
-         * @param mixed[] $values The values to add
+         * @param mixed $value
          *
          * @return Collect
          *
          */
-        public function stack(...$values): Collect
+        public function stack($value): Collect
         {
-            foreach ($values as $value)
-                array_unshift($this->data, $value);
-            return $this;
+            array_unshift($this->data, $value);
+
+            return $this->checkout($this->data);
         }
 
         /**
          *
          * Merge multiples array
          *
-         * @method merge
-         *
-         * @param $array
+         * @param array<mixed> $array
          *
          * @return Collect
+         *
          */
-        public function merge(array ...$array): Collect
+        public function merge(array $array): Collect
         {
-            foreach ($array as $x)
-                $this->data = array_merge($this->data, $x);
-            return $this;
+            $this->data = array_merge($this->data, $array);
+            return $this->checkout($this->data);
         }
 
         /**
          *
          * Defines only values
          *
-         * @method set
-         *
-         * @param mixed ...$values
+         * @param mixed $value
          *
          * @return Collect
          *
          */
-        public function set(...$values): Collect
+        public function set($value): Collect
         {
-            foreach ($values as $value)
-                $this->add($value);
-            return $this;
+            return  $this->add($value);
         }
 
         /**
          *
          * Add the value accessible by the key
-         *
-         * @method put
          *
          * @param mixed $key
          * @param mixed $value
@@ -863,17 +821,16 @@ namespace Eywa\Collection {
          *
          * Remove values or keys inside the array
          *
-         * @method  del
-         *
-         * @param mixed ...$data
+         * @param array<mixed> $data
          *
          * @return Collect
          *
          */
-        public function del(...$data): Collect
+        public function del(array $data): Collect
         {
             foreach ($data as $datum)
                 $this->exist($datum) ? $this->remove_value($datum) : $this->remove($datum);
+
             return $this->checkout($this->all());
         }
 
@@ -881,9 +838,7 @@ namespace Eywa\Collection {
          *
          * Join all values by a glue
          *
-         * @method join
-         *
-         * @param string $glue The values separator
+         * @param string $glue
          *
          * @return string
          *
@@ -896,8 +851,6 @@ namespace Eywa\Collection {
         /**
          *
          * Join all  keys by a glue
-         *
-         * @method join_keys
          *
          * @param string $glue
          *
@@ -913,8 +866,6 @@ namespace Eywa\Collection {
          *
          * Check if false was not found
          *
-         * @method ok
-         *
          * @return bool
          *
          */
@@ -927,9 +878,7 @@ namespace Eywa\Collection {
          *
          * Check if a value exist in the array
          *
-         * @method exist
-         *
-         * @param mixed $value The value to check
+         * @param mixed $value
          *
          * @return bool
          *
@@ -943,23 +892,19 @@ namespace Eywa\Collection {
          *
          * Check if a key exist in the array
          *
-         * @method has_key
-         *
-         * @param mixed $key The key to check
+         * @param int|string $key
          *
          * @return bool
          *
          */
         public function has($key): bool
         {
-            return is_string($key) || is_numeric($key) ? array_key_exists($key, $this->all()) : false;
+            return array_key_exists($key, $this->all());
         }
 
         /**
          *
          * Check if the value not exist in the array
-         *
-         * @method not_exist
          *
          * @param mixed $value The value to check
          *
@@ -975,8 +920,6 @@ namespace Eywa\Collection {
          *
          * Clear the array
          *
-         * @method clear
-         *
          * @return Collect
          *
          */
@@ -988,8 +931,6 @@ namespace Eywa\Collection {
         /**
          *
          * Return the number of elements in the array
-         *
-         * @method sum
          *
          * @return int
          *
@@ -1003,22 +944,19 @@ namespace Eywa\Collection {
          *
          * Remove the first element
          *
-         * @method shift
-         *
          * @return Collect
          *
          */
         public function shift(): Collect
         {
             array_shift($this->data);
-            return $this;
+
+            return $this->checkout($this->data);
         }
 
         /**
          *
          * Remove the last element
-         *
-         * @method pop
          *
          * @return Collect
          *
@@ -1027,37 +965,35 @@ namespace Eywa\Collection {
         {
             array_pop($this->data);
 
-            return $this;
+            return $this->checkout($this->data);
         }
 
         /**
          *
          * Checkout on the new array
          *
-         * @method checkout
-         *
-         * @param array $data
+         * @param array<mixed> $data
          *
          * @return Collect
          *
          */
         public function checkout(array $data): Collect
         {
-            return new static($data);
+            return new self($data);
         }
 
         /**
          *
          * Convert the array in a json string
          *
-         * @method json
-         *
          * @return string
          *
          */
         public function json(): string
         {
-            return json_encode($this->all(), JSON_FORCE_OBJECT);
+            $x = json_encode($this->all(), JSON_FORCE_OBJECT);
+
+            return  is_bool($x) ? '' : $x;
         }
 
 
@@ -1066,18 +1002,17 @@ namespace Eywa\Collection {
          *
          * Run callable function for each values  and keys in the array
          *
-         * @method each
-         *
          * @param callable $callable
          *
          * @return Collect
          *
          */
-        public function each($callable): Collect
+        public function each(callable $callable): Collect
         {
             $result = collect();
             foreach ($this->all() as $k => $v)
-                $result->set($callable($k, $v));
+                $result->put($k,call_user_func_array($callable,[$k,$v]));
+
             return $this->checkout($result->all());
         }
 
@@ -1085,18 +1020,16 @@ namespace Eywa\Collection {
          *
          * Execute the callable with all value in the array
          *
-         * @method for
-         *
          * @param callable $callable
          *
          * @return Collect
          *
          */
-        public function for($callable): Collect
+        public function for(callable $callable): Collect
         {
             $result = collect();
             foreach ($this->all() as $k => $items) {
-                $result->put($k, $callable($items));
+                $result->put($k, call_user_func_array($callable,[$items]));
             }
             return $this->checkout($result->all());
         }
@@ -1105,12 +1038,12 @@ namespace Eywa\Collection {
          *
          * Initialise all keys to value
          *
-         * @param $value
+         * @param mixed $value
          *
          * @return Collect
          *
          */
-        public function init($value)
+        public function init($value): Collect
         {
             return $this->checkout(array_fill_keys($this->keys()->all(), $value));
         }
@@ -1119,14 +1052,12 @@ namespace Eywa\Collection {
          *
          * Add the value only if not exist
          *
-         * @method uniq
-         *
-         * @param array $values
+         * @param array<mixed> $values
          *
          * @return Collect
          *
          */
-        public function uniq(...$values): Collect
+        public function uniq(array $values): Collect
         {
             foreach ($values as $value)
             {
@@ -1140,8 +1071,6 @@ namespace Eywa\Collection {
          *
          * Append value to the array with optional key
          *
-         * @method add
-         *
          * @param mixed $value The value to add
          * @param mixed $key The value's key
          *
@@ -1151,6 +1080,7 @@ namespace Eywa\Collection {
         private function add($value, $key = ''): Collect
         {
             not_def($key) ? $this->data[] = $value : $this->data[$key] = $value;
+
             return $this;
         }
 
@@ -1158,14 +1088,12 @@ namespace Eywa\Collection {
          *
          * Remove a data by a key
          *
-         * @method remove
-         *
-         * @param array $keys
+         * @param array<mixed> $keys
          *
          * @return Collect
          *
          */
-        private function remove(...$keys): Collect
+        private function remove(array $keys): Collect
         {
             foreach ($keys as $key)
             {
@@ -1179,12 +1107,12 @@ namespace Eywa\Collection {
          *
          * Remove a value in the array
          *
-         * @param array $values
+         * @param array<mixed> $values
          *
          * @return Collect
          *
          */
-        private function remove_value(...$values): Collect
+        private function remove_value(array $values): Collect
         {
             foreach ($values as $value)
             {

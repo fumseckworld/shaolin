@@ -14,7 +14,7 @@ class Key extends Command
 
     protected static $defaultName = 'key:generate';
 
-    protected function configure()
+    protected function configure():void
     {
 
         $this->setDescription('Generate app key');

@@ -3,16 +3,14 @@
 namespace Eywa\Console\Routes {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Routing\Admin;
-    use Eywa\Http\Routing\Task;
     use Eywa\Http\Routing\Web;
     use Symfony\Component\Console\Command\Command;
+    use Symfony\Component\Console\Helper\Table;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class FindRoute extends Command
     {
@@ -24,16 +22,11 @@ namespace Eywa\Console\Routes {
          * The search value
          *
          */
-        private string $search;
+        private string $search ='';
 
-        /**
-         *
-         * The base choose
-         *
-         */
-        private string $choose;
+
         
-        protected function configure()
+        protected function configure():void
         {
 
             $this->setDescription('Find a route');
@@ -45,73 +38,40 @@ namespace Eywa\Console\Routes {
          * @param InputInterface $input
          * @param OutputInterface $output
          *
+         * @return int
          * @throws Kedavra
-         * @throws DependencyException
-         * @throws NotFoundException
          */
-        public function interact(InputInterface $input, OutputInterface $output)
+        public function interact(InputInterface $input, OutputInterface $output):int
         {
 
-            $helper = $this->getHelper('question');
-
-            do {
-
-                do {
-                    clear_terminal();
-
-                    $question = new Question("<info>Route for admin, web or task ?</info> : ");
-
-                    $question->setAutocompleterValues(['admin', 'web','task']);
-
-                    $this->choose = $helper->ask($input, $output, $question);
-
-                } while (is_null($this->choose) || not_in(['admin', 'web','task'], $this->choose));
-
-                do {
-                    clear_terminal();
-
-                    $question = new Question("<info>Please enter the search value : </info>");
-
-                    switch ($this->choose)
-                    {
-                        case 'admin':
-                            $question->setAutocompleterValues($this->admin());
-                        break;
-                        case 'task':
-                            $question->setAutocompleterValues($this->task());
-                        break;
-                        default:
-                            $question->setAutocompleterValues($this->web());
-                        break;
-                    }
-
-                   $this->search = $helper->ask($input, $output, $question);
-
-                } while (is_null($this->search));
-
-                clear_terminal();
-
-                switch ($this->choose)
+            $io  = new SymfonyStyle($input,$output);
+            do
+            {
+                do
                 {
-                    case 'admin':
-                        routes($output,Admin::search($this->search)) ;
-                    break;
-                    case 'task':
-                        routes($output, Task::search($this->search));
-                    break;
-                    default:
-                        routes($output,Web::search($this->search));
-                    break;
-                }
+                    $this->search = $io->askQuestion((new Question('Type your search : '))->setAutocompleterValues($this->all()));
+                } while (not_def($this->search));
+
+                $table = new Table($output);
+                $io = new SymfonyStyle($input,$output);
 
 
-                $question = new Question("<info>Continue [Y/n] : </info>", 'Y');
+                $table
+                    ->setStyle('box')
 
-                $continue = strtoupper($helper->ask($input, $output, $question)) === 'Y';
-
-            } while ($continue);
-
+                    ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
+                    ->setRows(
+                        Web::like($this->search,\PDO::FETCH_ASSOC)
+                    )
+                ;
+                $table->render();
+            }while($io->confirm('Continue ?',true));
+            return 0;
         }
+
+
+
+
 
         /**
          * @param InputInterface $input
@@ -122,179 +82,82 @@ namespace Eywa\Console\Routes {
         public function execute(InputInterface $input, OutputInterface $output)
         {
 
-            $output->writeln('<info>bye</info>');
+            $io  = new SymfonyStyle($input,$output);
 
+            $io->success('Bye');
             return 0;
         }
 
+
         /**
-         * @param bool $web
-         * @param bool $admin
-         * @return array
-         * @throws DependencyException
+         * @return array<string>
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        private function controller(bool $web =true,bool $admin = false): array
+        private function controller(): array
         {
             $x = collect();
-            if ($web)
-            {
-                foreach (Web::all() as $v)
-                    $x->push($v->controller);
-                return $x->all();
-            }
 
-            if ($admin)
-            {
-                foreach (Admin::all() as $v)
-                     $x->push($v->controller);
-
-
-                return $x->all();
-            }
-
-
-            foreach (Task::all() as $v)
+            foreach (Web::all() as $v)
                 $x->push($v->controller);
-
-
             return $x->all();
+
 
         }
 
+
         /**
-         * @param bool $web
-         * @param bool $admin
-         * @return array
-         * @throws DependencyException
+         * @return array<string>
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        private function name(bool $web = true,bool $admin =false): array
+        private function name(): array
         {
             $x = collect();
-            if ($web)
-            {
-                foreach (Web::all() as $v)
-                    $x->push($v->name);
-                return $x->all();
-            }
 
-            if ($admin)
-            {
-                foreach (Admin::all() as $v)
-                    $x->push($v->name);
-                return $x->all();
-            }
-
-            foreach (Task::all() as $v)
+            foreach (Web::all() as $v)
                 $x->push($v->name);
-
-
             return $x->all();
+
         }
 
+
         /**
-         * @param bool $web
-         * @param bool $admin
-         * @return array
-         * @throws DependencyException
+         * @return array<string>
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        private function url(bool $web = true,bool $admin = false): array
+        private function url(): array
         {
             $x = collect();
-            if ($web)
-            {
-                foreach (Web::all() as $v)
-                    $x->push($v->url);
-                return $x->all();
-            }
 
-            if ($admin)
-            {
-                foreach (Admin::all() as $v)
-                    $x->push($v->url);
-                return $x->all();
-            }
-
-
-            foreach (Task::all() as $v)
+            foreach (Web::all() as $v)
                 $x->push($v->url);
-
             return $x->all();
+
 
         }
 
+
         /**
-         * @param bool $web
-         * @param bool $admin
-         * @return array
-         * @throws DependencyException
+         * @return array<string>
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        private function action(bool $web =true,bool $admin = false)
+        private function action():array
         {
             $x = collect();
-            if ($web)
-            {
+
                 foreach (Web::all() as $v)
                     $x->push($v->action);
                 return $x->all();
-            }
 
-            if ($admin)
-            {
-                foreach (Admin::all() as $v)
-                    $x->push($v->action);
-
-                return $x->all();
-            }
-
-
-            foreach (Task::all() as $v)
-                $x->push($v->action);
-
-            return $x->all();
         }
 
-        /**
-         * @return array
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         */
-        private function web()
-        {
-
-            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(), $this->url(),$this->action(), $this->controller())->all();
-        }
 
         /**
-         * @return array
-         * @throws DependencyException
+         * @return array<string>
          * @throws Kedavra
-         * @throws NotFoundException
          */
-        private function admin()
+        private function all():array
         {
-
-            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(false,true),$this->url(false,true),$this->action(false,true),$this->controller(false,true))->all();
-        }
-
-        /**
-         * @return array
-         * @throws DependencyException
-         * @throws Kedavra
-         * @throws NotFoundException
-         */
-        private function task()
-        {
-
-            return collect()->merge(controllers(), collect(METHOD_SUPPORTED)->for('strtolower')->all(),$this->name(false,false),$this->url(false,false),$this->action(false,false),$this->controller(false,false))->all();
+            return collect()->merge( collect(METHOD_SUPPORTED)->for('strtolower')->all())->merge($this->name())->merge($this->url())->merge($this->action())->merge($this->controller())->all();
         }
 
     }

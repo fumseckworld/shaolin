@@ -11,7 +11,7 @@ use Eywa\Debug\Dumper;
 use Eywa\Exception\Kedavra;
 use Eywa\File\File;
 use Eywa\Http\Request\Request;
-use Eywa\Ioc\Container;
+use Eywa\Ioc\Ioc;
 use Eywa\Security\Authentication\Auth;
 use Eywa\Security\Crypt\Crypter;
 use Eywa\Security\Hashing\Hash;
@@ -80,6 +80,20 @@ if (!function_exists('form_invalid'))
 }
 
 
+if (!function_exists('files'))
+{
+
+    /**
+     * @param string $pattern
+     * @return array
+     */
+    function files(string $pattern):array
+    {
+        $files = glob($pattern);
+
+        return  is_bool($files) ? [] : $files;
+    }
+}
 if (!function_exists('base'))
 {
     /**
@@ -229,7 +243,7 @@ if (!function_exists('ioc'))
      */
     function ioc(string $key)
     {
-        return Container::ioc()->get($key);
+        return (new Ioc())->get($key);
     }
 }
 
@@ -535,7 +549,6 @@ if (!function_exists('is_true'))
      */
     function is_true($data, bool $run_exception = false, string $message = ''): bool
     {
-
         $x = $data === true;
 
         if ($run_exception && $x)
@@ -846,6 +859,7 @@ if (!function_exists('commands'))
         return $commands->all();
     }
 }
+
 if (!function_exists('controllers'))
 {
     /**
@@ -861,9 +875,9 @@ if (!function_exists('controllers'))
     {
 
         if ($directory !== 'Controllers')
-            $controllers =glob(base('app', 'Controllers',$directory,'*.php'));
+            $controllers =files(base('app', 'Controllers',$directory,'*.php'));
         else
-            $controllers = glob(base('app', 'Controllers','*.php'));
+            $controllers = files(base('app', 'Controllers','*.php'));
         $data = collect();
         if ($controllers)
         {

@@ -15,12 +15,13 @@
 		{
 			
 			protected static $defaultName = 'table:list';
-            /**
-             * @var array
-             */
-            private array $tables;
 
-            protected function configure()
+            /**
+             * @var array<string>
+             */
+            private array $tables = [];
+
+            protected function configure(): void
 			{
 				$this->setDescription("List all tables found in the base")->addArgument('env',InputArgument::REQUIRED,'The base environment');
 			}
@@ -31,7 +32,7 @@
 
 		        $table = new \Symfony\Component\Console\Helper\Table($output);
 
-		        $env = $input->getArgument('env');
+		        $env = strval($input->getArgument('env'));
 
                 not_in(['dev','prod'],$env,true,'The env must be dev or prod');
 

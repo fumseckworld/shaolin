@@ -4,6 +4,7 @@
 namespace Testing\Http {
 
 
+    use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
     use PHPUnit\Framework\TestCase;
 
@@ -20,15 +21,21 @@ namespace Testing\Http {
             $this->request = new Request();
         }
 
+        /**
+         * @throws Kedavra
+         */
         public function test_request()
         {
-            $this->assertNull($this->request->query()->get('a'));
-            $this->assertNull($this->request->request()->get('a'));
-            $this->assertEmpty($this->request->attribute()->get('a'));
-            $this->assertNull($this->request->cookie()->get('a'));
-            $this->assertNull($this->request->server()->get('a'));
-            $this->assertEmpty($this->request->file()->files());
-            $this->assertEmpty($this->request->content());
+            $this->expectException(Kedavra::class);
+            $this->request->query()->get('a');
+            $this->request->request()->get('a');
+            $this->request->attribute()->get('a');
+            $this->request->cookie()->get('a');
+            $this->request->server()->get('a');
+        }
+        public function test_ip()
+        {
+            $this->assertEquals(LOCALHOST_IP,$this->request->ip());
         }
     }
 }

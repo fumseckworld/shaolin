@@ -76,12 +76,12 @@ namespace Eywa\File {
          *
          * Check if a file exist
          *
-         * @param string[] $files
+         * @param array<string> $files
          *
          * @return bool
          *
          */
-        public static function exist(string ...$files): bool
+        public static function exist(array $files): bool
         {
 
             $data = collect();
@@ -111,12 +111,12 @@ namespace Eywa\File {
          *
          * @param string $pattern
          *
-         * @return array
+         * @return array<string>
          *
          */
         public static function search(string $pattern): array
         {
-            return glob($pattern);
+            return files($pattern);
         }
 
         /**
@@ -130,22 +130,19 @@ namespace Eywa\File {
          */
         public static function delete(string $filename): bool
         {
-            return self::exist($filename) ? unlink($filename) : false;
+            return self::exist([$filename]) ? unlink($filename) : false;
         }
 
         /***
          *
-         *
-         * @param array $data
+         * @param array<mixed> $data
          *
          * @return bool
-         *
-         * @throws Kedavra
          *
          */
         public function to_json(array $data): bool
         {
-            return is_not_false(file_put_contents($this->absolute_path(), json_encode($data, JSON_FORCE_OBJECT)));
+            return file_put_contents($this->absolute_path(), json_encode($data, JSON_FORCE_OBJECT)) !== false;
         }
 
         /**
@@ -159,14 +156,14 @@ namespace Eywa\File {
          */
         public static function remove_if_exist(string $filename): bool
         {
-            return self::exist($filename) ? self::delete($filename) : false;
+            return self::exist([$filename]) ? self::delete($filename) : false;
         }
 
         /**
          *
          * Get all lines
          *
-         * @return array
+         * @return array<string>
          *
          */
         public function lines(): array
@@ -278,7 +275,8 @@ namespace Eywa\File {
          */
         public function tell(): int
         {
-            return $this->filename->ftell();
+            $x = $this->filename->ftell();
+            return is_bool($x) ? 1 : $x;
         }
 
         /**
@@ -319,7 +317,12 @@ namespace Eywa\File {
          */
         public function read(): string
         {
-            return superior($this->size(), 0) ? $this->instance()->fread($this->size()) : '';
+            if (superior($this->size(),0))
+            {
+                $x = $this->instance()->fread($this->size());
+                return is_bool($x) ? '' : $x;
+            }
+            return '';
         }
 
         /**
@@ -593,12 +596,14 @@ namespace Eywa\File {
          *
          * Gets absolute path to file
          *
-         * @return false|string
+         * @return string
          *
          */
-        public function absolute_path()
+        public function absolute_path():string
         {
-            return $this->instance()->getRealPath();
+            $x = $this->instance()->getRealPath();
+
+            return is_bool($x) ? '' : $x;
         }
 
         /**

@@ -67,41 +67,37 @@ namespace Eywa\Http\Request {
         /**
          * Request constructor.
          *
-         * @param array $request
-         * @param array $query
-         * @param array $attributes
-         * @param array $cookies
-         * @param array $files
-         * @param array $server
-         * @param array $router_args
-         * @param null $content
-
+         * @param array<mixed> $request
+         * @param array<mixed> $query
+         * @param array<mixed> $attributes
+         * @param array<mixed> $cookies
+         * @param array<mixed> $files
+         * @param array<mixed> $server
+         * @param array<mixed> $router_args
+         *
+         * @throws Kedavra
+         *
          */
-        public function __construct(array $request = [], array  $query = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [],$content = null)
+        public function __construct(array $request = [], array  $query = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [])
         {
-            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args,$content);;
+            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args);
         }
-
-        /**
-         *
-         * The request content
-         *
-         */
-        private $content = null;
 
 
         /**
          *
          * Creates a new request with values from PHP's super globals.
          *
-         * @param array $args
+         * @param array<mixed> $args
          *
          * @return Request
          *
+         * @throws Kedavra
+         *
          */
-        public static function generate(array $args = []): Request
+        public static function make(array $args = []): Request
         {
-            return new static($_POST,$_GET,[],$_COOKIE,$_FILES,$_SERVER,$args);
+            return new self($_POST,$_GET,[],$_COOKIE,$_FILES,$_SERVER,$args);
         }
 
         /**
@@ -120,22 +116,14 @@ namespace Eywa\Http\Request {
          *
          * Check if the request match the validator rules
          *
-         * @param string<Validator> $validator
+         * @param Validator $validator
          *
          * @return Response
          *
-         * @throws Kedavra
-         *
          */
-        public function validate(string $validator): Response
+        public function validate(Validator $validator): Response
         {
-            is_false(class_exists($validator),true,"The validator was not found");
-
-            is_false(new $validator instanceof  Validator,true,"The class was not a validator");
-
-            is_false(method_exists($validator,'validate'),true,"The class has not a validate method");
-
-            return $validator::validate($this);
+            return call_user_func_array([$validator,'validate'],[$this]);
         }
 
         /**
@@ -211,37 +199,60 @@ namespace Eywa\Http\Request {
         }
 
 
-
         /**
-         * @return null
-         */
-        public function content()
-        {
-            return $this->content;
-        }
-
-
-        /**
-         * @param array $query
-         * @param array $request
-         * @param array $attributes
-         * @param array $cookies
-         * @param array $files
-         * @param array $server
-         * @param array $router_args
-         * @param $content
+         * @param array<mixed> $query
+         * @param array<mixed> $request
+         * @param array<mixed> $attributes
+         * @param array<mixed> $cookies
+         * @param array<mixed> $files
+         * @param array<mixed> $server
+         * @param array<mixed> $router_args
          *
+         * @throws Kedavra
          */
-        private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, array $router_args, $content)
+        private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, array $router_args):void
         {
             $this->query = new Bag($query);
             $this->request = new Bag($request);
-            $this->attribute = collect($attributes)->for([$this,'secure']);
+            $this->attribute = collect($attributes);
             $this->cookie = new Bag($cookies);
             $this->file = new UploadedFile($files);
             $this->server = new Bag($server);
-            $this->content = $content;
             $this->args = new Bag($router_args);
+        }
+
+        /**
+         * @return mixed
+         */
+        public function ip()
+        {
+            if (cli())
+                return LOCALHOST_IP;
+            $ip = $_SERVER['REMOTE_ADDR'];
+
+            if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && preg_match_all('#\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}#s', $_SERVER['HTTP_X_FORWARDED_FOR'], $matches))
+            {
+                foreach ($matches[0] AS $xip)
+                {
+                    if (!preg_match('#^(10|172\.16|192\.168)\.#', $xip))
+                    {
+                        $ip = $xip;
+                        break;
+                    }
+                }
+            }elseif (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP']))
+                $ip = $_SERVER['HTTP_CLIENT_IP'];
+            elseif (isset($_SERVER['HTTP_CF_CONNECTING_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CF_CONNECTING_IP']))
+                $ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+            elseif (isset($_SERVER['HTTP_X_REAL_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_X_REAL_IP']))
+                $ip = $_SERVER['HTTP_X_REAL_IP'];
+
+            return $ip;
+        }
+
+        public function local():bool
+        {
+            return $this->ip() === LOCALHOST_IP;
         }
     }
 }

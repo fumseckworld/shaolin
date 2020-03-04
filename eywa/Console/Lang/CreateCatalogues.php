@@ -3,9 +3,8 @@
 
 namespace Eywa\Console\Lang {
 
-
-    use DI\DependencyException;
-    use DI\NotFoundException;
+;
+    use Exception;
     use Eywa\Console\Shell;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
@@ -18,7 +17,7 @@ namespace Eywa\Console\Lang {
         protected static $defaultName = "catalogues:generate";
 
 
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription('Create all catalogues');
         }
@@ -27,9 +26,8 @@ namespace Eywa\Console\Lang {
          * @param InputInterface $input
          * @param OutputInterface $output
          * @return int
-         * @throws DependencyException
          * @throws Kedavra
-         * @throws NotFoundException
+         * @throws Exception
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
@@ -42,17 +40,17 @@ namespace Eywa\Console\Lang {
             {
                 if ($this->generate($locale))
                 {
-                    $io->title("Generating the $locale catalog");
-                    $io->success("The $locale catalog was successfully generated");
+                    $io->title(sprintf('Generating the %s cataloge',$locale));
+                    $io->success(sprintf('The %s catalog has been generated successfully',$locale));
                     $x->push(true);
                 }else{
-                    $io->warning("The $locale catalog already exist");
+                    $io->warning(sprintf('The %s catalog already exist',$locale));
                     $x->push(false);
                 }
             }
             if ($x->ok())
             {
-                $io->success("All catalogs was successfully generated");
+                $io->success("All catalogs has been successfully generated");
                 return 0;
             }
 
@@ -61,26 +59,33 @@ namespace Eywa\Console\Lang {
         }
 
         /**
-         * @param $locale
+         * @param string $locale
          * @return bool
-         * @throws DependencyException
-         * @throws NotFoundException
+         * @throws Exception
+         *
          */
-        public function generate($locale)
+        public function generate(string $locale): bool
         {
             if (!is_dir('po'))
                 mkdir('po');
             if (!is_dir("po/$locale"))
             {
-                $files = collect(glob(base('app','Views') .DIRECTORY_SEPARATOR.'*.php'))->merge(glob(base('app','Views').DIRECTORY_SEPARATOR. '*'.DIRECTORY_SEPARATOR.'*.php'))->join(' ');
+                $view_base = files(base('app','Views','*.php'));
+                $view_prof = files(base('app','Views','*','*.php'));
 
-                $app_name = env('APP_NAME','eywa');
-                $app_version = env('APP_VERSION','1.0');
-                $translator_email = env('TRANSLATOR_EMAIL','translator@free.fr');
+                $x = array_merge($view_base,$view_prof);
+
+                $files = collect($x)->join(' ');
+
+                $app_name = strval(env('APP_NAME','eywa'));
+
+                $app_version = strval(env('APP_VERSION','1.0'));
+
+                $translator_email = strval(env('TRANSLATOR_EMAIL','translator@free.fr'));
 
                 mkdir("po/$locale");
                 mkdir("po/$locale/LC_MESSAGES");
-                (new Shell("xgettext --keyword=_ --language=PHP --add-comments --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name --sort-output -o po/$app_name.pot -f $files"))->run();
+                (new Shell("xgettext --keyword=@trans --language=PHP --add-comments --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name --sort-output -o po/$app_name.pot -f $files"))->run();
                 (new Shell("msginit --locale=$locale -i po/$app_name.pot -o po/$locale/LC_MESSAGES/messages.po"))->run();
                 return true;
             }

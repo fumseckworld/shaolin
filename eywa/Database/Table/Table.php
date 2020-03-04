@@ -6,7 +6,6 @@ namespace Eywa\Database\Table {
 
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
-    use wapmorgan\FileTypeDetector\Detector;
 
 
     class Table
@@ -16,7 +15,7 @@ namespace Eywa\Database\Table {
          * The table name
          *
          */
-        private ?string $table = null;
+        private string $table = '';
 
         /**
          *
@@ -30,11 +29,13 @@ namespace Eywa\Database\Table {
          * The primary key of the table
          *
          */
-        private ?string $primary = null;
+        private string $primary = '';
 
         /**
          *
          * The table columns
+         *
+         * @var array<string>
          *
          */
         private array $columns = [];
@@ -50,9 +51,7 @@ namespace Eywa\Database\Table {
          */
         public function __construct(Connect $connect)
         {
-
             $this->connexion = $connect;
-
         }
 
         /**
@@ -127,6 +126,7 @@ namespace Eywa\Database\Table {
          *
          * @return string
          *
+         * @throws Kedavra
          *
          */
         public function quote(string $x): string
@@ -138,14 +138,14 @@ namespace Eywa\Database\Table {
          *
          * Check if a column exist
          *
-         * @param string[] $columns
+         * @param array<string> $columns
          *
          * @return bool
          *
          * @throws Kedavra
          *
          */
-        public function has(string ...$columns): bool
+        public function has(array $columns): bool
         {
             $boolean = collect();
             foreach ($columns as $column)
@@ -176,23 +176,21 @@ namespace Eywa\Database\Table {
                     assign($data, $this->table, $new_name);
 
                     return $data;
-                break;
                 case POSTGRESQL :
                 case SQLITE :
                     $data = $this->connexion->set("ALTER TABLE {$this->table} RENAME TO ?")->with(compact('new_name'))->execute();
                     assign($data, $this->table, $new_name);
-
                     return $data;
-                break;
                 case SQL_SERVER :
                     $data = $this->connexion->set("EXEC sp_rename '{$this->table}', '?'")->with(compact('new_name'))->execute();
                     assign($data, $this->table, $new_name);
 
                     return $data;
-                break;
+                default:
+                    return false;
 
             }
-            return false;
+
         }
 
 
@@ -200,7 +198,7 @@ namespace Eywa\Database\Table {
          *
          * Display all tables
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          */
@@ -209,21 +207,16 @@ namespace Eywa\Database\Table {
             switch ($this->connexion->driver())
             {
                 case MYSQL :
-
                     return $this->connexion->set('SHOW TABLES')->get(\PDO::FETCH_COLUMN);
-
-                break;
                 case POSTGRESQL :
                    return  $this->connexion->set("SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE' AND table_schema NOT IN ('pg_catalog', 'information_schema');")->get(COLUMNS);
-               break;
                case SQLITE :
                     return $this->connexion->set("SELECT tbl_name FROM sqlite_master")->get(COLUMNS);
-                break;
                 case SQL_SERVER:
                     return $this->connexion->set("SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE='BASE TABLE'")->get(COLUMNS);
-                break;
+                default:
+                    return [];
             }
-           return  [];
         }
 
         /**
@@ -239,7 +232,7 @@ namespace Eywa\Database\Table {
         {
             $this->check();
 
-            return $this->exist($this->table) ?  $this->connexion->set("DROP TABLE {$this->table}")->execute() : false;
+            return $this->connexion->set("DROP TABLE IF EXISTS {$this->table}")->execute();
         }
 
         /**
@@ -259,16 +252,12 @@ namespace Eywa\Database\Table {
             {
                 case MYSQL :
                     return $this->connexion->set("TRUNCATE TABLE {$this->table}")->execute();
-                break;
                 case POSTGRESQL :
                     return $this->connexion->set("TRUNCATE TABLE {$this->table} RESTART IDENTITY")->execute();
-                break;
                 case SQLITE :
-                    return $this->connexion->set("DELETE  FROM {$this->table}",'VACUUM')->execute();
-                break;
+                    return $this->connexion->set("DELETE  FROM {$this->table}")->set('VACUUM')->execute();
                 default:
                     return false;
-                break;
             }
         }
 
@@ -276,7 +265,7 @@ namespace Eywa\Database\Table {
          *
          * Get all columns inside the table
          *
-         * @return array
+         * @return array<string>
          *
          * @throws Kedavra
          *
@@ -313,7 +302,7 @@ namespace Eywa\Database\Table {
                 break;
                 default:
                     return  [];
-                break;
+
             }
             return  $this->columns;
         }
@@ -334,6 +323,7 @@ namespace Eywa\Database\Table {
 
             if (def($this->primary))
                 return $this->primary;
+
             switch ($this->connexion->driver())
             {
                 case MYSQL:
@@ -349,11 +339,10 @@ namespace Eywa\Database\Table {
 
                 break;
                 case SQL_SERVER:
-                  return  collect($this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME  ='{$this->table}'  AND CONSTRAINT_NAME LIKE 'PK%'")->get(COLUMNS))->first();
+                  $this->primary =   collect($this->connexion->set("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME  ='{$this->table}'  AND CONSTRAINT_NAME LIKE 'PK%'")->get(COLUMNS))->first();
                 break;
                 default:
                     return '';
-                break;
             }
             return  $this->primary;
         }
@@ -361,7 +350,7 @@ namespace Eywa\Database\Table {
         /**
          * @throws Kedavra
          */
-        private function check()
+        private function check():void
         {
             is_true(not_def($this->table),true,"Select a table");
         }

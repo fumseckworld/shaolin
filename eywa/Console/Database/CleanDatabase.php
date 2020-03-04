@@ -17,7 +17,7 @@ namespace Eywa\Console\Database {
     {
         protected static $defaultName = 'db:clean';
 
-        protected function configure()
+        protected function configure():void
         {
             $this->setDescription("Truncate all tables")->addArgument('env',InputArgument::REQUIRED,'The base environment');
         }
@@ -30,13 +30,11 @@ namespace Eywa\Console\Database {
          */
         public function execute(InputInterface $input,  OutputInterface $output)
         {
-            $env = $input->getArgument('env');
+            $env = strval($input->getArgument('env'));
 
             not_in(['dev','prod','any'],$env,true,"Only dev, prod or any must be used");
 
             $io = new SymfonyStyle($input,$output);
-
-
 
             if((new Base($env))->clean())
             {

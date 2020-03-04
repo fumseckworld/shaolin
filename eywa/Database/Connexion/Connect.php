@@ -25,6 +25,7 @@ namespace Eywa\Database\Connexion {
          *
          * The queries to execute
          *
+         * @var array<string>
          */
         private array $queries = [];
 
@@ -47,7 +48,7 @@ namespace Eywa\Database\Connexion {
          * The current base port
          *
          */
-        private ?int $port = null;
+        private int $port = 3306;
 
 
         /**
@@ -55,21 +56,14 @@ namespace Eywa\Database\Connexion {
          * The current base username
          *
          */
-        private ?string $username = null;
+        private string $username;
 
         /**
          *
          * The current base password
          *
          */
-        private ?string $password  = null;
-
-        /**
-         *
-         * The connexion options
-         *
-         */
-        private array $options = [];
+        private string $password;
 
         /**
          *
@@ -81,7 +75,7 @@ namespace Eywa\Database\Connexion {
         /**
          *
          * The sql query args
-         *
+         * @var array<mixed>
          */
         private array $args = [];
 
@@ -100,16 +94,15 @@ namespace Eywa\Database\Connexion {
             $this->port = $port;
             $this->username = $username;
             $this->password = $password;
-            $this->options =  config('connexion','options');
             $this->host = $host;
         }
 
         /**
          * @inheritDoc
          */
-        public function set(string ...$queries): Connexion
+        public function set(string $query): Connexion
         {
-            $this->queries = array_merge($this->queries,$queries);
+            $this->queries = array_merge($this->queries,[$query]);
             return $this;
         }
 
@@ -169,7 +162,7 @@ namespace Eywa\Database\Connexion {
                     return [];
                 }
             }
-            return $x;
+            return is_array($x) ? $x : [$x];
         }
 
         /**
@@ -227,27 +220,22 @@ namespace Eywa\Database\Connexion {
         }
 
         /**
-         * @param string[] $users
+         *
+         * @param string $user
+         *
          * @return bool
+         *
          * @throws Kedavra
+         *
          */
-        public function remove_user(string ...$users): bool
+        public function remove_user(string $user): bool
         {
             $x = collect();
             if (in_array($this->driver(),[MYSQL,POSTGRESQL]))
             {
-                foreach ($users as $user)
-                   $this->mysql() ? $x->push($this->set("DROP USER IF EXISTS '$user'@'{$this->host}'")->execute()) : $x->push($this->set("DROP USER IF EXISTS $user")->execute());
+                $this->mysql() ? $x->push($this->set("DROP USER IF EXISTS '$user'@'{$this->host}'")->execute()) : $x->push($this->set("DROP USER IF EXISTS $user")->execute());
             }
             return  $x->ok();
-        }
-
-        public function create_root()
-        {
-            if (collect($this->set('select rolname from pg_roles')->execute())->not_exist('root') && $this->postgresql())
-                return $this->set("CREATE USER root WITH PASSWORD 'root' SUPERUSER CREATEDB CREATEROLE INHERIT LOGIN")->execute();
-
-            return false;
         }
 
         /**
@@ -264,13 +252,10 @@ namespace Eywa\Database\Connexion {
             {
                 case MYSQL:
                     return $this->set("CREATE USER IF NOT EXISTS '$user'@'localhost' IDENTIFIED BY '$password';")->set("GRANT ALL PRIVILEGES ON $base.* TO '$user'@'localhost';")->execute();
-                break;
                 case POSTGRESQL:
                    return $this->set("CREATE USER $user WITH PASSWORD '$password' LOGIN;")->set("GRANT ALL PRIVILEGES ON DATABASE $base TO $user")->execute();
-                break;
                 default:
                     return false;
-                break;
             }
 
         }
@@ -290,10 +275,17 @@ namespace Eywa\Database\Connexion {
             return $this->pdo()->commit();
         }
 
-        public function info()
+        /**
+         *
+         * Get the connexion infos
+         *
+         * @return string
+         *
+         */
+        public function info(): string
         {
 
-            return collect(get_object_vars($this))->del('connexion','queries','args','options')->each(function ($k,$v){
+            return collect(get_object_vars($this))->del(['connexion','queries','args','options'])->each(function ($k,$v){
                 return "\$$k=$v;";
             })->join('');
 
@@ -471,8 +463,7 @@ namespace Eywa\Database\Connexion {
         public function query(string $query)
         {
             $x = $this->pdo()->query($query);
-
-            return $x->fetch(PDO::FETCH_COLUMN);
+            return is_bool($x) ? $x : $x->fetch(PDO::FETCH_COLUMN);
         }
 
         /**
@@ -480,7 +471,7 @@ namespace Eywa\Database\Connexion {
          */
         public function development(): Connect
         {
-            return new static(env('DEVELOP_DB_DRIVER','mysql'),env('DEVELOP_DB_NAME','ikran'),env('DEVELOP_DB_USERNAME','ikran'),env('DEVELOP_DB_PASSWORD','ikran'),intval(env('DEVELOP_DB_PORT',3306)),env('DEVELOP_DB_HOST','localhost'));
+            return new static(strval(env('DEVELOP_DB_DRIVER','mysql')),strval(env('DEVELOP_DB_NAME','ikran')),strval(env('DEVELOP_DB_USERNAME','ikran')),strval(env('DEVELOP_DB_PASSWORD','ikran')),intval(env('DEVELOP_DB_PORT',3306)),strval(env('DEVELOP_DB_HOST','localhost')));
         }
 
         /**
@@ -491,7 +482,7 @@ namespace Eywa\Database\Connexion {
         {
             if (is_null($this->connexion))
             {
-                $this->connexion = equal($this->driver,SQL_SERVER) ? new PDO("{$this->driver}:Serve={$this->host};Database={$this->base}",$this->username,$this->password,config('connexion','options')) : (equal($this->driver,SQLITE) ? new PDO("sqlite:{$this->base}") : new PDO("{$this->driver}:host={$this->host};port={$this->port};dbname={$this->base}", $this->username, $this->password, config('connexion','options')));
+                $this->connexion = equal($this->driver,SQL_SERVER) ? new PDO("{$this->driver}:Serve={$this->host};Database={$this->base}",$this->username,$this->password,[]) : (equal($this->driver,SQLITE) ? new PDO("sqlite:{$this->base}") : new PDO("{$this->driver}:host={$this->host};port={$this->port};dbname={$this->base}", $this->username, $this->password, []));
 
                 $this->connexion->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
                 try {

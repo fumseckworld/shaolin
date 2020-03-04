@@ -14,7 +14,7 @@
 		
 		protected static $defaultName = "make:view";
 		
-		protected function configure()
+		protected function configure():void
 		{
 			
 			$this->setDescription('Generate a view')->addArgument('view', InputArgument::REQUIRED, 'the view name')->addArgument('dir', InputArgument::OPTIONAL, 'the view dir');
@@ -31,7 +31,7 @@
             $io = new SymfonyStyle($input,$output);
 
             $io->title('Generation of the view');
-			$dir = $input->getArgument('dir') ?? '';
+			$dir = strval($input->getArgument('dir')) ?? '';
 
 			if (def($dir))
             {
@@ -41,24 +41,24 @@
 
             }
 			
-			$view =  collect(explode('.', $input->getArgument('view')))->first();
+			$view =  collect(explode('.', strval($input->getArgument('view'))))->first();
 			
 			append($view, '.php');
 			$view = def($dir) ? base('app','Views',$dir,$view) : base('app','Views',$view);
 
 			if (file_exists($view))
             {
-                $io->error('The view already exist');
+                $io->error(sprintf('The %s view already exist',$view));
                 return 1;
             }
 
 			if (touch($view))
 			{
-                $io->success('The view was generated successfully');
+                $io->success(sprintf('The %s view has been generated successfully',$view));
                 return 0;
 
             }
-            $io->error('Failed to generate the view');
+            $io->error(sprintf('The %s view generation has failed',$view));
 			return 1;
 
 

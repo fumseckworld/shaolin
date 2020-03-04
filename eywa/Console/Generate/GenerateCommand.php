@@ -8,46 +8,94 @@ namespace Eywa\Console\Generate {
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
+    use Symfony\Component\Console\Style\SymfonyStyle;
 
     class GenerateCommand extends Command
     {
 
-        protected static $defaultName = "make:command";
+        protected static $defaultName = 'make:console';
 
-        protected function configure()
+        protected function configure():void
         {
 
-            $this->setDescription('Generate a command')->addArgument('cmd', InputArgument::REQUIRED, 'the command name');
+            $this
+                // the short description shown while running "php bin/console list"
+                ->setDescription('Create a new console')
+                // the full command description shown when running the command with
+                // the "--help" option
+                ->setHelp('php shaolin make:model model table')->addArgument('console', InputArgument::REQUIRED, 'The console name.');
         }
 
         /**
          * @param InputInterface $input
          * @param OutputInterface $output
          *
-         * @return int|void|null
+         * @return int|null
          * @throws Kedavra
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            $io = new SymfonyStyle($input,$output);
 
-            $command = ucfirst(strtolower(str_replace('Command', '', $input->getArgument('cmd')))) . 'Command';
+            $x = strval($input->getArgument('console'));
 
-
-            $file = base('app') . DIRECTORY_SEPARATOR . 'Console' . DIRECTORY_SEPARATOR . $command . '.php';
-
-            if (!file_exists($file))
+            if(preg_match("#^[a-z]([a-z_]+)$#",$x) !== 1)
             {
-                if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\n\t\tnamespace App\Console;\n\n\t\tuse Symfony\Component\Console\Command\Command;\n\t\tuse Symfony\Component\Console\Input\InputInterface;\n\t\tuse Symfony\Component\Console\Output\OutputInterface;\n\n\t\tclass {$command} extends Command\n\t\t{\n\n\t\t\tprotected static \$defaultName = '';\n\n\t\t\tprotected function configure()\n\t\t\t{\n\t\t\t\t\$this->setDescription('');\n\t\t\t}\n\n\t\t\tpublic function interact(InputInterface \$input, OutputInterface \$output)\n\t\t\t{\n\n\n\t\t\t}\n\n\t\t\tpublic function execute(InputInterface \$input, OutputInterface \$output)\n\t\t\t{\n\n\t\t\t\treturn 0;\n\t\t\t}\n\n\t\t}\n")->flush())
-                    $output->writeln('<info>The command has been generated successfully</info>');
-
-                return 0;
+                $io->error('You must use snake case syntax to generate the console');
+                return  1;
             }
-            else
+
+            $io->title('Generation of the console');
+
+
+            $console = collect(explode('_',$x))->for('ucfirst')->join('');
+
+            $namespace = 'App\Console';
+
+            $file = base( 'app' , 'Console' , "$console.php");
+
+            if (file_exists($file))
             {
-                $output->writeln('<bg=red;fg=white>The view already exist </>');
+                $io->error(sprintf('The %s console already exist',$console));
 
                 return 1;
             }
+            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+
+
+namespace $namespace;
+
+
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
+class $console extends Command
+{
+    protected static \$defaultName = '';
+
+    protected function configure(): void
+    {
+
+        \$this->setDescription('');
+
+    }
+    public function execute(InputInterface \$input, OutputInterface \$output): int
+    {
+        \$io = new SymfonyStyle(\$input,\$output);
+
+
+        return 0;
+    }
+
+}")->flush()) {
+                $io->success(sprintf('The %s console has been created successfully',$console));
+
+                return 0;
+            }
+            $io->error(sprintf('The %s console creation has failede',$console));
+            return 1;
         }
 
     }

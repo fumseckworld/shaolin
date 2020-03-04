@@ -122,9 +122,10 @@ if (!function_exists('env'))
     /**
      *
      * @param $variable
+     * @param mixed $default
      *
-     * @param string $default
      * @return array|false|string
+     *
      * @throws Exception
      */
     function env($variable,$default = '')

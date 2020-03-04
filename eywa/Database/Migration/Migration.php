@@ -80,6 +80,8 @@ namespace Eywa\Database\Migration {
          *
          * All constrait for a column
          *
+         * @var array<string>
+         *
          */
         protected static array $constraint = [];
 
@@ -111,6 +113,9 @@ namespace Eywa\Database\Migration {
          * @var string
          */
         private static string $mode;
+        /**
+         * @var string
+         */
         private static string $env;
 
 
@@ -162,8 +167,10 @@ namespace Eywa\Database\Migration {
          * @param string $column
          * @param string $type
          * @param int $size
-         * @param string[] $constraints
+         * @param array<int,string> $constraints
+         *
          * @return Migration
+         *
          *
          * @throws Kedavra
          */
@@ -202,11 +209,103 @@ namespace Eywa\Database\Migration {
         }
 
         /**
-         * @param string ...$names
+         * @param string $name
+         *
          * @return bool
+         *
+         * @throws Kedavra
          */
-        public function drop_foreign(string ...$names): bool
+        public function drop_foreign_key(string $name): bool
         {
+            $table = static::$table;
+
+            switch ($this->driver())
+            {
+                case MYSQL:
+                    return  $this->connexion()->set(sprintf('ALTER TABLE %s DROP FOREIGN KEY %s',$table,$name))->execute();
+
+                case POSTGRESQL:
+                    return  $this->connexion()->set(sprintf('ALTER TABLE %s DROP CONSTRAINT %s',$table,$name))->execute();
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         *
+         * Rename the table
+         *
+         * @param string $new_name
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function rename(string $new_name):bool
+        {
+            $table = static::$table;
+            switch ($this->driver())
+            {
+                case MYSQL:
+                    return  $this->connexion()->set(sprintf('RENAME TABLE %s TO %s',$table,$new_name))->execute();
+                case POSTGRESQL:
+                    return  $this->connexion()->set(sprintf('ALTER TABLE %s RENAME TO %s',$table,$new_name))->execute();
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         *
+         * Rename the table
+         *
+         * @param string $column_name
+         * @param string $new_name
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         */
+        public function rename_column(string $column_name,string $new_name): bool
+        {
+            $table = static::$table;
+            switch ($this->driver())
+            {
+                case MYSQL:
+                case POSTGRESQL:
+                    return  $this->connexion()->set(sprintf('ALTER TABLE %s RENAME COLUMN %s TO %s',$table,$column_name,$new_name))->execute();
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         *
+         * Add a foreign key
+         *
+         * @param string $name
+         * @param string $reference
+         * @param string $column
+         * @param string $on
+         * @param string $do
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function add_foreign_key(string $name,string $reference,string $column,string $on,string $do): bool
+        {
+            $table = static::$table;
+            switch ($this->driver())
+            {
+                case MYSQL:
+                case POSTGRESQL:
+                    return  $this->connexion()->set(sprintf('ALTER TABLE %s ADD FOREIGN KEY (%s) REFERENCES %s(%s)  ON %s  %s;',$table,$name,$reference,$column,$on,$do))->execute();
+                default:
+                    return false;
+            }
 
         }
 
@@ -221,26 +320,25 @@ namespace Eywa\Database\Migration {
         private function primary(string $column): Migration
         {
             static::$current_column = $column;
-
+            $size = 0;
             switch ($this->driver())
             {
                 case MYSQL:
                     $type = 'INT';
                     $constraints = ['PRIMARY KEY NOT NULL AUTO_INCREMENT'];
+                    static::$columns->push(compact('column', 'type','size','constraints'));
                 break;
                 case POSTGRESQL:
                     $type = 'SERIAL';
                     $constraints =  ['PRIMARY KEY'];
+                    static::$columns->push(compact('column', 'type','size','constraints'));
                 break;
                 case SQLITE:
                     $type = 'INTEGER';
                     $constraints = ['PRIMARY KEY AUTOINCREMENT'];
+                    static::$columns->push(compact('column', 'type','size','constraints'));
                 break;
             }
-            $size = 0;
-
-            static::$columns->push(compact('column', 'type','size','constraints'));
-
 
             return $this;
         }
@@ -422,12 +520,12 @@ namespace Eywa\Database\Migration {
 
         /**
          *
-         * @return array
+         * @return array<string>
          *
          * @throws Kedavra
          *
          */
-        public function columns()
+        public function columns():array
         {
             return static::$env === 'dev' ? (new Sql(development(),static::$table))->columns() : (new Sql(production(),static::$table))->columns();
         }
@@ -442,16 +540,12 @@ namespace Eywa\Database\Migration {
             {
                 case MYSQL:
                     return 'DATETIME';
-                break;
                 case POSTGRESQL:
                     return 'TIMESTAMP';
-                break;
                 case SQLITE:
                     return 'TEXT';
-                break;
                 default:
                     return '';
-                break;
             }
         }
 
@@ -466,15 +560,13 @@ namespace Eywa\Database\Migration {
             {
                 case MYSQL:
                     return  'VARCHAR';
-                break;
                 case POSTGRESQL:
                     return 'character varying';
-                break;
                 case SQLITE:
-                break;
+                    return  'text';
                 default:
                     return  '';
-                break;
+
             }
         }
 
@@ -488,14 +580,11 @@ namespace Eywa\Database\Migration {
             {
                 case MYSQL:
                     return 'LONGTEXT';
-                break;
                 case POSTGRESQL:
                 case SQLITE:
                     return 'TEXT';
-                break;
                 default:
                     return '';
-                break;
             }
         }
 
