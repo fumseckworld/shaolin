@@ -829,7 +829,7 @@ namespace Eywa\Collection {
         public function del(array $data): Collect
         {
             foreach ($data as $datum)
-                $this->exist($datum) ? $this->remove_value($datum) : $this->remove($datum);
+                $this->exist($datum) ? $this->remove_value([$datum]) : $this->remove([$datum]);
 
             return $this->checkout($this->all());
         }

@@ -222,12 +222,12 @@ namespace Eywa\Database\Migration {
                             if ($result->ok())
                             {
                                 $io->success($up_success_message);
-                                $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                                $sql->create(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
                                 return  0;
                             }else
                             {
 
-                                $sql->where('version',EQUAL,$date)->destroy();
+                                $sql->where('version',EQUAL,$date)->delete();
                                 $io->error($up_error_message);
                                 return 1;
                             }
@@ -266,7 +266,7 @@ namespace Eywa\Database\Migration {
                             if ($result->ok())
                             {
                                 $io->success($down_success_message);
-                                $sql->where('version',EQUAL,$date)->destroy();
+                                $sql->where('version',EQUAL,$date)->delete();
 
                                 return  0;
                             }else
@@ -313,12 +313,12 @@ namespace Eywa\Database\Migration {
                         if ($result->ok())
                         {
                             $io->success($up_success_message);
-                            $sql->save(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            $sql->create(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
                             return  0;
                         }else
                         {
 
-                            $sql->where('version',EQUAL,$date)->destroy();
+                            $sql->where('version',EQUAL,$date)->delete();
                             $io->error($up_error_message);
                             return 1;
                         }
@@ -356,7 +356,7 @@ namespace Eywa\Database\Migration {
                         if ($result->ok())
                         {
                             $io->success($down_success_message);
-                            $sql->where('version',EQUAL,$date)->destroy();
+                            $sql->where('version',EQUAL,$date)->delete();
 
                             return  0;
                         }else

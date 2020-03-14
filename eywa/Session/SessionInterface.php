@@ -25,7 +25,7 @@ namespace Eywa\Session {
          * Set a value in the session
          *
          * @param string $key
-         * @param $value
+         * @param mixed $value
          *
          * @return $this
          *
@@ -49,10 +49,12 @@ namespace Eywa\Session {
          *
          * Remove a key
          *
-         * @param string[] $keys
+         * @param array<mixed> $keys
+         *
          * @return bool
+         *
          */
-        public function destroy(string ...$keys): bool;
+        public function destroy(array $keys): bool;
 
         /**
          *
@@ -67,7 +69,7 @@ namespace Eywa\Session {
          *
          * Get all values
          *
-         * @return array
+         * @return array<mixed>
          *
          */
         public function all(): array;

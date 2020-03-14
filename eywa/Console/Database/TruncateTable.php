@@ -5,6 +5,7 @@
 
         use Eywa\Database\Connexion\Connect;
         use Eywa\Database\Table\Table;
+        use Eywa\Exception\Kedavra;
         use Symfony\Component\Console\Command\Command;
         use Symfony\Component\Console\Input\InputArgument;
         use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +21,13 @@
 			{
 				$this->setDescription("Truncate a table")->addArgument('table',InputArgument::REQUIRED,'The table name')->addArgument('env',InputArgument::REQUIRED,'The base environment');
 			}
-			
+
+            /**
+             * @param InputInterface $input
+             * @param OutputInterface $output
+             * @return int
+             * @throws Kedavra
+             */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
 		        $io = new SymfonyStyle($input,$output);
@@ -31,10 +38,10 @@
 
                 if (equal($env,'dev'))
                 {
-                    $success = (new Table(development()))->from($table)->truncate();
+                    $success = (new Table(development(),$table))->truncate();
                 }else{
 
-                    $success = (new Table(production()))->from($table)->truncate();
+                    $success = (new Table(production(),$table))->truncate();
                 }
 
 

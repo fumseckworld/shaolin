@@ -7,6 +7,9 @@ namespace Eywa\Console\Lang {
     use Exception;
     use Eywa\Console\Shell;
     use Eywa\Exception\Kedavra;
+    use Gettext\Generator\PoGenerator;
+    use Gettext\Loader\PoLoader;
+    use Gettext\Scanner\PhpScanner;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -83,10 +86,7 @@ namespace Eywa\Console\Lang {
 
                 $translator_email = strval(env('TRANSLATOR_EMAIL','translator@free.fr'));
 
-                mkdir("po/$locale");
-                mkdir("po/$locale/LC_MESSAGES");
-                (new Shell("xgettext --keyword=@trans --language=PHP --add-comments --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name --sort-output -o po/$app_name.pot -f $files"))->run();
-                (new Shell("msginit --locale=$locale -i po/$app_name.pot -o po/$locale/LC_MESSAGES/messages.po"))->run();
+
                 return true;
             }
             return false;

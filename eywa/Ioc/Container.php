@@ -12,6 +12,6 @@ namespace Eywa\Ioc {
      */
     abstract class Container extends Ioc
     {
-        abstract public function build(): Ioc;
+        abstract public function add(): Ioc;
     }
 }

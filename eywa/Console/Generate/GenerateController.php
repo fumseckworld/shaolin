@@ -66,7 +66,7 @@ namespace Eywa\Console\Generate {
 
             $namespace = def($directory) ? "App\Controllers\\$directory" : 'App\Controllers';
 
-            $layout = def($layout) ? "protected static string \$layout = '$layout'" :  "protected static string \$layout = 'layout';";
+            $layout = def($layout) ? "protected static string \$layout = '$layout';" :  "protected static string \$layout = 'layout';";
 
             $directory = def($directory) ? "protected static string \$directory = '$directory';" : '';
 
@@ -84,7 +84,21 @@ namespace $namespace {
     
         $directory
         
-     
+       /**
+        * @inheritDoc
+        */
+        public function before_action(Request \$request): void
+        {
+            // TODO: Implement before_action() method.
+        }
+        
+       /**
+        * @inheritDoc
+        */
+        public function after_action(Request \$request): void
+        {
+            // TODO: Implement after_action() method.
+        }
         
     }
 }")->flush()) {

@@ -75,7 +75,7 @@ namespace Eywa\Console\Lang {
                 $app_version = strval(env('APP_VERSION','1.0'));
                 $translator_email = strval(env('TRANSLATOR_EMAIL','translator@free.fr'));
 
-                if((new Shell("xgettext --keyword=_ --language=PHP --add-comments  --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name  --sort-output -o $pot $files"))->run() &&    (new Shell("msgmerge --update $po $pot"))->run())
+                if((new Shell("xgettext --keyword=@trans --language=PHP --add-comments  --msgid-bugs-address=$translator_email --package-version=$app_version  --package-name=$app_name  --sort-output -o $pot $files"))->run() &&    (new Shell("msgmerge --update $po $pot"))->run())
                     return true;
 
                 return false;

@@ -28,7 +28,7 @@ namespace Eywa\Database\Migration {
          */
         public function down(): bool
         {
-            return $this->drop('migrations');
+            return $this->drop();
         }
     }
 }

@@ -3,13 +3,10 @@
 
 namespace Eywa\Database\Migration {
 
-    use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Query\Sql;
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
-
 
     /**
      * Class Migration
@@ -17,47 +14,33 @@ namespace Eywa\Database\Migration {
      * @package Eywa\Database\Migration
      *
      */
-    abstract class Migration
+    abstract class Migration implements Evolution
     {
 
         /**
          *
-         * The current table to manage
-         *
-         */
-        public static string $table = '';
-
-        /**
-         *
-         * The generated migration date
+         * The creation time of the migration
          *
          */
         public static string $created_at = '';
 
         /**
          *
-         * The migrate success message
+         * The table name
+         *
+         */
+        public static string $table = '';
+
+        /**
+         *
+         * The migration success message
          *
          */
         public static string $up_success_message = '';
 
         /**
          *
-         * The title used to explain the migration command
-         *
-         */
-        public static string $up_title = '';
-
-        /**
-         *
-         * The title used to explain the rollback command
-         *
-         */
-        public static string $down_title = '';
-
-        /**
-         *
-         * The migrate error message
+         * The migration error message
          *
          */
         public static string $up_error_message = '';
@@ -71,293 +54,101 @@ namespace Eywa\Database\Migration {
 
         /**
          *
-         * The rolback fail message
+         * The rollback error message
          *
          */
         public static string $down_error_message = '';
 
         /**
          *
-         * All constrait for a column
-         *
-         * @var array<string>
+         * The migration title
          *
          */
-        protected static array $constraint = [];
+        public static string $up_title = '';
 
         /**
          *
-         * Used to store the current column to save correct constraints
+         * The rollback title
          *
          */
-        protected static string $current_column ='';
+        public static string $down_title = '';
 
         /**
          *
-         * All added columns
+         * All columns to manage
          *
          */
-        protected static Collect $columns;
+        private static Collect $columns;
 
         /**
-         * @var Collect
+         *
+         * All foreign keys to manage
+         *
          */
         private static Collect $foreign;
 
         /**
-         * @var Connect
-         */
-        private static Connect $connect;
-
-        /**
-         * @var string
-         */
-        private static string $mode;
-        /**
-         * @var string
+         *
+         * The dev or prod environment
+         *
          */
         private static string $env;
 
+        /**
+         *
+         * The down or up mode
+         *
+         */
+        private static string $mode;
 
         /**
          *
-         * The method to updagrade table
+         * The instance to manage all tables
+         *
+         */
+        private Table $db;
+
+        /**
+         *
+         * The migration up code
          *
          * @return bool
          *
          * @throws Kedavra
-         * @throws Exception
          *
          */
         abstract public function up(): bool;
 
         /**
          *
-         * The method to reset change
+         * The migration down code
          *
          * @return bool
          *
          * @throws Kedavra
-         * @throws Exception
          *
          */
         abstract public function down(): bool;
 
-
         /**
-         * Migration constructor.
-         *
-         * @param Connect $connect
-         * @param string $mode
-         * @param string $env
+         * @inheritDoc
          */
-        public function __construct(Connect $connect,string $mode,string $env)
+        public function __construct(string $mode, string $env)
         {
             static::$columns = collect();
             static::$foreign = collect();
-            static::$connect = $connect;
             static::$env   = $env;
             static::$mode  = $mode;
         }
 
         /**
-         *
-         * Add a new column
-         *
-         * @param string $column
-         * @param string $type
-         * @param int $size
-         * @param array<int,string> $constraints
-         *
-         * @return Migration
-         *
-         *
-         * @throws Kedavra
-         */
-        public function add(string $column,string $type,int $size = 0,string ...$constraints): Migration
-        {
-            if (equal($type, 'primary'))
-                return $this->primary($column);
-
-            static::$current_column = $column;
-
-            static::$columns->push(compact('column', 'type', 'size','constraints'));
-
-            return  $this;
-        }
-
-        /**
-         * @param string $column
-         * @param string $table
-         * @param string $table_column
-         * @param string $on
-         * @param string $do
-         *
-         * @return Migration
-         *
-         */
-        public function foreign(string $column, string $table, string $table_column, string $on = '', string $do =''): Migration
-        {
-            $constraint = " FOREIGN KEY ($column) REFERENCES $table($table_column)";
-
-            if (def($on,$do))
-                append($constraint," ON $on $do");
-
-            static::$foreign->push(compact('column', 'constraint'));
-
-            return $this;
-        }
-
-        /**
-         * @param string $name
-         *
-         * @return bool
-         *
-         * @throws Kedavra
-         */
-        public function drop_foreign_key(string $name): bool
-        {
-            $table = static::$table;
-
-            switch ($this->driver())
-            {
-                case MYSQL:
-                    return  $this->connexion()->set(sprintf('ALTER TABLE %s DROP FOREIGN KEY %s',$table,$name))->execute();
-
-                case POSTGRESQL:
-                    return  $this->connexion()->set(sprintf('ALTER TABLE %s DROP CONSTRAINT %s',$table,$name))->execute();
-                default:
-                    return false;
-            }
-        }
-
-        /**
-         *
-         * Rename the table
-         *
-         * @param string $new_name
-         *
-         * @return bool
-         *
-         * @throws Kedavra
-         *
-         */
-        public function rename(string $new_name):bool
-        {
-            $table = static::$table;
-            switch ($this->driver())
-            {
-                case MYSQL:
-                    return  $this->connexion()->set(sprintf('RENAME TABLE %s TO %s',$table,$new_name))->execute();
-                case POSTGRESQL:
-                    return  $this->connexion()->set(sprintf('ALTER TABLE %s RENAME TO %s',$table,$new_name))->execute();
-                default:
-                    return false;
-            }
-        }
-
-        /**
-         *
-         * Rename the table
-         *
-         * @param string $column_name
-         * @param string $new_name
-         *
-         * @return bool
-         *
-         * @throws Kedavra
-         */
-        public function rename_column(string $column_name,string $new_name): bool
-        {
-            $table = static::$table;
-            switch ($this->driver())
-            {
-                case MYSQL:
-                case POSTGRESQL:
-                    return  $this->connexion()->set(sprintf('ALTER TABLE %s RENAME COLUMN %s TO %s',$table,$column_name,$new_name))->execute();
-                default:
-                    return false;
-            }
-        }
-
-        /**
-         *
-         * Add a foreign key
-         *
-         * @param string $name
-         * @param string $reference
-         * @param string $column
-         * @param string $on
-         * @param string $do
-         *
-         * @return bool
-         *
-         * @throws Kedavra
-         *
-         */
-        public function add_foreign_key(string $name,string $reference,string $column,string $on,string $do): bool
-        {
-            $table = static::$table;
-            switch ($this->driver())
-            {
-                case MYSQL:
-                case POSTGRESQL:
-                    return  $this->connexion()->set(sprintf('ALTER TABLE %s ADD FOREIGN KEY (%s) REFERENCES %s(%s)  ON %s  %s;',$table,$name,$reference,$column,$on,$do))->execute();
-                default:
-                    return false;
-            }
-
-        }
-
-        /**
-         * @param string $column
-         *
-         * @return Migration
-         *
-         * @throws Kedavra
-         *
-         */
-        private function primary(string $column): Migration
-        {
-            static::$current_column = $column;
-            $size = 0;
-            switch ($this->driver())
-            {
-                case MYSQL:
-                    $type = 'INT';
-                    $constraints = ['PRIMARY KEY NOT NULL AUTO_INCREMENT'];
-                    static::$columns->push(compact('column', 'type','size','constraints'));
-                break;
-                case POSTGRESQL:
-                    $type = 'SERIAL';
-                    $constraints =  ['PRIMARY KEY'];
-                    static::$columns->push(compact('column', 'type','size','constraints'));
-                break;
-                case SQLITE:
-                    $type = 'INTEGER';
-                    $constraints = ['PRIMARY KEY AUTOINCREMENT'];
-                    static::$columns->push(compact('column', 'type','size','constraints'));
-                break;
-            }
-
-            return $this;
-        }
-
-
-        /***
-         *
-         * Create the table
-         *
-         * @return bool
-         *
-         * @throws Kedavra
+         * @inheritDoc
          */
         public function create(): bool
         {
             $table = static::$table;
 
             $sql = "CREATE TABLE IF NOT EXISTS $table  (";
-
 
             foreach (static::$columns->all() as $column)
             {
@@ -371,23 +162,11 @@ namespace Eywa\Database\Migration {
 
                 $size = $x->get('size') ?? 0;
 
-                switch ($type)
-                {
-                    case 'string':
-                        append($sql, "$column {$this->text()} ");
-                    break;
-                    case 'longtext':
-                        append($sql, "$column {$this->long_text()} ");
-                    break;
-                    case 'datetime':
-                        append($sql, "$column {$this->datetime()} ");
-                    break;
-                    default:
-                        append($sql,"$column $type ");
-                    break;
-                }
 
-                if ($size != 0)
+                append($sql,"$column $type ");
+
+
+                if ($size !== 0)
                     append($sql," ($size) ");
 
                 append($sql," $constraint , ");
@@ -411,26 +190,34 @@ namespace Eywa\Database\Migration {
 
             static::$columns->clear();
 
-            return static::connexion()->set($sql)->execute();
+            return $this->connexion()->set($sql)->execute();
         }
 
+        /**
+         * @inheritDoc
+         */
+        public function drop(): bool
+        {
+            return $this->db->drop();
+        }
 
         /**
-         *
-         * Update the table
-         *
-         * @return bool
-         *
-         * @throws Kedavra
+         * @inheritDoc
+         */
+        public function truncate(): bool
+        {
+            return $this->db->truncate();
+        }
+
+        /**
+         * @inheritDoc
          */
         public function update(): bool
         {
             $table = static::$table;
 
-
-
-
             $sql = '';
+
             foreach (static::$columns->all() as $column)
             {
 
@@ -443,21 +230,8 @@ namespace Eywa\Database\Migration {
 
                 $column_type = '';
 
-                switch ($type)
-                {
-                    case 'string':
-                        append($column_type, "$column {$this->text()} ");
-                    break;
-                    case 'longtext':
-                        append($column_type, "$column {$this->long_text()} ");
-                    break;
-                    case 'datetime':
-                        append($column_type, "$column {$this->datetime()} ");
-                    break;
-                    default:
-                        append($column_type,$column, " $type ");
-                    break;
-                }
+
+                append($column_type,"$column $type");
 
                 $x = " $column_type";
 
@@ -468,147 +242,93 @@ namespace Eywa\Database\Migration {
                 append($sql,$x);
             }
 
-              return  static::connexion()->set("ALTER TABLE $table ADD COLUMN $sql;")->execute();
-
-
-
+            return  $this->connexion()->set("ALTER TABLE $table ADD COLUMN $sql;")->execute();
         }
 
         /**
-         *
-         * Remove columns
-         *
-         * @param string ...$columns
-         *
-         * @return bool
-         *
-         * @throws Kedavra
+         * @inheritDoc
          */
-        public function drop_columns(string ...$columns): bool
+        public function remove(array $columns): bool
         {
-            if ($this->columns() === $columns)
-              return $this->drop(static::$table);
+            return $this->db->remove($columns);
+        }
 
-            $connexion = $this->connexion();
-            $result = collect();
+        /**
+         * @inheritDoc
+         */
+        public function rename(string $new_name): bool
+        {
+            return $this->db->rename($new_name);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function refresh(string $colunn, string $new_column_name): bool
+        {
+           return $this->db->rename_column($colunn,$new_column_name);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function remove_foreign(array $columns): bool
+        {
             $table = static::$table;
-            foreach (static::$columns->all() as $column)
+
+            $x = collect();
+            foreach ($columns as $column)
             {
-                $x = $column['column'];
-                $result->push($connexion->set("ALTER TABLE $table DROP $x")->execute());
+                switch ($this->connexion()->driver())
+                {
+                    case MYSQL:
+                        $x->push($this->connexion()->set(sprintf('ALTER TABLE %s DROP FOREIGN KEY %s',$table,$column))->execute());
+                    break;
+                    case POSTGRESQL:
+                        $x->push($this->connexion()->set(sprintf('ALTER TABLE %s DROP CONSTRAINT %s',$table,$column))->execute());
+                    break;
+                    default:
+                        return false;
+                }
             }
+            return $x->ok();
 
-            static::$columns->clear();
-
-            return $result->ok();
         }
 
         /**
-         *
-         * Remove the table
-         *
-         * @param string $table
-         *
-         * @return bool
-         *
-         * @throws Kedavra
+         * @inheritDoc
          */
-        public function drop(string $table): bool
+        public function add(string $column, string $type, int $size = 0, array $constraints = []): Evolution
         {
-            return equal(static::$env,'dev') ? (new Table(development()))->from($table)->drop() : (new Table(production()))->from($table)->drop() ;
+            static::$columns->push(compact('column', 'type', 'size','constraints'));
+
+            return  $this;
         }
 
         /**
-         *
-         * @return array<string>
-         *
-         * @throws Kedavra
-         *
+         * @inheritDoc
          */
-        public function columns():array
+        public function foreign(string $column, string $reference, string $reference_column, string $on = '', string $do = ''): Evolution
         {
-            return static::$env === 'dev' ? (new Sql(development(),static::$table))->columns() : (new Sql(production(),static::$table))->columns();
-        }
+            $constraint = " FOREIGN KEY ($column) REFERENCES $reference($reference_column)";
 
-        /**
-         * @return string
-         * @throws Kedavra
-         */
-        private function datetime()
-        {
-            switch ($this->driver())
-            {
-                case MYSQL:
-                    return 'DATETIME';
-                case POSTGRESQL:
-                    return 'TIMESTAMP';
-                case SQLITE:
-                    return 'TEXT';
-                default:
-                    return '';
-            }
-        }
+            if (def($on,$do))
+                append($constraint," $on $do");
 
-        /**
-         * @return string
-         *
-         * @throws Kedavra
-         */
-        private function text()
-        {
-            switch ($this->driver())
-            {
-                case MYSQL:
-                    return  'VARCHAR';
-                case POSTGRESQL:
-                    return 'character varying';
-                case SQLITE:
-                    return  'text';
-                default:
-                    return  '';
+            static::$foreign->push(compact('column', 'constraint'));
 
-            }
-        }
-
-        /**
-         * @return string
-         * @throws Kedavra
-         */
-        private function long_text()
-        {
-            switch ($this->driver())
-            {
-                case MYSQL:
-                    return 'LONGTEXT';
-                case POSTGRESQL:
-                case SQLITE:
-                    return 'TEXT';
-                default:
-                    return '';
-            }
+            return $this;
         }
 
         /**
          * @return Connect
          *
          * @throws Kedavra
+         *
          */
         private function connexion(): Connect
         {
-           return static::$env == 'dev' ? development() : production();
+            return static::$env == 'dev' ? development() : production();
         }
-
-        /**
-         *
-         *
-         * @return string
-         *
-         * @throws Kedavra
-         */
-        private function driver(): string
-        {
-            return $this->connexion()->driver();
-        }
-
     }
 }

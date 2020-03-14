@@ -56,7 +56,7 @@ namespace Eywa\Security\Csrf {
          */
         public function remove_token(): bool
         {
-            return $this->session->destroy(CSRF_TOKEN);
+            return $this->session->destroy([CSRF_TOKEN]);
         }
 
 

@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace Eywa\Application {
 
 
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Exception;
     use Eywa\Cache\CacheInterface;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Connexion\Connexion;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -36,6 +33,7 @@ namespace Eywa\Application {
          *
          * @return mixed
          *
+         * @throws Kedavra
          * @throws Exception
          *
          */
@@ -120,7 +118,6 @@ namespace Eywa\Application {
          * @return Response
          *
          * @throws Kedavra
-         * @throws Exception
          *
          */
         public function redirect(string $route,array $route_args,string $message,bool $success,int $status = 301): Response;
@@ -152,14 +149,13 @@ namespace Eywa\Application {
 
         /**
          *
-         * Get query builder
+         * Get the query builder
          *
          * @param string $table
          *
          * @return Sql
          *
          * @throws Kedavra
-         * @throws Exception
          *
          */
         public function sql(string $table): Sql;

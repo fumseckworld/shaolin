@@ -4,7 +4,7 @@
 namespace Base\Migrations;
 
 
-use Eywa\Database\Migration\Migration;;
+use Eywa\Database\Migration\Migration;
 
 class CreateUsersTable extends Migration
 {
@@ -31,7 +31,7 @@ class CreateUsersTable extends Migration
 
     public function down(): bool
     {
-        return $this->drop(static::$table);
+        return $this->drop();
 
     }
 }

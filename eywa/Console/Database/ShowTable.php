@@ -4,6 +4,7 @@
 	{
 
         use Eywa\Database\Table\Table;
+        use Eywa\Exception\Kedavra;
         use PDO;
         use Symfony\Component\Console\Command\Command;
         use Symfony\Component\Console\Input\InputArgument;
@@ -25,7 +26,13 @@
 			{
 				$this->setDescription("List all tables found in the base")->addArgument('env',InputArgument::REQUIRED,'The base environment');
 			}
-			
+
+            /**
+             * @param InputInterface $input
+             * @param OutputInterface $output
+             * @return int
+             * @throws Kedavra
+             */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
 
@@ -53,7 +60,7 @@
                             $table->render();
                         break;
                         default:
-                            $this->tables = (new Table(development()))->show();
+                            $this->tables = (new Table(development(),''))->show()->all();
                         break;
                     }
                 }
@@ -74,7 +81,7 @@
                             $table->render();
                         break;
                         default:
-                            $this->tables = (new Table(production()))->show();
+                            $this->tables = (new Table(production(),''))->show()->all();
                         break;
                     }
                 }

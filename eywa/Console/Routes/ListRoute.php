@@ -3,6 +3,7 @@
 namespace Eywa\Console\Routes {
 
 
+    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Routing\Web;
     use PDO;
@@ -42,7 +43,7 @@ namespace Eywa\Console\Routes {
 
                 ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                 ->setRows(
-                    Web::all(PDO::FETCH_ASSOC)
+                    (new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'))->to(PDO::FETCH_ASSOC)
                 )
             ;
             $table->render();

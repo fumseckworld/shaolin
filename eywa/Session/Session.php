@@ -38,7 +38,7 @@ namespace Eywa\Session {
         /**
          * @inheritDoc
          */
-        public function destroy(string ...$keys): bool
+        public function destroy(array $keys): bool
         {
             $x = collect();
 

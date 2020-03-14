@@ -57,7 +57,7 @@ namespace Eywa\Http\Request {
          * @throws Kedavra
          *
          */
-        public function __construct(string $url,string $method,array $errors = [],array $options =[])
+        public function __construct(string $url,string $method= 'POST',array $errors = [],array $options =[])
         {
             $this->url = $url;
             $this->method = strtoupper($method);

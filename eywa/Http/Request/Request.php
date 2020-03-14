@@ -83,6 +83,14 @@ namespace Eywa\Http\Request {
             $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args);
         }
 
+        /**
+         * @return bool
+         *
+         */
+        public function secure(): bool
+        {
+            return cli() ? false: intval($this->server->get('SERVER_PORT')) === 443;
+        }
 
         /**
          *

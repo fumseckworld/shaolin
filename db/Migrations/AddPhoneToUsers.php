@@ -4,7 +4,7 @@
 namespace Base\Migrations;
 
 
-use Eywa\Database\Migration\Migration;;
+use Eywa\Database\Migration\Migration;
 
 class AddPhoneToUsers extends Migration
 {
@@ -31,7 +31,7 @@ class AddPhoneToUsers extends Migration
 
     public function down(): bool
     {
-        return $this->drop_columns('phone');
+        return $this->remove(['phone']);
 
     }
 }

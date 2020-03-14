@@ -11,9 +11,9 @@ namespace Eywa\Testing {
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
-    use Eywa\Security\Validator\Validator;
     use Eywa\Session\ArraySession;
     use PHPUnit\Framework\TestCase;
+    use ReflectionException;
 
     class Unit extends TestCase
     {
@@ -27,6 +27,7 @@ namespace Eywa\Testing {
          * @return Router
          *
          * @throws Kedavra
+         * @throws ReflectionException
          *
          */
         public function visit(string $url,string  $method = GET): Router
@@ -34,21 +35,6 @@ namespace Eywa\Testing {
             return new Router(new ServerRequest($url,$method));
         }
 
-        /**
-         *
-         * Get a validator instance
-         *
-         * @param array $array
-         *
-         * @return Validator
-         *
-         * @throws Kedavra
-         *
-         */
-        public function validate(array $array): Validator
-        {
-            return new Validator($this->collect($array));
-        }
         /**
          * @param string $filename
          * @param string $mode
@@ -79,7 +65,7 @@ namespace Eywa\Testing {
 
         /**
          *
-         * @param array $data
+         * @param array<mixed> $data
          *
          * @return Collect
          *

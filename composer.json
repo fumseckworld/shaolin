@@ -17,7 +17,6 @@
     "fzaninotto/faker": "^1.9",
     "nesbot/carbon": "^2.27",
     "codedungeon/phpunit-result-printer": "^0.26.2",
-    "gettext/gettext": "^5.2",
     "symfony/process": "^5.0",
     "phpunit/phpunit": "^8.5",
     "ext-redis": "*",
@@ -29,7 +28,9 @@
     "sinergi/browser-detector": "^6.1",
     "mobiledetect/mobiledetectlib": "^2.8",
     "vlucas/phpdotenv": "^4.1",
-    "wapmorgan/file-type-detector": "^1.1"
+    "wapmorgan/file-type-detector": "^1.1",
+    "phpro/grumphp": "^0.18.0",
+    "phpstan/phpstan": "^0.12.14"
   },
   "authors": [
     {

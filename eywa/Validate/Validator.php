@@ -21,6 +21,8 @@ namespace Eywa\Validate {
          *
          * The validator rules
          *
+         * @var array<string>
+         *
          */
         protected static array $rules = [];
 
@@ -73,7 +75,6 @@ namespace Eywa\Validate {
          */
         public static function validate(Request $request): Response
         {
-
             if (not_def($request->request()->all()))
                 return  (new RedirectResponse(static::$redirect_url))->send();
 

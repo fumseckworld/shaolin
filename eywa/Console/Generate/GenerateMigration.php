@@ -67,7 +67,7 @@ namespace Base\Migrations {
 
     use Eywa\Database\Migration\Migration;
 
-    class CreateAchats extends Migration
+    class $class extends Migration
     {
         public static string \$created_at = '$time';
 

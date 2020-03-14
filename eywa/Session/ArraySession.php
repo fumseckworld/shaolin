@@ -34,7 +34,7 @@ namespace Eywa\Session {
          */
         public function set(string $key, $value): SessionInterface
         {
-            $this->session->set($key,$value);
+            $this->session->put($key,$value);
             return $this;
         }
 
@@ -49,7 +49,7 @@ namespace Eywa\Session {
         /**
          * @inheritDoc
          */
-        public function destroy(string ...$keys): bool
+        public function destroy(array $keys): bool
         {
             return $this->session->del($keys)->ok();
         }

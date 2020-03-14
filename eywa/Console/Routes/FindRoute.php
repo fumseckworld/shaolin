@@ -3,8 +3,9 @@
 namespace Eywa\Console\Routes {
 
 
+    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Routing\Web;
+    use PDO;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Helper\Table;
     use Symfony\Component\Console\Input\InputInterface;
@@ -23,12 +24,28 @@ namespace Eywa\Console\Routes {
          *
          */
         private string $search ='';
+        /**
+         *
+         */
+        private Sql $sql;
 
 
-        
+        /**
+         * FindRoute constructor.
+         * @param string|null $name
+         *
+         * @throws Kedavra
+         *
+         */
+        public function __construct(string $name = null)
+        {
+            parent::__construct($name);
+
+            $this->sql =  (new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'));
+        }
+
         protected function configure():void
         {
-
             $this->setDescription('Find a route');
         }
 
@@ -49,7 +66,7 @@ namespace Eywa\Console\Routes {
             {
                 do
                 {
-                    $this->search = $io->askQuestion((new Question('Type your search : '))->setAutocompleterValues($this->all()));
+                    $this->search = $io->askQuestion((new Question('Type your search '))->setAutocompleterValues($this->all()));
                 } while (not_def($this->search));
 
                 $table = new Table($output);
@@ -61,7 +78,8 @@ namespace Eywa\Console\Routes {
 
                     ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                     ->setRows(
-                        Web::like($this->search,\PDO::FETCH_ASSOC)
+                        $this->sql->like($this->search)->to(PDO::FETCH_ASSOC)
+
                     )
                 ;
                 $table->render();
@@ -97,7 +115,7 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-            foreach (Web::all() as $v)
+            foreach ($this->sql->get() as $v)
                 $x->push($v->controller);
             return $x->all();
 
@@ -113,7 +131,7 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-            foreach (Web::all() as $v)
+            foreach ($this->sql->get() as $v)
                 $x->push($v->name);
             return $x->all();
 
@@ -128,7 +146,7 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-            foreach (Web::all() as $v)
+            foreach ($this->sql->get() as $v)
                 $x->push($v->url);
             return $x->all();
 
@@ -144,7 +162,7 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-                foreach (Web::all() as $v)
+                foreach ($this->sql->get() as $v)
                     $x->push($v->action);
                 return $x->all();
 

@@ -28,12 +28,16 @@ namespace Eywa\Http\Response {
          *
          * All headers
          *
+         * @var array<string>
+         *
          */
         private array $headers = [];
 
         /**
          *
          * The status text and codes
+         *
+         * @var array<int,string>
          *
          */
         private array $status_text = STATUS;
@@ -43,7 +47,7 @@ namespace Eywa\Http\Response {
          * The redirect url
          *
          */
-        private string $url;
+        private string $url ='';
 
 
         /**
@@ -52,8 +56,10 @@ namespace Eywa\Http\Response {
          * @param string $content
          * @param string $url
          * @param int $status
-         * @param array $headers
+         * @param array<mixed> $headers
+         *
          * @throws Kedavra
+         *
          */
         public function __construct(string $content,string $url = '',int $status = 200, array $headers = [])
         {
@@ -100,7 +106,7 @@ namespace Eywa\Http\Response {
          *
          * Set the headers
          *
-         * @param array $headers
+         * @param array<string> $headers
          *
          * @return Response
          *

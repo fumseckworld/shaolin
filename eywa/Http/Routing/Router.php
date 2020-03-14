@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Eywa\Http\Routing {
 
+    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use Eywa\Security\Middleware\CsrfMiddleware;
+    use ReflectionClass;
+    use ReflectionException;
     use stdClass;
 
     class Router
@@ -32,6 +35,8 @@ namespace Eywa\Http\Routing {
          *
          * The routes parameters
          *
+         * @var array<mixed>
+         *
          */
         private array $parameters = [];
 
@@ -40,7 +45,7 @@ namespace Eywa\Http\Routing {
          * All routes params
          *
          */
-        private ?stdClass $route = null;
+        private stdClass $route;
 
 
         /**
@@ -50,6 +55,7 @@ namespace Eywa\Http\Routing {
          * @param ServerRequest $request
          *
          * @throws Kedavra
+         * @throws ReflectionException
          *
          */
         public function __construct(ServerRequest $request)
@@ -68,10 +74,11 @@ namespace Eywa\Http\Routing {
          * @return Response
          *
          * @throws Kedavra
+         * @throws ReflectionException
          */
         public function run(): Response
         {
-            foreach (Web::where('method', EQUAL, $this->method)->execute() as $route)
+            foreach ((new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'))->where('method',EQUAL,$this->method)->get() as $route)
             {
                 if ($this->match($route->url,$route))
                 {
@@ -80,7 +87,6 @@ namespace Eywa\Http\Routing {
                     return  $this->result()->call();
                 }
             }
-
             return $this->not_found();
         }
 
@@ -98,11 +104,12 @@ namespace Eywa\Http\Routing {
          * Check if a route matches
          *
          * @param string $url
+         * @param stdClass $route
          *
-         * @param $route
          * @return bool
+         *
          */
-        private function match(string $url,$route): bool
+        private function match(string $url,stdClass $route): bool
         {
 
             $path = preg_replace('#:([\w]+)#','([^/]+)',$url);
@@ -117,7 +124,7 @@ namespace Eywa\Http\Routing {
 
                 if (def(strstr($url,':')))
                 {
-                    $args = substr($url,strpos($url,':'));
+                    $args = strval(substr($url,intval(strpos($url,':'))));
 
                     $args = collect(explode(':',$args))->for(function ($x){
                         return trim($x,'/');
@@ -165,6 +172,8 @@ namespace Eywa\Http\Routing {
          * @return void
          *
          * @throws Kedavra
+         * @throws ReflectionException
+         *
          */
         private function call_middleware(ServerRequest $request): void
         {
@@ -172,11 +181,11 @@ namespace Eywa\Http\Routing {
 
             $namespace = 'App' . '\\' . $middleware_dir . '\\';
 
-            $dir = base('app'). DIRECTORY_SEPARATOR . $middleware_dir;
+            $dir = base('app',$middleware_dir);
 
             is_false(is_dir($dir), true, "The $dir directory was not found");
 
-            $middle = glob("$dir/*php");
+            $middle = files(base('app',$middleware_dir,'*.php'));
 
             call_user_func_array([ new CsrfMiddleware(), 'check' ], [ $request ]);
 
@@ -188,8 +197,10 @@ namespace Eywa\Http\Routing {
 
                 $class = "$namespace$middleware";
 
-                call_user_func_array([ new $class(), 'check' ], [ $request ]);
-            }
+                $x = new ReflectionClass($class);
+
+
+                $x->getMethod('check')->invoke($x->newInstance(),$request);            }
         }
     }
 }

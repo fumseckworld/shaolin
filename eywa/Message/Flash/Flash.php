@@ -33,7 +33,7 @@ namespace Eywa\Message\Flash {
                 {
                     $success = equal($key,SUCCESS);
                     $message = $this->get($key);
-                    $this->destroy($key);
+                    $this->destroy([$key]);
 
                     if(def($message))
                     {

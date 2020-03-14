@@ -34,29 +34,29 @@ namespace Eywa\Database\Base {
         {
             if (equal($this->env,'dev'))
             {
-                foreach ((new Table(development()))->show() as $table)
+                foreach ((new Table(development(),''))->show() as $table)
                     if (different($table,'migrations'))
-                        is_false((new Table(development()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                        is_false((new Table(development(),$table))->truncate(),true,sprintf('The truncate task for the %s table has failed',$table));
                 return  true;
             }
 
             if (equal($this->env,'prod'))
             {
-                foreach ((new Table(production()))->show() as $table)
+                foreach ((new Table(production(),''))->show() as $table)
                     if (different($table,'migrations'))
-                        is_false((new Table(production()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                        is_false((new Table(production(),$table))->truncate(),true,sprintf('The truncate task for the %s table has failed',$table));
                 return  true;
             }
 
             if (equal($this->env,'any'))
             {
-                foreach ((new Table(production()))->show() as $table)
+                foreach ((new Table(production(),''))->show() as $table)
                     if (different($table,'migrations'))
-                        is_false((new Table(production()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                        is_false((new Table(production(),$table))->truncate(),true,sprintf('The truncate task for the %s table has failed',$table));
 
-                foreach ((new Table(development()))->show() as $table)
+                foreach ((new Table(development(),''))->show() as $table)
                     if (different($table,'migrations'))
-                        is_false((new Table(development()))->from($table)->truncate(),true,"Failed to truuncate the $table table");
+                        is_false((new Table(development(),$table))->truncate(),true,sprintf('The truncate task for the %s table has failed',$table));
                 return  true;
             }
 

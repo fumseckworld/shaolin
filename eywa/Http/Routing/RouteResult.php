@@ -16,7 +16,7 @@ namespace Eywa\Http\Routing {
          * The controller namespace
          *
          */
-        private string $namespace;
+        private string $namespace = '';
 
 
         /**
@@ -24,19 +24,21 @@ namespace Eywa\Http\Routing {
          * The route controller
          *
          */
-        private string $controller;
+        private string $controller = '';
 
         /**
          *
          * The route action&
          *
          */
-        private string $action;
+        private string $action = '';
 
 
         /**
          *
          * All route args
+         *
+         * @var array<mixed>
          *
          */
         private array $args = [];
@@ -46,7 +48,7 @@ namespace Eywa\Http\Routing {
          * The http  method used
          *
          */
-        private string $method;
+        private string $method = '';
 
         /**
          *
@@ -55,13 +57,12 @@ namespace Eywa\Http\Routing {
          * @param string $controller
          * @param string $namespace
          * @param string $action
-         * @param array $args
+         * @param array<mixed> $args
          * @param string $method
          *
          */
         public function __construct(string $controller,string $namespace,string $action,array $args,string $method)
         {
-
             $this->controller = $controller;
             $this->action = $action;
             $this->args = $args;
@@ -92,6 +93,7 @@ namespace Eywa\Http\Routing {
         /**
          * @return Response
          * @throws Kedavra
+         * @throws \ReflectionException
          */
         public function call(): Response
         {
@@ -103,11 +105,17 @@ namespace Eywa\Http\Routing {
 
             is_false(method_exists($class, $this->action()), true, "The action {$this->action()} not exist inside the {$this->controller()} controller");
 
-             cli() ? call_user_func_array([ $instance, 'before_action' ], [new Request([],[],[],[],[],[],$this->args())]) :  call_user_func_array([ $instance, 'before_action' ], [Request::make($this->args())]);
-             cli() ? call_user_func_array([ $instance, 'after_action' ], [new Request([],[],[],[],[],[],$this->args())]) : call_user_func_array([ $instance, 'after_action' ], [Request::make($this->args())]);
+            $x = new \ReflectionClass($instance);
 
+            $request = cli() ? new Request([],[],[],[],[],[],$this->args()) : Request::make($this->args());
 
-            return  cli() ?  call_user_func_array([ $instance, $this->action() ], [new Request([],[],[],[],[],[],$this->args())]) :  call_user_func_array([ $instance, $this->action() ], [Request::make($this->args())]);
+            $x->getMethod('before_action')->invokeArgs($x->newInstance(),[$request]);
+
+            $result = $x->getMethod($this->action())->invokeArgs($x->newInstance(),[$request]);
+
+            $x->getMethod('after_action')->invokeArgs($x->newInstance(),[$request]);
+
+            return $result;
         }
 
         /**
@@ -141,7 +149,7 @@ namespace Eywa\Http\Routing {
          *
          * Get all route parametter
          *
-         * @return array
+         * @return array<mixed>
          *
          */
         public function args(): array

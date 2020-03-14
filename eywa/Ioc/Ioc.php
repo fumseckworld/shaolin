@@ -5,219 +5,145 @@ declare(strict_types=1);
 namespace Eywa\Ioc {
 
 
-    use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
     use Eywa\Message\Flash\Flash;
+    use ReflectionClass;
+    use ReflectionException;
 
     class Ioc
     {
+
 
         /**
          *
          * All instances
          *
          */
-        private Collect $instances;
+        private static array $instances =[];
 
         /**
-         * @var Collect
+         *
+         * All variables
+         *
          */
-        private Collect $variables;
-        /**
-         * @var Collect
-         */
-        private $temp_variables;
-        /**
-         * @var Collect
-         */
-        private $temp_instances;
+        private static array $variables = [];
 
 
         /**
-         * Ioc constructor.
+         *
+         * Check if a key exist
+         *
+         * @param string $key
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         * @throws ReflectionException
+         *
          */
-        public function __construct()
+        public static function has(string $key): bool
         {
-            $this->instances = collect();
-            $this->variables = collect();
-            $this->temp_instances = collect();
-            $this->temp_variables = collect();
+            self::make();
+            return array_key_exists($key,self::$variables) || array_key_exists($key,self::$instances);
         }
 
         /**
          *
-         * Add instances in the container
+         * @param string $key
+         * @param array $args
          *
-         * @param string $class
+         * @return mixed
+         *
+         * @throws Kedavra
+         * @throws ReflectionException
+         */
+        public static function get(string $key,array $args = [])
+        {
+            self::make();
+
+            $instances = collect(self::$instances);
+            $variables = collect(self::$variables);
+
+            if ($instances->has($key))
+                return $instances->get($key);
+            elseif ($variables->has($key))
+                return $variables->get($key);
+
+            return self::parse($key,$args);
+        }
+
+        /**
+         *
+         * Add a new instance
+         *
+         * @param string $key
          * @param callable $callback
          *
          * @return Ioc
          *
          */
-        public function init(string $class,callable $callback):Ioc
+        public function init(string $key,callable $callback): Ioc
         {
-            if ($this->instances->has($class))
+            if (array_key_exists($key,self::$instances))
                 return $this;
-            $this->temp_instances->put($class, call_user_func($callback));
-            $this->instances = $this->instances->merge($this->temp_instances->all());
-            $this->temp_instances->clear();
 
+            self::$instances[$key] = call_user_func($callback);
 
             return $this;
-
         }
-
-
 
         /**
          *
-         * Add variable in the container
+         * Add a new variable
          *
          * @param string $key
-         * @param mixed $value
+         * @param mixed  $value
          *
          * @return Ioc
          *
          */
         public function set(string $key,$value): Ioc
         {
-            $this->temp_variables->put($key,$value);
-            $this->variables = $this->variables->merge($this->temp_variables->all());
-            $this->temp_variables->clear();
+            self::$variables[$key] = $value;
 
             return $this;
         }
 
-
         /**
          *
-         * Check if a key exist in the container
-         *
-         * @param string $key
-         * @return bool
+         * Generate the container
          *
          * @throws Kedavra
-         * @throws \ReflectionException
+         * @throws ReflectionException
          *
          */
-        public function has(string $key):bool
+        private static function make(): void
         {
-            return $this->container()->instances->has($key) || $this->container()->variables->has($key);
-        }
-        /**
-         *
-         * Get an instance of a class
-         *
-         * @param string $class
-         *
-         * @return object
-         *
-         * @throws Kedavra
-         *
-         * @throws \ReflectionException
-         *
-         *
-         */
-        public function get(string $class): object
-        {
-
-            $instances = collect($this->container()->instances());
-            $variables = collect($this->container()->variables());
-
-            if ($instances->has($class))
-                return $instances->get($class);
-            elseif($variables->has($class))
-                return $variables->get($class);
-
-
-
-            $reflect = new \ReflectionClass($class);
-
-            if (!is_null($reflect->getConstructor()))
+            if (count(self::$instances) == 0 || count(self::$variables) == 0)
             {
-                if ($reflect->getConstructor()->getNumberOfRequiredParameters() === 0)
-                {
-                    $this->instances->put($class, $reflect->newInstance());
-
-                }else
-                {
-                    $args = collect();
-
-                   foreach ($reflect->getConstructor()->getParameters() as $parameter)
-                   {
-                       if (!is_null($parameter->getClass()))
-                       {
-                           $arg = $parameter->getClass()->getName();
-
-                           is_false($this->container()->instances->has($arg),true,sprintf('Cannot create an instance for %s class because the %s value has not been found inside the container',$class,$arg));
-
-
-                           $args->push($this->container()->instances->get($arg));
-
-                       }
-
-                       if (is_null($parameter->getClass()))
-                       {
-                           $arg = $parameter->getName();
-
-                           is_false($this->container()->variables->has($arg),true,sprintf('Cannot create an instance for %s class because the %s value has not been found inside the container',$class,$arg));
-
-                           $args->push($this->container()->variables->get($arg));
-
-                       }
-                   }
-                   if (def($args->all()))
-                       $this->instances->put($class,$reflect->newInstanceArgs($args->all()));
-
-                }
-            }else
-            {
-
-                $this->instances->put($class, $reflect->newInstance());
-            }
-
-            return $this->container()->get($class);
-        }
-
-        /**
-         *
-         * Get the container
-         *
-         * @return Ioc
-         *
-         * @throws Kedavra
-         * @throws \ReflectionException
-         *
-         */
-        private function container(): Ioc
-        {
-            if ($this->instances->empty())
-            {
-                foreach (glob(base('ioc','*.php')) as $container)
+                foreach (files(base('ioc','*.php')) as $container)
                 {
                     $namespace = '\Ioc\\';
 
-                    $container = \collect(explode('.',collect(explode(DIRECTORY_SEPARATOR,$container))->last()))->first();
+                    $container = collect(explode('.',collect(explode(DIRECTORY_SEPARATOR,$container))->last()))->first();
 
-                    $x = new \ReflectionClass("$namespace$container");
+                    $x = "$namespace$container";
+                    $x = new ReflectionClass($x);
 
-                   $extern_container = call_user_func($x->getMethod('build')->getClosure($x->newInstance()));
+                    $extern_container = $x->getMethod('add')->invoke($x->newInstance());
 
-                   $this->instances->merge(call_user_func([$extern_container,'instances']));
+                    $x = new ReflectionClass($extern_container);
 
-                   $this->variables->merge(call_user_func([$extern_container,'variables']));
+                    self::$instances = array_merge(self::$instances,$x->getMethod('instances')->invoke($x->newInstance()));
+                    self::$variables = array_merge(self::$variables,$x->getMethod('variables')->invoke($x->newInstance()));
 
+                    self::$instances[Connect::class] = equal(config('mode','connexion'),'prod') ? production() : development();
+
+                    self::$variables['faker'] = faker(strval(config('i18n','locale')));
+                    self::$variables['flash'] = new Flash();
                 }
-
-                $this->init(Connect::class,function (){
-                    return equal(config('mode','connexion'),'prod') ? production() : development();
-                });
-                $this->set('faker',faker(strval(config('i18n','locale'))));
-                $this->set('flash',new Flash());
-
             }
-            return $this;
         }
 
         /**
@@ -229,19 +155,91 @@ namespace Eywa\Ioc {
          */
         public function instances(): array
         {
-            return $this->instances->all();
+            return self::$instances;
         }
 
         /**
          *
-         * Get all instances
+         * Get all variables
          *
          * @return array
          *
          */
         public function variables(): array
         {
-            return $this->variables->all();
+            return self::$variables;
+        }
+
+
+        /**
+         * @param string $key
+         * @param array $args
+         * @return object
+         * @throws Kedavra
+         * @throws ReflectionException
+         */
+        private static function parse(string $key,array $args =[]): object
+        {
+
+            $instances = [];
+            $youldlike = new ReflectionClass($key);
+
+            $youldlike_constructor = $youldlike->getConstructor();
+            $youldlike_parameters =   !is_null($youldlike_constructor) ?  $youldlike_constructor->getParameters() : [] ;
+
+            if (not_def($youldlike_parameters) && $youldlike->isInstantiable())
+            {
+                $instances[] =  $youldlike->newInstance();
+                self::$instances[$key] =  $youldlike->newInstanceArgs($instances);
+                return self::get($key);
+            }
+
+            for ($i=0;$i<count($youldlike_parameters);$i++)
+            {
+                $parameter = $youldlike_parameters[$i];
+                $name =  $parameter->getClass();
+                $class = is_null($name) ? $parameter->getName() : $name->getName();
+
+                if (class_exists($class))
+                {
+                    if (is_false(self::has($class)))
+                    {
+                        $x =  new ReflectionClass($class);
+                        $constructor = $x->getConstructor();
+                        $parameters = is_null($constructor) ? [] : $constructor->getParameters();
+                        $params = [];
+                        foreach ($parameters as $parameter)
+                        {
+                            $current = $parameter->getClass();
+                            $current = is_null($current) ? $parameter->getName() : $current->getName();
+
+                            if (is_false(self::has($current)))
+                            {
+                                throw new Kedavra(sprintf('We have not found the %s parameter in the container',$current));
+                            }else{
+                                $params[] = self::get($current);
+                            }
+                        }
+                        $instances[] = $x->newInstanceArgs($params);
+
+                    }else{
+                        $instances[] = self::get($class);
+                    }
+                }else
+                {
+                    if (array_key_exists($class,$args))
+                    {
+                        $instances[] = $args[$class];
+                    }else{
+                        is_false(self::has($class),true,sprintf('We have not found the %s parameter in the container',$class));
+                        $instances[] = self::get($class);
+                    }
+
+                }
+            }
+            self::$instances[$key] =  $youldlike->newInstanceArgs($instances);
+            return self::get($key);
+
         }
     }
 }

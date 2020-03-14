@@ -19,7 +19,6 @@ namespace Eywa\Http\Response {
          */
         private string $url;
 
-
         private Response $reponse;
 
         /**
@@ -27,7 +26,7 @@ namespace Eywa\Http\Response {
          *
          * Json response constructor.
          *
-         * @param array $data
+         * @param array<mixed> $data
          * @param int $status
          *
          * @throws Kedavra
@@ -35,7 +34,9 @@ namespace Eywa\Http\Response {
          */
         public function __construct(array $data,int $status = 200)
         {
-            $this->reponse = new Response(json_encode($data,JSON_FORCE_OBJECT),'',$status,['Content-Type' => 'application/json']);
+            $json = json_encode($data,JSON_FORCE_OBJECT);
+            $json = is_bool($json) ? '' : strval($json);
+            $this->reponse = new Response($json,'', $status,['Content-Type' => 'application/json']);
 
         }
 

@@ -4,6 +4,7 @@
 	{
 
         use Eywa\Database\Table\Table;
+        use Eywa\Exception\Kedavra;
         use Symfony\Component\Console\Command\Command;
         use Symfony\Component\Console\Input\InputArgument;
         use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +21,13 @@
                 $this->setDescription("Drop a table")->addArgument('table',InputArgument::REQUIRED,'The table name')->addArgument('env',InputArgument::REQUIRED,'The base environment');
 
             }
-			
+
+            /**
+             * @param InputInterface $input
+             * @param OutputInterface $output
+             * @return int
+             * @throws Kedavra
+             */
 			public function execute(InputInterface $input, OutputInterface $output)
 			{
                 $env = strval($input->getArgument('env'));
@@ -33,20 +40,20 @@
 
                 if (equal($env, 'dev'))
                 {
-                    $table = new Table(development());
+                    $table = new Table(development(),$x);
 
-                    if (not_def($table->show()))
+                    if (not_def($table->show()->all()))
                     {
                         $io->error('No tables has been found');
                         return 1;
                     }
 
-                    if (is_false($table->exist($x)))
+                    if (is_false($table->exist()))
                     {
                         $io->error(sprintf('The %s table not exist',$x));
                         return 1;
                     }
-                    if ($table->from($x)->drop())
+                    if ($table->drop())
                     {
                         $io->success(sprintf('The %s table has been removed successfully',$x));
                         return 0;
@@ -60,20 +67,20 @@
                 {
 
 
-                    $table = new Table(production());
+                    $table = new Table(production(),$x);
 
-                    if (not_def($table->show()))
+                    if (not_def($table->show()->all()))
                     {
                         $io->error('No tables has been found');
                         return 1;
                     }
 
-                    if (is_false($table->exist($x)))
+                    if (is_false($table->exist()))
                     {
                         $io->error(sprintf('The %s table not exist',$x));
                         return 1;
                     }
-                    if ($table->from($x)->drop())
+                    if ($table->drop())
                     {
                         $io->success(sprintf('The %s table has been removed successfully',$x));
                         return 0;
@@ -86,20 +93,20 @@
                if (equal($env, 'any'))
                 {
 
-                    $table = new Table(development());
+                    $table = new Table(development(),$x);
 
-                    if (not_def($table->show()))
+                    if (not_def($table->show()->all()))
                     {
                         $io->error('No tables has been found');
                         return 1;
                     }
 
-                    if (is_false($table->exist($x)))
+                    if (is_false($table->exist()))
                     {
                         $io->error(sprintf('The %s table not exist',$x));
                         return 1;
                     }
-                    if ($table->from($x)->drop())
+                    if ($table->drop())
                     {
                         $io->success(sprintf('The %s table has been removed successfully',$x));
                     }else
@@ -108,20 +115,20 @@
                         return 1;
                     }
 
-                    $table = new Table(production());
+                    $table = new Table(production(),$x);
 
-                    if (not_def($table->show()))
+                    if (not_def($table->show()->all()))
                     {
                         $io->error('No tables has been found');
                         return 1;
                     }
 
-                    if (is_false($table->exist($x)))
+                    if (is_false($table->exist()))
                     {
                         $io->error(sprintf('The %s table not exist',$x));
                         return 1;
                     }
-                    if ($table->from($x)->drop())
+                    if ($table->drop())
                     {
                         $io->success(sprintf('The %s table has been removed successfully',$x));
                     }else{

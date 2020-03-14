@@ -6,8 +6,9 @@ namespace Eywa\Http\View {
 
     use Exception;
     use Eywa\Cache\FileCache;
-    use Eywa\Database\User\User;
+    use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
+    use Eywa\File\Assets;
 
 
     class View extends FileCache
@@ -36,6 +37,8 @@ namespace Eywa\Http\View {
         /**
          *
          * The view arguments
+         *
+         * @var array<mixed>
          *
          */
         private array $args;
@@ -70,7 +73,7 @@ namespace Eywa\Http\View {
          * @param string $view
          * @param string $title
          * @param string $description
-         * @param array $args
+         * @param array<mixed> $args
          * @param string $layout
          * @param string $directory
          *
@@ -126,7 +129,7 @@ namespace Eywa\Http\View {
 
                 require($this->file($this->cache));
 
-                return ltrim(ob_get_clean());
+                return ltrim(strval(ob_get_clean()));
             }
 
 
@@ -136,7 +139,7 @@ namespace Eywa\Http\View {
 
             require($this->view);
 
-            $content = ltrim(ob_get_clean());
+            $content = ltrim(strval(ob_get_clean()));
 
             $title = $this->title;
 
@@ -147,19 +150,16 @@ namespace Eywa\Http\View {
 
              ob_start();
 
-             extract(compact('content','title','description','lang'));
-
              require($this->layout);
 
-
-
-            $html = ltrim(ob_get_clean());
+            $html = ltrim(strval(ob_get_clean()));
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#','<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#','<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@admin#','<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'admin\')) : ?>',$html,$html)
                 ->replace('#@csrf#','<?= (new \Eywa\Security\Csrf\Csrf(new \Eywa\Session\Session()))->token(); ?>',$html,$html)
                 ->replace('#@url\(\'([a-zA-Z0-9\-\/]+)\'\)#','<?php  if(equal(\Eywa\Http\Request\ServerRequest::generate()->url(),\'${1}\')) : ?>',$html,$html)
+                ->replace('#@trans\(([a-zA-Z0-9\-\/]+)\)#','<?= _("${1}"); ?>',$html,$html)
                 ->replace('#@redac#','<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'redac\')) :?>',$html,$html)
                 ->replace('#@print\(([a-zA-Z0-9 ]+)\)#','<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>',$html,$html)
                 ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#','<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>',$html,$html)
@@ -178,11 +178,17 @@ namespace Eywa\Http\View {
                 ->replace('#@break#','<?php break;  ?>',$html,$html)
                 ->replace('#@default#','<?php default :   ?>',$html,$html)
                 ->replace('#@logged#','<?php if(logged()) :?>',$html,$html)
+                ->replace('#@history#','<?= history() ; ?>',$html,$html)
                 ->replace('#@mobile#','<?php if(app()->detect()->mobile()) :?>',$html,$html)
                 ->replace('#@tablet#','<?php if(app()->detect()->tablet()) :?>',$html,$html)
                 ->replace('#@desktop#','<?php if(app()->detect()->desktop()) :?>',$html,$html)
+                ->replace('#@windows#','<?php if(app()->detect()->windows()) :?>',$html,$html)
+                ->replace('#@linux#','<?php if(app()->detect()->linux()) :?>',$html,$html)
                 ->replace('#@guest#','<?php if(guest()) :?>',$html,$html)
                 ->replace('#@endlogged#','<?php endif;?>',$html,$html)
+                ->replace('#@endlinux#','<?php endif;?>',$html,$html)
+                ->replace('#@endwindows#','<?php endif;?>',$html,$html)
+                ->replace('#@end#','<?php endif;?>',$html,$html)
                 ->replace('#@endadmin#','<?php endif;?>',$html,$html)
                 ->replace('#@endurl#','<?php endif;?>',$html,$html)
                 ->replace('#@endredac#','<?php endif;?>',$html,$html)
@@ -192,11 +198,12 @@ namespace Eywa\Http\View {
                 ->replace('#@endmobile#','<?php endif;?>',$html,$html)
                 ->replace('#@endtablet#','<?php endif;?>',$html,$html)
                 ->replace('#@enddesktop#','<?php endif;?>',$html,$html)
-                ->replace('#@css\(([a-zA-Z0-9]+)\)#','<link rel="stylesheet"  href="/css/${1}.css">',$html,$html)
-                ->replace('#@js\(([a-zA-Z0-9]+)\)#','<script src="/js/${1}.js"></script>',$html,$html)
+                ->replace('#@css\(([a-zA-Z0-9]+)\)#','<?= (new \Eywa\\File\Assets("css","${1}.css"))->make();?>',$html,$html)
+                ->replace('#@js\(([a-zA-Z0-9]+)\)#','<?= (new \Eywa\\File\Assets("js","${1}.js"))->make();?>',$html,$html)
                 ->replace('#@endswitch#','<?php endswitch ;  ?>',$html,$html);
 
 
+            $html = collect(explode("\n",collect(explode('  ',$html))->join('')))->join('');
 
             $this->set($this->cache,$html);
 
@@ -206,15 +213,17 @@ namespace Eywa\Http\View {
 
             require($this->file($this->cache));
 
-            return  ltrim(ob_get_clean());
+            return ltrim(strval(ob_get_clean()));
         }
 
 
         /**
+         *
          * @param string $regex
          * @param string $new
          * @param string $html
-         * @param $content
+         * @param string $content
+         *
          * @return View
          */
         private function replace(string $regex,string $new,string $html,&$content): View

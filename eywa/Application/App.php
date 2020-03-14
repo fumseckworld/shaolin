@@ -13,6 +13,7 @@ namespace Eywa\Application {
     use Eywa\Collection\Collect;
     use Eywa\Configuration\Config;
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Model\Model;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -58,9 +59,7 @@ namespace Eywa\Application {
         protected static string $directory = '';
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function __construct()
         {
@@ -73,9 +72,7 @@ namespace Eywa\Application {
 
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function env(string $key,$default = '')
         {
@@ -85,9 +82,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
         {
@@ -96,29 +91,17 @@ namespace Eywa\Application {
 
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function ioc(string $key)
         {
-            return (new Ioc())->get($key);
+            return Ioc::get($key);
         }
 
-        /**
-         *
-         * @inheritDoc
-         *
-         */
-        public function sql(string $table): Sql
-        {
-            return new Sql($this->connexion(),$table);
-        }
+
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function crypter(): Crypter
         {
@@ -126,9 +109,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function view(string $view, string $title, string $description, array $args = []): Response
         {
@@ -136,9 +117,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function get(string $key, $default = null)
         {
@@ -146,9 +125,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function post(string $key, $default = null)
         {
@@ -156,9 +133,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function cookie(string $key, $default = null)
         {
@@ -166,9 +141,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function server(string $key, $default = null)
         {
@@ -176,9 +149,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function file(string $filename,string $mode = READ_FILE_MODE): File
         {
@@ -186,9 +157,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function request(array $args = []): Request
         {
@@ -196,9 +165,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function run(): Response
         {
@@ -206,7 +173,7 @@ namespace Eywa\Application {
                 return (new Router((new ServerRequest('/',GET))))->run();
 
             if (equal($this->config('mode','mode'),'down'))
-                return (new Response((new View('maintenance',HTTP_SERVICE_UNAVAILABLE_TEXT,'Site in maintenance we comming soon'))->render(),'',503,['Retry-After'=> 600]))->send();
+                return (new Response((new View('maintenance',HTTP_SERVICE_UNAVAILABLE_TEXT,'Site in maintenance, we comming soon'))->render(),'',503,['Retry-After'=> 600]))->send();
 
             return (new Router(ServerRequest::generate()))->run();
         }
@@ -220,9 +187,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function redis(): Redis
         {
@@ -230,9 +195,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function back(string $message = '', bool $success = true): Response
         {
@@ -243,9 +206,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          *
          */
         public function to(string $route,array $route_args= [],string $message = '', bool $success = true): Response
@@ -257,9 +218,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function cache(int $type = FILE_CACHE): CacheInterface
         {
@@ -280,9 +239,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function decrypt(string $x, bool $unzerialize = true): string
         {
@@ -290,9 +247,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function crypt(string $x, bool $unzerialize = true): string
         {
@@ -300,9 +255,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function flash(string $key, string $message): void
         {
@@ -311,9 +264,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function auth(): Auth
         {
@@ -321,9 +272,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function session(): SessionInterface
         {
@@ -331,9 +280,7 @@ namespace Eywa\Application {
         }
 
         /**
-         *
          * @inheritDoc
-         *
          */
         public function validator(Validator $validator): Response
         {
@@ -410,6 +357,15 @@ namespace Eywa\Application {
         public function json(array $data,int $status = 200): Response
         {
             return  (new JsonResponse($data,$status))->send();
+        }
+
+
+        /**
+         * @inheritDoc
+         */
+        public function sql(string $table): Sql
+        {
+            return new Sql($this->ioc(Connect::class),$table);
         }
     }
 }

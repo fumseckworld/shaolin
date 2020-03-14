@@ -258,7 +258,7 @@ namespace Eywa\File {
          *
          * Retrieve current line of file
          *
-         * @return array|false|string
+         * @return array<mixed>|false|string
          *
          */
         public function current()
@@ -288,7 +288,9 @@ namespace Eywa\File {
          */
         public function infos(): Collect
         {
-            return collect($this->instance()->fstat());
+            $x = $this->instance()->fstat();
+
+            return is_array($x) ? collect($x) : collect();
         }
 
         /**
@@ -558,7 +560,7 @@ namespace Eywa\File {
          *
          * Get the base filename
          *
-         * @param string|null $suffix
+         * @param string $suffix
          *
          * @return string
          *
@@ -696,7 +698,7 @@ namespace Eywa\File {
          *
          * Rename a file
          *
-         * @param $new_name
+         * @param string $new_name
          *
          * @return bool
          *
@@ -738,16 +740,21 @@ namespace Eywa\File {
          *
          * @param string $delimiter
          *
-         * @return array
+         * @return array<mixed>
          *
          */
-        public function keys(string $delimiter = ':')
+        public function keys(string $delimiter = ':'):array
         {
             $data = collect();
+
             foreach ($this->lines() as $line)
             {
                 if (def($line))
-                    $data->set(collect(explode($delimiter, $line))->first());
+                {
+                    $x = explode($delimiter,$line);
+                    if (is_array($x))
+                        $data->set(collect($x)->first());
+                }
             }
 
             return $data->values()->all();
@@ -759,7 +766,7 @@ namespace Eywa\File {
          *
          * @param string $delimiter
          *
-         * @return array
+         * @return array<mixed>
          *
          */
         public function values(string $delimiter): array
@@ -768,16 +775,17 @@ namespace Eywa\File {
             $data = collect();
             foreach ($this->lines() as $line)
             {
-                $data->set(collect(explode($delimiter, $line))->last());
+                $x = explode($delimiter,$line);
+                if (is_array($x))
+                    $data->set(collect($x)->last());
             }
 
             return $data->values()->all();
         }
 
         /**
-         * @param array $keys
-         * @param array $values
-         *
+         * @param array<mixed> $keys
+         * @param array<mixed> $values
          * @param string $delimiter
          *
          * @return bool

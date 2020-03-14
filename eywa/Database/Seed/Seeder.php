@@ -128,15 +128,14 @@ namespace Eywa\Database\Seed {
 
             static::$faker = ioc('faker');
 
-            static::$table = (new Table(development()));
+            static::$table = (new Table(development(),static::$from));
 
             $table = static::$from;
 
             $db = static::$connexion->base();
 
-            is_false(static::$table->exist(static::$from),true,"The $table table not exist in the $db base");
+            is_false(static::$table->exist(),true,sprintf('The %s table not exist in the %s base',$table,$db));
 
-            static::$table = static::$table->from($table);
 
             static::$set = collect();
 
@@ -160,7 +159,7 @@ namespace Eywa\Database\Seed {
                 $tmp->clear();
             }
 
-            $x = collect($columns)->join();
+            $x = collect($columns->all())->join();
 
             $table = static::$from;
 

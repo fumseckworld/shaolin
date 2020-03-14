@@ -21,6 +21,34 @@ use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
 
+if (!function_exists('controllers_directory'))
+{
+    /**
+     * @return array
+     */
+    function controllers_directory(): array
+    {
+        $x =  scandir(base('app','Controllers'));
+        return is_bool($x) ? [] : collect($x)->del(['.','..'])->all();
+    }
+
+}
+if (!function_exists('only'))
+{
+    /**
+     *
+     * check if the request is secure
+     *
+     * @return bool
+     *
+     * @throws Kedavra
+     *
+     */
+    function https():bool
+    {
+        return cli() ? false : Request::make()->secure();
+    }
+}
 if (!function_exists('only'))
 {
     function only(bool $condition, callable $callback,array $args = [])
@@ -72,7 +100,7 @@ if (!function_exists('form_invalid'))
             $session = new Eywa\Session\Session();
             if ($session->has(CSRF_TOKEN))
             {
-                return different((new Crypter())->decrypt($session->get('server')), Request::generate()->server()->get('SERVER_NAME', 'eywa'), true, "FormBuilder is not valid") || different($session->get('csrf'), collect(explode('@', $session->get(CSRF_TOKEN)))->last(), true, "Csrf token was not found");
+                return different((new Crypter())->decrypt($session->get('server')), Request::make()->server()->get('SERVER_NAME', 'eywa'), true, "FormBuilder is not valid") || different($session->get('csrf'), collect(explode('@', $session->get(CSRF_TOKEN)))->last(), true, "Csrf token was not found");
             }
         }
         throw new Kedavra('Csrf token was not found');
@@ -234,16 +262,19 @@ if (!function_exists('sql'))
 if (!function_exists('ioc'))
 {
     /**
+     *
      * @param string $key
+     * @param array $args
      *
      * @return mixed
      *
-     * @throws Exception
+     * @throws Kedavra
+     * @throws ReflectionException
      *
      */
-    function ioc(string $key)
+    function ioc(string $key,array $args = [])
     {
-        return (new Ioc())->get($key);
+        return Ioc::get($key,$args);
     }
 }
 

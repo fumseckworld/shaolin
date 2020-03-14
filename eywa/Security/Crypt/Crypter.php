@@ -9,18 +9,18 @@ namespace Eywa\Security\Crypt {
     class Crypter
     {
         /**
+         *
          * The encryption key.
          *
-         * @var string
          */
-        protected $key;
+        private string $key ='';
 
         /**
+         *
          * The algorithm used for encryption.
          *
-         * @var string
          */
-        protected $cipher;
+        private string $cipher = '';
 
         /**
          * Create a new encrypter instance.
@@ -31,9 +31,9 @@ namespace Eywa\Security\Crypt {
         public function __construct()
         {
 
-            $this->key = base64_decode(app()->env('APP_KEY'));
+            $this->key = base64_decode(strval(env('APP_KEY')));
 
-            $this->cipher = strtolower(app()->env('CIPHER'));
+            $this->cipher = strtolower(strval(env('CIPHER')));
 
             is_true(collect(openssl_get_cipher_methods())->not_exist($this->cipher),true,"The cipher is not valid");
         }
@@ -50,7 +50,7 @@ namespace Eywa\Security\Crypt {
          */
         public static function generateKey(): string
         {
-            return base64_encode(random_bytes(openssl_cipher_iv_length(strtolower(app()->env('CIPHER')))));
+            return base64_encode(random_bytes(intval(openssl_cipher_iv_length(strtolower(strval(env('CIPHER')))))));
         }
 
         /**
@@ -69,7 +69,7 @@ namespace Eywa\Security\Crypt {
         public function encrypt($value, $serialize = true)
         {
 
-            $iv = random_bytes(openssl_cipher_iv_length($this->cipher));
+            $iv = random_bytes(intval(openssl_cipher_iv_length($this->cipher)));
 
             $value = openssl_encrypt($serialize ? serialize($value) : $value, $this->cipher, $this->key, 0, $iv);
 
@@ -84,7 +84,7 @@ namespace Eywa\Security\Crypt {
                 throw new Kedavra('Could not encrypt the data.');
             }
 
-            return base64_encode($json);
+            return base64_encode(strval($json));
         }
 
         /**
@@ -125,7 +125,7 @@ namespace Eywa\Security\Crypt {
 
             is_false($decrypted, true, 'could not decrypt the data.');
 
-            return $unserialize ? unserialize($decrypted) : $decrypted;
+            return $unserialize ? unserialize(strval($decrypted)) : $decrypted;
         }
 
         /**
@@ -161,13 +161,13 @@ namespace Eywa\Security\Crypt {
          *
          * @param string $payload
          *
-         * @return array
+         * @return array<mixed>
          *
          * @throws Kedavra
          *
          * @throws Exception
          */
-        protected function getJsonPayload($payload)
+        protected function getJsonPayload($payload):array
         {
 
             $payload = json_decode(base64_decode($payload), true);
@@ -193,21 +193,21 @@ namespace Eywa\Security\Crypt {
          */
         protected function validPayload($payload)
         {
-            return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']) && strlen(base64_decode($payload['iv'], true)) === openssl_cipher_iv_length($this->cipher);
+            return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']) && strlen(strval(base64_decode($payload['iv'],true))) === openssl_cipher_iv_length($this->cipher);
         }
 
         /**
          *
          * Determine if the MAC for the given payload is valid.
          *
-         * @param array $payload
+         * @param array<mixed> $payload
          *
          * @return bool
          *
          * @throws Exception
          *
          */
-        protected function validMac(array $payload)
+        protected function validMac(array $payload): bool
         {
 
             $calculated = $this->calculateMac($payload, $bytes = random_bytes(16));
@@ -216,14 +216,16 @@ namespace Eywa\Security\Crypt {
         }
 
         /**
+         *
          * Calculate the hash of the given payload.
          *
-         * @param array $payload
+         * @param array<mixed> $payload
          * @param string $bytes
          *
          * @return string
+         *
          */
-        protected function calculateMac($payload, $bytes)
+        protected function calculateMac($payload, $bytes): string
         {
             return hash_hmac('sha256', $this->hash($payload['iv'], $payload['value']), $bytes, true);
         }

@@ -3,16 +3,12 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
-use DI\DependencyException;
-use DI\NotFoundException;
 use Eywa\Application\Environment\Env;
 use Eywa\Collection\Collect;
+use Eywa\Database\Query\Sql;
 use Eywa\Exception\Kedavra;
-use Eywa\Html\Pagination\Pagination;
-use Eywa\Http\Routing\Task;
-use Eywa\Http\Routing\Web;
+use Eywa\Http\Request\Request;
 use Eywa\Message\Flash\Flash;
-use Symfony\Component\Console\Output\OutputInterface;
 
 if (!function_exists('collect'))
 {
@@ -20,102 +16,18 @@ if (!function_exists('collect'))
      *
      * Return an instance of collection
      *
-     * @method collection
-     *
-     * @param array $data The started array
+     * @param array<mixed> $data
      *
      * @return Collect
+     *
      */
-    function collect($data = []): Collect
+    function collect(array $data = []): Collect
     {
         return new Collect($data);
     }
 
 }
 
-
-if (!function_exists('routes'))
-{
-    /**
-     *
-     * List routes
-     *
-     * @param OutputInterface $output
-     * @param array $routes
-     *
-     * @throws Kedavra
-     *
-     */
-    function routes(OutputInterface $output, array $routes): void
-    {
-
-
-            if (def($routes))
-            {
-                $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
-
-                foreach ($routes as $route)
-                {
-
-                    $name = "<fg=blue;options=bold>$route->name</>";
-
-                    $url = "<fg=magenta;options=bold>$route->url</>";
-                    $controller = "<fg=green;options=bold>$route->controller</>";
-                    $action = "<fg=yellow;options=bold>$route->action</>";
-                    $method = "<fg=cyan;options=bold>$route->method</>";
-
-                    if (sum($route->method) > 4)
-                        $output->write("|  $method\t");
-                    else
-                        $output->write("|  $method\t\t");
-
-                    if (sum($route->name) < 5)
-                        $output->write("|  $name\t\t\t\t|");
-
-                    elseif (sum($route->name) > 10)
-                        $output->write("|  $name\t\t|");
-                    else
-                        $output->write("|  $name\t\t\t|");
-
-                    if (sum($route->url) < 5)
-                        $output->write("  $url\t\t\t\t\t|");
-                    elseif (sum($route->url) < 12)
-                        $output->write("  $url\t\t\t\t|");
-                    elseif (sum($route->url) > 18)
-                        $output->write("  $url\t\t|");
-                    else
-                        $output->write("  $url\t\t\t|");
-
-                    if (sum($route->controller) < 5)
-                        $output->write("  $controller\t\t\t\t\t|");
-                    elseif (sum($route->controller) < 8)
-                        $output->write("  $controller\t\t\t\t|");
-                    elseif (sum($route->controller) > 8 && sum($route->controller) < 15)
-                        $output->write("  $controller\t\t\t|");
-                    elseif (sum($route->controller) > 15)
-                        $output->write("  $controller\t\t\t|");
-                    else
-                        $output->write("  $controller\t\t\t|");
-
-                    if (sum($route->action) < 5)
-                        $output->write("  $action\t\t\t\t|\n");
-                    elseif (sum($route->action) < 10)
-                        $output->write("  $action\t\t\t|\n");
-                    elseif (sum($route->action) > 12)
-                        $output->write("  $action\t\t|\n");
-                    else
-                        $output->write("  $action\t\t\t|\n");
-
-                    $output->write("+---------------+-------------------------------+---------------------------------------+---------------------------------------+-------------------------------+\n");
-                }
-            } else
-            {
-                $output->write("<error>We have not found routes</error>\n");
-            }
-
-
-    }
-}
 
 if (!function_exists('env'))
 {
@@ -127,10 +39,12 @@ if (!function_exists('env'))
      * @return array|false|string
      *
      * @throws Exception
+     *
      */
     function env($variable,$default = '')
     {
         $x =  (new Env())->get($variable);
+
         return  def($x) ? $x : $default;
     }
 
@@ -272,12 +186,12 @@ if (!function_exists('root'))
      *
      * @return string
      *
+     * @throws Kedavra
+     *
      */
     function root(): string
     {
-
-        return php_sapi_name() !== 'cli' ? https() ? 'https://' . request()->server->get('HTTP_HOST') : 'http://' . request()->server->get('HTTP_HOST') : '/';
-
+        return php_sapi_name() !== 'cli' ? https() ? 'https://' . Request::make()->server()->get('HTTP_HOST') : 'http://' . Request::make()->server()->get('HTTP_HOST') : '/';
     }
 
 }
@@ -328,27 +242,48 @@ if (!function_exists('route'))
      */
     function route(string $route,array $args = []): string
     {
-        $x =  Web::where('name',EQUAL,$route)->execute();
+        $x = (new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'))->where('name',EQUAL,$route)->get();
 
         is_true(not_def($x),true,"The $route route was not found");
 
-        $route = $x[0]->url;
-
-        if (def($args))
-        {
 
 
-            $x = '';
+        if (cli())
+        {    $route = $x[0]->url;
 
-            foreach ($args as $k => $v) {
+            if (def($args))
+            {
 
-                append($x, str_replace(":$k", "$v", $route));
+
+                $x = '';
+
+                foreach ($args as $k => $v) {
+
+                    append($x, str_replace(":$k", "$v", $route));
+
+                }
+                return trim($x, '/');
 
             }
-            return trim($x, '/');
-
+            return  $route;
         }
+            $route = https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') .'/' : 'http://'.Request::make()->server()->get('SERVER_NAME').'/';
+
+            if (def($args))
+            {
+                $route .= $x[0]->url;
+                $x = '';
+
+                foreach ($args as $k => $v) {
+
+                    append($x, str_replace(":$k", "$v", $route));
+
+                }
+                return trim($x, '/');
+            }
+
         return  $route;
+
     }
 }
 
@@ -399,9 +334,9 @@ if (!function_exists('ago'))
      *
      * @return string
      *
-     * @throws DependencyException
      * @throws Kedavra
-     * @throws NotFoundException
+     * @throws Exception
+     *
      */
     function ago(string $time,$tz = null):string
     {
@@ -409,99 +344,6 @@ if (!function_exists('ago'))
 
         return Carbon::parse($time,$tz)->diffForHumans();
 
-    }
-}
-if (!function_exists('detect_method'))
-{
-    /**
-     *
-     * Detection a route method
-     *
-     * @param string $db
-     * @param string $route
-     *
-     * @return string
-     *
-     * @throws DependencyException
-     * @throws Kedavra
-     * @throws NotFoundException
-     *
-     */
-    function detect_method(string $db,string $route): string
-    {
-
-        switch ($db)
-        {
-            case 'admin':
-                $x = Admin::where('name',EQUAL,$route)->fetch(true)->all();
-                break;
-            case 'web':
-                $x = Web::where('name',EQUAL,$route)->fetch(true)->all();
-                break;
-            case 'task':
-                $x = Task::where('name',EQUAL,$route)->fetch(true)->all();
-                break;
-            default:
-                throw new Kedavra("The db parameter must be web, admin or task");
-                break;
-        }
-        return $x->method;
-
-    }
-}
-
-if (!function_exists('url'))
-{
-
-    /**
-     *
-     *
-     *
-     * @method url
-     *
-     * @param mixed $params
-     *
-     * @return string
-     *
-     */
-    function url(...$params): string
-    {
-
-        return php_sapi_name() !== 'cli' ? https() ? 'https://' . request()->getHost() . '/' . collect($params)->join('/') : 'http://' . request()->getHost() . '/' . collect($params)->join('/') : '/' . collect($params)->join('/');
-
-    }
-
-}
-if (!function_exists('redirect_select'))
-{
-
-    /**
-     *
-     * Generate a redirect select
-     *
-     * @param array $options
-     *
-     * @return string
-     *
-     * @throws Kedavra
-     *
-     */
-    function redirect_select(array $options): string
-    {
-        $html = '';
-
-        append($html, '<div class="' . collect(config('form','class'))->get('separator').'">');
-
-        append($html, '<select class="' . collect(config('form','class'))->get('base').'"  onChange="location = this.options[this.selectedIndex].value">');
-
-        append($html,'<option value="'.root().'"> ' . config('form','choice_option') . '</option>');
-
-        foreach($options as $k => $option)
-            is_integer($k) ? append($html,'<option value="' . $option . '"> ' . $option . '</option>'):append($httml, '<option value="' . $k . '"> ' . $option . '</option>');
-
-        append($html, '</select></div></div>');
-
-        return $html;
     }
 }
 
@@ -530,24 +372,6 @@ if (!function_exists('append'))
 
 }
 
-if (!function_exists('pagination'))
-{
-    /**
-     * create a pagination
-     *
-     * @param  int  $current_page
-     * @param  int  $limit
-     * @param  int  $total
-     *
-     * @throws Kedavra
-     * @return string
-     */
-    function pagination(int $current_page,int $limit,int $total): string
-    {
-        return  (new Pagination($current_page,$limit,$total))->paginate();
-    }
-
-}
 
 if (!function_exists('clear_terminal'))
 {
@@ -580,21 +404,18 @@ if (!function_exists('flash'))
 
 }
 
-if (!function_exists('is_mobile'))
+if (!function_exists('mobile'))
 {
     /**
      *
      * Check if device is mobile
      *
-     * @method is_mobile
-     *
      * @return bool
-     * @throws DependencyException
-     * @throws NotFoundException
+     *
+     * @throws Exception
      */
-    function is_mobile(): bool
+    function mobile(): bool
     {
-
         return app()->detect()->mobile();
     }
 }
@@ -603,8 +424,6 @@ if (!function_exists('is_pair'))
 {
     /**
      * Check if number is pair
-     *
-     * @method is_pair
      *
      * @param int $x
      *

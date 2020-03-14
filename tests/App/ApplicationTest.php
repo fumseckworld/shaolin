@@ -11,8 +11,10 @@ use Eywa\Database\Connexion\Connect;
 use Eywa\Database\Connexion\Connexion;
 use Eywa\Database\Query\Sql;
 use Eywa\Detection\Detect;
+use Eywa\Exception\Kedavra;
 use Eywa\File\File;
 use Eywa\Html\Form\Form;
+use Eywa\Http\Request\FormRequest;
 use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
 use Eywa\Message\Email\Write;
@@ -25,6 +27,9 @@ use Redis;
 class ApplicationTest extends Unit
 {
 
+    /**
+     * @throws Kedavra
+     */
     public function test_ioc()
     {
         $this->assertInstanceOf(Connexion::class,app()->ioc(Connect::class));
@@ -34,12 +39,12 @@ class ApplicationTest extends Unit
         $this->assertInstanceOf(Response::class,app()->response('i am a view')->send());
         $this->assertInstanceOf(Response::class,app()->redirect('root',[],'',true)->send());
         $this->assertInstanceOf(Collect::class,app()->collect());
-        $this->assertTrue(app()->validator(UsersValidator::class)->to(UsersValidator::$redirect_url));
+        $this->assertTrue(app()->validator(new UsersValidator())->to('/error'));
         $this->assertInstanceOf(Sql::class,app()->sql('users'));
         $this->assertInstanceOf(SessionInterface::class,app()->session());
         $this->assertInstanceOf(Auth::class,app()->auth());
         $this->assertInstanceOf(File::class,app()->file('README.md'));
-        $this->assertInstanceOf(Form::class,app()->form('root',GET));
+        $this->assertInstanceOf(Form::class,app()->form(new FormRequest('/')));
         $this->assertInstanceOf(Request::class,app()->request());
         $this->assertInstanceOf(Detect::class,app()->detect());
         $this->assertInstanceOf(Response::class,app()->back());
