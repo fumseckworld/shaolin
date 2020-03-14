@@ -3,4 +3,5 @@ parameters:
         failed: ~
         succeeded: ~
     tasks:
+        composer: ~
         make: ~
