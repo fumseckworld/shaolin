@@ -7,6 +7,8 @@ namespace Eywa\Database\Table {
     use Eywa\Collection\Collect;
     use Eywa\Console\Shell;
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Exception\Kedavra;
+    use PDO;
 
 
     class Table implements Records
@@ -18,8 +20,8 @@ namespace Eywa\Database\Table {
         /**
          * @var string
          */
-        private string $table;
-        private Collect $columns;
+        private string $table ='';
+        private Collect $columns ;
         private string $saved_table = '';
         private string $primary ='id';
 
@@ -30,8 +32,18 @@ namespace Eywa\Database\Table {
         {
             $this->connect = $connect;
             $this->table = $table;
+            $this->columns = collect();
         }
 
+        /**
+         * @param int $pdo_mode
+         * @return array
+         * @throws Kedavra
+         */
+        public function content(int $pdo_mode = PDO::FETCH_OBJ):array
+        {
+            return $this->connect->set(sprintf('SELECT * FROM %s',$this->table))->get($pdo_mode);
+        }
         /**
          * @inheritDoc
          */
