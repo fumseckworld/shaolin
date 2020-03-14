@@ -1,3 +1,6 @@
 parameters:
+    ascii:
+        failed: ~
+        succeeded: ~
     tasks:
-      make: ~
+        make: ~
