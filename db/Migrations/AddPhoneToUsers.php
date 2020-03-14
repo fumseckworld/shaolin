@@ -26,7 +26,7 @@ class AddPhoneToUsers extends Migration
 
     public function up(): bool
     {
-      return  $this->add('phone','string',255)->update();
+      return  $this->add('phone','varchar',255)->update();
     }
 
     public function down(): bool

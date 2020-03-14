@@ -32,6 +32,8 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
+         * @throws Kedavra
+         *
          */
         public function drop(): bool;
 
@@ -40,6 +42,8 @@ namespace Eywa\Database\Migration {
          * Truncate the table
          *
          * @return bool
+         *
+         * @throws Kedavra
          *
          */
         public function truncate(): bool;
@@ -63,6 +67,8 @@ namespace Eywa\Database\Migration {
          *
          * @return bool
          *
+         * @throws Kedavra
+         *
          */
         public function remove(array $columns): bool;
 
@@ -73,6 +79,8 @@ namespace Eywa\Database\Migration {
          * @param string $new_name
          *
          * @return bool
+         *
+         * @throws Kedavra
          *
          */
         public function rename(string $new_name): bool;
@@ -85,6 +93,8 @@ namespace Eywa\Database\Migration {
          * @param string $new_column_name
          *
          * @return bool
+         *
+         * @throws Kedavra
          *
          */
         public function refresh(string $colunn,string $new_column_name): bool;
@@ -112,6 +122,8 @@ namespace Eywa\Database\Migration {
          * @param array<string> $constraints
          *
          * @return Evolution
+         *
+         * @throws Kedavra
          *
          */
         public function add(string $column, string $type,  int $size = 0,array $constraints= []): Evolution;

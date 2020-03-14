@@ -6,6 +6,7 @@ namespace Eywa\Console\Records {
 
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
+    use PDO;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
@@ -35,7 +36,7 @@ namespace Eywa\Console\Records {
             $i = new Table($connect,$table);
 
             $x = new \Symfony\Component\Console\Helper\Table($output);
-            $x->setStyle('box')->setHeaders($i->columns()->all())->setRows($i->content(\PDO::FETCH_ASSOC))->render();
+            $x->setStyle('box')->setHeaders($i->columns()->all())->setRows($i->content(PDO::FETCH_ASSOC))->render();
 
             return 0;
 

@@ -99,7 +99,7 @@ namespace Eywa\Console\Database {
                         $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
                     } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
 
-                    if( connect(MYSQL,'','root',$this->pass)->create_database(strval(env('DEVELOP_DB_NAME'))))
+                    if(connect(MYSQL,'','root',$this->pass)->create_database(strval(env('DEVELOP_DB_NAME'))))
                     {
                         $io->success($this->dev_base_created_successfully);
 
@@ -159,10 +159,15 @@ namespace Eywa\Console\Database {
             switch ($prod)
             {
                 case MYSQL :
-                    do
+
+                    if (!connect(MYSQL, '', 'root', $this->pass)->connected())
                     {
-                        $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
-                    } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
+                        do
+                        {
+                            $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
+                        } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
+                    }
+
 
                     if(connect(MYSQL,'','root',$this->pass)->create_database(strval(env('DB_NAME'))))
                     {
@@ -184,11 +189,14 @@ namespace Eywa\Console\Database {
                   break;
 
                 case POSTGRESQL:
-                    do
-                    {
-                        $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'postgres'))->setHidden(true));
-                    } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
 
+                    if (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected())
+                    {
+                        do
+                        {
+                            $this->pass = $io->askQuestion((new Question($this->mysql_root_password_question, 'postgres'))->setHidden(true));
+                        }while(!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
+                    }
                     if( connect(POSTGRESQL,'','postgres',$this->pass)->create_database(strval(env('DB_NAME'))))
                     {
                         $io->success($this->prod_base_created_successfully);
@@ -236,7 +244,7 @@ namespace Eywa\Console\Database {
                 return 1;
 
             }
-            $io->success('');
+            $io->success('The app are ready');
             return 0;
 
         }

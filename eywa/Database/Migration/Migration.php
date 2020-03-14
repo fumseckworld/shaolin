@@ -161,10 +161,21 @@ namespace Eywa\Database\Migration {
                 $type = $x->get('type');
 
                 $size = $x->get('size') ?? 0;
-
-
-                append($sql,"$column $type ");
-
+                switch ($type)
+                {
+                    case 'string':
+                        append($sql, "$column {$this->text()} ");
+                    break;
+                    case 'longtext':
+                        append($sql, "$column {$this->longtext()} ");
+                    break;
+                    case 'datetime':
+                        append($sql, "$column {$this->datetime()} ");
+                    break;
+                    default:
+                        append($sql,"$column $type ");
+                    break;
+                }
 
                 if ($size !== 0)
                     append($sql," ($size) ");
@@ -300,6 +311,9 @@ namespace Eywa\Database\Migration {
          */
         public function add(string $column, string $type, int $size = 0, array $constraints = []): Evolution
         {
+            if (equal($type, 'primary'))
+                return $this->primary($column);
+
             static::$columns->push(compact('column', 'type', 'size','constraints'));
 
             return  $this;
@@ -321,6 +335,57 @@ namespace Eywa\Database\Migration {
         }
 
         /**
+         * @param string $column
+         * @return Migration
+         * @throws Kedavra
+         */
+        private function primary(string $column): Migration
+        {
+            $size = 0;
+            switch ($this->connexion()->driver())
+            {
+                case MYSQL:
+                    $type = 'INT';
+                    $constraints = ['PRIMARY KEY NOT NULL AUTO_INCREMENT'];
+                    static::$columns->push(compact('column', 'type','size','constraints'));
+                break;
+                case POSTGRESQL:
+                    $type = 'SERIAL';
+                    $constraints =  ['PRIMARY KEY'];
+                    static::$columns->push(compact('column', 'type','size','constraints'));
+                break;
+                case SQLITE:
+                    $type = 'INTEGER';
+                    $constraints = ['PRIMARY KEY AUTOINCREMENT'];
+                    static::$columns->push(compact('column', 'type','size','constraints'));
+                break;
+            }
+
+            return $this;
+        }
+
+        /**
+         *
+         * @throws Kedavra
+         *
+         * @return string
+         *
+         */
+        private function longtext(): string
+        {
+            switch ($this->connexion()->driver())
+            {
+                case MYSQL:
+                    return  'LONGTEXT';
+                case POSTGRESQL:
+                case SQLITE:
+                    return 'TEXT';
+                default:
+                    return '';
+            }
+        }
+
+        /**
          * @return Connect
          *
          * @throws Kedavra
@@ -329,6 +394,47 @@ namespace Eywa\Database\Migration {
         private function connexion(): Connect
         {
             return static::$env == 'dev' ? development() : production();
+        }
+
+        /**
+         * @return string
+         * @throws Kedavra
+         */
+        private function datetime(): string
+        {
+            switch ($this->connexion()->driver())
+            {
+                case MYSQL:
+                case SQLITE:
+                    return 'DATETIME';
+                case POSTGRESQL:
+                    return 'TIMESTAMP';
+                default:
+                    return '';
+            }
+        }
+        /**
+         *
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        private function text():string
+        {
+            switch ($this->connexion()->driver())
+            {
+                case MYSQL:
+                    return  'VARCHAR';
+                case POSTGRESQL:
+                    return 'character varying';
+                case SQLITE:
+                    return  'text';
+                default:
+                    return  '';
+
+            }
         }
     }
 }

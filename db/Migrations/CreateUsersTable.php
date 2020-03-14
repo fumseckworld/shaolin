@@ -26,7 +26,7 @@ class CreateUsersTable extends Migration
 
     public function up(): bool
     {
-      return  $this->add('id','primary')->add('username','longtext')->add('email','string',255)->create();
+      return  $this->add('id','primary')->add('username','longtext')->add('email','varchar',255)->create();
     }
 
     public function down(): bool

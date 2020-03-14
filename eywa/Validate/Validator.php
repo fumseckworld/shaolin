@@ -43,8 +43,11 @@ namespace Eywa\Validate {
 
         /**
          *
+         *
          * @param Request $request
+         *
          * @return Response
+         *
          */
         abstract protected static function do(Request $request): Response;
 
@@ -159,8 +162,6 @@ namespace Eywa\Validate {
          * @param string $key
          *
          * @return string
-         *
-         * @throws Kedavra
          *
          */
         public static function message(string $key): string
