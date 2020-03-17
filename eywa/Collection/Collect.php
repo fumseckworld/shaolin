@@ -45,7 +45,6 @@ namespace Eywa\Collection {
          */
         public function __construct(array $data)
         {
-
             $this->data = $data;
 
             $this->position();
@@ -64,7 +63,6 @@ namespace Eywa\Collection {
             $x = array_combine($keys, $values);
 
             return is_bool($x) ? $this : $this->checkout($x);
-
         }
 
         /**
@@ -158,9 +156,7 @@ namespace Eywa\Collection {
         public function chunk(int $x): Collect
         {
             $data = collect();
-            while (def($this->data))
-            {
-
+            while (def($this->data)) {
                 $data->push($this->diff($this->slice($x)->all())->all());
 
                 $this->data = $this->slice($x)->all();
@@ -193,10 +189,10 @@ namespace Eywa\Collection {
         public function only(array $keys): Collect
         {
             $x = collect();
-            foreach ($this->all() as $k => $v)
-            {
-                foreach ($keys as $key)
+            foreach ($this->all() as $k => $v) {
+                foreach ($keys as $key) {
                     is_array($v) ? $x->push([$key => $v[$key]]) : $x->put($key, $this->get($key));
+                }
             }
             return $this->checkout($x->all());
         }
@@ -266,13 +262,14 @@ namespace Eywa\Collection {
          */
         public function value_before_key(string $key)
         {
-            if ($this->has($key))
-            {
-                foreach ($this->data as $k => $v)
-                    if ($k !== $key)
+            if ($this->has($key)) {
+                foreach ($this->data as $k => $v) {
+                    if ($k !== $key) {
                         $this->beforeValue = $v;
-                    else
+                    } else {
                         return $this->beforeValue;
+                    }
+                }
             }
             return '';
         }
@@ -527,9 +524,7 @@ namespace Eywa\Collection {
          */
         public function forget(array $keys): Collect
         {
-            foreach ($keys as $key)
-                $this->del($key);
-            return $this;
+            return  $this->del($keys);
         }
 
         /**
@@ -728,12 +723,11 @@ namespace Eywa\Collection {
          */
         public function refresh($old_value, $new_value): Collect
         {
-            if ($old_value !== $new_value)
-            {
-                foreach ($this->all() as $k => $v)
-                {
-                    if ($v === $old_value && $this->has($k))
+            if ($old_value !== $new_value) {
+                foreach ($this->all() as $k => $v) {
+                    if ($v === $old_value && $this->has($k)) {
                         $this->data[$k] = $new_value;
+                    }
                 }
             }
             return $this;
@@ -751,7 +745,7 @@ namespace Eywa\Collection {
          */
         public function push($value): Collect
         {
-             array_push($this->data,$value);
+            array_push($this->data, $value);
 
             return $this->checkout($this->data);
         }
@@ -828,8 +822,9 @@ namespace Eywa\Collection {
          */
         public function del(array $data): Collect
         {
-            foreach ($data as $datum)
+            foreach ($data as $datum) {
                 $this->exist($datum) ? $this->remove_value([$datum]) : $this->remove([$datum]);
+            }
 
             return $this->checkout($this->all());
         }
@@ -1007,11 +1002,12 @@ namespace Eywa\Collection {
          * @return Collect
          *
          */
-        public function each(callable $callable): Collect
+        public function each($callable): Collect
         {
             $result = collect();
-            foreach ($this->all() as $k => $v)
-                $result->put($k,call_user_func_array($callable,[$k,$v]));
+            foreach ($this->all() as $k => $v) {
+                $result->put($k, call_user_func_array($callable, [$k,$v]));
+            }
 
             return $this->checkout($result->all());
         }
@@ -1025,11 +1021,11 @@ namespace Eywa\Collection {
          * @return Collect
          *
          */
-        public function for(callable $callable): Collect
+        public function for($callable): Collect
         {
             $result = collect();
             foreach ($this->all() as $k => $items) {
-                $result->put($k, call_user_func_array($callable,[$items]));
+                $result->put($k, call_user_func_array($callable, [$items]));
             }
             return $this->checkout($result->all());
         }
@@ -1059,10 +1055,10 @@ namespace Eywa\Collection {
          */
         public function uniq(array $values): Collect
         {
-            foreach ($values as $value)
-            {
-                if ($this->not_exist($value))
+            foreach ($values as $value) {
+                if ($this->not_exist($value)) {
                     $this->push($value);
+                }
             }
             return $this;
         }
@@ -1095,10 +1091,10 @@ namespace Eywa\Collection {
          */
         private function remove(array $keys): Collect
         {
-            foreach ($keys as $key)
-            {
-                if ($this->has($key))
+            foreach ($keys as $key) {
+                if ($this->has($key)) {
                     unset($this->data[$key]);
+                }
             }
             return $this;
         }
@@ -1114,13 +1110,12 @@ namespace Eywa\Collection {
          */
         private function remove_value(array $values): Collect
         {
-            foreach ($values as $value)
-            {
-                if (($key = array_search($value, $this->data)) !== false)
+            foreach ($values as $value) {
+                if (($key = array_search($value, $this->data)) !== false) {
                     unset($this->data[$key]);
+                }
             }
             return $this;
         }
-
     }
 }

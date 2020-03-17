@@ -11,7 +11,6 @@ namespace Eywa\Database\Seed {
     use Eywa\Exception\Kedavra;
     use Faker\Generator;
 
-
     abstract class Seeder
     {
 
@@ -91,7 +90,7 @@ namespace Eywa\Database\Seed {
          * @throws Kedavra
          *
          */
-        abstract public function each(Generator $generator,Table $table,Seeder $seeder): void;
+        abstract public function each(Generator $generator, Table $table, Seeder $seeder): void;
 
         /**
          *
@@ -105,9 +104,9 @@ namespace Eywa\Database\Seed {
          * @throws Kedavra
          *
          */
-        public function set(string $column,$value): Seeder
+        public function set(string $column, $value): Seeder
         {
-            static::$set->put($column,static::$connexion->secure($value));
+            static::$set->put($column, static::$connexion->secure($value));
 
             return $this;
         }
@@ -128,13 +127,13 @@ namespace Eywa\Database\Seed {
 
             static::$faker = ioc('faker');
 
-            static::$table = (new Table(development(),static::$from));
+            static::$table = (new Table(development(), static::$from));
 
             $table = static::$from;
 
             $db = static::$connexion->base();
 
-            is_false(static::$table->exist(),true,sprintf('The %s table not exist in the %s base',$table,$db));
+            is_false(static::$table->exist(), true, sprintf('The %s table not exist in the %s base', $table, $db));
 
 
             static::$set = collect();
@@ -143,16 +142,16 @@ namespace Eywa\Database\Seed {
 
             $columns = static::$table->columns();
 
-            for ($i=0;$i<static::$generate;$i++)
-            {
-                static::each(static::$faker,static::$table,$this);
+            for ($i=0;$i<static::$generate;$i++) {
+                static::each(static::$faker, static::$table, $this);
 
                 $tmp = collect();
 
-                foreach ($columns as $column)
+                foreach ($columns as $column) {
                     $tmp->set(static::$set->get($column));
+                }
 
-                append($values, '('. trim($tmp->join(),', ') . '),');
+                append($values, '('. trim($tmp->join(), ', ') . '),');
 
                 static::$set->clear();
 
@@ -161,12 +160,10 @@ namespace Eywa\Database\Seed {
 
             $x = collect($columns->all())->join();
 
-            $table = static::$from;
 
-            $sql = trim("INSERT INTO {$table} ($x) VALUES {$values}",', ') ;
+            $sql = trim("INSERT INTO {$table} ($x) VALUES {$values}", ', ') ;
 
             return static::$connexion->set($sql)->execute();
-
         }
 
         /**
@@ -180,12 +177,11 @@ namespace Eywa\Database\Seed {
          */
         public function primary(string $column): Seeder
         {
-            $value =  in_array(static::$connexion->driver(),[MYSQL, SQLITE]) ? 'NULL' : 'DEFAULT';
+            $value =  in_array(static::$connexion->driver(), [MYSQL, SQLITE]) ? 'NULL' : 'DEFAULT';
 
-            static::$set->put($column,$value);
+            static::$set->put($column, $value);
 
             return  $this;
         }
-
     }
 }

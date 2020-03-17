@@ -78,78 +78,81 @@ namespace Eywa\Validate {
          */
         public static function validate(Request $request): Response
         {
-            if (not_def($request->request()->all()))
+            if (not_def($request->request()->all())) {
                 return  (new RedirectResponse(static::$redirect_url))->send();
+            }
 
             static::$errors = collect();
 
-            foreach (static::$rules as $k => $v)
-            {
+            foreach (static::$rules as $k => $v) {
+                $rules = explode('|', $v);
 
-                $rules = explode('|',$v);
-
-                foreach ($rules as $rule)
-                {
-                    switch ($rule)
-                    {
+                foreach ($rules as $rule) {
+                    switch ($rule) {
                         case 'email':
-                            if (!(new EmailValidator())->isValid($request->request()->get($k),new RFCValidation()))
-                                static::$errors->put($k,'Email not valide');
+                            if (!(new EmailValidator())->isValid($request->request()->get($k), new RFCValidation())) {
+                                static::$errors->put($k, 'Email not valide');
+                            }
                         break;
                         case 'required':
-                            if (not_def($request->request()->get($k)))
-                                static::$errors->put($k,'Is not define');
+                            if (not_def($request->request()->get($k))) {
+                                static::$errors->put($k, 'Is not define');
+                            }
                         break;
                         case 'numeric':
-                            if(!is_numeric($request->request()->get($k)))
-                                static::$errors->put($k,'Is not numeric');
+                            if (!is_numeric($request->request()->get($k))) {
+                                static::$errors->put($k, 'Is not numeric');
+                            }
                         break;
 
-                        case preg_match('#unique:([a-zA-Z]+)#',$rule) === 1:
-                            $x = explode(':',$rule);
+                        case preg_match('#unique:([a-zA-Z]+)#', $rule) === 1:
+                            $x = explode(':', $rule);
                             $table = $x[1];
 
-                            if (sql($table)->where($k,EQUAL,$request->request()->get($k))->exist())
-                                static::$errors->put($k,'Is not unique');
+                            if (sql($table)->where($k, EQUAL, $request->request()->get($k))->exist()) {
+                                static::$errors->put($k, 'Is not unique');
+                            }
 
                         break;
-                        case preg_match('#between:([0-9]+),([0-9]+)#',$rule) === 1:
-                            $x = explode(',',$rule);
-                            $min = str_replace('between:','',$x[0]);
+                        case preg_match('#between:([0-9]+),([0-9]+)#', $rule) === 1:
+                            $x = explode(',', $rule);
+                            $min = str_replace('between:', '', $x[0]);
                             $max = $x[1];
                             $value = $request->request()->get($k);
-                            if ($value <  $min || $value > $max)
-                                static::$errors->put($k,'Is not between');
+                            if ($value <  $min || $value > $max) {
+                                static::$errors->put($k, 'Is not between');
+                            }
                         break;
 
-                        case preg_match('#max:([0-9]+)#',$rule) === 1:
+                        case preg_match('#max:([0-9]+)#', $rule) === 1:
 
-                            $max = collect(explode(':',$rule))->last();
+                            $max = collect(explode(':', $rule))->last();
 
                             $value = $request->request()->get($k);
 
                             $length = mb_strlen($value);
-                            if ($length >  $max)
-                                static::$errors->put($k,'Value superio to maximum value');
+                            if ($length >  $max) {
+                                static::$errors->put($k, 'Value superio to maximum value');
+                            }
                         break;
 
-                        case preg_match('#min:([0-9]+)#',$rule) === 1:
-                            $min = collect(explode(':',$rule))->last();
+                        case preg_match('#min:([0-9]+)#', $rule) === 1:
+                            $min = collect(explode(':', $rule))->last();
 
                             $value = $request->request()->get($k);
 
                             $length = mb_strlen($value);
-                            if ($length <  $min)
-                                static::$errors->put($k,'Value inferior of the minimum value');
+                            if ($length <  $min) {
+                                static::$errors->put($k, 'Value inferior of the minimum value');
+                            }
                         break;
                     }
-
                 }
-
             }
 
-            if (static::$errors->sum() === 0)
+            if (static::$errors->sum() === 0) {
                 return static::do($request)->send();
+            }
 
 
             return  (new RedirectResponse(static::$redirect_url))->send();
@@ -168,6 +171,5 @@ namespace Eywa\Validate {
         {
             return  static::has($key) ? static::$errors->get($key) : '';
         }
-
     }
 }

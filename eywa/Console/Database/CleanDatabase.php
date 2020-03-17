@@ -19,7 +19,7 @@ namespace Eywa\Console\Database {
 
         protected function configure():void
         {
-            $this->setDescription("Truncate all tables")->addArgument('env',InputArgument::REQUIRED,'The base environment');
+            $this->setDescription("Truncate all tables")->addArgument('env', InputArgument::REQUIRED, 'The base environment');
         }
 
         /**
@@ -28,16 +28,15 @@ namespace Eywa\Console\Database {
          * @return int
          * @throws Kedavra
          */
-        public function execute(InputInterface $input,  OutputInterface $output)
+        public function execute(InputInterface $input, OutputInterface $output)
         {
             $env = strval($input->getArgument('env'));
 
-            not_in(['dev','prod','any'],$env,true,"Only dev, prod or any must be used");
+            not_in(['dev','prod','any'], $env, true, "Only dev, prod or any must be used");
 
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
-            if((new Base($env))->clean())
-            {
+            if ((new Base($env))->clean()) {
                 $io->success('All tables are now empty');
                 return 0;
             }
@@ -45,7 +44,5 @@ namespace Eywa\Console\Database {
             $io->error('Failed to clean the database');
             return 1;
         }
-
-
     }
 }

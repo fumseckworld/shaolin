@@ -19,7 +19,7 @@ namespace Eywa\Console\Records {
 
         public function configure():void
         {
-            $this->setDescription('List the content of a table')->addArgument('table',InputArgument::REQUIRED,'The table name')->addArgument('env',InputArgument::REQUIRED,'The env mode');
+            $this->setDescription('List the content of a table')->addArgument('table', InputArgument::REQUIRED, 'The table name')->addArgument('env', InputArgument::REQUIRED, 'The env mode');
         }
 
         /**
@@ -32,15 +32,13 @@ namespace Eywa\Console\Records {
         {
             $env = strval($input->getArgument('env'));
             $table = strval($input->getArgument('table'));
-            $connect = equal($env,'prod') ? production() : development();
-            $i = new Table($connect,$table);
+            $connect = equal($env, 'prod') ? production() : development();
+            $i = new Table($connect, $table);
 
             $x = new \Symfony\Component\Console\Helper\Table($output);
             $x->setStyle('box')->setHeaders($i->columns()->all())->setRows($i->content(PDO::FETCH_ASSOC))->render();
 
             return 0;
-
         }
-
     }
 }

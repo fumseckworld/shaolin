@@ -32,9 +32,8 @@ namespace Eywa\Database\Export {
             $host = $this->connexion->hostname();
             $base = $this->connexion->base();
 
-            $file = base('db','dump',"$base.sql");
-            switch($this->connexion->driver())
-            {
+            $file = base('db', 'dump', "$base.sql");
+            switch ($this->connexion->driver()) {
                 case MYSQL:
                     return (new Shell("mysqldump -u $username -p$password $base > $file"))->run();
                 case POSTGRESQL:
@@ -44,9 +43,6 @@ namespace Eywa\Database\Export {
                 default:
                     return false;
             }
-
-
         }
-
     }
 }

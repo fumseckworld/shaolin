@@ -466,6 +466,6 @@ define('STATUS', [
 
 ]);
 
-define('CACHE_DEFAULT_TTL',7200); // 120m | 2h | 7200s
+define('CACHE_DEFAULT_TTL', 7200); // 120m | 2h | 7200s
 
-define('LOCALHOST_IP','127.0.0.1');
+define('LOCALHOST_IP', '127.0.0.1');

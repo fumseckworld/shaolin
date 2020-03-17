@@ -15,7 +15,6 @@ namespace Eywa\Console\Routes {
 
     class FindRoute extends Command
     {
-
         protected static $defaultName = "route:find";
 
         /**
@@ -41,7 +40,7 @@ namespace Eywa\Console\Routes {
         {
             parent::__construct($name);
 
-            $this->sql =  (new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'));
+            $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
         }
 
         protected function configure():void
@@ -60,17 +59,14 @@ namespace Eywa\Console\Routes {
          */
         public function interact(InputInterface $input, OutputInterface $output):int
         {
-
-            $io  = new SymfonyStyle($input,$output);
-            do
-            {
-                do
-                {
+            $io  = new SymfonyStyle($input, $output);
+            do {
+                do {
                     $this->search = $io->askQuestion((new Question('Type your search '))->setAutocompleterValues($this->all()));
                 } while (not_def($this->search));
 
                 $table = new Table($output);
-                $io = new SymfonyStyle($input,$output);
+                $io = new SymfonyStyle($input, $output);
 
 
                 $table
@@ -79,11 +75,10 @@ namespace Eywa\Console\Routes {
                     ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                     ->setRows(
                         $this->sql->like($this->search)->to(PDO::FETCH_ASSOC)
-
                     )
                 ;
                 $table->render();
-            }while($io->confirm('Continue ?',true));
+            } while ($io->confirm('Continue ?', true));
             return 0;
         }
 
@@ -99,8 +94,7 @@ namespace Eywa\Console\Routes {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
-            $io  = new SymfonyStyle($input,$output);
+            $io  = new SymfonyStyle($input, $output);
 
             $io->success('Bye');
             return 0;
@@ -115,11 +109,10 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-            foreach ($this->sql->get() as $v)
+            foreach ($this->sql->get() as $v) {
                 $x->push($v->controller);
+            }
             return $x->all();
-
-
         }
 
 
@@ -131,10 +124,10 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-            foreach ($this->sql->get() as $v)
+            foreach ($this->sql->get() as $v) {
                 $x->push($v->name);
+            }
             return $x->all();
-
         }
 
 
@@ -146,11 +139,10 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-            foreach ($this->sql->get() as $v)
+            foreach ($this->sql->get() as $v) {
                 $x->push($v->url);
+            }
             return $x->all();
-
-
         }
 
 
@@ -162,10 +154,10 @@ namespace Eywa\Console\Routes {
         {
             $x = collect();
 
-                foreach ($this->sql->get() as $v)
-                    $x->push($v->action);
-                return $x->all();
-
+            foreach ($this->sql->get() as $v) {
+                $x->push($v->action);
+            }
+            return $x->all();
         }
 
 
@@ -175,8 +167,7 @@ namespace Eywa\Console\Routes {
          */
         private function all():array
         {
-            return collect()->merge( collect(METHOD_SUPPORTED)->for('strtolower')->all())->merge($this->name())->merge($this->url())->merge($this->action())->merge($this->controller())->all();
+            return collect()->merge(collect(METHOD_SUPPORTED)->for('strtolower')->all())->merge($this->name())->merge($this->url())->merge($this->action())->merge($this->controller())->all();
         }
-
     }
 }

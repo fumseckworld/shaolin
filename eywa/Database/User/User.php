@@ -34,8 +34,7 @@ namespace Eywa\Database\User {
          */
         public function show(): Collect
         {
-            switch ($this->connexion->driver())
-            {
+            switch ($this->connexion->driver()) {
                 case MYSQL:
                     return collect($this->connexion->set('SELECT User from mysql.user')->get(COLUMNS));
                 case POSTGRESQL:

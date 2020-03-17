@@ -79,17 +79,11 @@ namespace Eywa\Http\Parameter\Uploaded {
             $this->temporary = collect();
             $this->errors = collect();
             $this->size = collect();
-            if (def($files))
-            {
-
-
-
+            if (def($files)) {
                 $i= 0;
                 $this->sum = collect($files['files']['name'])->sum();
 
-                do
-                {
-
+                do {
                     $file = $files['files'];
 
                     $current = $file['name'][$i];
@@ -99,33 +93,26 @@ namespace Eywa\Http\Parameter\Uploaded {
 
                     try {
                         $type = Detector::getMimeType($current);
-
-                    }catch (Exception $exception)
-                    {
-
-                      $type = false;
-
+                    } catch (Exception $exception) {
+                        $type = false;
                     }
 
 
-                    if(
-                        $type  && ! in_array($x->getExtension(),['exe','php','c','rb','bat','js','perl','bash','sh','py','ts',''])
+                    if (
+                        $type  && ! in_array($x->getExtension(), ['exe','php','c','rb','bat','js','perl','bash','sh','py','ts',''])
                         && ! $x->isExecutable()
-                        && ! in_array($type,['application/javascript','application/typescript','application/java-archive','application/x-msdownload','text/plain']))
-                    {
-                        $this->filename->put($i,$current);
+                        && ! in_array($type, ['application/javascript','application/typescript','application/java-archive','application/x-msdownload','text/plain'])) {
+                        $this->filename->put($i, $current);
 
-                        $this->types->put($this->filename->get($i),$file['type'][$i]);
-                        $this->temporary->put($i,$file['tmp_name'][$i]);
+                        $this->types->put($this->filename->get($i), $file['type'][$i]);
+                        $this->temporary->put($i, $file['tmp_name'][$i]);
 
-                        $this->errors->put($this->filename->get($i),$file['error'][$i]);
-                        $this->size->put($this->filename->get($i),$file['size'][$i]);
+                        $this->errors->put($this->filename->get($i), $file['error'][$i]);
+                        $this->size->put($this->filename->get($i), $file['size'][$i]);
                     }
                     $i++;
-               }while($i <$this->sum);
-
+                } while ($i <$this->sum);
             }
-
         }
 
         /**
@@ -135,28 +122,26 @@ namespace Eywa\Http\Parameter\Uploaded {
         {
             $path = base('web');
 
-            foreach (explode(DIRECTORY_SEPARATOR,$path) as $dir)
-            {
-                append($path,DIRECTORY_SEPARATOR. $dir);
+            foreach (explode(DIRECTORY_SEPARATOR, $path) as $dir) {
+                append($path, DIRECTORY_SEPARATOR. $dir);
 
-                if (!is_dir($path))
+                if (!is_dir($path)) {
                     mkdir($path);
+                }
             }
 
-            is_false(is_dir($path) ,true,"The directory has been not found");
+            is_false(is_dir($path), true, "The directory has been not found");
 
             $result = collect();
 
             $countfiles = $this->filename->sum();
 
             // Looping all files
-            for($i=0;$i<$countfiles;$i++)
-            {
+            for ($i=0;$i<$countfiles;$i++) {
                 $filename = $this->filename->get($i);
 
                 // Upload file
-                $result->push(move_uploaded_file($this->temporary->get($i),$path.DIRECTORY_SEPARATOR.$filename));
-
+                $result->push(move_uploaded_file($this->temporary->get($i), $path.DIRECTORY_SEPARATOR.$filename));
             }
             return  $result->ok();
         }
@@ -166,9 +151,11 @@ namespace Eywa\Http\Parameter\Uploaded {
          */
         public function valid(): bool
         {
-            foreach ($this->errors() as $error)
-                if ($error != UPLOAD_ERR_OK)
+            foreach ($this->errors() as $error) {
+                if ($error != UPLOAD_ERR_OK) {
                     return  false;
+                }
+            }
 
 
             return  true;
@@ -197,7 +184,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          */
         public function types(): array
         {
-           return $this->types->all();
+            return $this->types->all();
         }
 
         /**
@@ -213,7 +200,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          */
         public function errors(): array
         {
-           return $this->errors->all();
+            return $this->errors->all();
         }
 
         /**

@@ -1,17 +1,15 @@
 <?php
 
 namespace App\Models
-{ 
+{
 
-	use Eywa\Database\Model\Model;
+    use Eywa\Database\Model\Model;
 
-	Class User extends Model
-	{
+    class User extends Model
+    {
+        protected static string $table = 'auth';
 
-		protected static string $table = 'users';
-
-		protected static int $limit = 20;
-
-	}
+        protected static int $limit = 20;
+    }
 
 }

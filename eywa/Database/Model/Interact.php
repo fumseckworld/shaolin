@@ -39,7 +39,7 @@ namespace Eywa\Database\Model {
          * @throws Exception
          *
          */
-        public static function update(int $id,array $values): bool;
+        public static function update(int $id, array $values): bool;
 
         /**
          *
@@ -83,7 +83,7 @@ namespace Eywa\Database\Model {
          * @throws Exception
          *
          */
-        public static function different(string $column,$expected): array;
+        public static function different(string $column, $expected): array;
 
         /**
          *
@@ -98,7 +98,7 @@ namespace Eywa\Database\Model {
          * @throws Exception
          *
          */
-        public static function by(string $column,$expected): stdClass;
+        public static function by(string $column, $expected): stdClass;
 
         /**
          *
@@ -152,7 +152,6 @@ namespace Eywa\Database\Model {
          * @throws Exception
          *
          */
-        public static function paginate(callable $callback,int $current_page): Sql;
-
+        public static function paginate(callable $callback, int $current_page): Sql;
     }
 }

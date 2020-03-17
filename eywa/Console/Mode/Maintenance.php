@@ -1,7 +1,7 @@
 <?php
-	
-	namespace Eywa\Console\Mode
-	{
+    
+    namespace Eywa\Console\Mode
+    {
         use Eywa\Exception\Kedavra;
         use Eywa\File\File;
         use Symfony\Component\Console\Command\Command;
@@ -10,14 +10,13 @@
         use Symfony\Component\Console\Style\SymfonyStyle;
 
         class Maintenance extends Command
-		{
-			
-			protected static $defaultName = 'app:down';
-			
-			protected function configure():void
-			{
-				$this->setDescription('Put the application in maintenance mode');
-			}
+        {
+            protected static $defaultName = 'app:down';
+            
+            protected function configure():void
+            {
+                $this->setDescription('Put the application in maintenance mode');
+            }
 
             /**
              * @param InputInterface $input
@@ -25,20 +24,18 @@
              * @return int|void
              * @throws Kedavra
              */
-			public function execute(InputInterface $input, OutputInterface $output)
-			{
-                $io = new SymfonyStyle($input,$output);
+            public function execute(InputInterface $input, OutputInterface $output)
+            {
+                $io = new SymfonyStyle($input, $output);
 
                 $io->title('Enabling the maintenance mode');
-				if((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: down\nconnexion: prod")->flush())
-                {
+                if ((new File('config/mode.yaml', EMPTY_AND_WRITE_FILE_MODE))->write("mode: down\nconnexion: prod")->flush()) {
                     $io->success('The application is now in maintenance mode');
                     return 0;
                 }
 
-				$io->error('Checkout mode has failed');
-				return 1;
-			}
-			
-		}
-	}
+                $io->error('Checkout mode has failed');
+                return 1;
+            }
+        }
+    }

@@ -2,6 +2,30 @@ parameters:
     ascii:
         failed: ~
         succeeded: ~
+    ignore_unstaged_changes: false
+    stop_on_failure: true
     tasks:
+        phpcsfixer: ~
+        phpversion:
+            project: '7.4.2'
+        file_size:
+            max_size: 10M
+        git_branch_name:
+            blacklist:
+                - master
+                - develop
+                - feature
+                - hotfix
+                - release
+        securitychecker: ~
         composer: ~
-        make: ~
+        phplint: ~
+        phpstan:
+            autoload_file: ~
+            configuration: ~
+            level: 8
+            force_patterns: []
+            ignore_patterns: ['app']
+            triggered_by: ['php']
+            memory_limit: "4G"
+        phpunit: ~

@@ -13,7 +13,6 @@ namespace Eywa\Console\Database {
 
     class ImportDatabase extends Command
     {
-
         protected static $defaultName = 'db:import';
 
         /**
@@ -36,10 +35,8 @@ namespace Eywa\Console\Database {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
-            $io = new SymfonyStyle($input,$output);
-            if((new Import(app()->connexion()))->import())
-            {
+            $io = new SymfonyStyle($input, $output);
+            if ((new Import(app()->connexion()))->import()) {
                 $io->success('The import has successfully executed');
                 return 0;
             }
@@ -49,6 +46,5 @@ namespace Eywa\Console\Database {
             $io->error("The $file file not exist or authentication problems");
             return 1;
         }
-
     }
 }

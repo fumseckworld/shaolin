@@ -12,12 +12,10 @@ namespace Eywa\Console\Generate {
 
     class GenerateModel extends Command
     {
-
         protected static $defaultName = 'make:model';
 
         protected function configure():void
         {
-
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new model')
@@ -35,12 +33,11 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $x = strval($input->getArgument('model'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$x) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $x) !== 1) {
                 $io->error('You must use snake case syntax to generate the model');
                 return  1;
             }
@@ -49,26 +46,24 @@ namespace Eywa\Console\Generate {
 
             $table = strval($input->getArgument('table'));
 
-            $model = collect(explode('_',$x))->for('ucfirst')->join('');
+            $model = collect(explode('_', $x))->for('ucfirst')->join('');
 
             $namespace = 'App\Models';
 
-            $file = base( 'app' , 'Models' , "$model.php");
+            $file = base('app', 'Models', "$model.php");
 
-            if (file_exists($file))
-            {
+            if (file_exists($file)) {
                 $io->error("The $model model already exist");
 
                 return 1;
             }
             if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php\n\nnamespace $namespace\n{ \n\n\tuse Eywa\Database\Model\Model;\n\n\tClass $model extends Model\n\t{\n\n\t\tprotected static string \$table = '$table';\n\n\t\tprotected static string \$by = 'id';\n\n\t\tprotected static int \$limit = 20;\n\n\t}\n\n}\n")->flush()) {
-                $io->success(sprintf('The %s model has been generated successfully',$model));
+                $io->success(sprintf('The %s model has been generated successfully', $model));
 
                 return 0;
             }
-            $io->error(sprintf('The %s model generation has failed',$model));
+            $io->error(sprintf('The %s model generation has failed', $model));
             return 1;
         }
-
     }
 }

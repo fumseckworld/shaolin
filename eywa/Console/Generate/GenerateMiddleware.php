@@ -12,12 +12,10 @@ namespace Eywa\Console\Generate {
 
     class GenerateMiddleware extends Command
     {
-
         protected static $defaultName = 'make:middleware';
 
         protected function configure():void
         {
-
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new middleware')
@@ -35,23 +33,21 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $middleware = strval($input->getArgument('middleware'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$middleware) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $middleware) !== 1) {
                 $io->error('You must use snake case syntax to generate the middleware');
                 return  1;
             }
 
-            $class = collect(explode('_',$middleware))->for('ucfirst')->join('');
+            $class = collect(explode('_', $middleware))->for('ucfirst')->join('');
 
-            $file  =  base('app','Middleware',"$class.php");
+            $file  =  base('app', 'Middleware', "$class.php");
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s middleware already exist',$class));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s middleware already exist', $class));
 
                 return 1;
             }
@@ -76,7 +72,7 @@ namespace App\Middleware {
         }
     }
 }")->flush()) {
-                $io->success(sprintf('The %s middleware was generated successfully',$class));
+                $io->success(sprintf('The %s middleware was generated successfully', $class));
 
                 return 0;
             }
@@ -84,6 +80,5 @@ namespace App\Middleware {
             $io->error('Failed to generate the middleware');
             return 1;
         }
-
     }
 }

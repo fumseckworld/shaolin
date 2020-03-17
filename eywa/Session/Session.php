@@ -32,7 +32,7 @@ namespace Eywa\Session {
         public function has(string $key): bool
         {
             $this->start();
-            return  array_key_exists($key,$_SESSION);
+            return  array_key_exists($key, $_SESSION);
         }
 
         /**
@@ -42,19 +42,15 @@ namespace Eywa\Session {
         {
             $x = collect();
 
-            foreach ($keys as $key)
-            {
-                if ($this->has($key))
-                {
+            foreach ($keys as $key) {
+                if ($this->has($key)) {
                     unset($_SESSION[$key]);
                     $x->push(true);
-                }else
-                {
+                } else {
                     $x->push(false);
                 }
-
             }
-           return $x->ok();
+            return $x->ok();
         }
 
         /**
@@ -62,10 +58,10 @@ namespace Eywa\Session {
          */
         public function start(): SessionInterface
         {
-            if (php_sapi_name() !== 'cli')
-            {
-                if (session_status() === PHP_SESSION_NONE)
+            if (php_sapi_name() !== 'cli') {
+                if (session_status() === PHP_SESSION_NONE) {
                     session_start();
+                }
             }
 
 
@@ -86,8 +82,9 @@ namespace Eywa\Session {
          */
         public function clear(): bool
         {
-            foreach ($this->all() as $value)
+            foreach ($this->all() as $value) {
                 $this->destroy($value);
+            }
 
             return empty($this->all());
         }

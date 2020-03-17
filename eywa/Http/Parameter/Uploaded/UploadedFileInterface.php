@@ -95,6 +95,5 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          */
         public function valid(): bool;
-
     }
 }

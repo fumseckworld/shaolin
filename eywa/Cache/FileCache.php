@@ -14,10 +14,8 @@ namespace Eywa\Cache {
          */
         public function get(string $key)
         {
-            if ($this->has($key))
-            {
+            if ($this->has($key)) {
                 return (new File($this->file($key)))->read();
-
             }
             return false;
         }
@@ -27,7 +25,7 @@ namespace Eywa\Cache {
          */
         public function set(string $key, $value): CacheInterface
         {
-            (new File($this->file($key),EMPTY_AND_WRITE_FILE_MODE))->write($value)->flush();
+            (new File($this->file($key), EMPTY_AND_WRITE_FILE_MODE))->write($value)->flush();
 
             return $this;
         }
@@ -45,7 +43,7 @@ namespace Eywa\Cache {
          */
         public function has(string $key): bool
         {
-            $x = env('CACHE_TIME_DIVISER',60);
+            $x = env('CACHE_TIME_DIVISER', 60);
             $x = $x <= 0 ? 1 : $x;
 
             return file_exists($this->file($key)) &&   (time() - filemtime($this->file($key))) / $x  < $this->ttl();
@@ -56,7 +54,7 @@ namespace Eywa\Cache {
          */
         public function ttl(): int
         {
-            return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
+            return  intval(env('CACHE_TTL', CACHE_DEFAULT_TTL));
         }
 
 
@@ -74,7 +72,7 @@ namespace Eywa\Cache {
          */
         public function file(string $key): string
         {
-            return  base($this->directory(),$key);
+            return  base($this->directory(), $key);
         }
 
         /**
@@ -82,11 +80,14 @@ namespace Eywa\Cache {
          */
         public function clear(): bool
         {
-           $x = function (){ return glob($this->directory() .DIRECTORY_SEPARATOR . '*');};
-           foreach ($x() as $file)
-               unlink($file);
+            $x = function () {
+                return glob($this->directory() .DIRECTORY_SEPARATOR . '*');
+            };
+            foreach ($x() as $file) {
+                unlink($file);
+            }
 
-           return  not_def($x());
+            return  not_def($x());
         }
     }
 }

@@ -11,7 +11,6 @@ namespace Eywa\Console\Mode {
 
     class DevMode extends Command
     {
-
         protected static $defaultName = 'app:dev';
 
         protected function configure():void
@@ -21,18 +20,15 @@ namespace Eywa\Console\Mode {
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $io->title('Enabling the development mode');
-            if ((new File('config/mode.yaml',EMPTY_AND_WRITE_FILE_MODE))->write("mode: up\nconnexion: dev")->flush())
-            {
+            if ((new File('config/mode.yaml', EMPTY_AND_WRITE_FILE_MODE))->write("mode: up\nconnexion: dev")->flush()) {
                 $io->success('The application is now in development mode');
                 return 0;
             }
             $io->error('The change mode command has fail');
             return 1;
         }
-
     }
 }

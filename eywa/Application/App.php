@@ -41,7 +41,6 @@ namespace Eywa\Application {
 
     class App extends Zen implements Eywa
     {
-
         private Env $env;
 
         /**
@@ -63,18 +62,18 @@ namespace Eywa\Application {
          */
         public function __construct()
         {
-            cli() ? new Timing() : (new Session())->set('time',new Timing());
+            cli() ? new Timing() : (new Session())->set('time', new Timing());
 
             $this->env = new Env();
 
-            only($this->env->get(DISPLAY_BUGS) === 'true','whoops');
+            only($this->env->get(DISPLAY_BUGS) === 'true', 'whoops');
         }
 
 
         /**
          * @inheritDoc
          */
-        public function env(string $key,$default = '')
+        public function env(string $key, $default = '')
         {
             $x =  $this->env->get($key);
 
@@ -113,7 +112,7 @@ namespace Eywa\Application {
          */
         public function view(string $view, string $title, string $description, array $args = []): Response
         {
-            return (new Response((new View($view,$title,$description,$args,static::$layout,static::$directory))->render()))->send();
+            return (new Response((new View($view, $title, $description, $args, static::$layout, static::$directory))->render()))->send();
         }
 
         /**
@@ -121,7 +120,7 @@ namespace Eywa\Application {
          */
         public function get(string $key, $default = null)
         {
-            return $this->request()->query()->get($key,$default);
+            return $this->request()->query()->get($key, $default);
         }
 
         /**
@@ -129,7 +128,7 @@ namespace Eywa\Application {
          */
         public function post(string $key, $default = null)
         {
-            return $this->request()->request()->get($key,$default);
+            return $this->request()->request()->get($key, $default);
         }
 
         /**
@@ -137,7 +136,7 @@ namespace Eywa\Application {
          */
         public function cookie(string $key, $default = null)
         {
-            return $this->request()->cookie()->get($key,$default);
+            return $this->request()->cookie()->get($key, $default);
         }
 
         /**
@@ -145,15 +144,15 @@ namespace Eywa\Application {
          */
         public function server(string $key, $default = null)
         {
-           return $this->request()->server()->get($key,$default);
+            return $this->request()->server()->get($key, $default);
         }
 
         /**
          * @inheritDoc
          */
-        public function file(string $filename,string $mode = READ_FILE_MODE): File
+        public function file(string $filename, string $mode = READ_FILE_MODE): File
         {
-            return new File($filename,$mode);
+            return new File($filename, $mode);
         }
 
         /**
@@ -169,11 +168,13 @@ namespace Eywa\Application {
          */
         public function run(): Response
         {
-            if (cli())
-                return (new Router((new ServerRequest('/',GET))))->run();
+            if (cli()) {
+                return (new Router((new ServerRequest('/', GET))))->run();
+            }
 
-            if (equal($this->config('mode','mode'),'down'))
-                return (new Response((new View('maintenance',HTTP_SERVICE_UNAVAILABLE_TEXT,'Site in maintenance, we comming soon'))->render(),'',503,['Retry-After'=> 600]))->send();
+            if (equal($this->config('mode', 'mode'), 'down')) {
+                return (new Response((new View('maintenance', HTTP_SERVICE_UNAVAILABLE_TEXT, 'Site in maintenance, we comming soon'))->render(), '', 503, ['Retry-After'=> 600]))->send();
+            }
 
             return (new Router(ServerRequest::generate()))->run();
         }
@@ -199,22 +200,24 @@ namespace Eywa\Application {
          */
         public function back(string $message = '', bool $success = true): Response
         {
-            if (def($message))
-                $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+            if (def($message)) {
+                $success ?  $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
+            }
 
-           return  not_cli() ? (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send() : (new RedirectResponse('/'))->send();
+            return  not_cli() ? (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send() : (new RedirectResponse('/'))->send();
         }
 
         /**
          * @inheritDoc
          *
          */
-        public function to(string $route,array $route_args= [],string $message = '', bool $success = true): Response
+        public function to(string $route, array $route_args= [], string $message = '', bool $success = true): Response
         {
-            if (def($message))
-                $success ?  $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+            if (def($message)) {
+                $success ?  $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
+            }
 
-            return (new RedirectResponse(route($route,$route_args)))->send();
+            return (new RedirectResponse(route($route, $route_args)))->send();
         }
 
         /**
@@ -222,8 +225,7 @@ namespace Eywa\Application {
          */
         public function cache(int $type = FILE_CACHE): CacheInterface
         {
-            switch ($type)
-            {
+            switch ($type) {
                 case APCU_CACHE:
                     return  new ApcuCache();
                 case FILE_CACHE:
@@ -235,7 +237,6 @@ namespace Eywa\Application {
                 default:
                     throw new Kedavra('The apdater is not supported');
             }
-
         }
 
         /**
@@ -243,7 +244,7 @@ namespace Eywa\Application {
          */
         public function decrypt(string $x, bool $unzerialize = true): string
         {
-            return (new Crypter())->decrypt($x,$unzerialize);
+            return (new Crypter())->decrypt($x, $unzerialize);
         }
 
         /**
@@ -251,7 +252,7 @@ namespace Eywa\Application {
          */
         public function crypt(string $x, bool $unzerialize = true): string
         {
-            return (new Crypter())->encrypt($x,$unzerialize);
+            return (new Crypter())->encrypt($x, $unzerialize);
         }
 
         /**
@@ -259,8 +260,9 @@ namespace Eywa\Application {
          */
         public function flash(string $key, string $message): void
         {
-            if(not_cli())
-                (new Flash())->set($key,$message);
+            if (not_cli()) {
+                (new Flash())->set($key, $message);
+            }
         }
 
         /**
@@ -268,7 +270,7 @@ namespace Eywa\Application {
          */
         public function auth(): Auth
         {
-           return  new Auth(new Session());
+            return  new Auth(new Session());
         }
 
         /**
@@ -306,7 +308,7 @@ namespace Eywa\Application {
          */
         public function lang(): string
         {
-            return $this->request()->cookie()->get('locale',collect(explode('_',config('i18n','locale')))->first());
+            return $this->request()->cookie()->get('locale', collect(explode('_', config('i18n', 'locale')))->first());
         }
 
         /**
@@ -314,7 +316,7 @@ namespace Eywa\Application {
          */
         public function config(string $file, string $key)
         {
-            return (new Config($file,$key))->value();
+            return (new Config($file, $key))->value();
         }
 
         /**
@@ -338,25 +340,25 @@ namespace Eywa\Application {
          */
         public function response(string $content, int $status = 200, array $headers = [], string $url = ''): Response
         {
-           return new Response($content,$url,$status,$headers);
+            return new Response($content, $url, $status, $headers);
         }
 
         /**
          * @inheritDoc
          */
-        public function redirect(string $route,array $route_args,string $message,bool $success,int $status = 301): Response
+        public function redirect(string $route, array $route_args, string $message, bool $success, int $status = 301): Response
         {
-            $success ? $this->flash(SUCCESS,$message) : $this->flash(FAILURE,$message);
+            $success ? $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
 
-            return (new RedirectResponse(route($route,$route_args),$status))->send();
+            return (new RedirectResponse(route($route, $route_args), $status))->send();
         }
 
         /**
          * @inheritDoc
          */
-        public function json(array $data,int $status = 200): Response
+        public function json(array $data, int $status = 200): Response
         {
-            return  (new JsonResponse($data,$status))->send();
+            return  (new JsonResponse($data, $status))->send();
         }
 
 
@@ -365,7 +367,7 @@ namespace Eywa\Application {
          */
         public function sql(string $table): Sql
         {
-            return new Sql($this->ioc(Connect::class),$table);
+            return new Sql($this->ioc(Connect::class), $table);
         }
     }
 }

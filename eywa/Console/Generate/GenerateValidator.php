@@ -13,17 +13,15 @@ namespace Eywa\Console\Generate {
 
     class GenerateValidator extends Command
     {
-
         protected static $defaultName = 'make:validator';
 
         protected function configure():void
         {
-
             $this
 
                 ->setDescription('Create a new validator')
                 ->addArgument('validator', InputArgument::REQUIRED, 'The validator name')
-                ->addArgument('directory',InputArgument::OPTIONAL,'The directory to create the validator');
+                ->addArgument('directory', InputArgument::OPTIONAL, 'The directory to create the validator');
         }
 
         /**
@@ -35,18 +33,17 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
 
             $validator = strval($input->getArgument('validator'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$validator) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $validator) !== 1) {
                 $io->error('You must use snake case syntax to generate the seeder');
                 return  1;
             }
 
-            $class = collect(explode('_',$validator))->for('ucfirst')->join('');
+            $class = collect(explode('_', $validator))->for('ucfirst')->join('');
 
 
             $dir = ucfirst(strval($input->getArgument('directory'))) ?? '';
@@ -54,28 +51,26 @@ namespace Eywa\Console\Generate {
             $namespace = def($dir) ? "App\Validators\\$dir" : 'App\Validators';
 
 
-            $file  =  base('app','Validators',$dir,"$class.php");
+            $file  =  base('app', 'Validators', $dir, "$class.php");
 
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s validator already exist',$class));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s validator already exist', $class));
                 return 1;
             }
 
             $io->title('Generation of the validator');
 
-            if (!is_dir(base('app','Validators',$dir)) && def($dir))
-            {
+            if (!is_dir(base('app', 'Validators', $dir)) && def($dir)) {
                 $io->title('Creating the directory');
 
-                if(mkdir(base('app','Validators',$dir)))
+                if (mkdir(base('app', 'Validators', $dir))) {
                     $io->success('Directory has been created successfully');
+                }
             }
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s validator already exist',$class));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s validator already exist', $class));
 
                 return 1;
             }
@@ -108,13 +103,12 @@ namespace $namespace {
     }
 }
             ")->flush()) {
-                $io->success(sprintf('The %s validator has been generated successfully',$class));
+                $io->success(sprintf('The %s validator has been generated successfully', $class));
 
                 return 0;
             }
-            $io->error(sprintf('The %s validator generation has failed',$class));
+            $io->error(sprintf('The %s validator generation has failed', $class));
             return 1;
         }
-
     }
 }

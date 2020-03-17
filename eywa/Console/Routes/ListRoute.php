@@ -14,7 +14,6 @@ namespace Eywa\Console\Routes {
 
     class ListRoute extends Command
     {
-
         protected static $defaultName = "route:list";
 
 
@@ -35,7 +34,6 @@ namespace Eywa\Console\Routes {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
             $table = new Table($output);
 
             $table
@@ -43,13 +41,12 @@ namespace Eywa\Console\Routes {
 
                 ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                 ->setRows(
-                    (new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'))->to(PDO::FETCH_ASSOC)
+                    (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->to(PDO::FETCH_ASSOC)
                 )
             ;
             $table->render();
 
             return 0;
         }
-
     }
 }

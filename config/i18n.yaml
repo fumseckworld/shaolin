@@ -1,5 +1,5 @@
 locales:
-  - fr_FR
-  - en_US
-locale: fr_FR
+  - fr
+  - en
+locale: fr
 pot: eywa

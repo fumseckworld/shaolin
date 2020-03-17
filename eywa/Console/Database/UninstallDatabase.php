@@ -15,30 +15,36 @@ namespace Eywa\Console\Database {
     {
         protected static $defaultName = 'db:uninstall';
 
-        /**
-         *
-         * The root password
-         *
-         */
         private string $pass = '';
 
-        /**
-         *
-         * The mysql root password
-         *
-         */
-        private string $mysql_pass = '';
+        private string $mysql_root_password_question = 'What it\'s the password for the MySQL root user ?';
 
-        /**
-         *
-         * The pgsql postgres password
-         *
-         */
-        private string $pgsql_pass = '';
+        private string $pgsql_root_password = 'What it\'s the password for the postgreSQL postgres user ?';
+
+        private string $prod_user_created_fail = 'The production user has been removed successfully';
+
+        private string $dev_user_created_fail = 'The development user has been removed successfully';
+
+        private string $prod_base_created_fail = 'The production database has been removed successfully';
+
+        private string $dev_base_created_fail = 'The development database has been removed successfully';
+
+        private string $prod_user_created_successfully = 'The production user has been removed successfully';
+
+        private string $dev_user_created_successfully = 'The development user has been removed successfully';
+
+        private string $prod_base_created_successfully = 'The production database has been removed successfully';
+
+        private string $dev_base_created_successfully = 'The development database has been removed successfully';
+
+        private string $routing_instance_created_successfully = 'The routing database has been removed successfully';
+
+        private string $routing_instance_creation_has_fail = 'The deletion of the routing database has failed';
+
 
         protected function configure():void
         {
-            $this->setDescription('Reverse the install command');
+            $this->setDescription('Rollback the db:install command');
         }
 
 
@@ -46,440 +52,158 @@ namespace Eywa\Console\Database {
          * @param InputInterface $input
          * @param OutputInterface $output
          * @return int
-         *
          * @throws Kedavra
          * @throws Exception
-         *
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
             $io = new SymfonyStyle($input, $output);
 
 
-            $dev_base_created_successfully = 'The development database has been removed successfully';
-            $prod_base_created_successfully = 'The production database has been removed successfully';
-            $dev_user_created_successfully = 'The development user has been removed successfully';
-            $prod_user_created_successfully = 'The production user has been removed successfully';
-
-            $dev_base_created_fail = 'The development database has been  removed successfully';
-            $prod_base_created_fail = 'The production database has been removed successfully created';
-            $dev_user_created_fail = 'The development user has been removed successfully created';
-            $prod_user_created_fail = 'The production user has been removed successfully created';
 
             $prod = production()->info();
             $dev = development()->info();
-            $mysql_root_password_question = "What it's the password for the MySQL root user ?";
-            $pgsql_root_password = "What it's the password for the postgreSQL postgres user ?";
-            if($io->confirm("Are you sure to remove the development database ? \n\n<fg=black;bg=yellow>$dev</>",false) && $io->confirm("Are you sure to remove the production database ? \n\n<fg=black;bg=yellow>$prod</>",false))
-            {
 
-                if (in_array(development()->driver(), [MYSQL, POSTGRESQL]) && in_array(production()->driver(),[MYSQL,POSTGRESQL]))
-                {
-
-                    $io->title('Removing users and databases');
-
-                    if (development()->driver() === MYSQL && production()->driver() === MYSQL)
-                    {
-
-                        do
-                        {
-                            $this->pass  =  $io->askQuestion((new Question($mysql_root_password_question, 'root'))->setHidden(true));
-
-                        }while (!connect(MYSQL, '', 'root', $this->pass)->connected());
-
-                        $dev = connect(MYSQL,'','root',$this->pass);
-
-                        $prod = connect(MYSQL,'','root',$this->pass);
-
-
-                        if ($dev->remove_database(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        } else {
-                            $io->error($dev_base_created_fail);
-                            return 1;
-                        }
-
-                        if ($prod->remove_database(strval(env('DB_NAME'))))
-                        {
-
-                            $io->success($prod_base_created_successfully);
-
-                        } else {
-                            $io->error($prod_base_created_fail);
-                            return 1;
-                        }
-
-                        $dev = connect(MYSQL,'','root',$this->pass);
-
-                        $prod = connect(MYSQL,'','root',$this->pass);
-
-                        if ($prod->remove_user(strval(env('DB_USERNAME'))))
-                        {
-
-                            $io->success($prod_user_created_successfully);
-
-                        } else {
-                            $io->error($prod_user_created_fail);
-                            return 1;
-                        }
-                        if ($dev->remove_user(strval(env('DEVELOP_DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        } else {
-                            $io->error($dev_user_created_fail);
-                            return 1;
-                        }
-
-                    }
-
-                    if (development()->driver() === MYSQL && production()->driver() === POSTGRESQL)
-                    {
-
-
-                        do
-                        {
-                            $this->pass  =  $io->askQuestion((new Question($mysql_root_password_question, 'root'))->setHidden(true));
-
-                        } while (!connect(MYSQL, '', 'root', $this->mysql_pass)->connected());
-
-                        do
-                        {
-                            $this->pgsql_pass  =  $io->askQuestion((new Question($pgsql_root_password, 'postgres'))->setHidden(true));
-
-                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432)->connected());
-
-                        $dev = connect(MYSQL, '', 'root', $this->mysql_pass);
-                        $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-
-                        if ($dev->remove_database(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        } else {
-                            $io->error($dev_base_created_fail);
-                            return 1;
-                        }
-
-                        if ($prod->remove_database(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        } else {
-                            $io->error($prod_base_created_fail);
-                            return 1;
-                        }
-
-                        $dev = connect(MYSQL, '', 'root', $this->mysql_pass);
-                        $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-
-                        if ($dev->remove_user(strval(env('DEVELOP_DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        } else {
-                            $io->error($dev_user_created_fail);
-                            return 1;
-
-                        }
-
-
-
-                        if ($prod->remove_user(strval(env('DB_USERNAME'))))
-                        {
-                            $io->success($prod_user_created_successfully);
-                        } else {
-                            $io->error($prod_user_created_fail);
-                            return 1;
-
-                        }
-
-                    }
-
-                    if (development()->driver() === POSTGRESQL && production()->driver() === MYSQL)
-                    {
-
-
-                        do
-                        {
-                            $this->pass  =  $io->askQuestion((new Question($mysql_root_password_question, 'root'))->setHidden(true));
-
-                        } while (!connect(MYSQL, '', 'root', $this->mysql_pass)->connected());
-
-                        do
-                        {
-                            $this->pgsql_pass  =  $io->askQuestion((new Question($pgsql_root_password, 'postgres'))->setHidden(true));
-
-                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432)->connected());
-
-
-                        $dev =  connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-                        $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
-
-                        if ($dev->remove_database(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        } else {
-                            $io->error($dev_base_created_fail);
-                            return 1;
-                        }
-
-                        if ($prod->remove_database(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        } else {
-                            $io->error($prod_base_created_fail);
-                            return 1;
-                        }
-                        $dev =  connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-                        $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
-
-                        if ($prod->remove_user(strval(env('DB_USERNAME'))))
-                        {
-                            $io->success($prod_user_created_successfully);
-                        } else {
-                            $io->error($prod_user_created_fail);
-                            return 1;
-
-                        }
-                        if ($dev->remove_user(strval(env('DEVELOP_DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        } else {
-                            $io->error($dev_user_created_fail);
-                            return 1;
-
-                        }
-
-                    }
-
-                    if (development()->driver() === POSTGRESQL && production()->driver() === POSTGRESQL)
-                    {
-
-                        do
-                        {
-                            $this->pgsql_pass  =  $io->askQuestion((new Question($pgsql_root_password, 'postgres'))->setHidden(true));
-
-                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432)->connected());
-
-                        $dev = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-
-                        $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-
-                        if ($dev->remove_database(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        } else {
-                            $io->error($dev_base_created_fail);
-                            return 1;
-                        }
-
-                        if ($prod->remove_database(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        } else {
-                            $io->error($prod_base_created_fail);
-                            return 1;
-                        }
-
-                        $dev = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-
-                        $prod = connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432);
-
-                        if ($prod->remove_user(strval(env('DB_USERNAME'))))
-                        {
-                            $io->success($prod_user_created_successfully);
-                        } else {
-                            $io->error($prod_user_created_fail);
-                            return 1;
-
-                        }
-
-                        if ($dev->remove_user(strval(env('DEVELOP_DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        } else {
-                            $io->error($dev_user_created_fail);
-                            return 1;
-
-                        }
-                    }
-
-                } else {
-                    if (development()->driver() ===  SQLITE && production()->driver() === MYSQL)
-                    {
-
-
-
-                        do
-                        {
-                            $this->mysql_pass  =  $io->askQuestion((new Question($mysql_root_password_question, 'root'))->setHidden(true));
-
-                        } while (!connect(MYSQL, '', 'root', $this->mysql_pass)->connected());
-
-
-
-
-                        $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
-
-                        if (unlink(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        }else{
-                            $io->error($dev_base_created_fail);
-                        }
-
-                        if ($prod->remove_database(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        }else{
-                            $io->error($prod_base_created_fail);
-                        }
-
-                        $prod = connect(MYSQL, '', 'root', $this->mysql_pass);
-                        if ($prod->remove_user(strval(env('DB_USERNAME'))))
-                        {
-                            $io->success($prod_user_created_successfully);
-                        }else{
-                            $io->error($prod_user_created_fail);
-                        }
-                    }
-
-                    if (development()->driver() ===  MYSQL && production()->driver() === SQLITE)
-                    {
-
-                        do
-                        {
-                            $this->mysql_pass  =  $io->askQuestion((new Question($mysql_root_password_question, 'root'))->setHidden(true));
-
-                        } while (!connect(MYSQL, '', 'root', $this->mysql_pass)->connected());
-
-
-                        $dev = connect(MYSQL,'','root',$this->mysql_pass);
-
-
-
-                        if (unlink(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        }else{
-                            $io->error($prod_base_created_fail);
-                        }
-
-                        if ($dev->remove_database(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        }else{
-                            $io->error($dev_base_created_fail);
-                        }
-                        $dev = connect(MYSQL,'','root',$this->mysql_pass);
-                        if ($dev->remove_user(strval(env('DEVELOP_DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        }else{
-                            $io->error($dev_user_created_fail);
-                        }
-                    }
-
-                    if (development()->driver() ===  SQLITE && production()->driver() === POSTGRESQL)
-                    {
-
-
-
-                        do
-                        {
-                            $this->pgsql_pass  =  $io->askQuestion((new Question($pgsql_root_password, 'postgres'))->setHidden(true));
-
-                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432)->connected());
-
-
-                        $prod = connect(POSTGRESQL,'','postgres',$this->pgsql_pass,5432);
-
-
-
-                        if (unlink(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        }else{
-                            $io->error($dev_base_created_fail);
-                        }
-
-                        if ($prod->remove_database(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        }else{
-                            $io->error($prod_base_created_fail);
-                        }
-                        $prod = connect(POSTGRESQL,'','postgres',$this->pgsql_pass,5432);
-                        if ($prod->remove_user(strval(env('DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        }else{
-                            $io->error($dev_user_created_fail);
-                        }
-                    }
-
-                    if (development()->driver() ===  POSTGRESQL && production()->driver() === SQLITE)
-                    {
-
-                        do
-                        {
-                            $this->pgsql_pass  =  $io->askQuestion((new Question($pgsql_root_password, 'postgres'))->setHidden(true));
-
-                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pgsql_pass,5432)->connected());
-
-
-                        $dev = connect(POSTGRESQL, '','postgres',$this->pgsql_pass,5432);
-
-                        if (unlink(strval(env('DB_NAME'))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        }else{
-                            $io->error($prod_base_created_fail);
-                        }
-
-                        if ($dev->remove_database(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        }else{
-                            $io->error($dev_base_created_fail);
-                        }
-                        $dev = connect(POSTGRESQL, '','postgres',$this->pgsql_pass,5432);
-                        if ($dev->remove_user(strval(env('DEVELOP_DB_USERNAME'))))
-                        {
-                            $io->success($dev_user_created_successfully);
-                        }else{
-                            $io->error($dev_user_created_fail);
-                        }
-
-                    }
-                    if (development()->driver() ===  SQLITE && production()->driver() === SQLITE)
-                    {
-
-
-
-                        if (unlink((strval(env('DB_NAME')))))
-                        {
-                            $io->success($prod_base_created_successfully);
-                        }else{
-                            $io->error($prod_base_created_fail);
-                        }
-                        if (unlink(strval(env('DEVELOP_DB_NAME'))))
-                        {
-                            $io->success($dev_base_created_successfully);
-                        }else{
-                            $io->error($dev_base_created_fail);
-                        }
-                    }
-
-
-                }
-                $io->success('All databases and users has been removed successfully');
-
-                return 0;
+            if ($io->confirm(sprintf('Are you sure to remove the following production database ? <fg=black;bg=yellow>%s</>', $prod), false) && $io->confirm(sprintf('Are you sure to remove the development database ? <fg=black;bg=yellow>%s</>', $dev), false)) {
+                return  $this->create(strval(env('DEVELOP_DB_DRIVER', 'mysql')), strval(env('DB_DRIVER', 'mysql')), $io);
             }
-            $io->warning('Nothing has been done');
-
+            $io->warning('Nothing has been done ! Modify the .env file and try again');
             return 0;
         }
 
 
+        /**
+         * @param string $dev
+         * @param string $prod
+         * @param SymfonyStyle $io
+         * @return int
+         * @throws Kedavra
+         * @throws Exception
+         */
+
+        private function create(string $dev, string $prod, SymfonyStyle $io):int
+        {
+            switch ($dev) {
+                case MYSQL:
+                    do {
+                        $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
+                    } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
+
+                    if (connect(MYSQL, '', 'root', $this->pass)->remove_database(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
+                        $io->success($this->dev_base_created_successfully);
+                    } else {
+                        $io->error($this->dev_base_created_fail);
+                        return 1;
+                    }
+
+                    if (connect(MYSQL, '', 'root', $this->pass)->remove_user(strval(env('DEVELOP_DB_USERNAME', 'ikran')))) {
+                        $io->success($this->dev_user_created_successfully);
+                    } else {
+                        $io->error($this->dev_user_created_fail);
+                        return 1;
+                    }
+                    break;
+
+                case POSTGRESQL:
+                    do {
+                        $this->pass  =  $io->askQuestion((new Question($this->pgsql_root_password, 'postgres'))->setHidden(true));
+                    } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
+
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->remove_database(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
+                        $io->success($this->dev_base_created_successfully);
+                    } else {
+                        $io->error($this->dev_base_created_fail);
+                        return 1;
+                    }
+
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->remove_user(strval(env('DEVELOP_DB_USERNAME', 'ikran')))) {
+                        $io->success($this->dev_user_created_successfully);
+                    } else {
+                        $io->error($this->dev_user_created_fail);
+                        return 1;
+                    }
+
+
+                    break;
+                default:
+                    if (unlink(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
+                        $io->success($this->dev_base_created_successfully);
+                    } else {
+                        $io->error($this->dev_base_created_fail);
+                        return 1;
+                    }
+                    break;
+
+            }
+
+            switch ($prod) {
+                case MYSQL:
+
+                    if (!connect(MYSQL, '', 'root', $this->pass)->connected()) {
+                        do {
+                            $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
+                        } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
+                    }
+
+
+                    if (connect(MYSQL, '', 'root', $this->pass)->remove_database(strval(env('DB_NAME', 'eywa')))) {
+                        $io->success($this->prod_base_created_successfully);
+                    } else {
+                        $io->error($this->prod_base_created_fail);
+                        return 1;
+                    }
+
+                    if (connect(MYSQL, '', 'root', $this->pass)->remove_user(strval(env('DB_USERNAME', 'eywa')))) {
+                        $io->success($this->prod_user_created_successfully);
+                    } else {
+                        $io->error($this->prod_user_created_fail);
+                        return 1;
+                    }
+                    break;
+
+                case POSTGRESQL:
+
+                    if (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected()) {
+                        do {
+                            $this->pass = $io->askQuestion((new Question($this->pgsql_root_password, 'postgres'))->setHidden(true));
+                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
+                    }
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->remove_database(strval(env('DB_NAME', 'eywa')))) {
+                        $io->success($this->prod_base_created_successfully);
+                    } else {
+                        $io->error($this->prod_base_created_fail);
+                        return 1;
+                    }
+
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->remove_user(strval(env('DB_USERNAME', 'eywa')))) {
+                        $io->success($this->prod_user_created_successfully);
+                    } else {
+                        $io->error($this->prod_user_created_fail);
+                        return 1;
+                    }
+
+                    break;
+                default:
+                    if (unlink(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
+                        $io->success($this->prod_base_created_successfully);
+                    } else {
+                        $io->error($this->prod_base_created_fail);
+                        return 1;
+                    }
+                    break;
+            }
+
+            if (is_dir(base('routes'))) {
+                if (unlink(base('routes', 'web.sqlite3'))) {
+                    $io->success($this->routing_instance_created_successfully);
+                } else {
+                    $io->error($this->routing_instance_creation_has_fail);
+                    return 1;
+                }
+            }
+
+            $io->success('Congratulations all databases are now deleted successfully');
+            return 0;
+        }
     }
 }

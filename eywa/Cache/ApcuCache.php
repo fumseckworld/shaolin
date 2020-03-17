@@ -22,7 +22,7 @@ namespace Eywa\Cache {
          */
         public function set(string $key, $value): CacheInterface
         {
-            apcu_add($key,$value,$this->ttl());
+            apcu_add($key, $value, $this->ttl());
             return  $this;
         }
 
@@ -47,7 +47,7 @@ namespace Eywa\Cache {
          */
         public function ttl(): int
         {
-            return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
+            return  intval(env('CACHE_TTL', CACHE_DEFAULT_TTL));
         }
 
         /**
@@ -55,7 +55,7 @@ namespace Eywa\Cache {
          */
         public function clear(): bool
         {
-           return  apcu_clear_cache();
+            return  apcu_clear_cache();
         }
     }
 }

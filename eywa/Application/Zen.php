@@ -850,7 +850,5 @@ namespace Eywa\Application {
             self::POINT, self::LINE, self::LSEG, self::BOX, self::PATH, self::POLYGON, self::CIRCLE, ];
 
         const SQLITE_TYPES     = [ self::NULL, self::INTEGER, self::REAL, self::TEXT, self::BLOB, self::NUMERIC, self::NONE ];
-
-
     }
 }

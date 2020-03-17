@@ -13,10 +13,10 @@ namespace Eywa\Cache {
          */
         private Redis $redis;
 
-        public function __construct(string $host = 'localhost',int $port =6379)
+        public function __construct(string $host = 'localhost', int $port =6379)
         {
             $this->redis = new Redis();
-            $this->redis->connect($host,$port);
+            $this->redis->connect($host, $port);
         }
 
         /**
@@ -32,7 +32,7 @@ namespace Eywa\Cache {
          */
         public function set(string $key, $value): CacheInterface
         {
-            $this->redis->set($key,$value);
+            $this->redis->set($key, $value);
 
             return $this;
         }
@@ -42,8 +42,7 @@ namespace Eywa\Cache {
          */
         public function destroy(string $key): bool
         {
-           return $this->has($key) ? $this->redis->del($key) === 1 : false;
-
+            return $this->has($key) ? $this->redis->del($key) === 1 : false;
         }
 
         /**
@@ -59,7 +58,7 @@ namespace Eywa\Cache {
          */
         public function ttl(): int
         {
-            return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
+            return  intval(env('CACHE_TTL', CACHE_DEFAULT_TTL));
         }
 
         /**
@@ -67,7 +66,7 @@ namespace Eywa\Cache {
          */
         public function clear(): bool
         {
-           return  $this->redis->flushAll();
+            return  $this->redis->flushAll();
         }
     }
 }

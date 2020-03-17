@@ -101,10 +101,10 @@ namespace Eywa\Database\Query {
         /**
          * @inheritDoc
          */
-        public function __construct(Connect $connect,string $table)
+        public function __construct(Connect $connect, string $table)
         {
             $this->table = $table;
-            $this->from = sprintf('FROM %s',$table);
+            $this->from = sprintf('FROM %s', $table);
             $this->connect = $connect;
         }
 
@@ -113,7 +113,7 @@ namespace Eywa\Database\Query {
          */
         public function take(int $limit, int $offset = 0): Sql
         {
-            $this->limit = $this->connexion()->mysql() ? sprintf('LIMIT %d,%d', $offset,$limit) : sprintf('LIMIT %d OFFSET %d',$limit,$offset);
+            $this->limit = $this->connexion()->mysql() ? sprintf('LIMIT %d,%d', $offset, $limit) : sprintf('LIMIT %d OFFSET %d', $limit, $offset);
 
             return $this;
         }
@@ -123,7 +123,7 @@ namespace Eywa\Database\Query {
          */
         public function by(string $column, string $order = DESC): Sql
         {
-            $this->by = sprintf('ORDER BY %s %s',$column,$order);
+            $this->by = sprintf('ORDER BY %s %s', $column, $order);
 
             return $this;
         }
@@ -133,9 +133,9 @@ namespace Eywa\Database\Query {
          */
         public function join(string $type, string $condition, string $first_table, string $second_table, string $first_param, string $second_param): Sql
         {
-            not_in([LEFT_JOIN,RIGHT_JOIN,CROSS_JOIN,NATURAL_JOIN,INNER_JOIN,FULL_JOIN],$type,true,'The type is invalid');
+            not_in([LEFT_JOIN,RIGHT_JOIN,CROSS_JOIN,NATURAL_JOIN,INNER_JOIN,FULL_JOIN], $type, true, 'The type is invalid');
 
-            append($this->join,sprintf('SELECT %s FROM %s %s %s ON %s.%s %s %s.%s ',$this->columns,$first_table,$type,$second_table,$first_table,$first_param,$condition,$second_table,$second_param));
+            append($this->join, sprintf('SELECT %s FROM %s %s %s ON %s.%s %s %s.%s ', $this->columns, $first_table, $type, $second_table, $first_table, $first_param, $condition, $second_table, $second_param));
 
             return $this;
         }
@@ -145,12 +145,13 @@ namespace Eywa\Database\Query {
          */
         public function union(string $type, string $first_table, string $second_table, string $first_column, string $second_column): Sql
         {
-            not_in([UNION,UNION_ALL],$type,true,'The type is not valid');
+            not_in([UNION,UNION_ALL], $type, true, 'The type is not valid');
 
-            if (not_def($first_column,$second_column))
-                append($this->union,sprintf('SELECT * FROM %s %s SELECT * FROM %s ',$first_table,$type,$second_table));
-            else
-                append($this->union,sprintf('SELECT %s FROM %s %s SELECT %s FROM %s ',$first_column,$first_table,$type,$second_column,$second_table));
+            if (not_def($first_column, $second_column)) {
+                append($this->union, sprintf('SELECT * FROM %s %s SELECT * FROM %s ', $first_table, $type, $second_table));
+            } else {
+                append($this->union, sprintf('SELECT %s FROM %s %s SELECT %s FROM %s ', $first_column, $first_table, $type, $second_column, $second_table));
+            }
 
             return $this;
         }
@@ -160,13 +161,13 @@ namespace Eywa\Database\Query {
          */
         public function or(string $column, string $condition, $expected): Sql
         {
+            not_in(self::VALID_OPERATORS, $condition, true, 'The used condition operator is not valid');
 
-            not_in(self::VALID_OPERATORS,$condition,true,'The used condition operator is not valid');
-
-            if (is_string($expected))
-                append($this->or,sprintf('OR %s %s %s ',$column,html_entity_decode($condition),$this->connexion()->secure($expected)));
-            else
-                append($this->or,sprintf('OR %s %s %d ',$column,html_entity_decode($condition),$expected));
+            if (is_string($expected)) {
+                append($this->or, sprintf('OR %s %s %s ', $column, html_entity_decode($condition), $this->connexion()->secure($expected)));
+            } else {
+                append($this->or, sprintf('OR %s %s %d ', $column, html_entity_decode($condition), $expected));
+            }
 
             return $this;
         }
@@ -176,12 +177,13 @@ namespace Eywa\Database\Query {
          */
         public function and(string $column, string $condition, $expected): Sql
         {
-            not_in(self::VALID_OPERATORS,$condition,true,'The used condition operator is not valid');
+            not_in(self::VALID_OPERATORS, $condition, true, 'The used condition operator is not valid');
 
-            if (is_string($expected))
-                append($this->and,sprintf('AND %s %s %s ',$column,html_entity_decode($condition),$this->connexion()->secure($expected)));
-            else
-                append($this->and,sprintf('AND %s %s %d ',$column,html_entity_decode($condition),$expected));
+            if (is_string($expected)) {
+                append($this->and, sprintf('AND %s %s %s ', $column, html_entity_decode($condition), $this->connexion()->secure($expected)));
+            } else {
+                append($this->and, sprintf('AND %s %s %d ', $column, html_entity_decode($condition), $expected));
+            }
 
             return $this;
         }
@@ -191,7 +193,7 @@ namespace Eywa\Database\Query {
          */
         public function between(string $column, int $min, int $max): Sql
         {
-            $this->where = sprintf('WHERE %s BETWEEN %d AND %d',$column,$min,$max);
+            $this->where = sprintf('WHERE %s BETWEEN %d AND %d', $column, $min, $max);
 
             return $this;
         }
@@ -211,9 +213,9 @@ namespace Eywa\Database\Query {
          */
         public function where(string $column, string $condition, $expected): Sql
         {
-            not_in(self::VALID_OPERATORS,$condition,true,'The used condition operator is not valid');
+            not_in(self::VALID_OPERATORS, $condition, true, 'The used condition operator is not valid');
 
-            $this->where = is_numeric($expected) ? sprintf('WHERE %s %s %d',$column,html_entity_decode($condition),$expected) : sprintf('WHERE %s %s %s',$column,html_entity_decode($condition),$this->connexion()->secure($expected));
+            $this->where = is_numeric($expected) ? sprintf('WHERE %s %s %d', $column, html_entity_decode($condition), $expected) : sprintf('WHERE %s %s %s', $column, html_entity_decode($condition), $this->connexion()->secure($expected));
 
             return $this;
         }
@@ -247,10 +249,11 @@ namespace Eywa\Database\Query {
 
             $columns = def($this->columns) ? $this->columns : "*";
 
-            if (def($union))
+            if (def($union)) {
                 return "$union $where $and $or $order $limit";
-            elseif (def($join))
+            } elseif (def($join)) {
                 return "$join $and $or $order $limit";
+            }
 
             return "SELECT $columns {$this->from} $where $and $or $order $limit ";
         }
@@ -280,8 +283,9 @@ namespace Eywa\Database\Query {
 
             $bool = collect();
 
-            foreach ($this->get() as $record)
-                $bool->push($this->connexion()->set(sprintf('DELETE FROM %s WHERE %s = %d',$this->table,$id,$record->$id))->execute());
+            foreach ($this->get() as $record) {
+                $bool->push($this->connexion()->set(sprintf('DELETE FROM %s WHERE %s = %d', $this->table, $id, $record->$id))->execute());
+            }
 
             return $bool->ok();
         }
@@ -289,7 +293,7 @@ namespace Eywa\Database\Query {
         /**
          * @inheritDoc
          */
-        public function update(int $id,array $values): bool
+        public function update(int $id, array $values): bool
         {
             $primary = $this->primary();
 
@@ -297,11 +301,10 @@ namespace Eywa\Database\Query {
 
             $table = $this->table;
 
-            foreach ($values  as $k => $value)
-            {
-                if (different($k,$primary))
+            foreach ($values  as $k => $value) {
+                if (different($k, $primary)) {
                     $columns->push("$k =" .$this->connexion()->secure($value));
-
+                }
             }
 
             $columns =  $columns->join(', ');
@@ -320,17 +323,17 @@ namespace Eywa\Database\Query {
 
             $sql = "INSERT INTO {$this->table} ($x) VALUES( ";
 
-            foreach ($this->columns() as $column) // modify it
-            {
-                if (array_key_exists($column,$record))
-                    append($sql,$this->connexion()->secure($record[$column]),',');
+            foreach ($this->columns() as $column) { // modify it
+                if (array_key_exists($column, $record)) {
+                    append($sql, $this->connexion()->secure($record[$column]), ',');
+                }
             }
 
-            $sql = trim($sql,',');
+            $sql = trim($sql, ',');
 
-            append($sql,')',',');
+            append($sql, ')', ',');
 
-            $sql = trim($sql,',');
+            $sql = trim($sql, ',');
 
             return $this->connexion()->set($sql)->execute();
         }
@@ -340,25 +343,22 @@ namespace Eywa\Database\Query {
          */
         public function like(string $search): Sql
         {
-            if($this->connexion()->mysql() || $this->connexion()->postgresql())
-            {
+            if ($this->connexion()->mysql() || $this->connexion()->postgresql()) {
                 $columns = collect($this->columns())->join();
                 $this->where = "WHERE CONCAT($columns) LIKE '%$search%'";
-            }
-            else
-            {
+            } else {
                 $fields = collect($this->columns());
 
                 $end = $fields->last();
 
                 $columns = '';
 
-                foreach($fields->all() as $column)
-                {
-                    if(different($column, $end))
+                foreach ($fields->all() as $column) {
+                    if (different($column, $end)) {
                         append($columns, "$column LIKE '%$search%' OR ");
-                    else
+                    } else {
                         append($columns, "$column LIKE '%$search%'");
+                    }
                 }
 
                 $this->where = "WHERE $columns";
@@ -374,18 +374,16 @@ namespace Eywa\Database\Query {
          */
         public function primary(): string
         {
-            switch($this->connexion()->driver())
-            {
+            switch ($this->connexion()->driver()) {
                 case MYSQL:
                     return strval(collect($this->connexion()->set("show columns from {$this->table} where `Key` = 'PRI';")->get(COLUMNS))->first());
                 case POSTGRESQL:
                     return strval(collect($this->connexion()->set("select column_name FROM information_schema.key_column_usage WHERE table_name = '{$this->table}' and constraint_name ='{$this->table}_pkey';")->get(PDO::FETCH_COLUMN))->first());
                 case SQLITE:
-                    foreach($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $value)
-                    {
-                        if ($value->pk)
+                    foreach ($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $value) {
+                        if ($value->pk) {
                             return strval($value->name);
-
+                        }
                     }
                 break;
                 case SQL_SERVER:
@@ -402,19 +400,19 @@ namespace Eywa\Database\Query {
         {
             $fields = collect();
 
-            switch($this->connexion()->driver())
-            {
+            switch ($this->connexion()->driver()) {
                 case MYSQL:
                     return $this->connexion()->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS);
                 case POSTGRESQL:
                     return $this->connexion()->set("SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'")->get(COLUMNS);
                 case SQLITE:
-                    $x = function ($x){return $x->name ;};
+                    $x = function ($x) {
+                        return $x->name ;
+                    };
                     return collect($this->connexion()->set("PRAGMA table_info({$this->table})")->get(OBJECTS))->for($x)->all();
                 default:
                     return $fields->all();
             }
-
         }
 
         /**

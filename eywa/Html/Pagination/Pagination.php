@@ -56,7 +56,6 @@ namespace Eywa\Html\Pagination {
          */
         public function __construct(int $current_page, int $limit, int $total)
         {
-
             $limit = $limit ===  0 ? 1 : $limit;
 
             $this->current_page = $current_page;
@@ -68,7 +67,6 @@ namespace Eywa\Html\Pagination {
             $this->pages = intval(ceil($total / $limit)) + 1;
 
             $this->url = config('pagination', 'url');
-
         }
 
         /**
@@ -82,14 +80,15 @@ namespace Eywa\Html\Pagination {
          */
         public function paginate() : string
         {
-
-            if (superior_or_equal($this->limit,$this->total))
+            if (superior_or_equal($this->limit, $this->total)) {
                 return '';
+            }
 
             $html = '<ul class="' . config('pagination', 'ul_class') . '">';
 
-            for($i = 1; $i != $this->pages; $i++)
+            for ($i = 1; $i != $this->pages; $i++) {
                 $i === $this->current_page ? append($html, '<li class="' . config('pagination', 'li_class') . ' active"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>') : append($html, '<li class="' . config('pagination', 'li_class') . '"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>');
+            }
 
             append($html, '</ul>');
 

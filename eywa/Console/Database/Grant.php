@@ -8,6 +8,5 @@ namespace Eywa\Console\Database {
 
     class Grant extends Command
     {
-
     }
 }

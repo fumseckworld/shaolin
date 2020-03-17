@@ -10,8 +10,6 @@ namespace Eywa\Database\Model {
 
     abstract class Model implements Interact
     {
-
-
         protected static string $table = '';
 
 
@@ -23,15 +21,15 @@ namespace Eywa\Database\Model {
          */
         public static function destroy(int $id): bool
         {
-            return (new Sql(ioc(Connect::class),static::$table))->where(self::primary(),EQUAL,$id)->delete();
+            return (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->delete();
         }
 
         /**
          * @inheritDoc
          */
-        public static function update(int $id,array $values): bool
+        public static function update(int $id, array $values): bool
         {
-            return (new Sql(ioc(Connect::class),static::$table))->update($id,$values);
+            return (new Sql(ioc(Connect::class), static::$table))->update($id, $values);
         }
 
         /**
@@ -39,7 +37,7 @@ namespace Eywa\Database\Model {
          */
         public static function create(array $record): bool
         {
-           return (new Sql(ioc(Connect::class),static::$table))->create($record);
+            return (new Sql(ioc(Connect::class), static::$table))->create($record);
         }
 
         /**
@@ -47,9 +45,9 @@ namespace Eywa\Database\Model {
          */
         public static function find(int $id): stdClass
         {
-            $x = (new Sql(ioc(Connect::class),static::$table))->where(self::primary(),EQUAL,$id)->get();
+            $x = (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->get();
 
-            is_true(not_def($x),true,'The record has not been found');
+            is_false(array_key_exists(0, $x), true, 'We have not found the record');
 
             return collect($x)->get(0);
         }
@@ -59,7 +57,7 @@ namespace Eywa\Database\Model {
          */
         public static function different(string $column, $expected): array
         {
-            return (new Sql(ioc(Connect::class),static::$table))->where($column,DIFFERENT,$expected)->get();
+            return (new Sql(ioc(Connect::class), static::$table))->where($column, DIFFERENT, $expected)->get();
         }
 
         /**
@@ -67,7 +65,11 @@ namespace Eywa\Database\Model {
          */
         public static function by(string $column, $expected): stdClass
         {
-            return collect((new Sql(ioc(Connect::class),static::$table))->where($column,EQUAL,$expected)->get())->get(0);
+            $x = (new Sql(ioc(Connect::class), static::$table))->where($column, EQUAL, $expected)->get();
+
+            is_false(array_key_exists(0, $x), true, 'We have not found the record');
+
+            return collect($x)->get(0);
         }
 
         /**
@@ -75,7 +77,7 @@ namespace Eywa\Database\Model {
          */
         public static function search(string $value): array
         {
-            return (new Sql(ioc(Connect::class),static::$table))->like($value)->get();
+            return (new Sql(ioc(Connect::class), static::$table))->like($value)->get();
         }
 
         /**
@@ -83,7 +85,7 @@ namespace Eywa\Database\Model {
          */
         public static function columns(): array
         {
-            return (new Sql(ioc(Connect::class),static::$table))->columns();
+            return (new Sql(ioc(Connect::class), static::$table))->columns();
         }
 
         /**
@@ -91,7 +93,7 @@ namespace Eywa\Database\Model {
          */
         public static function primary(): string
         {
-           return (new Sql(ioc(Connect::class),static::$table))->primary();
+            return (new Sql(ioc(Connect::class), static::$table))->primary();
         }
 
         /**
@@ -99,7 +101,7 @@ namespace Eywa\Database\Model {
          */
         public static function paginate(callable $callback, int $current_page): Sql
         {
-            return (new Sql(ioc(Connect::class),static::$table))->paginate($callback,$current_page,static::$limit);
+            return (new Sql(ioc(Connect::class), static::$table))->paginate($callback, $current_page, static::$limit);
         }
     }
 }

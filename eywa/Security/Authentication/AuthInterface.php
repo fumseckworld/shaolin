@@ -73,7 +73,7 @@ namespace Eywa\Security\Authentication {
          *
          *
          */
-        public function login(string $username,string $password): Response;
+        public function login(string $username, string $password): Response;
 
         /**
          *
@@ -99,6 +99,5 @@ namespace Eywa\Security\Authentication {
          *
          */
         public function delete_account(): Response;
-
     }
 }

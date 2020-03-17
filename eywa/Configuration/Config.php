@@ -61,14 +61,13 @@ namespace Eywa\Configuration {
          */
         public function __construct(string $file, string $key)
         {
-
             $file = $this->path() . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
 
-            is_false(file_exists($file), true, sprintf('The %s file has not been found in the %s directory',$file, $this->path()));
+            is_false(file_exists($file), true, sprintf('The %s file has not been found in the %s directory', $file, $this->path()));
 
             $this->values = collect(self::parseFile($file));
 
-            is_false($this->values->has($key), true, sprintf('The %s key has not been found in the %s file in the %s directory', $key,$file,$this->path()));
+            is_false($this->values->has($key), true, sprintf('The %s key has not been found in the %s file in the %s directory', $key, $file, $this->path()));
 
             $this->filename = $file;
 
@@ -91,7 +90,6 @@ namespace Eywa\Configuration {
          *
          * Get the config.yaml value
          *
-         *
          * @return mixed
          *
          */
@@ -99,6 +97,5 @@ namespace Eywa\Configuration {
         {
             return $this->values->get($this->key);
         }
-
     }
 }

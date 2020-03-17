@@ -34,7 +34,7 @@ namespace Eywa\File {
          */
         public function __construct(string $type, string $filename)
         {
-            not_in(['css','js'],$type,true,'The type must be css or js');
+            not_in(['css','js'], $type, true, 'The type must be css or js');
 
             $this->filename = $filename;
             $this->type = $type;
@@ -51,12 +51,11 @@ namespace Eywa\File {
          */
         public function make():string
         {
-            switch ($this->type)
-            {
+            switch ($this->type) {
                 case 'css':
-                    return sprintf('<link rel="stylesheet" href="%s">',$this->css());
+                    return sprintf('<link rel="stylesheet" href="%s">', $this->css());
                 case 'js':
-                    return sprintf('<script src="%s"></script>',$this->js());
+                    return sprintf('<script src="%s"></script>', $this->js());
                 default:
                     return '';
             }
@@ -90,7 +89,5 @@ namespace Eywa\File {
         {
             return https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') . '/css/' . $this->filename :   'http://'. Request::make()->server()->get('SERVER_NAME') . '/css/' . $this->filename;
         }
-
-
     }
 }

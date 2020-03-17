@@ -14,11 +14,10 @@ namespace Eywa\Cache {
          */
         private Memcache $cache;
 
-        public function __construct(string $host ='localhost',int $port = 11211,bool $persistent =true)
+        public function __construct(string $host ='localhost', int $port = 11211, bool $persistent =true)
         {
             $this->cache = new Memcache();
-            $this->cache->addServer($host,$port,$persistent);
-
+            $this->cache->addServer($host, $port, $persistent);
         }
 
         /**
@@ -34,7 +33,7 @@ namespace Eywa\Cache {
          */
         public function set(string $key, $value): CacheInterface
         {
-            $this->cache->set($key,$value,MEMCACHE_COMPRESSED,$this->ttl());
+            $this->cache->set($key, $value, MEMCACHE_COMPRESSED, $this->ttl());
 
             return $this;
         }
@@ -44,8 +43,7 @@ namespace Eywa\Cache {
          */
         public function destroy(string $key): bool
         {
-           return $this->has($key) ? $this->cache->delete($key): false;
-
+            return $this->has($key) ? $this->cache->delete($key): false;
         }
 
         /**
@@ -61,7 +59,7 @@ namespace Eywa\Cache {
          */
         public function ttl(): int
         {
-            return  intval(env('CACHE_TTL',CACHE_DEFAULT_TTL));
+            return  intval(env('CACHE_TTL', CACHE_DEFAULT_TTL));
         }
 
         /**

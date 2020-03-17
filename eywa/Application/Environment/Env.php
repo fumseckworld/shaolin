@@ -18,7 +18,6 @@ namespace Eywa\Application\Environment {
 
         public function __construct()
         {
-
             $repository = RepositoryBuilder::create()
                 ->withReaders([
                     new EnvConstAdapter(),
@@ -30,10 +29,9 @@ namespace Eywa\Application\Environment {
                 ->immutable()
                 ->make();
 
-            $this->env =   Dotenv::create($repository, base(),'.env');
+            $this->env =   Dotenv::create($repository, base(), '.env');
             $this->env->load();
             $this->env->required(['CACHE_TIME_DIVISER','CACHE_DIRECTORY','CACHE_TTL','DEBUG','DB_DRIVER','DB_HOST','DB_PORT','DB_NAME', 'DB_USERNAME', 'DB_PASSWORD','DEVELOP_DB_DRIVER','DEVELOP_DB_HOST','DEVELOP_DB_PORT','DEVELOP_DB_NAME', 'DEVELOP_DB_USERNAME', 'DEVELOP_DB_PASSWORD','APP_NAME','APP_KEY','CIPHER','TRANSLATOR_EMAIL']);
-
         }
 
         /**

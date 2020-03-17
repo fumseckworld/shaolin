@@ -13,7 +13,6 @@ namespace Eywa\Console\Database {
 
     class ExportDatabase extends Command
     {
-
         protected static $defaultName = 'db:export';
 
         /**
@@ -35,10 +34,8 @@ namespace Eywa\Console\Database {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
-            $io = new SymfonyStyle($input,$output);
-            if((new Export(app()->connexion()))->dump())
-            {
+            $io = new SymfonyStyle($input, $output);
+            if ((new Export(app()->connexion()))->dump()) {
                 $io->success('The base was successfully saved');
                 return 0;
             }
@@ -46,6 +43,5 @@ namespace Eywa\Console\Database {
             $io->error('The export task has failed');
             return 1;
         }
-
     }
 }

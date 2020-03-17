@@ -6,6 +6,5 @@ namespace Eywa\Http\Curl {
 
     class Curl
     {
-
     }
 }

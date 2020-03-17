@@ -29,7 +29,6 @@ namespace Eywa\Http\Response {
          */
         public function __construct(string $url, int $status = 301)
         {
-
             $this->response = new Response(sprintf('<!DOCTYPE html>
 <html lang="en">
     <head>
@@ -40,7 +39,7 @@ namespace Eywa\Http\Response {
     <body>
         Redirecting to <a href="%1$s">%1$s</a>.
     </body>
-</html>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8')),$url,$status,['Location' => $url]);
+</html>', htmlspecialchars($url, ENT_QUOTES, 'UTF-8')), $url, $status, ['Location' => $url]);
         }
 
 

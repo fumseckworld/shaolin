@@ -17,7 +17,6 @@ namespace Eywa\Message\Email {
 
     class Write
     {
-
         private Swift_Message $message;
 
 
@@ -41,7 +40,6 @@ namespace Eywa\Message\Email {
          */
         public function __construct(string $subject, string $message, string $author_email, string $to)
         {
-
             $this->validator = new EmailValidator();
 
             self::valid($to, $author_email);
@@ -77,7 +75,6 @@ namespace Eywa\Message\Email {
          */
         public function sign() : Write
         {
-
             $file = 'mail';
             $signer = new Swift_Signers_DKIMSigner($this->private_key, config($file, 'domain'), config($file, 'selector'), config($file, 'passphrase'));
             $this->message->attachSigner($signer);
@@ -96,11 +93,11 @@ namespace Eywa\Message\Email {
          */
         public function attach(string $path, string $filename, string $type, string $disposition = '') : Write
         {
-
-            if(def($disposition))
+            if (def($disposition)) {
                 $this->message->attach(Swift_Attachment::fromPath($path, $type)->setFilename($filename)->setDisposition($disposition));
-            else
+            } else {
                 $this->message->attach(Swift_Attachment::fromPath($path, $type)->setFilename($filename));
+            }
 
             return $this;
         }
@@ -114,8 +111,9 @@ namespace Eywa\Message\Email {
          */
         public static function valid(string ...$emails) : bool
         {
-            foreach($emails as $email)
+            foreach ($emails as $email) {
                 is_false((new EmailValidator())->isValid($email, new RFCValidation()), true, "The email $email is not valid");
+            }
 
             return true;
         }
@@ -132,7 +130,6 @@ namespace Eywa\Message\Email {
          */
         public function cc(string $email, string $name = null) : Write
         {
-
             self::valid($email);
             $this->message->setCc($email, $name);
 
@@ -151,7 +148,6 @@ namespace Eywa\Message\Email {
          */
         public function bcc(string $email, string $name = null) : Write
         {
-
             self::valid($email);
 
             $this->message->setBcc($email, $name);
@@ -171,7 +167,6 @@ namespace Eywa\Message\Email {
          */
         public function add_bcc(string $email, string $name = null) : Write
         {
-
             self::valid($email);
 
             $this->message->addBcc($email, $name);
@@ -191,7 +186,6 @@ namespace Eywa\Message\Email {
          */
         public function add_cc(string $email, string $name = null) : Write
         {
-
             self::valid($email);
 
             $this->message->addCc($email, $name);
@@ -211,7 +205,6 @@ namespace Eywa\Message\Email {
          */
         public function add_to(string $email, string $name = null) : Write
         {
-
             self::valid($email);
 
             $this->message->addTo($email, $name);

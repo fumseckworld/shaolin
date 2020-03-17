@@ -8,6 +8,8 @@ namespace Eywa\Http\Routing {
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
+    use ReflectionClass;
+    use ReflectionException;
 
     class RouteResult
     {
@@ -61,7 +63,7 @@ namespace Eywa\Http\Routing {
          * @param string $method
          *
          */
-        public function __construct(string $controller,string $namespace,string $action,array $args,string $method)
+        public function __construct(string $controller, string $namespace, string $action, array $args, string $method)
         {
             $this->controller = $controller;
             $this->action = $action;
@@ -93,27 +95,25 @@ namespace Eywa\Http\Routing {
         /**
          * @return Response
          * @throws Kedavra
-         * @throws \ReflectionException
+         * @throws ReflectionException
          */
         public function call(): Response
         {
-            $class = $this->class();
+            is_false(class_exists($this->class()), true, "The class {$this->controller()} not exist inside the Controllers directory");
 
-            $instance = new $class();
+            is_false(method_exists($this->class(), $this->action()), true, "The action {$this->action()} not exist inside the {$this->controller()} controller");
 
-            is_false(class_exists($class), true, "The class {$this->controller()} not exist inside the Controllers directory");
+            $x = new ReflectionClass($this->class());
 
-            is_false(method_exists($class, $this->action()), true, "The action {$this->action()} not exist inside the {$this->controller()} controller");
 
-            $x = new \ReflectionClass($instance);
+            $request = cli() ? new Request([], [], [], [], [], [], $this->args()) : Request::make($this->args());
 
-            $request = cli() ? new Request([],[],[],[],[],[],$this->args()) : Request::make($this->args());
+            $x->getMethod('before_action')->invoke($x->newInstance(), $request);
 
-            $x->getMethod('before_action')->invokeArgs($x->newInstance(),[$request]);
+            $result = $x->getMethod($this->action())->invoke($x->newInstance(), $request);
 
-            $result = $x->getMethod($this->action())->invokeArgs($x->newInstance(),[$request]);
 
-            $x->getMethod('after_action')->invokeArgs($x->newInstance(),[$request]);
+            $x->getMethod('after_action')->invoke($x->newInstance(), $request);
 
             return $result;
         }
@@ -138,12 +138,12 @@ namespace Eywa\Http\Routing {
          * @return string
          *
          */
-         public function namespace(): string
-         {
-             $x = $this->namespace;
+        public function namespace(): string
+        {
+            $x = $this->namespace;
 
-             return $x !== 'Controllers' ? "\App\Controllers\\$x" : "\App\Controllers";
-         }
+            return $x !== 'Controllers' ? "\App\Controllers\\$x" : "\App\Controllers";
+        }
 
         /**
          *
@@ -156,6 +156,5 @@ namespace Eywa\Http\Routing {
         {
             return $this->args;
         }
-
     }
 }

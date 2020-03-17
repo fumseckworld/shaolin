@@ -5,6 +5,8 @@ namespace Eywa\Console\Database {
 
 
     use Eywa\Database\Migration\Migrate;
+    use Eywa\Exception\Kedavra;
+    use ReflectionException;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -16,37 +18,21 @@ namespace Eywa\Console\Database {
 
         protected function configure():void
         {
-            $this->setDescription('Run the migrations')
-                ->setHelp('php shaolin db:migrate env');
-            ;
+            $this->setDescription('Run the migrations');
         }
 
-        public function execute(InputInterface $input,  OutputInterface $output)
+        /**
+         * @param InputInterface $input
+         * @param OutputInterface $output
+         * @return int
+         * @throws Kedavra
+         * @throws ReflectionException
+         */
+        public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
-            if (Migrate::check_migrate())
-            {
-                $io->warning('Nothing to migrate');
-                return 0;
-            }
-            $listes = Migrate::list();
-
-            $end = sum($listes);
-            $i = 0;
-
-            do{
-                if(Migrate::run('up',$io) !== 0)
-                {
-                    $io->error('A migration has fail');
-                    die();
-                }
-
-                $i++;
-            }while($i!==$end);
-            $io->success('All migration has been executed successfully');
-            return 0;
-
+            return (new Migrate())->migrate($io);
         }
     }
 }

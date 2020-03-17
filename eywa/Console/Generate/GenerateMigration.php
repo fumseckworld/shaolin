@@ -13,16 +13,14 @@ namespace Eywa\Console\Generate {
 
     class GenerateMigration extends Command
     {
-
         protected static $defaultName = 'make:migration';
 
         protected function configure():void
         {
-
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new migration')
-                ->addArgument('table',InputArgument::REQUIRED,'The table name')
+                ->addArgument('table', InputArgument::REQUIRED, 'The table name')
                 ->addArgument('migration', InputArgument::REQUIRED, 'The migration name.');
         }
 
@@ -35,23 +33,21 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $migration = strval($input->getArgument('migration'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$migration) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $migration) !== 1) {
                 $io->error('You must use snake case syntax to generate the migration');
                 return  1;
             }
 
-            $class = collect(explode('_',$migration))->for('ucfirst')->join('');
+            $class = collect(explode('_', $migration))->for('ucfirst')->join('');
 
-            $file  =  base('db','Migrations',"$class.php");
+            $file  =  base('db', 'Migrations', "$class.php");
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s migration already exist',$class));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s migration already exist', $class));
                 return 1;
             }
             $io->title('Generation of the migration');
@@ -62,7 +58,7 @@ namespace Eywa\Console\Generate {
             if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
-namespace Base\Migrations {
+namespace Evolution\Migrations {
 
 
     use Eywa\Database\Migration\Migration;
@@ -95,16 +91,13 @@ namespace Base\Migrations {
 
         }
     }
-}")->flush())
-            {
-                $io->success(sprintf('The %s migration was successfully generated',$class));
+}")->flush()) {
+                $io->success(sprintf('The %s migration was successfully generated', $class));
                 return 0;
             }
 
             $io->error('The creation of the migrations has failed');
             return 1;
-
-
         }
     }
 }

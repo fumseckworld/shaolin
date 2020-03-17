@@ -8,7 +8,6 @@ namespace App\Validators\Users {
 
     class UsersValidator extends Validator
     {
-
         public static string $redirect_url = '/error';
 
         public static array $rules =
@@ -28,4 +27,3 @@ namespace App\Validators\Users {
         }
     }
 }
-            

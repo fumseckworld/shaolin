@@ -42,21 +42,17 @@ namespace Eywa\Http\Request {
          * @throws Kedavra
          *
          */
-        public function __construct(string $url,string $method = GET)
+        public function __construct(string $url, string $method = GET)
         {
-            not_in(METHOD_SUPPORTED,$method,true,"The method used is not supported");
+            not_in(METHOD_SUPPORTED, $method, true, "The method used is not supported");
 
             $this->url = $url;
 
-            if (not_cli())
-            {
+            if (not_cli()) {
                 $this->request = Request::make();
 
-                $this->method = different($method,GET) ? $this->request->request()->get('_method',POST) : $method;
-
-            }else
-            {
-
+                $this->method = different($method, GET) ? $this->request->request()->get('_method', POST) : $method;
+            } else {
                 $this->request = new Request();
 
                 $this->method = $method;
@@ -75,7 +71,7 @@ namespace Eywa\Http\Request {
          */
         public static function generate(): ServerRequest
         {
-            return new self($_SERVER['REQUEST_URI'],$_SERVER['REQUEST_METHOD']);
+            return new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
         }
 
         /***
@@ -123,7 +119,7 @@ namespace Eywa\Http\Request {
          */
         public function submited(): bool
         {
-            return !in_array($this->method(),[GET]);
+            return !in_array($this->method(), [GET]);
         }
 
         /**
@@ -186,6 +182,5 @@ namespace Eywa\Http\Request {
         {
             return $this->request->file();
         }
-
     }
 }

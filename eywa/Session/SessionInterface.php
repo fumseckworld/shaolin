@@ -82,6 +82,5 @@ namespace Eywa\Session {
          *
          */
         public function clear(): bool;
-
     }
 }

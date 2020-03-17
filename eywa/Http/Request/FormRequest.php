@@ -8,7 +8,6 @@ namespace Eywa\Http\Request {
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
 
-
     class FormRequest
     {
         /**
@@ -57,13 +56,13 @@ namespace Eywa\Http\Request {
          * @throws Kedavra
          *
          */
-        public function __construct(string $url,string $method= 'POST',array $errors = [],array $options =[])
+        public function __construct(string $url, string $method= 'POST', array $errors = [], array $options =[])
         {
             $this->url = $url;
             $this->method = strtoupper($method);
             $this->options = $options;
             $this->errors = $errors;
-            not_in(METHOD_SUPPORTED,$this->method,true,sprintf('The %s method is not supported',$this->method));
+            not_in(METHOD_SUPPORTED, $this->method, true, sprintf('The %s method is not supported', $this->method));
         }
 
         /**

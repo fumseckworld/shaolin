@@ -30,12 +30,11 @@ namespace Eywa\Security\Crypt {
          */
         public function __construct()
         {
+            $this->key = base64_decode(strval(env('APP_KEY', '')));
 
-            $this->key = base64_decode(strval(env('APP_KEY')));
+            $this->cipher = strtolower(strval(env('CIPHER', 'AES-128-CBC')));
 
-            $this->cipher = strtolower(strval(env('CIPHER')));
-
-            is_true(collect(openssl_get_cipher_methods())->not_exist($this->cipher),true,"The cipher is not valid");
+            is_true(collect(openssl_get_cipher_methods())->not_exist($this->cipher), true, "The cipher is not valid");
         }
 
 
@@ -50,7 +49,7 @@ namespace Eywa\Security\Crypt {
          */
         public static function generateKey(): string
         {
-            return base64_encode(random_bytes(intval(openssl_cipher_iv_length(strtolower(strval(env('CIPHER')))))));
+            return base64_encode(random_bytes(intval(openssl_cipher_iv_length(strtolower(strval(env('CIPHER', 'AES-128-CBC')))))));
         }
 
         /**
@@ -68,7 +67,6 @@ namespace Eywa\Security\Crypt {
          */
         public function encrypt($value, $serialize = true)
         {
-
             $iv = random_bytes(intval(openssl_cipher_iv_length($this->cipher)));
 
             $value = openssl_encrypt($serialize ? serialize($value) : $value, $this->cipher, $this->key, 0, $iv);
@@ -79,8 +77,7 @@ namespace Eywa\Security\Crypt {
 
             $json = json_encode(compact('iv', 'value', 'mac'));
 
-            if(json_last_error() !== JSON_ERROR_NONE)
-            {
+            if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new Kedavra('Could not encrypt the data.');
             }
 
@@ -116,7 +113,6 @@ namespace Eywa\Security\Crypt {
          */
         public function decrypt(string $payload, bool $unserialize = true)
         {
-
             $payload = $this->getJsonPayload($payload);
 
             $iv = base64_decode($payload['iv']);
@@ -169,15 +165,12 @@ namespace Eywa\Security\Crypt {
          */
         protected function getJsonPayload($payload):array
         {
-
             $payload = json_decode(base64_decode($payload), true);
 
-            if (!$this->validPayload($payload))
-            {
+            if (!$this->validPayload($payload)) {
                 throw new Kedavra('The payload is invalid.');
             }
-            if (!$this->validMac($payload))
-            {
+            if (!$this->validMac($payload)) {
                 throw new Kedavra('The MAC is invalid.');
             }
 
@@ -193,7 +186,7 @@ namespace Eywa\Security\Crypt {
          */
         protected function validPayload($payload)
         {
-            return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']) && strlen(strval(base64_decode($payload['iv'],true))) === openssl_cipher_iv_length($this->cipher);
+            return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']) && strlen(strval(base64_decode($payload['iv'], true))) === openssl_cipher_iv_length($this->cipher);
         }
 
         /**
@@ -209,7 +202,6 @@ namespace Eywa\Security\Crypt {
          */
         protected function validMac(array $payload): bool
         {
-
             $calculated = $this->calculateMac($payload, $bytes = random_bytes(16));
 
             return hash_equals(hash_hmac('sha256', $payload['mac'], $bytes, true), $calculated);
@@ -229,6 +221,5 @@ namespace Eywa\Security\Crypt {
         {
             return hash_hmac('sha256', $this->hash($payload['iv'], $payload['value']), $bytes, true);
         }
-
     }
 }

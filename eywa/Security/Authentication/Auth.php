@@ -1,8 +1,8 @@
 <?php
-	declare(strict_types=1);
+    declare(strict_types=1);
 
-	namespace Eywa\Security\Authentication
-	{
+    namespace Eywa\Security\Authentication
+    {
 
         use App\Models\User;
         use Eywa\Collection\Collect;
@@ -20,8 +20,8 @@
          * @package Eywa\Security\Authentication
          *
          */
-		class Auth implements AuthInterface
-		{
+        class Auth implements AuthInterface
+        {
 
             /**
              *
@@ -51,12 +51,11 @@
              */
             public function is(string $role): bool
             {
-                switch ($role)
-                {
+                switch ($role) {
                     case 'admin':
                         return $this->current()->id === 1;
                     case 'redac':
-                        return in_array($this->current()->id,[1,2],true);
+                        return in_array($this->current()->id, [1,2], true);
                     default:
                         return false;
                 }
@@ -75,7 +74,7 @@
              */
             public function current(): stdClass
             {
-               return unserialize($this->session->get('user'));
+                return $this->session->has('user') ? unserialize($this->session->get('user')) : new stdClass();
             }
 
             /**
@@ -83,25 +82,24 @@
              */
             public function login(string $username, string $password): Response
             {
+                try {
+                    $user = User::by('username', $username);
+                } catch (Kedavra $kedavra) {
+                    return $this->redirect('/login', $this->messages()->get('user_not_found'));
+                }
 
-                $user = User::by('username',$username);
-
-                if(def($user))
-                {
-                    if(check($password, $user->pwd))
-                    {
-                        $this->session->set('user',serialize($user));
-                        return $this->redirect('/home',$this->messages()->get('welcome'),true);
-                    }
-                    else
-                    {
+                if (def($user)) {
+                    if (check($password, $user->password)) {
+                        $this->session->set('user', serialize($user));
+                        return $this->redirect('/home', $this->messages()->get('welcome'), true);
+                    } else {
                         $this->clean();
 
-                        return $this->redirect('/login',$this->messages()->get('password_no_match'));
+                        return $this->redirect('/login', $this->messages()->get('password_no_match'));
                     }
                 }
 
-                return $this->redirect('/login',$this->messages()->get('not_exist'));
+                return $this->redirect('/login', $this->messages()->get('user_not_found'));
             }
 
             /**
@@ -111,7 +109,7 @@
             {
                 $this->clean();
 
-                return $this->redirect('/',$this->messages()->get('bye'),true);
+                return $this->redirect('/', $this->messages()->get('bye'), true);
             }
 
             /**
@@ -119,10 +117,11 @@
              */
             public function delete_account(): Response
             {
-                if(User::destroy(intval($this->current()->id)))
-                    return $this->redirect('/',$this->messages()->get('account_removed_successfully'),true);
+                if (User::destroy(intval($this->current()->id))) {
+                    return $this->redirect('/', $this->messages()->get('account_removed_successfully'), true);
+                }
 
-                return $this->redirect('/login',$this->messages()->get('account_removed_fail'));
+                return $this->redirect('/login', $this->messages()->get('account_removed_fail'));
             }
 
             /**
@@ -136,7 +135,7 @@
              */
             private function messages(): Collect
             {
-                return collect(config('auth','messages'));
+                return collect(config('auth', 'messages'));
             }
 
             /**
@@ -150,11 +149,11 @@
              *
              * @throws Kedavra
              */
-            private function redirect(string $url,string $message,bool $success = false): Response
+            private function redirect(string $url, string $message, bool $success = false): Response
             {
-                $success ?  (new Flash())->set(SUCCESS,$message) : (new Flash())->set(FAILURE,$message);
+                $success ?  (new Flash())->set(SUCCESS, $message) : (new Flash())->set(FAILURE, $message);
 
                 return  (new RedirectResponse($url))->send();
             }
         }
-	}
+    }

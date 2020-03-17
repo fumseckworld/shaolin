@@ -10,7 +10,6 @@ namespace Eywa\Database\Table {
     use Eywa\Exception\Kedavra;
     use PDO;
 
-
     class Table implements Records
     {
         /**
@@ -42,14 +41,14 @@ namespace Eywa\Database\Table {
          */
         public function content(int $pdo_mode = PDO::FETCH_OBJ):array
         {
-            return $this->connect->set(sprintf('SELECT * FROM %s',$this->table))->get($pdo_mode);
+            return $this->connect->set(sprintf('SELECT * FROM %s', $this->table))->get($pdo_mode);
         }
         /**
          * @inheritDoc
          */
         public function drop(): bool
         {
-           return  $this->connect->set(sprintf('DROP TABLE %s',$this->table))->execute();
+            return  $this->connect->set(sprintf('DROP TABLE %s', $this->table))->execute();
         }
 
         /**
@@ -57,7 +56,7 @@ namespace Eywa\Database\Table {
          */
         public function exist(): bool
         {
-           return $this->show()->exist($this->table);
+            return $this->show()->exist($this->table);
         }
 
         /**
@@ -65,14 +64,13 @@ namespace Eywa\Database\Table {
          */
         public function truncate(): bool
         {
-           switch ($this->connect->driver())
-           {
+            switch ($this->connect->driver()) {
                case MYSQL:
-                   return $this->connect->set(sprintf('TRUNCATE TABLE %s',$this->table))->execute();
+                   return $this->connect->set(sprintf('TRUNCATE TABLE %s', $this->table))->execute();
                case POSTGRESQL:
-                   return $this->connect->set(sprintf('TRUNCATE TABLE %s RESTART IDENTITY',$this->table))->execute();
+                   return $this->connect->set(sprintf('TRUNCATE TABLE %s RESTART IDENTITY', $this->table))->execute();
                case SQLITE:
-                   return $this->connect->set(sprintf('DELETE  FROM %s',$this->table))->set('VACUUM')->execute();
+                   return $this->connect->set(sprintf('DELETE  FROM %s', $this->table))->set('VACUUM')->execute();
                default:
                    return false;
            }
@@ -83,15 +81,13 @@ namespace Eywa\Database\Table {
          */
         public function remove(array $columns): bool
         {
-
-            $mysql = function (string $x){
-                return sprintf('DROP COLUMN %s',$x);
+            $mysql = function (string $x) {
+                return sprintf('DROP COLUMN %s', $x);
             };
-            switch ($this->connect->driver())
-            {
+            switch ($this->connect->driver()) {
                 case MYSQL:
                 case POSTGRESQL:
-                    return $this->connect->set(sprintf('ALTER TABLE %s %s',$this->table,collect($columns)->for($mysql)->join()))->execute();
+                    return $this->connect->set(sprintf('ALTER TABLE %s %s', $this->table, collect($columns)->for($mysql)->join()))->execute();
                 default:
                     return false;
             }
@@ -102,12 +98,11 @@ namespace Eywa\Database\Table {
          */
         public function rename(string $new_name): bool
         {
-            switch ($this->connect->driver())
-            {
+            switch ($this->connect->driver()) {
                 case MYSQL:
-                    return $this->connect->set(sprintf('RENAME TABLE %s TO %s',$this->table,$new_name))->execute();
+                    return $this->connect->set(sprintf('RENAME TABLE %s TO %s', $this->table, $new_name))->execute();
                 case POSTGRESQL:
-                    return $this->connect->set(sprintf('ALTER TABLE %s RENAME TO %s',$this->table,$new_name))->execute();
+                    return $this->connect->set(sprintf('ALTER TABLE %s RENAME TO %s', $this->table, $new_name))->execute();
                 default:
                     return false;
             }
@@ -118,11 +113,13 @@ namespace Eywa\Database\Table {
          */
         public function has(array $columns): bool
         {
-           foreach ($columns as $column)
-               if ($this->columns()->not_exist($column))
-                   return false;
+            foreach ($columns as $column) {
+                if ($this->columns()->not_exist($column)) {
+                    return false;
+                }
+            }
 
-           return true;
+            return true;
         }
 
         /**
@@ -130,11 +127,10 @@ namespace Eywa\Database\Table {
          */
         public function rename_column(string $column, string $new_name): bool
         {
-            switch ($this->connect->driver())
-            {
+            switch ($this->connect->driver()) {
                 case MYSQL:
                 case POSTGRESQL:
-                    return $this->connect->set(sprintf('ALTER TABLE %s RENAME COLUMN %s TO %s',$this->table,$column,$new_name))->execute();
+                    return $this->connect->set(sprintf('ALTER TABLE %s RENAME COLUMN %s TO %s', $this->table, $column, $new_name))->execute();
                 default:
                     return false;
             }
@@ -145,45 +141,46 @@ namespace Eywa\Database\Table {
          */
         public function primary(): string
         {
-            if (def($this->primary))
+            if (def($this->primary)) {
                 return $this->primary;
+            }
 
-                switch ($this->connect->driver())
-                {
+            switch ($this->connect->driver()) {
                     case MYSQL:
-                        $this->primary =  collect($this->connect->set(sprintf('show columns from %s where `Key` = \'PRI\' ',$this->table))->get(COLUMNS))->first();
+                        $this->primary =  collect($this->connect->set(sprintf('show columns from %s where `Key` = \'PRI\' ', $this->table))->get(COLUMNS))->first();
                     break;
                     case POSTGRESQL:
-                        $this->primary = collect($this->connect->set(sprintf('select column_name FROM information_schema.key_column_usage WHERE table_name = \'%s\' ',$this->table))->get(COLUMNS))->first();
+                        $this->primary = collect($this->connect->set(sprintf('select column_name FROM information_schema.key_column_usage WHERE table_name = \'%s\' ', $this->table))->get(COLUMNS))->first();
                     break;
                     case SQLITE:
-                        foreach ($this->connect->set(sprintf('PRAGMA table_info(%s)',$this->table))->get(OBJECTS) as $column)
-                            if ($column->pk)
+                        foreach ($this->connect->set(sprintf('PRAGMA table_info(%s)', $this->table))->get(OBJECTS) as $column) {
+                            if ($column->pk) {
                                 $this->primary = $column->name;
+                            }
+                        }
                     break;
                     case SQL_SERVER:
-                        $this->primary =   collect($this->connect->set(sprintf('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME  =\'%s\'  AND CONSTRAINT_NAME LIKE \'PK\'',$this->table))->get(COLUMNS))->first();
+                        $this->primary =   collect($this->connect->set(sprintf('SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE TABLE_NAME  =\'%s\'  AND CONSTRAINT_NAME LIKE \'PK\'', $this->table))->get(COLUMNS))->first();
                     break;
                     default:
                         return '';
                 }
-                return  $this->primary;
-            }
+            return  $this->primary;
+        }
 
         /**
          * @inheritDoc
          */
         public function export(): bool
         {
-            $file = sprintf('%s.sql',$this->connect->base());
-            switch($this->connect->driver())
-            {
+            $file = sprintf('%s.sql', $this->connect->base());
+            switch ($this->connect->driver()) {
                 case MYSQL:
-                    return (new Shell(sprintf('mysqldump -u %s -p%s %s > %s',$this->connect->username(),$this->connect->password(),$this->connect->base(),$file)))->run();
+                    return (new Shell(sprintf('mysqldump -u %s -p%s %s > %s', $this->connect->username(), $this->connect->password(), $this->connect->base(), $file)))->run();
                 case POSTGRESQL:
-                    return (new Shell(sprintf('pg_dump -h %s  -U %s %s > %s',$this->connect->hostname(),$this->connect->username(),$this->connect->base(),$file)))->run();
+                    return (new Shell(sprintf('pg_dump -h %s  -U %s %s > %s', $this->connect->hostname(), $this->connect->username(), $this->connect->base(), $file)))->run();
                 case SQLITE:
-                    return (new Shell(sprintf('sqlite3 %s  > %s',$this->connect->base(),$file)))->run();
+                    return (new Shell(sprintf('sqlite3 %s  > %s', $this->connect->base(), $file)))->run();
                 default:
                     return false;
             }
@@ -198,46 +195,37 @@ namespace Eywa\Database\Table {
             $username = $this->connect->username();
             $host = $this->connect->hostname();
             $base = $this->connect->base();
-            $file = base('db','dump',sprintf('%s.sql',$base));
+            $file = base('db', 'dump', sprintf('%s.sql', $base));
 
 
-            if (!file_exists($file))
+            if (!file_exists($file)) {
                 return  false;
+            }
 
-            switch($this->connect->driver())
-            {
+            switch ($this->connect->driver()) {
                 case MYSQL:
-                    return (new Shell(sprintf('mysqldump  -h %s -u %s -p%s %s < %s',$host,$username,$password,$base,$file)))->run();
+                    return (new Shell(sprintf('mysqldump  -h %s -u %s -p%s %s < %s', $host, $username, $password, $base, $file)))->run();
                 case POSTGRESQL:
-                    return (new Shell(sprintf('psql -h %s -U %s %s < %s',$host,$username,$base,$file)))->run();
+                    return (new Shell(sprintf('psql -h %s -U %s %s < %s', $host, $username, $base, $file)))->run();
                 case SQLITE:
-                    return (new Shell(sprintf('sqlite3  %s < %s',$base,$file)))->run();
+                    return (new Shell(sprintf('sqlite3  %s < %s', $base, $file)))->run();
                 default:
                     return false;
             }
         }
 
-        /**
-         * @inheritDoc
-         */
-        public function add(string $column, string $type, int $size = 0, array $constraint = []): Records
-        {
-
-           return $this;
-        }
 
         /**
          * @inheritDoc
          */
         public function show(): Collect
         {
-            switch ($this->connect->driver())
-            {
-                case MYSQL :
+            switch ($this->connect->driver()) {
+                case MYSQL:
                     return collect($this->connect->set('SHOW TABLES')->get(COLUMNS));
-                case POSTGRESQL :
+                case POSTGRESQL:
                     return  collect($this->connect->set('SELECT table_name FROM information_schema.tables WHERE  table_type = \'BASE TABLE\' AND table_schema NOT IN (\'pg_catalog\', \'information_schema\');')->get(COLUMNS));
-                case SQLITE :
+                case SQLITE:
                     return collect($this->connect->set('SELECT tbl_name FROM sqlite_master')->get(COLUMNS));
                 case SQL_SERVER:
                     return collect($this->connect->set('SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE=\'BASE TABLE\'')->get(COLUMNS));
@@ -250,14 +238,14 @@ namespace Eywa\Database\Table {
          * @inheritDoc
          */
         public function columns(): Collect
-        { 
-            if (def($this->columns) && equal($this->table,$this->saved_table))
+        {
+            if (def($this->columns) && equal($this->table, $this->saved_table)) {
                 return $this->columns;
+            }
 
 
             $x =  collect();
-            switch ($this->connect->driver())
-            {
+            switch ($this->connect->driver()) {
                 case MYSQL:
                     $this->columns =  collect($this->connect->set("SHOW FULL COLUMNS FROM {$this->table}")->get(COLUMNS));
                     $this->saved_table = $this->table;
@@ -267,8 +255,9 @@ namespace Eywa\Database\Table {
                     $this->saved_table = $this->table;
                     break;
                 case SQLITE:
-                    foreach ($this->connect->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $c)
+                    foreach ($this->connect->set("PRAGMA table_info({$this->table})")->get(OBJECTS) as $c) {
                         $x->push($c->name);
+                    }
                     $this->saved_table = $this->table;
                     $this->columns =  $x;
                     break;

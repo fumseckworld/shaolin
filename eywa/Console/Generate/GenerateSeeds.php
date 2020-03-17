@@ -13,16 +13,14 @@ namespace Eywa\Console\Generate {
 
     class GenerateSeeds extends Command
     {
-
         protected static $defaultName = 'make:seed';
 
         protected function configure():void
         {
-
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new migration')
-                ->addArgument('table',InputArgument::REQUIRED,'The table name')
+                ->addArgument('table', InputArgument::REQUIRED, 'The table name')
                 ->addArgument('seed', InputArgument::REQUIRED, 'The migration name.');
         }
 
@@ -35,23 +33,21 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $seed = strval($input->getArgument('seed'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$seed) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $seed) !== 1) {
                 $io->error('You must use snake case syntax to generate the seeder');
                 return  1;
             }
 
-            $class = collect(explode('_',$seed))->for('ucfirst')->join('');
+            $class = collect(explode('_', $seed))->for('ucfirst')->join('');
 
-            $file  =  base('db','Seeds',"$class.php");
+            $file  =  base('db', 'Seeds', "$class.php");
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s seeder already exist',$class));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s seeder already exist', $class));
                 return 1;
             }
 
@@ -63,7 +59,7 @@ namespace Eywa\Console\Generate {
             if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
-namespace Base\Seeds {
+namespace Evolution\Seeds {
 
 
     use Eywa\Database\Seed\Seeder;
@@ -99,16 +95,13 @@ namespace Base\Seeds {
             }
         }
     }
-}")->flush())
-            {
-                $io->success(sprintf('The %s seeder was successfully generated',$class));
+}")->flush()) {
+                $io->success(sprintf('The %s seeder was successfully generated', $class));
                 return 0;
             }
 
-            $io->error(sprintf('The %s seeder creation has failed',$class));
+            $io->error(sprintf('The %s seeder creation has failed', $class));
             return 1;
-
-
         }
     }
 }

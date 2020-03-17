@@ -78,10 +78,8 @@ namespace Eywa\Http\Routing {
          */
         public function run(): Response
         {
-            foreach ((new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'))->where('method',EQUAL,$this->method)->get() as $route)
-            {
-                if ($this->match($route->url,$route))
-                {
+            foreach ((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->where('method', EQUAL, $this->method)->get() as $route) {
+                if ($this->match($route->url, $route)) {
                     $this->route = $route;
 
                     return  $this->result()->call();
@@ -96,7 +94,7 @@ namespace Eywa\Http\Routing {
          */
         public function result(): RouteResult
         {
-            return new RouteResult($this->route->controller,$this->route->directory,$this->route->action,$this->parameters,$this->method);
+            return new RouteResult($this->route->controller, $this->route->directory, $this->route->action, $this->parameters, $this->method);
         }
 
         /**
@@ -109,25 +107,21 @@ namespace Eywa\Http\Routing {
          * @return bool
          *
          */
-        private function match(string $url,stdClass $route): bool
+        private function match(string $url, stdClass $route): bool
         {
-
-            $path = preg_replace('#:([\w]+)#','([^/]+)',$url);
+            $path = preg_replace('#:([\w]+)#', '([^/]+)', $url);
 
             $regex = "#^$path$#";
 
-            if(preg_match($regex, $this->url, $this->parameters) === 1)
-            {
-
+            if (preg_match($regex, $this->url, $this->parameters) === 1) {
                 $url = $route->url;
 
 
-                if (def(strstr($url,':')))
-                {
-                    $args = strval(substr($url,intval(strpos($url,':'))));
+                if (def(strstr($url, ':'))) {
+                    $args = strval(substr($url, intval(strpos($url, ':'))));
 
-                    $args = collect(explode(':',$args))->for(function ($x){
-                        return trim($x,'/');
+                    $args = collect(explode(':', $args))->for(function ($x) {
+                        return trim($x, '/');
                     })->shift()->all();
 
                     $result = collect();
@@ -135,8 +129,9 @@ namespace Eywa\Http\Routing {
 
                     array_shift($this->parameters);
 
-                    foreach ($this->parameters as $k => $v)
-                        $result->put($args[$k],$v);
+                    foreach ($this->parameters as $k => $v) {
+                        $result->put($args[$k], $v);
+                    }
 
                     $this->parameters = $result->all();
 
@@ -181,16 +176,15 @@ namespace Eywa\Http\Routing {
 
             $namespace = 'App' . '\\' . $middleware_dir . '\\';
 
-            $dir = base('app',$middleware_dir);
+            $dir = base('app', $middleware_dir);
 
             is_false(is_dir($dir), true, "The $dir directory was not found");
 
-            $middle = files(base('app',$middleware_dir,'*.php'));
+            $middle = files(base('app', $middleware_dir, '*.php'));
 
             call_user_func_array([ new CsrfMiddleware(), 'check' ], [ $request ]);
 
-            foreach($middle as $middleware)
-            {
+            foreach ($middle as $middleware) {
                 $middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
 
                 $middleware = collect(explode('.', $middle))->first();
@@ -200,7 +194,8 @@ namespace Eywa\Http\Routing {
                 $x = new ReflectionClass($class);
 
 
-                $x->getMethod('check')->invoke($x->newInstance(),$request);            }
+                $x->getMethod('check')->invoke($x->newInstance(), $request);
+            }
         }
     }
 }

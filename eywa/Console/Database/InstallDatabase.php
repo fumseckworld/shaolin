@@ -16,8 +16,7 @@ namespace Eywa\Console\Database {
     {
         protected static $defaultName = 'db:install';
 
-        private string $pass ='';
-
+        private string $pass = '';
 
         private string $mysql_root_password_question = 'What it\'s the password for the MySQL root user ?';
 
@@ -42,7 +41,9 @@ namespace Eywa\Console\Database {
         private string $routing_instance_created_successfully = 'The routing database has been created successfully';
 
         private string $routing_instance_creation_has_fail ='The creation of the routing database has failed please check if sqlite are running';
+
         private string $migration_tables_created_successfully ='All migrations tables has been created successfully';
+
         private string $migration_tables_created_failed ='Creation of the migrations table has failed';
 
         protected function configure():void
@@ -67,9 +68,8 @@ namespace Eywa\Console\Database {
             $prod = production()->info();
             $dev = development()->info();
 
-            if($io->confirm(sprintf('Are you sure to use the following as a production database ? <fg=black;bg=yellow>%s</>',$prod),false) && $io->confirm(sprintf('Are you sure to use the following as a development database ? <fg=black;bg=yellow>%s</>',$dev),false))
-            {
-                return  $this->create(strval(env('DEVELOP_DB_DRIVER')),strval(env('DB_DRIVER')),$io);
+            if ($io->confirm(sprintf('Are you sure to use the following as a production database ? <fg=black;bg=yellow>%s</>', $prod), false) && $io->confirm(sprintf('Are you sure to use the following as a development database ? <fg=black;bg=yellow>%s</>', $dev), false)) {
+                return  $this->create(strval(env('DEVELOP_DB_DRIVER', 'mysql')), strval(env('DB_DRIVER', 'mysql')), $io);
             }
             $io->warning('Nothing has been done ! Modify the .env file and try again');
             return 0;
@@ -85,59 +85,48 @@ namespace Eywa\Console\Database {
          * @throws Exception
          */
 
-        private function create(string $dev,string $prod,SymfonyStyle $io):int
+        private function create(string $dev, string $prod, SymfonyStyle $io):int
         {
-
-            if (!is_dir(base('routes')))
+            if (!is_dir(base('routes'))) {
                 mkdir(base('routes'));
+            }
 
-            switch ($dev)
-            {
+            switch ($dev) {
                 case MYSQL:
-                    do
-                    {
+                    do {
                         $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
                     } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
 
-                    if(connect(MYSQL,'','root',$this->pass)->create_database(strval(env('DEVELOP_DB_NAME'))))
-                    {
+                    if (connect(MYSQL, '', 'root', $this->pass)->create_database(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
                         $io->success($this->dev_base_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->dev_base_created_fail);
                         return 1;
                     }
 
-                    if( connect(MYSQL,'','root',$this->pass)->create_user(strval(env('DEVELOP_DB_USERNAME')),strval(env('DEVELOP_DB_PASSWORD')),strval(env('DEVELOP_DB_NAME'))))
-                    {
+                    if (connect(MYSQL, '', 'root', $this->pass)->create_user(strval(env('DEVELOP_DB_USERNAME', 'ikran')), strval(env('DEVELOP_DB_PASSWORD', 'ikran')), strval(env('DEVELOP_DB_NAME', 'ikran')))) {
                         $io->success($this->dev_user_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->dev_user_created_fail);
                         return 1;
                     }
                 break;
 
                 case POSTGRESQL:
-                    do
-                    {
+                    do {
                         $this->pass  =  $io->askQuestion((new Question($this->pgsql_root_password, 'postgres'))->setHidden(true));
                     } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
 
-                    if( connect(POSTGRESQL,'','postgres',$this->pass)->create_database(strval(env('DEVELOP_DB_NAME'))))
-                    {
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->create_database(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
                         $io->success($this->dev_base_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->dev_base_created_fail);
                         return 1;
                     }
 
-                    if( connect(POSTGRESQL,'','postgres',$this->pass)->create_user(strval(env('DEVELOP_DB_USERNAME')),strval(env('DEVELOP_DB_PASSWORD')),strval(env('DEVELOP_DB_NAME'))))
-                    {
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->create_user(strval(env('DEVELOP_DB_USERNAME', 'ikran')), strval(env('DEVELOP_DB_PASSWORD', 'ikran')), strval(env('DEVELOP_DB_NAME', 'ikran')))) {
                         $io->success($this->dev_user_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->dev_user_created_fail);
                         return 1;
                     }
@@ -145,10 +134,9 @@ namespace Eywa\Console\Database {
 
                 break;
                 default:
-                    if (connect(SQLITE,strval(env('DEVELOP_DB_NAME')))->connected())
-                    {
+                    if (connect(SQLITE, strval(env('DEVELOP_DB_NAME', 'ikran')))->connected()) {
                         $io->success($this->dev_base_created_successfully);
-                    }else{
+                    } else {
                         $io->error($this->dev_base_created_fail);
                         return 1;
                     }
@@ -156,33 +144,26 @@ namespace Eywa\Console\Database {
 
             }
 
-            switch ($prod)
-            {
-                case MYSQL :
+            switch ($prod) {
+                case MYSQL:
 
-                    if (!connect(MYSQL, '', 'root', $this->pass)->connected())
-                    {
-                        do
-                        {
+                    if (!connect(MYSQL, '', 'root', $this->pass)->connected()) {
+                        do {
                             $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))->setHidden(true));
                         } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
                     }
 
 
-                    if(connect(MYSQL,'','root',$this->pass)->create_database(strval(env('DB_NAME'))))
-                    {
+                    if (connect(MYSQL, '', 'root', $this->pass)->create_database(strval(env('DB_NAME', 'eywa')))) {
                         $io->success($this->prod_base_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->prod_base_created_fail);
                         return 1;
                     }
 
-                    if(connect(MYSQL,'','root',$this->pass)->create_user(strval(env('DB_USERNAME')),strval(env('DB_PASSWORD')),strval(env('DB_NAME'))))
-                    {
+                    if (connect(MYSQL, '', 'root', $this->pass)->create_user(strval(env('DB_USERNAME', 'eywa')), strval(env('DB_PASSWORD', 'eywa')), strval(env('DB_NAME', 'eywa')))) {
                         $io->success($this->prod_user_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->prod_user_created_fail);
                         return 1;
                     }
@@ -190,64 +171,58 @@ namespace Eywa\Console\Database {
 
                 case POSTGRESQL:
 
-                    if (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected())
-                    {
-                        do
-                        {
+                    if (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected()) {
+                        do {
                             $this->pass = $io->askQuestion((new Question($this->mysql_root_password_question, 'postgres'))->setHidden(true));
-                        }while(!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
+                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
                     }
-                    if( connect(POSTGRESQL,'','postgres',$this->pass)->create_database(strval(env('DB_NAME'))))
-                    {
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->create_database(strval(env('DB_NAME', 'eywa')))) {
                         $io->success($this->prod_base_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->prod_base_created_fail);
                         return 1;
                     }
 
-                    if( connect(POSTGRESQL,'','postgres',$this->pass)->create_user(strval(env('DB_USERNAME')),strval(env('DB_PASSWORD')),strval(env('DB_NAME'))))
-                    {
+                    if (connect(POSTGRESQL, '', 'postgres', $this->pass)->create_user(strval(env('DB_USERNAME', 'eywa')), strval(env('DB_PASSWORD', 'eywa')), strval(env('DB_NAME', 'eywa')))) {
                         $io->success($this->prod_user_created_successfully);
-
-                    }   else{
+                    } else {
                         $io->error($this->prod_user_created_fail);
                         return 1;
                     }
 
                 break;
                 default:
-                    if (connect(SQLITE,strval(env('DEVELOP_DB_NAME')))->connected())
-                    {
+                    if (connect(SQLITE, strval(env('DEVELOP_DB_NAME', 'ikran')))->connected()) {
                         $io->success($this->prod_base_created_successfully);
-                    }else{
+                    } else {
                         $io->error($this->prod_base_created_fail);
                         return 1;
                     }
                 break;
             }
 
-            if (connect(SQLITE,base('routes','web.sqlite3'))->connected())
-            {
+            if (connect(SQLITE, base('routes', 'web.sqlite3'))->connected()) {
                 $io->success($this->routing_instance_created_successfully);
 
-            }   else
-            {
+                if (connect(SQLITE, base('routes', 'web.sqlite3'))->set('CREATE TABLE IF NOT EXISTS routes ( id INTEGER PRIMARY KEY AUTOINCREMENT, method TEXT(10) NOT NULL, name TEXT(255) NOT NULL UNIQUE,url TEXT(255) NOT NULL UNIQUE, controller TEXT(255) NOT NULL, directory TEXT(255) NOT NULL, action TEXT(255) NOT NULL, created_at DATETIME NOT NULL , updated_at DATETIME NOT NULL )')->execute()) {
+                    $io->success('The routes table has been generated successfully');
+                } else {
+                    $io->error('The creation of the routes table has failed');
+
+                    return 1;
+                }
+            } else {
                 $io->error($this->routing_instance_creation_has_fail);
                 return 1;
             }
-            if ((new CreateMigrationTable( 'up', 'prod'))->up() && (new CreateMigrationTable('up', 'dev'))->up())
-            {
+            if ((new CreateMigrationTable('prod'))->up() && (new CreateMigrationTable('dev'))->up()) {
                 $io->success($this->migration_tables_created_successfully);
-            } else{
+            } else {
                 $io->error($this->migration_tables_created_failed);
                 return 1;
-
             }
-            $io->success('The app are ready');
+            $io->success('Congratulations all databases are now ready');
             return 0;
-
         }
-
     }
 }

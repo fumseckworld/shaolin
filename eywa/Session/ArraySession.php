@@ -34,7 +34,7 @@ namespace Eywa\Session {
          */
         public function set(string $key, $value): SessionInterface
         {
-            $this->session->put($key,$value);
+            $this->session->put($key, $value);
             return $this;
         }
 

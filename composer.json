@@ -8,8 +8,6 @@
     "predis/predis": "^1.1",
     "symfony/console": "^5.0",
     "symfony/yaml": "^4.0",
-    "swiftmailer/swiftmailer": "^6.2",
-    "symfony/var-dumper": "^5.0",
     "filp/whoops": "^2.5",
     "ocramius/proxy-manager": "^2.2",
     "erusev/parsedown": "^1.7",
@@ -18,19 +16,21 @@
     "nesbot/carbon": "^2.27",
     "codedungeon/phpunit-result-printer": "^0.26.2",
     "symfony/process": "^5.0",
-    "phpunit/phpunit": "^8.5",
-    "ext-redis": "*",
-    "ext-apcu": "*",
-    "ext-gettext": "*",
-    "ext-pdo": "*",
-    "ext-openssl": "*",
-    "ext-json": "*",
     "sinergi/browser-detector": "^6.1",
     "mobiledetect/mobiledetectlib": "^2.8",
     "vlucas/phpdotenv": "^4.1",
     "wapmorgan/file-type-detector": "^1.1",
-    "phpro/grumphp": "^0.18.0",
-    "phpstan/phpstan": "^0.12.14"
+    "swiftmailer/swiftmailer": "^6.2",
+    "ext-openssl": "*",
+    "ext-gettext": "*",
+    "ext-redis": "*",
+    "ext-apcu": "*",
+    "ext-pdo": "*",
+    "ext-json": "*",
+    "ext-hash": "*",
+    "ext-mbstring": "*",
+    "ext-session": "*",
+    "ext-memcache": "*"
   },
   "authors": [
     {
@@ -41,7 +41,7 @@
   "autoload-dev": {
     "psr-4": {
       "Testing\\": "tests/",
-      "Base\\": "db/",
+      "Evolution\\": "db/",
       "App\\": "app/",
       "Ioc\\": "ioc/"
     }
@@ -63,5 +63,14 @@
     "send" : "git push origin --all && git push origin --tags && cd coverage && git add . && git commit -m 'send' && git push origin --all"
   },
   "require-dev": {
+    "symfony/var-dumper": "^5.0",
+    "phpunit/phpunit": "^8.5",
+    "phpro/grumphp": "^0.18.0",
+    "phpstan/phpstan": "^0.12.14",
+    "jakub-onderka/php-parallel-lint": "^1.0",
+    "maglnet/composer-require-checker": "^2.1",
+    "infection/infection": "^0.15.3",
+    "sensiolabs/security-checker": "^6.0",
+    "friendsofphp/php-cs-fixer": "^2.16"
   }
 }

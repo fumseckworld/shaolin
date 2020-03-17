@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Controllers\Email { 
+namespace App\Controllers\Email {
 
-	use Eywa\Http\Controller\Controller;
+    use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
-    
-	Class WriteController extends Controller
-	{
 
+    class WriteController extends Controller
+    {
         protected static string $layout = 'layout';
     
         protected static string $directory = 'Email';
@@ -124,6 +123,5 @@ namespace App\Controllers\Email {
         {
             // TODO: Implement after_destroy() method.
         }
-        
     }
 }

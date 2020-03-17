@@ -19,7 +19,7 @@ namespace Eywa\Database\Table {
          * @param string $table
          *
          */
-        public function __construct(Connect $connect,string $table);
+        public function __construct(Connect $connect, string $table);
 
 
         /**
@@ -140,21 +140,6 @@ namespace Eywa\Database\Table {
 
         /**
          *
-         * Add a new column
-         *
-         * @param string $column
-         * @param string $type
-         * @param int $size
-         * @param array<string> $constraint
-         *
-         * @return Records
-         *
-         */
-        public function add(string $column,string $type,int $size = 0,array $constraint = []): Records;
-
-
-        /**
-         *
          * List all tables found
          *
          * @return Collect
@@ -193,6 +178,5 @@ namespace Eywa\Database\Table {
          *
          */
         public function connexion(): Connect;
-
     }
 }

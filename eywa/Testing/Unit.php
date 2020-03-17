@@ -30,9 +30,9 @@ namespace Eywa\Testing {
          * @throws ReflectionException
          *
          */
-        public function visit(string $url,string  $method = GET): Router
+        public function visit(string $url, string  $method = GET): Router
         {
-            return new Router(new ServerRequest($url,$method));
+            return new Router(new ServerRequest($url, $method));
         }
 
         /**
@@ -44,9 +44,9 @@ namespace Eywa\Testing {
          * @throws Kedavra
          *
          */
-        public function file(string $filename,string $mode = READ_FILE_MODE): File
+        public function file(string $filename, string $mode = READ_FILE_MODE): File
         {
-            return new File($filename,$mode);
+            return new File($filename, $mode);
         }
 
         /**
@@ -60,7 +60,7 @@ namespace Eywa\Testing {
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write
         {
-            return new Write($subject,$message,$author_email,$to);
+            return new Write($subject, $message, $author_email, $to);
         }
 
         /**

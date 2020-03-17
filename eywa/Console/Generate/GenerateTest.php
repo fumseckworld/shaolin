@@ -13,17 +13,15 @@ namespace Eywa\Console\Generate {
 
     class GenerateTest extends Command
     {
-
         protected static $defaultName = 'make:test';
 
         protected function configure():void
         {
-
             $this
 
                 ->setDescription('Create a new test')
                 ->addArgument('test', InputArgument::REQUIRED, 'The test name')
-                ->addArgument('directory',InputArgument::OPTIONAL,'The directory to create the test');
+                ->addArgument('directory', InputArgument::OPTIONAL, 'The directory to create the test');
         }
 
         /**
@@ -35,30 +33,27 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $test = strval($input->getArgument('test'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$test) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $test) !== 1) {
                 $io->error('You must use snake case syntax to generate the test');
                 return  1;
             }
 
-            $class = collect(explode('_',$test))->for('ucfirst')->join('');
+            $class = collect(explode('_', $test))->for('ucfirst')->join('');
 
-            $file  =  base('tests',ucfirst(strval($input->getArgument('directory'))),"$class.php");
+            $file  =  base('tests', ucfirst(strval($input->getArgument('directory'))), "$class.php");
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s tests already exist',$class));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s tests already exist', $class));
                 return 1;
             }
             $x= ucfirst(strval($input->getArgument('directory')));
 
-            if (def($x) && !is_dir(base('tests',$x)))
-            {
-                mkdir(base('tests',$x));
+            if (def($x) && !is_dir(base('tests', $x))) {
+                mkdir(base('tests', $x));
             }
             $namespace  = def($x) ? "Testing\\$x" : 'Testing' ;
             $io->title('Generation of the test');
@@ -76,16 +71,13 @@ namespace $namespace {
     
     }
 }
-")->flush())
-            {
-                $io->success(sprintf('The %s test has been created successfully',$class));
+")->flush()) {
+                $io->success(sprintf('The %s test has been created successfully', $class));
                 return 0;
             }
 
-            $io->error(sprintf('The creation of the %s test has failed',$class));
+            $io->error(sprintf('The creation of the %s test has failed', $class));
             return 1;
-
-
         }
     }
 }

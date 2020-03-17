@@ -56,7 +56,7 @@ namespace Eywa\Application {
          * @return mixed
          *
          */
-        public function env(string $key,$default = '');
+        public function env(string $key, $default = '');
 
         /**
          *
@@ -70,7 +70,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function config(string $file,string $key);
+        public function config(string $file, string $key);
 
         /**
          *
@@ -120,7 +120,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function redirect(string $route,array $route_args,string $message,bool $success,int $status = 301): Response;
+        public function redirect(string $route, array $route_args, string $message, bool $success, int $status = 301): Response;
 
 
         /**
@@ -192,7 +192,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function flash(string $key,string $message): void;
+        public function flash(string $key, string $message): void;
 
 
         /**
@@ -222,7 +222,7 @@ namespace Eywa\Application {
          *
          *
          */
-        public function get(string $key,$default = null);
+        public function get(string $key, $default = null);
 
         /**
          *
@@ -236,7 +236,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function post(string $key,$default = null);
+        public function post(string $key, $default = null);
 
         /**
          *
@@ -250,7 +250,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function cookie(string $key,$default = null);
+        public function cookie(string $key, $default = null);
 
 
         /**
@@ -265,7 +265,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function server(string $key,$default = null);
+        public function server(string $key, $default = null);
 
         /**
          *
@@ -279,7 +279,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function file(string $filename,string $mode = READ_FILE_MODE): File;
+        public function file(string $filename, string $mode = READ_FILE_MODE): File;
 
         /**
          *
@@ -320,7 +320,7 @@ namespace Eywa\Application {
          *
          *
          */
-        public function view(string $view,string $title,string $description,array $args =[]): Response;
+        public function view(string $view, string $title, string $description, array $args =[]): Response;
 
         /**
          *
@@ -346,7 +346,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function json(array $data,int $status = 200): Response;
+        public function json(array $data, int $status = 200): Response;
 
         /**
          *
@@ -392,7 +392,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function back(string $message ='',bool $success = true): Response;
+        public function back(string $message ='', bool $success = true): Response;
 
         /**
          *
@@ -406,7 +406,7 @@ namespace Eywa\Application {
          * @return Response
          * @throws Kedavra
          */
-        public function to(string $route,array $route_args = [],string $message ='',bool $success = true): Response;
+        public function to(string $route, array $route_args = [], string $message ='', bool $success = true): Response;
 
         /**
          *
@@ -434,7 +434,7 @@ namespace Eywa\Application {
          * @throws Exception
          *
          */
-        public function decrypt(string $x,bool $unzerialize = true): string;
+        public function decrypt(string $x, bool $unzerialize = true): string;
 
         /**
          *
@@ -450,6 +450,6 @@ namespace Eywa\Application {
          *
          *
          */
-        public function crypt(string $x,bool $unzerialize = true): string;
-  }
+        public function crypt(string $x, bool $unzerialize = true): string;
+    }
 }

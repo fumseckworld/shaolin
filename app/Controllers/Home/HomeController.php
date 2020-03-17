@@ -7,27 +7,24 @@ namespace App\Controllers\Home {
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
 
-
-    Class HomeController extends Controller
-	{
-
+    class HomeController extends Controller
+    {
         protected static string $layout = 'layout';
     
         protected static string $directory = 'Home';
         
-       /**
-        * @inheritDoc
-        */
+        /**
+         * @inheritDoc
+         */
         public function before_action(Request $request): void
         {
         }
         
-       /**
-        * @inheritDoc
-        */
+        /**
+         * @inheritDoc
+         */
         public function after_action(Request $request): void
         {
-
         }
 
 
@@ -42,7 +39,7 @@ namespace App\Controllers\Home {
          */
         public function home(Request $request): Response
         {
-            return $this->view('home','A library to make mvc website','The core of shaolin');
+            return $this->view('home', 'A library to make mvc website', 'The core of shaolin');
         }
     }
 }

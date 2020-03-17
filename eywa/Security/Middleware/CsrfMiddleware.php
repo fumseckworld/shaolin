@@ -17,8 +17,7 @@ namespace Eywa\Security\Middleware {
          */
         public function check(ServerRequest $request): void
         {
-            if ( not_cli() && $request->submited())
-            {
+            if (not_cli() && $request->submited()) {
                 (new Csrf(new Session()))->check();
             }
         }

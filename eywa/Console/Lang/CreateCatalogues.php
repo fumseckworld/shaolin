@@ -34,25 +34,22 @@ namespace Eywa\Console\Lang {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $io->title('Create localization catalog');
             $x = collect();
 
-            foreach (config('i18n','locales') as $locale)
-            {
-                if ($this->generate($locale))
-                {
-                    $io->title(sprintf('Generating the %s cataloge',$locale));
-                    $io->success(sprintf('The %s catalog has been generated successfully',$locale));
+            foreach (config('i18n', 'locales') as $locale) {
+                if ($this->generate($locale)) {
+                    $io->title(sprintf('Generating the %s cataloge', $locale));
+                    $io->success(sprintf('The %s catalog has been generated successfully', $locale));
                     $x->push(true);
-                }else{
-                    $io->warning(sprintf('The %s catalog already exist',$locale));
+                } else {
+                    $io->warning(sprintf('The %s catalog already exist', $locale));
                     $x->push(false);
                 }
             }
-            if ($x->ok())
-            {
+            if ($x->ok()) {
                 $io->success("All catalogs has been successfully generated");
                 return 0;
             }
@@ -69,28 +66,27 @@ namespace Eywa\Console\Lang {
          */
         public function generate(string $locale): bool
         {
-            if (!is_dir('po'))
+            if (!is_dir('po')) {
                 mkdir('po');
-            if (!is_dir("po/$locale"))
-            {
-                $view_base = files(base('app','Views','*.php'));
-                $view_prof = files(base('app','Views','*','*.php'));
+            }
+            if (!is_dir("po/$locale")) {
+                $view_base = files(base('app', 'Views', '*.php'));
+                $view_prof = files(base('app', 'Views', '*', '*.php'));
 
-                $x = array_merge($view_base,$view_prof);
+                $x = array_merge($view_base, $view_prof);
 
                 $files = collect($x)->join(' ');
 
-                $app_name = strval(env('APP_NAME','eywa'));
+                $app_name = strval(env('APP_NAME', 'eywa'));
 
-                $app_version = strval(env('APP_VERSION','1.0'));
+                $app_version = strval(env('APP_VERSION', '1.0'));
 
-                $translator_email = strval(env('TRANSLATOR_EMAIL','translator@free.fr'));
+                $translator_email = strval(env('TRANSLATOR_EMAIL', 'translator@free.fr'));
 
 
                 return true;
             }
             return false;
-
         }
     }
 }

@@ -8,6 +8,5 @@ namespace Eywa\Exception {
 
     class Kedavra extends Exception
     {
-
     }
 }

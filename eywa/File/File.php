@@ -49,11 +49,11 @@ namespace Eywa\File {
          */
         public function __construct(string $filename, string $mode = READ_FILE_MODE)
         {
-
             not_in(FILES_OPEN_MODE, $mode, true, "The open mode is not a valid mode");
 
-            if (!file_exists($filename))
+            if (!file_exists($filename)) {
                 touch($filename);
+            }
 
             $this->mode = $mode;
 
@@ -83,10 +83,10 @@ namespace Eywa\File {
          */
         public static function exist(array $files): bool
         {
-
             $data = collect();
-            foreach ($files as $file)
+            foreach ($files as $file) {
                 file_exists($file) ? $data->put(true, $file) : $data->put(false, $file);
+            }
 
             return $data->ok();
         }
@@ -168,11 +168,9 @@ namespace Eywa\File {
          */
         public function lines(): array
         {
-
             $data = collect();
             $this->rewind();
-            while ($this->valid()) 
-            {
+            while ($this->valid()) {
                 $data->set($this->line());
                 $this->next();
             }
@@ -319,8 +317,7 @@ namespace Eywa\File {
          */
         public function read(): string
         {
-            if (superior($this->size(),0))
-            {
+            if (superior($this->size(), 0)) {
                 $x = $this->instance()->fread($this->size());
                 return is_bool($x) ? '' : $x;
             }
@@ -364,8 +361,7 @@ namespace Eywa\File {
          */
         public function write(string $text): File
         {
-            if ($this->writable()) 
-            {
+            if ($this->writable()) {
                 is_true($this->instance()->fwrite($text, sum($text)) === 0, true, "Fail to write data");
             }
 
@@ -727,9 +723,9 @@ namespace Eywa\File {
          */
         public function next(): File
         {
-
-            if ($this->valid())
+            if ($this->valid()) {
                 $this->instance()->next();
+            }
 
             return $this;
         }
@@ -747,13 +743,12 @@ namespace Eywa\File {
         {
             $data = collect();
 
-            foreach ($this->lines() as $line)
-            {
-                if (def($line))
-                {
-                    $x = explode($delimiter,$line);
-                    if (is_array($x))
+            foreach ($this->lines() as $line) {
+                if (def($line)) {
+                    $x = explode($delimiter, $line);
+                    if (is_array($x)) {
                         $data->set(collect($x)->first());
+                    }
                 }
             }
 
@@ -771,13 +766,12 @@ namespace Eywa\File {
          */
         public function values(string $delimiter): array
         {
-
             $data = collect();
-            foreach ($this->lines() as $line)
-            {
-                $x = explode($delimiter,$line);
-                if (is_array($x))
+            foreach ($this->lines() as $line) {
+                $x = explode($delimiter, $line);
+                if (is_array($x)) {
                     $data->set(collect($x)->last());
+                }
             }
 
             return $data->values()->all();
@@ -795,13 +789,12 @@ namespace Eywa\File {
          */
         public function change_values(array $keys, array $values, string $delimiter = ':'): bool
         {
-
-            if (sum($keys) !==  sum($values))
+            if (sum($keys) !==  sum($values)) {
                 throw new Kedavra('The keys and values size are different');
+            }
             $keys = collect($keys);
             $values = collect($values);
-            foreach ($keys->all() as $k => $v)
-            {
+            foreach ($keys->all() as $k => $v) {
                 $key = $keys->get($k);
                 $value = $values->get($k);
                 $line = is_numeric($value) || is_bool($value) ? "$key$delimiter $value" : "$key$delimiter '$value'";
@@ -810,6 +803,5 @@ namespace Eywa\File {
 
             return $this->flush();
         }
-
     }
 }

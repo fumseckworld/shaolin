@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Base\Seeds {
+namespace Evolution\Seeds {
 
     use Eywa\Database\Seed\Seeder;
     use Eywa\Database\Table\Table;
@@ -24,11 +24,9 @@ namespace Base\Seeds {
          */
         public function each(Generator $generator, Table $table, Seeder $seeder): void
         {
-            foreach ($table->columns() as $column)
-            {
-                switch ($column)
-                {
-                    case 'name':
+            foreach ($table->columns() as $column) {
+                switch ($column) {
+                    case 'username':
                         $seeder->set($column, $generator->name());
                     break;
                     case 'email':

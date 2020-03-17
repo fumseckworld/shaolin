@@ -7,7 +7,6 @@ namespace Eywa\Http\Response {
     use Eywa\Exception\Kedavra;
     use Eywa\Session\Session;
 
-
     class Response
     {
         /**
@@ -61,7 +60,7 @@ namespace Eywa\Http\Response {
          * @throws Kedavra
          *
          */
-        public function __construct(string $content,string $url = '',int $status = 200, array $headers = [])
+        public function __construct(string $content, string $url = '', int $status = 200, array $headers = [])
         {
             $this->set_content($content)->set_status($status)->set_headers($headers)->set_url($url);
         }
@@ -80,7 +79,7 @@ namespace Eywa\Http\Response {
          */
         public function set_status(int $status): Response
         {
-            not_in(STATUS_CODES,$status,true,'The status code is not valid');
+            not_in(STATUS_CODES, $status, true, 'The status code is not valid');
 
             $this->status = $status;
 
@@ -99,7 +98,7 @@ namespace Eywa\Http\Response {
          */
         public function time(): string
         {
-            return '<div class="'.config('alert','container').'"><div class="'.config('alert','success_class').'">'. intval((new Session())->get('time')->check()). ' ms</div></div>';
+            return '<div class="'.config('alert', 'container').'"><div class="'.config('alert', 'success_class').'">'. intval((new Session())->get('time')->check()). ' ms</div></div>';
         }
 
         /**
@@ -167,8 +166,9 @@ namespace Eywa\Http\Response {
          */
         public function send_content()
         {
-            if (not_cli())
+            if (not_cli()) {
                 echo $this->content();
+            }
 
             return $this;
         }
@@ -183,13 +183,13 @@ namespace Eywa\Http\Response {
         public function send_headers(): Response
         {
             // headers have already been sent by the developer
-            if (headers_sent())
+            if (headers_sent()) {
                 return $this;
+            }
 
-            foreach ($this->headers as $k => $v)
-            {
+            foreach ($this->headers as $k => $v) {
                 $replace = strcasecmp($k, 'Content-Type') === 0;
-                header("$k:$v",$replace,$this->status());
+                header("$k:$v", $replace, $this->status());
             }
 
             // status
@@ -271,9 +271,5 @@ namespace Eywa\Http\Response {
             $this->url = def($url) ? $url : '';
             return $this;
         }
-
-
-
-
     }
 }

@@ -10,8 +10,7 @@ use Eywa\Exception\Kedavra;
 use Eywa\Http\Request\Request;
 use Eywa\Message\Flash\Flash;
 
-if (!function_exists('collect'))
-{
+if (!function_exists('collect')) {
     /**
      *
      * Return an instance of collection
@@ -25,39 +24,34 @@ if (!function_exists('collect'))
     {
         return new Collect($data);
     }
-
 }
 
 
-if (!function_exists('env'))
-{
+if (!function_exists('env')) {
+
     /**
      *
-     * @param $variable
+     * Get an env value
+     *
+     * @param mixed $variable
      * @param mixed $default
      *
      * @return array|false|string
      *
-     * @throws Exception
-     *
      */
-    function env($variable,$default = '')
+    function env($variable, $default)
     {
         $x =  (new Env())->get($variable);
 
         return  def($x) ? $x : $default;
     }
-
 }
 
 
-if (!function_exists('now'))
-{
+if (!function_exists('now')) {
     /**
      *
      * Return an instance of Carbon
-     *
-     * @method now
      *
      * @param mixed $tz
      *
@@ -66,42 +60,33 @@ if (!function_exists('now'))
      */
     function now($tz = null): Carbon
     {
-
         return Carbon::now($tz);
     }
-
 }
 
-if (!function_exists('has'))
-{
+if (!function_exists('has')) {
 
     /**
      *
      * Check if the value exist
      *
-     * @method has
-     *
-     * @param mixed $needle
-     * @param mixed $array
+     * @param string $xeedle
+     * @param array<mixed> $array
      *
      * @return bool
      *
      */
-    function has($needle, array $array): bool
+    function has(string $xeedle, array $array): bool
     {
-
-        return collect($array)->exist($needle);
+        return collect($array)->exist($xeedle);
     }
 }
 
-if (!function_exists('not_in'))
-{
+if (!function_exists('not_in')) {
 
     /**
      *
      * Check if a value is not in the array
-     *
-     * @method not_in
      *
      * @param array $array
      * @param mixed $value
@@ -116,7 +101,6 @@ if (!function_exists('not_in'))
      */
     function not_in(array $array, $value, bool $run_exception = false, string $message = ''): bool
     {
-
         $x = !in_array($value, $array, true);
 
         is_true($x, $run_exception, $message);
@@ -125,13 +109,10 @@ if (!function_exists('not_in'))
     }
 }
 
-if (!function_exists('sum'))
-{
+if (!function_exists('sum')) {
     /**
      *
      * Return the length of data
-     *
-     * @method length
      *
      * @param mixed $data
      *
@@ -142,44 +123,44 @@ if (!function_exists('sum'))
      */
     function sum($data): int
     {
-
-        if (is_array($data))
+        if (is_array($data)) {
             return count($data);
-        elseif (is_string($data))
+        } elseif (is_string($data)) {
             return mb_strlen($data);
-        elseif (is_integer($data) || is_numeric($data) || is_float($data) || is_int($data))
+        } elseif (is_integer($data) || is_numeric($data)) {
             return intval($data);
-        else
-
+        } else {
             throw new Kedavra('The parameter must be a string or an array');
+        }
     }
 }
 
-if (!function_exists('numb'))
-{
-    #    Output easy-to-read numbers
-    #    by james at bandit.co.nz
-    function numb(int $x)
+if (!function_exists('total')) {
+
+
+    /**
+     *
+     * @param int $x
+     *
+     * @return string
+     *
+     */
+    function total(int $x): string
     {
+        if ($x >= 1000000000000) {
+            return round(($x / 1000000000000), 2) . ' T';
+        } elseif ($x >= 1000000000) {
+            return round(($x / 1000000000), 2) . ' B';
+        } elseif ($x >= 1000000) {
+            return round(($x / 1000000), 2) . ' M';
+        } elseif ($x >= 1000) {
+            return round(($x / 1000), 2) . ' K';
+        }
 
-        // first strip any formatting;
-        $n = (0 + str_replace(",", "", $x));
-
-        // now filter it;
-        if ($n >= 1000000000000)
-            return round(($n / 1000000000000), 2) . ' T';
-        else if ($n >= 1000000000)
-            return round(($n / 1000000000), 2) . ' B';
-        else if ($n >= 1000000)
-            return round(($n / 1000000), 2) . ' M';
-        else if ($n >= 1000)
-            return round(($n / 1000), 2) . ' K';
-
-        return number_format($n);
+        return number_format($x);
     }
 }
-if (!function_exists('root'))
-{
+if (!function_exists('root')) {
 
     /**
      * root
@@ -193,11 +174,9 @@ if (!function_exists('root'))
     {
         return php_sapi_name() !== 'cli' ? https() ? 'https://' . Request::make()->server()->get('HTTP_HOST') : 'http://' . Request::make()->server()->get('HTTP_HOST') : '/';
     }
-
 }
 
-if (!function_exists('cli'))
-{
+if (!function_exists('cli')) {
     /**
      *
      * Check if the code is executed in cli
@@ -211,8 +190,7 @@ if (!function_exists('cli'))
     }
 }
 
-if (!function_exists('not_cli'))
-{
+if (!function_exists('not_cli')) {
     /**
      *
      * Check if the code is executed in cli
@@ -225,14 +203,11 @@ if (!function_exists('not_cli'))
         return ! cli();
     }
 }
-if (!function_exists('route'))
-{
+if (!function_exists('route')) {
 
     /**
      *
      * Get a route url
-     *
-     * @method route
      *
      * @param string $route
      * @param array $args
@@ -240,55 +215,44 @@ if (!function_exists('route'))
      *
      * @throws Kedavra
      */
-    function route(string $route,array $args = []): string
+    function route(string $route, array $args = []): string
     {
-        $x = (new Sql(connect(SQLITE,base('routes','web.sqlite3')),'routes'))->where('name',EQUAL,$route)->get();
+        $x = (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->where('name', EQUAL, $route)->get();
 
-        is_true(not_def($x),true,"The $route route was not found");
-
-
-
-        if (cli())
-        {    $route = $x[0]->url;
-
-            if (def($args))
-            {
+        is_true(not_def($x), true, "The $route route was not found");
 
 
+
+        if (cli()) {
+            $route = $x[0]->url;
+
+            if (def($args)) {
                 $x = '';
 
                 foreach ($args as $k => $v) {
-
                     append($x, str_replace(":$k", "$v", $route));
-
                 }
                 return trim($x, '/');
-
             }
             return  $route;
         }
-            $route = https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') .'/' : 'http://'.Request::make()->server()->get('SERVER_NAME').'/';
+        $route = https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') .'/' : 'http://'.Request::make()->server()->get('SERVER_NAME').'/';
 
-            if (def($args))
-            {
-                $route .= $x[0]->url;
-                $x = '';
+        if (def($args)) {
+            $route .= $x[0]->url;
+            $x = '';
 
-                foreach ($args as $k => $v) {
-
-                    append($x, str_replace(":$k", "$v", $route));
-
-                }
-                return trim($x, '/');
+            foreach ($args as $k => $v) {
+                append($x, str_replace(":$k", "$v", $route));
             }
+            return trim($x, '/');
+        }
 
         return  $route;
-
     }
 }
 
-if(!function_exists('block'))
-{
+if (!function_exists('block')) {
     /**
      * @param string ...$values
      * @return string
@@ -296,20 +260,17 @@ if(!function_exists('block'))
     function block(string ...$values): string
     {
         $html = '';
-        foreach ($values as $value)
-            append($html,html_entity_decode($value,ENT_QUOTES,'UTF-8'));
+        foreach ($values as $value) {
+            append($html, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
+        }
 
         return $html;
-
     }
 }
-if(!function_exists('fa'))
-{
+if (!function_exists('fa')) {
     /**
      *
      * Generate a fa icon
-     *
-     * @method fa
      *
      * @param  string $prefix    The fa prefix
      * @param  string $icon     The fa icon name
@@ -318,15 +279,14 @@ if(!function_exists('fa'))
      * @return string
      *
      */
-    function fa(string $prefix,string $icon, string $options = ''): string
+    function fa(string $prefix, string $icon, string $options = ''): string
     {
         $x = "$prefix $icon $options";
         return '<i class="'.$x.'"></i>';
     }
 }
 
-if (!function_exists('ago'))
-{
+if (!function_exists('ago')) {
     /**
      *
      * @param string $time
@@ -338,43 +298,35 @@ if (!function_exists('ago'))
      * @throws Exception
      *
      */
-    function ago(string $time,$tz = null):string
+    function ago(string $time, $tz = null):string
     {
         Carbon::setLocale(app()->lang());
 
-        return Carbon::parse($time,$tz)->diffForHumans();
-
+        return Carbon::parse($time, $tz)->diffForHumans();
     }
 }
 
-if (!function_exists('append'))
-{
+if (!function_exists('append')) {
 
     /**
      *
      * Append contents to the variable
      *
-     * @method append
-     *
      * @param mixed $variable
-     * @param mixed $contents
+     * @param string ...$contents
      *
      * @return void
-     *
      */
-    function append(&$variable, ...$contents): void
+    function append(&$variable, string ...$contents): void
     {
-
-        foreach ($contents as $content)
+        foreach ($contents as $content) {
             $variable .= $content;
-
+        }
     }
-
 }
 
 
-if (!function_exists('clear_terminal'))
-{
+if (!function_exists('clear_terminal')) {
     /**
      * @throws Kedavra
      * @return bool
@@ -382,12 +334,9 @@ if (!function_exists('clear_terminal'))
     function clear_terminal(): bool
     {
         return  is_not_false(system('clear'));
-
     }
-
 }
-if (!function_exists('flash'))
-{
+if (!function_exists('flash')) {
     /**
      *
      * Display flash message
@@ -401,11 +350,9 @@ if (!function_exists('flash'))
     {
         return (new Flash())->display();
     }
-
 }
 
-if (!function_exists('mobile'))
-{
+if (!function_exists('mobile')) {
     /**
      *
      * Check if device is mobile
@@ -420,8 +367,7 @@ if (!function_exists('mobile'))
     }
 }
 
-if (!function_exists('is_pair'))
-{
+if (!function_exists('is_pair')) {
     /**
      * Check if number is pair
      *

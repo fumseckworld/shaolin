@@ -12,12 +12,10 @@ namespace Eywa\Console\Generate {
 
     class GenerateCommand extends Command
     {
-
         protected static $defaultName = 'make:console';
 
         protected function configure():void
         {
-
             $this
                 // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new console')
@@ -35,12 +33,11 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input,$output);
+            $io = new SymfonyStyle($input, $output);
 
             $x = strval($input->getArgument('console'));
 
-            if(preg_match("#^[a-z]([a-z_]+)$#",$x) !== 1)
-            {
+            if (preg_match("#^[a-z]([a-z_]+)$#", $x) !== 1) {
                 $io->error('You must use snake case syntax to generate the console');
                 return  1;
             }
@@ -48,15 +45,14 @@ namespace Eywa\Console\Generate {
             $io->title('Generation of the console');
 
 
-            $console = collect(explode('_',$x))->for('ucfirst')->join('');
+            $console = collect(explode('_', $x))->for('ucfirst')->join('');
 
             $namespace = 'App\Console';
 
-            $file = base( 'app' , 'Console' , "$console.php");
+            $file = base('app', 'Console', "$console.php");
 
-            if (file_exists($file))
-            {
-                $io->error(sprintf('The %s console already exist',$console));
+            if (file_exists($file)) {
+                $io->error(sprintf('The %s console already exist', $console));
 
                 return 1;
             }
@@ -90,13 +86,12 @@ class $console extends Command
     }
 
 }")->flush()) {
-                $io->success(sprintf('The %s console has been created successfully',$console));
+                $io->success(sprintf('The %s console has been created successfully', $console));
 
                 return 0;
             }
-            $io->error(sprintf('The %s console creation has failede',$console));
+            $io->error(sprintf('The %s console creation has failede', $console));
             return 1;
         }
-
     }
 }

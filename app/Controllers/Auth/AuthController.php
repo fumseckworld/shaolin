@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Controllers\Auth { 
+namespace App\Controllers\Auth {
 
-	use Eywa\Http\Controller\Controller;
+    use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
-    
-	Class AuthController extends Controller
-	{
 
+    class AuthController extends Controller
+    {
         protected static string $layout = 'layout';
     
         protected static string $directory = 'Auth';
@@ -124,6 +123,5 @@ namespace App\Controllers\Auth {
         {
             // TODO: Implement after_destroy() method.
         }
-        
     }
 }

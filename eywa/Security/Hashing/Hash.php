@@ -56,7 +56,6 @@ namespace Eywa\Security\Hashing
          */
         public function __construct(string $data)
         {
-
             $this->algorithm = config('hash', 'algorithm');
 
             $this->secret = config('hash', 'secret');
@@ -93,6 +92,5 @@ namespace Eywa\Security\Hashing
         {
             return $this->valid;
         }
-
     }
 }

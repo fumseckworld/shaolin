@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Eywa\Database\Seed {
 
 
-    use Symfony\Component\Console\Input\InputInterface;
-    use Symfony\Component\Console\Output\OutputInterface;
+    use ReflectionClass;
+    use ReflectionException;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
     class Seeding
@@ -22,15 +22,14 @@ namespace Eywa\Database\Seed {
         public static function list(): array
         {
             $x = [];
-            foreach (files(base('db','Seeds','*.php')) as $seed)
-            {
-                $item = collect(explode(DIRECTORY_SEPARATOR,$seed))->last();
+            foreach (files(base('db', 'Seeds', '*.php')) as $seed) {
+                $item = collect(explode(DIRECTORY_SEPARATOR, $seed))->last();
 
 
-                $item = collect(explode('.',$item))->first();
+                $item = collect(explode('.', $item))->first();
 
 
-                $class = '\Base\Seeds\\' .$item;
+                $class = '\Evolution\Seeds\\' .$item;
 
                 $x[$item] = $class;
             }
@@ -41,52 +40,50 @@ namespace Eywa\Database\Seed {
          *
          * Run the seeding
          *
-         * @param InputInterface $input
-         * @param OutputInterface $output
+         * @param SymfonyStyle $io
          *
-         * @return bool
+         * @return int
          *
-         * @throws \ReflectionException
+         * @throws ReflectionException
          *
          */
-        public static function run(InputInterface $input,OutputInterface $output): bool
+        public static function run(SymfonyStyle $io): int
         {
             $bool = collect();
 
-            $io = new SymfonyStyle($input,$output);
 
-            foreach (self::list() as $file => $class)
-            {
+            foreach (self::list() as $file => $class) {
+                $x = new ReflectionClass($class);
 
-                    $x = new \ReflectionClass(new $class);
+                $title = str_replace('%s', $x->getStaticPropertyValue('from'), $x->getStaticPropertyValue('title'));
 
-                    $title = str_replace('%s',$x->getStaticPropertyValue('from'),$x->getStaticPropertyValue('title'));
-
-                    $io->title($title);
+                $io->title($title);
 
 
-                    $bool->push($x->getMethod('seed')->getClosure($x->newInstance()));
+                $bool->push($x->getMethod('seed')->invoke($x->newInstance()));
 
 
-                if ($bool->ok())
-                {
+                if ($bool->ok()) {
                     $success_message =  $x->getStaticPropertyValue('success_message');
-                    $success_message = str_replace('%s',$x->getStaticPropertyValue('from'),$success_message);
-                    $success_message = str_replace('%d',$x->getStaticPropertyValue('generate'),$success_message);
+                    $success_message = str_replace('%s', $x->getStaticPropertyValue('from'), $success_message);
+                    $success_message = str_replace('%d', $x->getStaticPropertyValue('generate'), $success_message);
 
                     $io->success($success_message);
-                }else{
+                } else {
                     $error_message =  $x->getStaticPropertyValue('error_message');
-                    $error_message = str_replace('%s',$x->getStaticPropertyValue('from'),$error_message);
-                    $error_message = str_replace('%d',$x->getStaticPropertyValue('generate'),$error_message);
+                    $error_message = str_replace('%s', $x->getStaticPropertyValue('from'), $error_message);
+                    $error_message = str_replace('%d', $x->getStaticPropertyValue('generate'), $error_message);
 
                     $io->error($error_message);
-                    return false;
+                    return 1;
                 }
-
             }
-            return $bool->ok();
-
+            if ($bool->ok()) {
+                $io->success("The database has been seeded successfully");
+                return 0;
+            }
+            $io->error('The database seeder has been failed');
+            return 1;
         }
     }
 }

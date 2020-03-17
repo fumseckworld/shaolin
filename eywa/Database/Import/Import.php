@@ -30,7 +30,6 @@ namespace Eywa\Database\Import {
         public function __construct(Connect $connect)
         {
             $this->connect = $connect;
-
         }
 
         /**
@@ -42,19 +41,18 @@ namespace Eywa\Database\Import {
          */
         public function import() : bool
         {
-
             $password = $this->connect->password();
             $username = $this->connect->username();
             $host = $this->connect->hostname();
             $base = $this->connect->base();
-            $file = base('db','dump',"$base.sql");
+            $file = base('db', 'dump', "$base.sql");
 
 
-            if (!file_exists($file))
+            if (!file_exists($file)) {
                 return  false;
+            }
 
-            switch($this->connect->driver())
-            {
+            switch ($this->connect->driver()) {
                 case MYSQL:
                     return (new Shell("mysqldump  -h $host -u $username -p$password $base < $file"))->run();
                 case POSTGRESQL:
@@ -64,7 +62,6 @@ namespace Eywa\Database\Import {
                 default:
                     return false;
             }
-
         }
     }
 }

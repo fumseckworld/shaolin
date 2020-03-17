@@ -3,7 +3,6 @@
 
 namespace Eywa\Console;
 
-
 use Traversable;
 use Symfony\Component\Process\Process;
 
@@ -39,7 +38,7 @@ class Shell
      */
     public function run(callable $callback = null, array $env = []): bool
     {
-         $this->process->run($callback, $env);
-         return $this->process->isSuccessful();
+        $this->process->run($callback, $env);
+        return $this->process->isSuccessful();
     }
 }

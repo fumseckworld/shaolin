@@ -48,10 +48,8 @@ namespace Eywa\Console {
     use Symfony\Component\Console\Application;
     use Symfony\Component\Console\Command\Command;
 
-
     class Console
     {
-        
         private Application $command;
 
         public function __construct(string $name = 'UNKNOWN', string $version = 'UNKNOWN')
@@ -70,9 +68,9 @@ namespace Eywa\Console {
          */
         public function add(array $commands): Console
         {
-            foreach ($commands as $command)
-
+            foreach ($commands as $command) {
                 $this->command->add($command);
+            }
 
             return $this;
         }
@@ -88,8 +86,7 @@ namespace Eywa\Console {
          */
         public function run(): int
         {
-
-           $commands = [
+            $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(),new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase(),
                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute(),new Records\Records()

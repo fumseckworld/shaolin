@@ -20,7 +20,7 @@ namespace Eywa\Database\Query {
          * @param string $table
          *
          */
-        public function __construct(Connect $connect,string $table);
+        public function __construct(Connect $connect, string $table);
 
         /**
          *
@@ -35,7 +35,7 @@ namespace Eywa\Database\Query {
          *
          *
          */
-        public function take(int $limit,int $offset =0): self;
+        public function take(int $limit, int $offset =0): self;
 
         /**
          *
@@ -47,7 +47,7 @@ namespace Eywa\Database\Query {
          * @return self
          *
          */
-        public function by(string $column,string $order = DESC): self;
+        public function by(string $column, string $order = DESC): self;
 
         /**
          *
@@ -65,7 +65,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function join(string $type,string $condition, string $first_table, string $second_table, string $first_param, string $second_param): self;
+        public function join(string $type, string $condition, string $first_table, string $second_table, string $first_param, string $second_param): self;
 
         /**
          *
@@ -82,7 +82,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function union(string $type,string $first_table, string $second_table, string $first_column, string $second_column): self;
+        public function union(string $type, string $first_table, string $second_table, string $first_column, string $second_column): self;
 
         /**
          *
@@ -98,7 +98,7 @@ namespace Eywa\Database\Query {
          *
          *
          */
-        public function or(string $column,string $condition,$expected): self;
+        public function or(string $column, string $condition, $expected): self;
 
         /**
          *
@@ -113,7 +113,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function and(string $column,string $condition,$expected): self;
+        public function and(string $column, string $condition, $expected): self;
 
         /**
          *
@@ -126,7 +126,7 @@ namespace Eywa\Database\Query {
          * @return self
          *
          */
-        public function between(string $column,int $min,int $max): self;
+        public function between(string $column, int $min, int $max): self;
         /**
          *
          * Get only column values
@@ -151,7 +151,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function where(string $column,string $condition,$expected): self;
+        public function where(string $column, string $condition, $expected): self;
 
         /**
          *
@@ -179,7 +179,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function paginate(callable $callback,int $current_page,int $limit = 20): self;
+        public function paginate(callable $callback, int $current_page, int $limit = 20): self;
 
         /**
          *
@@ -299,7 +299,7 @@ namespace Eywa\Database\Query {
          *
          *
          */
-        public function update(int $id,array $values): bool;
+        public function update(int $id, array $values): bool;
 
         /**
          *
@@ -333,6 +333,5 @@ namespace Eywa\Database\Query {
          *
          */
         public function connexion():Connect;
-
     }
 }
