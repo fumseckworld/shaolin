@@ -87,6 +87,19 @@ namespace Eywa\Database\Model {
 
         /**
          *
+         * Get all records
+         *
+         * @return array<stdClass>
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         *
+         */
+        public static function all(): array;
+
+        /**
+         *
          * Find a record by a column
          *
          * @param string $column

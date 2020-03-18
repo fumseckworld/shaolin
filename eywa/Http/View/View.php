@@ -6,9 +6,7 @@ namespace Eywa\Http\View {
 
     use Exception;
     use Eywa\Cache\FileCache;
-    use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
-    use Eywa\File\Assets;
 
     class View extends FileCache
     {
@@ -154,7 +152,7 @@ namespace Eywa\Http\View {
             $html = ltrim(strval(ob_get_clean()));
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#', '<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>', $html, $html)
-                ->replace('#{{ ([\$a-zA-Z-0-9\_]+).([\$a-zA-Z0-9\_]+) }}#', '<?=  htmlentities($${1}->${2},ENT_QUOTES,"UTF-8");?>', $html, $html)
+                ->replace('#{{ (\$[\$a-zA-Z-0-9\_]+)->([a-zA-Z0-9\_]+) }}#', '<?=  htmlentities(${1}->${2},ENT_QUOTES,"UTF-8");?>', $html, $html)
                 ->replace('#@admin#', '<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'admin\')) : ?>', $html, $html)
                 ->replace('#@csrf#', '<?= (new \Eywa\Security\Csrf\Csrf(new \Eywa\Session\Session()))->token(); ?>', $html, $html)
                 ->replace('#@url\(\'([a-zA-Z0-9\-\/]+)\'\)#', '<?php  if(equal(\Eywa\Http\Request\ServerRequest::generate()->url(),\'${1}\')) : ?>', $html, $html)
@@ -164,14 +162,16 @@ namespace Eywa\Http\View {
                 ->replace('#@d\(([\$a-zA-Z0-9 ]+)\)#', '<?=  (new \Eywa\Debug\Dumper())->dump($${1});?>', $html, $html)
                 ->replace('#@if\(([\$a-zA-Z0-9]+)\)#', '<?php if($${1}) :?>', $html, $html)
                 ->replace('#@elseif\(([\$a-zA-Z0-9]+)\)#', '<?php elseif ($${1}) :?>', $html, $html)
+                ->replace('#@continue\((\$[a-zA-Z0-9\-> ==]+)\)#', '<?php if(${1}) { continue; }?>', $html, $html)
+                ->replace('#@exit\((\$[a-zA-Z0-9\-> ==]+)\)#', '<?php if(${1}) { break; }?>', $html, $html)
                 ->replace('#@else#', '<?php else :?>', $html, $html)
                 ->replace('#@endif#', '<?php endif;?>', $html, $html)
-                ->replace('#@for ([a-zA-Z-0-9]+) in ([a-zA-Z0-9]+)#', '<?php foreach($${2} ?? [] as $${1}) : ?>', $html, $html)
+                ->replace('#@foreach\((\$[a-zA-Z0-9]+) as (\$[a-z0-9]+)\)#', '<?php foreach(${1} ?? [] as ${2}) : ?>', $html, $html)
                 ->replace('#@route\(([a-zA-Z-0-9]+):([a-zA-Z0-9]+)\)#', '<?= route("${1}",["${2}"]); ?>', $html, $html)
-                ->replace('#@endfor#', '<?php endforeach;  ?>', $html, $html)
+                ->replace('#@endforeach#', '<?php endforeach;  ?>', $html, $html)
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#', '<?php switch($${1}): ', $html, $html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#', 'case "${1}" :  ?>', $html, $html)
-                ->replace('#@flash#', '<?=  ioc(\'flash\')->display(); ?>', $html, $html)
+                ->replace('#@flash#', '<?= ioc(\'flash\')->display(); ?>', $html, $html)
                 ->replace('#@alert\(([a-zA-Z0-9\_\- ]+),([\$a-zA-Z0-9\_ ]+)\)#', '<div class="alert ${1}">${2}</div>', $html, $html)
                 ->replace('#@case\(([0-9]+)\)#', 'case ${1} :  ?>', $html, $html)
                 ->replace('#@break#', '<?php break;  ?>', $html, $html)

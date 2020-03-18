@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Home {
 
+    use App\Models\User;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
@@ -39,7 +40,8 @@ namespace App\Controllers\Home {
          */
         public function home(Request $request): Response
         {
-            return $this->view('home', 'A library to make mvc website', 'The core of shaolin');
+            $users = User::all();
+            return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
         }
     }
 }

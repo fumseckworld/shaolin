@@ -19,10 +19,18 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
+        public static function all(): array
+        {
+            return (new Sql(ioc(Connect::class), static::$table))->get();
+        }
+        /**
+         * @inheritDoc
+         */
         public static function destroy(int $id): bool
         {
             return (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->delete();
         }
+
 
         /**
          * @inheritDoc
