@@ -27,6 +27,13 @@ class Shell
     }
 
     /**
+     * @return Process
+     */
+    public function get(): Process
+    {
+        return $this->process;
+    }
+    /**
      *
      * Run the thell command
      *

@@ -21,11 +21,14 @@
             {
                 $io = new SymfonyStyle($input, $output);
 
-                echo shell_exec(base('vendor', 'bin', 'grumphp') . ' run');
+                $x = new Shell(base('vendor', 'bin', 'grumphp') . ' run');
+                if ($x->run()) {
+                    $io->success('Congratulations no errors has been found');
+                    return 0;
+                }
+                $io->error($x->get()->getOutput());
 
-                $io->success('Bye');
-
-                return 0;
+                return 1;
             }
         }
     }

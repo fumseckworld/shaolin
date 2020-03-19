@@ -24,7 +24,8 @@
 
                 $io->success('Starting all tests');
 
-                if ((new Shell(base('vendor', 'bin', 'grumphp') . ' run'))->run()) {
+                $x = new Shell(base('vendor', 'bin', 'grumphp') . ' run');
+                if ($x->run()) {
                     $io->success('Congratulations no errors has been found');
 
                     if (is_dir('.git')) {
@@ -72,7 +73,7 @@
                         return 1;
                     }
                 }
-                $io->error('Errors has been found, please check your code before send your application');
+                $io->error($x->get()->getOutput());
                 return 1;
             }
         }
