@@ -68,7 +68,7 @@ namespace Eywa\Security\Csrf {
         public function token(): string
         {
             if ($this->session->has(CSRF_TOKEN)) {
-                return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $this->session->get(CSRF_TOKEN) . '">';
+                return $this->session->get(CSRF_TOKEN);
             }
 
             $server = $this->session->has('server') ? $this->session->get('server') : $this->session->set('server', (new Crypter())->encrypt(Request::make()->server()->get('SERVER_NAME', 'eywa')))->get('server');
@@ -80,7 +80,7 @@ namespace Eywa\Security\Csrf {
 
             $this->session->set(CSRF_TOKEN, $token);
 
-            return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . $token . '">';
+            return $this->session->get(CSRF_TOKEN);
         }
     }
 }

@@ -1,4 +1,8 @@
 class:
+  row: 'row'
+  help: 'help'
+  input: 'input'
+  hide: 'hide'
   base: 'form-control'
   separator: 'form-group'
   submit: 'btn-outline-primary btn mb-5 text-uppercase'

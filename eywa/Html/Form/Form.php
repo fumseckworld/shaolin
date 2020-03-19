@@ -66,9 +66,9 @@ namespace Eywa\Html\Form {
             $this->inputs = collect();
             $this->url = $request->url();
             $this->method = $request->method();
-            $this->append(csrf_field());
 
             $this->add('_method', 'hidden', '', '', ['value'=> $request->method()]);
+            $this->add(CSRF_TOKEN, 'hidden', '', '', ['value'=> csrf_field()]);
             $this->request = $request;
         }
 
@@ -116,7 +116,6 @@ namespace Eywa\Html\Form {
                 case 'date':
                 case 'datetime-local':
                 case 'email':
-                case 'hidden':
                 case 'image':
                 case 'month':
                 case 'number':
@@ -135,7 +134,7 @@ namespace Eywa\Html\Form {
 
                     $x = collect($options)->each(function ($k, $v) {
                         return $k.'='.'"'.$v.'"';
-                    })->join('');
+                    })->join(' ');
 
                     $help_id = def($help_text) ? "help-$name" : '';
 
@@ -149,7 +148,7 @@ namespace Eywa\Html\Form {
                         $input = '<div class="'.$this->class('separator', 'form-group').'">
                                         '.$help_input.'
                                         <label for="'.$name.'">'.$label_text.'</label>
-                                        <input type="'.$type.'" class="'.$this->class('input', 'form-control').'" id="'.$name.'" '.$help_atribute.' '.$x.'>
+                                        <input type="'.$type.'" name="'.$name.'"  class="'.$this->class('input', 'form-control').'" id="'.$name.'"  '.$help_atribute.'  '.$x.'>
                                   </div>';
                     }
 
@@ -203,6 +202,10 @@ namespace Eywa\Html\Form {
                     $this->append($input);
 
                     $this->end();
+                    break;
+                case 'hidden':
+                    $x = '<input name="'.$name.'" class="'.$this->class('hide', 'hide').'" value="'.$options['value'] .'">';
+                    $this->append($x);
                     break;
             }
             return $this;

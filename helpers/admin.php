@@ -79,7 +79,7 @@ if (!function_exists('csrf_field')) {
     function csrf_field(): string
     {
         if (cli()) {
-            return '<input type="hidden" name="' . CSRF_TOKEN . '" value="' . bin2hex(random_bytes(16)) . '">';
+            return  bin2hex(random_bytes(16));
         }
 
         return (new Eywa\Security\Csrf\Csrf(new Session()))->token();
