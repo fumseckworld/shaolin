@@ -4,6 +4,7 @@
 namespace Testing\Helpers {
 
     use Carbon\Carbon;
+    use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Testing\Unit;
@@ -48,6 +49,29 @@ namespace Testing\Helpers {
         }
 
         /**
+         * @throws Kedavra
+         */
+        public function test_flash()
+        {
+            $this->assertEquals('', flash());
+        }
+
+        /**
+         * @throws Kedavra
+         */
+        public function test_sum()
+        {
+            $this->assertEquals(5, sum([0,1,2,3,4]));
+            $this->assertEquals(5, sum(5));
+            $this->assertEquals(5, sum('equal'));
+        }
+
+        public function test_sum_error()
+        {
+            $this->expectException(Kedavra::class);
+            sum(false);
+        }
+        /**
          *
          */
         public function test_cli()
@@ -64,9 +88,13 @@ namespace Testing\Helpers {
             $this->assertEquals('/', route('root'));
         }
 
-        /**
-         *
+        /***
+         * @throws Kedavra
          */
+        public function test_ago()
+        {
+            $this->assertNotEmpty(ago('2020-02-17'));
+        }
         public function test_total()
         {
             $this->assertEquals('1', total(1));
@@ -104,7 +132,7 @@ namespace Testing\Helpers {
         }
 
         /**
-         * @throws \Exception
+         * @throws Exception
          */
         public function test()
         {

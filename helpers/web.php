@@ -63,25 +63,6 @@ if (!function_exists('now')) {
         return Carbon::now($tz);
     }
 }
-
-if (!function_exists('has')) {
-
-    /**
-     *
-     * Check if the value exist
-     *
-     * @param string $xeedle
-     * @param array<mixed> $array
-     *
-     * @return bool
-     *
-     */
-    function has(string $xeedle, array $array): bool
-    {
-        return collect($array)->exist($xeedle);
-    }
-}
-
 if (!function_exists('not_in')) {
 
     /**
@@ -147,9 +128,7 @@ if (!function_exists('total')) {
      */
     function total(int $x): string
     {
-        if ($x >= 1000000000000) {
-            return round(($x / 1000000000000), 2) . ' T';
-        } elseif ($x >= 1000000000) {
+        if ($x >= 1000000000) {
             return round(($x / 1000000000), 2) . ' B';
         } elseif ($x >= 1000000) {
             return round(($x / 1000000), 2) . ' M';
@@ -249,25 +228,6 @@ if (!function_exists('route')) {
         }
 
         return  $route;
-    }
-}
-
-if (!function_exists('fa')) {
-    /**
-     *
-     * Generate a fa icon
-     *
-     * @param  string $prefix    The fa prefix
-     * @param  string $icon     The fa icon name
-     * @param  string $options  The fa options
-     *
-     * @return string
-     *
-     */
-    function fa(string $prefix, string $icon, string $options = ''): string
-    {
-        $x = "$prefix $icon $options";
-        return '<i class="'.$x.'"></i>';
     }
 }
 
