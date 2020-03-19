@@ -24,7 +24,7 @@
 
                 $io->success('Starting all tests');
 
-                if ((new Shell(base('vendor', 'bin', 'phpunit') . ' --coverage-html coverage'))->run()) {
+                if ((new Shell(base('vendor', 'bin', 'grumphp') . ' run'))->run()) {
                     $io->success('Congratulations no errors has been found');
 
                     if (is_dir('.git')) {

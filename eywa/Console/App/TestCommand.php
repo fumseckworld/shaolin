@@ -21,23 +21,11 @@
             {
                 $io = new SymfonyStyle($input, $output);
 
+                echo shell_exec(base('vendor', 'bin', 'grumphp') . ' run');
 
-                if (is_dir('vendor')) {
-                    if (is_dir('vendor'.DIRECTORY_SEPARATOR.'phpunit')) {
-                        $io->success('Starting all tests');
-                        if ((new Shell(base('vendor', 'bin', 'phpunit') . ' --coverage-html coverage'))->run()) {
-                            $io->success('Congratulations no errors has been found');
-                            return 0;
-                        }
-                        $io->error('Errors has been found, please check your code before send your application');
-                        return 1;
-                    } else {
-                        $io->error('phpunit not installed');
-                        return 1;
-                    }
-                }
-                $io->error('run composer install');
-                return 1;
+                $io->success('Bye');
+
+                return 0;
             }
         }
     }
