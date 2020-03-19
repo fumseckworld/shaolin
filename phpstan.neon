@@ -1,9 +1,11 @@
 parameters:
+
   level: 8
   paths:
     - eywa
     - helpers
   excludes_analyse:
+      - tests/*
   checkMissingIterableValueType: false
   checkGenericClassInNonGenericObjectType: false
   ignoreErrors:

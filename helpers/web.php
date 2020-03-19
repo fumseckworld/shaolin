@@ -252,21 +252,6 @@ if (!function_exists('route')) {
     }
 }
 
-if (!function_exists('block')) {
-    /**
-     * @param string ...$values
-     * @return string
-     */
-    function block(string ...$values): string
-    {
-        $html = '';
-        foreach ($values as $value) {
-            append($html, html_entity_decode($value, ENT_QUOTES, 'UTF-8'));
-        }
-
-        return $html;
-    }
-}
 if (!function_exists('fa')) {
     /**
      *
@@ -325,17 +310,6 @@ if (!function_exists('append')) {
     }
 }
 
-
-if (!function_exists('clear_terminal')) {
-    /**
-     * @throws Kedavra
-     * @return bool
-     */
-    function clear_terminal(): bool
-    {
-        return  is_not_false(system('clear'));
-    }
-}
 if (!function_exists('flash')) {
     /**
      *

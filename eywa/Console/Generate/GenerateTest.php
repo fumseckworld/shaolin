@@ -33,6 +33,9 @@ namespace Eywa\Console\Generate {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
+            if (!is_dir(base('tests'))) {
+                mkdir(base('tests'));
+            }
             $io = new SymfonyStyle($input, $output);
 
             $test = strval($input->getArgument('test'));
