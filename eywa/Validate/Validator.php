@@ -100,8 +100,10 @@ namespace Eywa\Validate {
                             }
                         break;
                         case 'numeric':
-                            if (!is_numeric($request->request()->get($k))) {
-                                static::$errors->put($k, 'Is not numeric');
+
+                            $digit = $request->request()->get($k);
+                            if (not_int($digit)) {
+                                static::$errors->put($k, 'Not numeric');
                             }
                         break;
 
@@ -153,7 +155,6 @@ namespace Eywa\Validate {
             if (static::$errors->sum() === 0) {
                 return static::do($request)->send();
             }
-
 
             return  (new RedirectResponse(static::$redirect_url))->send();
         }

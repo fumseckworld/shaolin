@@ -229,6 +229,42 @@ if (!function_exists('sql')) {
     }
 }
 
+if (!function_exists('int')) {
+
+    /**
+     *
+     * @param mixed $digit
+     *
+     * @return bool
+     *
+     */
+    function int($digit):bool
+    {
+        if (is_int($digit)) {
+            return true;
+        } elseif (is_string($digit)) {
+            return ctype_digit($digit);
+        } else {
+            // booleans, floats and others
+            return false;
+        }
+    }
+}
+
+if (!function_exists('not_int')) {
+
+    /**
+     *
+     * @param mixed $digit
+     *
+     * @return bool
+     *
+     */
+    function not_int($digit):bool
+    {
+        return ! int($digit);
+    }
+}
 if (!function_exists('ioc')) {
     /**
      *

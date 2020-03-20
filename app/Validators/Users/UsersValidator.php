@@ -14,7 +14,7 @@ namespace App\Validators\Users {
         [
 
             'email' => 'email|required',
-            'name' => 'required|unique:auth|max:5|min:3',
+            'username' => 'required|unique:auth|max:25|min:3',
             'age'     => 'numeric|between:0,100'
         ];
 
