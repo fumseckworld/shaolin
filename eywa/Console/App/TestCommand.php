@@ -21,6 +21,8 @@
             {
                 $io = new SymfonyStyle($input, $output);
 
+                $io->title('Executing grumphp please wait !');
+
                 $x = new Shell(base('vendor', 'bin', 'grumphp') . ' run');
                 if ($x->run()) {
                     $io->success('Congratulations no errors has been found');

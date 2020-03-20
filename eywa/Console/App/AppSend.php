@@ -23,7 +23,6 @@
                 $io = new SymfonyStyle($input, $output);
 
                 $io->success('Starting all tests');
-
                 $x = new Shell(base('vendor', 'bin', 'grumphp') . ' run');
                 if ($x->run()) {
                     $io->success('Congratulations no errors has been found');
