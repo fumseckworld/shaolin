@@ -1025,7 +1025,7 @@ namespace Eywa\Collection {
         {
             $result = collect();
             foreach ($this->all() as $k => $items) {
-                $result->put($k, call_user_func_array($callable, [$items]));
+                $result->add(call_user_func_array($callable, [$items]));
             }
             return $this->checkout($result->all());
         }

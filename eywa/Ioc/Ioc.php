@@ -7,9 +7,9 @@ namespace Eywa\Ioc {
 
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
-    use Eywa\Message\Flash\Flash;
     use ReflectionClass;
     use ReflectionException;
+    use ReflectionParameter;
 
     class Ioc
     {
@@ -38,8 +38,8 @@ namespace Eywa\Ioc {
          *
          * @return bool
          *
-         * @throws Kedavra
          * @throws ReflectionException
+         * @throws Kedavra
          *
          */
         public static function has(string $key): bool
@@ -55,8 +55,8 @@ namespace Eywa\Ioc {
          *
          * @return mixed
          *
-         * @throws Kedavra
          * @throws ReflectionException
+         * @throws Kedavra
          */
         public static function get(string $key, array $args = [])
         {
@@ -116,8 +116,8 @@ namespace Eywa\Ioc {
          *
          * Generate the container
          *
-         * @throws Kedavra
          * @throws ReflectionException
+         * @throws Kedavra
          *
          */
         private static function make(): void
@@ -141,7 +141,6 @@ namespace Eywa\Ioc {
                     self::$instances[Connect::class] = equal(config('mode', 'connexion'), 'prod') ? production() : development();
 
                     self::$variables['faker'] = faker(strval(config('i18n', 'locale')));
-                    self::$variables['flash'] = new Flash();
                 }
             }
         }
@@ -172,62 +171,106 @@ namespace Eywa\Ioc {
 
 
         /**
+         *
+         * Pase an object to get a new instance
+         *
          * @param string $key
          * @param array $args
+         *
          * @return object
-         * @throws Kedavra
+         *
          * @throws ReflectionException
+         *
          */
         private static function parse(string $key, array $args =[]): object
         {
-            $instances = [];
-            $youldlike = new ReflectionClass($key);
+            $reflection = new ReflectionClass($key);
+            $constructor = $reflection->getConstructor();
+            $youldlike_parameters =   !is_null($constructor) ?  $constructor->getParameters() : [] ;
 
-            $youldlike_constructor = $youldlike->getConstructor();
-            $youldlike_parameters =   !is_null($youldlike_constructor) ?  $youldlike_constructor->getParameters() : [] ;
+            /**
+             *
+             * Capture all class
+             *
+             * @param ReflectionParameter $parameter
+             *
+             * @return string
+             *
+             */
+            $capture = function (ReflectionParameter $parameter) {
+                $x = $parameter->getClass();
+                return is_null($x)? $parameter->getName()  : $x->getName();
+            };
 
-            if (not_def($youldlike_parameters) && $youldlike->isInstantiable()) {
-                $instances[] =  $youldlike->newInstance();
-                self::$instances[$key] =  $youldlike->newInstanceArgs($instances);
-                return self::get($key);
-            }
 
-            for ($i=0;$i<count($youldlike_parameters);$i++) {
-                $parameter = $youldlike_parameters[$i];
-                $name =  $parameter->getClass();
-                $class = is_null($name) ? $parameter->getName() : $name->getName();
+            /**
+             *
+             * Get the instance for a key
+             *
+             * @param string $key
+             *
+             * @return object
+             *
+             */
+            $parse = function (string $key) use ($capture,$args) {
+                $reflection = new ReflectionClass($key);
+                $constructor = $reflection->getConstructor();
+                $youldlike_parameters =   !is_null($constructor) ?  $constructor->getParameters() : [] ;
+                $all = collect();
+                foreach ($youldlike_parameters as $parameter) {
+                    $current = call_user_func_array($capture, [$parameter]);
 
-                if (class_exists($class)) {
-                    if (is_false(self::has($class))) {
-                        $x =  new ReflectionClass($class);
-                        $constructor = $x->getConstructor();
-                        $parameters = is_null($constructor) ? [] : $constructor->getParameters();
-                        $params = [];
-                        foreach ($parameters as $parameter) {
-                            $current = $parameter->getClass();
-                            $current = is_null($current) ? $parameter->getName() : $current->getName();
 
-                            if (is_false(self::has($current))) {
-                                throw new Kedavra(sprintf('We have not found the %s parameter in the container', $current));
-                            } else {
-                                $params[] = self::get($current);
-                            }
+                    if (class_exists($current)) {
+                        if (self::has($current)) {
+                            $all->push(self::get($current));
                         }
-                        $instances[] = $x->newInstanceArgs($params);
                     } else {
-                        $instances[] = self::get($class);
-                    }
-                } else {
-                    if (array_key_exists($class, $args)) {
-                        $instances[] = $args[$class];
-                    } else {
-                        is_false(self::has($class), true, sprintf('We have not found the %s parameter in the container', $class));
-                        $instances[] = self::get($class);
+                        if (array_key_exists($current, $args)) {
+                            $all->push($args[$current]);
+                        } else {
+                            throw new Kedavra(sprintf('The %s parameter has not been found in the container', $current));
+                        }
                     }
                 }
-            }
-            self::$instances[$key] =  $youldlike->newInstanceArgs($instances);
-            return self::get($key);
+                return $reflection->newInstanceArgs($all->all());
+            };
+
+            /**
+             *
+             * Add a new instance
+             *
+             * @param string $key
+             *
+             * @return mixed
+             *
+             */
+            $add = function (string $key) use ($parse) {
+                if (self::has($key)) {
+                    return self::get($key);
+                }
+
+                return call_user_func_array($parse, [$key]);
+            };
+
+            /**
+             *
+             * Save instance and return it
+             *
+             * @param array $classes
+             *
+             * @return object
+             *
+             */
+            $instance = function (array $classes) use ($key) {
+                $reflection = new ReflectionClass($key);
+
+                self::$instances[$key] = $reflection->newInstanceArgs($classes);
+
+                return self::get($key);
+            };
+
+            return call_user_func_array($instance, [collect($youldlike_parameters)->for($capture)->for($add)->all()]);
         }
     }
 }
