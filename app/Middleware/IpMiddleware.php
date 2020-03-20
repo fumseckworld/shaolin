@@ -14,9 +14,6 @@ namespace App\Middleware {
          */
         public function check(ServerRequest $request): void
         {
-            if (not_cli()) {
-                is_false($request->local(), true, "You must be in localhost");
-            }
         }
     }
 }

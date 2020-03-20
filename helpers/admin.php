@@ -116,7 +116,7 @@ if (!function_exists('base')) {
      */
     function base(string ...$dirs): string
     {
-        $base = cli() ? realpath('./') : dirname(strval(realpath('./')));
+        $base = cli() ? strval(realpath('.')) : dirname(strval(realpath('./')));
 
         if (def($dirs)) {
             foreach ($dirs as $dir) {

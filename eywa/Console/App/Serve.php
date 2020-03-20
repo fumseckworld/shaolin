@@ -3,7 +3,7 @@
     namespace Eywa\Console\App
     {
 
-        use Eywa\Console\Shell;
+        use Eywa\Http\Server\Http;
         use Symfony\Component\Console\Command\Command;
         use Symfony\Component\Console\Input\InputInterface;
         use Symfony\Component\Console\Output\OutputInterface;
@@ -30,12 +30,7 @@
             {
                 $io = new SymfonyStyle($input, $output);
 
-                $io->title('Started development server');
-                $io->success("The server is running at : http://localhost:3000");
-
-                (new Shell("php -S localhost:3000 -d display_errors=1 -t web"))->run();
-
-                return 0;
+                return (new Http($io))->run();
             }
         }
     }
