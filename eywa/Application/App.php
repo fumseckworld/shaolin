@@ -13,7 +13,6 @@ namespace Eywa\Application {
     use Eywa\Collection\Collect;
     use Eywa\Configuration\Config;
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Model\Model;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -66,7 +65,7 @@ namespace Eywa\Application {
 
             $this->env = new Env();
 
-            only($this->env->get(DISPLAY_BUGS) === 'true', 'whoops');
+            only(strval($this->env->get(DISPLAY_BUGS)) === 'true', 'whoops');
         }
 
 

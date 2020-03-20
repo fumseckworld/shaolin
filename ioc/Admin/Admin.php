@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ioc;
+namespace Ioc\Admin;
 
 use Eywa\Http\Request\Request;
 use Eywa\Ioc\Container;

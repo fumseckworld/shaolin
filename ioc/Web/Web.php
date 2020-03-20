@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Ioc;
+namespace Ioc\Web;
 
 use Eywa\Html\Form\Form;
 use Eywa\Ioc\Container;

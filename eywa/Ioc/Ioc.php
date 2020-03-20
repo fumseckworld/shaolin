@@ -123,13 +123,15 @@ namespace Eywa\Ioc {
         private static function make(): void
         {
             if (count(self::$instances) == 0 || count(self::$variables) == 0) {
-                foreach (files(base('ioc', '*.php')) as $container) {
-                    $namespace = '\Ioc\\';
+                $containers = collect(files(base('ioc', '*.php')))->merge(files(base('ioc', '*', '*.php')))->all();
+                foreach ($containers as $container) {
+                    $filename = function (array $data) {
+                        return $data['filename'];
+                    };
+                    $container = '\\'.collect(explode(DIRECTORY_SEPARATOR, strval(strstr($container, '/ioc'))))->shift()->for('ucfirst')->for('pathinfo')->for($filename)->join('\\');
 
-                    $container = collect(explode('.', collect(explode(DIRECTORY_SEPARATOR, $container))->last()))->first();
 
-                    $x = "$namespace$container";
-                    $x = new ReflectionClass($x);
+                    $x = new ReflectionClass($container);
 
                     $extern_container = $x->getMethod('add')->invoke($x->newInstance());
 
