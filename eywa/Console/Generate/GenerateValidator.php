@@ -39,7 +39,7 @@ namespace Eywa\Console\Generate {
             $validator = strval($input->getArgument('validator'));
 
             if (preg_match("#^[a-z]([a-z_]+)$#", $validator) !== 1) {
-                $io->error('You must use snake case syntax to generate the seeder');
+                $io->error('You must use snake case syntax to generate the validator');
                 return  1;
             }
 

@@ -25,6 +25,7 @@ namespace Eywa\Console {
     use Eywa\Console\Database\TruncateTable;
     use Eywa\Console\Database\UninstallDatabase;
     use Eywa\Console\Generate\GenerateCommand;
+    use Eywa\Console\Generate\GenerateContainer;
     use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateMiddleware;
     use Eywa\Console\Generate\GenerateMigration;
@@ -89,7 +90,7 @@ namespace Eywa\Console {
             $commands = [
                new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(),new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase(),
-               new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute(),new Records\Records()
+               new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute(),new Records\Records(),new GenerateContainer()
            ];
 
             $this->add($commands)->add(commands());
