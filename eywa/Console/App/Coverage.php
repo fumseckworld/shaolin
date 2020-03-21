@@ -4,6 +4,7 @@
     {
 
         use Eywa\Console\Shell;
+        use Eywa\Http\Server\Http;
         use Symfony\Component\Console\Command\Command;
         use Symfony\Component\Console\Input\InputInterface;
         use Symfony\Component\Console\Output\OutputInterface;
@@ -30,12 +31,7 @@
             {
                 $io = new SymfonyStyle($input, $output);
 
-                $io->title('Started coverage server');
-                $io->success("The server is running at : http://localhost:8000");
-
-                (new Shell("php -S localhost:8000 -t coverage"))->run();
-
-                return 0;
+                return (new Http($io, 'coverage', 8000))->run();
             }
         }
     }

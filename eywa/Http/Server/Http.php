@@ -36,13 +36,14 @@ namespace Eywa\Http\Server {
          * Http constructor.
          *
          * @param SymfonyStyle $io
+         * @param string $directory
          * @param int $port
          */
-        public function __construct(SymfonyStyle $io, int $port = 3000)
+        public function __construct(SymfonyStyle $io, string $directory = 'web', int $port = 3000)
         {
             $this->url = "http://localhost:$port";
 
-            $this->http = new Shell(sprintf('php -S 0.0.0.0:%d -t web', $port));
+            $this->http = new Shell(sprintf('php -S 0.0.0.0:%d -t %s', $port, $directory));
 
             $this->io = $io;
         }
