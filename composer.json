@@ -30,7 +30,8 @@
     "ext-hash": "*",
     "ext-mbstring": "*",
     "ext-session": "*",
-    "ext-memcache": "*"
+    "ext-memcache": "*",
+    "php-parallel-lint/php-parallel-lint": "^1.1"
   },
   "authors": [
     {
@@ -67,7 +68,6 @@
     "phpunit/phpunit": "^8.5",
     "phpro/grumphp": "^0.18.0",
     "phpstan/phpstan": "^0.12.14",
-    "jakub-onderka/php-parallel-lint": "^1.0",
     "maglnet/composer-require-checker": "^2.1",
     "infection/infection": "^0.15.3",
     "sensiolabs/security-checker": "^6.0",
