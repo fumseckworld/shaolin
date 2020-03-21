@@ -6,8 +6,6 @@ namespace Eywa\Testing {
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
-    use Eywa\Html\Form\Form;
-    use Eywa\Http\Request\FormRequest;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Routing\Router;
     use Eywa\Message\Email\Write;
@@ -89,21 +87,6 @@ namespace Eywa\Testing {
             return new Auth(new ArraySession());
         }
 
-        /**
-         *
-         * Initialize a form
-         *
-         * @param FormRequest $form_request
-         *
-         * @return Form
-         *
-         * @throws Kedavra
-         *
-         */
-        public function form(FormRequest $form_request): Form
-        {
-            return new Form($form_request);
-        }
 
         /**
          * @return Crypter

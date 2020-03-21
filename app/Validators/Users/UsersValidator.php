@@ -12,18 +12,26 @@ namespace App\Validators\Users {
 
         public static array $rules =
         [
-
             'email' => 'email|required',
             'username' => 'required|unique:auth|max:25|min:3',
             'age'     => 'numeric|between:0,100'
         ];
 
+
         /**
          * @inheritDoc
          */
-        protected static function do(Request $request): Response
+        protected function valid(Request $request): Response
         {
             return  new Response('valid');
+        }
+
+        /**
+         * @inheritDoc
+         */
+        protected function invalid(Request $request, array $errors): Response
+        {
+            return  new Response('invalid');
         }
     }
 }

@@ -17,8 +17,6 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
-    use Eywa\Html\Form\Form;
-    use Eywa\Http\Request\FormRequest;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\JsonResponse;
@@ -176,14 +174,6 @@ namespace Eywa\Application {
             }
 
             return (new Router(ServerRequest::generate()))->run();
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function form(FormRequest $request) : Form
-        {
-            return new Form($request);
         }
 
         /**

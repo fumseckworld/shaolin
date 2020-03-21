@@ -41,15 +41,22 @@ namespace Eywa\Validate {
          */
         public static string $redirect_url = '';
 
+
+
         /**
-         *
-         *
          * @param Request $request
+         * @return Response
+         */
+        abstract protected function valid(Request $request):Response;
+
+        /**
+         * @param Request $request
+         * @param array<string> $errors
          *
          * @return Response
-         *
          */
-        abstract protected static function do(Request $request): Response;
+        abstract protected function invalid(Request $request, array $errors):Response;
+
 
         /**
          *
@@ -76,7 +83,7 @@ namespace Eywa\Validate {
          * @throws Kedavra
          *
          */
-        public static function validate(Request $request): Response
+        public function check(Request $request): Response
         {
             if (not_def($request->request()->all())) {
                 return  (new RedirectResponse(static::$redirect_url))->send();
@@ -153,10 +160,9 @@ namespace Eywa\Validate {
             }
 
             if (static::$errors->sum() === 0) {
-                return static::do($request)->send();
+                return $this->valid($request)->send();
             }
-
-            return  (new RedirectResponse(static::$redirect_url))->send();
+            return $this->invalid($request, static::$errors->all())->send();
         }
 
         /**

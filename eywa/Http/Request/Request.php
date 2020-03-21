@@ -130,7 +130,7 @@ namespace Eywa\Http\Request {
          */
         public function validate(Validator $validator): Response
         {
-            return call_user_func_array([$validator,'validate'], [$this]);
+            return call_user_func_array([$validator,'check'], [$this]);
         }
 
         /**

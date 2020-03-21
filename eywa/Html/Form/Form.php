@@ -7,9 +7,9 @@ namespace Eywa\Html\Form {
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Request\FormRequest;
+    use Eywa\Validate\Validator;
 
-    class Form
+    abstract class Form extends Validator
     {
 
         /**
@@ -26,62 +26,77 @@ namespace Eywa\Html\Form {
          */
         private Collect $inputs;
 
-        /**
-         *
-         * The form url
-         *
-         */
-        private string $url;
 
         /**
          *
          * The form method
          *
          */
-        private string $method;
-
+        protected static string $method = POST;
 
         /**
          *
-         * The form request
+         * The form route name
          *
          */
-        private FormRequest $request;
+        protected static string $route = 'root';
 
         /**
+         *
+         * The route arguments
+         *
+         */
+        protected static array $route_args = [];
+
+        /**
+         *
+         * The form options
+         *
+         * @var array<string>
+         *
+         */
+        protected static array $options = [];
+
+
+
+
+        /**
+         *
+         * Make the form
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
+        abstract public function make(): string;
+
+        /**
+         *
          * Form constructor.
          *
-         * @param FormRequest $request
+         *
+         * @return Form
          *
          * @throws Kedavra
          * @throws Exception
          *
          */
-        public function __construct(FormRequest $request)
+        protected function start(): Form
         {
-            $this->form = '<form action="'.$request->url().'" method="POST" '. collect($request->options())->each(function ($k, $v) {
+            $url = route(static::$route, static::$route_args);
+            $method = static::$method;
+            $options = static::$options;
+            $this->form = '<form action="'.$url.'" method="POST" '. collect($options)->each(function ($k, $v) {
                 return $k.'='.'"'.$v.'"';
             })->join('').'>';
 
             $this->inputs = collect();
-            $this->url = $request->url();
-            $this->method = $request->method();
 
-            $this->add('_method', 'hidden', '', '', ['value'=> $request->method()]);
+
+            $this->add('_method', 'hidden', '', '', ['value'=> $method]);
             $this->add(CSRF_TOKEN, 'hidden', '', '', ['value'=> csrf_field()]);
-            $this->request = $request;
-        }
-
-        /**
-         *
-         * Get all errors
-         *
-         * @return Collect
-         *
-         */
-        public function errors(): Collect
-        {
-            return $this->request->errors();
+            return $this;
         }
 
         /**
@@ -99,9 +114,9 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          *
          */
-        public function add(string $name, string $type, string $label_text, string $help_text  ='', array $options = []): Form
+        protected function add(string $name, string $type, string $label_text, string $help_text  ='', array $options = []): Form
         {
-            if ($this->has($name)) {
+            if ($this->has_input($name)) {
                 return  $this;
             } else {
                 $this->inputs->put($name, $name);
@@ -222,7 +237,7 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          *
          */
-        public function get(string $submit_text ='submit'): string
+        protected function get(string $submit_text ='submit'): string
         {
             $input = '<div class="'.$this->class('separator', 'form-group').'">
                         <button type="submit" class="'.$this->class('submit', 'btn btn-submit').'">'.$submit_text.'</button>
@@ -242,7 +257,7 @@ namespace Eywa\Html\Form {
          * @return Form
          *
          */
-        public function end(): Form
+        protected function end(): Form
         {
             return $this->append('</div>');
         }
@@ -256,7 +271,7 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          *
          */
-        public function row(): Form
+        protected function row(): Form
         {
             return $this->append('<div class="'.$this->class('row', 'row').'">');
         }
@@ -270,7 +285,7 @@ namespace Eywa\Html\Form {
          * @return bool
          *
          */
-        private function has(string $name): bool
+        private function has_input(string $name): bool
         {
             return $this->inputs->has($name);
         }

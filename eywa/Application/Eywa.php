@@ -195,19 +195,6 @@ namespace Eywa\Application {
         public function flash(string $key, string $message): void;
 
 
-        /**
-         *
-         * Get the form builder instance
-         *
-         * @param FormRequest $request
-         *
-         * @return Form
-         *
-         * @throws Kedavra
-         * @throws Exception
-         *
-         */
-        public function form(FormRequest $request) : Form;
 
         /**
          *

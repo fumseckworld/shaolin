@@ -3,17 +3,22 @@
 
 namespace Testing\Html {
 
-    use Eywa\Http\Request\FormRequest;
+    use App\Form\UsersForm;
+    use Eywa\Exception\Kedavra;
+    use Eywa\Http\Request\Request;
     use Eywa\Testing\Unit;
 
     class FormTest extends Unit
     {
+        /**
+         * @throws Kedavra
+         */
         public function test_success()
         {
-            $form = $this->form(new FormRequest('/', GET))->row()->add('username', 'text', 'username', 'must be uniq', ['autofocus' =>'autofocus'])->end()->row()->add('bio', 'textarea', 'bio')->end()->get('submit');
+            $form = (new UsersForm())->make();
             $this->assertNotEmpty($form);
             $this->assertStringContainsString('/', $form);
-            $this->assertStringContainsString('<input name="_method" class="hide" value="GET">', $form);
+            $this->assertStringContainsString('<input name="_method" class="hide" value="POST">', $form);
             $this->assertStringContainsString('<input name="csrf_token" class="hide" ', $form);
             $this->assertStringContainsString('type="text"', $form);
             $this->assertStringContainsString('textarea', $form);
@@ -24,6 +29,16 @@ namespace Testing\Html {
             $this->assertStringContainsString('must be uniq', $form);
             $this->assertStringContainsString('autofocus="autofocus"', $form);
             $this->assertStringContainsString('submit"', $form);
+        }
+
+        /**
+         * @throws Kedavra
+         */
+        public function test_validator()
+        {
+            $form = new UsersForm();
+            $this->assertTrue($form->check(new Request([]))->to('/error'));
+            $this->assertEquals('valid', $form->check(new Request(['username' => 'a']))->content());
         }
     }
 }
