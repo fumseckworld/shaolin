@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Home {
 
-    use App\Form\UsersForm;
+    use App\Forms\UsersForm;
     use App\Models\User;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;

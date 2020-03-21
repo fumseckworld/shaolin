@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Form;
+namespace App\Forms;
 
 use Eywa\Html\Form\Form;
 use Eywa\Http\Request\Request;
