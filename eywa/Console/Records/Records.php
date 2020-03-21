@@ -35,6 +35,7 @@ namespace Eywa\Console\Records {
             $connect = equal($env, 'prod') ? production() : development();
             $i = new Table($connect, $table);
 
+
             $x = new \Symfony\Component\Console\Helper\Table($output);
             $x->setStyle('box')->setHeaders($i->columns()->all())->setRows($i->content(PDO::FETCH_ASSOC))->render();
 

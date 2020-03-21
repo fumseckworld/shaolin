@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Eywa\Ioc {
 
 
+    use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
     use ReflectionClass;
     use ReflectionException;
     use ReflectionParameter;
 
-    class Ioc
+    abstract class Ioc
     {
 
 
@@ -46,6 +47,20 @@ namespace Eywa\Ioc {
         {
             self::make();
             return array_key_exists($key, self::$variables) || array_key_exists($key, self::$instances);
+        }
+
+        /**
+         *
+         * @return Collect
+         *
+         * @throws Kedavra
+         * @throws ReflectionException
+         *
+         */
+        public static function list():Collect
+        {
+            self::make();
+            return collect()->put('variables', self::$variables)->put('instances', self::$instances);
         }
 
         /**
@@ -120,7 +135,7 @@ namespace Eywa\Ioc {
          * @throws Kedavra
          *
          */
-        private static function make(): void
+        protected static function make(): array
         {
             if (count(self::$instances) == 0 || count(self::$variables) == 0) {
                 $containers = collect(files(base('ioc', '*.php')))->merge(files(base('ioc', '*', '*.php')))->all();
@@ -145,6 +160,7 @@ namespace Eywa\Ioc {
                     self::$variables['faker'] = faker(strval(config('i18n', 'locale')));
                 }
             }
+            return collect()->put('variables', self::$variables)->put('instances', self::$instances)->all();
         }
 
         /**

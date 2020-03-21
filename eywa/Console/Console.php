@@ -48,7 +48,6 @@ namespace Eywa\Console {
     use Eywa\Console\Routes\RemoveRoute;
     use Eywa\Console\Routes\UpdateRoute;
     use Symfony\Component\Console\Application;
-    use Symfony\Component\Console\Command\Command;
 
     class Console
     {
