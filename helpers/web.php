@@ -203,31 +203,27 @@ if (!function_exists('route')) {
 
 
         if (cli()) {
-            $route = $x[0]->url;
+            $url = $x[0]->url;
 
             if (def($args)) {
                 $x = '';
 
                 foreach ($args as $k => $v) {
-                    append($x, str_replace(":$k", "$v", $route));
+                    append($x, str_replace(":$k", "$v", $url));
                 }
                 return trim($x, '/');
             }
-            return  $route;
+            return  $url;
         }
-        $route = https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') .'/' : 'http://'.Request::make()->server()->get('SERVER_NAME').'/';
+        $url = https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') . $x[0]->url : 'http://'.Request::make()->server()->get('SERVER_NAME').$x[0]->url;
 
         if (def($args)) {
-            $route .= $x[0]->url;
-            $x = '';
-
             foreach ($args as $k => $v) {
-                append($x, str_replace(":$k", "$v", $route));
+                append($url, str_replace(":$k", "$v", $url));
             }
-            return trim($x, '/');
+            return trim($url, '/');
         }
-
-        return  $route;
+        return  $url;
     }
 }
 

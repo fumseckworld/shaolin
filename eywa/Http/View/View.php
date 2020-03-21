@@ -152,6 +152,7 @@ namespace Eywa\Http\View {
             $html = ltrim(strval(ob_get_clean()));
             $this
                 ->replace('#{{ ([\$a-zA-Z-0-9\_]+) }}#', '<?=  htmlentities($${1},ENT_QUOTES,"UTF-8");?>', $html, $html)
+                ->replace('#@echo\(([a-zA-Z-0-9\_]+)\)#', '<?=  html_entity_decode($${1},ENT_QUOTES,"UTF-8");?>', $html, $html)
                 ->replace('#{{ (\$[\$a-zA-Z-0-9\_]+)->([a-zA-Z0-9\_]+) }}#', '<?=  htmlentities(${1}->${2},ENT_QUOTES,"UTF-8");?>', $html, $html)
                 ->replace('#@admin#', '<?php  if((new \Eywa\Security\Authentication\Auth(new \Eywa\Session\Session()))->is(\'admin\')) : ?>', $html, $html)
                 ->replace('#@csrf#', '<?= (new \Eywa\Security\Csrf\Csrf(new \Eywa\Session\Session()))->token(); ?>', $html, $html)

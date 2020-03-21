@@ -81,7 +81,6 @@ namespace Eywa\Http\Routing {
             foreach ((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->where('method', EQUAL, $this->method)->get() as $route) {
                 if ($this->match($route->url, $route)) {
                     $this->route = $route;
-
                     return  $this->result()->call();
                 }
             }
@@ -112,10 +111,8 @@ namespace Eywa\Http\Routing {
             $path = preg_replace('#:([\w]+)#', '([^/]+)', $url);
 
             $regex = "#^$path$#";
-
             if (preg_match($regex, $this->url, $this->parameters) === 1) {
                 $url = $route->url;
-
 
                 if (def(strstr($url, ':'))) {
                     $args = strval(substr($url, intval(strpos($url, ':'))));
@@ -134,7 +131,6 @@ namespace Eywa\Http\Routing {
                     }
 
                     $this->parameters = $result->all();
-
                     return true;
                 }
                 array_shift($this->parameters);
@@ -155,7 +151,7 @@ namespace Eywa\Http\Routing {
          */
         private function not_found(): Response
         {
-            return (new RedirectResponse(route('web', ['404'])))->send();
+            return (new RedirectResponse(route('404')))->send();
         }
 
         /**

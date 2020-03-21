@@ -9,7 +9,7 @@ use Eywa\Http\Response\Response;
 
 class UsersForm extends Form
 {
-    protected static string $method = POST;
+    protected static string $method = GET;
 
     protected static string $route = 'root';
 

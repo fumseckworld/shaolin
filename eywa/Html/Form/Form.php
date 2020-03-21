@@ -85,6 +85,7 @@ namespace Eywa\Html\Form {
         protected function start(): Form
         {
             $url = route(static::$route, static::$route_args);
+
             $method = static::$method;
             $options = static::$options;
             $this->form = '<form action="'.$url.'" method="POST" '. collect($options)->each(function ($k, $v) {
@@ -219,7 +220,7 @@ namespace Eywa\Html\Form {
                     $this->end();
                     break;
                 case 'hidden':
-                    $x = '<input name="'.$name.'" class="'.$this->class('hide', 'hide').'" value="'.$options['value'] .'">';
+                    $x = '<input type="hidden" name="'.$name.'" class="'.$this->class('hide', 'hide').'" value="'.$options['value'] .'">';
                     $this->append($x);
                     break;
             }

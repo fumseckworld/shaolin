@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Home {
 
+    use App\Form\UsersForm;
     use App\Models\User;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
@@ -29,6 +30,10 @@ namespace App\Controllers\Home {
         }
 
 
+        public function not_found()
+        {
+            return $this->view('404', 'not found', 'error');
+        }
         /**
          *
          * @param Request $request
@@ -41,7 +46,11 @@ namespace App\Controllers\Home {
         public function home(Request $request): Response
         {
             $users = User::all();
-            return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
+
+            $form = (new UsersForm())->make();
+
+
+            return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users', 'form'));
         }
     }
 }

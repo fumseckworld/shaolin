@@ -18,8 +18,8 @@ namespace Testing\Html {
             $form = (new UsersForm())->make();
             $this->assertNotEmpty($form);
             $this->assertStringContainsString('/', $form);
-            $this->assertStringContainsString('<input name="_method" class="hide" value="POST">', $form);
-            $this->assertStringContainsString('<input name="csrf_token" class="hide" ', $form);
+            $this->assertStringContainsString('<input type="hidden" name="_method" class="hide" value="GET">', $form);
+            $this->assertStringContainsString('<input type="hidden" name="csrf_token" class="hide" ', $form);
             $this->assertStringContainsString('type="text"', $form);
             $this->assertStringContainsString('textarea', $form);
             $this->assertStringContainsString('name="username"', $form);
