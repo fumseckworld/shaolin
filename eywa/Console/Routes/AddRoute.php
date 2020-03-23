@@ -5,6 +5,7 @@ namespace Eywa\Console\Routes {
 
     use Eywa\Collection\Collect;
     use Eywa\Database\Query\Sql;
+    use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -94,6 +95,7 @@ namespace Eywa\Console\Routes {
                 } while (def($sql->where('action', EQUAL, $this->entry->get('action'))->get()) || not_def($this->entry->get('action')));
 
                 $this->entry->put('created_at', now()->toDateTimeString())->put('updated_at', now()->toDateTimeString());
+
 
                 if ($sql->create($this->entry->all())) {
                     $route = $this->entry->get('name');

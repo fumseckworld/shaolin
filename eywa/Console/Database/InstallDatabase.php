@@ -124,6 +124,7 @@ namespace Eywa\Console\Database {
                         return 1;
                     }
 
+
                     if (connect(POSTGRESQL, '', 'postgres', $this->pass)->create_user(strval(env('DEVELOP_DB_USERNAME', 'ikran')), strval(env('DEVELOP_DB_PASSWORD', 'ikran')), strval(env('DEVELOP_DB_NAME', 'ikran')))) {
                         $io->success($this->dev_user_created_successfully);
                     } else {

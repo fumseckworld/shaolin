@@ -18,14 +18,13 @@ namespace Eywa\Database\Connexion {
          *
          * @param string $driver
          * @param string $base
-         * @param int $port
          * @param string $username
          * @param string $password
          * @param string $host
          *
          * @throws Kedavra
          */
-        public function __construct(string $driver, string $base, string $username ='', string $password ='', int $port = 3306, string $host = LOCALHOST);
+        public function __construct(string $driver, string $base, string $username ='', string $password ='', string $host = LOCALHOST);
 
         /**
          *
@@ -219,14 +218,6 @@ namespace Eywa\Database\Connexion {
          */
         public function hostname(): string;
 
-        /**
-         *
-         * Get the base port
-         *
-         * @return int
-         *
-         */
-        public function port(): int;
 
         /**
          *

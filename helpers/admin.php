@@ -13,7 +13,6 @@ use Eywa\File\File;
 use Eywa\Http\Request\Request;
 use Eywa\Ioc\Ioc;
 use Eywa\Security\Authentication\Auth;
-use Eywa\Security\Crypt\Crypter;
 use Eywa\Security\Hashing\Hash;
 use Eywa\Session\Session;
 use Faker\Factory;
@@ -194,7 +193,7 @@ if (!function_exists('production')) {
      */
     function production(): Connect
     {
-        return new Connect(strval(env('DB_DRIVER', 'mysql')), strval(env('DB_NAME', 'eywa')), strval(env('DB_USERNAME', 'eywa')), strval(env('DB_PASSWORD', 'eywa')), intval(env('DB_PORT', 3306)), strval(env('DB_HOST', 'localhost')));
+        return new Connect(strval(env('DB_DRIVER', 'mysql')), strval(env('DB_NAME', 'eywa')), strval(env('DB_USERNAME', 'eywa')), strval(env('DB_PASSWORD', 'eywa')), strval(env('DB_HOST', 'localhost')));
     }
 }
 
@@ -206,7 +205,7 @@ if (!function_exists('development')) {
      */
     function development(): Connect
     {
-        return new Connect(strval(env('DEVELOP_DB_DRIVER', 'mysql')), strval(env('DEVELOP_DB_NAME', 'ikran')), strval(env('DEVELOP_DB_USERNAME', 'ikran')), strval(env('DEVELOP_DB_PASSWORD', 'ikran')), intval(env('DEVELOP_DB_PORT', 3306)), strval(env('DEVELOP_DB_HOST', 'localhost')));
+        return new Connect(strval(env('DEVELOP_DB_DRIVER', 'mysql')), strval(env('DEVELOP_DB_NAME', 'ikran')), strval(env('DEVELOP_DB_USERNAME', 'ikran')), strval(env('DEVELOP_DB_PASSWORD', 'ikran')), strval(env('DEVELOP_DB_HOST', 'localhost')));
     }
 }
 if (!function_exists('sql')) {
@@ -593,16 +592,15 @@ if (!function_exists('connect')) {
      * @param string $base
      * @param string $user
      * @param string $password
-     * @param int $port
      * @param string $host
      *
      * @return Connect
      *
      * @throws Kedavra
      */
-    function connect(string $driver, string $base, string $user = '', string $password = '', int $port = 3306, string $host = 'localhost'): Connect
+    function connect(string $driver, string $base, string $user = '', string $password = '', string $host = 'localhost'): Connect
     {
-        return new Connect($driver, $base, $user, $password, $port, $host);
+        return new Connect($driver, $base, $user, $password, $host);
     }
 }
 if (!function_exists('superior')) {

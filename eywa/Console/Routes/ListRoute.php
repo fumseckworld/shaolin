@@ -9,6 +9,7 @@ namespace Eywa\Console\Routes {
     use PDO;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Helper\Table;
+    use Symfony\Component\Console\Helper\TableSeparator;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
 
@@ -36,15 +37,10 @@ namespace Eywa\Console\Routes {
         {
             $table = new Table($output);
 
-            $table
-                ->setStyle('box')
-
-                ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
-                ->setRows(
-                    (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->to(PDO::FETCH_ASSOC)
-                )
-            ;
-            $table->render();
+            $table ->setStyle('box')
+                ->setHeaders(['id', 'metho', 'name','url','controller','action','namespace','created','updated'])
+                ->setRows((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->to(PDO::FETCH_ASSOC))
+                    ->render();
 
             return 0;
         }

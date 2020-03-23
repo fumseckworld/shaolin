@@ -26,6 +26,7 @@ namespace Eywa\Database\Connexion {
          * The queries to execute
          *
          * @var array<string>
+         *
          */
         private array $queries = [];
 
@@ -43,12 +44,6 @@ namespace Eywa\Database\Connexion {
          */
         private string $base;
 
-        /**
-         *
-         * The current base port
-         *
-         */
-        private int $port = 3306;
 
 
         /**
@@ -70,7 +65,7 @@ namespace Eywa\Database\Connexion {
          * The hostname
          *
          */
-        private string $host = LOCALHOST;
+        private string $host;
 
         /**
          *
@@ -81,16 +76,14 @@ namespace Eywa\Database\Connexion {
 
         /**
          *
-         * @Inject({"db.driver","db.name","db.username", "db.password","db.port","db.host"})
          *
          * @inheritDoc
          *
          */
-        public function __construct(string $driver, string $base, string $username ='', string $password ='', int $port = 3306, string $host = LOCALHOST)
+        public function __construct(string $driver, string $base, string $username ='', string $password ='', string $host = LOCALHOST)
         {
             $this->driver = $driver;
             $this->base = $base;
-            $this->port = $port;
             $this->username = $username;
             $this->password = $password;
             $this->host = $host;
@@ -110,17 +103,17 @@ namespace Eywa\Database\Connexion {
          */
         public function execute(): bool
         {
+            $result = collect();
             foreach ($this->queries as $query) {
                 try {
-                    $x =  $this->pdo()->prepare($query);
-                    $x->execute($this->args);
+                    $x = $this->pdo()->prepare($query);
+                    $result->push($x->execute($this->args));
                     $x->closeCursor();
                 } catch (PDOException $exception) {
-                    return $this->back($exception->getMessage());
+                    return false;
                 }
             }
-
-            return $this->commit();
+            return $result->ok();
         }
         /**
          * @inheritDoc
@@ -151,7 +144,6 @@ namespace Eywa\Database\Connexion {
 
                     $result = null;
                 } catch (PDOException $exception) {
-                    $this->back($exception->getMessage());
                     return [];
                 }
             }
@@ -183,7 +175,7 @@ namespace Eywa\Database\Connexion {
         {
             $x = collect();
             foreach ($bases as $base) {
-                $x->push($this->set("CREATE DATABASE IF NOT EXISTS $base")->execute());
+                $x->push($this->set("CREATE DATABASE $base")->execute());
             }
 
             return  $x->ok();
@@ -199,7 +191,7 @@ namespace Eywa\Database\Connexion {
             $x = collect();
             if (in_array($this->driver(), [MYSQL,POSTGRESQL])) {
                 foreach ($bases as $base) {
-                    $x->push($this->set("DROP DATABASE IF EXISTS $base")->execute());
+                    $x->push($this->set("DROP DATABASE $base")->execute());
                 }
             } else {
                 foreach ($bases as $base) {
@@ -293,7 +285,7 @@ namespace Eywa\Database\Connexion {
          */
         public function available(): bool
         {
-            return collect([MYSQL,POSTGRESQL,SQLITE,SQL_SERVER])->exist($this->driver());
+            return true;
         }
 
         /**
@@ -352,7 +344,6 @@ namespace Eywa\Database\Connexion {
 
                     $result = null;
                 } catch (PDOException $exception) {
-                    $this->back($exception->getMessage());
                     return [];
                 }
             }
@@ -420,14 +411,6 @@ namespace Eywa\Database\Connexion {
         /**
          * @inheritDoc
          */
-        public function port(): int
-        {
-            return $this->port;
-        }
-
-        /**
-         * @inheritDoc
-         */
         public function with(...$args): Connexion
         {
             $this->args = array_merge($this->args, $args);
@@ -449,7 +432,7 @@ namespace Eywa\Database\Connexion {
          */
         public function development(): Connect
         {
-            return new static(strval(env('DEVELOP_DB_DRIVER', 'mysql')),strval(env('DEVELOP_DB_NAME', 'ikran')),strval(env('DEVELOP_DB_USERNAME', 'ikran')),strval(env('DEVELOP_DB_PASSWORD', 'ikran')),intval(env('DEVELOP_DB_PORT', 3306)),strval(env('DEVELOP_DB_HOST', 'localhost')));
+            return new static(strval(env('DEVELOP_DB_DRIVER', 'mysql')),strval(env('DEVELOP_DB_NAME', 'ikran')),strval(env('DEVELOP_DB_USERNAME', 'ikran')),strval(env('DEVELOP_DB_PASSWORD', 'ikran')),strval(env('DEVELOP_DB_HOST', 'localhost')));
         }
 
         /**
@@ -459,14 +442,15 @@ namespace Eywa\Database\Connexion {
         private function pdo(): PDO
         {
             if (is_null($this->connexion)) {
-                $this->connexion = equal($this->driver, SQL_SERVER) ? new PDO("{$this->driver}:Serve={$this->host};Database={$this->base}", $this->username, $this->password, []) : (equal($this->driver, SQLITE) ? new PDO("sqlite:{$this->base}") : new PDO("{$this->driver}:host={$this->host};port={$this->port};dbname={$this->base}", $this->username, $this->password, []));
+                if (equal($this->driver, MYSQL)) {
+                    $this->connexion = def($this->base) ? new PDO(sprintf('mysql:host=%s;port=3306;dbname=%s;charset=UTF8', $this->host, $this->base), $this->username, $this->password) :  new PDO(sprintf('mysql:host=%s;port=3306;charset=UTF8', $this->host), $this->username, $this->password);
+                } elseif (equal($this->driver, POSTGRESQL)) {
+                    $this->connexion = def($this->base) ? new PDO(sprintf('pgsql:host=%s;port=5432;dbname=%s;options=\'--client_encoding=UTF8\'', $this->host, $this->base), $this->username, $this->password) :  new PDO(sprintf('pgsql:host=%s;port=5432;options=\'--client_encoding=UTF8\'', $this->host), $this->username, $this->password);
+                } else {
+                    $this->connexion =  new PDO(sprintf('sqlite:%s', $this->base), '', '');
+                }
 
                 $this->connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                try {
-                    $this->connexion->beginTransaction();
-                } catch (PDOException $e) {
-                    throw new Kedavra($e->getMessage());
-                }
             }
             return $this->connexion;
         }
