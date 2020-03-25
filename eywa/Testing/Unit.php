@@ -7,6 +7,7 @@ namespace Eywa\Testing {
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
     use Eywa\Http\Request\ServerRequest;
+    use Eywa\Http\Response\Response;
     use Eywa\Http\Routing\Router;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
@@ -24,15 +25,15 @@ namespace Eywa\Testing {
          * @param string $url
          * @param string $method
          *
-         * @return Router
+         * @return Response
          *
          * @throws Kedavra
          * @throws ReflectionException
          *
          */
-        public function visit(string $url, string  $method = GET): Router
+        public function visit(string $url, string  $method = GET): Response
         {
-            return new Router(new ServerRequest($url, $method));
+            return (new Router(new ServerRequest($url, $method)))->run();
         }
 
         /**
