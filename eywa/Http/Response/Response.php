@@ -5,7 +5,6 @@ namespace Eywa\Http\Response {
 
 
     use Eywa\Exception\Kedavra;
-    use Eywa\Session\Session;
 
     class Response
     {
@@ -86,20 +85,6 @@ namespace Eywa\Http\Response {
             return $this;
         }
 
-
-        /**
-         *
-         * Display the request time
-         *
-         * @return string
-         *
-         * @throws Kedavra
-         *
-         */
-        public function time(): string
-        {
-            return '<div class="'.config('alert', 'container').'"><div class="'.config('alert', 'success_class').'">'. intval((new Session())->get('time')->check()). ' ms</div></div>';
-        }
 
         /**
          *
@@ -226,14 +211,14 @@ namespace Eywa\Http\Response {
          *
          * Check the status
          *
-         * @param int $key
+         * @param int $status
          *
          * @return bool
          *
          */
-        public function is(int $key): bool
+        public function is(int $status): bool
         {
-            return $this->status === $key;
+            return $this->status === $status;
         }
 
 
