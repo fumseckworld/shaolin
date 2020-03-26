@@ -50,7 +50,7 @@ namespace Eywa\Http\Parameter {
          *
          *
          */
-        public function get(string $key, $default = '')
+        public function get(string $key, $default = null)
         {
             return $this->has($key) ? $this->data->get($key) : $default;
         }

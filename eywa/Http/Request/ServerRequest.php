@@ -130,7 +130,7 @@ namespace Eywa\Http\Request {
          */
         public function local(): bool
         {
-            return $this->request->server()->get('SERVER_ADDR') === '127.0.0.1';
+            return $this->request->local();
         }
 
 

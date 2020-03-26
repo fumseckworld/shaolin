@@ -106,7 +106,7 @@ namespace Eywa\Http\Routing {
             $x = new ReflectionClass($this->class());
 
 
-            $request = cli() ? new Request([], [], [], [], [], [], $this->args()) : Request::make($this->args());
+            $request = cli() ? new Request([], [], [], [], [], $this->args()) : Request::make($this->args());
 
             $x->getMethod('before_action')->invoke($x->newInstance(), $request);
 

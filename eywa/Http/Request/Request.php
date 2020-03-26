@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Eywa\Http\Request {
 
 
-    use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Parameter\Bag;
     use Eywa\Http\Parameter\Uploaded\UploadedFile;
@@ -28,13 +27,6 @@ namespace Eywa\Http\Request {
          *
          */
         private Bag $request;
-
-        /**
-         *
-         * The attibute
-         *
-         */
-        private Collect $attribute ;
         /**
          *
          * $_COOKIE values
@@ -68,7 +60,6 @@ namespace Eywa\Http\Request {
          *
          * @param array<mixed> $request
          * @param array<mixed> $query
-         * @param array<mixed> $attributes
          * @param array<mixed> $cookies
          * @param array<mixed> $files
          * @param array<mixed> $server
@@ -77,9 +68,9 @@ namespace Eywa\Http\Request {
          * @throws Kedavra
          *
          */
-        public function __construct(array $request = [], array  $query = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [])
+        public function __construct(array $request = [], array  $query = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [])
         {
-            $this->initialize($query, $request, $attributes, $cookies, $files, $server, $router_args);
+            $this->initialize($query, $request, $cookies, $files, $server, $router_args);
         }
 
         /**
@@ -88,7 +79,7 @@ namespace Eywa\Http\Request {
          */
         public function secure(): bool
         {
-            return cli() ? false: intval($this->server->get('SERVER_PORT')) === 443;
+            return cli() ? false : intval($this->server->get('SERVER_PORT')) === 443;
         }
 
         /**
@@ -104,7 +95,7 @@ namespace Eywa\Http\Request {
          */
         public static function make(array $args = []): Request
         {
-            return new self($_POST, $_GET, [], $_COOKIE, $_FILES, $_SERVER, $args);
+            return new self($_POST, $_GET, $_COOKIE, $_FILES, $_SERVER, $args);
         }
 
         /**
@@ -193,23 +184,11 @@ namespace Eywa\Http\Request {
             return $this->cookie;
         }
 
-        /**
-         *
-         * Get $_GET value
-         *
-         * @return Collect
-         *
-         */
-        public function attribute(): Collect
-        {
-            return $this->attribute;
-        }
 
 
         /**
          * @param array<mixed> $query
-         * @param array<mixed> $request
-         * @param array<mixed> $attributes
+         * @param array $request
          * @param array<mixed> $cookies
          * @param array<mixed> $files
          * @param array<mixed> $server
@@ -217,11 +196,10 @@ namespace Eywa\Http\Request {
          *
          * @throws Kedavra
          */
-        private function initialize(array $query, array $request, array $attributes, array $cookies, array $files, array $server, array $router_args):void
+        private function initialize(array $query, array $request, array $cookies, array $files, array $server, array $router_args):void
         {
             $this->query = new Bag($query);
             $this->request = new Bag($request);
-            $this->attribute = collect($attributes);
             $this->cookie = new Bag($cookies);
             $this->file = new UploadedFile($files);
             $this->server = new Bag($server);
