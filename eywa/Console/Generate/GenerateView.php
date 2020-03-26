@@ -28,7 +28,7 @@
             $io = new SymfonyStyle($input, $output);
 
             $io->title('Generation of the view');
-            $dir = strval($input->getArgument('dir')) ?? '';
+            $dir = ucfirst(strval($input->getArgument('dir'))) ?? '';
 
             if (def($dir)) {
                 if (!is_dir(base('app', 'Views', $dir))) {
@@ -47,10 +47,10 @@
             }
 
             if (touch($view)) {
-                $io->success(sprintf('The %s view has been generated successfully', $view));
+                $io->success(sprintf('The %s view has been generated successfully', strval($input->getArgument('view'))));
                 return 0;
             }
-            $io->error(sprintf('The %s view generation has failed', $view));
+            $io->error(sprintf('The %s view generation has failed', strval($input->getArgument('view'))));
             return 1;
         }
     }

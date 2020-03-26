@@ -18,6 +18,7 @@ namespace Testing\Http {
             $this->assertTrue($this->visit('/')->success());
             $this->assertTrue($this->visit('/error')->success());
             $this->assertTrue($this->visit('/e')->to('/error'));
+            $this->assertStringContainsString('hello marc', $this->visit('/hello/marc')->content());
         }
     }
 }

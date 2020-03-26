@@ -34,7 +34,7 @@ namespace Eywa\Console\Cache {
         {
             $io = new SymfonyStyle($input, $output);
 
-            $x =  strval($input->getArgument('system'));
+            $x =  strval($input->getArgument('system')) ?? '';
 
 
             if (def($x)) {

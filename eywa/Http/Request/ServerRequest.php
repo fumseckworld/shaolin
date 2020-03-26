@@ -50,8 +50,7 @@ namespace Eywa\Http\Request {
 
             if (not_cli()) {
                 $this->request = Request::make();
-
-                $this->method = different($method, GET) ? $this->request->request()->get('_method', POST) : $method;
+                $this->method = different($method, GET) ? strval($this->request->request()->get('_method', POST)) : $method;
             } else {
                 $this->request = new Request();
 

@@ -52,5 +52,10 @@ namespace App\Controllers\Home {
 
             return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users', 'form'));
         }
+
+        public function hello(Request $request): Response
+        {
+            return $this->view('hello', 'say hello', 'hello', ['name'=> $request->args()->get('name', 'jean')]);
+        }
     }
 }
