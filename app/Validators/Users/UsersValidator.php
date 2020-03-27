@@ -17,21 +17,20 @@ namespace App\Validators\Users {
             'age'     => 'numeric|between:0,100'
         ];
 
-
         /**
          * @inheritDoc
          */
-        protected function valid(Request $request): Response
+        public function success(Request $request): Response
         {
-            return  new Response('valid');
+            // TODO: Implement success() method.
         }
 
         /**
          * @inheritDoc
          */
-        protected function invalid(Request $request, array $errors): Response
+        public function error(array $messages): Response
         {
-            return  new Response('invalid');
+            // TODO: Implement error() method.
         }
     }
 }

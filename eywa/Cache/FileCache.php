@@ -15,7 +15,7 @@ namespace Eywa\Cache {
         public function get(string $key)
         {
             if ($this->has($key)) {
-                return (new File($this->file($key)))->read();
+                return (new File($key))->read();
             }
             return false;
         }
@@ -25,7 +25,7 @@ namespace Eywa\Cache {
          */
         public function set(string $key, $value): CacheInterface
         {
-            (new File($this->file($key), EMPTY_AND_WRITE_FILE_MODE))->write($value)->flush();
+            (new File($key, EMPTY_AND_WRITE_FILE_MODE))->write($value)->flush();
 
             return $this;
         }
@@ -35,7 +35,7 @@ namespace Eywa\Cache {
          */
         public function destroy(string $key): bool
         {
-            return  (new File($this->file($key)))->remove();
+            return  (new File($key))->remove();
         }
 
         /**
@@ -46,7 +46,7 @@ namespace Eywa\Cache {
             $x = env('CACHE_TIME_DIVISER', 60);
             $x = $x <= 0 ? 1 : $x;
 
-            return file_exists($this->file($key)) &&   (time() - filemtime($this->file($key))) / $x  < $this->ttl();
+            return file_exists($key) &&   (time() - filemtime($key)) / $x  < $this->ttl();
         }
 
         /**
@@ -61,27 +61,10 @@ namespace Eywa\Cache {
         /**
          * @inheritDoc
          */
-        public function directory(): string
-        {
-            return 'cache';
-        }
-
-
-        /**
-         * @inheritDoc
-         */
-        public function file(string $key): string
-        {
-            return  base($this->directory(), $key);
-        }
-
-        /**
-         * @inheritDoc
-         */
         public function clear(): bool
         {
             $x = function () {
-                return glob($this->directory() .DIRECTORY_SEPARATOR . '*');
+                return array_merge(files(base('cache', '*.php')), files(base('cache', '*', '*.php')));
             };
             foreach ($x() as $file) {
                 unlink($file);

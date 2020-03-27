@@ -53,9 +53,9 @@
             {
                 switch ($role) {
                     case 'admin':
-                        return $this->current()->id === 1;
+                        return $this->current()->id == '1';
                     case 'redac':
-                        return in_array($this->current()->id, [1,2], true);
+                        return in_array($this->current()->id, ['1','2'], true);
                     default:
                         return false;
                 }
@@ -85,21 +85,21 @@
                 try {
                     $user = User::by('username', $username);
                 } catch (Kedavra $kedavra) {
-                    return $this->redirect('/login', $this->messages()->get('user_not_found'));
+                    return $this->redirect('/login', alert([$this->messages()->get('user_not_found')]));
                 }
 
                 if (def($user)) {
                     if (check($password, $user->password)) {
                         $this->session->set('user', serialize($user));
-                        return $this->redirect('/home', $this->messages()->get('welcome'), true);
+                        return $this->redirect('/home', alert([ $this->messages()->get('welcome')], true), true);
                     } else {
                         $this->clean();
 
-                        return $this->redirect('/login', $this->messages()->get('password_no_match'));
+                        return $this->redirect('/login', alert([$this->messages()->get('password_no_match')]));
                     }
                 }
 
-                return $this->redirect('/login', $this->messages()->get('user_not_found'));
+                return $this->redirect('/login', alert([$this->messages()->get('user_not_found')]));
             }
 
             /**

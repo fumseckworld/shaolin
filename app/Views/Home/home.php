@@ -1,7 +1,9 @@
-
 <h1>welcome</h1>
 
-@echo(form)
+<ul>
+    <li>{login:connexion}</li>
+</ul>
+
 @ago(2020-02-17)
 @foreach($users as $user)
     @continue($user->id == 1)

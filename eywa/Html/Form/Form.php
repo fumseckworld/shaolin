@@ -57,9 +57,6 @@ namespace Eywa\Html\Form {
          */
         protected static array $options = [];
 
-
-
-
         /**
          *
          * Make the form

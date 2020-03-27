@@ -2,7 +2,7 @@
 
 namespace App\Controllers\Home {
 
-    use App\Forms\UsersForm;
+    use App\Forms\Auth\LoginForm;
     use App\Models\User;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
@@ -47,10 +47,7 @@ namespace App\Controllers\Home {
         {
             $users = User::all();
 
-            $form = (new UsersForm())->make();
-
-
-            return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users', 'form'));
+            return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
         }
 
         public function hello(Request $request): Response

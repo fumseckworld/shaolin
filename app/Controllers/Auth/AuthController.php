@@ -2,6 +2,7 @@
 
 namespace App\Controllers\Auth {
 
+    use App\Forms\Auth\LoginForm;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
 
@@ -11,117 +12,38 @@ namespace App\Controllers\Auth {
     
         protected static string $directory = 'Auth';
         
+        /**
+         * @inheritDoc
+         */
+        public function before_action(Request $request): void
+        {
+            // TODO: Implement before_action() method.
+        }
         
         /**
          * @inheritDoc
          */
-        public function before_validation(Request $request)
-        {
-            // TODO: Implement before_validation() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_validation(Request $request)
-        {
-            // TODO: Implement after_validation() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_save(Request $request)
-        {
-            // TODO: Implement before_save() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_save(Request $request)
-        {
-            // TODO: Implement after_save() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_commit(Request $request)
-        {
-            // TODO: Implement after_commit() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_rollback(Request $request)
-        {
-            // TODO: Implement after_rollback() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_update(Request $request)
-        {
-            // TODO: Implement before_update() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_update(Request $request)
-        {
-            // TODO: Implement after_update() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_action(Request $request):void
-        {
-            // TODO: Implement before_action() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_action(Request $request):void
+        public function after_action(Request $request): void
         {
             // TODO: Implement after_action() method.
         }
 
-        /**
-         * @inheritDoc
-         */
-        public function before_create(Request $request)
+        public function logout(Request $request)
         {
-            // TODO: Implement before_create() method.
+            return $this->auth()->logout();
         }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_create(Request $request)
+        public function show_home(Request $request)
         {
-            // TODO: Implement after_create() method.
+            return $this->view('home', 'Welcome', 'wecome');
         }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_destroy(Request $request)
+        public function show_login_form(Request $request)
         {
-            // TODO: Implement before_destroy() method.
+            $form = $this->form(LoginForm::class);
+            return $this->view('login', 'Login', 'Connexion for members', compact('form'));
         }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_destroy(Request $request)
+        public function login(Request $request)
         {
-            // TODO: Implement after_destroy() method.
+            return $this->check(LoginForm::class, $request);
         }
     }
 }

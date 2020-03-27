@@ -4,6 +4,8 @@
 namespace App\Forms;
 
 use Eywa\Html\Form\Form;
+use Eywa\Http\Request\Request;
+use Eywa\Http\Response\Response;
 
 class UsersForm extends Form
 {
@@ -19,7 +21,9 @@ class UsersForm extends Form
         'username' => 'required|between:1,3|max:3'
     ];
 
-    public static string $redirect_url = '/error';
+    public static string $redirect_error_url = '/error';
+
+    public static string $redirect_success_url = '/';
 
     public static string $success_message = '';
 
@@ -32,5 +36,22 @@ class UsersForm extends Form
     public function make(): string
     {
         return $this->start()->add('username', 'text', 'your username', 'must be uniq', ['autofocus'=> 'autofocus'])->add('bio', 'textarea', 'your bio')->get();
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function success(Request $request): Response
+    {
+        return $this->redirect(static::$redirect_success_url, static::$success_message);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function error(array $messages): Response
+    {
+        return $this->redirect(static::$redirect_error_url, static::$error_message);
     }
 }

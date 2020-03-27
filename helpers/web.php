@@ -182,6 +182,28 @@ if (!function_exists('not_cli')) {
         return ! cli();
     }
 }
+if (!function_exists('alert')) {
+
+    /**
+     * @param array $messages
+     * @param bool $success
+     * @return string
+     * @throws Kedavra
+     */
+    function alert(array $messages, bool $success = false) :string
+    {
+        $file = 'alert';
+        $ul_class = config($file, 'ul-class');
+        $class = $success ? config($file, 'success-class') : config($file, 'failure-class');
+        $html = sprintf('<ul class="%s" >', $ul_class);
+        foreach ($messages as $message) {
+            append($html, sprintf('<li class="%s">%s</li>', $class, $message));
+        }
+
+        append($html, '</ul>');
+        return $html;
+    }
+}
 if (!function_exists('route')) {
 
     /**
@@ -198,7 +220,7 @@ if (!function_exists('route')) {
     {
         $x = (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->where('name', EQUAL, $route)->get();
 
-        is_true(not_def($x), true, "The $route route was not found");
+        is_true(not_def($x), true, sprintf('The %s route has not been found', $route));
 
 
 

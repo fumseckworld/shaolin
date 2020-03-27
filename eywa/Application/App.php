@@ -157,7 +157,7 @@ namespace Eywa\Application {
          */
         public function request(array $args = []): Request
         {
-            return cli() ? new Request() :  Request::make($args);
+            return cli() ? new Request([], [], [], [], [], $args) :  Request::make($args);
         }
 
         /**
@@ -335,11 +335,11 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function redirect(string $route, array $route_args, string $message, bool $success, int $status = 301): Response
+        public function redirect(string $url, string $message, bool $success, int $status = 301): Response
         {
             $success ? $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
 
-            return (new RedirectResponse(route($route, $route_args), $status))->send();
+            return (new RedirectResponse($url, $status))->send();
         }
 
         /**
@@ -357,6 +357,22 @@ namespace Eywa\Application {
         public function sql(string $table): Sql
         {
             return new Sql($this->ioc(Connect::class), $table);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function form(string $form): string
+        {
+            return class_exists($form) && method_exists($form, 'make') ? (new $form)->make() : '';
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function check(string $form, Request $request): Response
+        {
+            return class_exists($form) && method_exists($form, 'validate') ? (new $form)->validate($request)->call() : new Response('Form has not been found');
         }
     }
 }

@@ -84,8 +84,11 @@ namespace Eywa\Http\View {
 
             $this->view = def($directory) ? base('app', 'Views', $directory, $x) : base('app', 'Views', $x);
 
-            $this->cache = $x;
+            $this->cache = base('cache', $directory, $x);
 
+            if (!is_dir(base('cache', $directory))) {
+                mkdir(base('cache', $directory));
+            }
             is_true(not_def($view, $title, $description), true, "You must have defined the view name, the view title and the view desccription");
 
             if (!file_exists($this->view)) {
@@ -123,7 +126,7 @@ namespace Eywa\Http\View {
 
                 extract($this->args);
 
-                require($this->file($this->cache));
+                require($this->cache);
 
                 return ltrim(strval(ob_get_clean()));
             }
@@ -168,7 +171,7 @@ namespace Eywa\Http\View {
                 ->replace('#@else#', '<?php else :?>', $html, $html)
                 ->replace('#@endif#', '<?php endif;?>', $html, $html)
                 ->replace('#@foreach\((\$[a-zA-Z0-9]+) as (\$[a-z0-9]+)\)#', '<?php foreach(${1} ?? [] as ${2}) : ?>', $html, $html)
-                ->replace('#@route\(([a-zA-Z-0-9]+):([a-zA-Z0-9]+)\)#', '<?= route("${1}",["${2}"]); ?>', $html, $html)
+                ->replace('#{([a-zA-Z-0-9]+):([a-zA-Z0-9]+)}#', '<a href="<?= route(\'${1}\')?>">${2}</a>', $html, $html)
                 ->replace('#@endforeach#', '<?php endforeach;  ?>', $html, $html)
                 ->replace('#@switch\(([\$a-zA-Z0-9]+)\)#', '<?php switch($${1}): ', $html, $html)
                 ->replace('#@case\(([\$a-zA-Z]+)\)#', 'case "${1}" :  ?>', $html, $html)
@@ -213,7 +216,7 @@ namespace Eywa\Http\View {
 
             extract($this->args);
 
-            require($this->file($this->cache));
+            require($this->cache);
 
             return ltrim(strval(ob_get_clean()));
         }

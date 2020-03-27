@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Eywa\Security\Authentication {
 
 
+    use Exception;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Response\Response;
     use Eywa\Session\SessionInterface;
@@ -70,7 +71,7 @@ namespace Eywa\Security\Authentication {
          * @return Response
          *
          * @throws Kedavra
-         *
+         * @throws Exception
          *
          */
         public function login(string $username, string $password): Response;

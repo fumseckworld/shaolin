@@ -45,13 +45,24 @@ namespace Eywa\Http\Response {
 
         /**
          *
-         *
-         * Send the redirect
+         * Get the response
          *
          * @return Response
          *
          */
-        public function send(): Response
+        public function get(): Response
+        {
+            return $this->response;
+        }
+
+        /**
+         *
+         * Send the response
+         *
+         * @return Response
+         *
+         */
+        public function send():Response
         {
             return $this->response->send();
         }

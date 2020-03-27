@@ -13,8 +13,6 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
-    use Eywa\Html\Form\Form;
-    use Eywa\Http\Request\FormRequest;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Email\Write;
@@ -109,8 +107,7 @@ namespace Eywa\Application {
          *
          * Redirect user to an another route
          *
-         * @param string $route
-         * @param array<mixed> $route_args
+         * @param string $url
          * @param string $message
          * @param bool $success
          * @param int $status
@@ -120,8 +117,30 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function redirect(string $route, array $route_args, string $message, bool $success, int $status = 301): Response;
+        public function redirect(string $url, string $message, bool $success, int $status = 301): Response;
 
+        /**
+         *
+         * Generate the form
+         *
+         * @param string $form
+         *
+         * @return string
+         *
+         */
+        public function form(string $form): string;
+
+        /**
+         *
+         * Validate a form
+         *
+         * @param string $form
+         * @param Request $request
+         *
+         * @return Response
+         *
+         */
+        public function check(string $form, Request $request): Response;
 
         /**
          *

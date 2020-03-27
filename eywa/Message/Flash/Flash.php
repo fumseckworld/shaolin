@@ -23,9 +23,9 @@ namespace Eywa\Message\Flash {
             }
 
 
-            $success_class = config('flash', 'success_class');
+            $success_class = config('alert', 'success-class');
 
-            $failure_class = config('flash', 'failure_class');
+            $failure_class = config('alert', 'failure-class');
 
 
             $result = '';

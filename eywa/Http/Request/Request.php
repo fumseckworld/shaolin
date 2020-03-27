@@ -118,10 +118,12 @@ namespace Eywa\Http\Request {
          *
          * @return Response
          *
+         * @throws Kedavra
+         *
          */
         public function validate(Validator $validator): Response
         {
-            return call_user_func_array([$validator,'check'], [$this]);
+            return $validator->validate($this)->call();
         }
 
         /**

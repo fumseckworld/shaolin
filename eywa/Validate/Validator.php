@@ -7,6 +7,7 @@ namespace Eywa\Validate {
 
     use Egulias\EmailValidator\EmailValidator;
     use Egulias\EmailValidator\Validation\RFCValidation;
+    use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\Request;
@@ -35,26 +36,20 @@ namespace Eywa\Validate {
          */
         protected static Collect $errors;
 
+
+        /**
+         *
+         * The redirect url on success
+         *
+         */
+        public static string $redirect_success_url = '/';
+
         /**
          *
          * The redirect url on error
          *
          */
-        public static string $redirect_url = '/';
-
-        /**
-         *
-         * The success message
-         *
-         */
-        public static string $success_message = '';
-
-        /**
-         *
-         * The error message
-         *
-         */
-        public static string $error_message = '';
+        public static string $redirect_error_url = '/error';
 
         protected static array $messages = [
             VALIDATOR_EMAIL_NOT_VALID => '',
@@ -65,7 +60,39 @@ namespace Eywa\Validate {
             VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => '',
             VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => '',
         ];
+        /**
+         * @var Request
+         */
+        private Request $request;
 
+        /**
+         *
+         * Success callback
+         *
+         * @param Request $request
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         *
+         */
+        abstract public function success(Request $request): Response;
+
+        /**
+         *
+         * Error callback
+         *
+         * @param string[] $messages
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         * @throws Exception
+         *
+         */
+        abstract public function error(array $messages): Response;
 
         /**
          *
@@ -73,14 +100,31 @@ namespace Eywa\Validate {
          *
          * @return Response
          *
+         *
+         */
+        public function call(): Response
+        {
+            return static::$errors->empty() ? call_user_func_array([$this,'success'], [$this->request]) : call_user_func_array([$this,'error'], [static::$errors->all()]);
+        }
+
+        /**
+         *
+         * Redirect user
+         *
+         * @param string $url
+         * @param string $message
+         * @param bool $success
+         *
+         * @return Response
+         *
          * @throws Kedavra
          *
          */
-        public function redirect(): Response
+        public function redirect(string $url, string $message, bool $success = true):Response
         {
-            static::$errors->empty() ? (new Flash())->set(SUCCESS, static::$success_message) : (new Flash())->set(FAILURE, static::$error_message);
+            $success ? (new Flash())->set(SUCCESS, $message) : (new Flash())->set(FAILURE, $message);
 
-            return (new RedirectResponse(static::$redirect_url))->send();
+            return (new RedirectResponse($url))->send();
         }
 
         /**
@@ -98,6 +142,7 @@ namespace Eywa\Validate {
         }
 
         /**
+         *
          * @param Request $request
          *
          * @return Validator
@@ -105,8 +150,9 @@ namespace Eywa\Validate {
          * @throws Kedavra
          *
          */
-        public function check(Request $request): Validator
+        public function validate(Request $request): Validator
         {
+            $this->request = $request;
             foreach (static::$rules as $k => $v) {
                 $rules = explode('|', $v);
 
