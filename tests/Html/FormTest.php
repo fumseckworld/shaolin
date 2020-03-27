@@ -37,8 +37,11 @@ namespace Testing\Html {
         public function test_validator()
         {
             $form = new UsersForm();
-            $this->assertTrue($form->check(new Request([]))->to('/error'));
-            $this->assertEquals('valid', $form->check(new Request(['username' => 'a']))->content());
+
+            $this->assertEmpty($form->check(new Request(['username' => 'aza']))->errors()->all());
+            $this->assertTrue($form->check(new Request([]))->redirect()->to('/error'));
+            $this->assertNotEmpty($form->check(new Request([]))->errors()->all());
+            $this->assertCount(6, $form->check(new Request())->errors()->all());
         }
     }
 }

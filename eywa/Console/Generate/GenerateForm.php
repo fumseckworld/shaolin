@@ -82,7 +82,11 @@ class $form_class extends Form
     ];
 
     public static string \$redirect_url = '/error';
-
+    
+    public static string \$success_message = '';
+    
+    public static string \$error_message = '';
+    
     /**
      * @inheritDoc
      */
@@ -108,11 +112,11 @@ class $form_class extends Form
         return new Response('');
     }
 }")->flush()) {
-                $io->success("The $form_class form has been generated successfully");
+                $io->success(sprintf('The %s form has been generated successfully', $form_class));
 
                 return 0;
             }
-            $io->error("The $form_class form generation has failed");
+            $io->error(sprintf('The %s form generation has failed', $form_class));
             return 1;
         }
     }

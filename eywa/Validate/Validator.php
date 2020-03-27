@@ -12,6 +12,7 @@ namespace Eywa\Validate {
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
+    use Eywa\Message\Flash\Flash;
 
     abstract class Validator
     {
@@ -32,31 +33,55 @@ namespace Eywa\Validate {
          * All errors founds
          *
          */
-        private static Collect $errors;
+        protected static Collect $errors;
 
         /**
          *
          * The redirect url on error
          *
          */
-        public static string $redirect_url = '';
-
-
+        public static string $redirect_url = '/';
 
         /**
-         * @param Request $request
-         * @return Response
+         *
+         * The success message
+         *
          */
-        abstract protected function valid(Request $request):Response;
+        public static string $success_message = '';
 
         /**
-         * @param Request $request
-         * @param array<string> $errors
+         *
+         * The error message
+         *
+         */
+        public static string $error_message = '';
+
+        protected static array $messages = [
+            VALIDATOR_EMAIL_NOT_VALID => '',
+            VALIDATOR_ARGUMENT_NOT_DEFINED => '',
+            VALIDATOR_ARGUMENT_NOT_NUMERIC => '',
+            VALIDATOR_ARGUMENT_NOT_UNIQUE => '',
+            VALIDATOR_ARGUMENT_NOT_BETWEEN => '',
+            VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => '',
+            VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => '',
+        ];
+
+
+        /**
+         *
+         * Redirect user
          *
          * @return Response
+         *
+         * @throws Kedavra
+         *
          */
-        abstract protected function invalid(Request $request, array $errors):Response;
+        public function redirect(): Response
+        {
+            static::$errors->empty() ? (new Flash())->set(SUCCESS, static::$success_message) : (new Flash())->set(FAILURE, static::$error_message);
 
+            return (new RedirectResponse(static::$redirect_url))->send();
+        }
 
         /**
          *
@@ -69,28 +94,19 @@ namespace Eywa\Validate {
          */
         public static function has(string $key): bool
         {
-            return  static::$errors->has($key);
+            return static::$errors->has($key);
         }
 
         /**
-         *
-         * Capture the errors
-         *
          * @param Request $request
          *
-         * @return Response
+         * @return Validator
          *
          * @throws Kedavra
          *
          */
-        public function check(Request $request): Response
+        public function check(Request $request): Validator
         {
-            if (not_def($request->request()->all())) {
-                return  (new RedirectResponse(static::$redirect_url))->send();
-            }
-
-            static::$errors = collect();
-
             foreach (static::$rules as $k => $v) {
                 $rules = explode('|', $v);
 
@@ -98,85 +114,67 @@ namespace Eywa\Validate {
                     switch ($rule) {
                         case 'email':
                             if (!(new EmailValidator())->isValid($request->request()->get($k), new RFCValidation())) {
-                                static::$errors->put($k, 'Email not valide');
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_EMAIL_NOT_VALID], $k, strval($request->request()->get($k))));
                             }
-                        break;
+                            break;
                         case 'required':
                             if (not_def($request->request()->get($k))) {
-                                static::$errors->put($k, 'Is not define');
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_DEFINED], strval($k)));
                             }
-                        break;
+                            break;
                         case 'numeric':
 
                             $digit = $request->request()->get($k);
                             if (not_int($digit)) {
-                                static::$errors->put($k, 'Not numeric');
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_NUMERIC], strval($k)));
                             }
-                        break;
+                            break;
 
                         case preg_match('#unique:([a-zA-Z]+)#', $rule) === 1:
                             $x = explode(':', $rule);
                             $table = $x[1];
 
                             if (sql($table)->where($k, EQUAL, $request->request()->get($k))->exist()) {
-                                static::$errors->put($k, 'Is not unique');
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_UNIQUE], strval($k), strval($table)));
                             }
 
-                        break;
+                            break;
                         case preg_match('#between:([0-9]+),([0-9]+)#', $rule) === 1:
                             $x = explode(',', $rule);
-                            $min = str_replace('between:', '', $x[0]);
-                            $max = $x[1];
+                            $min = intval(str_replace('between:', '', $x[0]));
+                            $max = intval($x[1]);
                             $value = $request->request()->get($k);
-                            if ($value <  $min || $value > $max) {
-                                static::$errors->put($k, 'Is not between');
+                            if ($value < $min && $value > $max || not_def($value)) {
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_BETWEEN], strval($k), $min, $max));
                             }
-                        break;
+                            break;
 
                         case preg_match('#max:([0-9]+)#', $rule) === 1:
 
-                            $max = collect(explode(':', $rule))->last();
+                            $max = intval(collect(explode(':', $rule))->last());
 
-                            $value = $request->request()->get($k);
+                            $value = strval($request->request()->get($k));
 
                             $length = mb_strlen($value);
-                            if ($length >  $max) {
-                                static::$errors->put($k, 'Value superio to maximum value');
+                            if ($length > $max) {
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE], strval($k), $max));
                             }
-                        break;
+                            break;
 
                         case preg_match('#min:([0-9]+)#', $rule) === 1:
-                            $min = collect(explode(':', $rule))->last();
+                            $min = intval(collect(explode(':', $rule))->last());
 
-                            $value = $request->request()->get($k);
+                            $value = strval($request->request()->get($k));
 
                             $length = mb_strlen($value);
-                            if ($length <  $min) {
-                                static::$errors->put($k, 'Value inferior of the minimum value');
+                            if ($length < $min) {
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE], strval($k), $min));
                             }
-                        break;
+                            break;
                     }
                 }
             }
-
-            if (static::$errors->sum() === 0) {
-                return $this->valid($request)->send();
-            }
-            return $this->invalid($request, static::$errors->all())->send();
-        }
-
-        /**
-         *
-         * Get the error message for a key
-         *
-         * @param string $key
-         *
-         * @return string
-         *
-         */
-        public static function message(string $key): string
-        {
-            return  static::has($key) ? static::$errors->get($key) : '';
+            return $this;
         }
     }
 }

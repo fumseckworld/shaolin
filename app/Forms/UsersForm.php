@@ -4,8 +4,6 @@
 namespace App\Forms;
 
 use Eywa\Html\Form\Form;
-use Eywa\Http\Request\Request;
-use Eywa\Http\Response\Response;
 
 class UsersForm extends Form
 {
@@ -18,10 +16,15 @@ class UsersForm extends Form
     protected static array $options = [];
 
     protected static array $rules = [
-        'username' => 'required'
+        'username' => 'required|between:1,3|max:3'
     ];
 
     public static string $redirect_url = '/error';
+
+    public static string $success_message = '';
+
+    public static string $error_message = '';
+
 
     /**
      * @inheritDoc
@@ -29,22 +32,5 @@ class UsersForm extends Form
     public function make(): string
     {
         return $this->start()->add('username', 'text', 'your username', 'must be uniq', ['autofocus'=> 'autofocus'])->add('bio', 'textarea', 'your bio')->get();
-    }
-
-
-    /**
-     * @inheritDoc
-     */
-    protected function valid(Request $request): Response
-    {
-        return new Response('valid');
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function invalid(Request $request, array $errors): Response
-    {
-        return new Response('invalid');
     }
 }

@@ -1,10 +1,12 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Http\Response {
 
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Message\Flash\Flash;
 
     class Response
     {
@@ -45,7 +47,7 @@ namespace Eywa\Http\Response {
          * The redirect url
          *
          */
-        private string $url ='';
+        private string $url = '';
 
 
         /**
@@ -62,6 +64,24 @@ namespace Eywa\Http\Response {
         public function __construct(string $content, string $url = '', int $status = 200, array $headers = [])
         {
             $this->set_content($content)->set_status($status)->set_headers($headers)->set_url($url);
+        }
+
+        /**
+         *
+         *
+         * @param string $message
+         * @param bool $success
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function flash(string $message, bool $success = true): Response
+        {
+            $success ? (new Flash())->set(SUCCESS, $message) : (new Flash())->set(FAILURE, $message);
+
+            return $this;
         }
 
         /**
@@ -113,7 +133,7 @@ namespace Eywa\Http\Response {
          */
         public function to(string $url): bool
         {
-            return  $this->url === $url;
+            return $this->url === $url;
         }
 
         /**
@@ -192,7 +212,7 @@ namespace Eywa\Http\Response {
          */
         public function content(): string
         {
-            return  $this->content;
+            return $this->content;
         }
 
         /**

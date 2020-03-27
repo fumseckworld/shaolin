@@ -72,6 +72,26 @@ namespace Eywa\Html\Form {
         abstract public function make(): string;
 
         /**
+         * Form constructor.
+         * @throws Kedavra
+         */
+        public function __construct()
+        {
+            static::$errors = collect();
+            $file = 'validator';
+
+            static::$messages = [
+                VALIDATOR_EMAIL_NOT_VALID => config($file, 'email'),
+                VALIDATOR_ARGUMENT_NOT_DEFINED => config($file, 'required'),
+                VALIDATOR_ARGUMENT_NOT_NUMERIC => config($file, 'digit'),
+                VALIDATOR_ARGUMENT_NOT_UNIQUE => config($file, 'unique'),
+                VALIDATOR_ARGUMENT_NOT_BETWEEN => config($file, 'between'),
+                VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => config($file, 'max'),
+                VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => config($file, 'min'),
+            ];
+        }
+
+        /**
          *
          * Form constructor.
          *
@@ -322,6 +342,14 @@ namespace Eywa\Html\Form {
         {
             $x = collect(config('form', 'class'))->get($x);
             return def($x) ? $x : $value;
+        }
+
+        /**
+         * @return Collect
+         */
+        public function errors()
+        {
+            return static::$errors;
         }
     }
 }
