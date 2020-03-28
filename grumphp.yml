@@ -29,3 +29,29 @@ parameters:
             triggered_by: ['php']
             memory_limit: "4G"
         phpunit: ~
+        git_commit_message:
+            allow_empty_message: false
+            enforce_capitalized_subject: false
+            enforce_no_subject_punctuations: true
+            enforce_no_subject_trailing_period: true
+            enforce_single_lined_subject: true
+            type_scope_conventions:
+                - types:
+                      - build
+                      - ci
+                      - core
+                      - docs
+                      - feat
+                      - fix
+                      - perf
+                      - refactor
+                      - revert
+                      - design
+                      - test
+                - scopes:
+                      - Routing
+            max_body_width: 72
+            max_subject_width: 60
+            case_insensitive: true
+            multiline: true
+            additional_modifiers: ''

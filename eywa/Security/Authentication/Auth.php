@@ -51,14 +51,17 @@
              */
             public function is(string $role): bool
             {
-                switch ($role) {
-                    case 'admin':
-                        return $this->current()->id == '1';
-                    case 'redac':
-                        return in_array($this->current()->id, ['1','2'], true);
-                    default:
-                        return false;
+                if ($this->connected()) {
+                    switch ($role) {
+                        case 'admin':
+                            return $this->current()->id == '1';
+                        case 'redac':
+                            return in_array($this->current()->id, ['1','2'], true);
+                        default:
+                            return false;
+                    }
                 }
+                return false;
             }
 
             /**
@@ -117,11 +120,14 @@
              */
             public function delete_account(): Response
             {
-                if (User::destroy(intval($this->current()->id))) {
-                    return $this->redirect('/', $this->messages()->get('account_removed_successfully'), true);
+                if ($this->connected()) {
+                    if (User::destroy(intval($this->current()->id))) {
+                        return $this->redirect('/', $this->messages()->get('account_removed_successfully'), true);
+                    }
+                    return $this->redirect('/', $this->messages()->get('account_removed_fail'));
                 }
 
-                return $this->redirect('/login', $this->messages()->get('account_removed_fail'));
+                return $this->redirect('/', $this->messages()->get('not_connected'));
             }
 
             /**

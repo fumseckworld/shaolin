@@ -51,6 +51,16 @@ namespace Eywa\Testing {
         }
 
         /**
+         *
+         * @return Auth
+         *
+         */
+        public function auth(): Auth
+        {
+            return new Auth(new ArraySession());
+        }
+
+        /**
          * @param string $subject
          * @param string $message
          * @param string $author_email
@@ -76,22 +86,10 @@ namespace Eywa\Testing {
             return new Collect($data);
         }
 
-        /**
-         *
-         * Get an instance of auth
-         *
-         * @return Auth
-         *
-         */
-        public function auth(): Auth
-        {
-            return new Auth(new ArraySession());
-        }
 
 
         /**
          * @return Crypter
-         * @throws Kedavra
          */
         public function crypter(): Crypter
         {

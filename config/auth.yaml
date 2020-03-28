@@ -13,3 +13,4 @@ messages:
   not_unique: 'Username must be unique'
   table_not_found: 'The table was not found'
   reset_fail: 'The password has not been modified'
+  not_connected: 'Connect before remove the account'
