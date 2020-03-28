@@ -1,5 +1,5 @@
 <ul>
-    <li>{logout:deconnexion}</li>
+    <li>@link(logout:logout:link)</li>
 </ul>
 
 @history

@@ -1,3 +1,3 @@
-@echo(form)
+@print($form)
 
 @history

@@ -182,6 +182,24 @@ if (!function_exists('not_cli')) {
         return ! cli();
     }
 }
+if (!function_exists('url')) {
+
+    /**
+     *
+     * Generate the url
+     *
+     * @param string $url
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function url(string $url):string
+    {
+        return php_sapi_name() !== 'cli' ? https() ? sprintf('https://%s/%s', Request::make()->server()->get('HTTP_HOST'), $url) : sprintf('http://%s/%s', Request::make()->server()->get('HTTP_HOST'), $url) : sprintf('/%s', $url);
+    }
+}
 if (!function_exists('alert')) {
 
     /**
