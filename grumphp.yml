@@ -48,8 +48,6 @@ parameters:
                       - revert
                       - design
                       - test
-                - scopes:
-                      - Routing
             max_body_width: 72
             max_subject_width: 60
             case_insensitive: true
