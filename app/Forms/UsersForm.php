@@ -3,7 +3,7 @@
 namespace App\Forms;
 
 use Eywa\Html\Form\Form;
-use Eywa\Http\Request\Request;
+use Eywa\Http\Parameter\Bag;
 use Eywa\Http\Response\Response;
 
 class UsersForm extends Form
@@ -44,7 +44,7 @@ class UsersForm extends Form
     /**
      * @inheritDoc
      */
-    public function success(Request $request): Response
+    public function success(Bag $bag): Response
     {
         return $this->redirect(static::$redirect_success_url, static::$success_message);
     }

@@ -46,6 +46,48 @@ if (!function_exists('views')) {
         return array_merge(files(base('app', 'Views', '*.php')), files(base('app', 'Views', '*', '*.php')));
     }
 }
+if (!function_exists('validator_messages')) {
+
+    /**
+     *
+     * Get validation message
+     *
+     * @return string[]
+     *
+     * @throws Kedavra
+     *
+     */
+    function validator_messages(): array
+    {
+        $file = 'validator';
+
+        return [
+            VALIDATOR_EMAIL_NOT_VALID => config($file, 'email'),
+            VALIDATOR_ARGUMENT_NOT_DEFINED => config($file, 'required'),
+            VALIDATOR_ARGUMENT_NOT_NUMERIC => config($file, 'digits'),
+            VALIDATOR_ARGUMENT_NOT_UNIQUE => config($file, 'unique'),
+            VALIDATOR_ARGUMENT_NOT_BETWEEN => config($file, 'between'),
+            VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => config($file, 'max'),
+            VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => config($file, 'min'),
+            VALIDATOR_ARGUMENT_SLUG =>  config($file, 'slug'),
+            VALIDATOR_ARGUMENT_SNAKE => config($file, 'snake'),
+            VALIDATOR_ARGUMENT_CAMEL_CASE => config($file, 'camel'),
+            VALIDATOR_ARGUMENT_ARRAY => config($file, 'array'),
+            VALIDATOR_ARGUMENT_BOOLEAN => config($file, 'boolean'),
+            VALIDATOR_ARGUMENT_IMAGE => config($file, 'image'),
+            VALIDATOR_ARGUMENT_JSON => config($file, 'json'),
+            VALIDATOR_ARGUMENT_STRING => config($file, 'string'),
+            VALIDATOR_ARGUMENT_URL => config($file, 'url'),
+            VALIDATOR_ARGUMENT_FLOAT => config($file, 'float'),
+            VALIDATOR_ARGUMENT_INT => config($file, 'int'),
+            VALIDATOR_ARGUMENT_MAC => config($file, 'mac'),
+            VALIDATOR_ARGUMENT_IPV4 => config($file, 'ipv4'),
+            VALIDATOR_ARGUMENT_IPV6 => config($file, 'ipv6'),
+            VALIDATOR_ARGUMENT_DOMAIN => config($file, 'domain'),
+        ];
+    }
+}
+
 if (!function_exists('only')) {
     /**
      *
@@ -53,7 +95,6 @@ if (!function_exists('only')) {
      *
      * @return bool
      *
-     * @throws Kedavra
      *
      */
     function https(): bool

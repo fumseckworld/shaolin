@@ -32,9 +32,8 @@ namespace Eywa\Application {
     use Eywa\Session\ArraySession;
     use Eywa\Session\Session;
     use Eywa\Session\SessionInterface;
-    use Eywa\Time\Timing;
-    use Eywa\Validate\Validator;
     use Redis;
+    use ReflectionClass;
 
     class App extends Zen implements Eywa
     {
@@ -59,11 +58,10 @@ namespace Eywa\Application {
          */
         public function __construct()
         {
-            cli() ? new Timing() : (new Session())->set('time', new Timing());
 
             $this->env = new Env();
 
-            only(strval($this->env->get(DISPLAY_BUGS)) === 'true', 'whoops');
+            only(strval($this->env->get(DISPLAY_BUGS)) == 'true', 'whoops');
         }
 
 
@@ -288,13 +286,6 @@ namespace Eywa\Application {
             return cli() ? new ArraySession() : new Session();
         }
 
-        /**
-         * @inheritDoc
-         */
-        public function validator(Validator $validator): Response
-        {
-            return $this->request()->validate($validator);
-        }
 
         /**
          * @inheritDoc
@@ -382,7 +373,8 @@ namespace Eywa\Application {
          */
         public function form(string $form): string
         {
-            return class_exists($form) && method_exists($form, 'make') ? (new $form())->make() : '';
+            $x = new ReflectionClass($form);
+            return $x->getMethod('make')->invoke($x->newInstance());
         }
 
         /**
@@ -390,8 +382,8 @@ namespace Eywa\Application {
          */
         public function check(string $form, Request $request): Response
         {
-            return class_exists($form) && method_exists($form, 'validate')
-            ? (new $form())->validate($request)->call() : new Response('Form has not been found');
+            $x = new ReflectionClass($form);
+            return $x->getMethod('handle')->invokeArgs($x->newInstance(), [$request->request()]);
         }
     }
 }

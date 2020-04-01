@@ -4,7 +4,7 @@ namespace App\Forms\Auth;
 
 use App\Models\Auth\Authentication;
 use Eywa\Html\Form\Form;
-use Eywa\Http\Request\Request;
+use Eywa\Http\Parameter\Bag;
 use Eywa\Http\Response\Response;
 use Eywa\Security\Authentication\Auth;
 use Eywa\Session\Session;
@@ -44,12 +44,12 @@ class LoginForm extends Form
     /**
      * @inheritDoc
      */
-    public function success(Request $request): Response
+    public function success(Bag $bag): Response
     {
         return (new Auth(new Session(), Authentication::class))
             ->login(
-                $request->request()->get('username'),
-                $request->request()->get('password')
+                $bag->get('username'),
+                $bag->get('password')
             );
     }
 

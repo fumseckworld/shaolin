@@ -2,7 +2,7 @@
 
 namespace App\Validators\Users {
 
-    use Eywa\Http\Request\Request;
+    use Eywa\Http\Parameter\Bag;
     use Eywa\Http\Response\Response;
     use Eywa\Validate\Validator;
 
@@ -20,7 +20,7 @@ namespace App\Validators\Users {
         /**
          * @inheritDoc
          */
-        public function success(Request $request): Response
+        public function success(Bag $request): Response
         {
             // TODO: Implement success() method.
         }

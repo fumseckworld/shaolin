@@ -21,6 +21,7 @@ namespace Eywa\Application {
     use Eywa\Session\SessionInterface;
     use Eywa\Validate\Validator;
     use Redis;
+    use ReflectionException;
 
     interface Eywa
     {
@@ -127,6 +128,8 @@ namespace Eywa\Application {
          *
          * @return string
          *
+         * @throws ReflectionException
+         *
          */
         public function form(string $form): string;
 
@@ -138,6 +141,7 @@ namespace Eywa\Application {
          * @param Request $request
          *
          * @return Response
+         * @throws ReflectionException
          *
          */
         public function check(string $form, Request $request): Response;
@@ -153,18 +157,6 @@ namespace Eywa\Application {
          */
         public function collect(array $data = []): Collect;
 
-        /**
-         *
-         * Get the validator
-         *
-         * @param Validator $validator
-         *
-         * @return Response
-         *
-         * @throws Kedavra
-         *
-         */
-        public function validator(Validator $validator): Response;
 
         /**
          *

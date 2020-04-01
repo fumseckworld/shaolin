@@ -10,7 +10,7 @@ namespace Eywa\Validate {
     use Exception;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
-    use Eywa\Http\Request\Request;
+    use Eywa\Http\Parameter\Bag;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Flash\Flash;
@@ -51,7 +51,8 @@ namespace Eywa\Validate {
          */
         public static string $redirect_error_url = '/error';
 
-        protected static array $messages = [
+        protected static array $messages =
+        [
             VALIDATOR_EMAIL_NOT_VALID => '',
             VALIDATOR_ARGUMENT_NOT_DEFINED => '',
             VALIDATOR_ARGUMENT_NOT_NUMERIC => '',
@@ -62,26 +63,48 @@ namespace Eywa\Validate {
             VALIDATOR_ARGUMENT_SLUG => '',
             VALIDATOR_ARGUMENT_SNAKE => '',
             VALIDATOR_ARGUMENT_CAMEL_CASE => '',
+            VALIDATOR_ARGUMENT_ARRAY => '',
+            VALIDATOR_ARGUMENT_BOOLEAN => '',
+            VALIDATOR_ARGUMENT_IMAGE => '',
+            VALIDATOR_ARGUMENT_JSON => '',
+            VALIDATOR_ARGUMENT_STRING => '',
+            VALIDATOR_ARGUMENT_URL => '',
+            VALIDATOR_ARGUMENT_FLOAT => '',
+            VALIDATOR_ARGUMENT_INT => '',
+            VALIDATOR_ARGUMENT_MAC => '',
+            VALIDATOR_ARGUMENT_IPV4 => '',
+            VALIDATOR_ARGUMENT_IPV6 => '',
+            VALIDATOR_ARGUMENT_DOMAIN => '',
         ];
+
         /**
-         * @var Request
+         * Validator constructor.
+         *
+         * @throws Kedavra
+         *
          */
-        private Request $request;
+        public function __construct()
+        {
+            static::$errors = collect();
+
+            static::$messages = validator_messages();
+        }
+
+        private Bag $bag;
 
         /**
          *
          * Success callback
          *
-         * @param Request $request
+         * @param Bag $bag
          *
          * @return Response
          *
          * @throws Kedavra
          * @throws Exception
          *
-         *
          */
-        abstract public function success(Request $request): Response;
+        abstract public function success(Bag $bag): Response;
 
         /**
          *
@@ -110,7 +133,7 @@ namespace Eywa\Validate {
             return static::$errors->empty()
                 ? call_user_func_array(
                     [$this, 'success'],
-                    [$this->request]
+                    [$this->bag]
                 )
                 : call_user_func_array(
                     [$this, 'error'],
@@ -154,45 +177,269 @@ namespace Eywa\Validate {
 
         /**
          *
-         * @param Request $request
+         * Validate a bag
+         *
+         * @param Bag $bag
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         *
+         */
+        public function handle(Bag $bag): Response
+        {
+            return $this->validate($bag)->call();
+        }
+
+        /**
+         * @param Bag $bag
          *
          * @return Validator
          *
          * @throws Kedavra
          *
          */
-        public function validate(Request $request): Validator
+        public function validate(Bag $bag): Validator
         {
-            $this->request = $request;
+            $this->bag = $bag;
             foreach (static::$rules as $k => $v) {
                 $rules = explode('|', $v);
 
                 foreach ($rules as $rule) {
                     switch ($rule) {
                         case 'email':
-                            if (!(new EmailValidator())->isValid($request->request()->get($k), new RFCValidation())) {
+                            if (!(new EmailValidator())->isValid($bag->get($k), new RFCValidation())) {
                                 static::$errors->push(
                                     sprintf(
                                         static::$messages[VALIDATOR_EMAIL_NOT_VALID],
                                         $k,
-                                        strval($request->request()->get($k))
+                                        strval($bag->get($k))
+                                    )
+                                );
+                            }
+                            break;
+                        case 'array':
+                            if (!is_array($bag->get($k))) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_ARRAY],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'string':
+                            if (!is_string($bag->get($k))) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_STRING],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'url':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_VALIDATE_URL
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_URL],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'ipv4':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_FLAG_IPV4
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_IPV4],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'ipv6':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_FLAG_IPV6
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_IPV6],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'boolean':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_VALIDATE_BOOLEAN
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_BOOLEAN],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+
+                        case 'domain':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_VALIDATE_DOMAIN,
+                                        FILTER_FLAG_HOSTNAME
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_DOMAIN],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'mac':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_VALIDATE_MAC
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_MAC],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'float':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_VALIDATE_FLOAT
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_FLOAT],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'int':
+                            if (
+                                is_false(
+                                    filter_var(
+                                        $bag->get($k),
+                                        FILTER_VALIDATE_INT
+                                    )
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_INT],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'image':
+                            if (
+                                !in_array(
+                                    strval(
+                                        pathinfo(
+                                            $bag->get($k),
+                                            PATHINFO_EXTENSION
+                                        )
+                                    ),
+                                    ['jpeg', 'jpg', 'png', 'bmp', 'gif', 'svg', 'webp']
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_IMAGE],
+                                        strval($k)
+                                    )
+                                );
+                            }
+                            break;
+                        case 'json':
+                            if (
+                                !in_array(
+                                    strval(
+                                        pathinfo(
+                                            $bag->get($k),
+                                            PATHINFO_EXTENSION
+                                        )
+                                    ),
+                                    ['json']
+                                )
+                            ) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_JSON],
+                                        strval($k)
                                     )
                                 );
                             }
                             break;
                         case 'slug':
-                            if (!is_slug($request->request()->get($k))) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SLUG], strval($k)));
+                            if (!is_slug($bag->get($k))) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_SLUG],
+                                        strval($k)
+                                    )
+                                );
                             }
                             break;
 
                         case 'snake':
-                            if (!is_snake($request->request()->get($k))) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SNAKE], strval($k)));
+                            if (!is_snake($bag->get($k))) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_SNAKE],
+                                        strval($k)
+                                    )
+                                );
                             }
                             break;
                         case 'camel':
-                            if (!is_camel($request->request()->get($k))) {
+                            if (!is_camel($bag->get($k))) {
                                 static::$errors->push(
                                     sprintf(
                                         static::$messages[VALIDATOR_ARGUMENT_CAMEL_CASE],
@@ -202,7 +449,7 @@ namespace Eywa\Validate {
                             }
                             break;
                         case 'required':
-                            if (not_def($request->request()->get($k))) {
+                            if (not_def($bag->get($k))) {
                                 static::$errors->push(
                                     sprintf(
                                         static::$messages[VALIDATOR_ARGUMENT_NOT_DEFINED],
@@ -212,7 +459,7 @@ namespace Eywa\Validate {
                             }
                             break;
                         case 'numeric':
-                            $digit = $request->request()->get($k);
+                            $digit = $bag->get($k);
                             if (not_int($digit)) {
                                 static::$errors->push(
                                     sprintf(
@@ -227,7 +474,7 @@ namespace Eywa\Validate {
                             $x = explode(':', $rule);
                             $table = $x[1];
 
-                            if (sql($table)->where($k, EQUAL, $request->request()->get($k))->exist()) {
+                            if (sql($table)->where($k, EQUAL, $bag->get($k))->exist()) {
                                 static::$errors->push(
                                     sprintf(
                                         static::$messages[VALIDATOR_ARGUMENT_NOT_UNIQUE],
@@ -242,7 +489,7 @@ namespace Eywa\Validate {
                             $x = explode(',', $rule);
                             $min = intval(str_replace('between:', '', $x[0]));
                             $max = intval($x[1]);
-                            $value = $request->request()->get($k);
+                            $value = $bag->get($k);
                             if ($value < $min && $value > $max || not_def($value)) {
                                 static::$errors->push(
                                     sprintf(
@@ -258,7 +505,7 @@ namespace Eywa\Validate {
                         case preg_match('#max:([0-9]+)#', $rule) === 1:
                             $max = intval(collect(explode(':', $rule))->last());
 
-                            $value = strval($request->request()->get($k));
+                            $value = strval($bag->get($k));
 
                             $length = mb_strlen($value);
                             if ($length > $max) {
@@ -275,7 +522,7 @@ namespace Eywa\Validate {
                         case preg_match('#min:([0-9]+)#', $rule) === 1:
                             $min = intval(collect(explode(':', $rule))->last());
 
-                            $value = strval($request->request()->get($k));
+                            $value = strval($bag->get($k));
 
                             $length = mb_strlen($value);
                             if ($length < $min) {
