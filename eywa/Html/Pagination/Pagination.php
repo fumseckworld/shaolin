@@ -78,7 +78,7 @@ namespace Eywa\Html\Pagination {
          * @return string
          *
          */
-        public function paginate() : string
+        public function paginate(): string
         {
             if (superior_or_equal($this->limit, $this->total)) {
                 return '';
@@ -87,7 +87,23 @@ namespace Eywa\Html\Pagination {
             $html = '<ul class="' . config('pagination', 'ul_class') . '">';
 
             for ($i = 1; $i != $this->pages; $i++) {
-                $i === $this->current_page ? append($html, '<li class="' . config('pagination', 'li_class') . ' active"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>') : append($html, '<li class="' . config('pagination', 'li_class') . '"><a href="' . $this->url . $i . '" class="' . config('pagination', 'link_class') . '">' . $i . '</a></li>');
+                ($i === $this->current_page) ?
+                    append(
+                        $html,
+                        '<li class="' . config('pagination', 'li_class') . ' active">
+                                    <a href="' . $this->url . $i . '" 
+                                        class="' . config('pagination', 'link_class') . '">' . $i . '</a>
+                                    </li>'
+                    )
+                :
+                    append(
+                        $html,
+                        '<li class="' . config('pagination', 'li_class') . '">
+                                       <a href="' . $this->url . $i . '" 
+                                        class="' . config('pagination', 'link_class') . '">' . $i . '
+                                        </a>
+                                </li>'
+                    );
             }
 
             append($html, '</ul>');

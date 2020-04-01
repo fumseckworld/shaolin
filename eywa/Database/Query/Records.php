@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Database\Query {
 
 
@@ -35,7 +34,7 @@ namespace Eywa\Database\Query {
          *
          *
          */
-        public function take(int $limit, int $offset =0): self;
+        public function take(int $limit, int $offset = 0): self;
 
         /**
          *
@@ -65,7 +64,14 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function join(string $type, string $condition, string $first_table, string $second_table, string $first_param, string $second_param): self;
+        public function join(
+            string $type,
+            string $condition,
+            string $first_table,
+            string $second_table,
+            string $first_param,
+            string $second_param
+        ): self;
 
         /**
          *
@@ -82,7 +88,13 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function union(string $type, string $first_table, string $second_table, string $first_column, string $second_column): self;
+        public function union(
+            string $type,
+            string $first_table,
+            string $second_table,
+            string $first_column,
+            string $second_column
+        ): self;
 
         /**
          *
@@ -199,7 +211,7 @@ namespace Eywa\Database\Query {
          * @return string
          *
          */
-        public function sql():string;
+        public function sql(): string;
 
         /**
          *
@@ -210,7 +222,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function primary():string;
+        public function primary(): string;
 
         /**
          *
@@ -219,7 +231,7 @@ namespace Eywa\Database\Query {
          * @return string
          *
          */
-        public function pagination():string;
+        public function pagination(): string;
 
         /**
          *
@@ -262,7 +274,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function columns():array;
+        public function columns(): array;
         /**
          *
          * Execute the query
@@ -323,7 +335,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function sum():int;
+        public function sum(): int;
 
         /**
          *
@@ -332,6 +344,6 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function connexion():Connect;
+        public function connexion(): Connect;
     }
 }

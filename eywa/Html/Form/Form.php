@@ -105,15 +105,15 @@ namespace Eywa\Html\Form {
 
             $method = static::$method;
             $options = static::$options;
-            $this->form = '<form action="'.$url.'" method="POST" '. collect($options)->each(function ($k, $v) {
-                return $k.'='.'"'.$v.'"';
-            })->join('').'>';
+            $this->form = '<form action="' . $url . '" method="POST" ' . collect($options)->each(function ($k, $v) {
+                return $k . '=' . '"' . $v . '"';
+            })->join('') . '>';
 
             $this->inputs = collect();
 
 
-            $this->add('_method', 'hidden', '', '', ['value'=> $method]);
-            $this->add(CSRF_TOKEN, 'hidden', '', '', ['value'=> csrf_field()]);
+            $this->add('_method', 'hidden', '', '', ['value' => $method]);
+            $this->add(CSRF_TOKEN, 'hidden', '', '', ['value' => csrf_field()]);
             return $this;
         }
 
@@ -132,9 +132,14 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          *
          */
-        protected function add(string $name, string $type, string $label_text, string $help_text  ='', array $options = []): Form
-        {
-            if ($this->has_input($name)) {
+        protected function add(
+            string $name,
+            string $type,
+            string $label_text,
+            string $help_text = '',
+            array $options = []
+        ): Form {
+            if ($this->check($name)) {
                 return  $this;
             } else {
                 $this->inputs->put($name, $name);
@@ -161,27 +166,30 @@ namespace Eywa\Html\Form {
                 case 'url':
                 case 'week':
                 case 'datetime':
-
-
-                    $this->append('<div class="'.$this->class('separator', 'form-group').'">');
+                    $this->append('<div class="' . $this->class('separator', 'form-group') . '">');
 
                     $x = collect($options)->each(function ($k, $v) {
-                        return $k.'='.'"'.$v.'"';
+                        return $k . '=' . '"' . $v . '"';
                     })->join(' ');
 
                     $help_id = def($help_text) ? "help-$name" : '';
 
-                    $help_input = def($help_text) ? '<small id="'.$help_id.'" class="'.$this->class('help', 'form-help').'">'.$help_text.'</small>' : '';
+                    $help_input =
+                        def($help_text) ?
+                            '<small id="' . $help_id . '" 
+                            class="' . $this->class('help', 'form-help') . '">' . $help_text . '</small>' : '';
 
-                    $help_atribute = def($help_text) ? ' aria-describedby="'.$help_id.'" ': '';
+                    $help_atribute = def($help_text) ? ' aria-describedby="' . $help_id . '" ' : '';
 
                     if (equal($type, 'hidden')) {
-                        $input = '<input type="'.$type.'" name="'.$name.'" id="'.$name.'" '.$x.'>';
+                        $input = '<input type="' . $type . '" name="' . $name . '" id="' . $name . '" ' . $x . '>';
                     } else {
-                        $input = '<div class="'.$this->class('separator', 'form-group').'">
-                                        '.$help_input.'
-                                        <label for="'.$name.'">'.$label_text.'</label>
-                                        <input type="'.$type.'" name="'.$name.'"  class="'.$this->class('input', 'form-control').'" id="'.$name.'"  '.$help_atribute.'  '.$x.'>
+                        $input = '<div class="' . $this->class('separator', 'form-group') . '">
+                                        ' . $help_input . '
+                                        <label for="' . $name . '">' . $label_text . '</label>
+                                        <input type="' . $type . '" name="' . $name . '"  
+                                            class="' . $this->class('input', 'form-control') . '" 
+                                            id="' . $name . '"  ' . $help_atribute . '  ' . $x . '>
                                   </div>';
                     }
 
@@ -189,25 +197,30 @@ namespace Eywa\Html\Form {
                     $this->end();
                     break;
                 case 'textarea':
-
-                    $this->append('<div class="'.$this->class('separator', 'form-group').'">');
+                    $this->append('<div class="' . $this->class('separator', 'form-group') . '">');
 
                     $x = collect($options)->each(function ($k, $v) {
-                        return $k.'='.'"'.$v.'"';
+                        return $k . '=' . '"' . $v . '"';
                     })->join('');
 
                     $value = array_key_exists('value', $options) ? $options['value'] :  '';
 
                     $help_id = def($help_text) ? "help-$name" : '';
 
-                    $help_input = def($help_text) ? '<div class="'.$this->class('help-separator', 'help-separator').'"><small id="'.$help_id.' " class="'.$this->class('help-text', 'help-text').'">'.$help_text.'</small></div>' : '';
+                    $help_input = def($help_text) ?
+                        '<div class="' . $this->class('help-separator', 'help-separator') . '">
+                            <small id="' . $help_id . '"
+                             class="' . $this->class('help-text', 'help-text') . '">' . $help_text . '</small>
+                        </div>' : '';
 
                     $help_atribute = '';
 
-                    $input = '<div class="'.$this->class('separator', 'form-group').'">
-                                    '.$help_input.'
-                                    <label for="'.$name.'">'.$label_text.'</label>
-                                    <textarea name="'.$name.'" class="'.$this->class('input', 'form-control').'" id="'.$name.'" '.$help_atribute.' '.$x.' >'.$value.'</textarea>
+                    $input = '<div class="' . $this->class('separator', 'form-group') . '">
+                                    ' . $help_input . '
+                                    <label for="' . $name . '">' . $label_text . '</label>
+                                    <textarea name="' . $name . '"
+                                     class="' . $this->class('input', 'form-control') . '" 
+                                     id="' . $name . '" ' . $help_atribute . ' ' . $x . ' >' . $value . '</textarea>
                                    
                               </div>';
 
@@ -216,28 +229,31 @@ namespace Eywa\Html\Form {
                     $this->end();
                     break;
                 case 'file':
-                    $this->append('<div class="'.$this->class('separator', 'form-group').'">');
+                    $this->append('<div class="' . $this->class('separator', 'form-group') . '">');
 
                     $help_id = def($help_text) ? "help-$name" : '';
 
-                    $help_input = def($help_text) ? '<small id="'.$help_id.' " class="text-muted">'.$help_text.'</small>' : '';
+                    $help_input = def($help_text) ?
+                        '<small id="' . $help_id . ' " class="text-muted">' . $help_text . '</small>' : '';
 
-                    $help_atribute = def($help_text) ? ' aria-describedby="'.$help_id.'" ': '';
+                    $help_atribute = def($help_text) ? ' aria-describedby="' . $help_id . '" ' : '';
                     $x = collect($options)->each(function ($k, $v) {
-                        return $k.'='.'"'.$v.'"';
+                        return $k . '=' . '"' . $v . '"';
                     })->join('');
 
-                    $input = '<div class="'.$this->class('separator', 'form-group').'">
-                                    '.$help_input.'
-                                    <label for="'.$name.'">'.$label_text.'</label>
-                                    <input name="files[]"  class="'.$this->class('input', 'form-control').'" id="'.$name.'" '.$help_atribute.' '.$x.' multiple>
+                    $input = '<div class="' . $this->class('separator', 'form-group') . '">
+                                    ' . $help_input . '
+                                    <label for="' . $name . '">' . $label_text . '</label>
+                                    <input name="files[]"  class="' . $this->class('input', 'form-control') . '" 
+                                    id="' . $name . '" ' . $help_atribute . ' ' . $x . ' multiple>
                               </div>';
                     $this->append($input);
 
                     $this->end();
                     break;
                 case 'hidden':
-                    $x = '<input type="hidden" name="'.$name.'" class="'.$this->class('hide', 'hide').'" value="'.$options['value'] .'">';
+                    $x = '<input type="hidden" name="' . $name . '"
+                     class="' . $this->class('hide', 'hide') . '" value="' . $options['value'] . '">';
                     $this->append($x);
                     break;
             }
@@ -255,10 +271,12 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          *
          */
-        protected function get(string $submit_text ='submit'): string
+        protected function get(string $submit_text = 'submit'): string
         {
-            $input = '<div class="'.$this->class('separator', 'form-group').'">
-                        <button type="submit" class="'.$this->class('submit', 'btn btn-submit').'">'.$submit_text.'</button>
+            $input = '<div class="' . $this->class('separator', 'form-group') . '">
+                        <button type="submit" class="' . $this->class('submit', 'btn btn-submit') . '">'
+                            . $submit_text . '
+                        </button>
                       </div>';
             $this->append($input);
 
@@ -291,7 +309,7 @@ namespace Eywa\Html\Form {
          */
         protected function row(): Form
         {
-            return $this->append('<div class="'.$this->class('row', 'row').'">');
+            return $this->append('<div class="' . $this->class('row', 'row') . '">');
         }
 
         /**
@@ -303,7 +321,7 @@ namespace Eywa\Html\Form {
          * @return bool
          *
          */
-        private function has_input(string $name): bool
+        private function check(string $name): bool
         {
             return $this->inputs->has($name);
         }
@@ -335,7 +353,7 @@ namespace Eywa\Html\Form {
          * @throws Kedavra
          *
          */
-        private function class(string $x, string $value =''):string
+        private function class(string $x, string $value = ''): string
         {
             $x = collect(config('form', 'class'))->get($x);
             return def($x) ? $x : $value;

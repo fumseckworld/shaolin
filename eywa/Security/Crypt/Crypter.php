@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Eywa\Security\Crypt {
@@ -13,14 +14,14 @@ namespace Eywa\Security\Crypt {
          * The encryption key.
          *
          */
-        private string $key ='';
+        private string $key;
 
         /**
          *
          * The algorithm used for encryption.
          *
          */
-        private string $cipher = '';
+        private string $cipher ;
 
         /**
          * Create a new encrypter instance.
@@ -34,7 +35,7 @@ namespace Eywa\Security\Crypt {
 
             $this->cipher = strtolower(strval(env('CIPHER', 'AES-128-CBC')));
 
-            is_true(collect(openssl_get_cipher_methods())->not_exist($this->cipher), true, "The cipher is not valid");
+            is_true(collect(openssl_get_cipher_methods())->notExist($this->cipher), true, "The cipher is not valid");
         }
 
 
@@ -49,7 +50,19 @@ namespace Eywa\Security\Crypt {
          */
         public static function generateKey(): string
         {
-            return base64_encode(random_bytes(intval(openssl_cipher_iv_length(strtolower(strval(env('CIPHER', 'AES-128-CBC')))))));
+            return base64_encode(
+                random_bytes(
+                    intval(
+                        openssl_cipher_iv_length(
+                            strtolower(
+                                strval(
+                                    env('CIPHER', 'AES-128-CBC')
+                                )
+                            )
+                        )
+                    )
+                )
+            );
         }
 
         /**
@@ -163,7 +176,7 @@ namespace Eywa\Security\Crypt {
          *
          * @throws Exception
          */
-        protected function getJsonPayload($payload):array
+        protected function getJsonPayload($payload): array
         {
             $payload = json_decode(base64_decode($payload), true);
 
@@ -186,7 +199,8 @@ namespace Eywa\Security\Crypt {
          */
         protected function validPayload($payload)
         {
-            return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac']) && strlen(strval(base64_decode($payload['iv'], true))) === openssl_cipher_iv_length($this->cipher);
+            return is_array($payload) && isset($payload['iv'], $payload['value'], $payload['mac'])
+                && strlen(strval(base64_decode($payload['iv'], true))) === openssl_cipher_iv_length($this->cipher);
         }
 
         /**

@@ -15,14 +15,14 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:controller';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
-                // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new controller')
-                // the full command description shown when running the command with
-                // the "--help" option
-                ->setHelp('php shaolin make:controller controller_name')->addArgument('controller', InputArgument::REQUIRED, 'The controller name.')->addArgument('directory', InputArgument::OPTIONAL, 'The controller directory')->addArgument('layout', InputArgument::OPTIONAL, 'the layout to use');
+                ->setHelp('php shaolin make:controller controller_name')
+                ->addArgument('controller', InputArgument::REQUIRED, 'The controller name.')
+                ->addArgument('directory', InputArgument::OPTIONAL, 'The controller directory')
+                ->addArgument('layout', InputArgument::OPTIONAL, 'the layout to use');
         }
 
         /**
@@ -42,17 +42,19 @@ namespace Eywa\Console\Generate {
 
             if (preg_match("#^[a-z]([a-z_]+)$#", $controller) !== 1) {
                 $io->error('You must use snake case syntax to generate the controller');
-                return  1;
+                return 1;
             }
 
-            if (def($directory) && ! is_dir(base('app', 'Controllers', $directory))) {
+            if (def($directory) && !is_dir(base('app', 'Controllers', $directory))) {
                 mkdir(base('app', 'Controllers', $directory));
             }
 
 
             $controller_class = collect(explode('_', $controller))->for('ucfirst')->join('');
 
-            $controller_file  = def($directory)?  base('app', 'Controllers', $directory, "$controller_class.php"): base('app', 'Controllers', "$controller_class.php");
+            $controller_file = def($directory)
+                ? base('app', 'Controllers', $directory, "$controller_class.php")
+                : base('app', 'Controllers', "$controller_class.php");
 
             if (file_exists($controller_file)) {
                 $io->error(sprintf('The %s controller already exist', $controller_class));
@@ -63,11 +65,14 @@ namespace Eywa\Console\Generate {
 
             $namespace = def($directory) ? "App\Controllers\\$directory" : 'App\Controllers';
 
-            $layout = def($layout) ? "protected static string \$layout = '$layout';" :  "protected static string \$layout = 'layout';";
+            $layout = def($layout)
+                ? "protected static string \$layout = '$layout';"
+                : "protected static string \$layout = 'layout';";
 
             $directory = def($directory) ? "protected static string \$directory = '$directory';" : '';
 
-            if ((new File($controller_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File($controller_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 namespace $namespace { 
 
@@ -98,12 +103,13 @@ namespace $namespace {
         }
         
     }
-}")->flush()) {
-                $io->success("The $controller_class controller has been generated successfully");
+}")->flush()
+            ) {
+                $io->success(sprintf('The %s controller has been generated successfully', $controller_class));
 
                 return 0;
             }
-            $io->error("The $controller_class controller generation has failed");
+            $io->error(sprintf('The %s controller generation has failed', $controller_class));
             return 1;
         }
     }

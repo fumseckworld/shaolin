@@ -15,7 +15,7 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:container';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
 
@@ -75,7 +75,8 @@ namespace Eywa\Console\Generate {
                 return 1;
             }
 
-            if ((new File("$file", EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File("$file", EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
 namespace $namespace;
@@ -94,7 +95,8 @@ class $class extends Container
         return \$this;
     }
 }
-")->flush()) {
+")->flush()
+            ) {
                 $io->success(sprintf('The %s container has been generated successfully', $class));
 
                 return 0;

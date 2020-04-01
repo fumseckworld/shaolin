@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console\Database {
 
 
@@ -17,9 +16,10 @@ namespace Eywa\Console\Database {
     {
         protected static $defaultName = 'db:clean';
 
-        protected function configure():void
+        protected function configure(): void
         {
-            $this->setDescription("Truncate all tables")->addArgument('env', InputArgument::REQUIRED, 'The base environment');
+            $this->setDescription("Truncate all tables")
+            ->addArgument('env', InputArgument::REQUIRED, 'The base environment');
         }
 
         /**

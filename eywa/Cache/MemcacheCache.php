@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Eywa\Cache {
 
-    use \Memcache;
+    use Memcache;
 
     class MemcacheCache implements CacheInterface
     {
@@ -14,7 +14,7 @@ namespace Eywa\Cache {
          */
         private Memcache $cache;
 
-        public function __construct(string $host ='localhost', int $port = 11211, bool $persistent =true)
+        public function __construct(string $host = 'localhost', int $port = 11211, bool $persistent = true)
         {
             $this->cache = new Memcache();
             $this->cache->addServer($host, $port, $persistent);
@@ -43,7 +43,7 @@ namespace Eywa\Cache {
          */
         public function destroy(string $key): bool
         {
-            return $this->has($key) ? $this->cache->delete($key): false;
+            return $this->has($key) ? $this->cache->delete($key) : false;
         }
 
         /**

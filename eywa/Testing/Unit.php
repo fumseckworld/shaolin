@@ -1,9 +1,11 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Testing {
 
     use Eywa\Collection\Collect;
+    use Eywa\Database\Model\Model;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
     use Eywa\Http\Request\ServerRequest;
@@ -31,7 +33,7 @@ namespace Eywa\Testing {
          * @throws ReflectionException
          *
          */
-        public function visit(string $url, string  $method = GET): Response
+        public function visit(string $url, string $method = GET): Response
         {
             return (new Router(new ServerRequest($url, $method)))->run();
         }
@@ -52,12 +54,17 @@ namespace Eywa\Testing {
 
         /**
          *
+         *
+         * @param string $model
+         *
          * @return Auth
          *
+         * @throws Kedavra
+         *
          */
-        public function auth(): Auth
+        public function auth(string $model): Auth
         {
-            return new Auth(new ArraySession());
+            return new Auth(new ArraySession(), $model);
         }
 
         /**

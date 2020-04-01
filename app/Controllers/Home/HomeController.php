@@ -2,8 +2,7 @@
 
 namespace App\Controllers\Home {
 
-    use App\Forms\Auth\LoginForm;
-    use App\Models\User;
+    use App\Models\Users\Users;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
@@ -18,22 +17,23 @@ namespace App\Controllers\Home {
         /**
          * @inheritDoc
          */
-        public function before_action(Request $request): void
+        public function before(Request $request): void
         {
         }
         
         /**
          * @inheritDoc
          */
-        public function after_action(Request $request): void
+        public function after(Request $request): void
         {
         }
 
 
-        public function not_found()
+        public function notFound()
         {
             return $this->view('404', 'not found', 'error');
         }
+
         /**
          *
          * @param Request $request
@@ -45,14 +45,14 @@ namespace App\Controllers\Home {
          */
         public function home(Request $request): Response
         {
-            $users = User::all();
+            $users = Users::all();
 
             return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
         }
 
         public function hello(Request $request): Response
         {
-            return $this->view('hello', 'say hello', 'hello', ['name'=> $request->args()->get('name', 'jean')]);
+            return $this->view('hello', 'say hello', 'hello', ['name' => $request->args()->get('name', 'jean')]);
         }
     }
 }

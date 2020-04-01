@@ -63,7 +63,7 @@ namespace Eywa\Http\Response {
          */
         public function __construct(string $content, string $url = '', int $status = 200, array $headers = [])
         {
-            $this->set_content($content)->set_status($status)->set_headers($headers)->set_url($url);
+            $this->setContent($content)->setStatus($status)->setHeaders($headers)->setUrl($url);
         }
 
         /**
@@ -96,7 +96,7 @@ namespace Eywa\Http\Response {
          * @throws Kedavra
          *
          */
-        public function set_status(int $status): Response
+        public function setStatus(int $status): Response
         {
             not_in(STATUS_CODES, $status, true, 'The status code is not valid');
 
@@ -115,7 +115,7 @@ namespace Eywa\Http\Response {
          * @return Response
          *
          */
-        public function set_headers(array $headers): Response
+        public function setHeaders(array $headers): Response
         {
             $this->headers = $headers;
 
@@ -145,7 +145,7 @@ namespace Eywa\Http\Response {
          * @return Response
          *
          */
-        public function set_content(string $content): Response
+        public function setContent(string $content): Response
         {
             $this->content = $content;
 
@@ -161,7 +161,7 @@ namespace Eywa\Http\Response {
          */
         public function send(): Response
         {
-            return $this->send_headers()->send_content();
+            return $this->sendHeaders()->sendContent();
         }
 
         /**
@@ -169,7 +169,7 @@ namespace Eywa\Http\Response {
          *
          * @return $this
          */
-        public function send_content()
+        public function sendContent()
         {
             if (not_cli()) {
                 echo $this->content();
@@ -185,7 +185,7 @@ namespace Eywa\Http\Response {
          * @return Response
          *
          */
-        public function send_headers(): Response
+        public function sendHeaders(): Response
         {
             // headers have already been sent by the developer
             if (headers_sent()) {
@@ -271,7 +271,7 @@ namespace Eywa\Http\Response {
          * @return Response
          *
          */
-        private function set_url(string $url): Response
+        private function setUrl(string $url): Response
         {
             $this->url = def($url) ? $url : '';
             return $this;

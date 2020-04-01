@@ -37,6 +37,16 @@ namespace Eywa\Html\Navigation {
             is_false(is_string($this->nav_a_class), true, 'The navigation a class must be a string');
         }
 
+        /**
+         *
+         *
+         * Display the navigation bar
+         *
+         * @return string
+         *
+         * @throws Kedavra
+         *
+         */
         public function display(): string
         {
             $html = sprintf('<nav class="%s" ><ul>', $this->navigation_class);
@@ -44,7 +54,16 @@ namespace Eywa\Html\Navigation {
 
             foreach ($this->links as $k => $v) {
                 $link = cli()  ? strval($k) : url($k) ;
-                append($html, sprintf('<li class="%s"><a href="%s" class="%s">%s</a></li>', $this->navigation_li_class, $link, $this->nav_a_class, $v));
+                append(
+                    $html,
+                    sprintf(
+                        '<li class="%s"><a href="%s" class="%s">%s</a></li>',
+                        $this->navigation_li_class,
+                        $link,
+                        $this->nav_a_class,
+                        $v
+                    )
+                );
             }
             append($html, '</ul></nav>');
             return $html;

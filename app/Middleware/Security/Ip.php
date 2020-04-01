@@ -1,12 +1,11 @@
 <?php
 
-
-namespace App\Middleware {
+namespace App\Middleware\Security {
 
     use Eywa\Http\Middleware\Middleware;
     use Eywa\Http\Request\ServerRequest;
 
-    class IpMiddleware extends Middleware
+    class Ip extends Middleware
     {
     
         /**
@@ -14,6 +13,7 @@ namespace App\Middleware {
          */
         public function check(ServerRequest $request): void
         {
+            // TODO: Implement check() method.
         }
     }
 }

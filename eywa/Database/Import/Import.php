@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Eywa\Database\Import {
 
 
@@ -39,7 +38,7 @@ namespace Eywa\Database\Import {
          * @return bool
          *
          */
-        public function import() : bool
+        public function import(): bool
         {
             $password = $this->connect->password();
             $username = $this->connect->username();

@@ -2,7 +2,6 @@
 
 namespace Eywa\Console\Routes {
 
-    use Eywa\Collection\Collect;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
@@ -15,22 +14,6 @@ namespace Eywa\Console\Routes {
     {
         protected static $defaultName = "route:update";
 
-        /**
-         *
-         * The result asked
-         *
-         */
-        private Collect $entry;
-
-        /**
-         *
-         * The value to find
-         *
-         */
-        private string $search = '';
-        /**
-         * @var Sql
-         */
         private Sql $sql;
 
 
@@ -47,7 +30,7 @@ namespace Eywa\Console\Routes {
 
             $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
         }
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('Update a route');
         }
@@ -56,9 +39,9 @@ namespace Eywa\Console\Routes {
          * @return array<string>
          * @throws Kedavra
          */
-        public function name():array
+        public function name(): array
         {
-            $names= collect();
+            $names = collect();
 
             foreach ($this->sql->get() as $value) {
                 $names->push($value->name);
@@ -79,67 +62,102 @@ namespace Eywa\Console\Routes {
         public function interact(InputInterface $input, OutputInterface $output)
         {
             $io = new SymfonyStyle($input, $output);
-            $this->entry = collect();
+            $entry = collect();
 
             if (def($this->sql->get())) {
                 do {
                     $this->sql = (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
                     do {
-                        $this->search = $io->askQuestion((new Question('What is the name of the route to update ?', 'root'))->setAutocompleterValues($this->name()));
-                    } while (not_def($this->sql->where('name', EQUAL, $this->search)->get()));
+                        $search = $io->askQuestion(
+                            (new Question('What is the name of the route to update ?', 'root'))
+                            ->setAutocompleterValues($this->name())
+                        );
+                    } while (not_def($this->sql->where('name', EQUAL, $search)->get()));
 
 
-                    $route = collect($this->sql->where('name', EQUAL, $this->search)->get())->get(0);
+                    $route = collect($this->sql->where('name', EQUAL, $search)->get())->get(0);
 
 
                     do {
-                        $this->entry->put('name', $io->askQuestion((new Question('Change the route name ? ', $route->name))));
-                    } while (not_def($this->entry->get('name')) || def($this->sql->where('name', EQUAL, $this->entry->get('name'))->get()) && $this->entry->get('name') !== $route->name);
+                        $entry->put('name', $io->askQuestion((new Question('Change the route name ?', $route->name))));
+                    } while (
+                        not_def($entry->get('name'))
+                        || def($this->sql->where('name', EQUAL, $entry->get('name'))->get())
+                        && $entry->get('name') !== $route->name
+                    );
 
                     do {
-                        $this->entry->put('method', strtoupper($io->askQuestion((new Question('Change the route method ? ', $route->method)))));
-                    } while (not_def($this->entry->get('method')) || not_in(METHOD_SUPPORTED, $this->entry->get('method')));
+                        $entry->put('method', strtoupper(
+                            $io->askQuestion(
+                                (new Question('Change the route method ?', $route->method))
+                            )
+                        ));
+                    } while (not_def($entry->get('method')) || not_in(METHOD_SUPPORTED, $entry->get('method')));
 
                     do {
-                        $this->entry->put('url', $io->askQuestion((new Question('Change the route url ? ', $route->url))));
-                    } while (not_def($this->entry->get('url')) || def($this->sql->where('url', EQUAL, $this->entry->get('url'))->get()) && $this->entry->get('url') !== $route->url);
+                        $entry->put('url', $io->askQuestion((new Question('Change the route url ?', $route->url))));
+                    } while (
+                        not_def($entry->get('url'))
+                        || def($this->sql->where('url', EQUAL, $entry->get('url'))->get())
+                        && $entry->get('url') !== $route->url
+                    );
 
                     do {
-                        $this->entry->put('directory', $io->askQuestion((new Question('Change the route namespace ? ', $route->directory))->setAutocompleterValues(controllers_directory())));
-                    } while (not_def($this->entry->get('directory')));
+                        $entry->put('directory', $io->askQuestion(
+                            (new Question('Change the route namespace ?', $route->directory))
+                            ->setAutocompleterValues(controllers_directory())
+                        ));
+                    } while (not_def($entry->get('directory')));
                     do {
-                        $this->entry->put('controller', $io->askQuestion((new Question(sprintf('Change the route controller ? '), $route->controller))->setAutocompleterValues(controllers($this->entry->get('directory')))));
-                    } while (is_null($this->entry->get('controller')));
+                        $entry->put(
+                            'controller',
+                            $io->askQuestion(
+                                (new Question(sprintf('Change the route controller ?'), $route->controller))
+                                ->setAutocompleterValues(
+                                    controllers($entry->get('directory'))
+                                )
+                            )
+                        );
+                    } while (is_null($entry->get('controller')));
 
                     do {
-                        if ($this->entry->get('directory') !== 'Controllers') {
-                            $class = '\App\Controllers\\' . $this->entry->get('directory') . '\\' .$this->entry->get('controller');
+                        if ($entry->get('directory') !== 'Controllers') {
+                            $class = '\App\Controllers\\' . $entry->get('directory') . '\\' . $entry->get('controller');
                         } else {
-                            $class = '\App\Controllers\\'  .$this->entry->get('controller');
+                            $class = '\App\Controllers\\'  . $entry->get('controller');
                         }
 
                         if (class_exists($class)) {
-                            $class = new $class;
+                            $class = new $class();
 
-                            $this->entry->put('action', $io->askQuestion((new Question('Change the route action ? ', $route->action))->setAutocompleterValues(get_class_methods($class))));
+                            $entry->put('action', $io->askQuestion(
+                                (new Question('Change the route action ?', $route->action))
+                                ->setAutocompleterValues(get_class_methods($class))
+                            ));
                         } else {
-                            $this->entry->put('action', $io->askQuestion((new Question('Change the route action ? ', $route->action))));
+                            $entry->put('action', $io->askQuestion(
+                                (new Question('Change the route action ?', $route->action))
+                            ));
                         }
-                    } while (not_def($this->entry->get('action')) && not_def($this->sql->where('action', EQUAL, $this->entry->get('action'))->get()) && $route->action !== $this->entry->get('action'));
+                    } while (
+                        not_def($entry->get('action')) &&
+                        not_def($this->sql->where('action', EQUAL, $entry->get('action'))->get()) &&
+                        $route->action !== $entry->get('action')
+                    );
 
 
-                    $this->entry->put('created_at', $route->created_at);
-                    $this->entry->put('updated_at', now()->toDateTimeString());
+                    $entry->put('created_at', $route->created_at);
+                    $entry->put('updated_at', now()->toDateTimeString());
 
 
-                    if ($this->sql->update(intval($route->id), $this->entry->all())) {
+                    if ($this->sql->update(intval($route->id), $entry->all())) {
                         $io->success('The route has been updated successfully');
                     } else {
                         $io->error('The route has not been updated');
                         return 1;
                     }
 
-                    $this->entry->clear();
+                    $entry->clear();
                 } while ($io->confirm('Continue to update routes ?', true));
                 return 0;
             }

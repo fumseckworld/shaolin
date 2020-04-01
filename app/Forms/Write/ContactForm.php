@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Forms\Write;
 
 use Eywa\Html\Form\Form;

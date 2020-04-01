@@ -101,7 +101,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function response(string $content, int $status = 200, array $headers = [], string $url =''): Response;
+        public function response(string $content, int $status = 200, array $headers = [], string $url = ''): Response;
 
         /**
          *
@@ -194,10 +194,15 @@ namespace Eywa\Application {
          *
          * Get and instance of autentication
          *
+         * @param string $model
+         *
          * @return Auth
          *
+         * @throws Kedavra
+         * @throws Exception
+         *
          */
-        public function auth(): Auth;
+        public function auth(string $model): Auth;
 
         /**
          *
@@ -326,7 +331,7 @@ namespace Eywa\Application {
          *
          *
          */
-        public function view(string $view, string $title, string $description, array $args =[]): Response;
+        public function view(string $view, string $title, string $description, array $args = []): Response;
 
         /**
          *
@@ -398,7 +403,7 @@ namespace Eywa\Application {
          * @throws Kedavra
          *
          */
-        public function back(string $message ='', bool $success = true): Response;
+        public function back(string $message = '', bool $success = true): Response;
 
         /**
          *
@@ -412,7 +417,7 @@ namespace Eywa\Application {
          * @return Response
          * @throws Kedavra
          */
-        public function to(string $route, array $route_args = [], string $message ='', bool $success = true): Response;
+        public function to(string $route, array $route_args = [], string $message = '', bool $success = true): Response;
 
         /**
          *

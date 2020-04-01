@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Ioc\Dev;
 
 use Eywa\Ioc\Container;

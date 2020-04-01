@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Testing\Http {
 
     use Eywa\Exception\Kedavra;

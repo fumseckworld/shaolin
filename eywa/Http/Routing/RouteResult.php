@@ -18,7 +18,7 @@ namespace Eywa\Http\Routing {
          * The controller namespace
          *
          */
-        private string $namespace = '';
+        private string $namespace ;
 
 
         /**
@@ -26,14 +26,14 @@ namespace Eywa\Http\Routing {
          * The route controller
          *
          */
-        private string $controller = '';
+        private string $controller ;
 
         /**
          *
          * The route action&
          *
          */
-        private string $action = '';
+        private string $action;
 
 
         /**
@@ -43,14 +43,14 @@ namespace Eywa\Http\Routing {
          * @var array<mixed>
          *
          */
-        private array $args = [];
+        private array $args;
 
         /**
          *
          * The http  method used
          *
          */
-        private string $method = '';
+        private string $method;
 
         /**
          *
@@ -89,7 +89,7 @@ namespace Eywa\Http\Routing {
          */
         public function class()
         {
-            return  $this->namespace() .'\\' . $this->controller();
+            return  $this->namespace() . '\\' . $this->controller();
         }
 
         /**
@@ -99,21 +99,41 @@ namespace Eywa\Http\Routing {
          */
         public function call(): Response
         {
-            is_false(class_exists($this->class()), true, "The class {$this->controller()} not exist inside the Controllers directory");
+            is_false(
+                class_exists(
+                    $this->class()
+                ),
+                true,
+                sprintf(
+                    'The class %s not exist inside the Controllers directory',
+                    $this->controller()
+                )
+            );
 
-            is_false(method_exists($this->class(), $this->action()), true, "The action {$this->action()} not exist inside the {$this->controller()} controller");
+            is_false(
+                method_exists(
+                    $this->class(),
+                    $this->action()
+                ),
+                true,
+                sprintf(
+                    'The action %s not exist inside the %s controller',
+                    $this->action(),
+                    $this->controller()
+                )
+            );
 
             $x = new ReflectionClass($this->class());
 
 
             $request = cli() ? new Request([], [], [], [], [], $this->args()) : Request::make($this->args());
 
-            $x->getMethod('before_action')->invoke($x->newInstance(), $request);
+            $x->getMethod('before')->invoke($x->newInstance(), $request);
 
             $result = $x->getMethod($this->action())->invoke($x->newInstance(), $request);
 
 
-            $x->getMethod('after_action')->invoke($x->newInstance(), $request);
+            $x->getMethod('after')->invoke($x->newInstance(), $request);
 
             return $result;
         }

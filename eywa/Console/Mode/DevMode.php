@@ -13,7 +13,7 @@ namespace Eywa\Console\Mode {
     {
         protected static $defaultName = 'app:dev';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('Put the application in development mode');
         }

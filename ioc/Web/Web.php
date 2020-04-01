@@ -1,8 +1,8 @@
 <?php
 
-
 namespace Ioc\Web;
 
+use Eywa\Cache\FileCache;
 use Eywa\Html\Form\Form;
 use Eywa\Ioc\Container;
 use Eywa\Ioc\Ioc;
@@ -16,8 +16,6 @@ class Web extends Container
     public function add(): Ioc
     {
         return
-            $this->init(Form::class, function () {
-                return 'form';
-            });
+            $this->set('cache', new FileCache());
     }
 }

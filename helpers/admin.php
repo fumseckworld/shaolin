@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 use Eywa\Application\App;
 use Eywa\Configuration\Config;
 use Eywa\Database\Connexion\Connect;
@@ -12,7 +11,6 @@ use Eywa\Exception\Kedavra;
 use Eywa\File\File;
 use Eywa\Http\Request\Request;
 use Eywa\Ioc\Ioc;
-use Eywa\Security\Authentication\Auth;
 use Eywa\Security\Hashing\Hash;
 use Eywa\Session\Session;
 use Faker\Factory;
@@ -21,12 +19,31 @@ use Whoops\Run;
 
 if (!function_exists('controllers_directory')) {
     /**
+     *
+     * List all controllers directories
+     *
      * @return array
+     *
      */
     function controllers_directory(): array
     {
         $x =  scandir(base('app', 'Controllers'));
         return is_bool($x) ? [] : collect($x)->del(['.','..'])->all();
+    }
+}
+
+if (!function_exists('views')) {
+
+    /**
+     *
+     * List all views
+     *
+     * @return array
+     *
+     */
+    function views(): array
+    {
+        return array_merge(files(base('app', 'Views', '*.php')), files(base('app', 'Views', '*', '*.php')));
     }
 }
 if (!function_exists('only')) {
@@ -39,7 +56,7 @@ if (!function_exists('only')) {
      * @throws Kedavra
      *
      */
-    function https():bool
+    function https(): bool
     {
         return cli() ? false : Request::make()->secure();
     }
@@ -96,7 +113,7 @@ if (!function_exists('files')) {
      * @return array
      *
      */
-    function files(string $pattern):array
+    function files(string $pattern): array
     {
         $files = glob($pattern);
 
@@ -193,7 +210,13 @@ if (!function_exists('production')) {
      */
     function production(): Connect
     {
-        return new Connect(strval(env('DB_DRIVER', 'mysql')), strval(env('DB_NAME', 'eywa')), strval(env('DB_USERNAME', 'eywa')), strval(env('DB_PASSWORD', 'eywa')), strval(env('DB_HOST', 'localhost')));
+        return new Connect(
+            strval(env('DB_DRIVER', 'mysql')),
+            strval(env('DB_NAME', 'eywa')),
+            strval(env('DB_USERNAME', 'eywa')),
+            strval(env('DB_PASSWORD', 'eywa')),
+            strval(env('DB_HOST', 'localhost'))
+        );
     }
 }
 
@@ -205,7 +228,13 @@ if (!function_exists('development')) {
      */
     function development(): Connect
     {
-        return new Connect(strval(env('DEVELOP_DB_DRIVER', 'mysql')), strval(env('DEVELOP_DB_NAME', 'ikran')), strval(env('DEVELOP_DB_USERNAME', 'ikran')), strval(env('DEVELOP_DB_PASSWORD', 'ikran')), strval(env('DEVELOP_DB_HOST', 'localhost')));
+        return new Connect(
+            strval(env('DEVELOP_DB_DRIVER', 'mysql')),
+            strval(env('DEVELOP_DB_NAME', 'ikran')),
+            strval(env('DEVELOP_DB_USERNAME', 'ikran')),
+            strval(env('DEVELOP_DB_PASSWORD', 'ikran')),
+            strval(env('DEVELOP_DB_HOST', 'localhost'))
+        );
     }
 }
 if (!function_exists('sql')) {
@@ -237,7 +266,7 @@ if (!function_exists('int')) {
      * @return bool
      *
      */
-    function int($digit):bool
+    function int($digit): bool
     {
         if (is_int($digit)) {
             return true;
@@ -259,7 +288,7 @@ if (!function_exists('not_int')) {
      * @return bool
      *
      */
-    function not_int($digit):bool
+    function not_int($digit): bool
     {
         return ! int($digit);
     }
@@ -350,7 +379,8 @@ if (!function_exists('history')) {
      */
     function history(): string
     {
-        return '<button onclick="window.history.back()" class="' . config('history', 'class') . '">' . config('history', 'text') . '</button>';
+        return '<button onclick="window.history.back()"
+        class="' . config('history', 'class') . '">' . config('history', 'text') . '</button>';
     }
 }
 
@@ -470,6 +500,176 @@ if (!function_exists('is_false')) {
         return $x;
     }
 }
+
+
+if (!function_exists('snake_to_camel')) {
+
+
+    /**
+     *
+     * Get a camelcase string format with snakecase format
+     *
+     * @param string $snake
+     *
+     * @return string
+     *
+     */
+    function snake_to_camel(string $snake): string
+    {
+        return collect(explode('_', $snake))->for('ucfirst')->join('');
+    }
+}
+
+if (!function_exists('camel_to_snake')) {
+
+
+    /**
+     *
+     * Get a snakecase string format with camelcase format
+     *
+     * @param string $snake
+     *
+     * @return string
+     *
+     */
+    function camel_to_snake(string $snake): string
+    {
+        return strtolower(strval(preg_replace('/(?<!^)[A-Z]/', '_$0', $snake)));
+    }
+}
+
+if (!function_exists('is_snake')) {
+
+
+    /**
+     *
+     * check if string is a snakecase
+     *
+     * @param string $snake
+     *
+     * @return bool
+     *
+     */
+    function is_snake(string $snake): bool
+    {
+        return preg_match("#^[a-z]([a-z_]+)$#", $snake) == 1;
+    }
+}
+
+if (!function_exists('is_slug')) {
+
+
+    /**
+     *
+     * check if string is a snakecase
+     *
+     * @param string $slug
+     *
+     * @return bool
+     *
+     */
+    function is_slug(string $slug): bool
+    {
+        return preg_match("#^[a-z]([a-z0-9\-]+)$#", $slug) == 1;
+    }
+}
+
+if (!function_exists('sluglify')) {
+
+
+    /**
+     *
+     * convert a sring in a slug
+     *
+     * @param string $slug
+     *
+     * @return string
+     *
+     */
+    function sluglify(string $slug): string
+    {
+        $space = function (string $x) {
+            return collect(explode(' ', $x))->for('trim')->for('strtolower')->join('-');
+        };
+
+        $point = function (string $point) {
+            $x = function ($x) {
+                return  str_replace(
+                    '__',
+                    '_',
+                    str_replace(
+                        '-',
+                        '_',
+                        str_replace(
+                            '--',
+                            '_',
+                            str_replace('.', '_', $x)
+                        )
+                    )
+                );
+            };
+
+            return collect(explode('_', call_user_func_array($x, [$point])))->join('-');
+        };
+        $comma = function (string $comma) {
+            $x = function ($x) {
+                return str_replace('-', '', str_replace(',', '_', $x));
+            };
+
+            return collect(explode('_', call_user_func_array($x, [$comma])))->join('-');
+        };
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+
+        if (def(strstr($slug, ' '))) {
+            $slug = call_user_func_array($space, [$slug]);
+        }
+
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+
+        if (def(strstr($slug, ','))) {
+            $slug = call_user_func_array($comma, [$slug]);
+        }
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+        if (def(strstr($slug, '.'))) {
+            $slug = call_user_func_array($point, [$slug]);
+        }
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('is_camel')) {
+
+
+    /**
+     *
+     * convert a sring in a slug
+     *
+     * @param string $camel
+     *
+     * @return bool
+     *
+     */
+    function is_camel(string $camel): bool
+    {
+        return preg_match("#^[A-Z]([A-Za-z]+)$#", $camel) == 1;
+    }
+}
+
+
 if (!function_exists('is_true')) {
     /**
      *
@@ -598,8 +798,13 @@ if (!function_exists('connect')) {
      *
      * @throws Kedavra
      */
-    function connect(string $driver, string $base, string $user = '', string $password = '', string $host = 'localhost'): Connect
-    {
+    function connect(
+        string $driver,
+        string $base,
+        string $user = '',
+        string $password = '',
+        string $host = 'localhost'
+    ): Connect {
         return new Connect($driver, $base, $user, $password, $host);
     }
 }
@@ -708,7 +913,7 @@ if (!function_exists('whoops')) {
      */
     function whoops(): Run
     {
-        return (new Run())->appendHandler(new PrettyPageHandler)->register();
+        return (new Run())->appendHandler(new PrettyPageHandler())->register();
     }
 }
 
@@ -722,18 +927,26 @@ if (!function_exists('commands')) {
      */
     function commands(): array
     {
-        $commands = base('app', 'Console', '*.php');
-        $namespace = 'App\Console';
-        $data = files($commands);
-        $commands = collect();
-        foreach ($data as $c) {
-            $command = collect(explode(DIRECTORY_SEPARATOR, $c))->last();
-            $command = collect(explode('.', $command))->first();
-            $command = "$namespace\\$command";
-            $commands->set(new $command());
+        $commands = array_merge(
+            files(base('app', 'Console', '*.php')),
+            files(base('app', 'Console', '*', '*.php'))
+        );
+
+        $x = collect();
+        foreach ($commands as $k => $v) {
+            $v = '\\' .
+                collect(explode(
+                    '.',
+                    collect(explode(DIRECTORY_SEPARATOR, strval(strstr($v, 'app'))))
+                    ->for('ucfirst')
+                    ->join('\\')
+                ))
+            ->first();
+
+            $x->set(new $v());
         }
 
-        return $commands->all();
+        return $x->all();
     }
 }
 
@@ -748,7 +961,7 @@ if (!function_exists('controllers')) {
     function controllers(string $directory): array
     {
         if ($directory !== 'Controllers') {
-            $controllers =files(base('app', 'Controllers', $directory, '*.php'));
+            $controllers = files(base('app', 'Controllers', $directory, '*.php'));
         } else {
             $controllers = files(base('app', 'Controllers', '*.php'));
         }
@@ -820,7 +1033,7 @@ if (!function_exists('logged')) {
      */
     function logged(): bool
     {
-        return cli() ? false : (new Auth(new Session()))->connected();
+        return cli() ? false : (new Eywa\Session\Session())->has('user');
     }
 }
 

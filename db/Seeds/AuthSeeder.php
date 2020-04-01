@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Evolution\Seeds {
 
     use Eywa\Database\Seed\Seeder;
@@ -28,17 +27,16 @@ namespace Evolution\Seeds {
                 switch ($column) {
                     case 'username':
                         $seeder->set($column, $generator->name());
-                    break;
+                        break;
                     case 'email':
                         $seeder->set($column, $generator->email);
-                    break;
+                        break;
                     case 'password':
                         $seeder->set($column, secure_password('00000000'));
-                    break;
+                        break;
                     default:
                         $seeder->primary($column);
-                    break;
-
+                        break;
                 }
             }
         }

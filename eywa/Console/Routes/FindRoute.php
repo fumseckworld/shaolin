@@ -19,12 +19,6 @@ namespace Eywa\Console\Routes {
 
         /**
          *
-         * The search value
-         *
-         */
-        private string $search ='';
-        /**
-         *
          */
         private Sql $sql;
 
@@ -43,7 +37,7 @@ namespace Eywa\Console\Routes {
             $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
         }
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('Find a route');
         }
@@ -57,13 +51,14 @@ namespace Eywa\Console\Routes {
          * @return int
          * @throws Kedavra
          */
-        public function interact(InputInterface $input, OutputInterface $output):int
+        public function interact(InputInterface $input, OutputInterface $output): int
         {
             $io  = new SymfonyStyle($input, $output);
             do {
                 do {
-                    $this->search = $io->askQuestion((new Question('Type your search '))->setAutocompleterValues($this->all()));
-                } while (not_def($this->search));
+                    $search =
+                        $io->askQuestion((new Question('Type your search '))->setAutocompleterValues($this->all()));
+                } while (not_def($search));
 
                 $table = new Table($output);
                 $io = new SymfonyStyle($input, $output);
@@ -74,7 +69,7 @@ namespace Eywa\Console\Routes {
 
                     ->setHeaders(['id', 'method', 'name','url','controller','action','namespace','created','updated'])
                     ->setRows(
-                        $this->sql->like($this->search)->to(PDO::FETCH_ASSOC)
+                        $this->sql->like($search)->to(PDO::FETCH_ASSOC)
                     )
                 ;
                 $table->render();
@@ -150,7 +145,7 @@ namespace Eywa\Console\Routes {
          * @return array<string>
          * @throws Kedavra
          */
-        private function action():array
+        private function action(): array
         {
             $x = collect();
 
@@ -165,9 +160,14 @@ namespace Eywa\Console\Routes {
          * @return array<string>
          * @throws Kedavra
          */
-        private function all():array
+        private function all(): array
         {
-            return collect()->merge(collect(METHOD_SUPPORTED)->for('strtolower')->all())->merge($this->name())->merge($this->url())->merge($this->action())->merge($this->controller())->all();
+            return collect()
+                ->merge(collect(METHOD_SUPPORTED)->for('strtolower')->all())
+                ->merge($this->name())->merge($this->url())
+                ->merge($this->action())
+                ->merge($this->controller())
+            ->all();
         }
     }
 }

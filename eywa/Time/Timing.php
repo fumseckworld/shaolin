@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Eywa\Time {
@@ -42,7 +41,7 @@ namespace Eywa\Time {
          * @return int
          *
          */
-        public function check():int
+        public function check(): int
         {
             $this->end_time = now();
 

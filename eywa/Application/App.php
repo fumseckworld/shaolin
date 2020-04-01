@@ -109,7 +109,10 @@ namespace Eywa\Application {
          */
         public function view(string $view, string $title, string $description, array $args = []): Response
         {
-            return (new Response((new View($view, $title, $description, $args, static::$layout, static::$directory))->render()))->send();
+            return (
+                new Response(
+                    (new View($view, $title, $description, $args, static::$layout, static::$directory))->render()
+                ))->send();
         }
 
         /**
@@ -170,7 +173,18 @@ namespace Eywa\Application {
             }
 
             if (equal($this->config('mode', 'mode'), 'down')) {
-                return (new Response((new View('maintenance', HTTP_SERVICE_UNAVAILABLE_TEXT, 'Site in maintenance, we comming soon'))->render(), '', 503, ['Retry-After'=> 600]))->send();
+                return
+                    (new Response(
+                        (new View(
+                            'maintenance',
+                            HTTP_SERVICE_UNAVAILABLE_TEXT,
+                            'We comming soon'
+                        ))
+                        ->render(),
+                        '',
+                        503,
+                        ['Retry-After' => 600]
+                    ))->send();
             }
 
             return (new Router(ServerRequest::generate()))->run();
@@ -193,14 +207,18 @@ namespace Eywa\Application {
                 $success ?  $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
             }
 
-            return  not_cli() ? (new RedirectResponse($this->request()->server()->get('HTTP_REFERER')))->send() : (new RedirectResponse('/'))->send();
+            return  not_cli()
+                ? (new RedirectResponse(
+                    $this->request()->server()->get('HTTP_REFERER')
+                ))->send()
+                : (new RedirectResponse('/'))->send();
         }
 
         /**
          * @inheritDoc
          *
          */
-        public function to(string $route, array $route_args= [], string $message = '', bool $success = true): Response
+        public function to(string $route, array $route_args = [], string $message = '', bool $success = true): Response
         {
             if (def($message)) {
                 $success ?  $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
@@ -257,9 +275,9 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function auth(): Auth
+        public function auth(string $model): Auth
         {
-            return  new Auth(new Session());
+            return  new Auth(new Session(), $model);
         }
 
         /**
@@ -364,7 +382,7 @@ namespace Eywa\Application {
          */
         public function form(string $form): string
         {
-            return class_exists($form) && method_exists($form, 'make') ? (new $form)->make() : '';
+            return class_exists($form) && method_exists($form, 'make') ? (new $form())->make() : '';
         }
 
         /**
@@ -372,7 +390,8 @@ namespace Eywa\Application {
          */
         public function check(string $form, Request $request): Response
         {
-            return class_exists($form) && method_exists($form, 'validate') ? (new $form)->validate($request)->call() : new Response('Form has not been found');
+            return class_exists($form) && method_exists($form, 'validate')
+            ? (new $form())->validate($request)->call() : new Response('Form has not been found');
         }
     }
 }

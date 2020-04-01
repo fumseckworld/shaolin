@@ -1,6 +1,6 @@
 <?php
-    
-    namespace Eywa\Console\Generate;
+
+namespace Eywa\Console\Generate {
 
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputArgument;
@@ -11,15 +11,17 @@
     class GenerateView extends Command
     {
         protected static $defaultName = "make:view";
-        
-        protected function configure():void
+
+        protected function configure(): void
         {
-            $this->setDescription('Generate a view')->addArgument('view', InputArgument::REQUIRED, 'the view name')->addArgument('dir', InputArgument::OPTIONAL, 'the view dir');
+            $this->setDescription('Generate a view')
+                ->addArgument('view', InputArgument::REQUIRED, 'the view name')
+                ->addArgument('dir', InputArgument::OPTIONAL, 'the view dir');
         }
-        
+
         /**
-         * @param  InputInterface   $input
-         * @param  OutputInterface  $output
+         * @param InputInterface $input
+         * @param OutputInterface $output
          *
          * @return int|void|null
          */
@@ -35,10 +37,10 @@
                     mkdir(base('app', 'Views', $dir));
                 }
             }
-            
-            $view =  collect(explode('.', strval($input->getArgument('view'))))->first();
-            
-            append($view, '.php');
+
+            $view = collect(explode('.', strval($input->getArgument('view'))))->first();
+
+            append($view, '.html');
             $view = def($dir) ? base('app', 'Views', $dir, $view) : base('app', 'Views', $view);
 
             if (file_exists($view)) {
@@ -47,10 +49,16 @@
             }
 
             if (touch($view)) {
-                $io->success(sprintf('The %s view has been generated successfully', strval($input->getArgument('view'))));
+                $io->success(
+                    sprintf(
+                        'The %s view has been generated successfully',
+                        strval($input->getArgument('view'))
+                    )
+                );
                 return 0;
             }
             $io->error(sprintf('The %s view generation has failed', strval($input->getArgument('view'))));
             return 1;
         }
     }
+}

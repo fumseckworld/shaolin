@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Security\Csrf {
 
 
@@ -40,9 +39,19 @@ namespace Eywa\Security\Csrf {
         {
             is_false($this->session->has(CSRF_TOKEN), true, 'Csrf token was not found');
 
-            is_true(different((new Crypter())->decrypt($this->session->get('server')), Request::make()->server()->get('SERVER_NAME', 'eywa')), true, 'Server is invalid');
+            is_true(
+                different(
+                    (new Crypter())
+                        ->decrypt(
+                            $this->session->get('server')
+                        ),
+                    Request::make()->server()->get('SERVER_NAME', 'eywa')
+                ),
+                true,
+                'Server is invalid'
+            );
 
-            $this->remove_token();
+            $this->removeToken();
 
             return true;
         }
@@ -54,7 +63,7 @@ namespace Eywa\Security\Csrf {
          * @return bool
          *
          */
-        public function remove_token(): bool
+        public function removeToken(): bool
         {
             return $this->session->destroy([CSRF_TOKEN]);
         }
@@ -71,7 +80,15 @@ namespace Eywa\Security\Csrf {
                 return $this->session->get(CSRF_TOKEN);
             }
 
-            $server = $this->session->has('server') ? $this->session->get('server') : $this->session->set('server', (new Crypter())->encrypt(Request::make()->server()->get('SERVER_NAME', 'eywa')))->get('server');
+            $server = $this->session->has('server')
+                ? $this->session->get('server')
+                : $this->session->set(
+                    'server',
+                    (new Crypter())->encrypt(
+                        Request::make()->server()
+                        ->get('SERVER_NAME', 'eywa')
+                    )
+                )->get('server');
             $x = bin2hex(random_bytes(16));
 
             $csrf = $this->session->set('csrf', $x)->get('csrf');

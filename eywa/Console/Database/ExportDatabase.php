@@ -19,10 +19,10 @@ namespace Eywa\Console\Database {
          * @throws Kedavra
          * @throws Exception
          */
-        protected function configure():void
+        protected function configure(): void
         {
             $base = app()->connexion()->base();
-            $this->setDescription("Export the $base base content into a sql file");
+            $this->setDescription(sprintf('Export the %s base content into a sql file', $base));
         }
 
         /**
@@ -36,11 +36,11 @@ namespace Eywa\Console\Database {
         {
             $io = new SymfonyStyle($input, $output);
             if ((new Export(app()->connexion()))->dump()) {
-                $io->success('The base was successfully saved');
+                $io->success(sprintf('The %s base has been exported successfully', app()->connexion()->base()));
                 return 0;
             }
 
-            $io->error('The export task has failed');
+            $io->error('Exportation has failed');
             return 1;
         }
     }

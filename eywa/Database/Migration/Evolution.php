@@ -1,5 +1,6 @@
 <?php
 
+declare(strict_types=1);
 
 namespace Eywa\Database\Migration {
 
@@ -11,7 +12,7 @@ namespace Eywa\Database\Migration {
 
     class Evolution
     {
-        private string $from = '';
+        private string $from;
 
         private Collect $columns;
 
@@ -19,7 +20,7 @@ namespace Eywa\Database\Migration {
 
         private Table $table;
 
-        private string $env = '';
+        private string $env;
 
         /**
          *
@@ -71,16 +72,16 @@ namespace Eywa\Database\Migration {
                 switch ($type) {
                     case 'string':
                         append($sql, "$column {$this->text()} ");
-                    break;
+                        break;
                     case 'longtext':
                         append($sql, "$column {$this->longtext()} ");
-                    break;
+                        break;
                     case 'datetime':
                         append($sql, "$column {$this->datetime()} ");
-                    break;
+                        break;
                     default:
                         append($sql, "$column $type ");
-                    break;
+                        break;
                 }
 
                 if ($size !== 0) {
@@ -221,7 +222,7 @@ namespace Eywa\Database\Migration {
          */
         public function refresh(string $column, string $new_column_name): bool
         {
-            return $this->table->rename_column($column, $new_column_name);
+            return $this->table->renameColumn($column, $new_column_name);
         }
 
         /**
@@ -235,17 +236,32 @@ namespace Eywa\Database\Migration {
          * @throws Kedavra
          *
          */
-        public function remove_foreign(array $columns): bool
+        public function removeForeign(array $columns): bool
         {
             $x = collect();
             foreach ($columns as $column) {
                 switch ($this->connexion()->driver()) {
                     case MYSQL:
-                        $x->push($this->connexion()->set(sprintf('ALTER TABLE %s DROP FOREIGN KEY %s', $this->from, $column))->execute());
-                    break;
+                        $x->push(
+                            $this->connexion()->set(
+                                sprintf(
+                                    'ALTER TABLE %s DROP FOREIGN KEY %s',
+                                    $this->from,
+                                    $column
+                                )
+                            )
+                            ->execute()
+                        );
+                        break;
                     case POSTGRESQL:
-                        $x->push($this->connexion()->set(sprintf('ALTER TABLE %s DROP CONSTRAINT %s', $this->from, $column))->execute());
-                    break;
+                        $x->push($this->connexion()->set(
+                            sprintf(
+                                'ALTER TABLE %s DROP CONSTRAINT %s',
+                                $this->from,
+                                $column
+                            )
+                        )->execute());
+                        break;
                     default:
                         return false;
                 }
@@ -267,7 +283,7 @@ namespace Eywa\Database\Migration {
          * @throws Kedavra
          *
          */
-        public function add(string $column, string $type, int $size = 0, array $constraints= []): Evolution
+        public function add(string $column, string $type, int $size = 0, array $constraints = []): Evolution
         {
             if (equal($type, 'primary')) {
                 return $this->primary($column);
@@ -292,8 +308,13 @@ namespace Eywa\Database\Migration {
          * @return Evolution
          *
          */
-        public function foreign(string $column, string $reference, string $reference_column, string $on = '', string $do =''): Evolution
-        {
+        public function foreign(
+            string $column,
+            string $reference,
+            string $reference_column,
+            string $on = '',
+            string $do = ''
+        ): Evolution {
             $constraint = " FOREIGN KEY ($column) REFERENCES $reference($reference_column)";
 
             if (def($on, $do)) {
@@ -320,17 +341,17 @@ namespace Eywa\Database\Migration {
                     $type = 'INT';
                     $constraints = ['PRIMARY KEY NOT NULL AUTO_INCREMENT'];
                     $this->columns->push(compact('column', 'type', 'size', 'constraints'));
-                break;
+                    break;
                 case POSTGRESQL:
                     $type = 'SERIAL';
                     $constraints =  ['PRIMARY KEY'];
                     $this->columns->push(compact('column', 'type', 'size', 'constraints'));
-                break;
+                    break;
                 case SQLITE:
                     $type = 'INTEGER';
                     $constraints = ['PRIMARY KEY AUTOINCREMENT'];
                     $this->columns->push(compact('column', 'type', 'size', 'constraints'));
-                break;
+                    break;
             }
 
             return $this;
@@ -391,7 +412,7 @@ namespace Eywa\Database\Migration {
          * @throws Kedavra
          *
          */
-        private function text():string
+        private function text(): string
         {
             switch ($this->connexion()->driver()) {
                 case MYSQL:
@@ -402,7 +423,6 @@ namespace Eywa\Database\Migration {
                     return  'text';
                 default:
                     return  '';
-
             }
         }
     }

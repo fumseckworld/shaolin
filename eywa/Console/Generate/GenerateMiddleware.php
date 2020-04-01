@@ -14,14 +14,13 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:middleware';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
-                // the short description shown while running "php bin/console list"
                 ->setDescription('Create a new middleware')
-                // the full command description shown when running the command with
-                // the "--help" option
-                ->setHelp('php shaolin make:middleware name')->addArgument('middleware', InputArgument::REQUIRED, 'The middleware name.');
+                ->setHelp('php shaolin make:middleware name')
+                ->addArgument('middleware', InputArgument::REQUIRED, 'The middleware name.')
+                ->addArgument('directory', InputArgument::OPTIONAL, 'The middleware directory.');
         }
 
         /**
@@ -44,21 +43,33 @@ namespace Eywa\Console\Generate {
 
             $class = collect(explode('_', $middleware))->for('ucfirst')->join('');
 
-            $file  =  base('app', 'Middleware', "$class.php");
+            $directory = ucfirst(strval($input->getArgument('directory')));
+
+            if (def($directory)) {
+                if (!is_dir(base('app', 'Middleware', $directory))) {
+                    mkdir(base('app', 'Middleware', $directory));
+                }
+            }
+            $file = def($directory) ? base('app', 'Middleware', $directory, "$class.php")
+                :  base('app', 'Middleware', "$class.php");
+
+            $namespace = def($directory) ? 'App\Middleware\\' . $directory : 'App\Middleware';
 
             if (file_exists($file)) {
                 $io->error(sprintf('The %s middleware already exist', $class));
 
                 return 1;
             }
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
-namespace App\Middleware {
+            if (
+                (new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+
+
+namespace $namespace {
 
     use Eywa\Http\Middleware\Middleware;
     use Eywa\Http\Request\ServerRequest;
-    use Eywa\Http\Response\Response;
 
     class $class extends Middleware
     {
@@ -71,7 +82,8 @@ namespace App\Middleware {
             // TODO: Implement check() method.
         }
     }
-}")->flush()) {
+}\n")->flush()
+            ) {
                 $io->success(sprintf('The %s middleware was generated successfully', $class));
 
                 return 0;

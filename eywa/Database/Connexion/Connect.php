@@ -80,8 +80,13 @@ namespace Eywa\Database\Connexion {
          * @inheritDoc
          *
          */
-        public function __construct(string $driver, string $base, string $username ='', string $password ='', string $host = LOCALHOST)
-        {
+        public function __construct(
+            string $driver,
+            string $base,
+            string $username = '',
+            string $password = '',
+            string $host = LOCALHOST
+        ) {
             $this->driver = $driver;
             $this->base = $base;
             $this->username = $username;
@@ -135,7 +140,7 @@ namespace Eywa\Database\Connexion {
                     $result = $this->pdo()->prepare($query);
 
                     foreach ($this->args as $k => $arg) {
-                        $result->bindParam($k +1, $arg);
+                        $result->bindParam($k + 1, $arg);
                     }
 
                     $result->execute();
@@ -171,7 +176,7 @@ namespace Eywa\Database\Connexion {
          * @return bool
          * @throws Kedavra
          */
-        public function create_database(string ...$bases): bool
+        public function createDatabase(string ...$bases): bool
         {
             $x = collect();
             foreach ($bases as $base) {
@@ -186,7 +191,7 @@ namespace Eywa\Database\Connexion {
          * @return bool
          * @throws Kedavra
          */
-        public function remove_database(string ...$bases): bool
+        public function removeDatabase(string ...$bases): bool
         {
             $x = collect();
             if (in_array($this->driver(), [MYSQL,POSTGRESQL])) {
@@ -210,11 +215,13 @@ namespace Eywa\Database\Connexion {
          * @throws Kedavra
          *
          */
-        public function remove_user(string $user): bool
+        public function removeUser(string $user): bool
         {
             $x = collect();
             if (in_array($this->driver(), [MYSQL,POSTGRESQL])) {
-                $this->mysql() ? $x->push($this->set("DROP USER IF EXISTS '$user'@'{$this->host}'")->execute()) : $x->push($this->set("DROP USER IF EXISTS $user")->execute());
+                $this->mysql()
+                ?   $x->push($this->set("DROP USER IF EXISTS '$user'@'{$this->host}'")->execute())
+                :   $x->push($this->set("DROP USER IF EXISTS $user")->execute());
             }
             return  $x->ok();
         }
@@ -226,13 +233,17 @@ namespace Eywa\Database\Connexion {
          * @return bool
          * @throws Kedavra
          */
-        public function create_user(string $user, string $password, string $base): bool
+        public function createUser(string $user, string $password, string $base): bool
         {
             switch ($this->driver()) {
                 case MYSQL:
-                    return $this->set("CREATE USER IF NOT EXISTS '$user'@'localhost' IDENTIFIED BY '$password';")->set("GRANT ALL PRIVILEGES ON $base.* TO '$user'@'localhost';")->execute();
+                    return $this->set("CREATE USER IF NOT EXISTS '$user'@'localhost' IDENTIFIED BY '$password';")
+                            ->set("GRANT ALL PRIVILEGES ON $base.* TO '$user'@'localhost';")
+                            ->execute();
                 case POSTGRESQL:
-                   return $this->set("CREATE USER $user WITH PASSWORD '$password' LOGIN;")->set("GRANT ALL PRIVILEGES ON DATABASE $base TO $user")->execute();
+                    return $this->set("CREATE USER $user WITH PASSWORD '$password' LOGIN;")
+                            ->set("GRANT ALL PRIVILEGES ON DATABASE $base TO $user")
+                        ->execute();
                 default:
                     return false;
             }
@@ -251,20 +262,6 @@ namespace Eywa\Database\Connexion {
         public function commit(): bool
         {
             return $this->pdo()->commit();
-        }
-
-        /**
-         *
-         * Get the connexion infos
-         *
-         * @return string
-         *
-         */
-        public function info(): string
-        {
-            return collect(get_object_vars($this))->del(['connexion','queries','args','options'])->each(function ($k, $v) {
-                return "\$$k=$v;";
-            })->join('');
         }
 
         /**
@@ -381,7 +378,7 @@ namespace Eywa\Database\Connexion {
          * @return bool
          *
          */
-        public function sqlite():bool
+        public function sqlite(): bool
         {
             return $this->driver() === SQLITE;
         }
@@ -432,7 +429,13 @@ namespace Eywa\Database\Connexion {
          */
         public function development(): Connect
         {
-            return new static(strval(env('DEVELOP_DB_DRIVER', 'mysql')),strval(env('DEVELOP_DB_NAME', 'ikran')),strval(env('DEVELOP_DB_USERNAME', 'ikran')),strval(env('DEVELOP_DB_PASSWORD', 'ikran')),strval(env('DEVELOP_DB_HOST', 'localhost')));
+            return new static(
+                strval(env('DEVELOP_DB_DRIVER', 'mysql')),
+                strval(env('DEVELOP_DB_NAME', 'ikran')),
+                strval(env('DEVELOP_DB_USERNAME', 'ikran')),
+                strval(env('DEVELOP_DB_PASSWORD', 'ikran')),
+                strval(env('DEVELOP_DB_HOST', 'localhost'))
+            );
         }
 
         /**
@@ -443,9 +446,45 @@ namespace Eywa\Database\Connexion {
         {
             if (is_null($this->connexion)) {
                 if (equal($this->driver, MYSQL)) {
-                    $this->connexion = def($this->base) ? new PDO(sprintf('mysql:host=%s;port=3306;dbname=%s;charset=UTF8', $this->host, $this->base), $this->username, $this->password) :  new PDO(sprintf('mysql:host=%s;port=3306;charset=UTF8', $this->host), $this->username, $this->password);
+                    $this->connexion = def($this->base)
+                    ?
+                        new PDO(
+                            sprintf(
+                                'mysql:host=%s;port=3306;dbname=%s;charset=UTF8',
+                                $this->host,
+                                $this->base
+                            ),
+                            $this->username,
+                            $this->password
+                        )
+                    :
+                        new PDO(
+                            sprintf(
+                                'mysql:host=%s;port=3306;charset=UTF8',
+                                $this->host
+                            ),
+                            $this->username,
+                            $this->password
+                        );
                 } elseif (equal($this->driver, POSTGRESQL)) {
-                    $this->connexion = def($this->base) ? new PDO(sprintf('pgsql:host=%s;port=5432;dbname=%s;options=\'--client_encoding=UTF8\'', $this->host, $this->base), $this->username, $this->password) :  new PDO(sprintf('pgsql:host=%s;port=5432;options=\'--client_encoding=UTF8\'', $this->host), $this->username, $this->password);
+                    $this->connexion = def($this->base)
+                    ? new PDO(
+                        sprintf(
+                            'pgsql:host=%s;port=5432;dbname=%s;options=\'--client_encoding=UTF8\'',
+                            $this->host,
+                            $this->base
+                        ),
+                        $this->username,
+                        $this->password
+                    )
+                        :  new PDO(
+                            sprintf(
+                                'pgsql:host=%s;port=5432;options=\'--client_encoding=UTF8\'',
+                                $this->host
+                            ),
+                            $this->username,
+                            $this->password
+                        );
                 } else {
                     $this->connexion =  new PDO(sprintf('sqlite:%s', $this->base), '', '');
                 }

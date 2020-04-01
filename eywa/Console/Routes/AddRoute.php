@@ -3,9 +3,7 @@
 namespace Eywa\Console\Routes {
 
 
-    use Eywa\Collection\Collect;
     use Eywa\Database\Query\Sql;
-    use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
@@ -17,11 +15,7 @@ namespace Eywa\Console\Routes {
     {
         protected static $defaultName = "route:add";
 
-        private Collect $routes;
-
-        private Collect $entry;
-
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('Create a new route');
         }
@@ -38,74 +32,110 @@ namespace Eywa\Console\Routes {
         {
             $io = new SymfonyStyle($input, $output);
 
-            $this->routes = collect();
-
-            $this->entry = collect();
+            $entry = collect();
 
             $methods = collect(METHOD_SUPPORTED)->for('strtolower')->all();
 
             do {
                 $sql =  new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
                 do {
-                    $this->entry->put('name', $io->askQuestion((new Question('What name should be used for represent the new route url ?'))));
-                } while (not_def($this->entry->get('name')) || def($sql->where('name', EQUAL, $this->entry->get('name'))->get()));
+                    $entry->put('name', $io->askQuestion(
+                        (new Question('What name should be used for represent the new route url ?'))
+                    ));
+                } while (not_def($entry->get('name')) || def($sql->where('name', EQUAL, $entry->get('name'))->get()));
 
                 do {
-                    $route = $this->entry->get('name');
-                    $this->entry->put('method', strtoupper($io->askQuestion((new Question(sprintf('What method should be used for the new %s route ?', $route), GET))->setAutocompleterValues($methods))));
-                } while (not_in(METHOD_SUPPORTED, $this->entry->get('method')));
+                    $route = $entry->get('name');
+                    $entry->put('method', strtoupper($io->askQuestion(
+                        (new Question(
+                            sprintf('What method should be used for the new %s route ?', $route),
+                            GET
+                        ))->setAutocompleterValues($methods)
+                    )));
+                } while (not_in(METHOD_SUPPORTED, $entry->get('method')));
 
                 do {
-                    $route = $this->entry->get('name');
-                    $this->entry->put('url', $io->askQuestion((new Question(sprintf('What url should be used by the %s route for accessing the controller ?', $route)))));
-                    if (is_null($this->entry->get('url'))) {
-                        $this->entry->put('url', '');
+                    $route = $entry->get('name');
+                    $entry->put('url', $io->askQuestion(
+                        (new Question(
+                            sprintf(
+                                'What url should be used by the %s route for accessing the controller ?',
+                                $route
+                            )
+                        ))
+                    ));
+                    if (is_null($entry->get('url'))) {
+                        $entry->put('url', '');
                     }
-                } while (not_def($this->entry->get('url') || def($sql->where('url', EQUAL, $this->entry->get('url'))->get())));
+                } while (not_def($entry->get('url') || def($sql->where('url', EQUAL, $entry->get('url'))->get())));
 
                 do {
-                    $this->entry->put('directory', ucfirst($io->askQuestion((new Question('Place the controller in a special directory ?', 'Controllers'))->setAutocompleterValues(controllers_directory()))));
-                } while (is_null($this->entry->get('directory')));
+                    $entry->put('directory', ucfirst($io->askQuestion(
+                        (new Question('Place the controller in a special directory ?', 'Controllers'))
+                        ->setAutocompleterValues(controllers_directory())
+                    )));
+                } while (is_null($entry->get('directory')));
 
                 do {
-                    $route = $this->entry->get('name');
-                    $this->entry->put('controller', $io->askQuestion((new Question(sprintf('What controller name should be called by the %s route ?', $route)))->setAutocompleterValues(controllers($this->entry->get('directory')))));
-                } while (is_null($this->entry->get('controller')));
+                    $route = $entry->get('name');
+                    $entry->put('controller', $io->askQuestion(
+                        (new Question(sprintf('What controller name should be called by the %s route ?', $route)))
+                        ->setAutocompleterValues(controllers($entry->get('directory')))
+                    ));
+                } while (is_null($entry->get('controller')));
 
-                if ($this->entry->get('directory') !== 'Controllers') {
-                    $class = '\App\Controllers\\' . $this->entry->get('directory') . '\\' .$this->entry->get('controller');
+                if ($entry->get('directory') !== 'Controllers') {
+                    $class = '\App\Controllers\\' . $entry->get('directory') . '\\' . $entry->get('controller');
                 } else {
-                    $class = '\App\Controllers\\'  .$this->entry->get('controller');
+                    $class = '\App\Controllers\\'  . $entry->get('controller');
                 }
 
                 do {
                     if (class_exists($class)) {
-                        $class = new $class;
+                        $class = new $class();
 
-                        $controller = $this->entry->get('controller');
-                        $route = $this->entry->get('name');
+                        $controller = $entry->get('controller');
+                        $route = $entry->get('name');
 
-                        $this->entry->put('action', $io->askQuestion((new Question(sprintf('What action in the %s controller should be executed by the %s route ?', $controller, $route)))->setAutocompleterValues(get_class_methods($class))));
+                        $entry->put('action', $io->askQuestion(
+                            (new Question(
+                                sprintf(
+                                    'What action in the %s controller should be executed by the %s route ?',
+                                    $controller,
+                                    $route
+                                )
+                            ))
+                            ->setAutocompleterValues(get_class_methods($class))
+                        ));
                     } else {
-                        $controller = $this->entry->get('controller');
-                        $route = $this->entry->get('name');
+                        $controller = $entry->get('controller');
+                        $route = $entry->get('name');
 
-                        $this->entry->put('action', $io->askQuestion((new Question(sprintf('What action in the %s controller should be executed by the %s route ?', $controller, $route)))));
+                        $entry->put('action', $io->askQuestion(
+                            (new Question(sprintf(
+                                'What action in the %s controller should be executed by the %s route ?',
+                                $controller,
+                                $route
+                            )))
+                        ));
                     }
-                } while (def($sql->where('action', EQUAL, $this->entry->get('action'))->get()) || not_def($this->entry->get('action')));
+                } while (
+                    def($sql->where('action', EQUAL, $entry->get('action'))->get())
+                    || not_def($entry->get('action'))
+                );
 
-                $this->entry->put('created_at', now()->toDateTimeString())->put('updated_at', now()->toDateTimeString());
+                $entry->put('created_at', now()->toDateTimeString())->put('updated_at', now()->toDateTimeString());
 
 
-                if ($sql->create($this->entry->all())) {
-                    $route = $this->entry->get('name');
+                if ($sql->create($entry->all())) {
+                    $route = $entry->get('name');
                     $io->success(sprintf('The %s route has been created successfully', $route));
                 } else {
                     $io->error(sprintf('Failed to create the %s route', $route));
                     return 1;
                 }
 
-                $this->entry->clear();
+                $entry->clear();
             } while ($io->confirm('Do you want continue to create new routes ? ', true));
             return 0;
         }

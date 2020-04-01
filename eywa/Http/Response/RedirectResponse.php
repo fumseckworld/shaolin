@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Eywa\Http\Response {
@@ -62,7 +61,7 @@ namespace Eywa\Http\Response {
          * @return Response
          *
          */
-        public function send():Response
+        public function send(): Response
         {
             return $this->response->send();
         }

@@ -28,7 +28,7 @@ namespace Eywa\Http\Routing {
          * The request method
          *
          */
-        private string $method = GET;
+        private string $method;
 
 
         /**
@@ -64,7 +64,7 @@ namespace Eywa\Http\Routing {
 
             $this->method = $request->method();
 
-            $this->call_middleware($request);
+            $this->callMiddleware($request);
         }
 
         /**
@@ -78,13 +78,21 @@ namespace Eywa\Http\Routing {
          */
         public function run(): Response
         {
-            foreach ((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->where('method', EQUAL, $this->method)->get() as $route) {
+            foreach (
+                (new Sql(
+                    connect(
+                        SQLITE,
+                        base('routes', 'web.sqlite3')
+                    ),
+                    'routes'
+                ))->where('method', EQUAL, $this->method)->get() as $route
+            ) {
                 if ($this->match($route->url, $route)) {
                     $this->route = $route;
                     return  $this->result()->call();
                 }
             }
-            return $this->not_found();
+            return $this->notFound();
         }
 
 
@@ -93,7 +101,13 @@ namespace Eywa\Http\Routing {
          */
         public function result(): RouteResult
         {
-            return new RouteResult($this->route->controller, $this->route->directory, $this->route->action, $this->parameters, $this->method);
+            return new RouteResult(
+                $this->route->controller,
+                $this->route->directory,
+                $this->route->action,
+                $this->parameters,
+                $this->method
+            );
         }
 
         /**
@@ -149,7 +163,7 @@ namespace Eywa\Http\Routing {
          * @throws Kedavra
          *
          */
-        private function not_found(): Response
+        private function notFound(): Response
         {
             return (new RedirectResponse(route('404')))->send();
         }
@@ -166,28 +180,49 @@ namespace Eywa\Http\Routing {
          * @throws ReflectionException
          *
          */
-        private function call_middleware(ServerRequest $request): void
+        private function callMiddleware(ServerRequest $request): void
         {
             $middleware_dir = 'Middleware';
 
-            $namespace = 'App' . '\\' . $middleware_dir . '\\';
 
             $dir = base('app', $middleware_dir);
 
-            is_false(is_dir($dir), true, "The $dir directory was not found");
+            is_false(is_dir($dir), true, sprintf('The %s directory has not been found', $dir));
 
-            $middle = files(base('app', $middleware_dir, '*.php'));
+            $middle = array_merge(
+                files(
+                    base(
+                        'app',
+                        $middleware_dir,
+                        '*.php'
+                    )
+                ),
+                files(
+                    base(
+                        'app',
+                        $middleware_dir,
+                        '*',
+                        '*.php'
+                    )
+                )
+            );
 
             call_user_func_array([ new CsrfMiddleware(), 'check' ], [ $request ]);
 
             foreach ($middle as $middleware) {
-                $middle = collect(explode(DIRECTORY_SEPARATOR, $middleware))->last();
+                $middle = '\\' .  strval(collect(explode('.', strval(collect(
+                    explode(
+                        DIRECTORY_SEPARATOR,
+                        strval(
+                            strstr(
+                                $middleware,
+                                'app'
+                            )
+                        )
+                    )
+                )->for('ucfirst')->join('\\'))))->first());
 
-                $middleware = collect(explode('.', $middle))->first();
-
-                $class = "$namespace$middleware";
-
-                $x = new ReflectionClass($class);
+                $x = new ReflectionClass($middle);
 
 
                 $x->getMethod('check')->invoke($x->newInstance(), $request);

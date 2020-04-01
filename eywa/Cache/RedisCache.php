@@ -13,7 +13,7 @@ namespace Eywa\Cache {
          */
         private Redis $redis;
 
-        public function __construct(string $host = 'localhost', int $port =6379)
+        public function __construct(string $host = 'localhost', int $port = 6379)
         {
             $this->redis = new Redis();
             $this->redis->connect($host, $port);

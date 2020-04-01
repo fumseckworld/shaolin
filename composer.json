@@ -14,7 +14,6 @@
     "scrivo/highlight.php": "^9.17",
     "fzaninotto/faker": "^1.9",
     "nesbot/carbon": "^2.27",
-    "codedungeon/phpunit-result-printer": "^0.26.2",
     "symfony/process": "^5.0",
     "sinergi/browser-detector": "^6.1",
     "mobiledetect/mobiledetectlib": "^2.8",
@@ -31,7 +30,7 @@
     "ext-mbstring": "*",
     "ext-session": "*",
     "ext-memcache": "*",
-    "php-parallel-lint/php-parallel-lint": "^1.1"
+    "maximebf/debugbar": "^1.16"
   },
   "authors": [
     {
@@ -57,20 +56,17 @@
       "helpers/admin.php"
     ]
   },
-  "scripts": {
-    "test": "phpunit  --coverage-html coverage",
-    "coverage" : "php -S localhost:8000 -t coverage",
-    "serve" : "php -S localhost:3000 -t web",
-    "send" : "git push origin --all && git push origin --tags && cd coverage && git add . && git commit -m 'send' && git push origin --all"
-  },
   "require-dev": {
     "symfony/var-dumper": "^5.0",
-    "phpunit/phpunit": "^8.5",
+    "phpunit/phpunit": "9.0",
     "phpro/grumphp": "^0.18.0",
     "phpstan/phpstan": "^0.12.14",
     "maglnet/composer-require-checker": "^2.1",
     "infection/infection": "^0.15.3",
     "sensiolabs/security-checker": "^6.0",
-    "friendsofphp/php-cs-fixer": "^2.16"
+    "codedungeon/phpunit-result-printer": "^0.27.0",
+    "friendsofphp/php-cs-fixer": "^2.16",
+    "squizlabs/php_codesniffer": "^3.5",
+    "php-parallel-lint/php-parallel-lint": "^1.1"
   }
 }

@@ -6,4 +6,4 @@ use Eywa\Console\Console;
 
 require __DIR__.'/vendor/autoload.php';
 
-exit((new Console('EYWA','11'))->run());
+exit((new Console('EYWA', '11'))->run());

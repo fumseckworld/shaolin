@@ -15,7 +15,7 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:seed';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
                 // the short description shown while running "php bin/console list"
@@ -56,7 +56,8 @@ namespace Eywa\Console\Generate {
             $table  = strval($input->getArgument('table'));
 
 
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
 namespace Evolution\Seeds {
@@ -95,7 +96,8 @@ namespace Evolution\Seeds {
             }
         }
     }
-}")->flush()) {
+}")->flush()
+            ) {
                 $io->success(sprintf('The %s seeder was successfully generated', $class));
                 return 0;
             }

@@ -15,6 +15,17 @@ namespace Eywa\Database\Model {
 
         protected static int $limit = 20;
 
+        /**
+         *
+         * Get and instance of the model
+         *
+         * @return Model
+         *
+         */
+        public function instance(): Model
+        {
+            return $this;
+        }
 
         /**
          * @inheritDoc

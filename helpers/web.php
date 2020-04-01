@@ -151,7 +151,11 @@ if (!function_exists('root')) {
      */
     function root(): string
     {
-        return php_sapi_name() !== 'cli' ? https() ? 'https://' . Request::make()->server()->get('HTTP_HOST') : 'http://' . Request::make()->server()->get('HTTP_HOST') : '/';
+        return php_sapi_name() !== 'cli'
+            ? https()
+                ? 'https://' . Request::make()->server()->get('HTTP_HOST')
+                : 'http://' . Request::make()->server()->get('HTTP_HOST')
+            : '/';
     }
 }
 
@@ -163,7 +167,7 @@ if (!function_exists('cli')) {
      * @return bool
      *
      */
-    function cli():bool
+    function cli(): bool
     {
         return  php_sapi_name() === 'cli';
     }
@@ -177,7 +181,7 @@ if (!function_exists('not_cli')) {
      * @return bool
      *
      */
-    function not_cli():bool
+    function not_cli(): bool
     {
         return ! cli();
     }
@@ -188,16 +192,20 @@ if (!function_exists('url')) {
      *
      * Generate the url
      *
-     * @param string $url
+     * @param string ...$urls
      *
      * @return string
      *
      * @throws Kedavra
-     *
      */
-    function url(string $url):string
+    function url(string ...$urls): string
     {
-        return php_sapi_name() !== 'cli' ? https() ? sprintf('https://%s/%s', Request::make()->server()->get('HTTP_HOST'), $url) : sprintf('http://%s/%s', Request::make()->server()->get('HTTP_HOST'), $url) : sprintf('/%s', $url);
+        return php_sapi_name() !== 'cli'
+        ? https()
+            ?
+                sprintf('https://%s/%s', Request::make()->server()->get('HTTP_HOST'), collect($urls)->join('/'))
+            :   sprintf('http://%s/%s', Request::make()->server()->get('HTTP_HOST'), collect($urls)->join('/'))
+        : sprintf('/%s', collect($urls)->join('/'));
     }
 }
 if (!function_exists('alert')) {
@@ -208,7 +216,7 @@ if (!function_exists('alert')) {
      * @return string
      * @throws Kedavra
      */
-    function alert(array $messages, bool $success = false) :string
+    function alert(array $messages, bool $success = false): string
     {
         $file = 'alert';
         $ul_class = config($file, 'ul-class');
@@ -255,7 +263,9 @@ if (!function_exists('route')) {
             }
             return  $url;
         }
-        $url = https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') . $x[0]->url : 'http://'.Request::make()->server()->get('SERVER_NAME').$x[0]->url;
+        $url =
+            https() ? 'https://' . Request::make()->server()->get('SERVER_NAME') . $x[0]->url
+            : 'http://' . Request::make()->server()->get('SERVER_NAME') . $x[0]->url;
 
         if (def($args)) {
             foreach ($args as $k => $v) {
@@ -279,7 +289,7 @@ if (!function_exists('ago')) {
      * @throws Exception
      *
      */
-    function ago(string $time, $tz = null):string
+    function ago(string $time, $tz = null): string
     {
         Carbon::setLocale(app()->lang());
 
@@ -316,7 +326,7 @@ if (!function_exists('flash')) {
      * @throws Kedavra
      *
      */
-    function flash():string
+    function flash(): string
     {
         return (new Flash())->display();
     }

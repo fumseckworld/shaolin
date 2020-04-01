@@ -34,15 +34,8 @@ namespace Eywa\Console\Routes {
             $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
         }
 
-        /**
-         *
-         * The route name
-         *
-         */
-        private string $route = '';
 
-
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('Delete a route');
         }
@@ -51,11 +44,15 @@ namespace Eywa\Console\Routes {
          * @return array<string>
          * @throws Kedavra
          */
-        public function name():array
+        public function name(): array
         {
-            $names= collect();
+            $names = collect();
 
-            foreach ((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->only(['name'])->get() as $value) {
+            foreach (
+                (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))
+                    ->only(['name'])
+                    ->get() as $value
+            ) {
                 $names->push($value->name);
             }
 
@@ -70,7 +67,7 @@ namespace Eywa\Console\Routes {
          * @throws Kedavra
          * @throws Exception
          */
-        public function execute(InputInterface $input, OutputInterface $output):int
+        public function execute(InputInterface $input, OutputInterface $output): int
         {
             $io = new SymfonyStyle($input, $output);
             if (def($this->sql->get())) {
@@ -80,10 +77,13 @@ namespace Eywa\Console\Routes {
                         do {
                             $names = $this->name();
                             $default = strval(reset($names));
-                            $this->route = $io->askQuestion((new Question('Wath is the name of the route to delete', $default))->setAutocompleterValues($this->name()));
-                        } while (not_def($this->route) || not_def($this->sql->where('name', EQUAL, $this->route)->get()));
+                            $route1 = $io->askQuestion(
+                                (new Question('Wath is the name of the route to delete', $default))
+                                ->setAutocompleterValues($this->name())
+                            );
+                        } while (not_def($route1) || not_def($this->sql->where('name', EQUAL, $route1)->get()));
 
-                        $route = collect($this->sql->where('name', EQUAL, $this->route)->get())->get(0);
+                        $route = collect($this->sql->where('name', EQUAL, $route1)->get())->get(0);
 
                         if ($this->sql->where('name', EQUAL, $route->name)->delete()) {
                             $io->success(sprintf('The %s route has been deleted successfully', $route->name));

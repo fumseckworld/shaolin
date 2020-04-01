@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App;
 
 use Eywa\Application\App;
@@ -58,8 +57,16 @@ class Application
      * @param User $user
      * @param Env $env
      */
-    public function __construct(Connect $connect, Base $base, Flash $flash, Request $request, Table $table, App $app, User $user, Env $env)
-    {
+    public function __construct(
+        Connect $connect,
+        Base $base,
+        Flash $flash,
+        Request $request,
+        Table $table,
+        App $app,
+        User $user,
+        Env $env
+    ) {
         $this->connect = $connect;
         $this->base = $base;
         $this->flash = $flash;

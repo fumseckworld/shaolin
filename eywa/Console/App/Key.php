@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console\App;
 
 use Eywa\Security\Crypt\Crypter;
@@ -13,7 +12,7 @@ class Key extends Command
 {
     protected static $defaultName = 'key:generate';
 
-    protected function configure():void
+    protected function configure(): void
     {
         $this->setDescription('Generate app key');
     }

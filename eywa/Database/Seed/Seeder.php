@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Eywa\Database\Seed {
@@ -121,7 +122,7 @@ namespace Eywa\Database\Seed {
          * @throws Exception
          *
          */
-        public function seed() : bool
+        public function seed(): bool
         {
             static::$connexion = development();
 
@@ -142,7 +143,7 @@ namespace Eywa\Database\Seed {
 
             $columns = static::$table->columns();
 
-            for ($i=0;$i<static::$generate;$i++) {
+            for ($i = 0; $i < static::$generate; $i++) {
                 static::each(static::$faker, static::$table, $this);
 
                 $tmp = collect();
@@ -151,7 +152,7 @@ namespace Eywa\Database\Seed {
                     $tmp->set(static::$set->get($column));
                 }
 
-                append($values, '('. trim($tmp->join(), ', ') . '),');
+                append($values, '(' . trim($tmp->join(), ', ') . '),');
 
                 static::$set->clear();
 

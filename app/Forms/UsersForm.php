@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Forms;
 
 use Eywa\Html\Form\Form;
@@ -35,7 +34,10 @@ class UsersForm extends Form
      */
     public function make(): string
     {
-        return $this->start()->add('username', 'text', 'your username', 'must be uniq', ['autofocus'=> 'autofocus'])->add('bio', 'textarea', 'your bio')->get();
+        return $this->start()
+            ->add('username', 'text', 'your username', 'must be uniq', ['autofocus' => 'autofocus'])
+            ->add('bio', 'textarea', 'your bio')
+            ->get();
     }
 
 

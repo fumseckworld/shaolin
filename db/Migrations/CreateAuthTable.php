@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Evolution\Migrations {
 
 
@@ -26,7 +25,12 @@ namespace Evolution\Migrations {
 
         public function up(): bool
         {
-            return  $this->add('id', 'primary')->add('username', 'varchar', 255, ['UNIQUE','NOT NULL'])->add('email', 'varchar', 255, ['UNIQUE','NOT NULL'])->add('password', 'varchar', 255, ['NOT NULL'])->create();
+            return  $this
+                ->add('id', 'primary')
+                ->add('username', 'varchar', 255, ['UNIQUE','NOT NULL'])
+                ->add('email', 'varchar', 255, ['UNIQUE','NOT NULL'])
+                ->add('password', 'varchar', 255, ['NOT NULL'])
+                ->create();
         }
 
         public function down(): bool

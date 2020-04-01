@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console {
 
 
@@ -26,19 +25,13 @@ namespace Eywa\Console {
     use Eywa\Console\Database\UninstallDatabase;
     use Eywa\Console\Generate\GenerateCommand;
     use Eywa\Console\Generate\GenerateContainer;
-    use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateForm;
     use Eywa\Console\Generate\GenerateMiddleware;
-    use Eywa\Console\Generate\GenerateMigration;
     use Eywa\Console\Generate\GenerateModel;
-    use Eywa\Console\Generate\GenerateSeeds;
-    use Eywa\Console\Generate\GenerateTest;
     use Eywa\Console\Generate\GenerateValidator;
     use Eywa\Console\Generate\GenerateView;
     use Eywa\Console\Get\Documentation;
     use Eywa\Console\Get\Wanted;
-    use Eywa\Console\Lang\CreateCatalogues;
-    use Eywa\Console\Lang\UpdateCatalogues;
     use Eywa\Console\Mode\DevMode;
     use Eywa\Console\Mode\Maintenance;
     use Eywa\Console\Mode\ProductionMode;
@@ -88,10 +81,15 @@ namespace Eywa\Console {
         public function run(): int
         {
             $commands = [
-               new CreateCatalogues(),new UpdateCatalogues(), new AddRoute(), new UpdateRoute(), new ListRoute(), new RemoveRoute(),new GenerateView(), new GenerateController(),new GenerateModel(),new GenerateMigration(),new GenerateSeeds(),new GenerateTest(),new GenerateMiddleware(),
-               new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(), new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),new CleanDatabase(),
-               new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute(),new Records\Records(),new GenerateContainer(),new GenerateForm()
-           ];
+                new ClearCache(), new Dkim(), new Serve(),new Key(),new SeedDatabase(),new Maintenance(),
+                new ProductionMode(),new DevMode(),new MigrateDatabase(),new RollbackDatabase(),new Coverage(),
+                new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),
+                new CleanDatabase(),new GenerateMiddleware(),new GenerateCommand(),new GenerateView(),
+                new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),
+                new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute() ,
+                new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
+                new GenerateContainer(),new GenerateForm(),new GenerateModel()
+            ];
 
             $this->add($commands)->add(commands());
 

@@ -15,6 +15,5 @@
             @flash
             <?= $content ?? ''?>
         </main>
-        @js(app)
     </body>
 </html>

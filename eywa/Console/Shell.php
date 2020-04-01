@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console;
 
 use Traversable;

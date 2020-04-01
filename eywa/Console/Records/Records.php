@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console\Records {
 
 
@@ -17,9 +16,11 @@ namespace Eywa\Console\Records {
         protected static $defaultName = 'record:show';
 
 
-        public function configure():void
+        public function configure(): void
         {
-            $this->setDescription('List the content of a table')->addArgument('table', InputArgument::REQUIRED, 'The table name')->addArgument('env', InputArgument::REQUIRED, 'The env mode');
+            $this->setDescription('List the content of a table')
+            ->addArgument('table', InputArgument::REQUIRED, 'The table name')
+            ->addArgument('env', InputArgument::REQUIRED, 'The env mode');
         }
 
         /**
@@ -28,7 +29,7 @@ namespace Eywa\Console\Records {
          * @return int
          * @throws Kedavra
          */
-        public function execute(InputInterface $input, OutputInterface $output):int
+        public function execute(InputInterface $input, OutputInterface $output): int
         {
             $env = strval($input->getArgument('env'));
             $table = strval($input->getArgument('table'));

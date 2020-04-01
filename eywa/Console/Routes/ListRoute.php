@@ -18,7 +18,7 @@ namespace Eywa\Console\Routes {
         protected static $defaultName = "route:list";
 
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('List all routes');
         }

@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Debug {
 
 
@@ -19,8 +20,8 @@ namespace Eywa\Debug {
          */
         public function dump($value)
         {
-            $dumper = 'cli' === PHP_SAPI ? new CliDumper : new HtmlDumper;
-            $dumper->dump((new VarCloner)->cloneVar($value));
+            $dumper = 'cli' === PHP_SAPI ? new CliDumper() : new HtmlDumper();
+            $dumper->dump((new VarCloner())->cloneVar($value));
         }
     }
 }

@@ -59,6 +59,9 @@ namespace Eywa\Validate {
             VALIDATOR_ARGUMENT_NOT_BETWEEN => '',
             VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => '',
             VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => '',
+            VALIDATOR_ARGUMENT_SLUG => '',
+            VALIDATOR_ARGUMENT_SNAKE => '',
+            VALIDATOR_ARGUMENT_CAMEL_CASE => '',
         ];
         /**
          * @var Request
@@ -104,7 +107,15 @@ namespace Eywa\Validate {
          */
         public function call(): Response
         {
-            return static::$errors->empty() ? call_user_func_array([$this,'success'], [$this->request]) : call_user_func_array([$this,'error'], [static::$errors->all()]);
+            return static::$errors->empty()
+                ? call_user_func_array(
+                    [$this, 'success'],
+                    [$this->request]
+                )
+                : call_user_func_array(
+                    [$this, 'error'],
+                    [static::$errors->all()]
+                );
         }
 
         /**
@@ -120,7 +131,7 @@ namespace Eywa\Validate {
          * @throws Kedavra
          *
          */
-        public function redirect(string $url, string $message, bool $success = true):Response
+        public function redirect(string $url, string $message, bool $success = true): Response
         {
             $success ? (new Flash())->set(SUCCESS, $message) : (new Flash())->set(FAILURE, $message);
 
@@ -160,19 +171,55 @@ namespace Eywa\Validate {
                     switch ($rule) {
                         case 'email':
                             if (!(new EmailValidator())->isValid($request->request()->get($k), new RFCValidation())) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_EMAIL_NOT_VALID], $k, strval($request->request()->get($k))));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_EMAIL_NOT_VALID],
+                                        $k,
+                                        strval($request->request()->get($k))
+                                    )
+                                );
+                            }
+                            break;
+                        case 'slug':
+                            if (!is_slug($request->request()->get($k))) {
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SLUG], strval($k)));
+                            }
+                            break;
+
+                        case 'snake':
+                            if (!is_snake($request->request()->get($k))) {
+                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SNAKE], strval($k)));
+                            }
+                            break;
+                        case 'camel':
+                            if (!is_camel($request->request()->get($k))) {
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_CAMEL_CASE],
+                                        strval($k)
+                                    )
+                                );
                             }
                             break;
                         case 'required':
                             if (not_def($request->request()->get($k))) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_DEFINED], strval($k)));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_NOT_DEFINED],
+                                        strval($k)
+                                    )
+                                );
                             }
                             break;
                         case 'numeric':
-
                             $digit = $request->request()->get($k);
                             if (not_int($digit)) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_NUMERIC], strval($k)));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_NOT_NUMERIC],
+                                        strval($k)
+                                    )
+                                );
                             }
                             break;
 
@@ -181,7 +228,13 @@ namespace Eywa\Validate {
                             $table = $x[1];
 
                             if (sql($table)->where($k, EQUAL, $request->request()->get($k))->exist()) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_UNIQUE], strval($k), strval($table)));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_NOT_UNIQUE],
+                                        strval($k),
+                                        strval($table)
+                                    )
+                                );
                             }
 
                             break;
@@ -191,19 +244,31 @@ namespace Eywa\Validate {
                             $max = intval($x[1]);
                             $value = $request->request()->get($k);
                             if ($value < $min && $value > $max || not_def($value)) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_NOT_BETWEEN], strval($k), $min, $max));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_NOT_BETWEEN],
+                                        strval($k),
+                                        $min,
+                                        $max
+                                    )
+                                );
                             }
                             break;
 
                         case preg_match('#max:([0-9]+)#', $rule) === 1:
-
                             $max = intval(collect(explode(':', $rule))->last());
 
                             $value = strval($request->request()->get($k));
 
                             $length = mb_strlen($value);
                             if ($length > $max) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE], strval($k), $max));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE],
+                                        strval($k),
+                                        $max
+                                    )
+                                );
                             }
                             break;
 
@@ -214,7 +279,13 @@ namespace Eywa\Validate {
 
                             $length = mb_strlen($value);
                             if ($length < $min) {
-                                static::$errors->push(sprintf(static::$messages[VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE], strval($k), $min));
+                                static::$errors->push(
+                                    sprintf(
+                                        static::$messages[VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE],
+                                        strval($k),
+                                        $min
+                                    )
+                                );
                             }
                             break;
                     }

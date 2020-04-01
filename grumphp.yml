@@ -5,7 +5,7 @@ parameters:
     ignore_unstaged_changes: false
     stop_on_failure: true
     tasks:
-        phpcsfixer: ~
+        phpcs: ~
         phpversion:
             project: '7.4.2'
         file_size:

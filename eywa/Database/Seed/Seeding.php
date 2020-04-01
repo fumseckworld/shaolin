@@ -29,7 +29,7 @@ namespace Eywa\Database\Seed {
                 $item = collect(explode('.', $item))->first();
 
 
-                $class = '\Evolution\Seeds\\' .$item;
+                $class = '\Evolution\Seeds\\' . $item;
 
                 $x[$item] = $class;
             }

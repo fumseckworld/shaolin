@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Http\Parameter\Uploaded {
 
 
@@ -50,7 +49,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          * @return array<string>
          *
          */
-        public function files():array;
+        public function files(): array;
 
         /**
          *
@@ -59,7 +58,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          * @return array<string>
          *
          */
-        public function types():array;
+        public function types(): array;
 
         /**
          *
@@ -68,7 +67,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          * @return array<int>
          *
          */
-        public function size():array;
+        public function size(): array;
 
         /**
          *
@@ -76,7 +75,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * @return array<int>
          */
-        public function errors():array;
+        public function errors(): array;
 
         /**
          *
@@ -85,7 +84,7 @@ namespace Eywa\Http\Parameter\Uploaded {
          * @return array<string>
          *
          */
-        public function temporary():array;
+        public function temporary(): array;
 
         /**
          *

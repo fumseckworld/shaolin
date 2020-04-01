@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console\Database {
 
 
@@ -17,7 +16,7 @@ namespace Eywa\Console\Database {
         protected static $defaultName = 'db:rollback';
 
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this->setDescription('Rollback the migrations')
                 ->setHelp('php shaolin db:migrate env');

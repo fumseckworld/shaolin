@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Database\Migration {
 
     use Eywa\Exception\Kedavra;
@@ -229,9 +228,9 @@ namespace Eywa\Database\Migration {
          * @throws Kedavra
          *
          */
-        public function remove_foreign(array $columns): bool
+        public function removeForeign(array $columns): bool
         {
-            return $this->db->remove_foreign($columns);
+            return $this->db->removeForeign($columns);
         }
 
         /**
@@ -267,8 +266,13 @@ namespace Eywa\Database\Migration {
          * @return Evolution
          *
          */
-        public function foreign(string $column, string $reference, string $reference_column, string $on = '', string $do = ''): Evolution
-        {
+        public function foreign(
+            string $column,
+            string $reference,
+            string $reference_column,
+            string $on = '',
+            string $do = ''
+        ): Evolution {
             return $this->db->foreign($column, $reference, $reference_column, $on, $do);
         }
     }

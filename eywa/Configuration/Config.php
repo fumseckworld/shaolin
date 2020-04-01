@@ -30,14 +30,14 @@ namespace Eywa\Configuration {
          * @var string
          *
          */
-        const EXT = '.yaml';
+        public const EXT = '.yaml';
 
         /**
          *
          * The config.yaml filename
          *
          */
-        private string  $filename;
+        private string $filename;
 
         /**
          *
@@ -63,11 +63,28 @@ namespace Eywa\Configuration {
         {
             $file = $this->path() . DIRECTORY_SEPARATOR . collect(explode('.', $file))->first() . self::EXT;
 
-            is_false(file_exists($file), true, sprintf('The %s file has not been found in the %s directory', $file, $this->path()));
+            is_false(
+                file_exists($file),
+                true,
+                sprintf(
+                    'The %s file has not been found in the %s directory',
+                    $file,
+                    $this->path()
+                )
+            );
 
             $this->values = collect(self::parseFile($file));
 
-            is_false($this->values->has($key), true, sprintf('The %s key has not been found in the %s file in the %s directory', $key, $file, $this->path()));
+            is_false(
+                $this->values->has($key),
+                true,
+                sprintf(
+                    'The %s key has not been found in the %s file in the %s directory',
+                    $key,
+                    $file,
+                    $this->path()
+                )
+            );
 
             $this->filename = $file;
 

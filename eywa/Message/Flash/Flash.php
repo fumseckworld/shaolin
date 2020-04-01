@@ -36,7 +36,9 @@ namespace Eywa\Message\Flash {
                 $this->destroy([$key]);
 
                 if (def($message)) {
-                    return $success ? '<div class="'.$success_class.'" role="alert">'.$message.'</div>':'<div class="'.$failure_class.'" role="alert">'.$message.'</div>';
+                    return $success
+                    ? '<div class="' . $success_class . '" role="alert">' . $message . '</div>'
+                    : '<div class="' . $failure_class . '" role="alert">' . $message . '</div>';
                 }
             }
             return  $result;

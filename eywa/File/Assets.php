@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\File {
 
 
@@ -49,7 +48,7 @@ namespace Eywa\File {
          * @throws Kedavra
          *
          */
-        public function make():string
+        public function make(): string
         {
             switch ($this->type) {
                 case 'css':
@@ -73,7 +72,8 @@ namespace Eywa\File {
          */
         private function js(): string
         {
-            return https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') . '/js/' . $this->filename :   'http://'. Request::make()->server()->get('SERVER_NAME') . '/js/' . $this->filename;
+            return https()  ? 'https://' . Request::make()->server()->get('SERVER_NAME') . '/js/' . $this->filename
+                            : 'http://' . Request::make()->server()->get('SERVER_NAME') . '/js/' . $this->filename;
         }
 
         /**
@@ -87,7 +87,10 @@ namespace Eywa\File {
          */
         private function css(): string
         {
-            return https() ? 'https://'. Request::make()->server()->get('SERVER_NAME') . '/css/' . $this->filename :   'http://'. Request::make()->server()->get('SERVER_NAME') . '/css/' . $this->filename;
+            return https()
+                    ?
+                        'https://' . Request::make()->server()->get('SERVER_NAME') . '/css/' . $this->filename
+                    :   'http://' . Request::make()->server()->get('SERVER_NAME') . '/css/' . $this->filename;
         }
     }
 }

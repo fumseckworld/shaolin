@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Http\Request {
 
 
@@ -50,7 +51,11 @@ namespace Eywa\Http\Request {
 
             if (not_cli()) {
                 $this->request = Request::make();
-                $this->method = different($method, GET) ? strval($this->request->request()->get('_method', POST)) : $method;
+                $this->method = different($method, GET) ?
+                    strval(
+                        $this->request->request()->get('_method', POST)
+                    )
+                    : $method;
             } else {
                 $this->request = new Request();
 
@@ -104,7 +109,7 @@ namespace Eywa\Http\Request {
          * @return Bag
          *
          */
-        public function request():Bag
+        public function request(): Bag
         {
             return $this->request->request();
         }

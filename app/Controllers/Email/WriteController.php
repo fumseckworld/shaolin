@@ -10,118 +10,22 @@ namespace App\Controllers\Email {
         protected static string $layout = 'layout';
     
         protected static string $directory = 'Email';
-        
-        
+
+
         /**
          * @inheritDoc
          */
-        public function before_validation(Request $request)
+        public function before(Request $request): void
         {
-            // TODO: Implement before_validation() method.
+            // TODO: Implement before() method.
         }
 
         /**
          * @inheritDoc
          */
-        public function after_validation(Request $request)
+        public function after(Request $request): void
         {
-            // TODO: Implement after_validation() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_save(Request $request)
-        {
-            // TODO: Implement before_save() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_save(Request $request)
-        {
-            // TODO: Implement after_save() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_commit(Request $request)
-        {
-            // TODO: Implement after_commit() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_rollback(Request $request)
-        {
-            // TODO: Implement after_rollback() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_update(Request $request)
-        {
-            // TODO: Implement before_update() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_update(Request $request)
-        {
-            // TODO: Implement after_update() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_action(Request $request):void
-        {
-            // TODO: Implement before_action() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_action(Request $request):void
-        {
-            // TODO: Implement after_action() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_create(Request $request)
-        {
-            // TODO: Implement before_create() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_create(Request $request)
-        {
-            // TODO: Implement after_create() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function before_destroy(Request $request)
-        {
-            // TODO: Implement before_destroy() method.
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function after_destroy(Request $request)
-        {
-            // TODO: Implement after_destroy() method.
+            // TODO: Implement after() method.
         }
     }
 }

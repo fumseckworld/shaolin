@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Database\Model {
 
 

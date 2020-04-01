@@ -19,10 +19,10 @@ namespace Eywa\Console\Database {
          * @throws Kedavra
          * @throws Exception
          */
-        protected function configure():void
+        protected function configure(): void
         {
             $base = app()->connexion()->base();
-            $this->setDescription("Import sql file content into the $base database");
+            $this->setDescription(sprintf('Import sql file content into the %s database', $base));
         }
 
         /**
@@ -37,13 +37,13 @@ namespace Eywa\Console\Database {
         {
             $io = new SymfonyStyle($input, $output);
             if ((new Import(app()->connexion()))->import()) {
-                $io->success('The import has successfully executed');
+                $io->success(sprintf('The %s base has been updated successfully', app()->connexion()->base()));
                 return 0;
             }
 
-            $file = app()->connexion()->base() .'.sql';
+            $file = app()->connexion()->base() . '.sql';
 
-            $io->error("The $file file not exist or authentication problems");
+            $io->error(sprintf('The %s file not exist or authentication problems', $file));
             return 1;
         }
     }

@@ -64,7 +64,22 @@ namespace Eywa\Cache {
         public function clear(): bool
         {
             $x = function () {
-                return array_merge(files(base('cache', '*.php')), files(base('cache', '*', '*.php')));
+                return array_merge(
+                    files(
+                        base('cache', '*.html')
+                    ),
+                    files(
+                        base('cache', '*', '*.html')
+                    ),
+                    array_merge(
+                        files(
+                            base('cache', '*.php')
+                        ),
+                        files(
+                            base('cache', '*', '*.php')
+                        )
+                    )
+                );
             };
             foreach ($x() as $file) {
                 unlink($file);

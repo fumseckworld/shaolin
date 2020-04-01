@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Eywa\Collection {
 
 
@@ -18,7 +17,7 @@ namespace Eywa\Collection {
          * @var array<mixed>
          *
          */
-        private array $data = [];
+        private array $data ;
 
         /**
          *
@@ -85,7 +84,7 @@ namespace Eywa\Collection {
          * @return int|mixed|string
          *
          */
-        public function first_key()
+        public function firstKey()
         {
             return array_key_first($this->data);
         }
@@ -96,7 +95,7 @@ namespace Eywa\Collection {
          * @return int|mixed|string
          *
          */
-        public function last_key()
+        public function lastKey()
         {
             return array_key_last($this->data);
         }
@@ -260,7 +259,7 @@ namespace Eywa\Collection {
          * @return mixed
          *
          */
-        public function value_before_key(string $key)
+        public function valueBeforeKey(string $key)
         {
             if ($this->has($key)) {
                 foreach ($this->data as $k => $v) {
@@ -377,7 +376,7 @@ namespace Eywa\Collection {
          * @return bool
          *
          */
-        public function has_not($key): bool
+        public function hasNot($key): bool
         {
             return !$this->has($key);
         }
@@ -823,7 +822,7 @@ namespace Eywa\Collection {
         public function del(array $data): Collect
         {
             foreach ($data as $datum) {
-                $this->exist($datum) ? $this->remove_value([$datum]) : $this->remove([$datum]);
+                $this->exist($datum) ? $this->removeValue([$datum]) : $this->remove([$datum]);
             }
 
             return $this->checkout($this->all());
@@ -852,7 +851,7 @@ namespace Eywa\Collection {
          * @return string
          *
          */
-        public function join_keys(string $glue = ','): string
+        public function joinKeys(string $glue = ','): string
         {
             return implode($glue, $this->keys()->all());
         }
@@ -866,7 +865,7 @@ namespace Eywa\Collection {
          */
         public function ok(): bool
         {
-            return $this->not_exist(false);
+            return $this->notExist(false);
         }
 
         /**
@@ -906,7 +905,7 @@ namespace Eywa\Collection {
          * @return bool
          *
          */
-        public function not_exist($value): bool
+        public function notExist($value): bool
         {
             return ! $this->exist($value);
         }
@@ -1056,7 +1055,7 @@ namespace Eywa\Collection {
         public function uniq(array $values): Collect
         {
             foreach ($values as $value) {
-                if ($this->not_exist($value)) {
+                if ($this->notExist($value)) {
                     $this->push($value);
                 }
             }
@@ -1108,7 +1107,7 @@ namespace Eywa\Collection {
          * @return Collect
          *
          */
-        private function remove_value(array $values): Collect
+        private function removeValue(array $values): Collect
         {
             foreach ($values as $value) {
                 if (($key = array_search($value, $this->data)) !== false) {

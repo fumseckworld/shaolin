@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Console\Cache {
 
 
@@ -19,9 +18,10 @@ namespace Eywa\Console\Cache {
     {
         protected static $defaultName = 'cache:clear';
 
-        protected function configure():void
+        protected function configure(): void
         {
-            $this->setDescription("Clean all cache systems")->addArgument('system', InputArgument::OPTIONAL, 'The cahe system name to clear');
+            $this->setDescription("Clean all cache systems")
+            ->addArgument('system', InputArgument::OPTIONAL, 'The cahe system name to clear');
         }
 
         /**

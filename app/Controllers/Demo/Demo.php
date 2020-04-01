@@ -10,5 +10,21 @@ namespace App\Controllers\Demo {
         protected static string $layout = 'layout';
     
         protected static string $directory = 'Demo';
+
+        /**
+         * @inheritDoc
+         */
+        public function before(Request $request): void
+        {
+            // TODO: Implement before() method.
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function after(Request $request): void
+        {
+            // TODO: Implement after() method.
+        }
     }
 }

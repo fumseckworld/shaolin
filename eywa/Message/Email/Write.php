@@ -46,7 +46,10 @@ namespace Eywa\Message\Email {
 
             $file = 'mail';
 
-            $this->transport = (new Swift_SmtpTransport(config($file, 'smtp'), config($file, 'port')))->setUsername(config($file, 'username'))->setPassword(config($file, 'password'));
+            $this->transport = (new Swift_SmtpTransport(
+                config($file, 'smtp'),
+                config($file, 'port')
+            ))->setUsername(config($file, 'username'))->setPassword(config($file, 'password'));
 
             $this->message = new Swift_Message();
 
@@ -60,7 +63,9 @@ namespace Eywa\Message\Email {
 
             $this->mailer = new Swift_Mailer($this->transport);
 
-            config($file, 'html') ? $this->message->setBody(message($message), 'text/html', 'utf-8') : $this->message->setBody($message, 'text/plain', 'utf-8');
+            config($file, 'html')
+                ? $this->message->setBody(message($message), 'text/html', 'utf-8')
+                : $this->message->setBody($message, 'text/plain', 'utf-8');
 
             $this->private_key = (new File(base() . DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
         }
@@ -73,10 +78,15 @@ namespace Eywa\Message\Email {
          *
          *
          */
-        public function sign() : Write
+        public function sign(): Write
         {
             $file = 'mail';
-            $signer = new Swift_Signers_DKIMSigner($this->private_key, config($file, 'domain'), config($file, 'selector'), config($file, 'passphrase'));
+            $signer = new Swift_Signers_DKIMSigner(
+                $this->private_key,
+                config($file, 'domain'),
+                config($file, 'selector'),
+                config($file, 'passphrase')
+            );
             $this->message->attachSigner($signer);
 
             return $this;
@@ -91,10 +101,12 @@ namespace Eywa\Message\Email {
          *
          * @return Write
          */
-        public function attach(string $path, string $filename, string $type, string $disposition = '') : Write
+        public function attach(string $path, string $filename, string $type, string $disposition = ''): Write
         {
             if (def($disposition)) {
-                $this->message->attach(Swift_Attachment::fromPath($path, $type)->setFilename($filename)->setDisposition($disposition));
+                $this->message->attach(Swift_Attachment::fromPath($path, $type)
+                    ->setFilename($filename)
+                    ->setDisposition($disposition));
             } else {
                 $this->message->attach(Swift_Attachment::fromPath($path, $type)->setFilename($filename));
             }
@@ -109,10 +121,15 @@ namespace Eywa\Message\Email {
          * @throws Kedavra
          * @return bool
          */
-        public static function valid(string ...$emails) : bool
+        public static function valid(string ...$emails): bool
         {
             foreach ($emails as $email) {
-                is_false((new EmailValidator())->isValid($email, new RFCValidation()), true, "The email $email is not valid");
+                is_false(
+                    (new EmailValidator())
+                    ->isValid($email, new RFCValidation()),
+                    true,
+                    sprintf('%s is not a valid email', $email)
+                );
             }
 
             return true;
@@ -128,7 +145,7 @@ namespace Eywa\Message\Email {
          * @return Write
          *
          */
-        public function cc(string $email, string $name = null) : Write
+        public function cc(string $email, string $name = null): Write
         {
             self::valid($email);
             $this->message->setCc($email, $name);
@@ -146,7 +163,7 @@ namespace Eywa\Message\Email {
          * @return Write
          *
          */
-        public function bcc(string $email, string $name = null) : Write
+        public function bcc(string $email, string $name = null): Write
         {
             self::valid($email);
 
@@ -165,7 +182,7 @@ namespace Eywa\Message\Email {
          * @return Write
          *
          */
-        public function add_bcc(string $email, string $name = null) : Write
+        public function addBcc(string $email, string $name = null): Write
         {
             self::valid($email);
 
@@ -184,7 +201,7 @@ namespace Eywa\Message\Email {
          * @return Write
          *
          */
-        public function add_cc(string $email, string $name = null) : Write
+        public function addCc(string $email, string $name = null): Write
         {
             self::valid($email);
 
@@ -203,7 +220,7 @@ namespace Eywa\Message\Email {
          * @return Write
          *
          */
-        public function add_to(string $email, string $name = null) : Write
+        public function addTo(string $email, string $name = null): Write
         {
             self::valid($email);
 
@@ -215,7 +232,7 @@ namespace Eywa\Message\Email {
         /**
          * @return bool
          */
-        public function send() : bool
+        public function send(): bool
         {
             return $this->mailer->send($this->message) !== 0;
         }

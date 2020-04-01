@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Http\Server {
 
 
@@ -51,7 +50,7 @@ namespace Eywa\Http\Server {
         /**
          * @return int
          */
-        public function run():int
+        public function run(): int
         {
             $this->io->title('Starting the development server');
             $this->io->success(sprintf('The server is running and listen at %s', $this->url));

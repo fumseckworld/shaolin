@@ -46,7 +46,7 @@ namespace Eywa\Http\Response {
          * @return Response
          *
          */
-        public function send():Response
+        public function send(): Response
         {
             return  $this->reponse->send();
         }

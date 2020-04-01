@@ -3,8 +3,11 @@
 namespace App\Controllers\Auth {
 
     use App\Forms\Auth\LoginForm;
+    use App\Models\Auth\Authentication;
+    use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
+    use Eywa\Http\Response\Response;
 
     class AuthController extends Controller
     {
@@ -15,7 +18,7 @@ namespace App\Controllers\Auth {
         /**
          * @inheritDoc
          */
-        public function before_action(Request $request): void
+        public function before(Request $request): void
         {
             // TODO: Implement before_action() method.
         }
@@ -23,24 +26,46 @@ namespace App\Controllers\Auth {
         /**
          * @inheritDoc
          */
-        public function after_action(Request $request): void
+        public function after(Request $request): void
         {
             // TODO: Implement after_action() method.
         }
 
+        /**
+         * @param Request $request
+         * @return Response
+         * @throws Kedavra
+         */
         public function logout(Request $request)
         {
-            return $this->auth()->logout();
+            return $this->auth(Authentication::class)->logout();
         }
-        public function show_home(Request $request)
+
+        /**
+         * @param Request $request
+         * @return Response
+         * @throws Kedavra
+         */
+        public function showHome(Request $request)
         {
             return $this->view('home', 'Welcome', 'wecome');
         }
-        public function show_login_form(Request $request)
+
+        /**
+         * @param Request $request
+         * @return Response
+         * @throws Kedavra
+         */
+        public function showLoginForm(Request $request)
         {
             $form = $this->form(LoginForm::class);
             return $this->view('login', 'Login', 'Connexion for members', compact('form'));
         }
+
+        /**
+         * @param Request $request
+         * @return Response
+         */
         public function login(Request $request)
         {
             return $this->check(LoginForm::class, $request);

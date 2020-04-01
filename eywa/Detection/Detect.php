@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Detection {
 
     use Mobile_Detect;
@@ -140,7 +141,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function chrome_os(): bool
+        public function chromeOs(): bool
         {
             return $this->os() === Os::CHROME_OS;
         }
@@ -312,7 +313,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function opera_mini(): bool
+        public function operaMini(): bool
         {
             return $this->browser() === Browser::OPERA_MINI;
         }
@@ -325,7 +326,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function web_tv(): bool
+        public function webTv(): bool
         {
             return $this->browser() === Browser::WEBTV;
         }
@@ -351,7 +352,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function pocket_ie(): bool
+        public function pocketIe(): bool
         {
             return $this->browser() === Browser::POCKET_IE;
         }
@@ -522,7 +523,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function samsung_browser(): bool
+        public function samsungBrowser(): bool
         {
             return $this->browser() === Browser::SAMSUNG_BROWSER;
         }
@@ -548,7 +549,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function google_bot(): bool
+        public function googlebot(): bool
         {
             return $this->browser() === Browser::GOOGLEBOT;
         }
@@ -619,7 +620,7 @@ namespace Eywa\Detection {
          * @return bool
          *
          */
-        public function windows_phone(): bool
+        public function windowsPhone(): bool
         {
             return $this->device() === Device::WINDOWS_PHONE;
         }

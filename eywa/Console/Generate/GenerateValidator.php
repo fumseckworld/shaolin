@@ -15,7 +15,7 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:validator';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
 
@@ -75,7 +75,8 @@ namespace Eywa\Console\Generate {
                 return 1;
             }
 
-            if ((new File("$file", EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File("$file", EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 namespace $namespace {
 
@@ -102,7 +103,8 @@ namespace $namespace {
         }
     }
 }
-            ")->flush()) {
+            ")->flush()
+            ) {
                 $io->success(sprintf('The %s validator has been generated successfully', $class));
 
                 return 0;

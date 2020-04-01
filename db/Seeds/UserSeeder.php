@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Evolution\Seeds {
 
 
@@ -29,17 +28,16 @@ namespace Evolution\Seeds {
                 switch ($column) {
                     case 'username':
                         $seeder->set($column, $generator->name());
-                    break;
+                        break;
                     case 'email':
                         $seeder->set($column, $generator->email);
-                    break;
+                        break;
                     case 'phone':
                         $seeder->set($column, $generator->phoneNumber);
-                    break;
+                        break;
                     default:
-                       $seeder->primary($column);
-                    break;
-
+                        $seeder->primary($column);
+                        break;
                 }
             }
         }

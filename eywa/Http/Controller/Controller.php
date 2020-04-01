@@ -23,7 +23,7 @@ namespace Eywa\Http\Controller {
          * @param Request $request
          *
          */
-        abstract public function before_action(Request $request): void;
+        abstract public function before(Request $request): void;
 
         /**
          *
@@ -32,6 +32,6 @@ namespace Eywa\Http\Controller {
          * @param Request $request
          *
          */
-        abstract public function after_action(Request $request):void;
+        abstract public function after(Request $request): void;
     }
 }

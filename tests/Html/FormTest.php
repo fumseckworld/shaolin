@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Testing\Html {
 
     use App\Forms\UsersForm;
@@ -13,13 +12,13 @@ namespace Testing\Html {
         /**
          * @throws Kedavra
          */
-        public function test_success()
+        public function testSuccess()
         {
             $form = (new UsersForm())->make();
             $this->assertNotEmpty($form);
             $this->assertStringContainsString('/', $form);
-            $this->assertStringContainsString('<input type="hidden" name="_method" class="hide" value="GET">', $form);
-            $this->assertStringContainsString('<input type="hidden" name="csrf_token" class="hide" ', $form);
+            $this->assertStringContainsString('<input type="hidden" name="_method"  class="hide" value="GET">', $form);
+            $this->assertStringContainsString('<input type="hidden" name="csrf_token"  class="hide" ', $form);
             $this->assertStringContainsString('type="text"', $form);
             $this->assertStringContainsString('textarea', $form);
             $this->assertStringContainsString('name="username"', $form);
@@ -34,7 +33,7 @@ namespace Testing\Html {
         /**
          * @throws Kedavra
          */
-        public function test_validator()
+        public function testValidator()
         {
             $form = new UsersForm();
             $this->assertEmpty($form->validate(new Request(['username' => 'aza']))->errors()->all());

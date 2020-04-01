@@ -68,8 +68,14 @@ namespace Eywa\Http\Request {
          * @throws Kedavra
          *
          */
-        public function __construct(array $request = [], array  $query = [], array $cookies = [], array $files = [], array $server = [], array $router_args = [])
-        {
+        public function __construct(
+            array $request = [],
+            array $query = [],
+            array $cookies = [],
+            array $files = [],
+            array $server = [],
+            array $router_args = []
+        ) {
             $this->initialize($query, $request, $cookies, $files, $server, $router_args);
         }
 
@@ -198,8 +204,14 @@ namespace Eywa\Http\Request {
          *
          * @throws Kedavra
          */
-        private function initialize(array $query, array $request, array $cookies, array $files, array $server, array $router_args):void
-        {
+        private function initialize(
+            array $query,
+            array $request,
+            array $cookies,
+            array $files,
+            array $server,
+            array $router_args
+        ): void {
             $this->query = new Bag($query);
             $this->request = new Bag($request);
             $this->cookie = new Bag($cookies);
@@ -218,25 +230,50 @@ namespace Eywa\Http\Request {
             }
             $ip = $_SERVER['REMOTE_ADDR'];
 
-            if (isset($_SERVER['HTTP_X_FORWARDED_FOR']) && preg_match_all('#\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}#s', $_SERVER['HTTP_X_FORWARDED_FOR'], $matches)) {
+            if (
+                isset($_SERVER['HTTP_X_FORWARDED_FOR'])
+                && preg_match_all(
+                    '#\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}#s',
+                    $_SERVER['HTTP_X_FORWARDED_FOR'],
+                    $matches
+                )
+            ) {
                 foreach ($matches[0] as $xip) {
                     if (!preg_match('#^(10|172\.16|192\.168)\.#', $xip)) {
                         $ip = $xip;
                         break;
                     }
                 }
-            } elseif (isset($_SERVER['HTTP_CLIENT_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CLIENT_IP'])) {
+            } elseif (
+                isset($_SERVER['HTTP_CLIENT_IP'])
+                && preg_match(
+                    '/^([0-9]{1,3}\.){3}[0-9]{1,3}$/',
+                    $_SERVER['HTTP_CLIENT_IP']
+                )
+            ) {
                 $ip = $_SERVER['HTTP_CLIENT_IP'];
-            } elseif (isset($_SERVER['HTTP_CF_CONNECTING_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            } elseif (
+                isset($_SERVER['HTTP_CF_CONNECTING_IP'])
+                && preg_match(
+                    '/^([0-9]{1,3}\.){3}[0-9]{1,3}$/',
+                    $_SERVER['HTTP_CF_CONNECTING_IP']
+                )
+            ) {
                 $ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
-            } elseif (isset($_SERVER['HTTP_X_REAL_IP']) && preg_match('/^([0-9]{1,3}\.){3}[0-9]{1,3}$/', $_SERVER['HTTP_X_REAL_IP'])) {
+            } elseif (
+                isset($_SERVER['HTTP_X_REAL_IP']) &&
+                preg_match(
+                    '/^([0-9]{1,3}\.){3}[0-9]{1,3}$/',
+                    $_SERVER['HTTP_X_REAL_IP']
+                )
+            ) {
                 $ip = $_SERVER['HTTP_X_REAL_IP'];
             }
 
             return $ip;
         }
 
-        public function local():bool
+        public function local(): bool
         {
             return $this->ip() === LOCALHOST_IP;
         }

@@ -1,12 +1,10 @@
 <?php
 
-
 namespace Eywa\Http\Parameter\Uploaded {
 
 
     use Exception;
     use Eywa\Collection\Collect;
-    use Eywa\Exception\Kedavra;
     use SplFileInfo;
     use wapmorgan\FileTypeDetector\Detector;
 
@@ -69,7 +67,6 @@ namespace Eywa\Http\Parameter\Uploaded {
          *
          * @param array<mixed> $files
          *
-         * @throws Kedavra
          *
          */
         public function __construct(array $files = [])
@@ -80,7 +77,7 @@ namespace Eywa\Http\Parameter\Uploaded {
             $this->errors = collect();
             $this->size = collect();
             if (def($files)) {
-                $i= 0;
+                $i = 0;
                 $this->sum = collect($files['files']['name'])->sum();
 
                 do {
@@ -99,9 +96,24 @@ namespace Eywa\Http\Parameter\Uploaded {
 
 
                     if (
-                        $type  && ! in_array($x->getExtension(), ['exe','php','c','rb','bat','js','perl','bash','sh','py','ts',''])
+                        $type
+                        &&
+                        ! in_array(
+                            $x->getExtension(),
+                            ['exe','php','c','rb','bat','js','perl','bash','sh','py','ts','']
+                        )
                         && ! $x->isExecutable()
-                        && ! in_array($type, ['application/javascript','application/typescript','application/java-archive','application/x-msdownload','text/plain'])) {
+                        && ! in_array(
+                            $type,
+                            [
+                                'application/javascript',
+                                'application/typescript',
+                                'application/java-archive',
+                                'application/x-msdownload',
+                                'text/plain'
+                            ]
+                        )
+                    ) {
                         $this->filename->put($i, $current);
 
                         $this->types->put($this->filename->get($i), $file['type'][$i]);
@@ -111,7 +123,7 @@ namespace Eywa\Http\Parameter\Uploaded {
                         $this->size->put($this->filename->get($i), $file['size'][$i]);
                     }
                     $i++;
-                } while ($i <$this->sum);
+                } while ($i < $this->sum);
             }
         }
 
@@ -123,7 +135,7 @@ namespace Eywa\Http\Parameter\Uploaded {
             $path = base('web');
 
             foreach (explode(DIRECTORY_SEPARATOR, $path) as $dir) {
-                append($path, DIRECTORY_SEPARATOR. $dir);
+                append($path, DIRECTORY_SEPARATOR . $dir);
 
                 if (!is_dir($path)) {
                     mkdir($path);
@@ -137,11 +149,11 @@ namespace Eywa\Http\Parameter\Uploaded {
             $countfiles = $this->filename->sum();
 
             // Looping all files
-            for ($i=0;$i<$countfiles;$i++) {
+            for ($i = 0; $i < $countfiles; $i++) {
                 $filename = $this->filename->get($i);
 
                 // Upload file
-                $result->push(move_uploaded_file($this->temporary->get($i), $path.DIRECTORY_SEPARATOR.$filename));
+                $result->push(move_uploaded_file($this->temporary->get($i), $path . DIRECTORY_SEPARATOR . $filename));
             }
             return  $result->ok();
         }

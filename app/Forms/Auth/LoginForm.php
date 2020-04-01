@@ -1,8 +1,8 @@
 <?php
 
-
 namespace App\Forms\Auth;
 
+use App\Models\Auth\Authentication;
 use Eywa\Html\Form\Form;
 use Eywa\Http\Request\Request;
 use Eywa\Http\Response\Response;
@@ -34,7 +34,10 @@ class LoginForm extends Form
      */
     public function make(): string
     {
-        return $this->start()->add('username', 'text', 'username')->add('password', 'password', 'password')->get('Login');
+        return $this->start()
+            ->add('username', 'text', 'username')
+            ->add('password', 'password', 'password')
+            ->get('Login');
     }
 
 
@@ -43,7 +46,11 @@ class LoginForm extends Form
      */
     public function success(Request $request): Response
     {
-        return (new Auth(new Session()))->login($request->request()->get('username'), $request->request()->get('password'));
+        return (new Auth(new Session(), Authentication::class))
+            ->login(
+                $request->request()->get('username'),
+                $request->request()->get('password')
+            );
     }
 
     /**

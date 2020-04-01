@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Testing\Helpers {
 
     use Carbon\Carbon;
@@ -18,7 +17,7 @@ namespace Testing\Helpers {
         /**
          *
          */
-        public function test_collect()
+        public function testCollect()
         {
             $this->assertInstanceOf(Collect::class, collect());
         }
@@ -26,7 +25,7 @@ namespace Testing\Helpers {
         /**
          *
          */
-        public function test_env()
+        public function testEnv()
         {
             $this->assertEquals('not_found', env('A', 'not_found'));
             $this->assertEquals(env('DB_DRIVER', ''), env('DB_DRIVER', ''));
@@ -35,7 +34,7 @@ namespace Testing\Helpers {
         /**
          *
          */
-        public function test_now()
+        public function testNow()
         {
             $this->assertInstanceOf(Carbon::class, now());
         }
@@ -43,7 +42,7 @@ namespace Testing\Helpers {
         /**
          * @throws Kedavra
          */
-        public function test_root()
+        public function testRoot()
         {
             $this->assertEquals('/', root());
         }
@@ -51,7 +50,7 @@ namespace Testing\Helpers {
         /**
          * @throws Kedavra
          */
-        public function test_flash()
+        public function testFlash()
         {
             $this->assertEquals('', flash());
         }
@@ -59,14 +58,14 @@ namespace Testing\Helpers {
         /**
          * @throws Kedavra
          */
-        public function test_sum()
+        public function testSum()
         {
             $this->assertEquals(5, sum([0,1,2,3,4]));
             $this->assertEquals(5, sum(5));
             $this->assertEquals(5, sum('equal'));
         }
 
-        public function test_sum_error()
+        public function testSumError()
         {
             $this->expectException(Kedavra::class);
             sum(false);
@@ -74,7 +73,7 @@ namespace Testing\Helpers {
         /**
          *
          */
-        public function test_cli()
+        public function testCli()
         {
             $this->assertTrue(cli());
             $this->assertFalse(not_cli());
@@ -83,19 +82,20 @@ namespace Testing\Helpers {
         /**
          * @throws Kedavra
          */
-        public function test_route()
+        public function testRoute()
         {
             $this->assertEquals('/', route('root'));
+            $this->assertEquals('hello/marc', route('hello', ['name' => 'marc']));
         }
 
         /***
          * @throws Kedavra
          */
-        public function test_ago()
+        public function testAgo()
         {
             $this->assertNotEmpty(ago('2020-02-17'));
         }
-        public function test_total()
+        public function testTotal()
         {
             $this->assertEquals('1', total(1));
             $this->assertEquals('10', total(10));
@@ -112,7 +112,7 @@ namespace Testing\Helpers {
         /**
          *
          */
-        public function test_append()
+        public function testAppend()
         {
             $x = '';
             append($x, 'php', 'is', 'super');
@@ -122,7 +122,7 @@ namespace Testing\Helpers {
         /**
          *
          */
-        public function test_is_pair()
+        public function testPair()
         {
             $this->assertTrue(is_pair(2));
             $this->assertTrue(is_pair(4));

@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Ioc\Admin;
 
 use Eywa\Http\Request\Request;

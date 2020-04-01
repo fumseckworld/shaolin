@@ -15,9 +15,11 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:form';
 
-        protected function configure():void
+        protected function configure(): void
         {
-            $this->setDescription('Create a new form')->addArgument('form', InputArgument::REQUIRED, 'The form name.')->addArgument('directory', InputArgument::OPTIONAL, 'The form directory');
+            $this->setDescription('Create a new form')
+            ->addArgument('form', InputArgument::REQUIRED, 'The form name.')
+            ->addArgument('directory', InputArgument::OPTIONAL, 'The form directory');
         }
 
         /**
@@ -36,17 +38,19 @@ namespace Eywa\Console\Generate {
 
             if (preg_match("#^[a-z]([a-z_]+)$#", $form) !== 1) {
                 $io->error('You must use snake case syntax to generate the form');
-                return  1;
+                return 1;
             }
 
-            if (def($directory) && ! is_dir(base('app', 'Forms', $directory))) {
+            if (def($directory) && !is_dir(base('app', 'Forms', $directory))) {
                 mkdir(base('app', 'Forms', $directory));
             }
 
 
             $form_class = collect(explode('_', $form))->for('ucfirst')->join('');
 
-            $form_file  = def($directory)?  base('app', 'Forms', $directory, "$form_class.php"): base('app', 'Forms', "$form_class.php");
+            $form_file = def($directory)
+            ? base('app', 'Forms', $directory, "$form_class.php")
+            : base('app', 'Forms', "$form_class.php");
 
             if (file_exists($form_file)) {
                 $io->error(sprintf('The %s form already exist', $form_class));
@@ -58,7 +62,8 @@ namespace Eywa\Console\Generate {
             $namespace = def($directory) ? "App\Forms\\$directory" : 'App\Forms';
 
 
-            if ((new File($form_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File($form_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
 namespace $namespace;
@@ -111,7 +116,8 @@ class $form_class extends Form
     {
         return new Response('');
     }
-}")->flush()) {
+}")->flush()
+            ) {
                 $io->success(sprintf('The %s form has been generated successfully', $form_class));
 
                 return 0;

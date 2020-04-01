@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Http\Middleware {
 
     use Eywa\Exception\Kedavra;

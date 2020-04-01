@@ -24,7 +24,13 @@ namespace Eywa\Database\Connexion {
          *
          * @throws Kedavra
          */
-        public function __construct(string $driver, string $base, string $username ='', string $password ='', string $host = LOCALHOST);
+        public function __construct(
+            string $driver,
+            string $base,
+            string $username = '',
+            string $password = '',
+            string $host = LOCALHOST
+        );
 
         /**
          *
@@ -96,7 +102,7 @@ namespace Eywa\Database\Connexion {
          * @throws Kedavra
          *
          */
-        public function fetch(string $class = 'stdClass', array $args = []) : array ;
+        public function fetch(string $class = 'stdClass', array $args = []): array;
 
 
         /**
@@ -112,7 +118,7 @@ namespace Eywa\Database\Connexion {
          * @throws Kedavra
          *
          */
-        public function get(int $style): array ;
+        public function get(int $style): array;
 
         /**
          *
@@ -227,6 +233,6 @@ namespace Eywa\Database\Connexion {
          * @return Collect
          *
          */
-        public function sql(): Collect ;
+        public function sql(): Collect;
     }
 }

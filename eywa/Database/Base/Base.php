@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace Eywa\Database\Base {
@@ -34,7 +33,15 @@ namespace Eywa\Database\Base {
             if (equal($this->env, 'dev')) {
                 foreach ((new Table(development(), ''))->show() as $table) {
                     if (different($table, 'migrations')) {
-                        is_false((new Table(development(), $table))->truncate(), true, sprintf('The truncate task for the %s table has failed', $table));
+                        is_false(
+                            (new Table(development(), $table))
+                            ->truncate(),
+                            true,
+                            sprintf(
+                                'The truncate task for the %s table has failed',
+                                $table
+                            )
+                        );
                     }
                 }
                 return  true;
@@ -43,7 +50,15 @@ namespace Eywa\Database\Base {
             if (equal($this->env, 'prod')) {
                 foreach ((new Table(production(), ''))->show() as $table) {
                     if (different($table, 'migrations')) {
-                        is_false((new Table(production(), $table))->truncate(), true, sprintf('The truncate task for the %s table has failed', $table));
+                        is_false(
+                            (new Table(production(), $table))
+                            ->truncate(),
+                            true,
+                            sprintf(
+                                'The truncate task for the %s table has failed',
+                                $table
+                            )
+                        );
                     }
                 }
                 return  true;
@@ -52,13 +67,29 @@ namespace Eywa\Database\Base {
             if (equal($this->env, 'any')) {
                 foreach ((new Table(production(), ''))->show() as $table) {
                     if (different($table, 'migrations')) {
-                        is_false((new Table(production(), $table))->truncate(), true, sprintf('The truncate task for the %s table has failed', $table));
+                        is_false(
+                            (new Table(production(), $table))
+                            ->truncate(),
+                            true,
+                            sprintf(
+                                'The truncate task for the %s table has failed',
+                                $table
+                            )
+                        );
                     }
                 }
 
                 foreach ((new Table(development(), ''))->show() as $table) {
                     if (different($table, 'migrations')) {
-                        is_false((new Table(development(), $table))->truncate(), true, sprintf('The truncate task for the %s table has failed', $table));
+                        is_false(
+                            (new Table(development(), $table))
+                            ->truncate(),
+                            true,
+                            sprintf(
+                                'The truncate task for the %s table has failed',
+                                $table
+                            )
+                        );
                     }
                 }
                 return  true;

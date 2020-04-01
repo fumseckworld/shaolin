@@ -15,7 +15,7 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:test';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
 
@@ -53,7 +53,7 @@ namespace Eywa\Console\Generate {
                 $io->error(sprintf('The %s tests already exist', $class));
                 return 1;
             }
-            $x= ucfirst(strval($input->getArgument('directory')));
+            $x = ucfirst(strval($input->getArgument('directory')));
 
             if (def($x) && !is_dir(base('tests', $x))) {
                 mkdir(base('tests', $x));
@@ -62,7 +62,8 @@ namespace Eywa\Console\Generate {
             $io->title('Generation of the test');
 
 
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
 namespace $namespace {
@@ -74,7 +75,8 @@ namespace $namespace {
     
     }
 }
-")->flush()) {
+")->flush()
+            ) {
                 $io->success(sprintf('The %s test has been created successfully', $class));
                 return 0;
             }

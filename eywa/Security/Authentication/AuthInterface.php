@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 namespace Eywa\Security\Authentication {
 
 
@@ -8,6 +9,7 @@ namespace Eywa\Security\Authentication {
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Response\Response;
     use Eywa\Session\SessionInterface;
+    use ReflectionException;
     use stdClass;
 
     interface AuthInterface
@@ -18,9 +20,13 @@ namespace Eywa\Security\Authentication {
          * AuthInterface constructor.
          *
          * @param SessionInterface $session
+         * @param string $model
+         *
+         * @throws Kedavra
+         * @throws ReflectionException
          *
          */
-        public function __construct(SessionInterface $session);
+        public function __construct(SessionInterface $session, string $model);
 
         /**
          *
@@ -99,6 +105,6 @@ namespace Eywa\Security\Authentication {
          *
          *
          */
-        public function delete_account(): Response;
+        public function deleteAccount(): Response;
     }
 }

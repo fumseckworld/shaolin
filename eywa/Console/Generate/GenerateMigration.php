@@ -15,7 +15,7 @@ namespace Eywa\Console\Generate {
     {
         protected static $defaultName = 'make:migration';
 
-        protected function configure():void
+        protected function configure(): void
         {
             $this
                 // the short description shown while running "php bin/console list"
@@ -55,7 +55,8 @@ namespace Eywa\Console\Generate {
             $time = date('Y-m-d-H-i-s');
 
 
-            if ((new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
+            if (
+                (new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
 
 namespace Evolution\Migrations {
@@ -91,7 +92,8 @@ namespace Evolution\Migrations {
 
         }
     }
-}")->flush()) {
+}")->flush()
+            ) {
                 $io->success(sprintf('The %s migration was successfully generated', $class));
                 return 0;
             }

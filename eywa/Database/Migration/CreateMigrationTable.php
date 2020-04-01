@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Database\Migration {
 
 
@@ -19,7 +18,11 @@ namespace Eywa\Database\Migration {
          */
         public function up(): bool
         {
-            return  $this->add('id', 'primary')->add('version', 'string', 255)->add('migration', 'string', 255)->add('time', 'datetime')->create();
+            return  $this->add('id', 'primary')
+                    ->add('version', 'string', 255)
+                    ->add('migration', 'string', 255)
+                    ->add('time', 'datetime')
+                    ->create();
         }
 
         /**

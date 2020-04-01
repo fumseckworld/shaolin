@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models
+namespace App\Models\Auth
 {
 
     use Eywa\Database\Model\Model;
 
-    class User extends Model
+    class Authentication extends Model
     {
         protected static string $table = 'auth';
 

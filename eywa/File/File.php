@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Eywa\File {
 
     use Eywa\Collection\Collect;
@@ -140,9 +142,9 @@ namespace Eywa\File {
          * @return bool
          *
          */
-        public function to_json(array $data): bool
+        public function json(array $data): bool
         {
-            return file_put_contents($this->absolute_path(), json_encode($data, JSON_FORCE_OBJECT)) !== false;
+            return file_put_contents($this->realpath(), json_encode($data, JSON_FORCE_OBJECT)) !== false;
         }
 
         /**
@@ -154,7 +156,7 @@ namespace Eywa\File {
          * @return bool
          *
          */
-        public static function remove_if_exist(string $filename): bool
+        public static function del(string $filename): bool
         {
             return self::exist([$filename]) ? self::delete($filename) : false;
         }
@@ -209,9 +211,9 @@ namespace Eywa\File {
          * @return int
          *
          */
-        public function count_lines(): int
+        public function sum(): int
         {
-            return $this->to(PHP_INT_MAX)->current_line() + 1;
+            return $this->to(PHP_INT_MAX)->position() + 1;
         }
 
         /**
@@ -247,9 +249,9 @@ namespace Eywa\File {
          */
         public function char(): string
         {
-            $x= $this->instance()->fgetc();
+            $x = $this->instance()->fgetc();
 
-            return  $x !== false ? $x :'';
+            return  $x !== false ? $x : '';
         }
 
         /**
@@ -343,7 +345,7 @@ namespace Eywa\File {
          * @return int
          *
          */
-        public function current_line(): int
+        public function position(): int
         {
             return $this->instance()->key();
         }
@@ -377,7 +379,7 @@ namespace Eywa\File {
          * @throws Kedavra
          *
          */
-        public function write_line(string $line_content): File
+        public function add(string $line_content): File
         {
             return $this->write("$line_content\n");
         }
@@ -418,7 +420,7 @@ namespace Eywa\File {
          * @return File
          *
          */
-        public function set_max(int $max): File
+        public function maximum(int $max): File
         {
             $this->instance()->setMaxLineLen($max);
 
@@ -463,7 +465,7 @@ namespace Eywa\File {
          * @return bool
          *
          */
-        public function is_dir(): bool
+        public function dir(): bool
         {
             return $this->instance()->isDir();
         }
@@ -475,7 +477,7 @@ namespace Eywa\File {
          * @return bool
          *
          */
-        public function is_file(): bool
+        public function file(): bool
         {
             return $this->instance()->isFile();
         }
@@ -561,7 +563,7 @@ namespace Eywa\File {
          * @return string
          *
          */
-        public function base_name(string $suffix = ''): string
+        public function basename(string $suffix = ''): string
         {
             return $this->instance()->getBasename($suffix);
         }
@@ -597,7 +599,7 @@ namespace Eywa\File {
          * @return string
          *
          */
-        public function absolute_path():string
+        public function realpath(): string
         {
             $x = $this->instance()->getRealPath();
 
@@ -621,7 +623,7 @@ namespace Eywa\File {
          * @return bool
          *
          */
-        public function is_link(): bool
+        public function link(): bool
         {
             return $this->instance()->isLink();
         }
@@ -661,7 +663,9 @@ namespace Eywa\File {
          */
         public function copy(string $dest): bool
         {
-            return is_dir($dest) ? copy($this->absolute_path(), "$dest" . DIRECTORY_SEPARATOR . $this->name()) : copy($this->absolute_path(), $dest);
+            return is_dir($dest)
+            ? copy($this->realpath(), "$dest" . DIRECTORY_SEPARATOR . $this->name())
+            : copy($this->realpath(), $dest);
         }
 
         /**
@@ -673,7 +677,7 @@ namespace Eywa\File {
          */
         public function remove(): bool
         {
-            return unlink($this->absolute_path());
+            return unlink($this->realpath());
         }
 
         /**
@@ -687,7 +691,9 @@ namespace Eywa\File {
          */
         public function move(string $dest)
         {
-            return is_dir($dest)  ? copy($this->absolute_path(), "$dest" . DIRECTORY_SEPARATOR . $this->name()) && $this->remove() : copy($this->absolute_path(), $dest) && $this->remove();
+            return is_dir($dest)
+            ? copy($this->realpath(), "$dest" . DIRECTORY_SEPARATOR . $this->name())
+            && $this->remove() : copy($this->realpath(), $dest) && $this->remove();
         }
 
         /**
@@ -739,7 +745,7 @@ namespace Eywa\File {
          * @return array<mixed>
          *
          */
-        public function keys(string $delimiter = ':'):array
+        public function keys(string $delimiter = ':'): array
         {
             $data = collect();
 
@@ -775,33 +781,6 @@ namespace Eywa\File {
             }
 
             return $data->values()->all();
-        }
-
-        /**
-         * @param array<mixed> $keys
-         * @param array<mixed> $values
-         * @param string $delimiter
-         *
-         * @return bool
-         *
-         * @throws Kedavra
-         *
-         */
-        public function change_values(array $keys, array $values, string $delimiter = ':'): bool
-        {
-            if (sum($keys) !==  sum($values)) {
-                throw new Kedavra('The keys and values size are different');
-            }
-            $keys = collect($keys);
-            $values = collect($values);
-            foreach ($keys->all() as $k => $v) {
-                $key = $keys->get($k);
-                $value = $values->get($k);
-                $line = is_numeric($value) || is_bool($value) ? "$key$delimiter $value" : "$key$delimiter '$value'";
-                $this->write_line($line);
-            }
-
-            return $this->flush();
         }
     }
 }

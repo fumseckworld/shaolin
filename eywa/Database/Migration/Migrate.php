@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Database\Migration {
 
     use Eywa\Database\Query\Sql;
@@ -62,7 +61,14 @@ namespace Eywa\Database\Migration {
 
                         if ($result->ok()) {
                             $io->success($up_success_message);
-                            self::sql('dev')->create(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            self::sql('dev')
+                                ->create(
+                                    [
+                                        'version' => $created_at,
+                                        'migration' => $migration,
+                                        'time' => now()->toDateTimeString()
+                                    ]
+                                );
                         } else {
                             self::sql('dev')->where('version', EQUAL, $date)->delete();
                             $io->error($up_error_message);
@@ -82,7 +88,13 @@ namespace Eywa\Database\Migration {
 
                         if ($result->ok()) {
                             $io->success($up_success_message);
-                            self::sql('prod')->create(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                            self::sql('prod')->create(
+                                [
+                                    'version' => $created_at,
+                                    'migration' => $migration,
+                                    'time' => now()->toDateTimeString()
+                                ]
+                            );
                         } else {
                             self::sql('prod')->where('version', EQUAL, $date)->delete();
                             $io->error($up_error_message);
@@ -116,7 +128,13 @@ namespace Eywa\Database\Migration {
 
                     if ($result->ok()) {
                         $io->success($up_success_message);
-                        self::sql('dev')->create(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                        self::sql('dev')->create(
+                            [
+                                'version' => $created_at,
+                                'migration' => $migration,
+                                'time' => now()->toDateTimeString()
+                            ]
+                        );
                     } else {
                         self::sql('dev')->where('version', EQUAL, $date)->delete();
                         $io->error($up_error_message);
@@ -132,7 +150,13 @@ namespace Eywa\Database\Migration {
 
                     if ($result->ok()) {
                         $io->success($up_success_message);
-                        self::sql('prod')->create(['version'=> $created_at,'migration'=> $migration,'time'=> now()->toDateTimeString()]);
+                        self::sql('prod')->create(
+                            [
+                                'version' => $created_at,
+                                'migration' => $migration,
+                                'time' => now()->toDateTimeString()
+                            ]
+                        );
                     } else {
                         self::sql('prod')->where('version', EQUAL, $date)->delete();
                         $io->error($up_error_message);
@@ -155,7 +179,7 @@ namespace Eywa\Database\Migration {
          * @throws Kedavra
          *
          */
-        public function rollback(SymfonyStyle $io):int
+        public function rollback(SymfonyStyle $io): int
         {
             if ($this->check('down')) {
                 $io->warning('Nothing to rollback');
@@ -172,13 +196,39 @@ namespace Eywa\Database\Migration {
 
                     $table = $x->getStaticPropertyValue('table');
 
-                    $down_success_message = str_replace('%s', $table, $x->getStaticPropertyValue('down_success_message'));
+                    $down_success_message =
+                        str_replace(
+                            '%s',
+                            $table,
+                            $x->getStaticPropertyValue('down_success_message')
+                        );
 
-                    $down_error_message = str_replace('%s', $table, $x->getStaticPropertyValue('down_error_message'));
+                    $down_error_message = str_replace(
+                        '%s',
+                        $table,
+                        $x->getStaticPropertyValue('down_error_message')
+                    );
 
-                    $down_title = str_replace('%s', $table, $x->getStaticPropertyValue('down_title'));
+                    $down_title = str_replace(
+                        '%s',
+                        $table,
+                        $x->getStaticPropertyValue('down_title')
+                    );
 
-                    $exist = self::sql('dev')->where('version', EQUAL, $date)->exist() && self::sql('prod')->where('version', EQUAL, $date)->exist();
+                    $exist = self::sql('dev')
+                            ->where(
+                                'version',
+                                EQUAL,
+                                $date
+                            )
+                            ->exist() &&
+                        self::sql('prod')
+                            ->where(
+                                'version',
+                                EQUAL,
+                                $date
+                            )
+                            ->exist();
 
 
                     if ($exist) {
@@ -268,7 +318,7 @@ namespace Eywa\Database\Migration {
 
                 $item = collect(explode('.', $item))->first();
 
-                $class = '\Evolution\Migrations\\' .$item;
+                $class = '\Evolution\Migrations\\' . $item;
 
                 $x[$class] = (new ReflectionClass($class))->getStaticPropertyValue('created_at');
             }
@@ -285,12 +335,25 @@ namespace Eywa\Database\Migration {
          * @throws Kedavra
          * @throws ReflectionException
          */
-        private function check(string $mode ='up'): bool
+        private function check(string $mode = 'up'): bool
         {
             if (equal($mode, 'up')) {
                 $return = collect();
                 foreach (self::list('up') as $class => $date) {
-                    $return->push(self::sql('dev')->where('version', EQUAL, $date)->exist() && self::sql('prod')->where('version', EQUAL, $date)->exist());
+                    $return->push(self::sql('dev')
+                            ->where(
+                                'version',
+                                EQUAL,
+                                $date
+                            )
+                        ->exist() &&
+                        self::sql('prod')
+                            ->where(
+                                'version',
+                                EQUAL,
+                                $date
+                            )
+                            ->exist());
                 }
                 return $return->ok();
             }

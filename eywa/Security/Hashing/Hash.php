@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Eywa\Security\Hashing
 {
 
@@ -76,7 +78,7 @@ namespace Eywa\Security\Hashing
          * @return bool
          *
          */
-        public function valid(string $value) : bool
+        public function valid(string $value): bool
         {
             return hash_equals($this->valid, $value);
         }
@@ -88,7 +90,7 @@ namespace Eywa\Security\Hashing
          * @return string
          *
          */
-        public function generate() : string
+        public function generate(): string
         {
             return $this->valid;
         }

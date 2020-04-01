@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Eywa\Database\Table {
 
 
@@ -106,7 +105,7 @@ namespace Eywa\Database\Table {
          * @throws Kedavra
          *
          */
-        public function rename_column(string $column, string $new_name): bool;
+        public function renameColumn(string $column, string $new_name): bool;
 
         /**
          *
