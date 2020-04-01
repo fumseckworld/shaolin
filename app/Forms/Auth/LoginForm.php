@@ -58,6 +58,6 @@ class LoginForm extends Form
      */
     public function error(array $messages): Response
     {
-        return $this->redirect(static::$redirect_error_url, alert($messages), false);
+        return $this->redirect(static::$redirect_error_url, $messages, false);
     }
 }

@@ -30,14 +30,14 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function all(): array
+        public function all(): array
         {
             return (new Sql(ioc(Connect::class), static::$table))->get();
         }
         /**
          * @inheritDoc
          */
-        public static function destroy(int $id): bool
+        public function destroy(int $id): bool
         {
             return (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->delete();
         }
@@ -46,7 +46,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function update(int $id, array $values): bool
+        public function update(int $id, array $values): bool
         {
             return (new Sql(ioc(Connect::class), static::$table))->update($id, $values);
         }
@@ -54,7 +54,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function create(array $record): bool
+        public function create(array $record): bool
         {
             return (new Sql(ioc(Connect::class), static::$table))->create($record);
         }
@@ -62,7 +62,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function find(int $id): stdClass
+        public function find(int $id): stdClass
         {
             $x = (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->get();
 
@@ -74,7 +74,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function different(string $column, $expected): array
+        public function different(string $column, $expected): array
         {
             return (new Sql(ioc(Connect::class), static::$table))->where($column, DIFFERENT, $expected)->get();
         }
@@ -82,7 +82,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function by(string $column, $expected): stdClass
+        public function by(string $column, $expected): stdClass
         {
             $x = (new Sql(ioc(Connect::class), static::$table))->where($column, EQUAL, $expected)->get();
 
@@ -94,7 +94,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function search(string $value): array
+        public function search(string $value): array
         {
             return (new Sql(ioc(Connect::class), static::$table))->like($value)->get();
         }
@@ -102,7 +102,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function columns(): array
+        public function columns(): array
         {
             return (new Sql(ioc(Connect::class), static::$table))->columns();
         }
@@ -110,7 +110,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function primary(): string
+        public function primary(): string
         {
             return (new Sql(ioc(Connect::class), static::$table))->primary();
         }
@@ -118,7 +118,7 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public static function paginate(callable $callback, int $current_page): Sql
+        public function paginate(callable $callback, int $current_page): Sql
         {
             return (new Sql(ioc(Connect::class), static::$table))->paginate($callback, $current_page, static::$limit);
         }

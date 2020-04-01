@@ -5,18 +5,20 @@ namespace Testing\Security {
     use App\Models\Auth\Authentication;
     use Eywa\Exception\Kedavra;
     use Eywa\Testing\Unit;
+    use ReflectionException;
     use stdClass;
 
     class AuthTest extends Unit
     {
 
         /**
-         * @throws Kedavra
+         * @throws Kedavra|ReflectionException
          */
         public function testSuccess()
         {
 
-            $username = Authentication::find(1)->username;
+
+            $username = (new Authentication())->find(1)->username;
 
             $this->assertTrue($this->auth(Authentication::class)->login($username, '00000000')->to('/home'));
             $this->assertTrue($this->auth(Authentication::class)->login($username, '0000000')->to('/login'));

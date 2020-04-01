@@ -46,7 +46,7 @@ class UsersForm extends Form
      */
     public function success(Bag $bag): Response
     {
-        return $this->redirect(static::$redirect_success_url, static::$success_message);
+        return $this->redirect(static::$redirect_success_url, [static::$success_message]);
     }
 
     /**
@@ -54,6 +54,6 @@ class UsersForm extends Form
      */
     public function error(array $messages): Response
     {
-        return $this->redirect(static::$redirect_error_url, static::$error_message);
+        return $this->redirect(static::$redirect_error_url, $messages, false);
     }
 }

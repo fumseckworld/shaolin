@@ -3,7 +3,7 @@
 namespace App\Forms\Write;
 
 use Eywa\Html\Form\Form;
-use Eywa\Http\Request\Request;
+use Eywa\Http\Parameter\Bag;
 use Eywa\Http\Response\Response;
 
 class ContactForm extends Form
@@ -17,33 +17,32 @@ class ContactForm extends Form
     protected static array $options = [];
 
     protected static array $rules = [
-    
+
     ];
 
-    public static string $redirect_url = '/error';
+
 
     /**
      * @inheritDoc
      */
     public function make(): string
     {
-        return '';
-    }
-
-
-    /**
-     * @inheritDoc
-     */
-    protected function valid(Request $request): Response
-    {
-        return new Response('');
+        // TODO: Implement make() method.
     }
 
     /**
      * @inheritDoc
      */
-    protected function invalid(Request $request, array $errors): Response
+    public function success(Bag $bag): Response
     {
-        return new Response('');
+        return new Response('send');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function error(array $messages): Response
+    {
+        return $this->redirect(static::$redirect_error_url, $messages, false);
     }
 }

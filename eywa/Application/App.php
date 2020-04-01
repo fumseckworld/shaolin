@@ -17,6 +17,7 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
+    use Eywa\Http\Parameter\Bag;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\JsonResponse;
@@ -70,7 +71,7 @@ namespace Eywa\Application {
          */
         public function env(string $key, $default = '')
         {
-            $x =  $this->env->get($key);
+            $x = $this->env->get($key);
 
             return def($x) ? $x : $default;
         }
@@ -93,7 +94,6 @@ namespace Eywa\Application {
         }
 
 
-
         /**
          * @inheritDoc
          */
@@ -108,9 +108,9 @@ namespace Eywa\Application {
         public function view(string $view, string $title, string $description, array $args = []): Response
         {
             return (
-                new Response(
-                    (new View($view, $title, $description, $args, static::$layout, static::$directory))->render()
-                ))->send();
+            new Response(
+                (new View($view, $title, $description, $args, static::$layout, static::$directory))->render()
+            ))->send();
         }
 
         /**
@@ -158,7 +158,7 @@ namespace Eywa\Application {
          */
         public function request(array $args = []): Request
         {
-            return cli() ? new Request([], [], [], [], [], $args) :  Request::make($args);
+            return cli() ? new Request([], [], [], [], [], $args) : Request::make($args);
         }
 
         /**
@@ -178,7 +178,7 @@ namespace Eywa\Application {
                             HTTP_SERVICE_UNAVAILABLE_TEXT,
                             'We comming soon'
                         ))
-                        ->render(),
+                            ->render(),
                         '',
                         503,
                         ['Retry-After' => 600]
@@ -202,10 +202,10 @@ namespace Eywa\Application {
         public function back(string $message = '', bool $success = true): Response
         {
             if (def($message)) {
-                $success ?  $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
+                $success ? $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
             }
 
-            return  not_cli()
+            return not_cli()
                 ? (new RedirectResponse(
                     $this->request()->server()->get('HTTP_REFERER')
                 ))->send()
@@ -219,7 +219,7 @@ namespace Eywa\Application {
         public function to(string $route, array $route_args = [], string $message = '', bool $success = true): Response
         {
             if (def($message)) {
-                $success ?  $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
+                $success ? $this->flash(SUCCESS, $message) : $this->flash(FAILURE, $message);
             }
 
             return (new RedirectResponse(route($route, $route_args)))->send();
@@ -232,13 +232,13 @@ namespace Eywa\Application {
         {
             switch ($type) {
                 case APCU_CACHE:
-                    return  new ApcuCache();
+                    return new ApcuCache();
                 case FILE_CACHE:
-                    return  new FileCache();
+                    return new FileCache();
                 case MEMCACHE_CACHE:
-                    return  new MemcacheCache();
+                    return new MemcacheCache();
                 case REDIS_CACHE:
-                    return  new RedisCache();
+                    return new RedisCache();
                 default:
                     throw new Kedavra('The apdater is not supported');
             }
@@ -275,7 +275,7 @@ namespace Eywa\Application {
          */
         public function auth(string $model): Auth
         {
-            return  new Auth(new Session(), $model);
+            return new Auth(new Session(), $model);
         }
 
         /**
@@ -356,7 +356,7 @@ namespace Eywa\Application {
          */
         public function json(array $data, int $status = 200): Response
         {
-            return  (new JsonResponse($data, $status))->send();
+            return (new JsonResponse($data, $status))->send();
         }
 
 
@@ -384,6 +384,24 @@ namespace Eywa\Application {
         {
             $x = new ReflectionClass($form);
             return $x->getMethod('handle')->invokeArgs($x->newInstance(), [$request->request()]);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function validate(string $validator, Bag $bag): Response
+        {
+            $x = new ReflectionClass($validator);
+            return $x->getMethod('handle')->invokeArgs($x->newInstance(), [$bag]);
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function model(string $model, string $method, array $method_args = [])
+        {
+            $model = new ReflectionClass($model);
+            return $model->getMethod($method)->invokeArgs($model->newInstance(), $method_args);
         }
     }
 }

@@ -51,6 +51,11 @@ namespace Eywa\Validate {
          */
         public static string $redirect_error_url = '/error';
 
+
+        public static string $success_message = '';
+
+        public static string $error_message = '';
+
         protected static array $messages =
         [
             VALIDATOR_EMAIL_NOT_VALID => '',
@@ -146,7 +151,7 @@ namespace Eywa\Validate {
          * Redirect user
          *
          * @param string $url
-         * @param string $message
+         * @param array $messages
          * @param bool $success
          *
          * @return Response
@@ -154,9 +159,9 @@ namespace Eywa\Validate {
          * @throws Kedavra
          *
          */
-        public function redirect(string $url, string $message, bool $success = true): Response
+        public function redirect(string $url, array $messages, bool $success = true): Response
         {
-            $success ? (new Flash())->set(SUCCESS, $message) : (new Flash())->set(FAILURE, $message);
+            $success ? (new Flash())->set(SUCCESS, alert($messages)) : (new Flash())->set(FAILURE, alert($messages));
 
             return (new RedirectResponse($url))->send();
         }

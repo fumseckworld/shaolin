@@ -102,7 +102,7 @@ namespace Eywa\Security\Authentication {
          * @return Response
          *
          * @throws Kedavra
-         *
+         * @throws ReflectionException
          *
          */
         public function deleteAccount(): Response;

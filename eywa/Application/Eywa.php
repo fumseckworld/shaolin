@@ -13,13 +13,13 @@ namespace Eywa\Application {
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
+    use Eywa\Http\Parameter\Bag;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Email\Write;
     use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Session\SessionInterface;
-    use Eywa\Validate\Validator;
     use Redis;
     use ReflectionException;
 
@@ -90,6 +90,24 @@ namespace Eywa\Application {
 
         /**
          *
+         *
+         * Get a model
+         *
+         * @param string $model
+         * @param string $method
+         * @param array $method_args
+         *
+         * @return mixed
+         *
+         * @throws Kedavra
+         * @throws ReflectionException
+         *
+         *
+         */
+        public function model(string $model, string $method, array $method_args = []);
+
+        /**
+         *
          * Generate a response
          *
          * @param string $content
@@ -145,6 +163,22 @@ namespace Eywa\Application {
          *
          */
         public function check(string $form, Request $request): Response;
+
+        /**
+         *
+         * Check a request
+         *
+         * @param string $validator
+         * @param Bag $bag
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         * @throws Exception
+         * @throws ReflectionException
+         *
+         */
+        public function validate(string $validator, Bag $bag): Response;
 
         /**
          *

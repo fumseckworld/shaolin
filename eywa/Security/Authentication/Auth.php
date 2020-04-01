@@ -6,7 +6,6 @@ namespace Eywa\Security\Authentication
 {
 
     use Eywa\Collection\Collect;
-    use Eywa\Database\Model\Model;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
@@ -24,10 +23,6 @@ namespace Eywa\Security\Authentication
      */
     class Auth implements AuthInterface
     {
-        /**
-         * @var Model
-         */
-        private static Model $model;
 
         /**
          *
@@ -35,6 +30,8 @@ namespace Eywa\Security\Authentication
          *
          */
         private SessionInterface $session;
+
+        private ReflectionClass $model;
 
         /**
          * @inheritDoc
@@ -44,8 +41,8 @@ namespace Eywa\Security\Authentication
             $this->session = $session;
             is_false(class_exists($model), true, 'The model not exist');
 
-            $model = new ReflectionClass($model);
-            static::$model = $model->getMethod('instance')->invoke($model->newInstance());
+
+            $this->model =   new ReflectionClass($model);
         }
 
         /**
@@ -96,8 +93,8 @@ namespace Eywa\Security\Authentication
         public function login(string $username, string $password): Response
         {
             try {
-                $user = static::$model::by('username', $username);
-            } catch (Kedavra $kedavra) {
+                $user = $this->model->getMethod('by')->invokeArgs($this->model->newInstance(), ['username',$username]);
+            } catch (Kedavra $exception) {
                 return $this->redirect('/login', alert([$this->messages()->get('user_not_found')]));
             }
 
@@ -131,7 +128,13 @@ namespace Eywa\Security\Authentication
         public function deleteAccount(): Response
         {
             if ($this->connected()) {
-                if (static::$model::destroy(intval($this->current()->id))) {
+                if (
+                    $this->model->getMethod('destroy')
+                    ->invokeArgs(
+                        $this->model->newInstance(),
+                        [intval($this->current()->id)]
+                    )
+                ) {
                     return $this->redirect('/', $this->messages()->get('account_removed_successfully'), true);
                 }
                 return $this->redirect('/', $this->messages()->get('account_removed_fail'));
