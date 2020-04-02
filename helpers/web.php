@@ -146,8 +146,6 @@ if (!function_exists('root')) {
      *
      * @return string
      *
-     * @throws Kedavra
-     *
      */
     function root(): string
     {
@@ -196,7 +194,6 @@ if (!function_exists('url')) {
      *
      * @return string
      *
-     * @throws Kedavra
      */
     function url(string ...$urls): string
     {
