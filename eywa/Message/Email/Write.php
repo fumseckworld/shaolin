@@ -67,7 +67,7 @@ namespace Eywa\Message\Email {
                 ? $this->message->setBody(message($message), 'text/html', 'utf-8')
                 : $this->message->setBody($message, 'text/plain', 'utf-8');
 
-            $this->private_key = (new File(base() . DIRECTORY_SEPARATOR . 'dkim.private.key'))->read();
+            $this->private_key = (new File(base('dkim.private.key')))->read();
         }
 
         /**
