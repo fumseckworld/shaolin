@@ -59,7 +59,7 @@ namespace Eywa\Html\Navigation {
                     sprintf(
                         '<li class="%s"><a href="%s" class="%s">%s</a></li>',
                         $this->navigation_li_class,
-                        $link,
+                        trim($link, '/'),
                         $this->nav_a_class,
                         $v
                     )

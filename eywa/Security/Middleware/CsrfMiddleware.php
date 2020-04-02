@@ -3,10 +3,10 @@
 namespace Eywa\Security\Middleware {
 
 
+    use Closure;
     use Eywa\Http\Middleware\Middleware;
     use Eywa\Http\Request\ServerRequest;
-    use Eywa\Security\Csrf\Csrf;
-    use Eywa\Session\Session;
+    use Eywa\Http\Response\Response;
 
     class CsrfMiddleware extends Middleware
     {
@@ -14,11 +14,9 @@ namespace Eywa\Security\Middleware {
         /**
          * @inheritDoc
          */
-        public function check(ServerRequest $request): void
+        public function handle(ServerRequest $request, Closure $next): Response
         {
-            if (not_cli() && $request->submited()) {
-                (new Csrf(new Session()))->check();
-            }
+            return $next($request);
         }
     }
 }

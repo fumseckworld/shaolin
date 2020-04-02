@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Eywa\Http\Routing {
 
+    use Closure;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\RedirectResponse;
     use Eywa\Http\Response\Response;
-    use Eywa\Security\Middleware\CsrfMiddleware;
     use ReflectionClass;
     use ReflectionException;
     use stdClass;
@@ -47,11 +47,14 @@ namespace Eywa\Http\Routing {
          */
         private stdClass $route;
 
+        private Closure $next;
+
+
+        private Response $response;
+
 
         /**
-         *
          * Router constructor.
-         *
          * @param ServerRequest $request
          *
          * @throws Kedavra
@@ -63,7 +66,7 @@ namespace Eywa\Http\Routing {
             $this->url = $request->url();
 
             $this->method = $request->method();
-
+            $this->response = new Response('');
             $this->callMiddleware($request);
         }
 
@@ -89,7 +92,7 @@ namespace Eywa\Http\Routing {
             ) {
                 if ($this->match($route->url, $route)) {
                     $this->route = $route;
-                    return  $this->result()->call();
+                    return $this->result()->call();
                 }
             }
             return $this->notFound();
@@ -174,13 +177,13 @@ namespace Eywa\Http\Routing {
          *
          * @param ServerRequest $request
          *
-         * @return void
+         * @return Response
          *
          * @throws Kedavra
          * @throws ReflectionException
          *
          */
-        private function callMiddleware(ServerRequest $request): void
+        private function callMiddleware(ServerRequest $request): Response
         {
             $middleware_dir = 'Middleware';
 
@@ -189,7 +192,7 @@ namespace Eywa\Http\Routing {
 
             is_false(is_dir($dir), true, sprintf('The %s directory has not been found', $dir));
 
-            $middle = array_merge(
+            $middlewares = array_merge(
                 files(
                     base(
                         'app',
@@ -207,26 +210,50 @@ namespace Eywa\Http\Routing {
                 )
             );
 
-            call_user_func_array([ new CsrfMiddleware(), 'check' ], [ $request ]);
+            $middle = collect($middlewares);
 
-            foreach ($middle as $middleware) {
-                $middle = '\\' .  strval(collect(explode('.', strval(collect(
-                    explode(
-                        DIRECTORY_SEPARATOR,
-                        strval(
-                            strstr(
-                                $middleware,
-                                'app'
-                            )
+            $this->next = function (ServerRequest $request) use ($middle) {
+
+                $middleware = $middle->nextValue();
+                if (def($middleware)) {
+                    return $this->call($middleware, $request)->send();
+                } else {
+                    return $this->response->send();
+                }
+            };
+
+
+            foreach ($middlewares as $middleware) {
+                return $this->call($middleware, $request)->send();
+            }
+            return $this->response->send();
+        }
+
+
+        /**
+         * @param string $middleware
+         * @param ServerRequest $request
+         * @return Response
+         * @throws ReflectionException
+         */
+        private function call(string $middleware, ServerRequest $request): Response
+        {
+
+            $middleware = '\\' . strval(collect(explode('.', strval(collect(
+                explode(
+                    DIRECTORY_SEPARATOR,
+                    strval(
+                        strstr(
+                            $middleware,
+                            'app'
                         )
                     )
-                )->for('ucfirst')->join('\\'))))->first());
+                )
+            )->for('ucfirst')->join('\\'))))->first());
 
-                $x = new ReflectionClass($middle);
+            $x = new ReflectionClass($middleware);
 
-
-                $x->getMethod('check')->invoke($x->newInstance(), $request);
-            }
+            return $x->getMethod('handle')->invokeArgs($x->newInstance(), [$request,$this->next]);
         }
     }
 }

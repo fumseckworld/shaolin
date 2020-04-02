@@ -444,6 +444,18 @@ namespace Eywa\Collection {
 
         /**
          *
+         * Get the next value
+         *
+         * @return mixed|string
+         *
+         */
+        public function nextValue()
+        {
+            $this->next();
+            return $this->valid() ?  $this->current() : '';
+        }
+        /**
+         *
          * Check if array is empty
          *
          * @return bool

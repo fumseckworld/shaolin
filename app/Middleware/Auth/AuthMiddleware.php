@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Middleware\Security {
+namespace App\Middleware\Auth {
 
     use Closure;
     use Eywa\Http\Middleware\Middleware;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\Response;
 
-    class Ip extends Middleware
+    class AuthMiddleware extends Middleware
     {
+
         /**
          * @inheritDoc
          */

@@ -63,6 +63,19 @@ namespace Eywa\Http\Request {
             }
         }
 
+        /**
+         *
+         * Check if the server url match the url
+         *
+         * @param string $url
+         *
+         * @return bool
+         *
+         */
+        public function match(string $url): bool
+        {
+            return $this->url() === $url;
+        }
 
         /**
          *
