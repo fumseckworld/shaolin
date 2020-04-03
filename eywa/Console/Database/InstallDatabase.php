@@ -364,14 +364,14 @@ namespace Eywa\Console\Database {
                 return 1;
             }
             if ((new CreateMigrationTable('prod'))->up()) {
-                $io->success('prod migration');
+                $io->success('The production migrations table has been created successfully');
             }
 
             if ((new CreateMigrationTable('dev'))->up()) {
-                $io->success('dev migration');
+                $io->success('The development migrations table has been created successfully');
             }
             if ((new CreateMigrationTable('test'))->up()) {
-                $io->success('test migration');
+                $io->success('The tests migrations table has been created successfully');
             }
             $io->success('Congratulations all databases are now ready');
             return 0;
