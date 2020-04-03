@@ -89,8 +89,12 @@ namespace Eywa\Console\Database {
                     } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
 
                     if (
-                        connect(MYSQL, '', 'root', $this->pass)
-                        ->removeDatabase(strval(env('DEVELOP_DB_NAME', 'ikran')))
+                        connect(
+                            MYSQL,
+                            '',
+                            'root',
+                            $this->pass
+                        )->removeDatabase(strval(env('DEVELOP_DB_NAME', 'ikran')))
                     ) {
                         $io->success($this->dev_base_created_successfully);
                     } else {
@@ -99,8 +103,12 @@ namespace Eywa\Console\Database {
                     }
 
                     if (
-                        connect(MYSQL, '', 'root', $this->pass)
-                        ->removeUser(strval(env('DEVELOP_DB_USERNAME', 'ikran')))
+                        connect(
+                            MYSQL,
+                            '',
+                            'root',
+                            $this->pass
+                        )->removeUser(strval(env('DEVELOP_DB_USERNAME', 'ikran')))
                     ) {
                         $io->success($this->dev_user_created_successfully);
                     } else {
@@ -118,8 +126,12 @@ namespace Eywa\Console\Database {
                     } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
 
                     if (
-                        connect(POSTGRESQL, '', 'postgres', $this->pass)
-                        ->removeDatabase(strval(env('DEVELOP_DB_NAME', 'ikran')))
+                        connect(
+                            POSTGRESQL,
+                            '',
+                            'postgres',
+                            $this->pass
+                        )->removeDatabase(strval(env('DEVELOP_DB_NAME', 'ikran')))
                     ) {
                         $io->success($this->dev_base_created_successfully);
                     } else {
@@ -128,8 +140,12 @@ namespace Eywa\Console\Database {
                     }
 
                     if (
-                        connect(POSTGRESQL, '', 'postgres', $this->pass)
-                        ->removeUser(strval(env('DEVELOP_DB_USERNAME', 'ikran')))
+                        connect(
+                            POSTGRESQL,
+                            '',
+                            'postgres',
+                            $this->pass
+                        )->removeUser(strval(env('DEVELOP_DB_USERNAME', 'ikran')))
                     ) {
                         $io->success($this->dev_user_created_successfully);
                     } else {
@@ -140,7 +156,16 @@ namespace Eywa\Console\Database {
 
                     break;
                 default:
-                    if (unlink(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
+                    if (
+                        unlink(
+                            strval(
+                                env(
+                                    'DEVELOP_DB_NAME',
+                                    'ikran'
+                                )
+                            )
+                        )
+                    ) {
                         $io->success($this->dev_base_created_successfully);
                     } else {
                         $io->error($this->dev_base_created_fail);
@@ -161,14 +186,29 @@ namespace Eywa\Console\Database {
                     }
 
 
-                    if (connect(MYSQL, '', 'root', $this->pass)->removeDatabase(strval(env('DB_NAME', 'eywa')))) {
+                    if (
+                        connect(
+                            MYSQL,
+                            '',
+                            '
+                            root',
+                            $this->pass
+                        )->removeDatabase(strval(env('DB_NAME', 'eywa')))
+                    ) {
                         $io->success($this->prod_base_created_successfully);
                     } else {
                         $io->error($this->prod_base_created_fail);
                         return 1;
                     }
 
-                    if (connect(MYSQL, '', 'root', $this->pass)->removeUser(strval(env('DB_USERNAME', 'eywa')))) {
+                    if (
+                        connect(
+                            MYSQL,
+                            '',
+                            'root',
+                            $this->pass
+                        )->removeUser(strval(env('DB_USERNAME', 'eywa')))
+                    ) {
                         $io->success($this->prod_user_created_successfully);
                     } else {
                         $io->error($this->prod_user_created_fail);
@@ -186,8 +226,12 @@ namespace Eywa\Console\Database {
                         } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
                     }
                     if (
-                        connect(POSTGRESQL, '', 'postgres', $this->pass)
-                        ->removeDatabase(strval(env('DB_NAME', 'eywa')))
+                        connect(
+                            POSTGRESQL,
+                            '',
+                            'postgres',
+                            $this->pass
+                        )->removeDatabase(strval(env('DB_NAME', 'eywa')))
                     ) {
                         $io->success($this->prod_base_created_successfully);
                     } else {
@@ -196,8 +240,12 @@ namespace Eywa\Console\Database {
                     }
 
                     if (
-                        connect(POSTGRESQL, '', 'postgres', $this->pass)
-                        ->removeUser(strval(env('DB_USERNAME', 'eywa')))
+                        connect(
+                            POSTGRESQL,
+                            '',
+                            'postgres',
+                            $this->pass
+                        )->removeUser(strval(env('DB_USERNAME', 'eywa')))
                     ) {
                         $io->success($this->prod_user_created_successfully);
                     } else {
@@ -207,7 +255,16 @@ namespace Eywa\Console\Database {
 
                     break;
                 default:
-                    if (unlink(strval(env('DEVELOP_DB_NAME', 'ikran')))) {
+                    if (
+                        unlink(
+                            strval(
+                                env(
+                                    'DEVELOP_DB_NAME',
+                                    'ikran'
+                                )
+                            )
+                        )
+                    ) {
                         $io->success($this->prod_base_created_successfully);
                     } else {
                         $io->error($this->prod_base_created_fail);
