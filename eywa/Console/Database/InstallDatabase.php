@@ -180,7 +180,7 @@ namespace Eywa\Console\Database {
 
 
                     if (
-                        connect(MYSQL, '', 'mysql', $this->pass)
+                        connect(MYSQL, '', 'root', $this->pass)
                         ->createDatabase(strval(env('DB_NAME', 'eywa')))
                     ) {
                         $io->success($this->prod_base_created_successfully);

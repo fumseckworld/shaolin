@@ -6,7 +6,6 @@ vendor
 coverage
 *.key
 *sqlite3*
-config/mode.yaml
 doc
 wanted
 .php_cs.cache
