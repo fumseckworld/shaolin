@@ -1,16 +1,15 @@
 <?php
     
-namespace Eywa\Console\App
-{
+namespace Eywa\Console\Git {
     use Eywa\Console\Shell;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
-    class AppSend extends Command
+    class GitSend extends Command
     {
-        protected static $defaultName = 'app:send';
+        protected static $defaultName = 'git:send';
 
 
         protected function configure(): void

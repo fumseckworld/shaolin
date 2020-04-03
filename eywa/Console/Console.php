@@ -4,7 +4,6 @@ namespace Eywa\Console {
 
 
     use Exception;
-    use Eywa\Console\App\AppSend;
     use Eywa\Console\App\Coverage;
     use Eywa\Console\App\Dkim;
     use Eywa\Console\App\Key;
@@ -33,6 +32,7 @@ namespace Eywa\Console {
     use Eywa\Console\Get\Documentation;
     use Eywa\Console\Get\Wanted;
     use Eywa\Console\Git\GitCommit;
+    use Eywa\Console\Git\GitSend;
     use Eywa\Console\Git\UngitCommand;
     use Eywa\Console\Mode\DevMode;
     use Eywa\Console\Mode\Maintenance;
@@ -88,7 +88,7 @@ namespace Eywa\Console {
                 new TruncateTable(),new ShowTable(),new DropTable(),new ImportDatabase(),new ExportDatabase(),
                 new CleanDatabase(),new GenerateMiddleware(),new GenerateCommand(),new GenerateView(),
                 new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),
-                new GenerateValidator(),new AppSend(),new TestCommand(),new GenerateCommand(),new FindRoute() ,
+                new GenerateValidator(),new GitSend(),new TestCommand(),new GenerateCommand(),new FindRoute() ,
                 new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
                 new GenerateContainer(),new GenerateForm(),new GenerateModel(),new UngitCommand(),new GitCommit()
             ];
