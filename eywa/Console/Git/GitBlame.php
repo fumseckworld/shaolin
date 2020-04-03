@@ -17,8 +17,7 @@ namespace Eywa\Console\Git {
 
         protected function configure(): void
         {
-            $this->setDescription('Run interactive git blame')
-            ->addArgument('months', InputArgument::OPTIONAL, 'The commits months');
+            $this->setDescription('Run interactive git blame');
         }
 
         public function interact(InputInterface $input, OutputInterface $output): int
@@ -27,6 +26,11 @@ namespace Eywa\Console\Git {
 
             $files = [];
             exec('git ls-files', $files);
+            
+            if (empty($files)) {
+                $io->error('No files has been found');
+                return 1;
+            }
             do {
                 $file =   $io->askQuestion((new Question('Type the filename '))->setAutocompleterValues($files));
                 if (file_exists($file)) {
