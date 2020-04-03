@@ -65,13 +65,13 @@ namespace Eywa\Console\Git {
                 } while (is_null($commit) || sum($commit) < 0 || sum($commit) > 60);
 
                 if ((new Shell(sprintf("git commit -m '%s'", $commit)))->run()) {
-                    $io->success('Commit has been send');
+                    $io->success('The new commit has been saved successfully');
                 } else {
                     $io->error('Git commit has failed');
                     return 1;
                 }
 
-                if ($io->confirm('Do you want send the new commits ?', true)) {
+                if ($io->confirm('Do you want send the new commits to all remotes ?', true)) {
                     $io->success('Sending the application');
 
                     $remotes  = [];
