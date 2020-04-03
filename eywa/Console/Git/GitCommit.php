@@ -9,6 +9,7 @@ namespace Eywa\Console\Git {
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
     use Symfony\Component\Console\Style\SymfonyStyle;
+    use Symfony\Component\Process\Process;
 
     class GitCommit extends Command
     {
@@ -33,6 +34,14 @@ namespace Eywa\Console\Git {
             $io->success('Running all tests');
             $x = new Shell(base('vendor', 'bin', 'grumphp') . ' run');
             if ($x->run()) {
+                $io->warning(
+                    html_entity_decode(
+                        strval(shell_exec('git diff')),
+                        ENT_QUOTES,
+                        'UTF-8'
+                    )
+                );
+
                 if ($io->confirm('Run git add ? ', true)) {
                     if ((new Shell('git add .'))->run()) {
                         $io->success('Modification has been added');
@@ -40,6 +49,8 @@ namespace Eywa\Console\Git {
                         $io->error('Git add has failed');
                         return 1;
                     }
+                } else {
+                    return 0;
                 }
                 do {
                     $commit =  $io->askQuestion(
