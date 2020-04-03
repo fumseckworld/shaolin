@@ -70,6 +70,49 @@ class GitCommit extends Command
                 $io->error('Git commit has failed');
                 return 1;
             }
+
+            if ($io->confirm('Do you want send the new commits ?', true)) {
+                $io->success('Sending the application');
+
+                $remotes  = [];
+
+                exec('git remote -v', $remotes);
+
+                if (not_def($remotes)) {
+                    $io->error('No server remote has been found');
+                    return 1;
+                }
+                
+                $all = collect();
+
+                foreach ($remotes as $remote) {
+                    $x = collect(explode("\t", $remote));
+                    $name = $x->first();
+                    $url = collect(explode(' ', $x->get(1)))->first();
+
+                    $host = collect(explode(':', collect(explode('@', $url))->last()))->first();
+
+                    if ($all->hasNot($name)) {
+                        $all->put($name, $host);
+                    }
+                }
+
+                foreach ($all->all() as $name => $url) {
+                    $io->warning(sprintf('Sending the application to %s', $url));
+
+                    if ((new Shell(sprintf('git push %s --all && git push %s --tags', $name, $name)))->run()) {
+                        $io->success(sprintf('The repository hosted at %s has been updated successfully', $url));
+                    } else {
+                        $io->error('Please make sure you have the correct access rights and the repository exists');
+                        return 1;
+                    }
+                }
+
+                $io->warning('End of all remote servers found');
+                $io->success('All remote servers has been updated successfully');
+            } else {
+                return 0;
+            }
         } else {
             $io->error($x->get()->getOutput());
             return 1;
