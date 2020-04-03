@@ -15,7 +15,7 @@ namespace Eywa\Console\Git {
 
         protected function configure(): void
         {
-            $this->setDescription('Start ungit');
+            $this->setDescription('Show the repository with ungit');
         }
 
         public function execute(InputInterface $input, OutputInterface $output)

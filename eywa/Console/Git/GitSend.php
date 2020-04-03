@@ -14,7 +14,7 @@ namespace Eywa\Console\Git {
 
         protected function configure(): void
         {
-            $this->setDescription('Send the application to the server');
+            $this->setDescription('Send the application to all remotes');
         }
             
         public function execute(InputInterface $input, OutputInterface $output)

@@ -31,7 +31,9 @@ namespace Eywa\Console {
     use Eywa\Console\Generate\GenerateView;
     use Eywa\Console\Get\Documentation;
     use Eywa\Console\Get\Wanted;
+    use Eywa\Console\Git\GitBlame;
     use Eywa\Console\Git\GitCommit;
+    use Eywa\Console\Git\GitLog;
     use Eywa\Console\Git\GitSend;
     use Eywa\Console\Git\UngitCommand;
     use Eywa\Console\Mode\DevMode;
@@ -90,7 +92,8 @@ namespace Eywa\Console {
                 new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),
                 new GenerateValidator(),new GitSend(),new TestCommand(),new GenerateCommand(),new FindRoute() ,
                 new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
-                new GenerateContainer(),new GenerateForm(),new GenerateModel(),new UngitCommand(),new GitCommit()
+                new GenerateContainer(),new GenerateForm(),new GenerateModel(),new UngitCommand(),new GitCommit(),
+                new GitLog(),new GitBlame()
             ];
 
             $this->add($commands)->add(commands());

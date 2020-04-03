@@ -9,7 +9,6 @@ namespace Eywa\Console\Git {
     use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
     use Symfony\Component\Console\Style\SymfonyStyle;
-    use Symfony\Component\Process\Process;
 
     class GitCommit extends Command
     {
@@ -18,7 +17,7 @@ namespace Eywa\Console\Git {
 
         protected function configure(): void
         {
-            $this->setDescription('run git commit interative command');
+            $this->setDescription('Run git commit interative command');
         }
 
         /**
@@ -36,7 +35,23 @@ namespace Eywa\Console\Git {
             if ($x->run()) {
                 $io->warning(
                     html_entity_decode(
-                        strval(shell_exec('git diff')),
+                        sprintf(
+                            "%s\n%s",
+                            strval(
+                                str_replace(
+                                    "\t",
+                                    '',
+                                    strval(
+                                        shell_exec(
+                                            'git status'
+                                        )
+                                    )
+                                )
+                            ),
+                            strval(
+                                shell_exec('git diff')
+                            )
+                        ),
                         ENT_QUOTES,
                         'UTF-8'
                     )
