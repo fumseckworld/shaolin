@@ -30,10 +30,11 @@ namespace Eywa\Database\Migration {
          * @param string $table
          *
          * @throws Kedavra
+         *
          */
         public function __construct(string $env, string $table)
         {
-            not_in(['dev','prod'], $env, true, 'The mode must be dev or prod');
+            not_in(['dev','prod','test'], $env, true, 'The mode must be dev, prod or test');
 
             is_true(not_def($table), true, 'The table name is required');
 
@@ -169,9 +170,9 @@ namespace Eywa\Database\Migration {
                     append($x, "($size)");
                 }
 
-
                 append($sql, $x);
-                return  $this->connexion()->set(sprintf('ALTER TABLE %s ADD COLUMN %s;', $this->from, $sql))->execute();
+
+                return $this->connexion()->set(sprintf('ALTER TABLE %s ADD COLUMN %s;', $this->from, $sql))->execute();
             }
 
             return false;
@@ -385,7 +386,13 @@ namespace Eywa\Database\Migration {
          */
         private function connexion(): Connect
         {
-            return $this->env == 'dev' ? development() : production();
+            if ($this->env == 'dev') {
+                return development();
+            } elseif ($this->env == 'prod') {
+                return production();
+            }
+
+            return tests();
         }
 
         /**

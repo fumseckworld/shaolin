@@ -32,7 +32,7 @@ namespace Eywa\Database\Migration {
 
             $result = collect();
 
-            if (def(self::sql('dev')->execute())) {
+            if (def(self::sql('dev')->get())) {
                 foreach (self::list('up') as $class => $date) {
                     $class = strval($class);
                     $x = new ReflectionClass($class);
@@ -52,12 +52,12 @@ namespace Eywa\Database\Migration {
                     $exist = self::sql('dev')->where('version', EQUAL, $date)->exist();
 
                     if (!$exist) {
-                        $i =   $x->newInstance('dev');
+                        $dev =   $x->newInstance('dev');
 
                         $io->title("$up_title (dev)");
 
 
-                        $result->push($x->getMethod('up')->invoke($i));
+                        $result->push($x->getMethod('up')->invoke($dev));
 
                         if ($result->ok()) {
                             $io->success($up_success_message);
@@ -78,13 +78,14 @@ namespace Eywa\Database\Migration {
 
                     $exist = self::sql('prod')->where('version', EQUAL, $date)->exist();
 
+                    $result->clear();
                     if (!$exist) {
-                        $i =   $x->newInstance('prod');
+                        $prod =   $x->newInstance('prod');
 
                         $io->title("$up_title (prod)");
 
 
-                        $result->push($x->getMethod('up')->invoke($i));
+                        $result->push($x->getMethod('up')->invoke($prod));
 
                         if ($result->ok()) {
                             $io->success($up_success_message);
@@ -97,6 +98,34 @@ namespace Eywa\Database\Migration {
                             );
                         } else {
                             self::sql('prod')->where('version', EQUAL, $date)->delete();
+                            $io->error($up_error_message);
+                            return 1;
+                        }
+                    }
+
+                    $result->clear();
+
+                    $exist = self::sql('test')->where('version', EQUAL, $date)->exist();
+
+                    if (!$exist) {
+                        $test =   $x->newInstance('test');
+
+                        $io->title("$up_title (test)");
+
+
+                        $result->push($x->getMethod('up')->invoke($test));
+
+                        if ($result->ok()) {
+                            $io->success($up_success_message);
+                            self::sql('test')->create(
+                                [
+                                    'version' => $created_at,
+                                    'migration' => $migration,
+                                    'time' => now()->toDateTimeString()
+                                ]
+                            );
+                        } else {
+                            self::sql('test')->where('version', EQUAL, $date)->delete();
                             $io->error($up_error_message);
                             return 1;
                         }
@@ -120,11 +149,11 @@ namespace Eywa\Database\Migration {
                     $up_title = str_replace('%s', $table, $x->getStaticPropertyValue('up_title'));
 
 
-                    $i =   $x->newInstance('dev');
+                    $dev =   $x->newInstance('dev');
 
                     $io->title("$up_title (dev)");
 
-                    $result->push($x->getMethod('up')->invoke($i));
+                    $result->push($x->getMethod('up')->invoke($dev));
 
                     if ($result->ok()) {
                         $io->success($up_success_message);
@@ -141,12 +170,13 @@ namespace Eywa\Database\Migration {
                         return 1;
                     }
 
-                    $i =   $x->newInstance('prod');
+                    $result->clear();
+                    $prod =   $x->newInstance('prod');
 
                     $io->title("$up_title (prod)");
 
 
-                    $result->push($x->getMethod('up')->getClosure($i));
+                    $result->push($x->getMethod('up')->invoke($prod));
 
                     if ($result->ok()) {
                         $io->success($up_success_message);
@@ -159,6 +189,29 @@ namespace Eywa\Database\Migration {
                         );
                     } else {
                         self::sql('prod')->where('version', EQUAL, $date)->delete();
+                        $io->error($up_error_message);
+                        return 1;
+                    }
+
+                    $result->clear();
+                    $test =   $x->newInstance('test');
+
+                    $io->title("$up_title (test)");
+
+
+                    $result->push($x->getMethod('up')->invoke($test));
+
+                    if ($result->ok()) {
+                        $io->success($up_success_message);
+                        self::sql('test')->create(
+                            [
+                                'version' => $created_at,
+                                'migration' => $migration,
+                                'time' => now()->toDateTimeString()
+                            ]
+                        );
+                    } else {
+                        self::sql('test')->where('version', EQUAL, $date)->delete();
                         $io->error($up_error_message);
                         return 1;
                     }
@@ -189,7 +242,7 @@ namespace Eywa\Database\Migration {
 
             $result = collect();
 
-            if (def(self::sql('dev')->execute()) && def(self::sql('prod')->execute())) {
+            if (def(self::sql('dev')->get()) && def(self::sql('prod')->get()) && def(self::sql('test')->get())) {
                 foreach (self::list('down') as $class => $date) {
                     $class = strval($class);
                     $x = new ReflectionClass($class);
@@ -220,15 +273,7 @@ namespace Eywa\Database\Migration {
                                 'version',
                                 EQUAL,
                                 $date
-                            )
-                            ->exist() &&
-                        self::sql('prod')
-                            ->where(
-                                'version',
-                                EQUAL,
-                                $date
-                            )
-                            ->exist();
+                            )->exist();
 
 
                     if ($exist) {
@@ -248,9 +293,22 @@ namespace Eywa\Database\Migration {
                             $result->push($x->getMethod('down')->invoke($k));
 
                             if ($result->ok()) {
-                                $io->success($down_success_message);
                                 self::sql('prod')->where('version', EQUAL, $date)->delete();
-                                return 0;
+
+                                $io->success($down_success_message);
+                                $k =  $x->newInstance('test');
+
+                                $io->title("$down_title (test)");
+
+                                $result->push($x->getMethod('down')->invoke($k));
+                                if ($result->ok()) {
+                                    self::sql('test')->where('version', EQUAL, $date)->delete();
+                                    $io->success($down_success_message);
+                                    return 0;
+                                } else {
+                                    $io->error($down_error_message);
+                                    return 1;
+                                }
                             } else {
                                 $io->error($down_error_message);
 
@@ -280,7 +338,12 @@ namespace Eywa\Database\Migration {
          */
         private static function sql(string $env, string $table = 'migrations'): Sql
         {
-            return equal($env, 'dev') ? new Sql(development(), $table) : new Sql(production(), $table);
+            return equal($env, 'dev') ?
+                new Sql(development(), $table) : (equal($env, 'prod')
+                ?
+                    new Sql(production(), $table)
+                :
+                    new Sql(tests(), $table));
         }
 
         /**
@@ -353,11 +416,22 @@ namespace Eywa\Database\Migration {
                                 EQUAL,
                                 $date
                             )
+                            ->exist() &&
+                        self::sql('test')
+                            ->where(
+                                'version',
+                                EQUAL,
+                                $date
+                            )
                             ->exist());
                 }
                 return $return->ok();
             }
-            return not_def(self::sql('dev')->get()) && not_def(self::sql('prod')->get());
+            return not_def(
+                self::sql('dev')->get(),
+                self::sql('prod')->get(),
+                self::sql('test')->get()
+            );
         }
     }
 }

@@ -21,21 +21,29 @@ namespace Eywa\Console\Database {
 
         private string $pgsql_root_password = 'What it\'s the password for the postgreSQL postgres user ?';
 
-        private string $prod_user_created_fail = 'The production user has been created successfully';
+        private string $prod_user_created_fail = 'The creation of the production user has failed';
 
-        private string $dev_user_created_fail = 'The development user has been created successfully';
+        private string $tests_user_created_fail = 'The creation of the test user has failed';
 
-        private string $prod_base_created_fail = 'The production database has been created successfully';
+        private string $dev_user_created_fail = 'The creation of the development user has failed';
 
-        private string $dev_base_created_fail = 'The development database has been created successfully';
+        private string $prod_base_created_fail = 'The creation of the production database has failed';
 
-        private string $prod_user_created_successfully = 'The production user has been created successfully';
+        private string $dev_base_created_fail = 'The creation of the development database has failed';
 
-        private string $dev_user_created_successfully = 'The development user has been created successfully';
+        private string $tests_base_created_fail = 'The creation of the tests database has failed';
+
+        private string $prod_user_created_successfully = 'The production user\'s has been created successfully';
+
+        private string $dev_user_created_successfully = 'The development user\'s has been created successfully';
+
+        private string $tests_user_created_successfully = 'The tests user\'s has been created successfully';
 
         private string $prod_base_created_successfully = 'The production database has been created successfully';
 
         private string $dev_base_created_successfully = 'The development database has been created successfully';
+
+        private string $tests_base_created_successfully = 'The tests database has been created successfully';
 
         private string $routing_instance_created_successfully = 'The routing database has been created successfully';
 
@@ -60,13 +68,13 @@ namespace Eywa\Console\Database {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-
             $io = new SymfonyStyle($input, $output);
 
             if ($io->confirm('Run the databases creation ?', true)) {
                 return  $this->create(
                     strval(env('DEVELOP_DB_DRIVER', 'mysql')),
                     strval(env('DB_DRIVER', 'mysql')),
+                    strval(env('TESTS_DB_DRIVER', 'mysql')),
                     $io
                 );
             }
@@ -78,13 +86,13 @@ namespace Eywa\Console\Database {
         /**
          * @param string $dev
          * @param string $prod
+         * @param string $test
          * @param SymfonyStyle $io
          * @return int
          * @throws Kedavra
-         * @throws Exception
          */
 
-        private function create(string $dev, string $prod, SymfonyStyle $io): int
+        private function create(string $dev, string $prod, string $test, SymfonyStyle $io): int
         {
             if (!is_dir(base('routes'))) {
                 mkdir(base('routes'));
@@ -208,7 +216,7 @@ namespace Eywa\Console\Database {
                     if (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected()) {
                         do {
                             $this->pass = $io->askQuestion(
-                                (new Question($this->mysql_root_password_question, 'postgres'))
+                                (new Question($this->pgsql_root_password, 'postgres'))
                                 ->setHidden(true)
                             );
                         } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
@@ -249,6 +257,86 @@ namespace Eywa\Console\Database {
                     break;
             }
 
+            switch ($test) {
+                case MYSQL:
+                    if (!connect(MYSQL, '', 'root', $this->pass)->connected()) {
+                        do {
+                            $this->pass  =  $io->askQuestion((new Question($this->mysql_root_password_question, 'root'))
+                                            ->setHidden(true));
+                        } while (!connect(MYSQL, '', 'root', $this->pass)->connected());
+                    }
+
+
+                    if (
+                        connect(MYSQL, '', 'root', $this->pass)
+                        ->createDatabase(strval(env('TESTS_DB_NAME', 'vortex')))
+                    ) {
+                        $io->success($this->tests_base_created_successfully);
+                    } else {
+                        $io->error($this->tests_base_created_fail);
+                        return 1;
+                    }
+
+                    if (
+                        connect(MYSQL, '', 'root', $this->pass)
+                        ->createUser(
+                            strval(env('TESTS_DB_USERNAME', 'vortex')),
+                            strval(env('TESTS_DB_PASSWORD', 'vortex')),
+                            strval(env('TESTS_DB_NAME', 'vortex'))
+                        )
+                    ) {
+                        $io->success($this->tests_user_created_successfully);
+                    } else {
+                        $io->error($this->tests_user_created_fail);
+                        return 1;
+                    }
+                    break;
+
+                case POSTGRESQL:
+                    if (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected()) {
+                        do {
+                            $this->pass = $io->askQuestion(
+                                (new Question($this->pgsql_root_password, 'postgres'))
+                                ->setHidden(true)
+                            );
+                        } while (!connect(POSTGRESQL, '', 'postgres', $this->pass)->connected());
+                    }
+
+                    if (
+                        connect(POSTGRESQL, '', 'postgres', $this->pass)
+                        ->createDatabase(strval(env('TESTS_DB_NAME', 'vortex')))
+                    ) {
+                        $io->success($this->tests_base_created_successfully);
+                    } else {
+                        $io->error($this->tests_base_created_fail);
+                        return 1;
+                    }
+
+                    if (
+                        connect(POSTGRESQL, '', 'postgres', $this->pass)
+                        ->createUser(
+                            strval(env('TESTS_DB_USERNAME', 'vortex')),
+                            strval(env('TESTS_DB_PASSWORD', 'vortex')),
+                            strval(env('TESTS_DB_NAME', 'vortex'))
+                        )
+                    ) {
+                        $io->success($this->tests_user_created_successfully);
+                    } else {
+                        $io->error($this->tests_user_created_fail);
+                        return 1;
+                    }
+
+                    break;
+                default:
+                    if (connect(SQLITE, strval(env('TESTS_DB_NAME', 'vortex.sqlite3')))->connected()) {
+                        $io->success($this->tests_base_created_successfully);
+                    } else {
+                        $io->error($this->tests_base_created_fail);
+                        return 1;
+                    }
+                    break;
+            }
+
             if (connect(SQLITE, base('routes', 'web.sqlite3'))->connected()) {
                 $io->success($this->routing_instance_created_successfully);
 
@@ -275,11 +363,15 @@ namespace Eywa\Console\Database {
                 $io->error($this->routing_instance_creation_has_fail);
                 return 1;
             }
-            if ((new CreateMigrationTable('prod'))->up() && (new CreateMigrationTable('dev'))->up()) {
-                $io->success($this->migration_tables_created_successfully);
-            } else {
-                $io->error($this->migration_tables_created_failed);
-                return 1;
+            if ((new CreateMigrationTable('prod'))->up()) {
+                $io->success('prod migration');
+            }
+
+            if ((new CreateMigrationTable('dev'))->up()) {
+                $io->success('dev migration');
+            }
+            if ((new CreateMigrationTable('test'))->up()) {
+                $io->success('test migration');
             }
             $io->success('Congratulations all databases are now ready');
             return 0;

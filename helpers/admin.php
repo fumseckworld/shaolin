@@ -278,6 +278,24 @@ if (!function_exists('development')) {
         );
     }
 }
+
+if (!function_exists('tests')) {
+    /**
+     * @return Connect
+     * @throws Kedavra
+     * @throws Exception
+     */
+    function tests(): Connect
+    {
+        return new Connect(
+            strval(env('TESTS_DB_DRIVER', 'mysql')),
+            strval(env('TESTS_DB_NAME', 'vortex')),
+            strval(env('TESTS_DB_USERNAME', 'vortex')),
+            strval(env('TESTS_DB_PASSWORD', 'vortex')),
+            strval(env('TESTS_DB_HOST', 'localhost'))
+        );
+    }
+}
 if (!function_exists('sql')) {
     /**
      *
