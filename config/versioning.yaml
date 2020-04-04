@@ -6,7 +6,7 @@ tests-success-message: 'Félicitations aucune erreur trouvées'
 confirm-send-message: 'Envoyer les modifications ?'
 confirm-send-message-default-value: true
 send-message: 'Mise à jour des référentiels'
-send-message-to: 'Mise à jour du référentiel héberger à %s'
+send-message-to: 'Mise à jour du référentiel hébergé à %s'
 remote-updated-success-message: 'Le référentiel a été mis à jour avec succès'
 remote-updated-fail-message: 'Vérifier que vous avez les droits et que le référentiel existe'
 all-remotes-updated-success-message: 'Tous les référentiels ont été mis à jour'
