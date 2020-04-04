@@ -35,6 +35,7 @@ namespace Eywa\Versioning {
         private string $continue_message;
         private bool $continue_default_value;
         private bool $checked = false;
+        private string $bye_message;
         private Collect $errors;
 
         /**
@@ -58,6 +59,7 @@ namespace Eywa\Versioning {
 
                 $file = 'versioning';
 
+                $this->bye_message = strval(config($file, 'bye-message'));
                 $this->commit_success = strval(config($file, 'commit-success-message'));
                 $this->commit_message_prompt = strval(config($file, 'commit-message-prompt'));
                 $this->commit_fail = strval(config($file, 'commit-fail-message'));
@@ -211,7 +213,7 @@ namespace Eywa\Versioning {
                     )
                 )
             );
-            return 0;
+            return $this->bye();
         }
         /**
          *
@@ -244,12 +246,33 @@ namespace Eywa\Versioning {
             return $this;
         }
 
+        /**
+         *
+         *
+         * Say good bye
+         *
+         * @param int $status
+         * @return int
+         */
+        public function bye(int $status = 0): int
+        {
+            $this->io->success($this->bye_message);
+            return $status;
+        }
+
+        /**
+         *
+         * Close all commands
+         *
+         * @return int
+         *
+         */
         public function success(): int
         {
             if (not_def($this->errors->all())) {
-                return 0;
+                return $this->bye();
             }
-            return 1;
+            return $this->bye(1);
         }
 
         /**

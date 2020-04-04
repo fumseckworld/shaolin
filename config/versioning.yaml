@@ -1,23 +1,24 @@
 commit-success-message: 'Le commit a été enregistré avec succès'
-commit-fail-message: 'La creation du commit à échouer'
+commit-fail-message: 'La création du commit a échoué'
 commit-message-prompt: 'Expliquer les changements'
 start-tests-message: 'Exécution des tests'
 tests-success-message: 'Félicitations aucune erreur trouvées'
 confirm-send-message: 'Envoyer les modifications ?'
 confirm-send-message-default-value: true
-send-message: 'Debut de la mise a jour des reférentiels'
-send-message-to: 'Mise a jour du reférentiel héberger à %s'
-remote-updated-success-message: 'Le reférentiel à été mis a jour avec succès'
-remote-updated-fail-message: 'Verifier que vous avez les droits et que le reférentiel existe'
-all-remotes-updated-success-message: 'Tout les reférentiels ont été mis a jour avec succès'
-end-of-remotes-message: 'Fin des reférentiels'
-remotes-empty: 'Aucun referenciel trouvé'
+send-message: 'Mise à jour des référentiels'
+send-message-to: 'Mise à jour du référentiel héberger à %s'
+remote-updated-success-message: 'Le référentiel a été mis à jour avec succès'
+remote-updated-fail-message: 'Vérifier que vous avez les droits et que le référentiel existe'
+all-remotes-updated-success-message: 'Tous les référentiels ont été mis à jour'
+end-of-remotes-message: 'Fin des référentiels'
+remotes-empty: 'Aucun référentiel trouvés'
 confirm-add-message: 'Ajouter les modifications ?'
 add-success-message: 'Les modifications ont été ajoutées avec succès'
-add-fail-message: "L'ajout des modifications à échoué"
-type-filename-prompt: "Entrez le nom d'un fichiez "
-no-files-found-message: "Aucun fichier n'as été commit"
+add-fail-message: "L'ajout des modifications a échoué"
+type-filename-prompt: "Entrez le nom d'un fichier "
+no-files-found-message: "Aucun fichier as été trouvés"
 continue-message: 'Continuer ?'
+bye-message: 'Au revoir'
 continue-message-default-value: true
 completions: []
 

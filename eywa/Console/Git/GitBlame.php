@@ -35,8 +35,6 @@ namespace Eywa\Console\Git {
 
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input, $output);
-            $io->success('Bye');
             return 0;
         }
     }
