@@ -6,6 +6,7 @@ namespace Eywa\Security\Authentication {
 
 
     use Exception;
+    use Eywa\Database\Model\Model;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Response\Response;
     use Eywa\Session\SessionInterface;
@@ -20,13 +21,13 @@ namespace Eywa\Security\Authentication {
          * AuthInterface constructor.
          *
          * @param SessionInterface $session
-         * @param string $model
+         * @param Model $model
          *
          * @throws Kedavra
          * @throws ReflectionException
          *
          */
-        public function __construct(SessionInterface $session, string $model);
+        public function __construct(SessionInterface $session, Model $model);
 
         /**
          *

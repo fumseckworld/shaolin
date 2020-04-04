@@ -2,13 +2,10 @@
 
 namespace App\Controllers\Home {
 
-    use App\Models\Users\Users;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
-    use ReflectionException;
-
     class HomeController extends Controller
     {
         protected static string $layout = 'layout';
@@ -46,12 +43,11 @@ namespace App\Controllers\Home {
          * @return Response
          *
          * @throws Kedavra
-         * @throws ReflectionException
          *
          */
         public function home(Request $request): Response
         {
-            $users = $this->model(Users::class, 'all');
+            $users = $this->model('users')->all();
             return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
         }
 

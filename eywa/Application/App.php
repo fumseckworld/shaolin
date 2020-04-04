@@ -13,6 +13,7 @@ namespace Eywa\Application {
     use Eywa\Collection\Collect;
     use Eywa\Configuration\Config;
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Model\Model;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -273,9 +274,9 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function auth(string $model): Auth
+        public function auth(string $table): Auth
         {
-            return new Auth(new Session(), $model);
+            return new Auth(new Session(), new Model($table));
         }
 
         /**
@@ -398,10 +399,9 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function model(string $model, string $method, array $method_args = [])
+        public function model(string $table, int $limit = 20): Model
         {
-            $model = new ReflectionClass($model);
-            return $model->getMethod($method)->invokeArgs($model->newInstance(), $method_args);
+            return new Model($table, $limit);
         }
     }
 }

@@ -9,6 +9,7 @@ namespace Eywa\Application {
     use Eywa\Cache\CacheInterface;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
+    use Eywa\Database\Model\Model;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -93,18 +94,13 @@ namespace Eywa\Application {
          *
          * Get a model
          *
-         * @param string $model
-         * @param string $method
-         * @param array $method_args
+         * @param string $table
+         * @param int $limit
          *
-         * @return mixed
-         *
-         * @throws Kedavra
-         * @throws ReflectionException
-         *
+         * @return Model
          *
          */
-        public function model(string $model, string $method, array $method_args = []);
+        public function model(string $table, int $limit = 20): Model;
 
         /**
          *
@@ -220,15 +216,14 @@ namespace Eywa\Application {
          *
          * Get and instance of autentication
          *
-         * @param string $model
+         * @param string $table
          *
          * @return Auth
          *
          * @throws Kedavra
          * @throws Exception
-         *
          */
-        public function auth(string $model): Auth;
+        public function auth(string $table): Auth;
 
         /**
          *

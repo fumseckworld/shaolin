@@ -3,11 +3,11 @@
 namespace App\Controllers\Auth {
 
     use App\Forms\Auth\LoginForm;
-    use App\Models\Auth\Authentication;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
+    use ReflectionException;
 
     class AuthController extends Controller
     {
@@ -32,19 +32,29 @@ namespace App\Controllers\Auth {
         }
 
         /**
+         *
+         *
          * @param Request $request
+         *
          * @return Response
+         *
          * @throws Kedavra
+         *
          */
         public function logout(Request $request)
         {
-            return $this->auth(Authentication::class)->logout();
+            return $this->auth('auth')->logout();
         }
 
         /**
+         *
+         *
          * @param Request $request
+         *
          * @return Response
+         *
          * @throws Kedavra
+         *
          */
         public function showHome(Request $request)
         {
@@ -52,9 +62,16 @@ namespace App\Controllers\Auth {
         }
 
         /**
+         *
+         * show form
+         *
          * @param Request $request
+         *
          * @return Response
+         *
          * @throws Kedavra
+         * @throws ReflectionException
+         *
          */
         public function showLoginForm(Request $request)
         {
@@ -63,8 +80,16 @@ namespace App\Controllers\Auth {
         }
 
         /**
+         *
+         *
+         * Login the user
+         *
          * @param Request $request
+         *
          * @return Response
+         *
+         * @throws ReflectionException
+         *
          */
         public function login(Request $request)
         {

@@ -8,23 +8,24 @@ namespace Eywa\Database\Model {
     use Eywa\Database\Query\Sql;
     use stdClass;
 
-    abstract class Model implements Interact
+    class Model implements Interact
     {
-        protected static string $table = '';
+        private string $table;
 
 
-        protected static int $limit = 20;
+        private int $limit;
 
         /**
+         * Model constructor.
          *
-         * Get and instance of the model
-         *
-         * @return Model
+         * @param string $table
+         * @param int $limit
          *
          */
-        public function instance(): Model
+        public function __construct(string $table, int $limit = 20)
         {
-            return $this;
+            $this->table = $table;
+            $this->limit = $limit;
         }
 
         /**
@@ -32,14 +33,14 @@ namespace Eywa\Database\Model {
          */
         public function all(): array
         {
-            return (new Sql(ioc(Connect::class), static::$table))->get();
+            return (new Sql(ioc(Connect::class), $this->table))->get();
         }
         /**
          * @inheritDoc
          */
         public function destroy(int $id): bool
         {
-            return (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->delete();
+            return (new Sql(ioc(Connect::class), $this->table))->where(self::primary(), EQUAL, $id)->delete();
         }
 
 
@@ -48,7 +49,7 @@ namespace Eywa\Database\Model {
          */
         public function update(int $id, array $values): bool
         {
-            return (new Sql(ioc(Connect::class), static::$table))->update($id, $values);
+            return (new Sql(ioc(Connect::class), $this->table))->update($id, $values);
         }
 
         /**
@@ -56,7 +57,7 @@ namespace Eywa\Database\Model {
          */
         public function create(array $record): bool
         {
-            return (new Sql(ioc(Connect::class), static::$table))->create($record);
+            return (new Sql(ioc(Connect::class), $this->table))->create($record);
         }
 
         /**
@@ -64,7 +65,7 @@ namespace Eywa\Database\Model {
          */
         public function find(int $id): stdClass
         {
-            $x = (new Sql(ioc(Connect::class), static::$table))->where(self::primary(), EQUAL, $id)->get();
+            $x = (new Sql(ioc(Connect::class), $this->table))->where(self::primary(), EQUAL, $id)->get();
 
             is_false(array_key_exists(0, $x), true, 'We have not found the record');
 
@@ -76,7 +77,7 @@ namespace Eywa\Database\Model {
          */
         public function different(string $column, $expected): array
         {
-            return (new Sql(ioc(Connect::class), static::$table))->where($column, DIFFERENT, $expected)->get();
+            return (new Sql(ioc(Connect::class), $this->table))->where($column, DIFFERENT, $expected)->get();
         }
 
         /**
@@ -84,7 +85,7 @@ namespace Eywa\Database\Model {
          */
         public function by(string $column, $expected): stdClass
         {
-            $x = (new Sql(ioc(Connect::class), static::$table))->where($column, EQUAL, $expected)->get();
+            $x = (new Sql(ioc(Connect::class), $this->table))->where($column, EQUAL, $expected)->get();
 
             is_false(array_key_exists(0, $x), true, 'We have not found the record');
 
@@ -96,7 +97,7 @@ namespace Eywa\Database\Model {
          */
         public function search(string $value): array
         {
-            return (new Sql(ioc(Connect::class), static::$table))->like($value)->get();
+            return (new Sql(ioc(Connect::class), $this->table))->like($value)->get();
         }
 
         /**
@@ -104,7 +105,7 @@ namespace Eywa\Database\Model {
          */
         public function columns(): array
         {
-            return (new Sql(ioc(Connect::class), static::$table))->columns();
+            return (new Sql(ioc(Connect::class), $this->table))->columns();
         }
 
         /**
@@ -112,7 +113,7 @@ namespace Eywa\Database\Model {
          */
         public function primary(): string
         {
-            return (new Sql(ioc(Connect::class), static::$table))->primary();
+            return (new Sql(ioc(Connect::class), $this->table))->primary();
         }
 
         /**
@@ -120,7 +121,7 @@ namespace Eywa\Database\Model {
          */
         public function paginate(callable $callback, int $current_page): Sql
         {
-            return (new Sql(ioc(Connect::class), static::$table))->paginate($callback, $current_page, static::$limit);
+            return (new Sql(ioc(Connect::class), $this->table))->paginate($callback, $current_page, $this->limit);
         }
     }
 }

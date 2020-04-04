@@ -55,16 +55,15 @@ namespace Eywa\Testing {
         /**
          *
          *
-         * @param string $model
-         *
+         * @param string $table
          * @return Auth
          *
          * @throws Kedavra
-         *
+         * @throws ReflectionException
          */
-        public function auth(string $model): Auth
+        public function auth(string $table): Auth
         {
-            return new Auth(new ArraySession(), $model);
+            return new Auth(new ArraySession(), new Model($table));
         }
 
         /**
