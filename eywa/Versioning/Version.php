@@ -119,9 +119,10 @@ namespace Eywa\Versioning {
 
                 if ((new Shell(sprintf("git commit -m '%s'", $commit)))->run()) {
                     $this->io->success($this->commit_success);
+                } else {
+                    $this->io->error($this->commit_fail);
+                    $this->errors->push($this->commit_fail);
                 }
-                $this->io->error($this->commit_fail);
-                $this->errors->push($this->commit_fail);
             }
             return $this;
         }
