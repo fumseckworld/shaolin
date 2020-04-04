@@ -3,11 +3,11 @@
 namespace Eywa\Console\Git {
 
 
+    use Eywa\Exception\Kedavra;
+    use Eywa\Versioning\Version;
     use Symfony\Component\Console\Command\Command;
-    use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
-    use Symfony\Component\Console\Question\Question;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
     class GitBlame extends Command
@@ -20,25 +20,17 @@ namespace Eywa\Console\Git {
             $this->setDescription('Run interactive git blame');
         }
 
+        /**
+         * @param InputInterface $input
+         * @param OutputInterface $output
+         * @return int
+         * @throws Kedavra
+         */
         public function interact(InputInterface $input, OutputInterface $output): int
         {
             $io = new SymfonyStyle($input, $output);
 
-            $files = [];
-            exec('git ls-files', $files);
-            
-            if (empty($files)) {
-                $io->error('No files has been found');
-                return 1;
-            }
-            do {
-                $file =   $io->askQuestion((new Question('Type the filename '))->setAutocompleterValues($files));
-                if (file_exists($file)) {
-                    $io->warning(strval(shell_exec(sprintf('git blame %s', strval($file)))));
-                }
-            } while ($io->confirm('Continue ?', true));
-
-            return 0;
+            return (new Version($io))->blame()->success();
         }
 
         public function execute(InputInterface $input, OutputInterface $output)

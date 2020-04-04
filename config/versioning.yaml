@@ -1,0 +1,23 @@
+commit-success-message: 'Le commit a été enregistré avec succès'
+commit-fail-message: 'La creation du commit à échouer'
+commit-message-prompt: 'Expliquer les changements'
+start-tests-message: 'Exécution des tests'
+tests-success-message: 'Félicitations aucune erreur trouvées'
+confirm-send-message: 'Envoyer les modifications ?'
+confirm-send-message-default-value: true
+send-message: 'Debut de la mise a jour des reférentiels'
+send-message-to: 'Mise a jour du reférentiel héberger à %s'
+remote-updated-success-message: 'Le reférentiel à été mis a jour avec succès'
+remote-updated-fail-message: 'Verifier que vous avez les droits et que le reférentiel existe'
+all-remotes-updated-success-message: 'Tout les reférentiels ont été mis a jour avec succès'
+end-of-remotes-message: 'Fin des reférentiels'
+remotes-empty: 'Aucun referenciel trouvé'
+confirm-add-message: 'Ajouter les modifications ?'
+add-success-message: 'Les modifications ont été ajoutées avec succès'
+add-fail-message: "L'ajout des modifications à échoué"
+type-filename-prompt: "Entrez le nom d'un fichiez "
+no-files-found-message: "Aucun fichier n'as été commit"
+continue-message: 'Continuer ?'
+continue-message-default-value: true
+completions: []
+

@@ -3,6 +3,8 @@
 namespace Eywa\Console\Git {
 
 
+    use Eywa\Exception\Kedavra;
+    use Eywa\Versioning\Version;
     use Symfony\Component\Console\Command\Command;
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
@@ -20,26 +22,19 @@ namespace Eywa\Console\Git {
             ->addArgument('months', InputArgument::OPTIONAL, 'The commits months');
         }
 
+        /**
+         * @param InputInterface $input
+         * @param OutputInterface $output
+         * @return int
+         * @throws Kedavra
+         */
         public function execute(InputInterface $input, OutputInterface $output)
         {
             $io = new SymfonyStyle($input, $output);
 
             $size = def($input->getArgument('months')) ? intval($input->getArgument('months')) : 1;
 
-
-            $format = '%h %an %cr %s';
-            $io->warning(
-                strval(
-                    shell_exec(
-                        sprintf(
-                            'git log --pretty=format:"%s" --graph  --since=%d.months',
-                            $format,
-                            $size
-                        )
-                    )
-                )
-            );
-            return 0;
+            return (new Version($io))->logs($size);
         }
     }
 }
