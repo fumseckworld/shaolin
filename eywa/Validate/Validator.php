@@ -266,6 +266,7 @@ namespace Eywa\Validate {
                                 is_false(
                                     filter_var(
                                         $bag->get($k),
+                                        FILTER_VALIDATE_IP,
                                         FILTER_FLAG_IPV4
                                     )
                                 )
@@ -283,6 +284,7 @@ namespace Eywa\Validate {
                                 is_false(
                                     filter_var(
                                         $bag->get($k),
+                                        FILTER_VALIDATE_IP,
                                         FILTER_FLAG_IPV6
                                     )
                                 )

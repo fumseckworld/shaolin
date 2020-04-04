@@ -3,8 +3,6 @@
 namespace App\Controllers\Home {
 
     use App\Models\Users\Users;
-    use App\Validators\Home\HomeValidator;
-    use App\Validators\Users\UsersValidator;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
@@ -32,6 +30,10 @@ namespace App\Controllers\Home {
         }
 
 
+        /**
+         * @return Response
+         * @throws Kedavra
+         */
         public function notFound()
         {
             return $this->view('404', 'not found', 'error');
@@ -53,6 +55,11 @@ namespace App\Controllers\Home {
             return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
         }
 
+        /**
+         * @param Request $request
+         * @return Response
+         * @throws Kedavra
+         */
         public function hello(Request $request): Response
         {
             return $this->view('hello', 'say hello', 'hello', ['name' => $request->args()->get('name', 'jean')]);

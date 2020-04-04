@@ -88,7 +88,7 @@ namespace Eywa\Console\Git {
                             ]
                         )
                     );
-                } while (is_null($commit) || sum($commit) < 0 || sum($commit) > 60);
+                } while (not_def($commit) || sum($commit) < 0 || sum($commit) > 60);
 
                 if ((new Shell(sprintf("git commit -m '%s'", $commit)))->run()) {
                     $io->success('The new commit has been saved successfully');

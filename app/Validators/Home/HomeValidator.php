@@ -14,7 +14,9 @@ namespace App\Validators\Home {
 
         public static array $rules =
         [
-            'REMOTE_ADDR' => '127.0.0.1'
+            'REMOTE_ADDR' => 'required|ipv4',
+            'SERVER_NAME' => 'required'
+
         ];
 
         /**
