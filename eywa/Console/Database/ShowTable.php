@@ -57,7 +57,7 @@ namespace Eywa\Console\Database
                         $table->render();
                         break;
                     default:
-                        $tables = (new Table(development(), ''))->show()->all();
+                        $tables = (new Table(development()))->show()->all();
                         break;
                 }
             }
@@ -80,7 +80,7 @@ namespace Eywa\Console\Database
                         $table->render();
                         break;
                     default:
-                        $tables = (new Table(production(), ''))->show()->all();
+                        $tables = (new Table(production()))->show()->all();
                         break;
                 }
             }

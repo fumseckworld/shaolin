@@ -31,10 +31,11 @@ namespace Eywa\Database\Base {
         public function clean()
         {
             if (equal($this->env, 'dev')) {
-                foreach ((new Table(development(), ''))->show() as $table) {
+                $tables = new Table(development());
+                foreach ($tables->show()->all() as $table) {
                     if (different($table, 'migrations')) {
                         is_false(
-                            (new Table(development(), $table))
+                            $tables->from($table)
                             ->truncate(),
                             true,
                             sprintf(
@@ -48,10 +49,11 @@ namespace Eywa\Database\Base {
             }
 
             if (equal($this->env, 'prod')) {
-                foreach ((new Table(production(), ''))->show() as $table) {
+                $tables = new Table(production());
+                foreach ($tables->show()->all() as $table) {
                     if (different($table, 'migrations')) {
                         is_false(
-                            (new Table(production(), $table))
+                            $tables->from($table)
                             ->truncate(),
                             true,
                             sprintf(
@@ -65,11 +67,12 @@ namespace Eywa\Database\Base {
             }
 
             if (equal($this->env, 'any')) {
-                foreach ((new Table(production(), ''))->show() as $table) {
+                $tables = new Table(development());
+                foreach ($tables->show()->all() as $table) {
                     if (different($table, 'migrations')) {
                         is_false(
-                            (new Table(production(), $table))
-                            ->truncate(),
+                            $tables->from($table)
+                                ->truncate(),
                             true,
                             sprintf(
                                 'The truncate task for the %s table has failed',
@@ -78,12 +81,12 @@ namespace Eywa\Database\Base {
                         );
                     }
                 }
-
-                foreach ((new Table(development(), ''))->show() as $table) {
+                $tables = new Table(production());
+                foreach ($tables->show()->all() as $table) {
                     if (different($table, 'migrations')) {
                         is_false(
-                            (new Table(development(), $table))
-                            ->truncate(),
+                            $tables->from($table)
+                                ->truncate(),
                             true,
                             sprintf(
                                 'The truncate task for the %s table has failed',
@@ -91,11 +94,9 @@ namespace Eywa\Database\Base {
                             )
                         );
                     }
+                    return  true;
                 }
-                return  true;
             }
-
-
             return true;
         }
     }

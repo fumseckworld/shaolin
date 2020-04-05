@@ -39,7 +39,7 @@ namespace Eywa\Console\Database
             $x = strval($input->getArgument('table'));
 
             if (equal($env, 'dev')) {
-                $table = new Table(development(), $x);
+                $table = (new Table(development()))->from($x);
 
                 if (not_def($table->show()->all())) {
                     $io->error('No tables has been found');
@@ -60,7 +60,7 @@ namespace Eywa\Console\Database
             }
 
             if (equal($env, 'prod')) {
-                $table = new Table(production(), $x);
+                $table = (new Table(production()))->from($x);
 
                 if (not_def($table->show()->all())) {
                     $io->error('No tables has been found');
@@ -81,7 +81,7 @@ namespace Eywa\Console\Database
             }
 
             if (equal($env, 'any')) {
-                $table = new Table(development(), $x);
+                $table = (new Table(development()))->from($x);
 
                 if (not_def($table->show()->all())) {
                     $io->error('No tables has been found');
@@ -99,7 +99,7 @@ namespace Eywa\Console\Database
                     return 1;
                 }
 
-                $table = new Table(production(), $x);
+                $table = (new Table(production()))->from($x);
 
                 if (not_def($table->show()->all())) {
                     $io->error('No tables has been found');

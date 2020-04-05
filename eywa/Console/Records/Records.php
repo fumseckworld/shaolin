@@ -34,7 +34,7 @@ namespace Eywa\Console\Records {
             $env = strval($input->getArgument('env'));
             $table = strval($input->getArgument('table'));
             $connect = equal($env, 'prod') ? production() : development();
-            $i = new Table($connect, $table);
+            $i = (new Table($connect))->from($table);
 
 
             $x = new \Symfony\Component\Console\Helper\Table($output);

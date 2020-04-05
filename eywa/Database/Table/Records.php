@@ -15,10 +15,9 @@ namespace Eywa\Database\Table {
          * Management constructor.
          *
          * @param Connect $connect
-         * @param string $table
          *
          */
-        public function __construct(Connect $connect, string $table);
+        public function __construct(Connect $connect);
 
 
         /**
