@@ -68,6 +68,34 @@ namespace Eywa\Http\Response {
 
         /**
          *
+         * Count how many tag exist in content
+         *
+         * @param string $tag
+         *
+         * @return int
+         *
+         */
+        public function count(string $tag): int
+        {
+            return substr_count($this->content, $tag);
+        }
+
+        /**
+         *
+         * Check if the element exist in the view
+         *
+         * @param string $element
+         *
+         * @return bool
+         *
+         */
+        public function exist(string $element): bool
+        {
+            return def(strstr($this->content, $element));
+        }
+
+        /**
+         *
          *
          * @param string $message
          * @param bool $success

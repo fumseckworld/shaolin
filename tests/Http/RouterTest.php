@@ -15,6 +15,10 @@ namespace Testing\Http {
         public function test()
         {
             $this->assertTrue($this->visit('/')->success());
+            $this->assertTrue($this->visit('/')->exist('h1'));
+            $this->assertTrue($this->visit('/')->exist('<h1>Welcome</h1>'));
+            $this->assertEquals(1, $this->visit('/')->count('<h1>'));
+            $this->assertEquals(0, $this->visit('/')->count('<h2>'));
             $this->assertTrue($this->visit('/error')->success());
             $this->assertEquals(200, $this->visit('/')->status());
             $this->assertTrue($this->visit('/')->is(200));
