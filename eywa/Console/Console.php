@@ -41,6 +41,7 @@ namespace Eywa\Console {
     use Eywa\Console\Mode\Maintenance;
     use Eywa\Console\Mode\ProductionMode;
     use Eywa\Console\Routes\AddRoute;
+    use Eywa\Console\Routes\CleanRoutes;
     use Eywa\Console\Routes\FindRoute;
     use Eywa\Console\Routes\ListRoute;
     use Eywa\Console\Routes\RemoveRoute;
@@ -94,7 +95,7 @@ namespace Eywa\Console {
                 new GenerateValidator(),new GitSend(),new TestCommand(),new GenerateCommand(),new FindRoute() ,
                 new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
                 new GenerateContainer(),new GenerateForm(),new GenerateModel(),new UngitCommand(),new GitCommit(),
-                new GitLog(),new GitBlame(),new Convert()
+                new GitLog(),new GitBlame(),new Convert(),new CleanRoutes()
             ];
 
             $this->add($commands)->add(commands());

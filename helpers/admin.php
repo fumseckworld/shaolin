@@ -28,7 +28,7 @@ if (!function_exists('controllers_directory')) {
     function controllers_directory(): array
     {
         $x =  scandir(base('app', 'Controllers'));
-        return is_bool($x) ? [] : collect($x)->del(['.','..'])->all();
+        return is_bool($x) ? [] : collect($x)->del(['.','..'])->push('Controllers')->all();
     }
 }
 

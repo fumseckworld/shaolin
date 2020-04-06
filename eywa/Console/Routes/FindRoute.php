@@ -57,12 +57,15 @@ namespace Eywa\Console\Routes {
             do {
                 do {
                     $search =
-                        $io->askQuestion((new Question('Type your search '))->setAutocompleterValues($this->all()));
+                        $io->askQuestion(
+                            (new Question(
+                                config('route', 'search')
+                            ))->setAutocompleterValues($this->all())
+                        );
                 } while (not_def($search));
 
                 $table = new Table($output);
                 $io = new SymfonyStyle($input, $output);
-
 
                 $table
                     ->setStyle('box')
@@ -73,7 +76,8 @@ namespace Eywa\Console\Routes {
                     )
                 ;
                 $table->render();
-            } while ($io->confirm('Continue ?', true));
+            } while ($io->confirm(config('route', 'continue'), true));
+            $io->success(config('route', 'bye'));
             return 0;
         }
 
@@ -89,12 +93,8 @@ namespace Eywa\Console\Routes {
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io  = new SymfonyStyle($input, $output);
-
-            $io->success('Bye');
             return 0;
         }
-
 
         /**
          * @return array<string>

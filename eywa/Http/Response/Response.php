@@ -70,14 +70,14 @@ namespace Eywa\Http\Response {
          *
          * Count how many tag exist in content
          *
-         * @param string $tag
+         * @param string $html_element
          *
          * @return int
          *
          */
-        public function count(string $tag): int
+        public function sum(string $html_element): int
         {
-            return substr_count($this->content, $tag);
+            return substr_count($this->content, $html_element);
         }
 
         /**
@@ -89,7 +89,7 @@ namespace Eywa\Http\Response {
          * @return bool
          *
          */
-        public function exist(string $element): bool
+        public function has(string $element): bool
         {
             return def(strstr($this->content, $element));
         }

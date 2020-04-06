@@ -38,7 +38,7 @@ namespace Eywa\Console\Routes {
             $table = new Table($output);
 
             $table ->setStyle('box')
-                ->setHeaders(['id', 'metho', 'name','url','controller','action','namespace','created','updated'])
+                ->setHeaders(['id', 'metho', 'name','url','controller','namespace','action','created','updated'])
                 ->setRows((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->to(PDO::FETCH_ASSOC))
                     ->render();
 
