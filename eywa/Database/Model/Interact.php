@@ -164,6 +164,6 @@ namespace Eywa\Database\Model {
          * @throws Exception
          *
          */
-        public function paginate(callable $callback, int $current_page): Sql;
+        public function paginate(callable $callback, string $slug, int $current_page): Sql;
     }
 }

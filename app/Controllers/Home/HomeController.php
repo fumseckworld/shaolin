@@ -3,9 +3,11 @@
 namespace App\Controllers\Home {
 
     use Eywa\Exception\Kedavra;
+    use Eywa\Html\Pagination\Pagination;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
+
     class HomeController extends Controller
     {
         protected static string $layout = 'layout';
@@ -36,6 +38,22 @@ namespace App\Controllers\Home {
             return $this->view('404', 'not found', 'error');
         }
 
+        public function showUsers(Request $request)
+        {
+
+            $users =  $this->model('users')->paginate(function ($user) {
+                return
+                    '<div>
+                        <h3>' . $user->username . '</h3>
+                        <p>
+                            <a href="mailto:' . $user->email . '">' . $user->username . '</a>
+                        </p>
+                        <p>' . $user->phone . '</p>
+                    </div>';
+            }, 'users', $request->args()->get('page', '1'));
+
+            return $this->view('users', 'show user', 'a suber paginaition', compact('users'));
+        }
         /**
          *
          * @param Request $request
@@ -58,7 +76,8 @@ namespace App\Controllers\Home {
          */
         public function hello(Request $request): Response
         {
-            return $this->view('hello', 'say hello', 'hello', ['name' => $request->args()->get('name', 'jean')]);
+            $name = $request->args()->get('name', 'jean');
+            return $this->view('hello', 'say hello', 'hello', compact('name'));
         }
     }
 }

@@ -183,6 +183,7 @@ namespace Eywa\Database\Query {
          * Paginate the records
          *
          * @param callable $callback
+         * @param string $slug
          * @param int $current_page
          * @param int $limit
          *
@@ -191,7 +192,7 @@ namespace Eywa\Database\Query {
          * @throws Kedavra
          *
          */
-        public function paginate(callable $callback, int $current_page, int $limit = 20): self;
+        public function paginate(callable $callback, string $slug, int $current_page, int $limit = 20): self;
 
         /**
          *

@@ -6,6 +6,7 @@ namespace Eywa\Http\View {
 
     use Exception;
     use Eywa\Cache\FileCache;
+    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
 
     class View extends FileCache
@@ -113,11 +114,20 @@ namespace Eywa\Http\View {
 
             $this->description = $description;
 
-            $this->args = $args;
+            $x = collect();
+
+            foreach ($args as $k => $v) {
+                if ($v instanceof  Sql) {
+                    $x->put('paginator', $v);
+                } else {
+                    $x->put($k, $v);
+                }
+            }
+            $this->args = $x->all();
 
             $this->layout = base('app', 'Views', "$layout.php");
 
-            $this->locale  = not_cli() ? app()->lang() : config('i18n', 'locale');
+            $this->locale  = not_cli() ? strval(app()->lang()) : strval(config('i18n', 'locale'));
 
             i18n($this->locale);
 
@@ -203,6 +213,18 @@ namespace Eywa\Http\View {
                 ->replace(
                     '#@url\(\'([a-zA-Z0-9\-\/]+)\'\)#',
                     '<?php  if(equal(\Eywa\Http\Request\ServerRequest::generate()->url(),\'${1}\')) : ?>',
+                    $html,
+                    $html
+                )
+                ->replace(
+                    '#@pagination#',
+                    '<?= $paginator->pagination();?>',
+                    $html,
+                    $html
+                )
+                ->replace(
+                    '#@records#',
+                    '<?= $paginator->records();?>',
                     $html,
                     $html
                 )

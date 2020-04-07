@@ -211,7 +211,6 @@ if (!function_exists('alert')) {
      * @param array $messages
      * @param bool $success
      * @return string
-     * @throws Kedavra
      */
     function alert(array $messages, bool $success = false): string
     {

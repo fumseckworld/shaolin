@@ -573,9 +573,9 @@ namespace Eywa\Database\Query {
         /**
          * @inheritDoc
          */
-        public function paginate(callable $callback, int $current_page, int $limit = 20): Sql
+        public function paginate(callable $callback, string $slug, int $current_page, int $limit = 20): Sql
         {
-            $this->pagination = (new Pagination($current_page, $limit, $this->sum()))->paginate();
+            $this->pagination = (new Pagination($current_page, $limit, $this->sum()))->render($slug);
 
             $this->records =  collect($this->take($limit, (($current_page) - 1) * $limit)->by($this->primary())->get())
                             ->for($callback)->join('');

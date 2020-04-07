@@ -119,9 +119,21 @@ namespace Eywa\Database\Model {
         /**
          * @inheritDoc
          */
-        public function paginate(callable $callback, int $current_page): Sql
+        public function paginate(callable $callback, string $slug, int $current_page): Sql
         {
-            return (new Sql(ioc(Connect::class), $this->table))->paginate($callback, $current_page, $this->limit);
+            return (
+                new Sql(
+                    ioc(
+                        Connect::class
+                    ),
+                    $this->table
+                ))
+                ->paginate(
+                    $callback,
+                    $slug,
+                    $current_page,
+                    $this->limit
+                );
         }
     }
 }

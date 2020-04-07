@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Eywa\Html\Pagination {
 
 
-    use Eywa\Exception\Kedavra;
-
     class Pagination
     {
 
@@ -30,20 +28,7 @@ namespace Eywa\Html\Pagination {
          *
          */
         private int $total;
-
-        /**
-         *
-         * The number of pages
-         *
-         */
-        private float $pages;
-
-        /**
-         *
-         * The url to checkout of pages
-         *
-         */
-        private string $url;
+        private int $pages;
 
         /**
          *
@@ -51,7 +36,6 @@ namespace Eywa\Html\Pagination {
          * @param int $limit
          * @param int $total
          *
-         * @throws Kedavra
          *
          */
         public function __construct(int $current_page, int $limit, int $total)
@@ -61,51 +45,46 @@ namespace Eywa\Html\Pagination {
             $this->current_page = $current_page;
 
             $this->limit = $limit;
-
             $this->total = $total;
-
-            $this->pages = intval(ceil($total / $limit)) + 1;
-
-            $this->url = config('pagination', 'url');
+            $this->pages = intval(ceil($total / $limit) + 1);
         }
 
         /**
          *
          * Get the pagination
          *
-         * @throws Kedavra
+         * @param string $prefix
          *
          * @return string
          *
+         *
          */
-        public function paginate(): string
+        public function render(string $prefix): string
         {
-            if (superior_or_equal($this->limit, $this->total)) {
+            if ($this->current_page > $this->pages) {
                 return '';
             }
 
             $html = '<ul class="' . config('pagination', 'ul_class') . '">';
 
-            for ($i = 1; $i != $this->pages; $i++) {
-                ($i === $this->current_page) ?
-                    append(
-                        $html,
-                        '<li class="' . config('pagination', 'li_class') . ' active">
-                                    <a href="' . $this->url . $i . '" 
-                                        class="' . config('pagination', 'link_class') . '">' . $i . '</a>
-                                    </li>'
-                    )
-                :
-                    append(
-                        $html,
-                        '<li class="' . config('pagination', 'li_class') . '">
-                                       <a href="' . $this->url . $i . '" 
-                                        class="' . config('pagination', 'link_class') . '">' . $i . '
-                                        </a>
-                                </li>'
-                    );
+            $next = strval($this->current_page + 1);
+            $previous = strval(($this->current_page - 1)) ;
+            if ($this->current_page > 1 && $this->current_page !== 1) {
+                $html .= '<li class="' . config('pagination', 'li_class') . '">
+                        <a href="' . url($prefix, $previous) . '" class="' . config('pagination', 'link_class') . '">'
+                    . config('pagination', 'previous', 'previous') . '
+                        </a>
+                    </li>';
             }
 
+
+            if ($this->current_page < $this->pages) {
+                $html .= '<li class="' . config('pagination', 'li_class') . '">
+                        <a href="' . url($prefix, $next) . '" class="' . config('pagination', 'link_class') . '">'
+                . config('pagination', 'next', 'next') . '
+                        </a>
+                    </li>';
+            }
             append($html, '</ul>');
 
             return $html;

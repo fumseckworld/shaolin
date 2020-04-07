@@ -54,8 +54,6 @@ if (!function_exists('validator_messages')) {
      *
      * @return string[]
      *
-     * @throws Kedavra
-     *
      */
     function validator_messages(): array
     {
@@ -409,15 +407,17 @@ if (!function_exists('config')) {
      *
      * @param string $file
      * @param string $key
-     *
+     * @param mixed $default
      * @return mixed
      *
-     * @throws Kedavra
-     *
      */
-    function config(string $file, string $key)
+    function config(string $file, string $key, $default = null)
     {
-        return (new Config($file, $key))->value();
+        try {
+            return (new Config($file, $key))->value();
+        } catch (Kedavra $e) {
+            return $default;
+        }
     }
 }
 if (!function_exists('def')) {
@@ -448,8 +448,6 @@ if (!function_exists('history')) {
      * Go to last page
      *
      * @return string
-     *
-     * @throws Kedavra
      *
      */
     function history(): string
