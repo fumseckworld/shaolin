@@ -39,3 +39,7 @@ base-removed-successfully: "La base de données à été supprimé avec succès"
 base-removed-fail: "La suppresion de la base de données à échoué"
 base-created-successfully: "La base de données à été créer avec success"
 base-created-failed: "La création de la base de données à échoué"
+controller-not-exist: "Le contrôleur %s n'éxiste pas"
+directory-not-exist: "Le répertoire %s n'éxiste pas dans le dossier des contrôleurs"
+action-not-exist: "L'action %s n'éxiste pas dans la class %s"
+can-use-the-router: 'Les routes sont valides'
