@@ -46,7 +46,7 @@ namespace Eywa\Html\Pagination {
 
             $this->limit = $limit;
             $this->total = $total;
-            $this->pages = intval(ceil($total / $limit) + 1);
+            $this->pages = intval(ceil($total / $limit));
         }
 
         /**
