@@ -46,7 +46,7 @@ namespace Eywa\Database\Migration {
 
             $this->from = $table;
 
-            $this->table = new Table($this->connexion(), $table);
+            $this->table = (new Table($this->connexion()))->from($table);
         }
 
         /**

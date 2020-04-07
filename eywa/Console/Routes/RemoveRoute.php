@@ -15,48 +15,11 @@ namespace Eywa\Console\Routes {
     class RemoveRoute extends Command
     {
         protected static $defaultName = "route:destroy";
-        /**
-         *
-         */
-        private Sql $sql;
-
-        /**
-         * FindRoute constructor.
-         * @param string|null $name
-         *
-         * @throws Kedavra
-         *
-         */
-        public function __construct(string $name = null)
-        {
-            parent::__construct($name);
-
-            $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
-        }
 
 
         protected function configure(): void
         {
             $this->setDescription('Delete a route');
-        }
-
-        /**
-         * @return array<string>
-         * @throws Kedavra
-         */
-        public function name(): array
-        {
-            $names = collect();
-
-            foreach (
-                (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))
-                    ->only(['name'])
-                    ->get() as $value
-            ) {
-                $names->push($value->name);
-            }
-
-            return $names->all();
         }
 
 
@@ -70,38 +33,61 @@ namespace Eywa\Console\Routes {
         public function execute(InputInterface $input, OutputInterface $output): int
         {
             $io = new SymfonyStyle($input, $output);
-            if (def($this->sql->get())) {
+
+            $file = 'route';
+            $sql = new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
+
+            $names = call_user_func(function () use ($sql) {
+                $x = collect();
+                foreach ($sql->get() as $route) {
+                    $x->push($route->name);
+                }
+                return $x->all();
+            });
+            if (def($names)) {
                 do {
-                    $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
-                    if (def($this->sql->get())) {
-                        do {
-                            $names = $this->name();
-                            $default = strval(reset($names));
-                            $route1 = $io->askQuestion(
-                                (new Question('Wath is the name of the route to delete', $default))
-                                ->setAutocompleterValues($this->name())
-                            );
-                        } while (not_def($route1) || not_def($this->sql->where('name', EQUAL, $route1)->get()));
+                    do {
+                        $x = $io->askQuestion(
+                            (new Question(config($file, 'route-name-to-delete')))
+                            ->setAutocompleterValues($names)
+                        );
 
-                        $route = collect($this->sql->where('name', EQUAL, $route1)->get())->get(0);
-
-                        if ($this->sql->where('name', EQUAL, $route->name)->delete()) {
-                            $io->success(sprintf('The %s route has been deleted successfully', $route->name));
-                        } else {
-                            $io->error(sprintf('The %s route has not been deleted', $route->name));
+                        if (is_null($x)) {
+                            $x = '';
                         }
+                        $not_exist = not_def($sql->where('name', EQUAL, $x)->get());
+                        if ($not_exist) {
+                            $io->error(sprintf(
+                                config($file, 'route-name-not-exist'),
+                                $x
+                            ));
+                        }
+                    } while (not_def($x) || $not_exist);
+
+                    $route = collect($sql->where('name', EQUAL, $x)->get())->get(0);
+
+                    if ($sql->where('name', EQUAL, $route->name)->delete()) {
+                        $io->success(
+                            sprintf(
+                                config($file, 'route-removed-successfully'),
+                                $route->name
+                            )
+                        );
                     } else {
-                        $io->warning('All routes has been deleted');
-
-                        return  0;
+                        $io->error(
+                            sprintf(
+                                config($file, 'route-removed-fail'),
+                                $route->name
+                            )
+                        );
                     }
-                } while ($io->confirm('Continue ?', true));
+                } while ($io->confirm(config($file, 'remove-route-again'), true));
+
+                $io->success(config($file, 'bye'));
+                return 0;
             }
-
-
-            $io->warning('No routes has been found');
-
-            return  0;
+            $io->error(config($file, 'no-routes-has-been-found'));
+            return  1;
         }
     }
 }

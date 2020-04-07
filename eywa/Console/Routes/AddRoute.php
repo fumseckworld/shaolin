@@ -2,7 +2,6 @@
 
 namespace Eywa\Console\Routes {
 
-
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
@@ -32,26 +31,53 @@ namespace Eywa\Console\Routes {
         {
             $io = new SymfonyStyle($input, $output);
 
+            $file = 'route';
             $entry = collect();
 
             $methods = collect(METHOD_SUPPORTED)->for('strtolower')->all();
+            $sql =  new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
 
             do {
-                $sql =  new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
                 do {
                     $entry->put('name', $io->askQuestion(
-                        (new Question('What name should be used for represent the new route url ?'))
+                        (new Question(config($file, 'route-name-question')))
                     ));
-                } while (not_def($entry->get('name')) || def($sql->where('name', EQUAL, $entry->get('name'))->get()));
+
+                    if (not_def($entry->get('name'))) {
+                        $entry->put('name', '');
+                    }
+                    $taken = def($sql->where('name', EQUAL, $entry->get('name'))->get());
+
+                    if ($taken) {
+                        $io->error(
+                            sprintf(
+                                config($file, 'route-name-already-taken'),
+                                $entry->get('name')
+                            )
+                        );
+                    }
+                } while (not_def($entry->get('name')) || $taken);
 
                 do {
                     $route = $entry->get('name');
                     $entry->put('method', strtoupper($io->askQuestion(
                         (new Question(
-                            sprintf('What method should be used for the new %s route ?', $route),
+                            sprintf(
+                                config($file, 'route-method-question'),
+                                $route
+                            ),
                             GET
                         ))->setAutocompleterValues($methods)
                     )));
+
+                    if (not_in(METHOD_SUPPORTED, $entry->get('method'))) {
+                        $io->error(
+                            sprintf(
+                                config($file, 'route-method-not-valid'),
+                                $entry->get('method')
+                            )
+                        );
+                    }
                 } while (not_in(METHOD_SUPPORTED, $entry->get('method')));
 
                 do {
@@ -59,7 +85,7 @@ namespace Eywa\Console\Routes {
                     $entry->put('url', $io->askQuestion(
                         (new Question(
                             sprintf(
-                                'What url should be used by the %s route for accessing the controller ?',
+                                config($file, 'route-url-question'),
                                 $route
                             )
                         ))
@@ -67,76 +93,149 @@ namespace Eywa\Console\Routes {
                     if (is_null($entry->get('url'))) {
                         $entry->put('url', '');
                     }
-                } while (not_def($entry->get('url') || def($sql->where('url', EQUAL, $entry->get('url'))->get())));
+                    $taken = def($sql->where('url', EQUAL, $entry->get('url'))->get());
+
+                    if ($taken) {
+                        $io->error(
+                            sprintf(
+                                config($file, 'route-url-already-taken'),
+                                $entry->get('url')
+                            )
+                        );
+                    }
+                } while (not_def($entry->get('url')) || $taken);
 
                 do {
                     $entry->put('directory', ucfirst($io->askQuestion(
-                        (new Question('Place the controller in a special directory ?', 'Controllers'))
+                        (new Question(
+                            config($file, 'route-controller-directory-question'),
+                            'Controllers'
+                        ))
                         ->setAutocompleterValues(controllers_directory())
                     )));
-                } while (is_null($entry->get('directory')));
+
+                    $not_exist = not_in(controllers_directory(), $entry->get('directory'));
+
+                    if ($not_exist) {
+                        $io->error(
+                            sprintf(
+                                config($file, "route-controller-directory-not-exist"),
+                                $entry->get('directory')
+                            )
+                        );
+                    }
+                } while (not_def($entry->get('directory')) || $not_exist);
 
                 do {
                     $route = $entry->get('name');
                     $entry->put('controller', $io->askQuestion(
-                        (new Question(sprintf('What controller name should be called by the %s route ?', $route)))
+                        (new Question(
+                            sprintf(
+                                config($file, 'route-controller-question'),
+                                $route
+                            )
+                        ))
                         ->setAutocompleterValues(controllers($entry->get('directory')))
                     ));
-                } while (is_null($entry->get('controller')));
+                    $not_exist = not_in(controllers($entry->get('directory')), $entry->get('controller'));
 
-                if ($entry->get('directory') !== 'Controllers') {
-                    $class = '\App\Controllers\\' . $entry->get('directory') . '\\' . $entry->get('controller');
-                } else {
-                    $class = '\App\Controllers\\'  . $entry->get('controller');
-                }
+                    if ($not_exist) {
+                        $io->error(
+                            sprintf(
+                                config($file, "route-controller-not-exist"),
+                                $entry->get('controller')
+                            )
+                        );
+                    }
 
-                do {
-                    if (class_exists($class)) {
-                        $class = new $class();
+                    $class = $entry->get('directory') !== 'Controllers' ?
+                        sprintf(
+                            "\App\Controllers\%s\%s",
+                            $entry->get('directory'),
+                            $entry->get('controller')
+                        )
+                    : sprintf(
+                        '\App\Controllers\%s',
+                        $entry->get('controller')
+                    );
 
-                        $controller = $entry->get('controller');
-                        $route = $entry->get('name');
+                    $exist = class_exists($class);
 
-                        $entry->put('action', $io->askQuestion(
-                            (new Question(
-                                sprintf(
-                                    'What action in the %s controller should be executed by the %s route ?',
-                                    $controller,
-                                    $route
-                                )
-                            ))
-                            ->setAutocompleterValues(get_class_methods($class))
-                        ));
-                    } else {
-                        $controller = $entry->get('controller');
-                        $route = $entry->get('name');
-
-                        $entry->put('action', $io->askQuestion(
-                            (new Question(sprintf(
-                                'What action in the %s controller should be executed by the %s route ?',
-                                $controller,
-                                $route
-                            )))
+                    if (!$exist) {
+                        $io->error(sprintf(
+                            config($file, 'route-controller-not-exist'),
+                            $entry->get('controller')
                         ));
                     }
-                } while (
-                    def($sql->where('action', EQUAL, $entry->get('action'))->get())
-                    || not_def($entry->get('action'))
-                );
+                } while (not_def($entry->get('controller')) || $not_exist || !$exist);
+
+
+
+                do {
+                    $actions = get_class_methods($class);
+                    $controller = $entry->get('controller');
+
+                    $entry->put('action', $io->askQuestion(
+                        (new Question(
+                            sprintf(
+                                config($file, 'route-action-question'),
+                                $controller
+                            )
+                        ))->setAutocompleterValues($actions)
+                    ));
+                    if (not_def($entry->get('action'))) {
+                        $entry->put('action', '');
+                        $print = false;
+                    } else {
+                        $print = true;
+                    }
+
+
+                    if (not_in($actions, $entry->get('action')) && $print) {
+                        $io->warning(sprintf(
+                            config($file, 'route-action-not-exist'),
+                            $entry->get('action')
+                        ));
+                    }
+
+                    $taken = def($sql->where('action', EQUAL, $entry->get('action'))->get());
+
+                    if ($taken) {
+                        $io->error(sprintf(
+                            config($file, 'route-action-already-taken'),
+                            $entry->get('action')
+                        ));
+                    }
+                } while (not_def($entry->get('action')) || $taken);
 
                 $entry->put('created_at', now()->toDateTimeString())->put('updated_at', now()->toDateTimeString());
 
-
                 if ($sql->create($entry->all())) {
                     $route = $entry->get('name');
-                    $io->success(sprintf('The %s route has been created successfully', $route));
+                    $io->success(
+                        sprintf(
+                            config($file, 'route-created'),
+                            $route
+                        )
+                    );
                 } else {
-                    $io->error(sprintf('Failed to create the %s route', $route));
+                    $io->error(
+                        sprintf(
+                            config($file, 'route-create-fail'),
+                            $route
+                        )
+                    );
                     return 1;
                 }
 
                 $entry->clear();
-            } while ($io->confirm('Do you want continue to create new routes ? ', true));
+            } while (
+                $io->confirm(
+                    config($file, 'route-creation-again'),
+                    true
+                )
+            );
+            $io->success(config('route', 'bye'));
             return 0;
         }
 
@@ -145,12 +244,12 @@ namespace Eywa\Console\Routes {
          * @param OutputInterface $output
          *
          * @return int|null
+         *
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input, $output);
 
-            $io->success('Bye');
+
             return 0;
         }
     }

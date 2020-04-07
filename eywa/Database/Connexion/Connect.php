@@ -6,10 +6,12 @@ namespace Eywa\Database\Connexion {
 
 
     use Eywa\Collection\Collect;
+    use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
     use PDO;
     use PDOException;
+    use stdClass;
 
     class Connect implements Connexion
     {
@@ -492,6 +494,58 @@ namespace Eywa\Database\Connexion {
                 $this->connexion->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             }
             return $this->connexion;
+        }
+
+        /**
+         *
+         * Get all records in a table
+         *
+         * @param string $table
+         *
+         * @return array<stdClass>
+         *
+         * @throws Kedavra
+         */
+        public function parse(string $table): array
+        {
+            return  $this->request(sprintf('SELECT * FROM %s', $table));
+        }
+
+        /**
+         *
+         * Execute a query and return results
+         *
+         * @param string $sql
+         * @param array $args
+         *
+         * @return array<stdClass>
+         *
+         * @throws Kedavra
+         */
+        public function request(string $sql, array $args = []): array
+        {
+            $pdo =  $this->pdo()->prepare($sql);
+            $pdo->execute($args);
+            $result =  $pdo->fetchAll(PDO::FETCH_OBJ);
+            $pdo->closeCursor();
+            $pdo = null;
+            return is_bool($result) ? [] : $result;
+        }
+
+        /**
+         *
+         * Create a record
+         *
+         * @param string $table
+         * @param array $record
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         */
+        public function create(string $table, array $record): bool
+        {
+            return (new Sql($this, $table))->create($record);
         }
     }
 }

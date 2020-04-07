@@ -20,7 +20,7 @@ namespace Eywa\Database\Table {
         /**
          * @var string
          */
-        private string $table = '';
+        private string $table;
         private Collect $columns ;
         private string $saved_table = '';
         private string $primary = 'id';
@@ -28,11 +28,85 @@ namespace Eywa\Database\Table {
         /**
          * @inheritDoc
          */
-        public function __construct(Connect $connect, string $table)
+        public function __construct(Connect $connect)
         {
             $this->connect = $connect;
-            $this->table = $table;
             $this->columns = collect();
+        }
+
+
+        /**
+         * @param string $type
+         * @param string $dest_driver
+         * @return string
+         */
+        public function replace(string $type, string $dest_driver): string
+        {
+            switch ($this->connect->driver()) {
+                case MYSQL:
+                    switch ($dest_driver) {
+                        case POSTGRESQL:
+                            break;
+                        case SQLITE:
+                            break;
+                    }
+                    break;
+                case POSTGRESQL:
+                    switch ($dest_driver) {
+                        case MYSQL:
+                            break;
+                        case SQLITE:
+                            break;
+                    }
+                    break;
+                case SQLITE:
+                    switch ($dest_driver) {
+                        case MYSQL:
+                            break;
+                        case POSTGRESQL:
+                            break;
+                    }
+                    break;
+            }
+            return '';
+        }
+
+        /**
+         *
+         * Create a table
+         *
+         * @param array $columns
+         * @param array $types
+         * @param string $dest_driver
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function create(array $columns, array $types, string $dest_driver): bool
+        {
+            $sql = sprintf('CREATE TABLE %s (', $this->table);
+            foreach ($columns as $k => $v) {
+                append($sql, sprintf(' %s %s ,', $v, $this->replace($types[$k], $dest_driver)));
+            }
+            $sql = trim($sql, ',');
+            append($sql, ')');
+            return $this->connect->set($sql)->execute();
+        }
+        /**
+         *
+         * Select the table
+         *
+         * @param string $table
+         *
+         * @return Table
+         *
+         */
+        public function from(string $table): Table
+        {
+            $this->table = $table;
+            return $this;
         }
 
         /**
@@ -407,6 +481,45 @@ namespace Eywa\Database\Table {
          */
         public function types(): Collect
         {
+            switch ($this->connect->driver()) {
+                case MYSQL:
+                    return
+                        collect(
+                            $this->connect->set(
+                                sprintf(
+                                    "SELECT COLUMN_NAME,
+                                            DATA_TYPE,
+                                            CHARACTER_MAXIMUM_LENGTH
+                                            FROM INFORMATION_SCHEMA.COLUMNS 
+                                            WHERE table_name = '%s'",
+                                    $this->table
+                                )
+                            )->get(PDO::FETCH_COLUMN)
+                        );
+                case POSTGRESQL:
+                    return
+                        collect(
+                            $this->connect->set(
+                                sprintf(
+                                    "select column_name, data_type, 
+                                            character_maximum_length from information_schema.columns
+                                    where table_name = '%s'",
+                                    $this->table
+                                )
+                            )->get(PDO::FETCH_COLUMN)
+                        );
+                case SQLITE:
+                    return
+                        collect(
+                            $this->connect->set(
+                                sprintf(
+                                    "select type from pragma_table_info('%s')",
+                                    $this->table
+                                )
+                            )->get(PDO::FETCH_COLUMN)
+                        );
+            }
+
             return collect();
         }
 

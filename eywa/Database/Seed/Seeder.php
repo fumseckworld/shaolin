@@ -128,7 +128,7 @@ namespace Eywa\Database\Seed {
 
             static::$faker = ioc('faker');
 
-            static::$table = (new Table(development(), static::$from));
+            static::$table = (new Table(development()))->from(static::$from);
 
             $table = static::$from;
 

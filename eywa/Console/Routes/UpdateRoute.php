@@ -14,47 +14,16 @@ namespace Eywa\Console\Routes {
     {
         protected static $defaultName = "route:update";
 
-        private Sql $sql;
-
-
-        /**
-         * FindRoute constructor.
-         * @param string|null $name
-         *
-         * @throws Kedavra
-         *
-         */
-        public function __construct(string $name = null)
-        {
-            parent::__construct($name);
-
-            $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
-        }
         protected function configure(): void
         {
-            $this->setDescription('Update a route');
+            $this->setDescription('Update an existing route');
         }
 
-        /**
-         * @return array<string>
-         * @throws Kedavra
-         */
-        public function name(): array
-        {
-            $names = collect();
-
-            foreach ($this->sql->get() as $value) {
-                $names->push($value->name);
-            }
-
-            return $names->all();
-        }
 
         /**
          *
          * @param InputInterface $input
          * @param OutputInterface $output
-         *
          *
          * @return int
          * @throws Kedavra
@@ -62,119 +31,233 @@ namespace Eywa\Console\Routes {
         public function interact(InputInterface $input, OutputInterface $output)
         {
             $io = new SymfonyStyle($input, $output);
-            $entry = collect();
 
-            if (def($this->sql->get())) {
+            $file = 'route';
+            $entry = collect();
+            $sql = new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
+            $methods = collect(METHOD_SUPPORTED)->for('strtolower')->all();
+
+            $names = call_user_func(function () use ($sql) {
+                $x = collect();
+                foreach ($sql->get() as $route) {
+                    $x->push($route->name);
+                }
+                return $x->all();
+            });
+
+            if (def($names)) {
                 do {
-                    $this->sql = (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
                     do {
                         $search = $io->askQuestion(
-                            (new Question('What is the name of the route to update ?', 'root'))
-                            ->setAutocompleterValues($this->name())
+                            (new Question(
+                                config($file, 'route-name'),
+                                'root'
+                            ))->setAutocompleterValues($names)
                         );
-                    } while (not_def($this->sql->where('name', EQUAL, $search)->get()));
+                        if (not_in($names, $search)) {
+                            $io->error(sprintf(
+                                config($file, 'route-name-not-exist'),
+                                $search
+                            ));
+                        }
+                    } while (not_in($names, $search) || not_def($search));
 
-
-                    $route = collect($this->sql->where('name', EQUAL, $search)->get())->get(0);
-
-
+                    $route = collect($sql->where('name', EQUAL, $search)->get())->get(0);
                     do {
-                        $entry->put('name', $io->askQuestion((new Question('Change the route name ?', $route->name))));
-                    } while (
-                        not_def($entry->get('name'))
-                        || def($this->sql->where('name', EQUAL, $entry->get('name'))->get())
-                        && $entry->get('name') !== $route->name
-                    );
-
-                    do {
-                        $entry->put('method', strtoupper(
-                            $io->askQuestion(
-                                (new Question('Change the route method ?', $route->method))
-                            )
+                        $entry->put('name', $io->askQuestion(
+                            (new Question(config($file, 'change-name'), $route->name))
                         ));
-                    } while (not_def($entry->get('method')) || not_in(METHOD_SUPPORTED, $entry->get('method')));
+                        $taken =
+                            def($sql->where('name', EQUAL, $entry->get('name'))->get())
+                            && $entry->get('name') !== $route->name;
 
-                    do {
-                        $entry->put('url', $io->askQuestion((new Question('Change the route url ?', $route->url))));
-                    } while (
-                        not_def($entry->get('url'))
-                        || def($this->sql->where('url', EQUAL, $entry->get('url'))->get())
-                        && $entry->get('url') !== $route->url
-                    );
-
-                    do {
-                        $entry->put('directory', $io->askQuestion(
-                            (new Question('Change the route namespace ?', $route->directory))
-                            ->setAutocompleterValues(controllers_directory())
-                        ));
-                    } while (not_def($entry->get('directory')));
-                    do {
-                        $entry->put(
-                            'controller',
-                            $io->askQuestion(
-                                (new Question(sprintf('Change the route controller ?'), $route->controller))
-                                ->setAutocompleterValues(
-                                    controllers($entry->get('directory'))
+                        if ($taken) {
+                            $io->error(
+                                sprintf(
+                                    config($file, 'route-name-already-taken'),
+                                    $entry->get('name')
                                 )
-                            )
-                        );
-                    } while (is_null($entry->get('controller')));
+                            );
+                        }
+                    } while (not_def($entry->get('name')) || $taken);
 
                     do {
-                        if ($entry->get('directory') !== 'Controllers') {
-                            $class = '\App\Controllers\\' . $entry->get('directory') . '\\' . $entry->get('controller');
-                        } else {
-                            $class = '\App\Controllers\\'  . $entry->get('controller');
+                        $entry->put('method', strtoupper($io->askQuestion(
+                            (new Question(
+                                config($file, 'change-method'),
+                                $route->method
+                            ))->setAutocompleterValues($methods)
+                        )));
+
+                        if (not_in(METHOD_SUPPORTED, $entry->get('method'))) {
+                            $io->error(
+                                sprintf(
+                                    config($file, 'route-method-not-valid'),
+                                    $entry->get('method')
+                                )
+                            );
+                        }
+                    } while (not_in(METHOD_SUPPORTED, $entry->get('method')));
+
+                    do {
+                        $entry->put('url', $io->askQuestion(
+                            (new Question(
+                                config($file, 'change-url'),
+                                $route->url
+                            ))
+                        ));
+                        if (is_null($entry->get('url'))) {
+                            $entry->put('url', '');
+                        }
+                        $taken = def($sql->where('url', EQUAL, $entry->get('url'))->get())
+                        && $entry->get('url') !== $route->url;
+
+                        if ($taken) {
+                            $io->error(
+                                sprintf(
+                                    config($file, 'route-url-already-taken'),
+                                    $entry->get('url')
+                                )
+                            );
+                        }
+                    } while (not_def($entry->get('url')) || $taken);
+
+                    do {
+                        $entry->put('directory', ucfirst($io->askQuestion(
+                            (new Question(
+                                config($file, 'change-directory'),
+                                $route->directory
+                            ))
+                            ->setAutocompleterValues(controllers_directory())
+                        )));
+
+                        $not_exist = not_in(controllers_directory(), $entry->get('directory'));
+
+                        if ($not_exist) {
+                            $io->error(
+                                sprintf(
+                                    config($file, "route-controller-directory-not-exist"),
+                                    $entry->get('directory')
+                                )
+                            );
+                        }
+                    } while (is_null($entry->get('directory')) || $not_exist);
+
+                    do {
+                        $entry->put('controller', $io->askQuestion(
+                            (new Question(
+                                config($file, 'change-controller'),
+                                $route->controller
+                            ))
+                            ->setAutocompleterValues(controllers($entry->get('directory')))
+                        ));
+                        $not_exist = not_in(controllers($entry->get('directory')), $entry->get('controller'));
+
+                        if ($not_exist) {
+                            $io->error(
+                                sprintf(
+                                    config($file, "route-controller-not-exist"),
+                                    $entry->get('controller')
+                                )
+                            );
                         }
 
-                        if (class_exists($class)) {
-                            $class = new $class();
+                        $class = $entry->get('directory') !== 'Controllers' ?
+                        sprintf(
+                            "\App\Controllers\%s\%s",
+                            $entry->get('directory'),
+                            $entry->get('controller')
+                        )
+                            : sprintf(
+                                '\App\Controllers\%s',
+                                $entry->get('controller')
+                            );
 
-                            $entry->put('action', $io->askQuestion(
-                                (new Question('Change the route action ?', $route->action))
-                                ->setAutocompleterValues(get_class_methods($class))
-                            ));
-                        } else {
-                            $entry->put('action', $io->askQuestion(
-                                (new Question('Change the route action ?', $route->action))
+                        $exist = class_exists($class);
+
+                        if (!$exist) {
+                            $io->error(sprintf(
+                                config($file, 'route-controller-not-exist'),
+                                $entry->get('controller')
                             ));
                         }
-                    } while (
-                        not_def($entry->get('action')) &&
-                        not_def($this->sql->where('action', EQUAL, $entry->get('action'))->get()) &&
-                        $route->action !== $entry->get('action')
-                    );
+                    } while (is_null($entry->get('controller')) || $not_exist || !$exist);
 
 
-                    $entry->put('created_at', $route->created_at);
-                    $entry->put('updated_at', now()->toDateTimeString());
+
+                    do {
+                        $actions = get_class_methods($class);
+
+                        $entry->put('action', $io->askQuestion(
+                            (new Question(
+                                config($file, 'change-action'),
+                                $route->action
+                            ))->setAutocompleterValues($actions)
+                        ));
+
+                        if (not_in($actions, $entry->get('action'))) {
+                            $io->warning(sprintf(
+                                config($file, 'route-action-not-exist'),
+                                $entry->get('action')
+                            ));
+                        }
+                        $taken = def($sql->where('action', EQUAL, $entry->get('action'))->get())
+                        &&  $route->action !== $entry->get('action')
+                        ;
+
+                        if ($taken) {
+                            $io->error(sprintf(
+                                config($file, 'route-action-already-taken'),
+                                $entry->get('action')
+                            ));
+                        }
+                    } while ($taken || not_def($entry->get('action')));
+
+                    $entry->put('created_at', $route->created_at)->put('updated_at', now()->toDateTimeString());
 
 
-                    if ($this->sql->update(intval($route->id), $entry->all())) {
-                        $io->success('The route has been updated successfully');
+                    if ($sql->update($route->id, $entry->all())) {
+                        $route = $entry->get('name');
+                        $io->success(
+                            sprintf(
+                                config($file, 'route-updated-successfully'),
+                                $route
+                            )
+                        );
                     } else {
-                        $io->error('The route has not been updated');
+                        $io->error(
+                            sprintf(
+                                config($file, 'route-update-failed'),
+                                $route
+                            )
+                        );
                         return 1;
                     }
 
                     $entry->clear();
-                } while ($io->confirm('Continue to update routes ?', true));
+                } while (
+                    $io->confirm(
+                        config($file, 'route-update-again'),
+                        true
+                    )
+                );
+                $io->success(config('route', 'bye'));
                 return 0;
             }
-            $io->warning('Cannot update a route no routes has been found');
-            return 0;
-        }
 
+            $io->error(config($file, 'no-routes-has-been-found'));
+            return 1;
+        }
 
         /**
          * @param InputInterface $input
          * @param OutputInterface $output
-         * @return int
+         *
+         * @return int|null
+         *
          */
         public function execute(InputInterface $input, OutputInterface $output)
         {
-            $io = new SymfonyStyle($input, $output);
-            $io->success('Bye');
             return 0;
         }
     }

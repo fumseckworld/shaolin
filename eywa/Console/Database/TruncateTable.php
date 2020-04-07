@@ -3,7 +3,6 @@
 namespace Eywa\Console\Database
 {
 
-    use Eywa\Database\Connexion\Connect;
     use Eywa\Database\Table\Table;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
@@ -38,17 +37,17 @@ namespace Eywa\Console\Database
             not_in(['dev','prod'], $env, true, 'The environement used is not valid');
 
             if (equal($env, 'dev')) {
-                $success = (new Table(development(), $table))->truncate();
+                $success = (new Table(development()))->from($table)->truncate();
             } else {
-                $success = (new Table(production(), $table))->truncate();
+                $success = (new Table(production()))->from($table)->truncate();
             }
 
 
             if ($success) {
-                $io->success("The $table table has been successfully truncated");
+                $io->success(sprintf('The %s table has been successfully truncated', $table));
                 return 0;
             }
-            $io->error("The truncate task for the $table table has failed");
+            $io->error('An error has been encondred');
             return 1;
         }
     }

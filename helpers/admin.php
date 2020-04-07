@@ -28,7 +28,7 @@ if (!function_exists('controllers_directory')) {
     function controllers_directory(): array
     {
         $x =  scandir(base('app', 'Controllers'));
-        return is_bool($x) ? [] : collect($x)->del(['.','..'])->all();
+        return is_bool($x) ? [] : collect($x)->del(['.','..'])->push('Controllers')->all();
     }
 }
 
@@ -186,6 +186,22 @@ if (!function_exists('base')) {
     }
 }
 
+if (!function_exists('class_to_array')) {
+
+    /**
+     *
+     * Parse an object an return an array
+     *
+     * @param object $object
+     *
+     * @return array
+     *
+     */
+    function class_to_array(object $object): array
+    {
+        return json_decode(strval(json_encode($object)), true);
+    }
+}
 if (!function_exists('i18n')) {
     /**
      *
