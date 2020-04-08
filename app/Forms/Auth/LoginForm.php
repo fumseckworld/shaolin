@@ -21,7 +21,7 @@ class LoginForm extends Form
 
     protected static array $rules = [
         'username' => 'required',
-        'password' => 'required'
+        'password' => 'required|min:6'
     ];
 
     public static string $redirect_error_url = '/login';
@@ -51,13 +51,5 @@ class LoginForm extends Form
                 $bag->get('username'),
                 $bag->get('password')
             );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function error(array $messages): Response
-    {
-        return $this->redirect(static::$redirect_error_url, $messages, false);
     }
 }

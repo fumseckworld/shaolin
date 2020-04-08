@@ -68,18 +68,19 @@ namespace Eywa\Console\Generate {
 
 namespace $namespace {
 
+    use Closure;
     use Eywa\Http\Middleware\Middleware;
     use Eywa\Http\Request\ServerRequest;
+    use Eywa\Http\Response\Response;
 
     class $class extends Middleware
     {
-    
         /**
          * @inheritDoc
          */
-        public function check(ServerRequest \$request): void
+        public function handle(ServerRequest \$request, Closure \$next): Response
         {
-            // TODO: Implement check() method.
+            return \$next(\$request);
         }
     }
 }\n")->flush()

@@ -199,5 +199,14 @@ namespace Eywa\Http\Request {
         {
             return $this->request->file();
         }
+
+
+        /**
+         * @return bool
+         */
+        public function missingToken(): bool
+        {
+            return not_def($this->request->request()->get(CSRF_TOKEN));
+        }
     }
 }

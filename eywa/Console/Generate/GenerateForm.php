@@ -65,58 +65,67 @@ namespace Eywa\Console\Generate {
             if (
                 (new File($form_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
+namespace $namespace {
 
-namespace $namespace;
+    use Eywa\Html\Form\Form;
+    use Eywa\Http\Parameter\Bag;
+    use Eywa\Http\Response\Response;
 
-use Eywa\Html\Form\Form;
-use Eywa\Http\Request\Request;
-use Eywa\Http\Response\Response;
-
-class $form_class extends Form
-{
-    protected static string \$method = 'POST';
-
-    protected static string \$route = '';
-
-    protected static array \$route_args = [];
-
-    protected static array \$options = [];
-
-    protected static array \$rules = [
-    
-    ];
-
-    public static string \$redirect_url = '/error';
-    
-    public static string \$success_message = '';
-    
-    public static string \$error_message = '';
-    
-    /**
-     * @inheritDoc
-     */
-    public function make(): string
+    class $form_class extends Form
     {
-        return '';
-    }
 
+        /**
+         * @inheritDoc
+         */
+        public static string \$redirect_success_url = '/';
 
-    /**
-     * @inheritDoc
-     */
-    protected function valid(Request \$request): Response
-    {
-        return new Response('');
-    }
+        /**
+         * @inheritDoc
+         */
+        public static string \$redirect_error_url = '/error';
+        
+        /**
+         * @inheritDoc
+         */
+        protected static string \$method = 'POST';
 
-    /**
-     * @inheritDoc
-     */
-    protected function invalid(Request \$request, array \$errors): Response
-    {
-        return new Response('');
+        /**
+         * @inheritDoc
+         */
+        protected static string \$route = 'send';
+
+        /**
+         * @inheritDoc
+         */
+        protected static array \$route_args = [];
+
+        /**
+         * @inheritDoc
+         */
+        protected static array \$options = [];
+        
+        /**
+         * @inheritDoc
+         */
+        protected static array \$rules = [];
+       
+        /**
+         * @inheritDoc
+         */
+        public function make(): string
+        {
+            return '';
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function success(Bag \$bag): Response
+        {
+            // TODO: Implement success() method.
+        }
     }
-}")->flush()
+}\n")->flush()
             ) {
                 $io->success(sprintf('The %s form has been generated successfully', $form_class));
 

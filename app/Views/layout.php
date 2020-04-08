@@ -10,7 +10,6 @@
         @css(app)
        </head>
     <body>
-        @navigation
         <main class="container">
             @flash
             <?= $content ?? ''?>

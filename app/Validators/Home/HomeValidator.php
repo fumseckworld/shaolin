@@ -15,7 +15,7 @@ namespace App\Validators\Home {
         public static array $rules =
         [
             'REMOTE_ADDR' => 'required|ipv4',
-            'SERVER_NAME' => 'required'
+            'SERVER_NAME' => 'required|domain'
 
         ];
 
@@ -25,14 +25,6 @@ namespace App\Validators\Home {
         public function success(Bag $bag): Response
         {
             return new Response('ok');
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function error(array $messages): Response
-        {
-            return $this->redirect(static::$redirect_error_url, $messages, false);
         }
     }
 }

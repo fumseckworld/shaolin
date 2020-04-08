@@ -3,7 +3,6 @@
 namespace App\Controllers\Home {
 
     use Eywa\Exception\Kedavra;
-    use Eywa\Html\Pagination\Pagination;
     use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
@@ -38,9 +37,18 @@ namespace App\Controllers\Home {
             return $this->view('404', 'not found', 'error');
         }
 
+        /**
+         *
+         *
+         * @param Request $request
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
         public function showUsers(Request $request)
         {
-
             $users =  $this->model('users')->paginate(function ($user) {
                 return
                     '<div>
@@ -54,6 +62,7 @@ namespace App\Controllers\Home {
 
             return $this->view('users', 'show user', 'a suber paginaition', compact('users'));
         }
+
         /**
          *
          * @param Request $request
@@ -66,7 +75,14 @@ namespace App\Controllers\Home {
         public function home(Request $request): Response
         {
             $users = $this->model('users')->all();
-            return $this->view('home', 'A library to make mvc website', 'The core of shaolin', compact('users'));
+
+            return
+                $this->view(
+                    'home',
+                    'A library to make mvc website',
+                    'The core of shaolin',
+                    compact('users')
+                );
         }
 
         /**

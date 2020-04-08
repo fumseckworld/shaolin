@@ -48,12 +48,4 @@ class UsersForm extends Form
     {
         return $this->redirect(static::$redirect_success_url, [static::$success_message]);
     }
-
-    /**
-     * @inheritDoc
-     */
-    public function error(array $messages): Response
-    {
-        return $this->redirect(static::$redirect_error_url, $messages, false);
-    }
 }

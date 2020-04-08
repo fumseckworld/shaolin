@@ -302,12 +302,6 @@ namespace Eywa\Http\View {
                     $html
                 )
                 ->replace(
-                    '#@navigation#',
-                    '<?= (new \Eywa\Html\Navigation\Navigation())->display();?>',
-                    $html,
-                    $html
-                )
-                ->replace(
                     '#@foreach\((\$[a-zA-Z0-9]+) as (\$[a-z0-9]+)\)#',
                     '<?php foreach(${1} ?? [] as ${2}) : ?>',
                     $html,

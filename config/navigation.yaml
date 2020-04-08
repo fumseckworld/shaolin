@@ -1,9 +1,0 @@
-nav-class: 'navigation'
-li-class: 'nav-item'
-a-class: 'nav-link'
-
-links:
-  /: accueil
-  home: home
-  login: connexion
-  logout: deconexion

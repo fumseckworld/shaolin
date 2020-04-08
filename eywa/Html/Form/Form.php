@@ -69,7 +69,6 @@ namespace Eywa\Html\Form {
         abstract public function make(): string;
 
 
-
         /**
          *
          * Form constructor.
@@ -250,18 +249,17 @@ namespace Eywa\Html\Form {
          *
          * @return string
          *
-         * @throws Kedavra
-         *
          */
         protected function get(string $submit_text = 'submit'): string
         {
+            $this->row();
             $input = '<div class="' . $this->class('separator', 'form-group') . '">
                         <button type="submit" class="' . $this->class('submit', 'btn btn-submit') . '">'
                             . $submit_text . '
                         </button>
                       </div>';
             $this->append($input);
-
+            $this->end();
             $this->append("</form>");
 
 
@@ -285,8 +283,6 @@ namespace Eywa\Html\Form {
          * Generate a row
          *
          * @return Form
-         *
-         * @throws Kedavra
          *
          */
         protected function row(): Form
@@ -328,16 +324,14 @@ namespace Eywa\Html\Form {
          * Found the class
          *
          * @param string $x
-         *
          * @param string $value
-         * @return string
          *
-         * @throws Kedavra
+         * @return string
          *
          */
         private function class(string $x, string $value = ''): string
         {
-            $x = collect(config('form', 'class'))->get($x);
+            $x = collect(config('form', 'class', $value))->get($x);
             return def($x) ? $x : $value;
         }
 

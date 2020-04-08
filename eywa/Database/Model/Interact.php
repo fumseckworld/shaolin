@@ -156,12 +156,10 @@ namespace Eywa\Database\Model {
          * Paginate all records
          *
          * @param callable $callback
+         * @param string $slug
          * @param int $current_page
          *
          * @return Sql
-         *
-         * @throws Kedavra
-         * @throws Exception
          *
          */
         public function paginate(callable $callback, string $slug, int $current_page): Sql;

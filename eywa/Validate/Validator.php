@@ -8,6 +8,7 @@ namespace Eywa\Validate {
     use Egulias\EmailValidator\EmailValidator;
     use Egulias\EmailValidator\Validation\RFCValidation;
     use Exception;
+    use Eywa\Application\App;
     use Eywa\Collection\Collect;
     use Eywa\Exception\Kedavra;
     use Eywa\Http\Parameter\Bag;
@@ -51,11 +52,6 @@ namespace Eywa\Validate {
          */
         public static string $redirect_error_url = '/error';
 
-
-        public static string $success_message = '';
-
-        public static string $error_message = '';
-
         protected static array $messages =
         [
             VALIDATOR_EMAIL_NOT_VALID => '',
@@ -82,10 +78,45 @@ namespace Eywa\Validate {
             VALIDATOR_ARGUMENT_DOMAIN => '',
         ];
 
+
         /**
-         * Validator constructor.
+         *
+         * Render a view
+         *
+         * @param string $view
+         * @param string $title
+         * @param string $description
+         * @param array $args
+         *
+         * @return Response
          *
          * @throws Kedavra
+         * @throws Exception
+         *
+         */
+        public function view(string $view, string $title, string $description, array $args = []): Response
+        {
+            return $this->app()->view($view, $title, $description, $args);
+        }
+
+        /**
+         *
+         * Get an instance of the application
+         *
+         * @return App
+         *
+         * @throws Exception
+         *
+         */
+        public function app(): App
+        {
+            return app();
+        }
+
+        /**
+         *
+         *
+         * Init the validator message
          *
          */
         public function __construct()
@@ -119,11 +150,13 @@ namespace Eywa\Validate {
          *
          * @return Response
          *
-         * @throws Kedavra
          * @throws Exception
          *
          */
-        abstract public function error(array $messages): Response;
+        private function error(array $messages): Response
+        {
+            return $this->redirect(static::$redirect_error_url, $messages, false);
+        }
 
         /**
          *
@@ -194,7 +227,7 @@ namespace Eywa\Validate {
          */
         public function handle(Bag $bag): Response
         {
-            return $this->validate($bag)->call();
+            return $this->validate($bag)->call()->send();
         }
 
         /**
