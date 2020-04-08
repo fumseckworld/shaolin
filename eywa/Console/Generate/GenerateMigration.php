@@ -52,49 +52,77 @@ namespace Eywa\Console\Generate {
             }
             $io->title('Generation of the migration');
             $table  = strval($input->getArgument('table'));
-            $time = date('Y-m-d-H-i-s');
+            $time = strval(date('Y-m-d-H-i-s'));
 
 
             if (
                 (new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
-
 namespace Evolution\Migrations {
-
 
     use Eywa\Database\Migration\Migration;
 
-    class $class extends Migration
+    class Ale extends Migration
     {
+        /**
+         * @inheritDoc
+         */
         public static string \$created_at = '$time';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$table = '$table';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$up_success_message = '';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$up_error_message = '';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$down_success_message = '';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$down_error_message = '';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$up_title = '';
-
+        
+        /**
+         * @inheritDoc
+         */
         public static string \$down_title = '';
-
+        
+        /**
+         * @inheritDoc
+         */
         public function up(): bool
         {
-
+            return true;
         }
-
+       
+        /**
+         * @inheritDoc
+         */
         public function down(): bool
         {
-
+            return true;
         }
     }
-}")->flush()
+}\n")->flush()
             ) {
-                $io->success(sprintf('The %s migration was successfully generated', $class));
+                $io->success(sprintf('The %s migration has been successfully created', $class));
                 return 0;
             }
 

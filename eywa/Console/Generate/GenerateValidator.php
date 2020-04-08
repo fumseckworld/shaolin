@@ -80,30 +80,36 @@ namespace Eywa\Console\Generate {
 
 namespace $namespace {
 
-    use Eywa\Http\Request\Request;
+    use Eywa\Http\Parameter\Bag;
     use Eywa\Http\Response\Response;
     use Eywa\Validate\Validator;
 
     class $class extends Validator
     {
-
-        public static string \$redirect_url = '/error';
-
-        public static array \$rules =
-        [
-                    
-        ];
+    
+       /**
+        * @inheritDoc
+        */
+        public static string \$redirect_success_url = '';
 
         /**
          * @inheritDoc
          */
-        protected static function do(Request \$request): Response
+        public static string \$redirect_error_url = '';
+
+        /**
+         * @inheritDoc
+         */
+        public static array \$rules = [];
+
+        /**
+         * @inheritDoc
+         */
+        public function success(Bag \$bag): Response
         {
-            
         }
     }
-}
-            ")->flush()
+}\n")->flush()
             ) {
                 $io->success(sprintf('The %s validator has been generated successfully', $class));
 

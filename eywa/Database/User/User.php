@@ -8,6 +8,7 @@ namespace Eywa\Database\User {
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
     use Eywa\Exception\Kedavra;
+    use PDO;
 
     class User
     {
@@ -28,18 +29,18 @@ namespace Eywa\Database\User {
          *
          * Show users
          *
-         * @return Collect
+         * @return array|array[]|Collect
          *
          * @throws Kedavra
          *
          */
-        public function show(): Collect
+        public function show()
         {
             switch ($this->connexion->driver()) {
                 case MYSQL:
-                    return collect($this->connexion->set('SELECT User from mysql.user')->get(COLUMNS));
+                    return $this->connexion->set('SELECT User from mysql.user')->get(PDO::FETCH_ASSOC);
                 case POSTGRESQL:
-                    return collect($this->connexion->set('SELECT rolname FROM pg_roles;')->get(COLUMNS));
+                    return $this->connexion->set('SELECT rolname FROM pg_roles;')->get(PDO::FETCH_ASSOC);
                 default:
                     return collect();
             }

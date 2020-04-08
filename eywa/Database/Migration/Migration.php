@@ -22,49 +22,49 @@ namespace Eywa\Database\Migration {
 
         /**
          *
-         * The table name
+         * The name of the table
          *
          */
         public static string $table = '';
 
         /**
          *
-         * The migration success message
+         * The migration up success message
          *
          */
         public static string $up_success_message = '';
 
         /**
          *
-         * The migration error message
+         * The migration up error message
          *
          */
         public static string $up_error_message = '';
 
         /**
          *
-         * The rollback success message
+         * The down success message
          *
          */
         public static string $down_success_message = '';
 
         /**
          *
-         * The rollback error message
+         * The down error message
          *
          */
         public static string $down_error_message = '';
 
         /**
          *
-         * The migration title
+         * The migration up title
          *
          */
         public static string $up_title = '';
 
         /**
          *
-         * The rollback title
+         * The down up title
          *
          */
         public static string $down_title = '';

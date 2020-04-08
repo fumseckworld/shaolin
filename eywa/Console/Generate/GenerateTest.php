@@ -65,7 +65,6 @@ namespace Eywa\Console\Generate {
             if (
                 (new File($file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
-
 namespace $namespace {
 
     use Eywa\Testing\Unit;

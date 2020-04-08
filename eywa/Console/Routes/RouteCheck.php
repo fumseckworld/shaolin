@@ -11,7 +11,7 @@ namespace Eywa\Console\Routes {
 
     class RouteCheck extends Command
     {
-        protected static $defaultName = "route:check";
+        protected static $defaultName = "check:routes";
 
         protected function configure(): void
         {

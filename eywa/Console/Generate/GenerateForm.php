@@ -77,22 +77,22 @@ namespace $namespace {
         /**
          * @inheritDoc
          */
-        public static string \$redirect_success_url = '/';
+        public static string \$redirect_success_url = '';
 
         /**
          * @inheritDoc
          */
-        public static string \$redirect_error_url = '/error';
+        public static string \$redirect_error_url = '';
         
         /**
          * @inheritDoc
          */
-        protected static string \$method = 'POST';
+        protected static string \$method = '';
 
         /**
          * @inheritDoc
          */
-        protected static string \$route = 'send';
+        protected static string \$route = '';
 
         /**
          * @inheritDoc

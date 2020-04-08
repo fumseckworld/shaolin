@@ -6,6 +6,7 @@ namespace Eywa\Console\Database
     use Eywa\Database\User\User;
     use Eywa\Exception\Kedavra;
     use Symfony\Component\Console\Command\Command;
+    use Symfony\Component\Console\Helper\Table;
     use Symfony\Component\Console\Input\InputArgument;
     use Symfony\Component\Console\Input\InputInterface;
     use Symfony\Component\Console\Output\OutputInterface;
@@ -13,11 +14,11 @@ namespace Eywa\Console\Database
 
     class ShowUsers extends Command
     {
-        protected static $defaultName = 'users:show';
+        protected static $defaultName = 'check:users';
             
         protected function configure(): void
         {
-            $this->setDescription("List all users found in the base")
+            $this->setDescription("Check users")
             ->addArgument('env', InputArgument::REQUIRED, 'The base environment');
         }
 
@@ -33,20 +34,22 @@ namespace Eywa\Console\Database
 
             $env = strval($input->getArgument('env'));
 
-            not_in(['dev','prod'], $env, true, 'The env must be dev or prod');
+            not_in(['dev','prod','test'], $env, true, 'The env must be dev, prod or test');
 
             if (equal($env, 'dev')) {
-                $x = (new User(development()))->show()->all();
+                $users = (new User(development()))->show();
+            } elseif (equal($env, 'prod')) {
+                $users = (new User(production()))->show();
             } else {
-                $x = (new User(production()))->show()->all();
+                $users = (new User(tests()))->show();
             }
-            if (not_def($x)) {
+            if (not_def($users)) {
                 $io->error("No users found");
                 return 1;
             }
-            foreach ($x as $table) {
-                $io->success($table);
-            }
+
+            $x = new Table($output);
+            $x->setStyle('box')->setHeaders(['name'])->setRows($users)->render();
 
             return 0;
         }

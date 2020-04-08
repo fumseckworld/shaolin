@@ -18,10 +18,9 @@ namespace Eywa\Console\Generate {
         protected function configure(): void
         {
             $this
-                // the short description shown while running "php bin/console list"
-                ->setDescription('Create a new migration')
+                ->setDescription('Create a new seeder')
                 ->addArgument('table', InputArgument::REQUIRED, 'The table name')
-                ->addArgument('seed', InputArgument::REQUIRED, 'The migration name.');
+                ->addArgument('seed', InputArgument::REQUIRED, 'The seeder class name.');
         }
 
         /**

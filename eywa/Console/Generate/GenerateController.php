@@ -89,7 +89,7 @@ namespace $namespace {
        /**
         * @inheritDoc
         */
-        public function before_action(Request \$request): void
+        public function before(Request \$request): void
         {
             // TODO: Implement before_action() method.
         }
@@ -97,7 +97,7 @@ namespace $namespace {
        /**
         * @inheritDoc
         */
-        public function after_action(Request \$request): void
+        public function after(Request \$request): void
         {
             // TODO: Implement after_action() method.
         }

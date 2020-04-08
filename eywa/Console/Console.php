@@ -23,11 +23,14 @@ namespace Eywa\Console {
     use Eywa\Console\Database\ShowUsers;
     use Eywa\Console\Database\TruncateTable;
     use Eywa\Console\Database\UninstallDatabase;
+    use Eywa\Console\Debug\DebugMigration;
+    use Eywa\Console\Debug\DebugSeeder;
     use Eywa\Console\Generate\GenerateCommand;
     use Eywa\Console\Generate\GenerateContainer;
     use Eywa\Console\Generate\GenerateForm;
     use Eywa\Console\Generate\GenerateMiddleware;
-    use Eywa\Console\Generate\GenerateModel;
+    use Eywa\Console\Generate\GenerateMigration;
+    use Eywa\Console\Generate\GenerateSeeds;
     use Eywa\Console\Generate\GenerateValidator;
     use Eywa\Console\Generate\GenerateView;
     use Eywa\Console\Get\Documentation;
@@ -95,8 +98,9 @@ namespace Eywa\Console {
                 new InstallDatabase(), new UninstallDatabase(),new ShowUsers(),new Documentation(),new Wanted(),
                 new GenerateValidator(),new GitSend(),new TestCommand(),new GenerateCommand(),new FindRoute() ,
                 new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
-                new GenerateContainer(),new GenerateForm(),new GenerateModel(),new UngitCommand(),new GitCommit(),
-                new GitLog(),new GitBlame(),new Convert(),new CleanRoutes(),new RouteCheck()
+                new GenerateContainer(),new GenerateForm(),new UngitCommand(),new GitCommit(),
+                new GitLog(),new GitBlame(),new Convert(),new CleanRoutes(),new RouteCheck(),
+                new GenerateMigration(),new GenerateSeeds(),new DebugMigration(),new DebugSeeder()
             ];
 
             $this->add($commands)->add(commands());
