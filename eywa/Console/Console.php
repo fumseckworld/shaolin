@@ -23,6 +23,7 @@ namespace Eywa\Console {
     use Eywa\Console\Database\ShowUsers;
     use Eywa\Console\Database\TruncateTable;
     use Eywa\Console\Database\UninstallDatabase;
+    use Eywa\Console\Debug\DebugConnexion;
     use Eywa\Console\Debug\DebugMigration;
     use Eywa\Console\Debug\DebugSeeder;
     use Eywa\Console\Generate\GenerateCommand;
@@ -100,7 +101,7 @@ namespace Eywa\Console {
                 new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
                 new GenerateContainer(),new GenerateForm(),new UngitCommand(),new GitCommit(),
                 new GitLog(),new GitBlame(),new Convert(),new CleanRoutes(),new RouteCheck(),
-                new GenerateMigration(),new GenerateSeeds(),new DebugMigration(),new DebugSeeder()
+                new GenerateMigration(),new GenerateSeeds(),new DebugMigration(),new DebugSeeder(), new DebugConnexion()
             ];
 
             $this->add($commands)->add(commands());
