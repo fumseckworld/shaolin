@@ -34,7 +34,7 @@ namespace Eywa\Console\Git {
 
             $size = def($input->getArgument('months')) ? intval($input->getArgument('months')) : 1;
 
-            return (new Version($io))->logs($size);
+            return (new Version($io))->logs($size, $output);
         }
     }
 }

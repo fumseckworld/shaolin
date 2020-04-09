@@ -42,6 +42,7 @@ namespace Eywa\Console {
     use Eywa\Console\Git\GitCommit;
     use Eywa\Console\Git\GitLog;
     use Eywa\Console\Git\GitSend;
+    use Eywa\Console\Git\GitStats;
     use Eywa\Console\Git\UngitCommand;
     use Eywa\Console\Mode\DevMode;
     use Eywa\Console\Mode\Maintenance;
@@ -104,7 +105,7 @@ namespace Eywa\Console {
                 new GenerateContainer(),new GenerateForm(),new UngitCommand(),new GitCommit(),
                 new GitLog(),new GitBlame(),new Convert(),new CleanRoutes(),new RouteCheck(),
                 new GenerateMigration(),new GenerateSeeds(),new DebugMigration(),new DebugSeeder(),
-                new DebugConnexion(), new GenerateController(),new GenerateTest()
+                new DebugConnexion(), new GenerateController(),new GenerateTest(),new GitStats()
             ];
 
             $this->add($commands)->add(commands());

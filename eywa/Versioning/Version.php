@@ -5,6 +5,8 @@ namespace Eywa\Versioning {
     use Eywa\Collection\Collect;
     use Eywa\Console\Shell;
     use Eywa\Exception\Kedavra;
+    use Symfony\Component\Console\Helper\Table;
+    use Symfony\Component\Console\Output\OutputInterface;
     use Symfony\Component\Console\Question\Question;
     use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -196,24 +198,36 @@ namespace Eywa\Versioning {
          *
          * @param int $months
          *
+         * @param OutputInterface $output
          * @return int
-         *
          */
-        public function logs(int $months): int
+        public function logs(int $months, OutputInterface $output): int
         {
-            $format = '%h %an %cr %s';
-            $this->io->warning(
-                strval(
-                    shell_exec(
-                        sprintf(
-                            'git log --pretty=format:"%s" --graph  --since=%d.months',
-                            $format,
-                            $months
-                        )
-                    )
-                )
-            );
-            return $this->bye();
+            $format = '%h_%an_%ae_%cr_%s';
+
+            exec(sprintf(
+                'git log --format="%s" --since=%d.months',
+                $format,
+                $months
+            ), $logs);
+
+            $commits = [];
+            foreach ($logs as $k => $v) {
+                $tmp = \collect(explode('_', $v));
+                $commit = [];
+                $commit['hash'] = $tmp->first();
+                $commit['commiter'] = $tmp->get(1);
+                $commit['email'] = $tmp->get(2);
+                $commit['ago'] = $tmp->get(3);
+                $commit['commit'] = $tmp->get(4);
+                $commits[] = $commit;
+            }
+            $x = new Table($output);
+            $x->setStyle('box')->setHeaders(['hash','commiter', 'email','ago','commit']);
+            $x->setRows($commits);
+
+            $x->render();
+            return 0;
         }
         /**
          *
