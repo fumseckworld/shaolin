@@ -28,10 +28,12 @@ namespace Eywa\Console {
     use Eywa\Console\Debug\DebugSeeder;
     use Eywa\Console\Generate\GenerateCommand;
     use Eywa\Console\Generate\GenerateContainer;
+    use Eywa\Console\Generate\GenerateController;
     use Eywa\Console\Generate\GenerateForm;
     use Eywa\Console\Generate\GenerateMiddleware;
     use Eywa\Console\Generate\GenerateMigration;
     use Eywa\Console\Generate\GenerateSeeds;
+    use Eywa\Console\Generate\GenerateTest;
     use Eywa\Console\Generate\GenerateValidator;
     use Eywa\Console\Generate\GenerateView;
     use Eywa\Console\Get\Documentation;
@@ -101,7 +103,8 @@ namespace Eywa\Console {
                 new ListRoute() , new AddRoute(), new RemoveRoute(), new UpdateRoute(),new Records\Records(),
                 new GenerateContainer(),new GenerateForm(),new UngitCommand(),new GitCommit(),
                 new GitLog(),new GitBlame(),new Convert(),new CleanRoutes(),new RouteCheck(),
-                new GenerateMigration(),new GenerateSeeds(),new DebugMigration(),new DebugSeeder(), new DebugConnexion()
+                new GenerateMigration(),new GenerateSeeds(),new DebugMigration(),new DebugSeeder(),
+                new DebugConnexion(), new GenerateController(),new GenerateTest()
             ];
 
             $this->add($commands)->add(commands());

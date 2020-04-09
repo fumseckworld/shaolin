@@ -68,7 +68,7 @@ namespace Eywa\Console\Generate {
 namespace $namespace {
 
     use Eywa\Testing\Unit;
-    
+
     class $class extends Unit
     {
     

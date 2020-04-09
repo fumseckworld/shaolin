@@ -74,36 +74,34 @@ namespace Eywa\Console\Generate {
             if (
                 (new File($controller_file, EMPTY_AND_WRITE_FILE_MODE))->write("<?php
 
-namespace $namespace { 
+namespace $namespace {
 
-	use Eywa\Http\Controller\Controller;
+    use Eywa\Http\Controller\Controller;
     use Eywa\Http\Request\Request;
-    
-	Class $controller_class extends Controller
-	{
 
+    class $controller_class extends Controller
+    {
         $layout
-    
-        $directory
         
-       /**
-        * @inheritDoc
-        */
+        $directory
+
+        /**
+         * @inheritDoc
+         */
         public function before(Request \$request): void
         {
             // TODO: Implement before_action() method.
         }
-        
-       /**
-        * @inheritDoc
-        */
+
+        /**
+         * @inheritDoc
+         */
         public function after(Request \$request): void
         {
             // TODO: Implement after_action() method.
         }
-        
     }
-}")->flush()
+}\n")->flush()
             ) {
                 $io->success(sprintf('The %s controller has been generated successfully', $controller_class));
 
