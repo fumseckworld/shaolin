@@ -545,7 +545,7 @@ namespace Eywa\Database\Connexion {
          */
         public function create(string $table, array $record): bool
         {
-            return (new Sql($this, $table))->create($record);
+            return (new Sql($this))->from($table)->create($record);
         }
     }
 }

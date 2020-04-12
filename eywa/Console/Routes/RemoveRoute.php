@@ -35,7 +35,7 @@ namespace Eywa\Console\Routes {
             $io = new SymfonyStyle($input, $output);
 
             $file = 'route';
-            $sql = new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
+            $sql = (new Sql(connect(SQLITE, base('routes', 'web.sqlite3'))))->from('routes');
 
             $names = call_user_func(function () use ($sql) {
                 $x = collect();

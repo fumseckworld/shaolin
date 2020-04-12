@@ -52,6 +52,7 @@ namespace Eywa\Validate {
          */
         public static string $redirect_error_url = '/error';
 
+
         protected static array $messages =
         [
             VALIDATOR_EMAIL_NOT_VALID => '',
@@ -135,9 +136,6 @@ namespace Eywa\Validate {
          * @param Bag $bag
          *
          * @return Response
-         *
-         * @throws Kedavra
-         * @throws Exception
          *
          */
         abstract public function success(Bag $bag): Response;

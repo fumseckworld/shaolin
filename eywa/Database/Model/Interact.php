@@ -11,16 +11,12 @@ namespace Eywa\Database\Model {
     interface Interact
     {
 
-
         /**
          * Delete a record
          *
          * @param int $id
          *
          * @return bool
-         *
-         * @throws Kedavra
-         * @throws Exception
          *
          */
         public function destroy(int $id): bool;
@@ -34,9 +30,6 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws Kedavra
-         * @throws Exception
-         *
          */
         public function update(int $id, array $values): bool;
 
@@ -48,8 +41,6 @@ namespace Eywa\Database\Model {
          *
          * @return bool
          *
-         * @throws Kedavra
-         * @throws Exception
          *
          */
         public function create(array $record): bool;
@@ -78,9 +69,6 @@ namespace Eywa\Database\Model {
          *
          * @return array<stdClass>
          *
-         * @throws Kedavra
-         * @throws Exception
-         *
          */
         public function different(string $column, $expected): array;
 
@@ -89,10 +77,6 @@ namespace Eywa\Database\Model {
          * Get all records
          *
          * @return array<stdClass>
-         *
-         * @throws Kedavra
-         * @throws Exception
-         *
          *
          */
         public function all(): array;
@@ -106,9 +90,6 @@ namespace Eywa\Database\Model {
          *
          * @return stdClass
          *
-         * @throws Kedavra
-         * @throws Exception
-         *
          */
         public function by(string $column, $expected): stdClass;
 
@@ -120,9 +101,6 @@ namespace Eywa\Database\Model {
          *
          * @return array<stdClass>
          *
-         * @throws Kedavra
-         * @throws Exception
-         *
          */
         public function search(string $value): array;
 
@@ -132,9 +110,6 @@ namespace Eywa\Database\Model {
          *
          * @return array<string>
          *
-         * @throws Kedavra
-         * @throws Exception
-         *
          */
         public function columns(): array;
 
@@ -143,9 +118,6 @@ namespace Eywa\Database\Model {
          * Get the primary key
          *
          * @return string
-         *
-         * @throws Kedavra
-         * @throws Exception
          *
          */
         public function primary(): string;

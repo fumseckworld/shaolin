@@ -38,7 +38,7 @@ namespace Eywa\Console\Routes {
 
 
             do {
-                $sql =  new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
+                $sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3'))))->from('routes');
                 do {
                     $entry->put('name', $io->askQuestion(
                         (new Question(config($file, 'route-name-question')))

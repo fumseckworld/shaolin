@@ -2,6 +2,7 @@
 
 namespace Eywa\Database\Migration {
 
+    use Eywa\Console\Records\Records;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use ReflectionClass;
@@ -332,18 +333,20 @@ namespace Eywa\Database\Migration {
          * @param string $env
          * @param string $table
          *
-         * @return Sql
          *
+         *
+         * @return \Eywa\Database\Query\Records|Sql
          * @throws Kedavra
+         *
          */
-        private static function sql(string $env, string $table = 'migrations'): Sql
+        private static function sql(string $env, string $table = 'migrations')
         {
-            return equal($env, 'dev') ?
-                new Sql(development(), $table) : (equal($env, 'prod')
-                ?
-                    new Sql(production(), $table)
-                :
-                    new Sql(tests(), $table));
+            if (equal($env, 'dev')) {
+                return (new Sql(development()))->from($table);
+            } elseif (equal($env, 'prod')) {
+                return (new Sql(production()))->from($table);
+            }
+            return (new Sql(tests()))->from($table);
         }
 
         /**

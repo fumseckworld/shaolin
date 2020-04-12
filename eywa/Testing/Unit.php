@@ -5,16 +5,13 @@ declare(strict_types=1);
 namespace Eywa\Testing {
 
     use Eywa\Collection\Collect;
-    use Eywa\Database\Model\Model;
     use Eywa\Exception\Kedavra;
     use Eywa\File\File;
     use Eywa\Http\Request\ServerRequest;
     use Eywa\Http\Response\Response;
     use Eywa\Http\Routing\Router;
     use Eywa\Message\Email\Write;
-    use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
-    use Eywa\Session\ArraySession;
     use PHPUnit\Framework\TestCase;
     use ReflectionException;
 
@@ -52,19 +49,6 @@ namespace Eywa\Testing {
             return new File($filename, $mode);
         }
 
-        /**
-         *
-         *
-         * @param string $table
-         * @return Auth
-         *
-         * @throws Kedavra
-         * @throws ReflectionException
-         */
-        public function auth(string $table): Auth
-        {
-            return new Auth(new ArraySession(), new Model($table));
-        }
 
         /**
          * @param string $subject

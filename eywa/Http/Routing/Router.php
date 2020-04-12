@@ -86,9 +86,8 @@ namespace Eywa\Http\Routing {
                     connect(
                         SQLITE,
                         base('routes', 'web.sqlite3')
-                    ),
-                    'routes'
-                ))->where('method', EQUAL, $this->method)->get() as $route
+                    )
+                ))->from('routes')->where('method', EQUAL, $this->method)->get() as $route
             ) {
                 if ($this->match($route->url, $route)) {
                     $this->route = $route;

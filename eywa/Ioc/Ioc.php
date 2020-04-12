@@ -167,11 +167,9 @@ namespace Eywa\Ioc {
                     );
 
                     self::$instances[Connect::class] =
-                        equal(config('mode', 'connexion'), 'prod')
-                            ?
-                                production()
-                            :
-                                development();
+                            equal(config('mode', 'connexion', 'prod'), 'prod')
+                            ? production() : (equal(config('mode', 'connexion', 'prod'), 'dev')
+                            ? development() : tests());
 
                     self::$variables['faker'] = faker(strval(config('i18n', 'locale')));
                 }
@@ -219,7 +217,6 @@ namespace Eywa\Ioc {
          */
         private static function parse(string $key, array $args = []): object
         {
-
             if (class_exists($key)) {
                 $reflection = new ReflectionClass($key);
                 $constructor = $reflection->getConstructor();

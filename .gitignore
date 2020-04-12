@@ -9,3 +9,4 @@ coverage
 doc
 wanted
 .php_cs.cache
+config/mode.yaml

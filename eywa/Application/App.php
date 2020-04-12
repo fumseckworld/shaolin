@@ -13,7 +13,7 @@ namespace Eywa\Application {
     use Eywa\Collection\Collect;
     use Eywa\Configuration\Config;
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Model\Model;
+    use Eywa\Database\Query\Records;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -29,7 +29,6 @@ namespace Eywa\Application {
     use Eywa\Ioc\Ioc;
     use Eywa\Message\Email\Write;
     use Eywa\Message\Flash\Flash;
-    use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Session\ArraySession;
     use Eywa\Session\Session;
@@ -274,14 +273,6 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function auth(string $table): Auth
-        {
-            return new Auth(new Session(), new Model($table));
-        }
-
-        /**
-         * @inheritDoc
-         */
         public function session(): SessionInterface
         {
             return cli() ? new ArraySession() : new Session();
@@ -364,9 +355,9 @@ namespace Eywa\Application {
         /**
          * @inheritDoc
          */
-        public function sql(string $table): Sql
+        public function sql(string $table): Records
         {
-            return new Sql($this->ioc(Connect::class), $table);
+            return (new Sql($this->ioc(Connect::class)))->from($table);
         }
 
         /**
@@ -394,14 +385,6 @@ namespace Eywa\Application {
         {
             $x = new ReflectionClass($validator);
             return $x->getMethod('handle')->invokeArgs($x->newInstance(), [$bag]);
-        }
-
-        /**
-         * @inheritDoc
-         */
-        public function model(string $table, int $limit = 20): Model
-        {
-            return new Model($table, $limit);
         }
     }
 }

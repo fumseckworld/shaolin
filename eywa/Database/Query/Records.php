@@ -16,10 +16,21 @@ namespace Eywa\Database\Query {
          * constructor.
          *
          * @param Connect $connect
-         * @param string $table
          *
          */
-        public function __construct(Connect $connect, string $table);
+        public function __construct(Connect $connect);
+
+
+        /**
+         *
+         * Define the table name
+         *
+         * @param string $table
+         *
+         * @return Records
+         *
+         */
+        public function from(string $table): Records;
 
         /**
          *
@@ -265,6 +276,15 @@ namespace Eywa\Database\Query {
          *
          */
         public function to(int $mode): array;
+
+        /**
+         *
+         * Truncate a table
+         *
+         * @return bool
+         *
+         */
+        public function truncate(): bool;
 
         /**
          *

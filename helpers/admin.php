@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Eywa\Application\App;
 use Eywa\Configuration\Config;
 use Eywa\Database\Connexion\Connect;
+use Eywa\Database\Query\Records;
 use Eywa\Database\Query\Sql;
 use Eywa\Debug\Dumper;
 use Eywa\Exception\Kedavra;
@@ -317,16 +318,16 @@ if (!function_exists('sql')) {
      *
      * @param string $table
      *
-     * @return Sql
+     * @return Records
      *
      * @throws Kedavra
      * @throws Exception
      *
      */
-    function sql(string $table): Sql
+    function sql(string $table): Records
     {
         $connexion = ioc(Connect::class);
-        return (new Sql($connexion, $table));
+        return (new Sql($connexion))->from($table);
     }
 }
 

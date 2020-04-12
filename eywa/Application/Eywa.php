@@ -9,7 +9,7 @@ namespace Eywa\Application {
     use Eywa\Cache\CacheInterface;
     use Eywa\Collection\Collect;
     use Eywa\Database\Connexion\Connect;
-    use Eywa\Database\Model\Model;
+    use Eywa\Database\Query\Records;
     use Eywa\Database\Query\Sql;
     use Eywa\Detection\Detect;
     use Eywa\Exception\Kedavra;
@@ -18,7 +18,6 @@ namespace Eywa\Application {
     use Eywa\Http\Request\Request;
     use Eywa\Http\Response\Response;
     use Eywa\Message\Email\Write;
-    use Eywa\Security\Authentication\Auth;
     use Eywa\Security\Crypt\Crypter;
     use Eywa\Session\SessionInterface;
     use Redis;
@@ -88,19 +87,6 @@ namespace Eywa\Application {
          */
         public function write(string $subject, string $message, string $author_email, string $to): Write;
 
-
-        /**
-         *
-         *
-         * Get a model
-         *
-         * @param string $table
-         * @param int $limit
-         *
-         * @return Model
-         *
-         */
-        public function model(string $table, int $limit = 20): Model;
 
         /**
          *
@@ -194,12 +180,12 @@ namespace Eywa\Application {
          *
          * @param string $table
          *
-         * @return Sql
+         * @return Records
          *
          * @throws Kedavra
          *
          */
-        public function sql(string $table): Sql;
+        public function sql(string $table): Records;
 
 
         /**
@@ -211,19 +197,6 @@ namespace Eywa\Application {
          */
         public function session(): SessionInterface;
 
-        /**
-         *
-         *
-         * Get and instance of autentication
-         *
-         * @param string $table
-         *
-         * @return Auth
-         *
-         * @throws Kedavra
-         * @throws Exception
-         */
-        public function auth(string $table): Auth;
 
         /**
          *

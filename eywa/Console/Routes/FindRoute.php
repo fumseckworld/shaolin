@@ -3,6 +3,7 @@
 namespace Eywa\Console\Routes {
 
 
+    use Eywa\Database\Query\Records;
     use Eywa\Database\Query\Sql;
     use Eywa\Exception\Kedavra;
     use PDO;
@@ -20,7 +21,7 @@ namespace Eywa\Console\Routes {
         /**
          *
          */
-        private Sql $sql;
+        private Records $sql;
 
 
         /**
@@ -34,7 +35,7 @@ namespace Eywa\Console\Routes {
         {
             parent::__construct($name);
 
-            $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'));
+            $this->sql =  (new Sql(connect(SQLITE, base('routes', 'web.sqlite3'))))->from('routes');
         }
 
         protected function configure(): void

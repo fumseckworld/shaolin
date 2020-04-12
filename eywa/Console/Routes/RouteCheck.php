@@ -35,7 +35,14 @@ namespace Eywa\Console\Routes {
 
             $urls = collect();
             $names = collect();
-            foreach ((new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->get() as $route) {
+            foreach (
+                (new Sql(
+                    connect(
+                        SQLITE,
+                        base('routes', 'web.sqlite3')
+                    )
+                ))->from('routes')->get() as $route
+            ) {
                 $directory = $route->directory;
 
                 if (def($directory) && !is_dir(base('app', 'Controllers', $directory))) {

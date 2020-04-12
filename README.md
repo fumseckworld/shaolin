@@ -16,3 +16,5 @@ It's a library to make mvc website morer simply and is the core of [**Shaolin**]
     * [**Show next version changes**](https://github.com/fumseckworld/eywa/compare/pandora...omaticayas)
     * [**List of tasks**](https://trello.com/b/ZMKB0OiD)
     * [**Documentation**](https://github.com/fumseckworld/documentation/blob/master/DOCUMENTATION.md)
+    * [**Chat**](https://discord.gg/tFjSEh)
+    * [**Donate**](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=6MTDRTCWG2L82&source=url)

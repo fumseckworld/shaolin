@@ -240,7 +240,13 @@ if (!function_exists('route')) {
      */
     function route(string $route, array $args = []): string
     {
-        $x = (new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes'))->where('name', EQUAL, $route)->get();
+        $x = (new Sql(
+            connect(
+                SQLITE,
+                base('routes', 'web.sqlite3')
+            )
+        ))->from('routes')
+            ->where('name', EQUAL, $route)->get();
 
         is_true(not_def($x), true, sprintf('The %s route has not been found', $route));
 

@@ -19,7 +19,7 @@ namespace Eywa\Database\Query {
          * The name of the table
          *
          */
-        private string $table;
+        private string $table = '';
 
         /**
          *
@@ -95,17 +95,25 @@ namespace Eywa\Database\Query {
          *
          */
         private string $records = '';
-        private string $from;
+        private string $from = '';
 
 
         /**
          * @inheritDoc
          */
-        public function __construct(Connect $connect, string $table)
+        public function __construct(Connect $connect)
+        {
+            $this->connect = $connect;
+        }
+
+        /**
+         * @inheritDoc
+         */
+        public function from(string $table): Records
         {
             $this->table = $table;
             $this->from = sprintf('FROM %s', $table);
-            $this->connect = $connect;
+            return  $this;
         }
 
         /**
@@ -393,12 +401,12 @@ namespace Eywa\Database\Query {
                 $bool->push(
                     $this->connexion()->set(
                         sprintf(
-                            'DELETE FROM %s WHERE %s = %d',
+                            'DELETE FROM %s WHERE %s = %s',
                             $this->table,
                             $id,
-                            $record->$id
+                            '?'
                         )
-                    )->execute()
+                    )->with($record->$id)->execute()
                 );
             }
 
@@ -622,6 +630,44 @@ namespace Eywa\Database\Query {
         public function to(int $mode): array
         {
             return $this->connexion()->set($this->sql())->get($mode);
+        }
+
+        /**
+         *
+         * Truncate a table
+         *
+         * @return bool
+         *
+         * @throws Kedavra
+         *
+         */
+        public function truncate(): bool
+        {
+            switch ($this->connexion()->driver()) {
+                case MYSQL:
+                    return $this->connexion()->set(
+                        sprintf(
+                            'TRUNCATE TABLE %s',
+                            $this->table
+                        )
+                    )->execute();
+                case POSTGRESQL:
+                    return $this->connexion()->set(
+                        sprintf(
+                            'TRUNCATE TABLE %s RESTART IDENTITY',
+                            $this->table
+                        )
+                    )->execute();
+                case SQLITE:
+                    return $this->connexion()->set(
+                        sprintf(
+                            'DELETE  FROM %s',
+                            $this->table
+                        )
+                    )->execute() && $this->connexion()->set('VACUUM')->execute();
+                default:
+                    return false;
+            }
         }
     }
 }

@@ -34,7 +34,15 @@ namespace Eywa\Console\Routes {
 
             $file = 'route';
             $entry = collect();
-            $sql = new Sql(connect(SQLITE, base('routes', 'web.sqlite3')), 'routes');
+            $sql = (new Sql(
+                connect(
+                    SQLITE,
+                    base(
+                        'routes',
+                        'web.sqlite3'
+                    )
+                )
+            ))->from('routes');
             $methods = collect(METHOD_SUPPORTED)->for('strtolower')->all();
 
             $names = call_user_func(function () use ($sql) {
