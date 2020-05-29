@@ -1,6 +1,6 @@
 {
-  "name": "eywa/eywa",
-  "description": "A library to make mvc websites more simply",
+  "name": "shaolin/shaolin",
+  "description": "A modern and customizable mvc framework",
   "type": "library",
   "license": "GPL-3.0-or-later",
   "require": {
