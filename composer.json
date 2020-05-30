@@ -1,6 +1,6 @@
 {
   "name": "shaolin/shaolin",
-  "description": "A library to build a modern and personalisable mvc framework",
+  "description": "A library to build a modern and customizable mvc framework",
   "type": "library",
   "license": "GPL-3.0-or-later",
   "require": {
@@ -66,7 +66,6 @@
     "codedungeon/phpunit-result-printer": "^0.27.0",
     "friendsofphp/php-cs-fixer": "^2.16",
     "squizlabs/php_codesniffer": "^3.5",
-    "php-parallel-lint/php-parallel-lint": "^1.1",
-    "php-coveralls/php-coveralls": "^2.2"
+    "php-parallel-lint/php-parallel-lint": "^1.1"
   }
 }

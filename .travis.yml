@@ -15,18 +15,16 @@ os:
   - linux
 
 before_install:
-  - sudo apt-get update &&  sudo apt-get install -y redis-server php-redis php-mysql php-pgsql php-sqlite3 composer sqlite3 apache2 php php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-memcache php-memcached  php-mbstring openssl php-intl
+  - sudo apt-get update &&  sudo apt-get install -y redis-server php-redis php-mysql php-pgsql php-sqlite3 composer sqlite3 apache2 php php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-mbstring openssl php-intl
   - phpenv config-add php.ini
 addons:
   mariadb: '10.0'
   postgresql: '9.4'
 
 services:
-  - memcached
   - mysql
   - postgresql
   - redis-server
-
 
 install:  
   - composer install
@@ -34,5 +32,3 @@ install:
 
 script:
   - ./vendor/bin/grumphp run
-after_success:
-  - travis_retry php vendor/bin/php-coveralls -v
