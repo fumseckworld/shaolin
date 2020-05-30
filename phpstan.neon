@@ -2,13 +2,9 @@ parameters:
 
   level: 8
   paths:
-    - eywa
+    - imperium
     - helpers
   excludes_analyse:
       - tests/*
   checkMissingIterableValueType: false
   checkGenericClassInNonGenericObjectType: false
-  ignoreErrors:
-      -
-          message: '#Parameter 1 $argument of class ReflectionClass constructor expects class-string<T of object>|T of object, string given.#'
-          path: eywa

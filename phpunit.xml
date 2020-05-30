@@ -7,7 +7,6 @@
          convertNoticesToExceptions="true"
          convertWarningsToExceptions="true"
          processIsolation="false"
-
          stopOnFailure="true"
          stopOnError="true"
          stopOnIncomplete="true"
@@ -23,7 +22,7 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">eywa/</directory>
+            <directory suffix=".php">imperium/</directory>
             <directory suffix=".php">helpers/</directory>
         </whitelist>
     </filter>

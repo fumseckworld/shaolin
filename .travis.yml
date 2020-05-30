@@ -1,0 +1,34 @@
+language: php
+
+php:
+  - 7.4.2
+  - 7.4.3
+  - 7.4.4
+  - 7.4.5
+  - 7.4.6
+
+branches:
+  only:
+  - omaticayas
+  - pandora
+os:
+  - linux
+  - osx
+  - windows
+
+before_install:
+  - apt-update && apt-get -y install redis php-redis php-mysql php-pgsql php-sqlite3 composer mariadb-server postgresql sqlite3 apache2 php  php-evenement php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-memcache  php-mbstring openssl php-intl
+
+services:
+  - memcached
+  - mysql
+  - postgresql
+  - redis-server
+
+
+install:  
+  - composer install
+  - cp .env.example .env
+
+script:
+  - ./vendor/bin/grumphp run
