@@ -1,11 +1,1 @@
-# How to use ?
-
-`mkdir your_project`
-
-`cd your_project`
-
-`composer init`
-
-`composer require shaolin/shaolin`
-
-`vendor/bin/shaolin init`
+[![Build Status](https://travis-ci.com/fumseckworld/imperium.svg?branch=omaticayas)](https://travis-ci.com/fumseckworld/imperium)
