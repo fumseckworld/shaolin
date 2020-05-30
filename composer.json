@@ -1,11 +1,8 @@
 {
   "name": "imperium/imperium",
   "type": "library",
-  "description": "A library to make mvc websites more simply",
+  "description": "A library to build a modern and personalisable mvc framework",
   "license": "GPL-3.0-or-later",
-  "support": {
-    "source": "https://git.fumseck.eu/cgit/imperium/"
-  },
   "authors": [
     {
       "name": "Willy Micieli",
@@ -52,13 +49,13 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Testing\\": "tests/"
+      "Testing\\": "tests/",
+      "App\\": "app/"
     }
   },
   "autoload": {
     "psr-4": {
-      "Imperium\\": "imperium/",
-      "App\\": "app/"
+      "Imperium\\": "imperium/"
     },
     "files": [
       "helpers/web.php",
