@@ -16,7 +16,7 @@ os:
   - osx
 
 before_install:
-  - apt-get update && apt-get -y install redis php-redis php-mysql php-pgsql php-sqlite3 composer mariadb-server postgresql sqlite3 apache2 php  php-evenement php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-memcache  php-mbstring openssl php-intl
+  - sudo apt-get update &&  sudo apt-get -y install redis php-redis php-mysql php-pgsql php-sqlite3 composer mariadb-server postgresql sqlite3 apache2 php  php-evenement php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-memcache  php-mbstring openssl php-intl
 
 services:
   - memcached
