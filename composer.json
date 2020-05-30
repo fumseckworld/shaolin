@@ -1,6 +1,6 @@
 {
   "name": "shaolin/shaolin",
-  "description": "A modern and customizable mvc framework",
+  "description": "A library to build a modern and personalisable mvc framework",
   "type": "library",
   "license": "GPL-3.0-or-later",
   "require": {
@@ -48,7 +48,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Eywa\\": "eywa/"
+      "Imperium\\": "imperium/"
     },
     "files": [
       "helpers/web.php",
