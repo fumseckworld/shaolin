@@ -30,5 +30,8 @@ install:
   - composer install
   - cp .env.example .env
 
+before_script:
+  - mysql -e 'CREATE DATABASE eywa;'
+  - psql -c 'create database eywa;' -U postgres
 script:
   - ./vendor/bin/grumphp run

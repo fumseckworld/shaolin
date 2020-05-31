@@ -5,7 +5,7 @@ vendor
 .env
 coverage
 *.key
-*sqlite3*
+*.db
 doc
 wanted
 .php_cs.cache
