@@ -43,9 +43,11 @@ The next version will be out on **december**.
 
 # Documentation
 
+[**Online documentation**](https://fumseckworld.github.io/imperium-documentation/)
+
 The documentation can be downloaded by the command :
 
-`composer create-project shaolin/shaolin documentation`
+`composer create-project imperium/doc documentation`
 
 But it's also automatically downloaded by the `./vendor/bin/imperium init` command
 
