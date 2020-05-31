@@ -85,7 +85,7 @@ namespace Imperium\Database {
                 env('DEVELOP_DB_DRIVER', 'mysql'),
                 env('DEVELOP_DB_NAME', 'ikran'),
                 env('DEVELOP_DB_USERNAME', 'ikran'),
-                env('DEVELOP_DB_PASSWORD', 'ikran'),
+                env('DEVELOP_DB_PASSWORD', ''),
                 env('DEVELOP_DB_HOST', 'localhost')
             );
         }
@@ -103,7 +103,7 @@ namespace Imperium\Database {
                 env('DB_DRIVER', 'mysql'),
                 env('DB_NAME', 'eywa'),
                 env('DB_USERNAME', 'eywa'),
-                env('DB_PASSWORD', 'eywa'),
+                env('DB_PASSWORD', ''),
                 env('DB_HOST', 'localhost')
             );
         }
@@ -121,7 +121,7 @@ namespace Imperium\Database {
                 env('TESTS_DB_DRIVER', 'mysql'),
                 env('TESTS_DB_NAME', 'vortex'),
                 env('TESTS_DB_USERNAME', 'vortex'),
-                env('TESTS_DB_PASSWORD', 'vortex'),
+                env('TESTS_DB_PASSWORD', ''),
                 env('TESTS_DB_HOST', 'localhost')
             );
         }
