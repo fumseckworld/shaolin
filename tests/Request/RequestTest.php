@@ -191,12 +191,12 @@ class RequestTest extends TestCase
         $this->assertEquals('jour-de-gloire', $request->args()->get('slug'));
     }
 
-    public function test_secure()
+    public function testSecure()
     {
         $this->assertFalse((new Request())->secure());
     }
 
-    public function test_ip()
+    public function testIp()
     {
         $this->assertEquals('127.0.0.1', (new Request())->ip());
         $this->assertTrue((new Request())->local());
