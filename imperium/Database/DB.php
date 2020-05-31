@@ -16,13 +16,15 @@
  *
  */
 
+declare(strict_types=1);
+
 namespace Imperium\Database {
 
     use PDO;
     use Imperium\Exception\Kedavra;
     use PDOException;
 
-/**
+    /**
      *
      * Represent a connection between php code and a database.
      *

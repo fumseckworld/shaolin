@@ -42,10 +42,22 @@ if (!file_exists('base')) {
     {
         $base = php_sapi_name() == 'cli' ? strval(realpath('.')) : dirname(strval(realpath('./')));
 
-        if (!empty($values)) {
+        if (def($values)) {
             foreach ($values as $dir) {
                 if (def($dir)) {
-                    $base .=  $base .  DIRECTORY_SEPARATOR . $dir;
+                    if (def(strstr($dir, DIRECTORY_SEPARATOR))) {
+                        foreach (explode(DIRECTORY_SEPARATOR, $dir) as $x) {
+                            $base .= DIRECTORY_SEPARATOR . $x;
+                            if (!is_dir($base)) {
+                                mkdir($base);
+                            }
+                        }
+                    } else {
+                        $base .=   DIRECTORY_SEPARATOR . $dir;
+                        if (!is_dir($base)) {
+                            mkdir($base);
+                        }
+                    }
                 }
             }
         }
