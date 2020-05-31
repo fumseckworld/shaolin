@@ -27,6 +27,7 @@ It's a library to build a modern and customizable mvc framework
 * [**Source code**](https://github.com/fumseckworld/imperium)
 * [**Bugs Reports**](https://github.com/fumseckworld/imperium/issues)
 * [**Collaboration**](https://github.com/fumseckworld/imperium/pulls)
+* [**Code coverage**](https://fumseckworld.github.io/imperium-coverage/)
 
 # How contribute  ? 
 
@@ -52,3 +53,4 @@ The documentation can be downloaded by the command :
 But it's also automatically downloaded by the `./vendor/bin/imperium init` command
 
 **I'm writing the documentation** so of course, she will be **available on december** like imperium.
+
