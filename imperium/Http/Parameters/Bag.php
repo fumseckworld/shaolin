@@ -193,9 +193,12 @@ namespace Imperium\Http\Parameters {
 
         /**
          *
-         * Get the digits of the parameter value.
+         * Get the digits of a parameter value.
          *
-         * @return string The filtered value.
+         * @param string $key       The parameter key
+         * @param string $default   The parameter default value.
+         *
+         * @return string
          *
          */
         public function digits(string $key, string $default = ''): string
@@ -230,7 +233,10 @@ namespace Imperium\Http\Parameters {
          *
          * Get the alphabetic characters of the parameter value.
          *
-         * @return string The filtered value.
+         * @param string $key       The parameter key
+         * @param string $default   The parameter default value
+         *
+         * @return string
          *
          */
         public function alpha(string $key, string $default = ''): string
@@ -242,7 +248,10 @@ namespace Imperium\Http\Parameters {
          *
          * Get the the alphabetic characters and digits of the parameter value.
          *
-         * @return string The filtered value.
+         * @param string $key       The parameter key
+         * @param string $default   The default parameter value
+         *
+         * @return string
          *
          */
         public function alnum(string $key, string $default = ''): string
