@@ -133,7 +133,9 @@ namespace Imperium\Http\Parameters {
          * return true if exist or false on not exist.
          *
          * @param string $key
+         *
          * @return boolean
+         *
          */
         public function has(string $key): bool
         {
@@ -142,7 +144,7 @@ namespace Imperium\Http\Parameters {
 
         /**
          *
-         * Destroy a parameters by this key.
+         * Destroy a parameter by this key.
          *
          * Return true if value has been destroyed or false on failure.
          *
@@ -211,8 +213,6 @@ namespace Imperium\Http\Parameters {
          *
          * Filter a key
          *
-         *
-         *
          * @param string    $key        The parameter key to filter.
          * @param mixed     $default    The default parameter value.
          * @param integer   $filter     The filter constant.
@@ -224,7 +224,6 @@ namespace Imperium\Http\Parameters {
         public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, array $options = [])
         {
             $value = $this->get($key, $default);
-
 
             return filter_var($value, $filter, $options);
         }
@@ -287,7 +286,7 @@ namespace Imperium\Http\Parameters {
          *
          * Returns the number of parameters.
          *
-         * @return int The number of parameters.
+         * @return int
          */
         public function count(): int
         {
