@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Imperium\Http\Response {
 
-
     use Imperium\Exception\Kedavra;
 
     /**
@@ -337,7 +336,7 @@ namespace Imperium\Http\Response {
          */
         public function setStatus(int $status): Response
         {
-        
+
             $this->status = $status;
 
             return $this;
