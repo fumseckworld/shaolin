@@ -2,7 +2,9 @@
 
 namespace Testing\Request;
 
+use ArrayIterator;
 use Directory;
+use Imperium\Http\Parameters\Bag;
 use Imperium\Http\Request;
 use PHPUnit\Framework\TestCase;
 
@@ -205,5 +207,85 @@ class RequestTest extends TestCase
     public function testMake()
     {
         $this->assertInstanceOf(Request::class, Request::make());
+    }
+
+    public function testHas()
+    {
+        $request = new Request();
+        $key = 'a';
+        $value = 'a';
+        $this->assertFalse($request->query()->has($key));
+        $this->assertTrue($request->query()->add([$key => $value])->has($key));
+    }
+
+    public function testInt()
+    {
+        $this->assertEquals(300, (new Request(['soldiers' => '300']))->request()->int('soldiers'));
+    }
+
+    public function testDigits()
+    {
+        $this->assertEquals(
+            300,
+            (new Request(
+                [
+                    'paragraph' =>
+                    'Leonidas the king of sparte has been gone to war with 300 spartiates to defend sparte'
+                ]
+            ))->request()->digits('paragraph')
+        );
+    }
+    public function testAlpha()
+    {
+        $this->assertEquals(
+            'Leonidasthekingofspartehasbeengonetowarwithspartiatestodefendsparte',
+            (new Request(
+                [
+                    'paragraph' =>
+                    'Leonidas the king of sparte has been gone to war with 300 spartiates to defend sparte'
+                ]
+            ))->request()->alpha('paragraph')
+        );
+    }
+    public function testAlnum()
+    {
+        $this->assertEquals('30days', (new Request(['days' => '30 days']))->request()->alnum('days'));
+    }
+
+    public function testBoolean()
+    {
+        $this->assertTrue((new Request(['a' => '1']))->request()->bool('a'));
+        $this->assertFalse((new Request(['a' => '0']))->request()->bool('a'));
+    }
+
+    public function testValues()
+    {
+        $this->assertEquals(['a', 'b', 'c'], (new Request(['a', 'b', 'c']))->request()->values());
+    }
+
+    public function testKeys()
+    {
+        $this->assertEquals([0, 1, 2], (new Request(['a', 'b', 'c']))->request()->keys());
+    }
+
+    public function testDestroy()
+    {
+        $this->assertFalse((new Request())->request()->destroy('a'));
+        $this->assertTrue((new Request(['a' => 152]))->request()->destroy('a'));
+    }
+    public function testSet()
+    {
+        $this->assertInstanceOf(Bag::class, (new Request())->request()->set('a', 'b'));
+        $this->assertEquals(2, (new Request())->query()->set('a', 2)->get('a'));
+    }
+
+    public function testCount()
+    {
+        $this->assertEquals(1, (new Request())->request()->set('a', 'a')->count());
+    }
+
+    public function testGetIterator()
+    {
+        $this->assertInstanceOf(ArrayIterator::class, (new Request())->request()->getIterator());
     }
 }

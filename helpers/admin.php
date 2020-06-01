@@ -48,14 +48,31 @@ if (!file_exists('base')) {
                     if (def(strstr($dir, DIRECTORY_SEPARATOR))) {
                         foreach (explode(DIRECTORY_SEPARATOR, $dir) as $x) {
                             $base .= DIRECTORY_SEPARATOR . $x;
-                            if (!is_dir($base)) {
-                                mkdir($base);
+
+                            if (!file_exists($base)) {
+                                if (def(strstr($base, '.'))) {
+                                    if (!file_exists($base)) {
+                                        touch($base);
+                                    }
+                                } else {
+                                    if (!is_dir($base)) {
+                                        mkdir($base);
+                                    }
+                                }
                             }
                         }
                     } else {
                         $base .=   DIRECTORY_SEPARATOR . $dir;
-                        if (!is_dir($base)) {
-                            mkdir($base);
+                        if (!file_exists($base)) {
+                            if (def(strstr($base, '.'))) {
+                                if (!file_exists($base)) {
+                                    touch($base);
+                                }
+                            } else {
+                                if (!is_dir($base)) {
+                                    mkdir($base);
+                                }
+                            }
                         }
                     }
                 }

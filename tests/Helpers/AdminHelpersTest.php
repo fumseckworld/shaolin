@@ -2,6 +2,7 @@
 
 namespace Testing\Helpers;
 
+use Faker\Provider\Base;
 use PHPUnit\Framework\TestCase;
 
 class AdminHelpersTest extends TestCase
@@ -25,6 +26,17 @@ class AdminHelpersTest extends TestCase
         $this->assertTrue(rmdir(base('bidon', 'alexandre')));
         $this->assertTrue(is_dir(base('alexandre')));
         $this->assertTrue(rmdir(base('alexandre')));
+        $this->assertTrue(file_exists(base('bidon', 'a', 'b', 'c', 'home.html')));
+        unlink(base('bidon', 'a', 'b', 'c', 'home.html'));
+        rmdir(base('bidon', 'a', 'b', 'c'));
+        rmdir(base('bidon', 'a', 'b'));
+        rmdir(base('bidon', 'a'));
+
+        $this->assertTrue(file_exists(base('bidon/a/b/c/home.html')));
+        unlink(base('bidon', 'a', 'b', 'c', 'home.html'));
+        rmdir(base('bidon', 'a', 'b', 'c'));
+        rmdir(base('bidon', 'a', 'b'));
+        rmdir(base('bidon', 'a'));
     }
 
     public function testEnv()

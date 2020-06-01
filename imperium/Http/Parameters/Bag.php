@@ -19,6 +19,11 @@
 declare(strict_types=1);
 
 namespace Imperium\Http\Parameters {
+
+    use ArrayIterator;
+    use Countable;
+    use IteratorAggregate;
+
     /**
      *
      * Represent the content of a type of request.
@@ -32,21 +37,45 @@ namespace Imperium\Http\Parameters {
      * @property array  $data All request values.
      *
      */
-    class Bag
+    class Bag implements IteratorAggregate, Countable
     {
-
-
         /**
          *
          * Bag constructor.
          *
-         * @param array<mixed> $data
+         * @param array $data
          *
          */
         public function __construct(array $data)
         {
             $this->data = $data;
         }
+
+        /**
+         *
+         * Get all parameter keys
+         *
+         * @return array
+         *
+         **/
+        public function keys(): array
+        {
+            return array_keys($this->data);
+        }
+
+        /**
+         *
+         * Get all parameter values
+         *
+         * @return array
+         *
+         **/
+        public function values(): array
+        {
+            return array_values($this->data);
+        }
+
+
         /**
          *
          * Get the value of the key if exist.
@@ -66,7 +95,164 @@ namespace Imperium\Http\Parameters {
 
         /**
          *
-         * Return all values inside the container.
+         * Set a value for a specific key.
+         *
+         * @param string $key   The bag key.
+         * @param mixed  $value The bag value.
+         *
+         * @return Bag
+         *
+         */
+        public function set(string $key, $value): Bag
+        {
+            $this->data[$key] = $value;
+
+            return $this;
+        }
+
+        /**
+         *
+         * Add new content in the parameters.
+         *
+         * @param array $parameters The parameter to add.
+         *
+         * @return Bag
+         *
+         */
+        public function add(array $parameters = []): Bag
+        {
+            $this->data = array_replace($this->data, $parameters);
+
+            return $this;
+        }
+
+        /**
+         *
+         * Check if a key has been define.
+         *
+         * return true if exist or false on not exist.
+         *
+         * @param string $key
+         * @return boolean
+         */
+        public function has(string $key): bool
+        {
+            return array_key_exists($key, $this->data);
+        }
+
+        /**
+         *
+         * Destroy a parameters by this key.
+         *
+         * Return true if value has been destroyed or false on failure.
+         *
+         * @param string $key The bag key to remove.
+         *
+         * @return boolean
+         *
+         */
+        public function destroy(string $key): bool
+        {
+            if ($this->has($key)) {
+                unset($this->data[$key]);
+                return !$this->has($key);
+            }
+
+            return false;
+        }
+
+        /**
+         *
+         * Return the parameter value converted in an integer.
+         *
+         * @param string $key The parameter key.
+         * @param integer $default The default value.
+         *
+         * @return integer
+         *
+         */
+        public function int(string $key, int $default = 0): int
+        {
+            return intval($this->get($key, $default));
+        }
+
+        /**
+         *
+         * Return the parameter value converted to boolean.
+         *
+         * @param string $key The parameter key.
+         * @param boolean $default The default value.
+         *
+         * @return boolean
+         *
+         */
+        public function bool(string $key, bool $default = false): bool
+        {
+            return $this->filter($key, $default, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        /**
+         *
+         * Get the digits of the parameter value.
+         *
+         * @return string The filtered value.
+         *
+         */
+        public function digits(string $key, string $default = ''): string
+        {
+            return str_replace(['-', '+'], '', $this->filter($key, $default, FILTER_SANITIZE_NUMBER_INT));
+        }
+
+
+        /**
+         *
+         * Filter a key
+         *
+         *
+         *
+         * @param string    $key        The parameter key to filter.
+         * @param mixed     $default    The default parameter value.
+         * @param integer   $filter     The filter constant.
+         * @param array     $options    The filter option.
+         *
+         * @return mixed
+         *
+         */
+        public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, array $options = [])
+        {
+            $value = $this->get($key, $default);
+
+
+            return filter_var($value, $filter, $options);
+        }
+
+        /**
+         *
+         * Get the alphabetic characters of the parameter value.
+         *
+         * @return string The filtered value.
+         *
+         */
+        public function alpha(string $key, string $default = ''): string
+        {
+            return preg_replace('/[^[:alpha:]]/', '', $this->get($key, $default));
+        }
+
+        /**
+         *
+         * Get the the alphabetic characters and digits of the parameter value.
+         *
+         * @return string The filtered value.
+         *
+         */
+        public function alnum(string $key, string $default = ''): string
+        {
+            return preg_replace('/[^[:alnum:]]/', '', $this->get($key, $default));
+        }
+
+        /**
+         *
+         * Return all parameters.
          *
          * @return array
          *
@@ -74,6 +260,29 @@ namespace Imperium\Http\Parameters {
         public function all(): array
         {
             return $this->data;
+        }
+
+        /**
+         *
+         * Returns an iterator for parameters.
+         *
+         * @return ArrayIterator An ArrayIterator instance.
+         *
+         */
+        public function getIterator(): ArrayIterator
+        {
+            return new ArrayIterator($this->data);
+        }
+
+        /**
+         *
+         * Returns the number of parameters.
+         *
+         * @return int The number of parameters.
+         */
+        public function count(): int
+        {
+            return count($this->data);
         }
     }
 }
