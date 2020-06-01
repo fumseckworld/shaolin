@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace Imperium\Http {
+namespace Imperium\Http\Request {
 
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Parameters\UploadedFile;
