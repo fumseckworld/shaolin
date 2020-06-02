@@ -20,112 +20,148 @@ declare(strict_types=1);
 
 namespace Imperium\Container {
 
-     use Closure;
-     use Imperium\Exception\Kedavra;
+    use Closure;
+    use DI\Container;
+    use DI\ContainerBuilder;
+    use DI\DependencyException;
+    use DI\NotFoundException;
+    use InvalidArgumentException;
 
-     /**
-      *
-      * Represent the core of the container of dependencies injection.
-      *
-      * This package contains all useful methods to manage the container content.
-      *
-      * It's the parent class of container class.
-      *
-      * @author Willy Micieli <fumseckworld@fumseck.eu>
-      * @package Imperium\Container\Ioc
-      * @version 12
-      * @property array $make      All initialization information to make always a new instance.
-      * @property array $init      All initialization information to make and save the instance.
-      * @property array $symbol    All initialization information to make and save the instance based on a word.
-      */
-    class Ioc
+    /**
+     *
+     * Represent the core of the container of dependencies injection.
+     *
+     * This package contains all useful methods to manage the container content.
+     *
+     * It's the parent class of container class.
+     *
+     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @package Imperium\Container\Ioc
+     * @version 12
+     *
+     * @property Container  $container  The container instance.
+     *
+     */
+    final class Ioc
     {
 
-         /**
-          * The array key to access at the key of one class inside the container for a specific mode.
-          */
-        public const KEY = 'key';
 
-         /**
-          *
-          * The array key to access at the function to initialize one class
-          * inside the container for a specific mode.
-          *
-          */
-        public const CALLBACK = 'callable';
+        
+        private ?Container $container  = null;
 
-         /**
-          *
-          * The of the array key to access at the function arguments
-          * to initialize one class inside the container for a specific mode.
-          *
-          */
-        public const ARGV = 'arguments';
-
-         /**
-          *
-          * Add information inside the container by a specific type.
-          *
-          * MAKE   => Save information to remake always a new instance.
-          *
-          * INIT   => Save information to save the instance.
-          *
-          * SYMBOL => Save information to save the instance based on a word.
-          *
-          * Only this types are accepted.
-          *
-          *
-          * @param integer $type
-          * @param string $key
-          * @param Closure $callback
-          * @param array $args
-          *
-          * @throws Kedavra
-          *
-          * @return Ioc
-          *
-          */
-        public function add(int $type, string $key, Closure $callback, array $args = []): Ioc
+        /**
+         *
+         * Get an instance of an object inside the container.
+         *
+         * @param string $key The container key.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return object
+         *
+         */
+        final public function get(string $key): object
         {
-            if (!def($type, $key, $callback)) {
-                throw new Kedavra('Parameters type, key, callback cannot be not define');
-            }
-            switch ($type) {
-                case MAKE:
-                    if (!class_exists($key)) {
-                         throw new Kedavra('Class not found');
-                    }
-                    $this->make[] = [
-                         self::KEY => $key,
-                         self::CALLBACK => $callback,
-                         self::ARGV => $args
-                    ];
-                    break;
-                case INIT:
-                    if (!class_exists($key)) {
-                        throw new Kedavra('Class not found');
-                    }
-                     $this->init[] = [
-                          self::KEY => $key,
-                          self::CALLBACK => $callback,
-                          self::ARGV => $args
-                     ];
-                    break;
-                case SYMBOL:
-                    if (!ctype_alpha($key)) {
-                         throw new Kedavra('This mode should no take the namespace but a symbol');
-                    }
+            return $this->container()->get($key);
+        }
 
-                     $this->symbol[] = [
-                          self::KEY => $key,
-                          self::CALLBACK => $callback,
-                          self::ARGV => $args
-                     ];
-                    break;
-                default:
-                    throw new Kedavra('The mode is invalid please use the correct mode');
+        /**
+         *
+         * Define an object or a value in the container.
+         *
+         * @param string $key The container key.
+         * @param mixed  $value The container value.
+         *
+         * @return Ioc
+         *
+         */
+        final public function set(string $key, $value): Ioc
+        {
+            $this->container()->set($key, $value);
+            return $this;
+        }
+
+        /**
+         *
+         * Call the given function using the given parameters
+         *
+         * Missing parameters will be resolved from the container.
+         *
+         * @param Closure $callback
+         * @param array $args
+         *
+         * @return mixed
+         *
+         */
+        final public function call(Closure $callback, array $args = [])
+        {
+            return $this->container()->call($callback, $args);
+        }
+
+        /**
+         *
+         * Make always a new instance
+         *
+         * @param string $key The container key.
+         * @param array  $args All parameters.
+         *
+         * @throws InvalidArgumentException The name parameter must be of type string.
+         * @throws DependencyException Error while resolving the entry.
+         * @throws NotFoundException No entry found for the given name.
+         * @return object
+         *
+         */
+        final public function make(string $key, array $args = []): object
+        {
+            return $this->container()->make($key, $args);
+        }
+
+
+        /**
+         *
+         * Check if a key exist in the container.
+         *
+         * @param string $key The key to check
+         *
+         * @throws InvalidArgumentException
+         *
+         * @return boolean
+         *
+         */
+        final public function has(string $key): bool
+        {
+            return $this->container()->has($key);
+        }
+
+        /**
+         *
+         * Return the instance of the container.
+         *
+         * @return Container
+         *
+         **/
+        final public function ioc(): Container
+        {
+            return $this->container();
+        }
+
+        /**
+         * Undocumented function
+         *
+         * @return Container
+         */
+        final private function container(): Container
+        {
+            if (is_null($this->container)) {
+                $c = new ContainerBuilder();
+                $c->addDefinitions(base('ioc', 'admin.php'), base('ioc', 'web.php'));
+                $c->useAnnotations(true);
+                $c->useAutowiring(true);
+                $c = $c->build();
+                $this->container = $c;
             }
-             return $this;
+            return $this->container;
         }
     }
 }

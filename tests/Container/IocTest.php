@@ -2,6 +2,7 @@
 
 namespace Testing\Container;
 
+use DI\Container;
 use Imperium\Container\Ioc;
 use Imperium\Exception\Kedavra;
 use Imperium\Http\Request\Request;
@@ -17,55 +18,36 @@ class IocTest extends TestCase
         $this->ioc = new Ioc();
     }
 
-    public function testException()
+    public function testCall()
     {
-        $this->expectException(Kedavra::class);
-        $this->expectExceptionMessage('The mode is invalid please use the correct mode');
-        $this->ioc->add(8, 'a', function () {
-        });
-        $this->ioc->add(81, 'a', function () {
-        });
-    }
-    public function testMakeNotFound()
-    {
-        $this->expectException(Kedavra::class);
-        $this->expectExceptionMessage('Class not found');
-        $this->ioc->add(MAKE, 'A', function () {
-        });
+        $this->assertEquals('hello', $this->ioc->call(function () {
+            return 'hello';
+        }));
     }
 
-    public function testInitNotFound()
+    public function testSet()
     {
-        $this->expectException(Kedavra::class);
-        $this->expectExceptionMessage('Class not found');
-        $this->ioc->add(INIT, 'A', function () {
-        });
+        $this->assertInstanceOf(Ioc::class, $this->ioc->set('a', 'b')->set('b', 'a'));
     }
 
-    public function testEmpty()
+    public function testHas()
     {
-        $this->expectException(Kedavra::class);
-        $this->expectExceptionMessage('Parameters type, key, callback cannot be not define');
-        $this->ioc->add(0, '', function () {
-        });
+        $this->assertFalse($this->ioc->has('a'));
+        $this->assertTrue($this->ioc->set('a', 'b')->has('a'));
     }
 
-    public function testSymbolClass()
+    public function testGet()
     {
-        $this->expectException(Kedavra::class);
-        $this->expectExceptionMessage('This mode should no take the namespace but a symbol');
-        $this->ioc->add(SYMBOL, Request::class, function () {
-        });
+        $this->assertInstanceOf(Response::class, $this->ioc->get(Response::class));
     }
 
-    public function testValid()
+    public function testMake()
     {
-        $this->assertInstanceOf(
-            Ioc::class,
-            $this->ioc->add(MAKE, Response::class, function () {
-            })->add(INIT, Request::class, function () {
-            })->add(SYMBOL, 'router', function () {
-            })
-        );
+        $this->assertInstanceOf(Response::class, $this->ioc->make(Response::class));
+    }
+
+    public function testIoc()
+    {
+        $this->assertInstanceOf(Container::class, $this->ioc->ioc());
     }
 }

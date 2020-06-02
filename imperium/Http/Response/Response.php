@@ -35,7 +35,7 @@ namespace Imperium\Http\Response {
      * @property    int             $status         The response status code.
      * @property    string          $content        The response content.
      * @property    array           $headers        All response headers.
-     * @property    string          $url            The redirect url.
+     * @property    string          $url     aa       The redirect url.
      * @property    array           $status_texts   All http status text.
      *
      *

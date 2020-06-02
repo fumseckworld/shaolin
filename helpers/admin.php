@@ -49,6 +49,23 @@ if (!file_exists('base')) {
                         foreach (explode(DIRECTORY_SEPARATOR, $dir) as $x) {
                             $base .= DIRECTORY_SEPARATOR . $x;
 
+                            if (strcmp($x, '*') !== 0) {
+                                if (!file_exists($base)) {
+                                    if (def(strstr($base, '.'))) {
+                                        if (!file_exists($base)) {
+                                            touch($base);
+                                        }
+                                    } else {
+                                        if (!is_dir($base)) {
+                                            mkdir($base);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $base .=   DIRECTORY_SEPARATOR . $dir;
+                        if (strcmp($dir, '*') !== 0) {
                             if (!file_exists($base)) {
                                 if (def(strstr($base, '.'))) {
                                     if (!file_exists($base)) {
@@ -58,19 +75,6 @@ if (!file_exists('base')) {
                                     if (!is_dir($base)) {
                                         mkdir($base);
                                     }
-                                }
-                            }
-                        }
-                    } else {
-                        $base .=   DIRECTORY_SEPARATOR . $dir;
-                        if (!file_exists($base)) {
-                            if (def(strstr($base, '.'))) {
-                                if (!file_exists($base)) {
-                                    touch($base);
-                                }
-                            } else {
-                                if (!is_dir($base)) {
-                                    mkdir($base);
                                 }
                             }
                         }
