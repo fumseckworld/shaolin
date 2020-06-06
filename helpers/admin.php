@@ -1,5 +1,23 @@
 <?php
 
+/**
+ * Copyright (C) <2020>  <Willy Micieli>
+ *
+ * This program is free software : you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https: //www.gnu.org/licenses/>.
+ *
+ */
+
+use Imperium\Configuration\Config;
+use Imperium\Configuration\Personalization\Imperium;
 use Imperium\Environment\Env;
 
 if (!function_exists('def')) {
@@ -9,7 +27,7 @@ if (!function_exists('def')) {
      *
      * Check if a values are define an not empty.
      *
-     * @param mixed ...$values
+     * @param mixed ...$values The values to check.
      *
      * @return boolean
      *
@@ -33,7 +51,7 @@ if (!file_exists('base')) {
      *
      * Can generate a path from the base by the directories and the files name.
      *
-     * @param string ...$values
+     * @param string ...$values The directories or files values.
      *
      * @return string
      *
@@ -87,6 +105,7 @@ if (!file_exists('base')) {
 }
 
 if (!function_exists('env')) {
+
     /**
      *
      * Get an environment variable.
@@ -94,8 +113,8 @@ if (!function_exists('env')) {
      * If the variable is not define
      * the default value is returned.
      *
-     * @param string $key
-     * @param mixed  $default
+     * @param string $key       The environment key.
+     * @param mixed  $default   The default value if not found.
      *
      * @return mixed
      *
@@ -104,5 +123,42 @@ if (!function_exists('env')) {
     {
         $value = Env::get($key);
         return def($value) ? $value : $default;
+    }
+}
+
+if (!function_exists('config')) {
+
+    /**
+     *
+     * Get a config value
+     *
+     * @param string $file  The config filename.
+     * @param string $key   The config key value.
+     *
+     *
+     * @return mixed
+     *
+     */
+    function config(string $file, string $key)
+    {
+        return (new Config($file, $key))->get();
+    }
+}
+
+if (!function_exists('imperium')) {
+
+    /**
+     *
+     * Get a personalized config value
+     *
+     * @param string $key     The personalization key.
+     * @param string $default The default value.
+     *
+     * @return mixed
+     *
+     */
+    function imperium(string $key, string $default = '')
+    {
+        return (new Imperium($key))->get($default);
     }
 }

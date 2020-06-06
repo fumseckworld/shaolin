@@ -28,7 +28,7 @@ namespace Imperium\Http\Response {
      *
      * This package contains all useful methods to interact with the response content.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Response\Response
      * @version 12
      *

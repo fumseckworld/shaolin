@@ -2,41 +2,28 @@
 
 namespace Testing\Connect;
 
-use Imperium\Database\DB;
+use Imperium\Database\Connection\Connect;
 use PHPUnit\Framework\TestCase;
 
 class ConnectTest extends TestCase
 {
+    private Connect $db;
+    public function setUp(): void
+    {
+        $this->db = new Connect();
+    }
+
     public function testInstance()
     {
-        $this->assertInstanceOf(DB::class, DB::dev());
-        $this->assertInstanceOf(DB::class, DB::prod());
-        $this->assertInstanceOf(DB::class, DB::test());
+        $this->assertInstanceOf(Connect::class, $this->db);
     }
 
-    public function testDriver()
+    public function testGet()
     {
-        $this->assertTrue(DB::prod()->mysql());
-        $this->assertFalse(DB::prod()->postgresql());
-        $this->assertFalse(DB::prod()->sqlite());
-
-        $this->assertTrue(DB::dev()->postgresql());
-        $this->assertFalse(DB::dev()->mysql());
-        $this->assertFalse(DB::dev()->sqlite());
-
-        $this->assertTrue(DB::test()->sqlite());
-        $this->assertFalse(DB::test()->mysql());
-        $this->assertFalse(DB::test()->postgresql());
+        $this->assertEmpty($this->db->get('SHOW TABLES'));
     }
-
-    public function testExecAndGet()
+    public function testExec()
     {
-        $this->assertTrue(DB::prod()->exec('SHOW TABLES'));
-        $this->assertTrue(DB::dev()->exec('SELECT * FROM pg_database'));
-        $this->assertTrue(DB::test()->exec("SELECT name FROM sqlite_master WHERE type='table';"));
-        $this->assertEmpty(DB::prod()->get('SHOW TABLES'));
-        $this->assertEmpty(DB::dev()->get('SELECT * FOR'));
-        $this->assertNotEmpty(DB::dev()->get('SELECT * FROM pg_database'));
-        $this->assertEmpty(DB::test()->get("SELECT name FROM sqlite_master WHERE type='table';"));
+        $this->assertTrue($this->db->exec('SHOW TABLES'));
     }
 }

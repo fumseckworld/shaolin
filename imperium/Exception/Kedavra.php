@@ -24,7 +24,7 @@ namespace Imperium\Exception {
      *
      * All exceptions throws by imperium.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli<fumseck@fumseck.org>
      * @package Imperium\Exception\Kedavra
      * @version 12
      *

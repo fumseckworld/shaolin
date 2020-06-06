@@ -30,7 +30,7 @@ namespace Imperium\Http\Request {
      *
      * This package contains all useful methods to interact with the router request.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Request\ServerRequest
      * @version 12
      *

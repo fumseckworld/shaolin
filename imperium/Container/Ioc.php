@@ -35,19 +35,25 @@ namespace Imperium\Container {
      *
      * It's the parent class of container class.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Container\Ioc
      * @version 12
      *
-     * @property Container  $container  The container instance.
+     * @property Container|null  $container The container instance.
      *
      */
     final class Ioc
     {
-
-
         
-        private ?Container $container  = null;
+        /**
+         *
+         * Initialize the default value
+         *
+         */
+        public function __construct()
+        {
+            $this->container = null;
+        }
 
         /**
          *
@@ -147,15 +153,20 @@ namespace Imperium\Container {
         }
 
         /**
-         * Undocumented function
+         *
+         * Build the container.
          *
          * @return Container
+         *
          */
         final private function container(): Container
         {
+
+
             if (is_null($this->container)) {
+                $dir = imperium('container-directory', 'ioc');
                 $c = new ContainerBuilder();
-                $c->addDefinitions(base('ioc', 'admin.php'), base('ioc', 'web.php'));
+                $c->addDefinitions(base($dir, 'admin.php'), base($dir, 'web.php'));
                 $c->useAnnotations(true);
                 $c->useAutowiring(true);
                 $c = $c->build();

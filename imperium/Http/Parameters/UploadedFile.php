@@ -31,7 +31,7 @@ namespace Imperium\Http\Parameters {
      *
      * This package contains all methods useful to manage $_FILES contents.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Parameters\UploadedFile
      * @version 12
      *

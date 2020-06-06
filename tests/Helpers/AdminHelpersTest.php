@@ -45,4 +45,9 @@ class AdminHelpersTest extends TestCase
         $this->assertNull(env('a'));
         $this->assertNotNull(env('DB_USERNAME'));
     }
+
+    public function testImperium()
+    {
+        $this->assertEquals('a', imperium('', 'a'));
+    }
 }

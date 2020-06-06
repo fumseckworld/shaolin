@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace Imperium\Database {
+namespace Imperium\Database\Connection {
 
     use PDO;
     use Imperium\Exception\Kedavra;
@@ -30,8 +30,8 @@ namespace Imperium\Database {
      *
      * Groups off all method useful to execute queries.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
-     * @package Imperium\Database\DB
+     * @author Willy Micieli <fumseck@fumseck.org>
+     * @package Imperium\Database\Connection\Connect
      * @version 12
      *
      * @property string  $driver    The current pdo driver value
@@ -39,12 +39,10 @@ namespace Imperium\Database {
      * @property string  $username  The current pdo username value
      * @property string  $password  The current pdo password value
      * @property string  $host      The current pdo hostname value
-     * @property ?PDO     $pdo       The pdo instance
+     * @property ?PDO    $pdo       The pdo instance
      */
-    class DB
+    class Connect
     {
-
-    
 
         /**
          *
@@ -59,11 +57,11 @@ namespace Imperium\Database {
          * @param string $password      The database password
          * @param string $host          The database hostname
          */
-        final private function __construct(
-            string $driver,
-            string $base,
-            string $username,
-            string $password,
+        final public function __construct(
+            string $driver = '',
+            string $base = '',
+            string $username = '',
+            string $password = '',
             string $host = 'localhost'
         ) {
             $this->driver = $driver;
@@ -78,10 +76,10 @@ namespace Imperium\Database {
          *
          * Call the constructor with the development environment information.
          *
-         * @return DB
+         * @return Connect
          *
          */
-        public static function dev(): DB
+        private function dev(): Connect
         {
             return new static(
                 env('DEVELOP_DB_DRIVER', 'mysql'),
@@ -96,10 +94,10 @@ namespace Imperium\Database {
          *
          * Call the constructor with the production environment information.
          *
-         * @return DB
+         * @return Connect
          *
          */
-        public static function prod(): DB
+        private function prod(): Connect
         {
             return new static(
                 env('DB_DRIVER', 'mysql'),
@@ -114,10 +112,10 @@ namespace Imperium\Database {
          *
          * Call the constructor with the test environment information.
          *
-         * @return DB
+         * @return Connect
          *
          */
-        public static function test(): DB
+        private function test(): Connect
         {
             return new static(
                 env('TESTS_DB_DRIVER', 'mysql'),
@@ -145,13 +143,13 @@ namespace Imperium\Database {
         public function exec(string $sql, array $args = []): bool
         {
             $stm = $this->pdo()->prepare($sql);
-            
+
             $success = $stm->execute($args);
-            
+
             $stm->closeCursor();
-            
+
             $stm = null;
-            
+
             return $success;
         }
 
@@ -181,8 +179,87 @@ namespace Imperium\Database {
             $data = $stm->fetchAll($output_mode);
             $stm->closeCursor();
             $stm = null;
-            
+
             return is_bool($data) ? [] : $data;
+        }
+        /**
+         *
+         * Get the correct environment.
+         *
+         * @throws Kedavra
+         *
+         * @return Connect
+         *
+         */
+        private function env(): Connect
+        {
+            $env = config('mode', 'connection');
+            if (strcmp($env, 'prod') === 0) {
+                return $this->prod();
+            } elseif (strcmp($env, 'dev') === 0) {
+                return $this->dev();
+            }
+            return $this->test();
+        }
+        /**
+         *
+         * Get the pdo driver used.
+         *
+         * @return string
+         *
+         */
+        public function driver(): string
+        {
+            return $this->driver;
+        }
+
+
+        /**
+         *
+         * Return the current username used.
+         *
+         * @return string
+         *
+         */
+        public function username(): string
+        {
+            return $this->username;
+        }
+
+        /**
+         *
+         * Return the current password used.
+         *
+         * @return string
+         *
+         */
+        public function password(): string
+        {
+            return $this->password;
+        }
+
+        /**
+         *
+         * Return the current base used.
+         *
+         * @return string
+         *
+         */
+        public function base(): string
+        {
+            return $this->base;
+        }
+
+        /**
+         *
+         * Return the current hostname used.
+         *
+         * @return string
+         *
+         */
+        public function hostname(): string
+        {
+            return $this->host;
         }
 
         /**
@@ -196,7 +273,7 @@ namespace Imperium\Database {
          */
         public function mysql(): bool
         {
-            return strcmp($this->driver, 'mysql') == 0;
+            return strcmp($this->env()->driver(), MYSQL) == 0;
         }
 
         /**
@@ -210,7 +287,7 @@ namespace Imperium\Database {
          */
         public function postgresql(): bool
         {
-            return strcmp($this->driver, 'pgsql') == 0;
+            return strcmp($this->env()->driver(), POSTGRESQL) == 0;
         }
 
 
@@ -225,7 +302,7 @@ namespace Imperium\Database {
          */
         public function sqlite(): bool
         {
-            return strcmp($this->driver, 'sqlite') == 0;
+            return strcmp($this->env()->driver(), SQLITE) == 0;
         }
 
         /**
@@ -234,32 +311,33 @@ namespace Imperium\Database {
          *
          * @return PDO
          */
-        private function pdo(): PDO
+        protected function pdo(): PDO
         {
+
             if (is_null($this->pdo)) {
-                if ($this->mysql()) {
+                if ($this->env()->mysql()) {
                     $this->pdo =
                         new PDO(
                             sprintf(
                                 'mysql:host=%s;port=3306;dbname=%s;charset=UTF8',
-                                $this->host,
-                                $this->base
+                                $this->env()->hostname(),
+                                $this->env()->base()
                             ),
-                            $this->username,
-                            $this->password
+                            $this->env()->username(),
+                            $this->env()->password()
                         );
-                } elseif ($this->postgresql()) {
+                } elseif ($this->env()->postgresql()) {
                     $this->pdo = new PDO(
                         sprintf(
                             'pgsql:host=%s;port=5432;dbname=%s;options=\'--client_encoding=UTF8\'',
-                            $this->host,
-                            $this->base
+                            $this->env()->hostname(),
+                            $this->env()->base()
                         ),
-                        $this->username,
-                        $this->password
+                        $this->env()->username(),
+                        $this->env()->password()
                     );
                 } else {
-                    $this->pdo =  new PDO(sprintf('sqlite:%s', $this->base), '', '');
+                    $this->pdo =  new PDO(sprintf('sqlite:%s', $this->env()->base()), '', '');
                 }
 
                 $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

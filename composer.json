@@ -52,7 +52,6 @@
       "Imperium\\": "imperium/"
     },
     "files": [
-      "helpers/web.php",
       "helpers/const.php",
       "helpers/admin.php"
     ]

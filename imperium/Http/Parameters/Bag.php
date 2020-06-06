@@ -30,7 +30,7 @@ namespace Imperium\Http\Parameters {
      *
      * This package contains all useful methods to get a request type values.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Parameters\Bag
      * @version 12
      *

@@ -29,7 +29,7 @@ namespace Imperium\Environment {
      *
      * Get multiples environment infos.
      *
-     * @author Willy Micieli <fumseckworld@fumseck.eu>
+     * @author Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Environment\Env
      * @version 12
      *

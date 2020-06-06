@@ -16,55 +16,43 @@
  *
  */
 
-declare(strict_types=1);
+namespace Imperium\Database\Found {
 
-namespace Imperium\Http\Response {
-
+    use Imperium\Database\Model\Model;
     use Imperium\Exception\Kedavra;
-    use Imperium\Http\Response\Response;
 
     /**
      *
-     * Represent an redirect response to redirect user on the website.
+     * Represent a value for a search.
      *
-     * This package contains all useful methods to interact with this redirection.
+     * This package contains all useful methods to get search values.
      *
      * @author Willy Micieli <fumseck@fumseck.org>
-     * @package Imperium\Http\Response\RedirectResponse
+     * @package Imperium\Database\Found\Search
      * @version 12
      *
-     * @property    Response    $response The response instance.
      *
-     *
-     */
-    class RedirectResponse
+     **/
+    class Search extends Model
     {
+
 
         /**
          *
-         * RedirectResponse constructor.
+         * Get all results inside the table by the search value.
          *
-         * @param string $url
-         * @param int $status
+         * @param mixed  $value The value to search.
+         * @param string $table The table name.
+         *
          *
          * @throws Kedavra
          *
-         */
-        public function __construct(string $url, int $status = 301)
+         * @return array
+         *
+         **/
+        public function found($value, string $table): array
         {
-            $this->response = new Response('', $url, $status, ['Location' => $url]);
-        }
-
-        /**
-         *
-         * Send the response
-         *
-         * @return Response
-         *
-         */
-        public function send(): Response
-        {
-            return $this->response->send();
+            return $this->search($table, $value);
         }
     }
 }
