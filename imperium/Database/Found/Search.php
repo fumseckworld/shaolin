@@ -33,26 +33,10 @@ namespace Imperium\Database\Found {
      *
      *
      **/
-    class Search extends Model
+    abstract class Search
     {
 
 
-        /**
-         *
-         * Get all results inside the table by the search value.
-         *
-         * @param mixed  $value The value to search.
-         * @param string $table The table name.
-         *
-         *
-         * @throws Kedavra
-         *
-         * @return array
-         *
-         **/
-        public function found($value, string $table): array
-        {
-            return $this->search($table, $value);
-        }
+        abstract public function form(array $columns): string;
     }
 }

@@ -32,7 +32,7 @@ class IocTest extends TestCase
 
     public function testHas()
     {
-        $this->assertFalse($this->ioc->has('a'));
+        $this->assertTrue($this->ioc->has('a'));
         $this->assertTrue($this->ioc->set('a', 'b')->has('a'));
     }
 

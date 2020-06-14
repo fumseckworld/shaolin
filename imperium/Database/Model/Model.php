@@ -20,7 +20,8 @@ namespace Imperium\Database\Model {
 
     use Closure;
     use Imperium\Database\Query\Sql;
-    use Imperium\Database\Table\Table;
+    use Imperium\Html\Pagination\Pagination;
+    use stdClass;
 
     /**
      *
@@ -35,28 +36,54 @@ namespace Imperium\Database\Model {
      * @version 12
      *
      **/
-    class Model extends Sql
+    abstract class Model
     {
+
+        /**
+         * The table name
+         */
+        protected static string $table = '';
+
+        /**
+         * The table prefix
+         */
+        protected static string $prefix = '';
+
+        /**
+         * The per page number
+         */
+        protected static int $limit = 24;
+
+        /**
+         *
+         * Method used to paginate all results inside the table.
+         *
+         * @param stdClass $record The current record.
+         *
+         * @return string
+         *
+         */
+        abstract public function each(stdClass $record): string;
 
 
         /**
          *
          * Search a value inside a table.
          *
-         * @param string    $table The table to analyse.
          * @param mixed     $value The value to search.
          *
          * @return array
          *
          */
-        public function search(string $table, $value): array
+        final public static function search($value): array
         {
-            if ($this->mysql() || $this->postgresql()) {
-                $columns = join(', ', $this->columns($table));
+            $x = app('connect');
+            if ($x->mysql() || $x->postgresql()) {
+                $columns = join(', ', app('table')->from(static::from())->columns());
 
                 $where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
-                $fields = $this->columns($table);
+                $fields = app('table')->from(static::from())->columns();
                 $end = end($fields);
                 $columns =  '';
                 foreach ($fields as $field) {
@@ -69,22 +96,21 @@ namespace Imperium\Database\Model {
                 $where = "WHERE $columns";
             }
 
-            return $this->get(sprintf('SELECT * FROM %s %s', $table, $where));
+            return $x->get(sprintf('SELECT * FROM %s %s', static::from(), $where));
         }
 
         /**
          *
          * Paginate the results for a page.
          *
-         * @param Closure $callback The prepare output callback.
-         * @param integer $page     The current page.
-         * @param integer $limit    The limit per page.
+         * @param integer $current_page     The current page.
          *
          * @return string
          *
          */
-        public function paginate(Closure $callback, int $page, int $limit): string
+        final public static function paginate(int $current_page): string
         {
+            $pagination = (new Pagination($current_page, static::$limit, static::all()))->render(static::$table);
             return '';
         }
 
@@ -98,7 +124,7 @@ namespace Imperium\Database\Model {
          * @return boolean
          *
          **/
-        public function update(int $id, array $values): bool
+        final public static function update(int $id, array $values): bool
         {
             return true;
         }
@@ -112,7 +138,7 @@ namespace Imperium\Database\Model {
          * @return boolean
          *
          */
-        public static function create(array $values): bool
+        final public static function create(array $values): bool
         {
             return true;
         }
@@ -121,15 +147,15 @@ namespace Imperium\Database\Model {
          *
          * Find a record by this identifier.
          *
-         * @param string  $table The table name.
          * @param integer $id The identifier.
          *
          * @return array
          *
          */
-        public function find(string $table, int $id): array
+        final public static function find(int $id): array
         {
-            return $this->where($this->primary($table), '=', $id)->results();
+            $sql = app('sql')->from(static::from());
+            return $sql->where($sql->primary(), '=', $id)->results();
         }
 
         /**
@@ -142,24 +168,49 @@ namespace Imperium\Database\Model {
          * @return array
          *
          */
-        public function different(string $column, $expected): array
+        final public static function different(string $column, $expected): array
         {
-            return $this->where($column, '!=', $expected)->results();
+            return app('sql')->where($column, '!=', $expected)->results();
         }
 
         /**
          *
          * Delete a record by this id.
          *
-         * @param string $table The table name.
          * @param integer $id The record identifier to delete.
          *
          * @return boolean
          *
          */
-        public function destroy(string $table, int $id): bool
+        final public static function destroy(int $id): bool
         {
-            return $this->where($this->primary($table), '=', $id)->delete();
+            $sql = app('sql')->from(static::from());
+            return  $sql->where($sql->primary(), '=', $id)->delete();
+        }
+
+
+        /**
+         *
+         * Count all records in the table
+         *
+         * @return integer
+         *
+         */
+        final public static function all(): int
+        {
+            return 1;
+        }
+
+        /**
+         *
+         * Get the complete table name.
+         *
+         * @return string
+         *
+         */
+        final private static function from(): string
+        {
+            return static::$prefix . static::$table;
         }
     }
 }

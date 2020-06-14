@@ -32,7 +32,7 @@ namespace Imperium\Database\Query {
      * @version 12
      *
      */
-    class Sql extends Table
+    class Sql
     {
 
         /**
@@ -223,9 +223,9 @@ namespace Imperium\Database\Query {
          */
         public function between(string $column, $begin, $end): Sql
         {
-
-            $begin = $this->pdo()->quote($begin);
-            $end = $this->pdo()->quote($end);
+            $pdo = app('connect')->pdo();
+            $begin = $pdo->quote($begin);
+            $end = $pdo->quote($end);
             $x = "WHERE $column BETWEEN $begin AND $end";
 
             return $this;

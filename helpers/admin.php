@@ -18,7 +18,9 @@
 
 use Imperium\Configuration\Config;
 use Imperium\Configuration\Personalization\Imperium;
+use Imperium\Container\Ioc;
 use Imperium\Environment\Env;
+use Imperium\Exception\Kedavra;
 
 if (!function_exists('def')) {
 
@@ -43,7 +45,7 @@ if (!function_exists('def')) {
     }
 }
 
-if (!file_exists('base')) {
+if (!function_exists('base')) {
 
     /**
      *
@@ -104,6 +106,23 @@ if (!file_exists('base')) {
     }
 }
 
+if (!function_exists('app')) {
+
+    /**
+     *
+     * Get an instance of a class.
+     *
+     * @param string $key THe class key.
+     *
+     * @return mixed
+     *
+     */
+    function app(string $key)
+    {
+        return (new Ioc())->get($key);
+    }
+}
+
 if (!function_exists('env')) {
 
     /**
@@ -134,14 +153,18 @@ if (!function_exists('config')) {
      *
      * @param string $file  The config filename.
      * @param string $key   The config key value.
-     *
+     * @param mixed  $default The default value if not exist.
      *
      * @return mixed
      *
      */
-    function config(string $file, string $key)
+    function config(string $file, string $key, $default = null)
     {
-        return (new Config($file, $key))->get();
+        try {
+            return (new Config($file, $key))->get();
+        } catch (Kedavra $e) {
+            return $default;
+        }
     }
 }
 

@@ -53,6 +53,7 @@
     },
     "files": [
       "helpers/const.php",
+      "helpers/web.php",
       "helpers/admin.php"
     ]
   },

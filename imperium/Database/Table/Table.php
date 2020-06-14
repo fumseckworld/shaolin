@@ -31,87 +31,118 @@ namespace Imperium\Database\Table {
      * @package Imperium\Database\Table\Table
      * @version 12
      *
+     * @property string $table      The table name.
+     * @property string $primary    The primary key.
+     * @property array  $columns    The table columns name.
+     *
      */
-    class Table extends Connect
+    class Table
     {
+
+        private ?string $primary = null;
+
+        private array $columns = [];
+
+        /**
+         *
+         * Set the table name to use.
+         *
+         * @param string $table The table name.
+         *
+         * @return Table
+         *
+         */
+        public function from(string $table): Table
+        {
+            $this->table = $table;
+            return $this;
+        }
 
         /**
          *
          * Return all columns inside a table.
          *
-         * @param string $table The tables to analyse.
-         *
          * @return array
          *
          */
-        public function columns(string $table): array
+        public function columns(): array
         {
-            $fields = [];
-            switch ($this->driver()) {
-                case MYSQL:
-                    foreach ($this->get("SHOW FULL COLUMNS FROM {$table}") as $column) {
-                        array_push($fields, $column->Field);
-                    }
-                    break;
-                case POSTGRESQL:
-                    foreach (
-                        $this->get(
-                            "SELECT column_name FROM information_schema.columns WHERE table_name ='{$table}'"
-                        ) as $column
-                    ) {
-                        array_push($fields, $column->column_name);
-                    }
-                    break;
-                case SQLITE:
-                    foreach ($this->get("PRAGMA table_info({$table})") as $column) {
-                        array_push($fields, $column->name);
-                    }
-                    break;
+            $x = app('connect');
+
+            if (empty($this->columns)) {
+                $fields = [];
+                switch ($x->driver()) {
+                    case MYSQL:
+                        foreach ($x->get("SHOW FULL COLUMNS FROM {$this->table}") as $column) {
+                            array_push($fields, $column->Field);
+                        }
+                        break;
+                    case POSTGRESQL:
+                        foreach (
+                            $x->get(
+                                "SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'"
+                            ) as $column
+                        ) {
+                            array_push($fields, $column->column_name);
+                        }
+                        break;
+                    case SQLITE:
+                        foreach ($x->get("PRAGMA table_info({$this->table})") as $column) {
+                            array_push($fields, $column->name);
+                        }
+                        break;
+                }
+                $this->columns = $fields;
             }
 
-            return $fields;
+            return $this->columns;
         }
 
         /**
          *
          * Get the primary key of the given table.
          *
-         * @param string $table The table name.
-         *
          * @throws Kedavra
          *
          * @return string
          *
          */
-        public function primary(string $table): string
+        public function primary(): string
         {
 
-            switch ($this->driver()) {
-                case MYSQL:
-                    foreach ($this->get("show columns from {$table} where `Key` = 'PRI';") as $key) {
-                        return $key->Field;
-                    }
-
-                    break;
-                case POSTGRESQL:
-                    foreach (
-                        $this->get(
-                            "select column_name FROM information_schema.key_column_usage WHERE table_name = '{$table}';"
-                        ) as $key
-                    ) {
-                        return $key->column_name;
-                    }
-
-                    break;
-                case SQLITE:
-                    foreach ($this->get("PRAGMA table_info({$table})") as $field) {
-                        if (def($field->pk)) {
-                            return $field->name;
+            if (is_null($this->primary)) {
+                $x = app('connect');
+                switch ($x->driver()) {
+                    case MYSQL:
+                        foreach ($x->get("show columns from {$this->table} where `Key` = 'PRI';") as $key) {
+                            $this->primary =  $key->Field;
                         }
-                    }
-                    break;
+
+                        break;
+                    case POSTGRESQL:
+                        foreach (
+                            $x->get(
+                                "select column_name FROM information_schema.key_column_usage 
+                                WHERE table_name = '{$this->table}';"
+                            ) as $key
+                        ) {
+                            $this->primary =  $key->column_name;
+                        }
+
+                        break;
+                    case SQLITE:
+                        foreach ($x->get("PRAGMA table_info({$this->table})") as $field) {
+                            if (def($field->pk)) {
+                                $this->primary =  $field->name;
+                            }
+                        }
+                        break;
+                }
+                if (is_null($this->primary)) {
+                    throw  new Kedavra('We have not found a primary key');
+                }
             }
-            throw  new Kedavra('We have not found a primary key');
+            return $this->primary;
         }
     }
 }

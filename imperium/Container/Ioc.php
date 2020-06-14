@@ -25,6 +25,10 @@ namespace Imperium\Container {
     use DI\ContainerBuilder;
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Imperium\Database\Connection\Connect;
+    use Imperium\Database\Query\Sql;
+    use Imperium\Database\Table\Table;
+    use Imperium\Environment\Env;
     use InvalidArgumentException;
 
     /**
@@ -44,17 +48,8 @@ namespace Imperium\Container {
      */
     final class Ioc
     {
-        
-        /**
-         *
-         * Initialize the default value
-         *
-         */
-        public function __construct()
-        {
-            $this->container = null;
-        }
 
+        private static ?Container $container = null;
         /**
          *
          * Get an instance of an object inside the container.
@@ -162,17 +157,21 @@ namespace Imperium\Container {
         final private function container(): Container
         {
 
-
-            if (is_null($this->container)) {
+            if (is_null(static::$container)) {
                 $dir = imperium('container-directory', 'ioc');
                 $c = new ContainerBuilder();
                 $c->addDefinitions(base($dir, 'admin.php'), base($dir, 'web.php'));
                 $c->useAnnotations(true);
                 $c->useAutowiring(true);
                 $c = $c->build();
-                $this->container = $c;
+                $c->set('sql', new Sql());
+                $c->set('table', new Table());
+                $c->set('connect', new Connect());
+                $c->set('env', new Env());
+            
+                static::$container = $c;
             }
-            return $this->container;
+            return static::$container;
         }
     }
 }
