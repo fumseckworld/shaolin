@@ -106,7 +106,64 @@ class CollectTest extends TestCase
         $this->assertEquals(['g', 'h', 'i'], collect($x)->after(2)->current());
     }
 
+    public function testValues()
+    {
+        $this->assertEquals(['a', 'b'], collect(['m' => 'a', 'z' => 'b'])->values()->all());
+        $this->assertEquals(['m', 'z'], collect(['m' => 'a', 'z' => 'b'])->keys()->all());
+    }
+    public function testJoin()
+    {
+        $this->assertEquals('a,b,c', collect(['a', 'b', 'c'])->join());
+    }
 
+    public function testMerge()
+    {
+        $this->assertEquals([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], collect([0, 1, 2, 3, 4])
+            ->merge([5, 6, 7])->merge([8, 9])->all());
+    }
+    public function testSet()
+    {
+        $this->assertEquals(['a', 'b'], collect()->set('a')->set('b')->all());
+    }
+
+    public function testClear()
+    {
+        $this->assertEmpty(collect(['a', 'b', 'c'])->clear()->all());
+    }
+
+    public function testPop()
+    {
+        $this->assertEmpty(collect([0, 1, 2, 3])->pop(4)->all());
+        $this->assertNotEmpty(collect([0, 1, 2, 3])->pop(3)->all());
+    }
+    public function testShuffle()
+    {
+        $this->assertNotEquals(['a', 'b', 'c'], \collect(['a', 'b', 'c'])->shuffle()->all());
+    }
+    public function testOk()
+    {
+        $this->assertTrue(collect()->ok());
+        $this->assertFalse(collect([true, false, true])->ok());
+    }
+    public function testHas()
+    {
+        $this->assertFalse(\collect()->has('a'));
+        $this->assertTrue(\collect()->hasNot('a'));
+        $this->assertTrue(\collect(['a' => 0])->has('a'));
+        $this->assertFalse(\collect(['a' => 0])->hasNot('a'));
+    }
+
+    public function testLoop()
+    {
+        $data = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+        $x = collect($data);
+        $x->rewind();
+        while ($x->valid()) {
+            $this->assertNotEmpty($x->current());
+            $this->assertIsInt($x->key());
+            $x->next();
+        }
+    }
     public function testSlice()
     {
         $data = ['a', 'b', 'b', 'c', 'c', 'c'];
