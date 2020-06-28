@@ -539,12 +539,12 @@ namespace Imperium\Collection {
          * Removes an item from the collection by its key
          *
          *
-         * @param array<mixed> $keys
+         * @param mixed $keys
          *
          * @return Collect
          *
          */
-        public function forget(array $keys): Collect
+        public function forget(...$keys): Collect
         {
             return  $this->del($keys);
         }
@@ -777,16 +777,17 @@ namespace Imperium\Collection {
          *
          * Add the values to the begin ot the array
          *
-         * @param mixed $value
+         * @param mixed $values
          *
          * @return Collect
          *
          */
-        public function stack($value): Collect
+        public function stack(...$values): Collect
         {
-            array_unshift($this->data, $value);
-
-            return $this->checkout($this->data);
+            foreach ($values as $value) {
+                array_unshift($this->data, $value);
+            }
+            return $this->checkout($this->all());
         }
 
         /**
@@ -993,10 +994,11 @@ namespace Imperium\Collection {
          * @return Collect
          *
          */
-        public function pop(): Collect
+        public function pop(int $size = 1): Collect
         {
-            array_pop($this->data);
-
+            for ($i = 0; $i < $size; $i++) {
+                array_pop($this->data);
+            }
             return $this->checkout($this->data);
         }
 
@@ -1113,6 +1115,40 @@ namespace Imperium\Collection {
         public function addObject(string $key, object $object): Collect
         {
             $this->data[$key] = serialize($object);
+            return $this;
+        }
+
+        /**
+         *
+         * Save a collection to be accessible more later.
+         *
+         * @param string $key The object key.
+         * @param Collect $object The object to save.
+         *
+         * @return Collect
+         *
+         */
+        public function addCollect(string $key, Collect $object): Collect
+        {
+            $this->data[$key] = $object;
+            return $this;
+        }
+
+        /**
+         *
+         * Get a collection saved.
+         *
+         * @param string $key The collection key.
+         *
+         * @return Collect
+         *
+         */
+        public function getCollect(string $key): Collect
+        {
+            if ($this->has($key)) {
+                $x = $this->get($key);
+                return $x instanceof Collect ? $x : $this;
+            }
             return $this;
         }
 

@@ -27,6 +27,7 @@ class CollectTest extends TestCase
             return "$os is better";
         };
         $this->assertEquals('linux is better', collect()->addCallback('os', $x, ['linux'])->call('os'));
+        $this->assertNull(\collect()->call('a'));
         $this->assertEquals('windows is better', collect()->addCallback('os', $x, ['windows'])->call('os'));
     }
 
@@ -39,6 +40,30 @@ class CollectTest extends TestCase
         $this->assertEquals(2, collect()->put('disk', $a)->get('disk'));
     }
 
+    public function testCollect()
+    {
+        $obj = new stdClass();
+        $a = function () {
+            return 0;
+        };
+        $b = function () {
+            return 255;
+        };
+        $this->assertInstanceOf(Collect::class, \collect()->getCollect(uniqid()));
+        $x = collect()->addCallback('success', $a)->addObject('class', $obj);
+        $z = collect()->addCallback('char', $b)->addObject('obj', $obj)->addCollect('old', $x);
+        $this->assertEquals(0, collect()->addCollect('data', $x)->getCollect('data')->call('success'));
+        $this->assertEquals(255, collect()
+            ->addCollect('old', $x)
+            ->addCollect('new', $z)->getCollect('new')->call('char'));
+        $this->assertInstanceOf(stdClass::class, collect()->addCollect('data', $x)
+            ->getCollect('data')->getObject('class'));
+    }
+
+    public function testToJson()
+    {
+        $this->assertNotEmpty(collect(['a' => 3])->json());
+    }
     public function testFor()
     {
         $this->assertEquals(
@@ -143,12 +168,35 @@ class CollectTest extends TestCase
     public function testGet()
     {
         $this->assertEquals('metal', collect(['classic', 'rap', 'metal'])->get(2));
+        $this->assertNull(collect(['classic', 'rap', 'metal'])->get(20));
+    }
+
+    public function testForget()
+    {
+        $a = \collect()->add('a')->add('b')->add('c');
+        $this->assertTrue($a->has(0));
+        $this->assertFalse($a->hasNot(0));
+        $this->assertFalse($a->forget(0)->has(0));
+        $this->assertTrue($a->forget(0)->hasNot(0));
     }
     public function testMaxAndMin()
     {
         $data = [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5];
         $this->assertEquals(5, collect($data)->max());
         $this->assertEquals(1, collect($data)->min());
+    }
+
+
+    public function testTake()
+    {
+        $data = [1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5];
+        $this->assertEquals([1, 2, 2], collect($data)->take(3)->all());
+    }
+
+    public function testStack()
+    {
+        $data = [0, 1, 2, 3, 4, 5];
+        $this->assertEquals($data, collect()->stack(5, 4, 3, 2, 1, 0)->all());
     }
 
     public function testEmpty()
