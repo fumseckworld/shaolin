@@ -400,7 +400,7 @@ if (!function_exists('base')) {
     function base(string ...$values): string
     {
         $base = cli() ? strval(realpath('.')) : dirname(strval(realpath('./')));
-        
+
         if (def($values)) {
             foreach ($values as $dir) {
                 if (def($dir)) {
@@ -442,6 +442,24 @@ if (!function_exists('base')) {
             }
         }
         return $base;
+    }
+}
+if (!function_exists('is_serial')) {
+    /**
+     *
+     * Check if a string is serialized
+     *
+     * @param mixed $x The string to analyse
+     *
+     * @return boolean
+     *
+     */
+    function is_serial($x): bool
+    {
+        if (!is_string($x)) {
+            return false;
+        }
+        return unserialize($x) !== false;
     }
 }
 

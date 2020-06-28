@@ -3,6 +3,7 @@
 namespace Testing\Collect;
 
 use Imperium\Collection\Collect;
+use Opis\Closure\SerializableClosure;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -18,6 +19,24 @@ class CollectTest extends TestCase
         $this->assertInstanceOf(Collect::class, collect(['id' => 1]));
         $this->assertInstanceOf(Collect::class, collect($obj));
         $this->assertEquals(['id' => 4, 'username' => 'willy'], collect($obj)->all());
+    }
+
+    public function testCall()
+    {
+        $x = function (string $os) {
+            return "$os is better";
+        };
+        $this->assertEquals('linux is better', collect()->addCallback('os', $x, ['linux'])->call('os'));
+        $this->assertEquals('windows is better', collect()->addCallback('os', $x, ['windows'])->call('os'));
+    }
+
+
+    public function testObject()
+    {
+        $obj = new stdClass();
+        $a = 2;
+        $this->assertInstanceOf(stdClass::class, collect()->addObj('os', $obj)->getObject('os'));
+        $this->assertEquals(2, collect()->put('disk', $a)->get('disk'));
     }
 
     public function testFor()

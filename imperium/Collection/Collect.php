@@ -21,7 +21,9 @@ declare(strict_types=1);
 namespace Imperium\Collection {
 
     use Closure;
+    use Imperium\Exception\Kedavra;
     use Iterator;
+    use Opis\Closure\SerializableClosure;
 
     /**
      *
@@ -342,7 +344,12 @@ namespace Imperium\Collection {
          */
         public function get($key)
         {
-            return $this->data[$key];
+            if ($this->has($key)) {
+                $x = $this->data[$key];
+
+                return $x;
+            }
+            return null;
         }
 
         /**
@@ -826,6 +833,21 @@ namespace Imperium\Collection {
             return $this->add($value, $key);
         }
 
+
+        /**
+         *
+         * Add a value accessible or not by a key
+         *
+         * @param mixed $value
+         * @param string $key
+         * @return Collect
+         */
+        public function add($value, string $key = ''): Collect
+        {
+            def($key) ? $this->data[$key] = $value : $this->data[] = $value;
+
+            return $this;
+        }
         /**
          *
          * Remove values or keys inside the array
@@ -1012,7 +1034,7 @@ namespace Imperium\Collection {
          *
          * Run callable function for each values  and keys in the array
          *
-         * @param callable $callable The function to use for each keys andvalues.
+         * @param callable $callable The function to use for each keys and values.
          *
          * @return Collect
          *
@@ -1080,21 +1102,92 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Append value to the array with optional key
+         * Save an object to be called more later.
          *
-         * @param mixed $value The value to add
-         * @param mixed $key The value's key
+         * @param string $key The object key.
+         * @param object $object The object to save.
          *
          * @return Collect
          *
          */
-        private function add($value, $key = ''): Collect
+        public function addObj(string $key, object $object): Collect
         {
-            not_def($key) ? $this->data[] = $value : $this->data[$key] = $value;
+            $this->data[$key] = serialize($object);
+            return $this;
+        }
+
+        /**
+         *
+         * Get the object instance.
+         *
+         * @param string $key The object key.
+         *
+         * @return object
+         *
+         */
+        public function getObject(string $key): object
+        {
+            return unserialize($this->data[$key]);
+        }
+        /**
+         *
+         * Save a callback to be called more later.
+         *
+         * @param string $key The callback key.
+         * @param Closure $value The callback code.
+         * @param array $args The callback arguments.
+         *
+         * @return Collect
+         *
+         */
+        public function addCallback(string $key, Closure $value, array $args = []): Collect
+        {
+            SerializableClosure::setSecretKey(env('SECURE_KEY'));
+            $this->data[$key] = serialize(new SerializableClosure($value));
+            $this->data["$key-args"] = $args;
 
             return $this;
         }
 
+        /**
+         *
+         * Get a callback saved in the collection.
+         *
+         * @param string $key The callback key.
+         *
+         * @return Closure
+         *
+         */
+        public function getCallback(string $key): Closure
+        {
+            return unserialize($this->get($key))->getClosure();
+        }
+
+        public function getCallbackArguments(string $key): array
+        {
+            return $this->data["$key-args"];
+        }
+
+        /**
+         *
+         * Call a callable function from the array.
+         *
+         * @param string $key The callback key.
+         *
+         * @return mixed
+         *
+         */
+        public function call(string $key)
+        {
+            if ($this->has($key)) {
+                SerializableClosure::setSecretKey(env('SECURE_KEY'));
+                return call_user_func_array(
+                    $this->getCallback($key),
+                    $this->getCallbackArguments($key)
+                );
+            }
+            return null;
+        }
         /**
          *
          * Remove a data by a key
