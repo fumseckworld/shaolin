@@ -1110,7 +1110,7 @@ namespace Imperium\Collection {
          * @return Collect
          *
          */
-        public function addObj(string $key, object $object): Collect
+        public function addObject(string $key, object $object): Collect
         {
             $this->data[$key] = serialize($object);
             return $this;
@@ -1127,8 +1127,9 @@ namespace Imperium\Collection {
          */
         public function getObject(string $key): object
         {
-            return unserialize($this->data[$key]);
+            return $this->has($key) ? unserialize($this->data[$key]) : $this;
         }
+
         /**
          *
          * Save a callback to be called more later.
@@ -1160,12 +1161,24 @@ namespace Imperium\Collection {
          */
         public function getCallback(string $key): Closure
         {
-            return unserialize($this->get($key))->getClosure();
+            $x = function () {
+            };
+
+            return $this->has($key) ?  unserialize($this->get($key))->getClosure() : $x;
         }
 
+        /**
+         *
+         * Get all callable arguments.
+         *
+         * @param string $key The callback key.
+         *
+         * @return array
+         *
+         */
         public function getCallbackArguments(string $key): array
         {
-            return $this->data["$key-args"];
+            return $this->has($key) ? $this->data["$key-args"] : [];
         }
 
         /**
@@ -1188,6 +1201,7 @@ namespace Imperium\Collection {
             }
             return null;
         }
+
         /**
          *
          * Remove a data by a key

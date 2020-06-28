@@ -35,7 +35,7 @@ class CollectTest extends TestCase
     {
         $obj = new stdClass();
         $a = 2;
-        $this->assertInstanceOf(stdClass::class, collect()->addObj('os', $obj)->getObject('os'));
+        $this->assertInstanceOf(stdClass::class, collect()->addObject('os', $obj)->getObject('os'));
         $this->assertEquals(2, collect()->put('disk', $a)->get('disk'));
     }
 
