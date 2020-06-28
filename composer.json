@@ -1,25 +1,10 @@
 {
-  "name": "shaolin/shaolin",
+  "name": "imperium/imperium",
   "description": "A library to build a modern and customizable mvc framework",
   "type": "library",
   "license": "GPL-3.0-or-later",
   "require": {
     "php": ">=7.4.2",
-    "predis/predis": "^1.1",
-    "symfony/console": "^5.0",
-    "symfony/yaml": "^4.0",
-    "filp/whoops": "^2.5",
-    "ocramius/proxy-manager": "^2.2",
-    "erusev/parsedown": "^1.7",
-    "scrivo/highlight.php": "^9.17",
-    "fzaninotto/faker": "^1.9",
-    "nesbot/carbon": "^2.27",
-    "symfony/process": "^5.0",
-    "sinergi/browser-detector": "^6.1",
-    "mobiledetect/mobiledetectlib": "^2.8",
-    "vlucas/phpdotenv": "^4.1",
-    "wapmorgan/file-type-detector": "^1.1",
-    "swiftmailer/swiftmailer": "^6.2",
     "ext-openssl": "*",
     "ext-gettext": "*",
     "ext-redis": "*",
@@ -29,14 +14,23 @@
     "ext-hash": "*",
     "ext-mbstring": "*",
     "ext-session": "*",
-    "maximebf/debugbar": "^1.16",
-    "php-di/php-di": "^6.1",
-    "doctrine/annotations": "^1.10"
+    "symfony/console": "^5.1",
+    "symfony/process": "^5.1",
+    "php-di/php-di": "^6.2",
+    "fzaninotto/faker": "^1.9",
+    "sinergi/browser-detector": "^6.1",
+    "mobiledetect/mobiledetectlib": "^2.8",
+    "vlucas/phpdotenv": "^5.0",
+    "filp/whoops": "^2.7",
+    "predis/predis": "^1.1",
+    "scrivo/highlight.php": "v9.18.1.1",
+    "erusev/parsedown": "^1.7",
+    "swiftmailer/swiftmailer": "^6.2"
   },
   "authors": [
     {
       "name": "Willy Micieli",
-      "email": "micieli@laposte.net"
+      "email": "fumseck@fumseck.org"
     }
   ],
   "autoload-dev": {
@@ -60,7 +54,7 @@
   "require-dev": {
     "symfony/var-dumper": "^5.0",
     "phpunit/phpunit": "9.0",
-    "phpro/grumphp": "^0.18.0",
+    "phpro/grumphp": "^0.19.1",
     "phpstan/phpstan": "^0.12.14",
     "maglnet/composer-require-checker": "^2.1",
     "infection/infection": "^0.15.3",
@@ -68,6 +62,6 @@
     "codedungeon/phpunit-result-printer": "^0.27.0",
     "friendsofphp/php-cs-fixer": "^2.16",
     "squizlabs/php_codesniffer": "^3.5",
-    "php-parallel-lint/php-parallel-lint": "^1.1"
+    "php-parallel-lint/php-parallel-lint": "^1.2"
   }
 }

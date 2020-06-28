@@ -17,13 +17,4 @@ class ConnectTest extends TestCase
     {
         $this->assertInstanceOf(Connect::class, $this->db);
     }
-
-    public function testGet()
-    {
-        $this->assertEmpty($this->db->get('SHOW TABLES'));
-    }
-    public function testExec()
-    {
-        $this->assertTrue($this->db->exec('SHOW TABLES'));
-    }
 }

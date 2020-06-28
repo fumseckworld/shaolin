@@ -39,13 +39,6 @@ class AdminHelpersTest extends TestCase
         rmdir(base('bidon', 'a'));
     }
 
-    public function testEnv()
-    {
-        $this->assertNotEmpty(env('DB_DRIVER'));
-        $this->assertNull(env('a'));
-        $this->assertNotNull(env('DB_USERNAME'));
-    }
-
     public function testImperium()
     {
         $this->assertEquals('a', imperium('', 'a'));

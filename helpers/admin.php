@@ -19,8 +19,347 @@
 use Imperium\Configuration\Config;
 use Imperium\Configuration\Personalization\Imperium;
 use Imperium\Container\Ioc;
-use Imperium\Environment\Env;
 use Imperium\Exception\Kedavra;
+use Imperium\Security\Hashing\Hash;
+
+if (!function_exists('validator_messages')) {
+
+    /**
+     *
+     * Get validation message
+     *
+     * @return string[]
+     *
+     */
+    function validator_messages(): array
+    {
+        $file = 'validator';
+
+        return [
+            VALIDATOR_EMAIL_NOT_VALID => config($file, 'email', 'The %s email is not a valid email'),
+            VALIDATOR_ARGUMENT_NOT_DEFINED => config($file, 'required', 'The %s argument is required'),
+            VALIDATOR_ARGUMENT_NOT_NUMERIC => config($file, 'digits', 'The %s argument is not a digit'),
+            VALIDATOR_ARGUMENT_NOT_UNIQUE => config($file, 'unique', 'The %s value is not unique inside the %s table'),
+            VALIDATOR_ARGUMENT_NOT_BETWEEN => config($file, 'between', 'The %s argument must be between %d and %d'),
+            VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => config($file, 'max', 'The %s argument is superior to %d'),
+            VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => config($file, 'min', 'The %s argument is inferior to %d'),
+            VALIDATOR_ARGUMENT_SLUG =>  config($file, 'slug', 'The %s is not a slug'),
+            VALIDATOR_ARGUMENT_SNAKE => config($file, 'snake', 'The %s is not a snake case string format'),
+            VALIDATOR_ARGUMENT_CAMEL_CASE => config($file, 'camel', 'The %s is not a camel case string format'),
+            VALIDATOR_ARGUMENT_ARRAY => config($file, 'array', 'The %s is not an array'),
+            VALIDATOR_ARGUMENT_BOOLEAN => config($file, 'boolean', 'The %s is not an boolean'),
+            VALIDATOR_ARGUMENT_IMAGE => config($file, 'image', 'The %s is not an image'),
+            VALIDATOR_ARGUMENT_JSON => config($file, 'json', 'The %s is not a json'),
+            VALIDATOR_ARGUMENT_STRING => config($file, 'string', 'The %s is not a string'),
+            VALIDATOR_ARGUMENT_URL => config($file, 'url', 'The %s is not an url'),
+            VALIDATOR_ARGUMENT_FLOAT => config($file, 'float', 'The %s is not a float'),
+            VALIDATOR_ARGUMENT_INT => config($file, 'int', 'The %s is not a int'),
+            VALIDATOR_ARGUMENT_MAC => config($file, 'mac', 'The %s is not a mac address'),
+            VALIDATOR_ARGUMENT_IPV4 => config($file, 'ipv4', 'The %s is not a valid ipv4 address'),
+            VALIDATOR_ARGUMENT_IPV6 => config($file, 'ipv6', 'The %s is not a valid ipv6 address'),
+            VALIDATOR_ARGUMENT_DOMAIN => config($file, 'domain', 'The %s is not a valid domain'),
+        ];
+    }
+}
+
+if (!function_exists('class_to_array')) {
+
+    /**
+     *
+     * Parse an object an return an array
+     *
+     * @param object $object
+     *
+     * @return array
+     *
+     */
+    function class_to_array(object $object): array
+    {
+        return json_decode(strval(json_encode($object)), true);
+    }
+}
+
+if (!function_exists('not_def')) {
+    /**
+     *
+     * Check if all values are not define
+     *
+     * @param array<int, mixed> $values
+     *
+     * @return bool
+     *
+     */
+    function not_def(...$values): bool
+    {
+        foreach ($values as $value) {
+            if (def($value)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+
+
+
+if (!function_exists('camel_to_snake')) {
+
+
+    /**
+     *
+     * Get a snake case string format with camel case format
+     *
+     * @param string $snake
+     *
+     * @return string
+     *
+     */
+    function camel_to_snake(string $snake): string
+    {
+        return strtolower(strval(preg_replace('/(?<!^)[A-Z]/', '_$0', $snake)));
+    }
+}
+
+if (!function_exists('is_snake')) {
+
+
+    /**
+     *
+     * check if string is a snake case
+     *
+     * @param string $snake
+     *
+     * @return bool
+     *
+     */
+    function is_snake(string $snake): bool
+    {
+        return preg_match("#^[a-z]([a-z_]+)$#", $snake) == 1;
+    }
+}
+
+if (!function_exists('is_slug')) {
+
+
+    /**
+     *
+     * check if string is a snake case
+     *
+     * @param string $slug
+     *
+     * @return bool
+     *
+     */
+    function is_slug(string $slug): bool
+    {
+        return preg_match("#^[a-z]([a-z0-9\-]+)$#", $slug) == 1;
+    }
+}
+
+if (!function_exists('sluglify')) {
+
+
+    /**
+     *
+     * convert a string to a slug
+     *
+     * @param string $slug the string to sluglify.
+     *
+     * @return string
+     *
+     */
+    function sluglify(string $slug): string
+    {
+        $space = function (string $x) {
+            return collect(explode(' ', $x))->for('trim')->for('strtolower')->join('-');
+        };
+
+        $point = function (string $point) {
+            $x = function ($x) {
+                return  str_replace(
+                    '__',
+                    '_',
+                    str_replace(
+                        '-',
+                        '_',
+                        str_replace(
+                            '--',
+                            '_',
+                            str_replace('.', '_', $x)
+                        )
+                    )
+                );
+            };
+
+            return collect(explode('_', call_user_func_array($x, [$point])))->join('-');
+        };
+        $comma = function (string $comma) {
+            $x = function ($x) {
+                return str_replace('-', '', str_replace(',', '_', $x));
+            };
+
+            return collect(explode('_', call_user_func_array($x, [$comma])))->join('-');
+        };
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+
+        if (def(strstr($slug, ' '))) {
+            $slug = call_user_func_array($space, [$slug]);
+        }
+
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+
+        if (def(strstr($slug, ','))) {
+            $slug = call_user_func_array($comma, [$slug]);
+        }
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+        if (def(strstr($slug, '.'))) {
+            $slug = call_user_func_array($point, [$slug]);
+        }
+
+        if (is_slug($slug)) {
+            return $slug;
+        }
+
+        return '';
+    }
+}
+
+if (!function_exists('is_camel')) {
+
+
+    /**
+     *
+     * convert a sing in a slug
+     *
+     * @param string $camel
+     *
+     * @return bool
+     *
+     */
+    function is_camel(string $camel): bool
+    {
+        return preg_match("#^[A-Z]([A-Za-z]+)$#", $camel) == 1;
+    }
+}
+if (!function_exists('snake_to_camel')) {
+
+
+    /**
+     *
+     * Get a camel case string format with snake case format
+     *
+     * @param string $snake
+     *
+     * @return string
+     *
+     */
+    function snake_to_camel(string $snake): string
+    {
+        return collect(explode('_', $snake))->for('ucfirst')->join('');
+    }
+}
+
+if (!function_exists('logged')) {
+    /**
+     * @return bool
+     */
+    function logged(): bool
+    {
+        return php_sapi_name() == 'cli' ? false : app('session')->has('user');
+    }
+}
+
+if (!function_exists('guest')) {
+    /**
+     * @return bool
+     */
+    function guest(): bool
+    {
+        return !logged();
+    }
+}
+if (!function_exists('secure_password')) {
+    /**
+     *
+     * Hash a value
+     *
+     * @param string $value
+     *
+     * @return string
+     *
+     * @throws Kedavra
+     *
+     */
+    function secure_password(string $value): string
+    {
+        return (new Hash($value))->generate();
+    }
+}
+if (!function_exists('check_password')) {
+    /**
+     *
+     * Check the password
+     *
+     * @param string $plain_text_password
+     * @param string $hash_value
+     *
+     * @return bool
+     *
+     * @throws Kedavra
+     */
+    function check_password(string $plain_text_password, string $hash_value): bool
+    {
+        return (new Hash($plain_text_password))->valid($hash_value);
+    }
+}
+
+
+if (!function_exists('int')) {
+
+    /**
+     *
+     * @param mixed $digit
+     *
+     * @return bool
+     *
+     */
+    function int($digit): bool
+    {
+        if (is_int($digit)) {
+            return true;
+        } elseif (is_string($digit)) {
+            return ctype_digit($digit);
+        } else {
+            // booleans, floats and others
+            return false;
+        }
+    }
+}
+
+if (!function_exists('not_int')) {
+
+    /**
+     *
+     * @param mixed $digit
+     *
+     * @return bool
+     *
+     */
+    function not_int($digit): bool
+    {
+        return !int($digit);
+    }
+}
 
 if (!function_exists('def')) {
 
@@ -60,8 +399,8 @@ if (!function_exists('base')) {
      */
     function base(string ...$values): string
     {
-        $base = php_sapi_name() == 'cli' ? strval(realpath('.')) : dirname(strval(realpath('./')));
-
+        $base = cli() ? strval(realpath('.')) : dirname(strval(realpath('./')));
+        
         if (def($values)) {
             foreach ($values as $dir) {
                 if (def($dir)) {
@@ -140,8 +479,7 @@ if (!function_exists('env')) {
      */
     function env(string $key, $default = null)
     {
-        $value = Env::get($key);
-        return def($value) ? $value : $default;
+        return app('env')->get($key, $default);
     }
 }
 

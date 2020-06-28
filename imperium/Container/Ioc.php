@@ -29,6 +29,7 @@ namespace Imperium\Container {
     use Imperium\Database\Query\Sql;
     use Imperium\Database\Table\Table;
     use Imperium\Environment\Env;
+    use Imperium\Session\Session;
     use InvalidArgumentException;
 
     /**
@@ -158,9 +159,8 @@ namespace Imperium\Container {
         {
 
             if (is_null(static::$container)) {
-                $dir = imperium('container-directory', 'ioc');
                 $c = new ContainerBuilder();
-                $c->addDefinitions(base($dir, 'admin.php'), base($dir, 'web.php'));
+                $c->addDefinitions(base('ioc', 'admin.php'), base('ioc', 'web.php'));
                 $c->useAnnotations(true);
                 $c->useAutowiring(true);
                 $c = $c->build();
@@ -168,7 +168,8 @@ namespace Imperium\Container {
                 $c->set('table', new Table());
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());
-            
+                $c->set('session', new Session());
+
                 static::$container = $c;
             }
             return static::$container;

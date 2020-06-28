@@ -15,7 +15,7 @@
  * along with this program.  If not, see <https: //www.gnu.org/licenses/>.
  *
  */
-    
+
 declare(strict_types=1);
 
 namespace Imperium\Environment {
@@ -38,6 +38,22 @@ namespace Imperium\Environment {
     {
 
 
+        public function __construct()
+        {
+
+            $repository = RepositoryBuilder::createWithNoAdapters()
+                ->addAdapter(EnvConstAdapter::class)
+                ->addWriter(PutenvAdapter::class)
+                ->immutable()
+                ->make();
+
+
+            $dotenv = Dotenv::create($repository, base(), '.env');
+
+
+            $dotenv->load();
+        }
+
         /**
          *
          *
@@ -45,38 +61,16 @@ namespace Imperium\Environment {
          *
          * Use the .env file, locate at the root directory.
          *
-         * @param string $key
+         * @param string $key The key to analyse.
+         * @param mixed $default The default value if not found.
          *
-         * @return string|array|false
+         * @return string|array|false|null
          *
          */
-        public static function get(string $key)
+        public function get(string $key, $default = null)
         {
-            
-            $repository = RepositoryBuilder::create()
-            ->withReaders([
-                new EnvConstAdapter(),
-            ])
-            ->withWriters([
-                new EnvConstAdapter(),
-                new PutenvAdapter(),
-            ])
-            ->immutable()
-            ->make();
-
-            $env =   Dotenv::create($repository, base(), '.env');
-            $env->load();
-            $env->required(
-                [
-                    'CACHE_TIME_DIVIDER', 'CACHE_DIRECTORY', 'CACHE_TTL',
-                    'DEBUG', 'DB_DRIVER', 'DB_HOST', 'DB_NAME', 'DB_USERNAME',
-                    'DB_PASSWORD', 'DEVELOP_DB_DRIVER', 'DEVELOP_DB_HOST',
-                    'DEVELOP_DB_NAME', 'DEVELOP_DB_USERNAME', 'DEVELOP_DB_PASSWORD',
-                    'TESTS_DB_NAME', 'TESTS_DB_USERNAME', 'TESTS_DB_PASSWORD', 'TESTS_DB_DRIVER', 'TESTS_DB_HOST',
-                    'APP_NAME', 'APP_KEY', 'CIPHER', 'TRANSLATOR_EMAIL'
-                ]
-            );
-            return getenv($key);
+            $x = getenv($key);
+            return def($x) ? $x : $default;
         }
     }
 }
