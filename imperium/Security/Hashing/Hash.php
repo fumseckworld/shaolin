@@ -6,7 +6,10 @@ namespace Imperium\Security\Hashing {
 
     use Imperium\Exception\Kedavra;
 
+
     /**
+     *
+     * Represent all hashed values.
      *
      * @property string $valid      The valid hash.
      * @property string $secret     The secret key.
@@ -17,7 +20,6 @@ namespace Imperium\Security\Hashing {
     class Hash
     {
 
-
         /**
          *
          * Hash constructor.
@@ -25,38 +27,36 @@ namespace Imperium\Security\Hashing {
          * @param string $data
          *
          * @throws Kedavra
+         *
          */
         public function __construct(string $data)
         {
-            $this->algorithm = config('hash', 'algorithm');
+            $this->algorithm = strtolower(config('hash', 'algorithm', 'sha512'));
 
-            $this->secret = config('hash', 'secret');
+            $this->secret = config('hash', 'secret', env('SECURE_KEY', 'secret'));
 
             $this->data = $data;
-            if (!in_array($this->algorithm, hash_algos())) {
-                throw new Kedavra('The algorithm used is not a valid algorithm');
-            }
 
             $this->valid = hash_hmac($this->algorithm, $this->data, $this->secret);
         }
 
         /**
          *
-         * Check if the hash is valid
+         * Check if the hash is valid.
          *
-         * @param  string  $value
+         * @param  string  $value The value to analyse.
          *
          * @return bool
          *
          */
         public function valid(string $value): bool
         {
-            return hash_equals($this->valid, $value);
+            return hash_equals($this->generate(), $value);
         }
 
         /**
          *
-         * Generate the hash
+         * Get the encrypted value.
          *
          * @return string
          *
