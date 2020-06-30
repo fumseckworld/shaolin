@@ -271,17 +271,26 @@ if (!function_exists('snake_to_camel')) {
 
 if (!function_exists('logged')) {
     /**
-     * @return bool
+     *
+     * Check if the user is logged
+     *
+     * @return boolean
+     *
      */
     function logged(): bool
     {
-        return php_sapi_name() == 'cli' ? false : app('session')->has('user');
+        return cli() ? false : app('session')->has('user');
     }
 }
 
 if (!function_exists('guest')) {
+
     /**
-     * @return bool
+     *
+     * Check if te user is not logged.
+     *
+     * @return boolean
+     *
      */
     function guest(): bool
     {
@@ -291,9 +300,9 @@ if (!function_exists('guest')) {
 if (!function_exists('secure_password')) {
     /**
      *
-     * Hash a value
+     * Hash a plain text value.
      *
-     * @param string $value
+     * @param string $value The password to hash.
      *
      * @return string
      *
@@ -305,6 +314,7 @@ if (!function_exists('secure_password')) {
         return (new Hash($value))->generate();
     }
 }
+
 if (!function_exists('check_password')) {
     /**
      *
@@ -324,7 +334,7 @@ if (!function_exists('check_password')) {
 }
 
 
-if (!function_exists('int')) {
+if (!function_exists('is_integer')) {
 
     /**
      *
@@ -333,20 +343,18 @@ if (!function_exists('int')) {
      * @return bool
      *
      */
-    function int($digit): bool
+    function is_integer($digit): bool
     {
         if (is_int($digit)) {
             return true;
         } elseif (is_string($digit)) {
             return ctype_digit($digit);
-        } else {
-            // booleans, floats and others
-            return false;
         }
+        return false;
     }
 }
 
-if (!function_exists('not_int')) {
+if (!function_exists('not_integer')) {
 
     /**
      *
@@ -355,9 +363,9 @@ if (!function_exists('not_int')) {
      * @return bool
      *
      */
-    function not_int($digit): bool
+    function not_integer($digit): bool
     {
-        return !int($digit);
+        return !is_integer($digit);
     }
 }
 

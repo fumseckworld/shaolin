@@ -5,8 +5,6 @@ namespace Testing\Security;
 use Imperium\Security\Hashing\Hash;
 use PHPUnit\Framework\TestCase;
 
-use function DI\value;
-
 class HashTest extends TestCase
 {
     public function test()
