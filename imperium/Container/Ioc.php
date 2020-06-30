@@ -160,7 +160,16 @@ namespace Imperium\Container {
 
             if (is_null(static::$container)) {
                 $c = new ContainerBuilder();
-                $c->addDefinitions(base('ioc', 'admin.php'), base('ioc', 'web.php'));
+                $c->addDefinitions(
+                    base(
+                        imperium('container-dir', 'ioc'),
+                        'admin.php'
+                    ),
+                    base(
+                        imperium('container-dir', 'ioc'),
+                        'web.php'
+                    )
+                );
                 $c->useAnnotations(true);
                 $c->useAutowiring(true);
                 $c = $c->build();
