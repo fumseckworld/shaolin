@@ -1,29 +1,24 @@
-<p align="center"> <img src="https://camo.githubusercontent.com/9014da55d4015e192764c4a743b213e6d36fd9d8/68747470733a2f2f7a7570696d616765732e6e65742f75702f31382f30382f726432752e706e67" width="400" alt="A library to build a modern and customizable mvc framework">  
-</p>
-
-<p align="center">
+<div align="center"> <img src="https://camo.githubusercontent.com/9014da55d4015e192764c4a743b213e6d36fd9d8/68747470733a2f2f7a7570696d616765732e6e65742f75702f31382f30382f726432752e706e67" width="400" alt="A library to build a modern and customizable mvc framework">  
+</div>
+<br/>  
+<div align="center">
     <a href="https://travis-ci.com/fumseckworld/imperium">   <img src="https://travis-ci.com/fumseckworld/imperium.svg?branch=omaticayas" alt="build status"></a>
     <img  src="https://poser.pugx.org/imperium/imperium/license" alt="imperium licence">
     <img src="https://poser.pugx.org/imperium/imperium/downloads"  alt="total download"> 
     <img src="https://poser.pugx.org/imperium/imperium/version" alt="stable version">
-</p>
+</div>
 
-# What it's ?
+<br/>
 
-It's a library to build a modern and customizable mvc framework
-
-# How use it ?
-
-`cd your_directory`
-
-`composer init`
+# Installation 
 
 `composer require imperium/imperium`
 
-`vendor/bin/imperium init`
+
+# Links 
 
 * [**Todo**](https://trello.com/b/ZMKB0OiD)
-*  [**Wiki**](https://github.com/fumseckworld/imperium/wiki)
+* [**Wiki**](https://github.com/fumseckworld/imperium/wiki)
 * [**Source code**](https://github.com/fumseckworld/imperium)
 * [**Bugs Reports**](https://github.com/fumseckworld/imperium/issues)
 * [**Collaboration**](https://github.com/fumseckworld/imperium/pulls)
