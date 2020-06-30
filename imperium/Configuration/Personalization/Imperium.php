@@ -35,7 +35,6 @@ namespace Imperium\Configuration\Personalization {
     {
 
         /**
-         * Undocumented function
          *
          * @param string $key The personalization key.
          *
@@ -46,7 +45,8 @@ namespace Imperium\Configuration\Personalization {
         }
 
         /**
-         * Undocumented function
+         *
+         * Get an user's configuration value.
          *
          * @param string $default The default value if not exist.
          *
@@ -69,7 +69,7 @@ namespace Imperium\Configuration\Personalization {
          * @return string
          *
          */
-        private function file(): string
+        public function file(): string
         {
             return base('imperium.yaml');
         }
