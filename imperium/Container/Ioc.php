@@ -219,7 +219,7 @@ namespace Imperium\Container {
                 ));
 
                 $c->set('cache-dirname', imperium(
-                    'app-cache-directory',
+                    'cache-directory',
                     'cache'
                 ));
 
