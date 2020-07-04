@@ -136,10 +136,6 @@ class CollectTest extends TestCase
         $this->assertEmpty(collect([0, 1, 2, 3])->pop(4)->all());
         $this->assertNotEmpty(collect([0, 1, 2, 3])->pop(3)->all());
     }
-    public function testShuffle()
-    {
-        $this->assertNotEquals(['a', 'b', 'c'], \collect(['a', 'b', 'c'])->shuffle()->all());
-    }
     public function testOk()
     {
         $this->assertTrue(collect()->ok());
