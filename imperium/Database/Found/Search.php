@@ -20,6 +20,8 @@ namespace Imperium\Database\Found {
 
     use Imperium\Database\Model\Model;
     use Imperium\Exception\Kedavra;
+    use ReflectionClass;
+    use ReflectionException;
 
     /**
      *
@@ -44,10 +46,42 @@ namespace Imperium\Database\Found {
          *
          * @return array
          *
+         * @throws ReflectionException
+         *
          */
         public static function global($x): array
         {
-            return [];
+            $data = collect();
+
+            $models_base = app('models-path') . DIRECTORY_SEPARATOR . '*.php';
+
+            $models_dir = app('models-path') . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . '*.php';
+
+            $models = array_merge(files($models_base), files($models_dir));
+
+            foreach ($models as $model) {
+                $class = sprintf(
+                    '%s\%s\%s',
+                    app('app-namespace'),
+                    app('models-dirname'),
+                    collect(
+                        explode(
+                            '.',
+                            collect(
+                                explode(
+                                    DIRECTORY_SEPARATOR,
+                                    $model
+                                )
+                            )->last()
+                        )
+                    )->first()
+                );
+
+                $reflection = new ReflectionClass(new $class());
+
+                $data->push($reflection->getMethod('search')->invokeArgs($reflection->newInstance(), [$x]));
+            }
+            return $data->all();
         }
 
         /**

@@ -60,10 +60,10 @@ namespace Imperium\Container {
          * @throws DependencyException
          * @throws NotFoundException
          *
-         * @return object
+         * @return mixed
          *
          */
-        final public function get(string $key): object
+        final public function get(string $key)
         {
             return $this->container()->get($key);
         }
@@ -178,6 +178,123 @@ namespace Imperium\Container {
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());
                 $c->set('session', new Session());
+
+                $c->set('app-directory', imperium('app-directory', 'app'));
+
+                $c->set('db-directory', imperium('db-directory', 'db'));
+
+                $c->set('tests-directory', imperium('tests-directory', 'tests'));
+
+                $c->set('app-namespace', imperium('app-namespace', 'App'));
+
+                $c->set('base-namespace', imperium('base-namespace', 'Evolution'));
+
+                $c->set('tests-namespace', imperium('tests-namespace', 'Testing'));
+
+                $c->set('models-dirname', imperium(
+                    'app-models-directory',
+                    'Models'
+                ));
+
+                $c->set('app-dirname', $c->get('app-directory'));
+
+                $c->set('views-dirname', imperium(
+                    'app-views-directory',
+                    'Views'
+                ));
+
+                $c->set('public-dirname', imperium(
+                    'public-directory',
+                    'web'
+                ));
+
+                $c->set('db-dirname', imperium(
+                    'db-base-directory',
+                    'db'
+                ));
+
+                $c->set('emails-dirname', imperium(
+                    'app-emails-directory',
+                    'Emails'
+                ));
+
+                $c->set('cache-dirname', imperium(
+                    'app-cache-directory',
+                    'cache'
+                ));
+
+                $c->set('controllers-dirname', imperium(
+                    'app-controllers-directory',
+                    'Controllers'
+                ));
+
+                $c->set('forms-dirname', imperium(
+                    'app-forms-directory',
+                    'Forms'
+                ));
+
+
+                $c->set('emails-dirname', imperium(
+                    'app-emails-directory',
+                    'Emails'
+                ));
+
+                $c->set('consoles-dirname', imperium(
+                    'app-consoles-directory',
+                    'Consoles'
+                ));
+
+                $c->set('validators-dirname', imperium(
+                    'app-validators-directory',
+                    'Validators'
+                ));
+
+                $c->set('search-dirname', imperium(
+                    'app-search-directory',
+                    'Search'
+                ));
+
+                $c->set('translations-dirname', imperium(
+                    'translations-directory',
+                    'po'
+                ));
+                $c->set('migrations-dirname', imperium(
+                    'db-migrations-directory',
+                    'Migrations'
+                ));
+
+                $c->set('seeds-dirname', imperium(
+                    'db-seeds-directory',
+                    'Seeds'
+                ));
+
+                $c->set('tests-dirname', $c->get('tests-directory'));
+
+                $c->set('tests-path', base($c->get('db-directory'), $c->get('tests-dirname')));
+
+                $c->set('migrations-path', base($c->get('db-directory'), $c->get('migrations-dirname')));
+
+                $c->set('seeds-path', base($c->get('db-directory'), $c->get('seeds-dirname')));
+
+                $c->set('models-path', base($c->get('app-directory'), $c->get('models-dirname')));
+
+                $c->set('views-path', base($c->get('app-directory'), $c->get('views-dirname')));
+
+                $c->set('controllers-path', base($c->get('app-directory'), $c->get('controllers-dirname')));
+
+                $c->set('emails-path', base($c->get('app-directory'), $c->get('emails-dirname')));
+
+                $c->set('forms-path', base($c->get('app-directory'), $c->get('forms-dirname')));
+
+                $c->set('consoles-path', base($c->get('app-directory'), $c->get('consoles-dirname')));
+
+                $c->set('validators-path', base($c->get('app-directory'), $c->get('validators-dirname')));
+
+                $c->set('search-path', base($c->get('app-directory'), $c->get('search-dirname')));
+
+                $c->set('cache-path', base($c->get('cache-dirname')));
+
+                $c->set('translations-path', base($c->get('translations-dirname')));
 
                 static::$container = $c;
             }

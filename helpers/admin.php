@@ -488,6 +488,25 @@ if (!function_exists('app')) {
     }
 }
 
+if (!function_exists('files')) {
+
+    /**
+     *
+     * Get all files who matches the pattern.
+     *
+     * @param string $pattern The glob pattern.
+     *
+     * @return array
+     *
+     */
+    function files(string $pattern): array
+    {
+        $x =  glob($pattern);
+        return is_bool($x) ? [] : $x;
+    }
+}
+
+
 if (!function_exists('env')) {
 
     /**
