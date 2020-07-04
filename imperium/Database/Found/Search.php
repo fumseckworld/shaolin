@@ -33,10 +33,36 @@ namespace Imperium\Database\Found {
      *
      *
      **/
-    abstract class Search
+    class Search
     {
 
+        /**
+         *
+         * Search in all tables
+         *
+         * @param mixed $x The value to search in all tables.
+         *
+         * @return array
+         *
+         */
+        public static function global($x): array
+        {
+            return [];
+        }
 
-        abstract public function form(array $columns): string;
+        /**
+         *
+         * Search inside the given table.
+         *
+         * @param string $table The name of the table.
+         * @param mixed $x The value to search.
+         *
+         * @return array
+         *
+         */
+        public static function from(string $table, $x): array
+        {
+            return app('sql')->from($table)->like($x)->results();
+        }
     }
 }

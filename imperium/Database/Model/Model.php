@@ -50,6 +50,36 @@ namespace Imperium\Database\Model {
         protected static string $prefix = '';
 
         /**
+         *
+         * Html code before the content of results.4
+         *
+         */
+        protected static string $beforeContent = '';
+
+
+        /**
+         *
+         * Html code after the content of results.
+         *
+         */
+        protected static string $afterContent = '';
+
+
+        /**
+         *
+         * Html code before the pagination
+         *
+         */
+        protected static string $beforePagination = '';
+
+        /**
+         *
+         * Html code after the pagination of results.
+         *
+         */
+        protected static string $afterPagination = '';
+
+        /**
          * The per page number
          */
         protected static int $limit = 24;
@@ -63,7 +93,7 @@ namespace Imperium\Database\Model {
          * @return string
          *
          */
-        abstract public function each(stdClass $record): string;
+        abstract public static function each(stdClass $record): string;
 
 
         /**
@@ -110,8 +140,25 @@ namespace Imperium\Database\Model {
          */
         final public static function paginate(int $current_page): string
         {
-            $pagination = (new Pagination($current_page, static::$limit, static::all()))->render(static::$table);
-            return '';
+            $content = '';
+            $sql = app('sql')->from(static::from());
+            $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render(static::$table);
+
+            $records =  $sql->take(static::$limit, (($current_page) - 1) * static::$limit)
+                ->by($sql->primary())->results();
+
+            foreach ($records as $record) {
+                $content .= static::each($record);
+            }
+            return trim(sprintf(
+                '%s%s%s%s%s%s',
+                static::$beforeContent,
+                $content,
+                static::$afterContent,
+                static::$beforePagination,
+                $pagination,
+                static::$afterPagination
+            ));
         }
 
         /**
@@ -198,7 +245,7 @@ namespace Imperium\Database\Model {
          */
         final public static function all(): int
         {
-            return 1;
+            return app('sql')->from(static::from())->sum();
         }
 
         /**
@@ -210,7 +257,7 @@ namespace Imperium\Database\Model {
          */
         final private static function from(): string
         {
-            return static::$prefix . static::$table;
+            return trim(sprintf('%s%s', static::$prefix, static::$table));
         }
     }
 }

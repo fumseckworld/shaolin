@@ -263,6 +263,18 @@ namespace Imperium\Database\Query {
 
         /**
          *
+         * Count all records inside a table.
+         *
+         * @return integer
+         *
+         */
+        public function sum(): int
+        {
+            return count($this->results());
+        }
+
+        /**
+         *
          * Delete all records found by the executed query.
          *
          * @return boolean
