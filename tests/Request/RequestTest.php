@@ -3,12 +3,9 @@
 namespace Testing\Request;
 
 use ArrayIterator;
-use Directory;
 use Imperium\Http\Parameters\Bag;
 use Imperium\Http\Request\Request;
 use PHPUnit\Framework\TestCase;
-
-use function PHPUnit\Framework\fileExists;
 
 class RequestTest extends TestCase
 {
