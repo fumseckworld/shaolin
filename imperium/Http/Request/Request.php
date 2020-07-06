@@ -79,7 +79,7 @@ namespace Imperium\Http\Request {
          */
         public function secure(): bool
         {
-            return php_sapi_name() == 'cli' ? false : intval($this->server->get('SERVER_PORT')) === 443;
+            return cli() ? false : intval($this->server->get('SERVER_PORT')) === 443;
         }
 
         /**
@@ -207,7 +207,7 @@ namespace Imperium\Http\Request {
          */
         public function ip(): string
         {
-            return php_sapi_name() == 'cli' ? '127.0.0.1' : strval($this->server()->get('REMOTE_ADDR'));
+            return cli()  ? '127.0.0.1' : strval($this->server()->get('REMOTE_ADDR'));
         }
 
         /**

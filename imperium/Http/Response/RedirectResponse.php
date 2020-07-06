@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Imperium\Http\Response {
 
     use Imperium\Exception\Kedavra;
-    use Imperium\Http\Response\Response;
 
     /**
      *

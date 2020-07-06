@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Imperium\Http\Response {
 
-    use Imperium\Exception\Kedavra;
 
     /**
      *
@@ -52,7 +51,6 @@ namespace Imperium\Http\Response {
          * @param int $status
          * @param array<mixed> $headers
          *
-         * @throws Kedavra
          *
          */
         public function __construct(string $content = '', string $url = '', int $status = 200, array $headers = [])

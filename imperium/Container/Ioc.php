@@ -25,6 +25,7 @@ namespace Imperium\Container {
     use DI\ContainerBuilder;
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Exception;
     use Imperium\Database\Connection\Connect;
     use Imperium\Database\Query\Sql;
     use Imperium\Database\Table\Table;
@@ -44,13 +45,13 @@ namespace Imperium\Container {
      * @package Imperium\Container\Ioc
      * @version 12
      *
-     * @property Container|null  $container The container instance.
      *
      */
     final class Ioc
     {
 
         private static ?Container $container = null;
+
         /**
          *
          * Get an instance of an object inside the container.
@@ -59,6 +60,7 @@ namespace Imperium\Container {
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Exception
          *
          * @return mixed
          *
@@ -75,6 +77,8 @@ namespace Imperium\Container {
          * @param string $key The container key.
          * @param mixed  $value The container value.
          *
+         * @throws Exception
+         *
          * @return Ioc
          *
          */
@@ -90,8 +94,10 @@ namespace Imperium\Container {
          *
          * Missing parameters will be resolved from the container.
          *
-         * @param Closure $callback
-         * @param array $args
+         * @param Closure $callback The callback to call.
+         * @param array $args The callback arguments.
+         *
+         * @throws Exception
          *
          * @return mixed
          *
@@ -111,6 +117,8 @@ namespace Imperium\Container {
          * @throws InvalidArgumentException The name parameter must be of type string.
          * @throws DependencyException Error while resolving the entry.
          * @throws NotFoundException No entry found for the given name.
+         * @throws Exception
+         *
          * @return object
          *
          */
@@ -126,7 +134,7 @@ namespace Imperium\Container {
          *
          * @param string $key The key to check
          *
-         * @throws InvalidArgumentException
+         * @throws Exception
          *
          * @return boolean
          *
@@ -141,6 +149,7 @@ namespace Imperium\Container {
          * Return the instance of the container.
          *
          * @return Container
+         * @throws Exception
          *
          **/
         final public function ioc(): Container
@@ -152,7 +161,9 @@ namespace Imperium\Container {
          *
          * Build the container.
          *
-         * @return Container
+         * @throws Exception
+         *
+         * @return  Container
          *
          */
         final private function container(): Container

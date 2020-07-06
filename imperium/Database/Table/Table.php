@@ -18,7 +18,6 @@
 
 namespace Imperium\Database\Table {
 
-    use Imperium\Database\Connection\Connect;
     use Imperium\Exception\Kedavra;
 
     /**

@@ -18,8 +18,6 @@
 
 namespace Imperium\Database\Query {
 
-    use Closure;
-    use Imperium\Database\Table\Table;
 
     /**
      *

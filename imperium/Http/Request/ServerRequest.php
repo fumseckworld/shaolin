@@ -66,7 +66,7 @@ namespace Imperium\Http\Request {
 
             $this->method = $method;
 
-            $this->request = php_sapi_name() != 'cli' ? Request::make() : new Request();
+            $this->request = cli() ? new Request() :  Request::make();
         }
 
         /**

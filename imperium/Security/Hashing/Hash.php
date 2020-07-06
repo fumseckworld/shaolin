@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Imperium\Security\Hashing {
 
-    use Imperium\Exception\Kedavra;
-
-
     /**
      *
      * Represent all hashed values.
@@ -24,9 +21,7 @@ namespace Imperium\Security\Hashing {
          *
          * Hash constructor.
          *
-         * @param string $data
-         *
-         * @throws Kedavra
+         * @param string $data The value to use.
          *
          */
         public function __construct(string $data)

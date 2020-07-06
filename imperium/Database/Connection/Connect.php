@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Imperium\Database\Connection {
 
     use PDO;
-    use Imperium\Exception\Kedavra;
     use PDOException;
 
     /**
@@ -39,7 +38,7 @@ namespace Imperium\Database\Connection {
      * @property string  $username  The current pdo username value
      * @property string  $password  The current pdo password value
      * @property string  $host      The current pdo hostname value
-     * @property ?PDO    $pdo       The pdo instance
+     * @property PDO    $pdo       The pdo instance
      */
     class Connect
     {
@@ -69,7 +68,6 @@ namespace Imperium\Database\Connection {
             $this->username = $username;
             $this->password = $password;
             $this->host = $host;
-            $this->pdo = null;
         }
 
         /**
@@ -135,7 +133,6 @@ namespace Imperium\Database\Connection {
          * @param string $sql   The query to execute
          * @param array  $args  The query args
          *
-         * @throws Kedavra
          *
          * @return boolean
          *
@@ -161,8 +158,6 @@ namespace Imperium\Database\Connection {
          * @param array   $args         The query arguments
          * @param int     $output_mode  The output style
          *
-         * @throws Kedavra
-         *
          * @return array
          *
          */
@@ -186,7 +181,6 @@ namespace Imperium\Database\Connection {
          *
          * Get the correct environment.
          *
-         * @throws Kedavra
          *
          * @return Connect
          *
@@ -313,8 +307,7 @@ namespace Imperium\Database\Connection {
          */
         protected function pdo(): PDO
         {
-
-            if (is_null($this->pdo)) {
+            if (! $this->pdo  instanceof  PDO) {
                 if ($this->env()->mysql()) {
                     $this->pdo =
                         new PDO(

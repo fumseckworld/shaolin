@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace Imperium\Collection {
 
     use Closure;
-    use Imperium\Exception\Kedavra;
     use Iterator;
     use Opis\Closure\SerializableClosure;
 
@@ -31,9 +30,9 @@ namespace Imperium\Collection {
      * @package Imperium\Collection\Collect
      * @version 12
      *
-     * @property array  $data           All data to manage.
-     * @property int    $position       The current index position.
-     * @property mixed  $beforeValue    The value before a key.
+     * @property array $data           All data to manage.
+     * @property int $position       The current index position.
+     * @property mixed $beforeValue    The value before a key.
      */
     final class Collect implements Iterator
     {
@@ -56,8 +55,8 @@ namespace Imperium\Collection {
          *
          * Creates an array by using one array for keys and another for its values.
          *
-         * @param array<mixed> $keys    Array of keys to be used.
-         * @param array<mixed> $values  Array of values to be used.
+         * @param array<mixed> $keys Array of keys to be used.
+         * @param array<mixed> $values Array of values to be used.
          *
          * @return Collect
          *
@@ -137,9 +136,9 @@ namespace Imperium\Collection {
          *
          * If it is omitted, then the sequence will have everything from offset up until the end of the array.
          *
-         * @param int       $offset The sequence will start at that offset in the array.
-         * @param int|null  $length The sequence will have everything from offset up until the end of the array.
-         * @param bool      $preserve_keys  Reorder and reset the integer array indices.
+         * @param int $offset The sequence will start at that offset in the array.
+         * @param int|null $length The sequence will have everything from offset up until the end of the array.
+         * @param bool $preserve_keys Reorder and reset the integer array indices.
          *
          * @return Collect
          *
@@ -299,10 +298,11 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Move pointer to the before position
-         * and return the current value
+         * Move the pointer to the before position.
          *
-         * @return mixed
+         * @param int $how_many The how many before.
+         *
+         * @return Collect
          *
          */
         public function before(int $how_many = 1)
@@ -316,11 +316,11 @@ namespace Imperium\Collection {
 
         /**
          *
-         * Move pointer to the after position
-         * and return the current value
+         * Move the pointer to the next position.
          *
+         * @param int $how_many The how many after.
          *
-         * @return mixed
+         * @return Collect
          *
          */
         public function after(int $how_many = 1)
@@ -335,21 +335,14 @@ namespace Imperium\Collection {
          *
          * Get a value in the array by a key
          *
-         *
          * @param mixed $key
          *
          * @return mixed
          *
-         *
          */
         public function get($key)
         {
-            if ($this->has($key)) {
-                $x = $this->data[$key];
-
-                return $x;
-            }
-            return null;
+            return $this->has($key) ? $this->data[$key] : null;
         }
 
         /**
@@ -457,14 +450,15 @@ namespace Imperium\Collection {
          *
          * Get the next value
          *
-         * @return mixed|string
+         * @return mixed
          *
          */
         public function nextValue()
         {
             $this->next();
-            return $this->valid() ?  $this->current() : '';
+            return $this->valid() ? $this->current() : null;
         }
+
         /**
          *
          * Check if array is empty
@@ -546,7 +540,7 @@ namespace Imperium\Collection {
          */
         public function forget(...$keys): Collect
         {
-            return  $this->del($keys);
+            return $this->del($keys);
         }
 
         /**
@@ -620,7 +614,7 @@ namespace Imperium\Collection {
          *
          *
          * @param callable $callable
-         * @param int      $flag
+         * @param int $flag
          *
          * @return Collect
          *
@@ -816,7 +810,7 @@ namespace Imperium\Collection {
          */
         public function set($value): Collect
         {
-            return  $this->add($value);
+            return $this->add($value);
         }
 
         /**
@@ -849,6 +843,7 @@ namespace Imperium\Collection {
 
             return $this;
         }
+
         /**
          *
          * Remove values or keys inside the array
@@ -977,12 +972,17 @@ namespace Imperium\Collection {
          *
          * Remove the first element
          *
+         * @param int $size How many remove.
+         *
          * @return Collect
          *
          */
-        public function shift(): Collect
+        public function shift(int $size = 1): Collect
         {
-            array_shift($this->data);
+            for ($i = 0; $i < $size; $i++) {
+                array_shift($this->data);
+            }
+
 
             return $this->checkout($this->data);
         }
@@ -990,6 +990,8 @@ namespace Imperium\Collection {
         /**
          *
          * Remove the last element
+         *
+         * @param int $size How many remove.
          *
          * @return Collect
          *
@@ -1027,9 +1029,8 @@ namespace Imperium\Collection {
         {
             $x = json_encode($this->all(), JSON_FORCE_OBJECT);
 
-            return  is_bool($x) ? '' : $x;
+            return is_bool($x) ? '' : $x;
         }
-
 
 
         /**
@@ -1200,7 +1201,7 @@ namespace Imperium\Collection {
             $x = function () {
             };
 
-            return $this->has($key) ?  unserialize($this->get($key))->getClosure() : $x;
+            return $this->has($key) ? unserialize($this->get($key))->getClosure() : $x;
         }
 
         /**

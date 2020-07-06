@@ -18,8 +18,6 @@
 
 namespace Imperium\Database\Model {
 
-    use Closure;
-    use Imperium\Database\Query\Sql;
     use Imperium\Html\Pagination\Pagination;
     use stdClass;
 
