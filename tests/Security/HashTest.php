@@ -3,15 +3,15 @@
 namespace Testing\Security;
 
 use Imperium\Security\Hashing\Hash;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 
-class HashTest extends TestCase
+class HashTest extends Unit
 {
     public function test()
     {
         $valid = 'secret';
         $encrypt = (new Hash($valid))->generate();
-        $this->assertNotEquals($valid, $encrypt);
-        $this->assertTrue((new Hash($valid))->valid($encrypt));
+        $this->different($valid, $encrypt);
+        $this->success((new Hash($valid))->valid($encrypt));
     }
 }

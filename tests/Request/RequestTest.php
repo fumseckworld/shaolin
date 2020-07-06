@@ -5,30 +5,34 @@ namespace Testing\Request;
 use ArrayIterator;
 use Imperium\Http\Parameters\Bag;
 use Imperium\Http\Request\Request;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 
-class RequestTest extends TestCase
+class RequestTest extends Unit
 {
     public function testEmptyRequest()
     {
         $request = new Request();
-        $this->assertEmpty($request->query()->all());
-        $this->assertEmpty($request->request()->all());
-        $this->assertEmpty($request->cookie()->all());
-        $this->assertEmpty($request->server()->all());
-        $this->assertEmpty($request->args()->all());
-        $this->assertEmpty($request->files()->all());
+        $this->empty(
+            $request->query()->all(),
+            $request->request()->all(),
+            $request->cookie()->all(),
+            $request->server()->all(),
+            $request->args()->all(),
+            $request->files()->all()
+        );
     }
     public function testRequest()
     {
         $request = new Request(['id' => 4, 'username' => 'Willy']);
-        $this->assertEquals(4, $request->request()->get('id'));
-        $this->assertEquals('Willy', $request->request()->get('username'));
-        $this->assertEmpty($request->query()->all());
-        $this->assertEmpty($request->cookie()->all());
-        $this->assertEmpty($request->server()->all());
-        $this->assertEmpty($request->args()->all());
-        $this->assertEmpty($request->files()->all());
+        $this->identic(4, $request->request()->get('id'))
+            ->identic('Willy', $request->request()->get('username'))
+            ->empty(
+                $request->query()->all(),
+                $request->cookie()->all(),
+                $request->server()->all(),
+                $request->args()->all(),
+                $request->files()->all()
+            );
     }
 
     public function testQuery()
@@ -43,15 +47,14 @@ class RequestTest extends TestCase
         // $_GET
 
         $this->assertNotEmpty($request->query()->all());
-        $this->assertEquals(50, $request->query()->get('page'));
-        $this->assertEquals('thriller', $request->query()->get('genre'));
+        $this->identic(50, $request->query()->get('page'))->identic('thriller', $request->query()->get('genre'));
 
-        // others
-
-        $this->assertEmpty($request->cookie()->all());
-        $this->assertEmpty($request->server()->all());
-        $this->assertEmpty($request->args()->all());
-        $this->assertEmpty($request->files()->all());
+        $this->empty(
+            $request->cookie()->all(),
+            $request->server()->all(),
+            $request->args()->all(),
+            $request->files()->all()
+        );
     }
 
 
@@ -83,9 +86,11 @@ class RequestTest extends TestCase
 
         // others
 
-        $this->assertEmpty($request->server()->all());
-        $this->assertEmpty($request->args()->all());
-        $this->assertEmpty($request->files()->all());
+        $this->empty(
+            $request->server()->all(),
+            $request->args()->all(),
+            $request->files()->all()
+        );
     }
 
 
@@ -169,9 +174,13 @@ class RequestTest extends TestCase
             ['REQUEST_URI' => '/']
         );
 
-
-        $this->assertNotEmpty($request->server()->all());
-        $this->assertEquals('/', $request->server()->get('REQUEST_URI'));
+        $this->empty(
+            $request->query()->all(),
+            $request->request()->all(),
+            $request->cookie()->all(),
+            $request->args()->all(),
+            $request->files()->all()
+        )->def($request->server()->all())->identic('/', $request->server()->get('REQUEST_URI'));
     }
 
     public function testArgs()
@@ -184,26 +193,28 @@ class RequestTest extends TestCase
             [],
             ['slug' => 'jour-de-gloire']
         );
-
-
-        $this->assertNotEmpty($request->args()->all());
-        $this->assertEquals('jour-de-gloire', $request->args()->get('slug'));
+        $this->empty(
+            $request->query()->all(),
+            $request->request()->all(),
+            $request->cookie()->all(),
+            $request->server()->all(),
+            $request->files()->all()
+        )->def($request->args()->all())->identic('jour-de-gloire', $request->args()->get('slug'));
     }
 
     public function testSecure()
     {
-        $this->assertFalse((new Request())->secure());
+        $this->failure((new Request())->secure());
     }
 
     public function testIp()
     {
-        $this->assertEquals('127.0.0.1', (new Request())->ip());
-        $this->assertTrue((new Request())->local());
+        $this->identic('127.0.0.1', (new Request())->ip())->success((new Request())->local());
     }
 
     public function testMake()
     {
-        $this->assertInstanceOf(Request::class, Request::make());
+        $this->is(Request::class, Request::make());
     }
 
     public function testHas()
@@ -211,18 +222,18 @@ class RequestTest extends TestCase
         $request = new Request();
         $key = 'a';
         $value = 'a';
-        $this->assertFalse($request->query()->has($key));
-        $this->assertTrue($request->query()->add([$key => $value])->has($key));
+        $this->failure($request->query()->has($key))
+            ->success($request->query()->add([$key => $value])->has($key));
     }
 
     public function testInt()
     {
-        $this->assertEquals(300, (new Request(['soldiers' => '300']))->request()->int('soldiers'));
+        $this->identic(300, (new Request(['soldiers' => '300']))->request()->int('soldiers'));
     }
 
     public function testDigits()
     {
-        $this->assertEquals(
+        $this->identic(
             300,
             (new Request(
                 [
@@ -234,7 +245,7 @@ class RequestTest extends TestCase
     }
     public function testAlpha()
     {
-        $this->assertEquals(
+        $this->identic(
             'Leonidasthekingofspartehasbeengonetowarwithspartiatestodefendsparte',
             (new Request(
                 [
@@ -246,43 +257,43 @@ class RequestTest extends TestCase
     }
     public function testAlnum()
     {
-        $this->assertEquals('30days', (new Request(['days' => '30 days']))->request()->alnum('days'));
+        $this->identic('30days', (new Request(['days' => '30 days']))->request()->alnum('days'));
     }
 
     public function testBoolean()
     {
-        $this->assertTrue((new Request(['a' => '1']))->request()->bool('a'));
-        $this->assertFalse((new Request(['a' => '0']))->request()->bool('a'));
+        $this->success((new Request(['a' => '1']))->request()->bool('a'))
+            ->failure((new Request(['a' => '0']))->request()->bool('a'));
     }
 
     public function testValues()
     {
-        $this->assertEquals(['a', 'b', 'c'], (new Request(['a', 'b', 'c']))->request()->values());
+        $this->identic(['a', 'b', 'c'], (new Request(['a', 'b', 'c']))->request()->values());
     }
 
     public function testKeys()
     {
-        $this->assertEquals([0, 1, 2], (new Request(['a', 'b', 'c']))->request()->keys());
+        $this->identic([0, 1, 2], (new Request(['a', 'b', 'c']))->request()->keys());
     }
 
     public function testDestroy()
     {
-        $this->assertFalse((new Request())->request()->destroy('a'));
-        $this->assertTrue((new Request(['a' => 152]))->request()->destroy('a'));
+        $this->failure((new Request())->request()->destroy('a'))
+            ->success((new Request(['a' => 152]))->request()->destroy('a'));
     }
     public function testSet()
     {
-        $this->assertInstanceOf(Bag::class, (new Request())->request()->set('a', 'b'));
-        $this->assertEquals(2, (new Request())->query()->set('a', 2)->get('a'));
+        $this->is(Bag::class, (new Request())->request()->set('a', 'b'))
+            ->identic(2, (new Request())->query()->set('a', 2)->get('a'));
     }
 
     public function testCount()
     {
-        $this->assertEquals(1, (new Request())->request()->set('a', 'a')->count());
+        $this->identic(1, (new Request())->request()->set('a', 'a')->count());
     }
 
     public function testGetIterator()
     {
-        $this->assertInstanceOf(ArrayIterator::class, (new Request())->request()->getIterator());
+        $this->is(ArrayIterator::class, (new Request())->request()->getIterator());
     }
 }

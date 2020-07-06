@@ -3,9 +3,9 @@
 namespace Testing\Connect;
 
 use Imperium\Database\Connection\Connect;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 
-class ConnectTest extends TestCase
+class ConnectTest extends Unit
 {
     private Connect $db;
     public function setUp(): void
@@ -15,6 +15,6 @@ class ConnectTest extends TestCase
 
     public function testInstance()
     {
-        $this->assertInstanceOf(Connect::class, $this->db);
+        $this->is(Connect::class, $this->db);
     }
 }

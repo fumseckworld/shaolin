@@ -5,20 +5,24 @@ namespace Imperium\Testing {
 
     use PHPUnit\Framework\TestCase;
 
+    use function DI\value;
+
     abstract class Unit extends TestCase
     {
         /**
          *
          * Asserts that a variable is null.
          *
-         * @param mixed $actual The data to check.
+         * @param mixed[] $actual The data to check.
          *
          * @return Unit
          *
          */
-        public function null($actual): self
+        public function null(...$actual): self
         {
-            $this->assertNull($actual, _('The data are not equal to null'));
+            foreach ($actual as $value) {
+                $this->assertNull($value, _('The data are not equal to null'));
+            }
             return $this;
         }
 
@@ -26,29 +30,48 @@ namespace Imperium\Testing {
          *
          * Asserts that a condition is true.
          *
-         * @param mixed $condition The condition to check.
+         * @param mixed $conditions The condition to check.
          *
          * @return Unit
          *
          */
-        public function success($condition): self
+        public function success(...$conditions): self
         {
-            $this->assertTrue($condition, _('The condition must return true but return false'));
+            foreach ($conditions as $condition) {
+                $this->assertTrue($condition, _('The condition must return true but return false'));
+            }
             return $this;
         }
 
         /**
+         * Undocumented function
          *
-         * Asserts that a condition is false.
-         *
-         * @param mixed $condition The condition to check.
+         * @param class-string<\Throwable> $expected The expected exception.
+         * @param string $message The expected message.
          *
          * @return Unit
          *
          */
-        public function failure($condition): self
+        public function throw(string $expected, string $message): self
         {
-            $this->assertFalse($condition, _('The condition must return false but return true'));
+            $this->expectException($expected);
+            $this->expectExceptionMessage($message);
+            return $this;
+        }
+        /**
+         *
+         * Asserts that a condition is false.
+         *
+         * @param mixed $conditions The condition to check.
+         *
+         * @return Unit
+         *
+         */
+        public function failure(...$conditions): self
+        {
+            foreach ($conditions as $condition) {
+                $this->assertFalse($condition, _('The condition must return false but return true'));
+            }
             return $this;
         }
 
@@ -56,30 +79,33 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type bool.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function boolean($actual): self
+        public function boolean(...$values): self
         {
-            $this->assertIsBool($actual, _('The result is not of the boolean type'));
+            foreach ($values as $value) {
+                $this->assertIsBool($value, _('The result is not of the boolean type'));
+            }
             return $this;
         }
-
 
         /**
          *
          * Asserts that a variable is not of type bool.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notBoolean($actual): self
+        public function notBoolean(...$values): self
         {
-            $this->assertIsNotBool($actual, _('The result is of the boolean type'));
+            foreach ($values as $value) {
+                $this->assertIsNotBool($value, _('The result is of the boolean type'));
+            }
             return $this;
         }
 
@@ -88,14 +114,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type int.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function int($actual): self
+        public function int(...$values): self
         {
-            $this->assertIsInt($actual, _('The result is not of the int type'));
+            foreach ($values as $value) {
+                $this->assertIsInt($value, _('The result is not of the int type'));
+            }
             return $this;
         }
 
@@ -103,14 +131,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of type int.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notInt($actual): self
+        public function notInt(...$values): self
         {
-            $this->assertIsNotInt($actual, _('The result is of the int type'));
+            foreach ($values as $value) {
+                $this->assertIsNotInt($value, _('The result is of the int type'));
+            }
             return $this;
         }
 
@@ -118,14 +148,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type numeric.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function num($actual): self
+        public function num(...$values): self
         {
-            $this->assertIsNumeric($actual, _('The result is not of the numeric type'));
+            foreach ($values as $value) {
+                $this->assertIsNumeric($value, _('The result is not of the numeric type'));
+            }
             return $this;
         }
 
@@ -133,14 +165,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of type numeric.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notNum($actual): self
+        public function notNum(...$values): self
         {
-            $this->assertIsNotNumeric($actual, _('The result is of the numeric type'));
+            foreach ($values as $value) {
+                $this->assertIsNotNumeric($value, _('The result is of the numeric type'));
+            }
             return $this;
         }
 
@@ -148,14 +182,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type callable.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function callable($actual): self
+        public function callable(...$values): self
         {
-            $this->assertIsCallable($actual, _('The result is not of the callable type'));
+            foreach ($values as $value) {
+                $this->assertIsCallable($value, _('The result is not of the callable type'));
+            }
             return $this;
         }
 
@@ -163,14 +199,16 @@ namespace Imperium\Testing {
          *
          * Assert that a variable is not of type callable.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notCallable($actual): self
+        public function notCallable(...$values): self
         {
-            $this->assertIsNotCallable($actual, _('The result is of the callable type'));
+            foreach ($values as $value) {
+                $this->assertIsNotCallable($value, _('The result is of the callable type'));
+            }
             return $this;
         }
 
@@ -178,14 +216,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type float.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function float($actual): self
+        public function float(...$values): self
         {
-            $this->assertIsFloat($actual, _('The result is not of the float type'));
+            foreach ($values as $value) {
+                $this->assertIsFloat($value, _('The result is not of the float type'));
+            }
             return $this;
         }
 
@@ -193,14 +233,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of type float.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notFloat($actual): self
+        public function notFloat(...$values): self
         {
-            $this->assertIsNotFloat($actual, _('The result is of the float type'));
+            foreach ($values as $value) {
+                $this->assertIsNotFloat($value, _('The result is of the float type'));
+            }
             return $this;
         }
 
@@ -208,14 +250,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type iterable.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function iterable($actual): self
+        public function iterable(...$values): self
         {
-            $this->assertIsIterable($actual, _('The result is not of the iterable type'));
+            foreach ($values as $value) {
+                $this->assertIsIterable($value, _('The result is not of the iterable type'));
+            }
             return $this;
         }
 
@@ -224,14 +268,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of type iterable.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notIterable($actual): self
+        public function notIterable(...$values): self
         {
-            $this->assertIsNotIterable($actual, _('The result is of the iterable type'));
+            foreach ($values as $value) {
+                $this->assertIsNotIterable($value, _('The result is of the iterable type'));
+            }
             return $this;
         }
 
@@ -240,14 +286,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type array.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function isArray($actual): self
+        public function isArray(...$values): self
         {
-            $this->assertIsArray($actual, _('The result is not of the array type'));
+            foreach ($values as $value) {
+                $this->assertIsArray($value, _('The result is not of the array type'));
+            }
             return $this;
         }
 
@@ -256,14 +304,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of type array.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notArray($actual): self
+        public function notArray(...$values): self
         {
-            $this->assertIsNotArray($actual, _('The result is of the array type'));
+            foreach ($values as $value) {
+                $this->assertIsNotArray($value, _('The result is of the array type'));
+            }
             return $this;
         }
 
@@ -272,14 +322,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of type object.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function object($actual): self
+        public function object(...$values): self
         {
-            $this->assertIsObject($actual, _('The result is not of the object type'));
+            foreach ($values as $value) {
+                $this->assertIsObject($value, _('The result is not of the object type'));
+            }
             return $this;
         }
 
@@ -288,14 +340,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of type object.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function notObject($actual): self
+        public function notObject(...$values): self
         {
-            $this->assertIsNotObject($actual, _('The result is of the object type'));
+            foreach ($values as $value) {
+                $this->assertIsNotObject($value, _('The result is of the object type'));
+            }
             return $this;
         }
 
@@ -304,14 +358,16 @@ namespace Imperium\Testing {
          *
          * Asserts that actual is empty.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function empty($actual): self
+        public function empty(...$values): self
         {
-            $this->assertEmpty($actual, _('The result is not empty'));
+            foreach ($values as $value) {
+                $this->assertEmpty($value, _('The result is not empty'));
+            }
             return $this;
         }
 
@@ -320,14 +376,16 @@ namespace Imperium\Testing {
          *
          * Asserts that actual is not empty.
          *
-         * @param mixed $actual The value to check.
+         * @param mixed $values The value to check.
          *
          * @return Unit
          *
          */
-        public function def($actual): self
+        public function def(...$values): self
         {
-            $this->assertNotEmpty($actual, _('The result is empty'));
+            foreach ($values as $value) {
+                $this->assertNotEmpty($value, _('The result is empty'));
+            }
             return $this;
         }
 
@@ -335,15 +393,16 @@ namespace Imperium\Testing {
          *
          * Asserts that values contains a value.
          *
-         * @param mixed $value The value to check the existence
-         * @param iterable $values All values.
-         *
+         * @param iterable $data All values.
+         * @param mixed $values all values to check.
          * @return Unit
          *
          */
-        public function exist($value, iterable $values): self
+        public function exist(iterable $data, ...$values): self
         {
-            $this->assertContains($value, $values, _('The value has not been found in all values'));
+            foreach ($values as $value) {
+                $this->assertContains($value, $data, _('The value has not been found in all values'));
+            }
             return $this;
         }
 
@@ -351,15 +410,17 @@ namespace Imperium\Testing {
          *
          * Asserts that a values does not contain a value.
          *
-         * @param mixed $value The value to check the existence
-         * @param iterable $values All values.
+         * @param iterable $data All values.
+         * @param mixed $values The values to check.
          *
          * @return Unit
          *
          */
-        public function notExist($value, iterable $values): self
+        public function notExist(iterable $data, ...$values): self
         {
-            $this->assertNotContains($value, $values, _('The value has been found in all values'));
+            foreach ($values as $value) {
+                $this->assertNotContains($value, $data, _('The value has been found in all values'));
+            }
             return $this;
         }
 
@@ -367,15 +428,17 @@ namespace Imperium\Testing {
          *
          * Asserts that an array does not have a specified key.
          *
-         * @param mixed $key The key to verify the non existence.
          * @param array $array The array to parse.
+         * @param mixed $keys The keys to verify the no existence.
          *
          * @return Unit
          *
          */
-        public function notHas($key, array $array): self
+        public function notHas(array $array, ...$keys): self
         {
-            $this->assertArrayNotHasKey($key, $array, _('The key has been found in the array'));
+            foreach ($keys as $key) {
+                $this->assertArrayNotHasKey($key, $array, _('The key has been found in the array'));
+            }
             return $this;
         }
 
@@ -383,15 +446,16 @@ namespace Imperium\Testing {
          *
          * Asserts that an array has a specified key.
          *
-         * @param mixed $key The key to verify the existence.
          * @param array $array The array to parse.
-         *
+         * @param mixed $keys The keys to verify the existence.
          * @return Unit
          *
          */
-        public function has($key, array $array): self
+        public function has(array $array, ...$keys): self
         {
-            $this->assertArrayHasKey($key, $array, _('The key has not been found in the array'));
+            foreach ($keys as $key) {
+                $this->assertArrayHasKey($key, $array, _('The key has not been found in the array'));
+            }
             return $this;
         }
 
@@ -477,17 +541,20 @@ namespace Imperium\Testing {
          * Asserts that a variable is of a given type.
          *
          * @param class-string $instance The expected instance.
-         * @param mixed $actual The actual instance.
+         * @param mixed $values The actual instance.
          *
          * @return Unit
          */
-        public function is(string $instance, $actual): self
+        public function is(string $instance, ...$values): self
         {
-            $this->assertInstanceOf(
-                $instance,
-                $actual,
-                _('The instance is not an instance of the expected class')
-            );
+            foreach ($values as $value) {
+                $this->assertInstanceOf(
+                    $instance,
+                    $value,
+                    _('The instance is not an instance of the expected class')
+                );
+            }
+
             return $this;
         }
 
@@ -496,19 +563,21 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of a given type.
          *
-         * @param class-string $instance The expected instance.
+         * @param class-string $instances The expected instance.
          * @param mixed $actual The actual instance.
          *
          * @return Unit
          *
          */
-        public function not(string $instance, $actual): self
+        public function not($actual, ...$instances): self
         {
-            $this->assertNotInstanceOf(
-                $instance,
-                $actual,
-                _('The instance is not an instance of the expected class')
-            );
+            foreach ($instances as $instance) {
+                $this->assertNotInstanceOf(
+                    $instance,
+                    $actual,
+                    _('The instance is not an instance of the expected class')
+                );
+            }
             return $this;
         }
 
@@ -516,15 +585,17 @@ namespace Imperium\Testing {
          *
          * Asserts that a class has a specified attribute.
          *
-         * @param string $name The attribute name.
          * @param string $class The class name.
+         * @param mixed $attributes the attribute to check
          *
          * @return Unit
          *
          */
-        public function hasAttribute(string $name, string $class): self
+        public function hasAttribute(string $class, ...$attributes): self
         {
-            $this->assertClassHasAttribute($name, $class, _('The class attribute has not been found'));
+            foreach ($attributes as $attribute) {
+                $this->assertClassHasAttribute($attribute, $class, _('The class attribute has not been found'));
+            }
             return $this;
         }
 
@@ -532,15 +603,17 @@ namespace Imperium\Testing {
          *
          * Asserts that a class does not have a specified attribute.
          *
-         * @param string $name The attribute name.
          * @param string $class The class name.
+         * @param mixed $attributes The attributes names.
          *
          * @return self
          *
          */
-        public function hasNotAttribute(string $name, string $class): self
+        public function hasNotAttribute(string $class, ...$attributes): self
         {
-            $this->assertClassNotHasAttribute($name, $class, _('The class attribute has been found'));
+            foreach ($attributes as $attribute) {
+                $this->assertClassNotHasAttribute($attribute, $class, _('The class attribute has been found'));
+            }
             return $this;
         }
 
@@ -548,15 +621,17 @@ namespace Imperium\Testing {
          *
          * Asserts that a class has a specified static attribute.
          *
-         * @param string $name The attribute name.
          * @param string $class The class name.
+         * @param mixed $attributes The attributes names.
          *
          * @return Unit
          *
          */
-        public function hasStatic(string $name, string $class): self
+        public function hasStatic(string $class, ...$attributes): self
         {
-            $this->assertClassHasStaticAttribute($name, $class, _('The attribute has not been found in the class'));
+            foreach ($attributes as $attribute) {
+                $this->assertClassHasStaticAttribute($attribute, $class, _('The attribute has not been found'));
+            }
             return $this;
         }
 
@@ -564,14 +639,16 @@ namespace Imperium\Testing {
          *
          * Asserts that a class does not have a specified static attribute.
          *
-         * @param string $name The attribute name.
          * @param string $class The class name.
-         *
+         * @param mixed  $attributes the attributes names.
          * @return Unit
+         *
          */
-        public function hasNotStatic(string $name, string $class): self
+        public function hasNotStatic(string $class, ...$attributes): self
         {
-            $this->assertClassNotHasStaticAttribute($name, $class, _('The attribute has been found in the class'));
+            foreach ($attributes as $attribute) {
+                $this->assertClassNotHasStaticAttribute($attribute, $class, _('The attribute has been found'));
+            }
             return $this;
         }
     }

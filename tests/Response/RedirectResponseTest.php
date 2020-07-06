@@ -3,13 +3,13 @@
 namespace Testing\Response;
 
 use Imperium\Http\Response\RedirectResponse;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 
-class RedirectResponseTest extends TestCase
+class RedirectResponseTest extends Unit
 {
 
     public function test()
     {
-        $this->assertTrue((new RedirectResponse('/'))->send()->to('/'));
+        $this->success((new RedirectResponse('/'))->send()->to('/'));
     }
 }

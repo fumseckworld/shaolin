@@ -6,19 +6,19 @@ use Imperium\Exception\Kedavra;
 use Imperium\Http\Parameters\Bag;
 use Imperium\Http\Parameters\UploadedFile;
 use Imperium\Http\Request\ServerRequest;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 
-class ServerRequestTest extends TestCase
+class ServerRequestTest extends Unit
 {
     public function testMatch()
     {
-        $this->assertTrue((new ServerRequest('/'))->match('/'));
-        $this->assertFalse((new ServerRequest('/news'))->match('/'));
+        $this->success((new ServerRequest('/'))->match('/'))
+            ->failure((new ServerRequest('/news'))->match('/'));
     }
 
     public function testException()
     {
-        $this->expectException(Kedavra::class);
+        $this->throw(Kedavra::class, 'The method used is not supported');
         new ServerRequest('/', 'put');
         new ServerRequest('/', 'delete');
         new ServerRequest('/', '');
@@ -26,42 +26,45 @@ class ServerRequestTest extends TestCase
 
     public function testMethod()
     {
-        $this->assertEquals('GET', (new ServerRequest('/', 'get'))->method());
-        $this->assertEquals('POST', (new ServerRequest('/', 'post'))->method());
+        $this->identic('GET', (new ServerRequest('/', 'get'))->method())
+            ->identic('POST', (new ServerRequest('/', 'post'))->method());
     }
 
     public function testUrl()
     {
-        $this->assertEquals('/', (new ServerRequest('/'))->url());
+        $this->identic('/', (new ServerRequest('/'))->url());
     }
 
     public function testSubmitted()
     {
-        $this->assertFalse((new ServerRequest('/'))->submitted());
-        $this->assertTrue((new ServerRequest('/', 'post'))->submitted());
+        $this->failure((new ServerRequest('/'))->submitted())
+            ->success((new ServerRequest('/', 'post'))->submitted());
     }
 
     public function testLocal()
     {
-        $this->assertTrue((new ServerRequest('/'))->local());
+        $this->success((new ServerRequest('/'))->local());
     }
 
     public function testBag()
     {
         $server = new ServerRequest('/');
-        $this->assertInstanceOf(Bag::class, $server->query());
-        $this->assertInstanceOf(Bag::class, $server->cookie());
-        $this->assertInstanceOf(Bag::class, $server->request());
-        $this->assertInstanceOf(Bag::class, $server->server());
-        $this->assertInstanceOf(UploadedFile::class, $server->files());
+        $this->is(
+            Bag::class,
+            $server->query(),
+            $server->cookie(),
+            $server->request(),
+            $server->server()
+        );
+        $this->is(UploadedFile::class, $server->files());
     }
     public function testHasToken()
     {
-        $this->assertFalse((new ServerRequest('/'))->hasToken());
+        $this->failure((new ServerRequest('/'))->hasToken());
     }
 
     public function testGenerate()
     {
-        $this->assertInstanceOf(ServerRequest::class, ServerRequest::generate());
+        $this->is(ServerRequest::class, ServerRequest::generate());
     }
 }

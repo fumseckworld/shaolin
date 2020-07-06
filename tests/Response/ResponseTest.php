@@ -3,22 +3,26 @@
 namespace Testing\Response;
 
 use Imperium\Http\Response\Response;
-use PHPUnit\Framework\TestCase;
+use Imperium\Testing\Unit;
 
-class ResponseTest extends TestCase
+class ResponseTest extends Unit
 {
 
     public function testSuccess()
     {
-        $this->assertTrue((new Response())->send()->success());
-        $this->assertTrue((new Response())->send()->is(200));
-        $this->assertEquals(200, (new Response())->send()->status());
-        $this->assertEquals(2, (new Response('<p>promise</p><p>a</p>'))->sum('<p>'));
-        $this->assertEquals('<p>promise</p><p>a</p>', (new Response('<p>promise</p><p>a</p>'))->content());
-        $this->assertTrue((new Response('<p>promise</p><p>a</p>'))->see('promise'));
-        $this->assertFalse((new Response('<p>promise</p><p>a</p>'))->see('promisesa'));
-        $this->assertTrue((new Response('', '', 404))->error());
-        $this->assertTrue((new Response('', '', 403))->forbidden());
-        $this->assertTrue((new Response('', '', 301))->redirect());
+        $this->success(
+            (new Response())->send()->success(),
+            (new Response())->send()->is(200)
+        )
+            ->identic(200, (new Response())->send()->status())
+            ->identic(2, (new Response('<p>promise</p><p>a</p>'))->sum('<p>'))
+            ->identic('<p>promise</p><p>a</p>', (new Response('<p>promise</p><p>a</p>'))->content())
+            ->success((new Response('<p>promise</p><p>a</p>'))->see('promise'))
+            ->failure((new Response('<p>promise</p><p>a</p>'))->see('promisesa'))
+            ->success(
+                (new Response('', '', 404))->error(),
+                (new Response('', '', 403))->forbidden(),
+                (new Response('', '', 301))->redirect()
+            );
     }
 }
