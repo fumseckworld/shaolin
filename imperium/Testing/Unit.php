@@ -2,10 +2,7 @@
 
 namespace Imperium\Testing {
 
-
     use PHPUnit\Framework\TestCase;
-
-    use function DI\value;
 
     abstract class Unit extends TestCase
     {
@@ -18,7 +15,7 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function null(...$actual): self
+        public function notDef(...$actual): self
         {
             foreach ($actual as $value) {
                 $this->assertNull($value, _('The data are not equal to null'));
@@ -50,7 +47,6 @@ namespace Imperium\Testing {
          * @param string $message The expected message.
          *
          * @return Unit
-         *
          */
         public function throw(string $expected, string $message): self
         {
@@ -58,6 +54,7 @@ namespace Imperium\Testing {
             $this->expectExceptionMessage($message);
             return $this;
         }
+
         /**
          *
          * Asserts that a condition is false.
@@ -464,12 +461,12 @@ namespace Imperium\Testing {
          * Asserts that two variables are equal.
          *
          * @param mixed $expected The expected value.
-         * @param mixed $actual   The actual value.
+         * @param mixed $actual The actual value.
          *
          * @return Unit
          *
          */
-        public function identic($expected, $actual): self
+        public function identical($expected, $actual): self
         {
             $this->assertEquals($expected, $actual, _('The actual value is not identic to the expected value'));
             return $this;
@@ -480,7 +477,7 @@ namespace Imperium\Testing {
          * Asserts that two variables are not equal.
          *
          * @param mixed $expected The expected value.
-         * @param mixed $actual   The actual value.
+         * @param mixed $actual The actual value.
          *
          * @return Unit
          *
@@ -540,7 +537,7 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is of a given type.
          *
-         * @param class-string $instance The expected instance.
+         * @param class-string<object> $instance
          * @param mixed $values The actual instance.
          *
          * @return Unit
@@ -563,8 +560,8 @@ namespace Imperium\Testing {
          *
          * Asserts that a variable is not of a given type.
          *
-         * @param class-string $instances The expected instance.
          * @param mixed $actual The actual instance.
+         * @param class-string<object> $instances
          *
          * @return Unit
          *
@@ -640,7 +637,7 @@ namespace Imperium\Testing {
          * Asserts that a class does not have a specified static attribute.
          *
          * @param string $class The class name.
-         * @param mixed  $attributes the attributes names.
+         * @param mixed $attributes the attributes names.
          * @return Unit
          *
          */
@@ -648,6 +645,128 @@ namespace Imperium\Testing {
         {
             foreach ($attributes as $attribute) {
                 $this->assertClassNotHasStaticAttribute($attribute, $class, _('The attribute has been found'));
+            }
+            return $this;
+        }
+
+        /**
+         *
+         * Asserts the number of elements of an array, Countable or Traversable.
+         *
+         * @param int $expected The expected number.
+         * @param iterable $value The data to count.
+         *
+         * @return Unit
+         *
+         */
+        public function sum(int $expected, iterable $value): self
+        {
+            $this->assertCount($expected, $value, _('The results not match te expected value'));
+            return $this;
+        }
+
+        /**
+         *
+         * Asserts that directories exists.
+         *
+         * @param mixed ...$directories The directories name to check.
+         *
+         * @return Unit
+         *
+         */
+        public function directoriesExist(...$directories): self
+        {
+            foreach ($directories as $directory) {
+                $this->assertDirectoryExists($directory, _('The directory not exists'));
+            }
+            return $this;
+        }
+
+
+        /**
+         *
+         * Asserts that a directory does not exist.
+         *
+         * @param mixed ...$directories The directories to check.
+         *
+         * @return Unit
+         *
+         */
+        public function directoriesNotExist(...$directories): self
+        {
+            foreach ($directories as $directory) {
+                $this->assertDirectoryNotExists($directory, _('The directory has been found'));
+            }
+            return $this;
+        }
+
+        /**
+         *
+         * Asserts that a directory exists and is readable.
+         *
+         * @param mixed ...$directories The directories to check.
+         *
+         * @return Unit
+         *
+         */
+        public function directoriesReadable(...$directories): self
+        {
+            foreach ($directories as $directory) {
+                $this->assertDirectoryIsReadable($directory, _('The directory is not readable'));
+            }
+            return $this;
+        }
+
+
+        /**
+         *
+         * Asserts that a directory exists and is not readable.
+         *
+         * @param mixed ...$directories The directories to check.
+         *
+         * @return Unit
+         *
+         */
+        public function directoriesNotReadable(...$directories): self
+        {
+            foreach ($directories as $directory) {
+                $this->assertDirectoryNotIsReadable($directory, _('The directory is readable'));
+            }
+            return $this;
+        }
+
+
+        /**
+         *
+         * Asserts that a directory exists and is writable.
+         *
+         * @param mixed ...$directories The directories to check.
+         *
+         * @return Unit
+         *
+         */
+        public function directoriesWritable(...$directories): self
+        {
+            foreach ($directories as $directory) {
+                $this->assertDirectoryIsWritable($directory, _('The directory is not writable'));
+            }
+            return $this;
+        }
+
+
+        /**
+         *
+         * Asserts that a directory exists and is not writable.
+         *
+         * @param mixed ...$directories The directories to check.
+         *
+         * @return Unit
+         *
+         */
+        public function directoriesNotWritable(...$directories): self
+        {
+            foreach ($directories as $directory) {
+                $this->assertDirectoryNotIsWritable($directory, _('The directory is writable'));
             }
             return $this;
         }

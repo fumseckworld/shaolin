@@ -17,19 +17,27 @@ class AdminHelpersTest extends Unit
 
     public function testBase()
     {
-        $this->def(base(), base('imperium'))
+        $this->def(
+            base(),
+            base('imperium'),
+            base('imperium/Html'),
+            base('core/models/Users.php')
+        )
             ->success(
                 is_dir(base('bidon', 'alexandre')),
                 file_exists(base('bidon', 'a.php')),
                 unlink(base('bidon', 'a.php')),
-                rmdir(base('bidon', 'alexandre'))
+                rmdir(base('bidon', 'alexandre')),
+                unlink(base('core', 'models', 'Users.php')),
+                rmdir(base('core', 'models')),
+                rmdir(base('core'))
             );
         $this->assertStringContainsString('imperium', base('imperium'));
     }
 
     public function testImperium()
     {
-        $this->identic('a', imperium('', 'a'));
+        $this->identical('a', imperium('', 'a'));
     }
 
     public function testLogged()
@@ -45,15 +53,15 @@ class AdminHelpersTest extends Unit
 
     public function testSnake()
     {
-        $this->identic('linux_is_super', camel_to_snake('LinuxIsSuper'))
-            ->identic('LinuxIsSuper', snake_to_camel('linux_is_super'))
+        $this->identical('linux_is_super', camel_to_snake('LinuxIsSuper'))
+            ->identical('LinuxIsSuper', snake_to_camel('linux_is_super'))
             ->success(is_snake('a_a_aa_adz'))
             ->failure(is_snake('LinuxIsSuper'));
     }
 
     public function testCamel()
     {
-        $this->identic('LinuxIsSuper', snake_to_camel('linux_is_super'))
+        $this->identical('LinuxIsSuper', snake_to_camel('linux_is_super'))
             ->success(is_camel('LinuxIsSuper'));
     }
 
@@ -62,8 +70,21 @@ class AdminHelpersTest extends Unit
         $this->success(is_slug('a-ala-12'))->failure(is_slug('ALEXANDRA-2'));
     }
 
-    public function testIsInteger()
+
+    public function testsSluglify()
     {
-        $this->failure(is_integer('1'))->success(is_integer(2))->failure(is_integer(true));
+        $this->success(
+            is_slug(sluglify('a.ape.ae')),
+        );
+        $this->identical('a-super-website', sluglify('a.super.website'));
+        $this->identical('a-axandra', sluglify('a-axandra'));
+        $this->identical('a-super-website', sluglify('a,super,website'));
+        $this->identical('a-super-website-alexandra-a', sluglify('a. super. website, alexandra.a'));
+        $this->identical('a-super-website', sluglify('a.super.website'));
+        $this->identical('a-tomato-superb', sluglify('a tomato superb'));
+        $this->identical('a-tomato-superb', sluglify('a_tomato_superb'));
+        $this->identical('a-tomato-superb', sluglify('a, tomato, superb'));
+        $this->identical('ulyse-super-heros', sluglify('ULYSE, SUPER, HEROS'));
+        $this->empty(sluglify(''));
     }
 }

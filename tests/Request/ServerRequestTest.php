@@ -26,13 +26,13 @@ class ServerRequestTest extends Unit
 
     public function testMethod()
     {
-        $this->identic('GET', (new ServerRequest('/', 'get'))->method())
-            ->identic('POST', (new ServerRequest('/', 'post'))->method());
+        $this->identical('GET', (new ServerRequest('/', 'get'))->method())
+            ->identical('POST', (new ServerRequest('/', 'post'))->method());
     }
 
     public function testUrl()
     {
-        $this->identic('/', (new ServerRequest('/'))->url());
+        $this->identical('/', (new ServerRequest('/'))->url());
     }
 
     public function testSubmitted()

@@ -229,7 +229,13 @@ if (!function_exists('sluglify')) {
         if (is_slug($slug)) {
             return $slug;
         }
+        if (def(strstr($slug, '_'))) {
+            $slug = collect(explode('_', $slug))->join('-');
+        }
 
+        if (is_slug($slug)) {
+            return $slug;
+        }
         return '';
     }
 }
@@ -333,41 +339,6 @@ if (!function_exists('check_password')) {
     }
 }
 
-
-if (!function_exists('is_integer')) {
-
-    /**
-     *
-     * @param mixed $digit
-     *
-     * @return bool
-     *
-     */
-    function is_integer($digit): bool
-    {
-        if (is_int($digit)) {
-            return true;
-        } elseif (is_string($digit)) {
-            return ctype_digit($digit);
-        }
-        return false;
-    }
-}
-
-if (!function_exists('not_integer')) {
-
-    /**
-     *
-     * @param mixed $digit
-     *
-     * @return bool
-     *
-     */
-    function not_integer($digit): bool
-    {
-        return !is_integer($digit);
-    }
-}
 
 if (!function_exists('def')) {
 

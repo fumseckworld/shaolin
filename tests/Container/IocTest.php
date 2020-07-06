@@ -20,7 +20,7 @@ class IocTest extends Unit
 
     public function testCall()
     {
-        $this->identic('hello', $this->ioc->call(function () {
+        $this->identical('hello', $this->ioc->call(function () {
             return 'hello';
         }));
     }

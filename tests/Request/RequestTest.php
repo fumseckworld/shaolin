@@ -24,8 +24,8 @@ class RequestTest extends Unit
     public function testRequest()
     {
         $request = new Request(['id' => 4, 'username' => 'Willy']);
-        $this->identic(4, $request->request()->get('id'))
-            ->identic('Willy', $request->request()->get('username'))
+        $this->identical(4, $request->request()->get('id'))
+            ->identical('Willy', $request->request()->get('username'))
             ->empty(
                 $request->query()->all(),
                 $request->cookie()->all(),
@@ -47,7 +47,7 @@ class RequestTest extends Unit
         // $_GET
 
         $this->assertNotEmpty($request->query()->all());
-        $this->identic(50, $request->query()->get('page'))->identic('thriller', $request->query()->get('genre'));
+        $this->identical(50, $request->query()->get('page'))->identical('thriller', $request->query()->get('genre'));
 
         $this->empty(
             $request->cookie()->all(),
@@ -180,7 +180,7 @@ class RequestTest extends Unit
             $request->cookie()->all(),
             $request->args()->all(),
             $request->files()->all()
-        )->def($request->server()->all())->identic('/', $request->server()->get('REQUEST_URI'));
+        )->def($request->server()->all())->identical('/', $request->server()->get('REQUEST_URI'));
     }
 
     public function testArgs()
@@ -199,7 +199,7 @@ class RequestTest extends Unit
             $request->cookie()->all(),
             $request->server()->all(),
             $request->files()->all()
-        )->def($request->args()->all())->identic('jour-de-gloire', $request->args()->get('slug'));
+        )->def($request->args()->all())->identical('jour-de-gloire', $request->args()->get('slug'));
     }
 
     public function testSecure()
@@ -209,7 +209,7 @@ class RequestTest extends Unit
 
     public function testIp()
     {
-        $this->identic('127.0.0.1', (new Request())->ip())->success((new Request())->local());
+        $this->identical('127.0.0.1', (new Request())->ip())->success((new Request())->local());
     }
 
     public function testMake()
@@ -228,12 +228,12 @@ class RequestTest extends Unit
 
     public function testInt()
     {
-        $this->identic(300, (new Request(['soldiers' => '300']))->request()->int('soldiers'));
+        $this->identical(300, (new Request(['soldiers' => '300']))->request()->int('soldiers'));
     }
 
     public function testDigits()
     {
-        $this->identic(
+        $this->identical(
             300,
             (new Request(
                 [
@@ -245,7 +245,7 @@ class RequestTest extends Unit
     }
     public function testAlpha()
     {
-        $this->identic(
+        $this->identical(
             'Leonidasthekingofspartehasbeengonetowarwithspartiatestodefendsparte',
             (new Request(
                 [
@@ -257,7 +257,7 @@ class RequestTest extends Unit
     }
     public function testAlnum()
     {
-        $this->identic('30days', (new Request(['days' => '30 days']))->request()->alnum('days'));
+        $this->identical('30days', (new Request(['days' => '30 days']))->request()->alnum('days'));
     }
 
     public function testBoolean()
@@ -268,12 +268,12 @@ class RequestTest extends Unit
 
     public function testValues()
     {
-        $this->identic(['a', 'b', 'c'], (new Request(['a', 'b', 'c']))->request()->values());
+        $this->identical(['a', 'b', 'c'], (new Request(['a', 'b', 'c']))->request()->values());
     }
 
     public function testKeys()
     {
-        $this->identic([0, 1, 2], (new Request(['a', 'b', 'c']))->request()->keys());
+        $this->identical([0, 1, 2], (new Request(['a', 'b', 'c']))->request()->keys());
     }
 
     public function testDestroy()
@@ -284,12 +284,12 @@ class RequestTest extends Unit
     public function testSet()
     {
         $this->is(Bag::class, (new Request())->request()->set('a', 'b'))
-            ->identic(2, (new Request())->query()->set('a', 2)->get('a'));
+            ->identical(2, (new Request())->query()->set('a', 2)->get('a'));
     }
 
     public function testCount()
     {
-        $this->identic(1, (new Request())->request()->set('a', 'a')->count());
+        $this->identical(1, (new Request())->request()->set('a', 'a')->count());
     }
 
     public function testGetIterator()
