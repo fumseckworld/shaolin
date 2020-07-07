@@ -34,7 +34,7 @@ namespace Imperium\Http\Parameters {
      * @package Imperium\Http\Parameters\Bag
      * @version 12
      *
-     * @property array  $data All request values.
+     * @property array $data All request values.
      *
      */
     class Bag implements IteratorAggregate, Countable
@@ -83,7 +83,7 @@ namespace Imperium\Http\Parameters {
          * Return the value on success or false on failure.
          *
          * @param string $key The value key.
-         * @param mixed  $default The value if not define.
+         * @param mixed $default The value if not define.
          *
          * @return mixed
          *
@@ -97,8 +97,8 @@ namespace Imperium\Http\Parameters {
          *
          * Set a value for a specific key.
          *
-         * @param string $key   The bag key.
-         * @param mixed  $value The bag value.
+         * @param string $key The bag key.
+         * @param mixed $value The bag value.
          *
          * @return Bag
          *
@@ -157,9 +157,8 @@ namespace Imperium\Http\Parameters {
         {
             if ($this->has($key)) {
                 unset($this->data[$key]);
-                return !$this->has($key);
+                return true;
             }
-
             return false;
         }
 
@@ -176,6 +175,36 @@ namespace Imperium\Http\Parameters {
         public function int(string $key, int $default = 0): int
         {
             return intval($this->get($key, $default));
+        }
+
+        /**
+         *
+         * Return the parameter value converted in a string.
+         *
+         * @param string $key The parameter key.
+         * @param integer $default The default value.
+         *
+         * @return string
+         *
+         */
+        public function string(string $key, int $default = 0): string
+        {
+            return strval($this->get($key, $default));
+        }
+
+        /**
+         *
+         * Return the parameter value converted in a double.
+         *
+         * @param string $key The parameter key.
+         * @param integer $default The default value.
+         *
+         * @return float
+         *
+         */
+        public function double(string $key, int $default = 0): float
+        {
+            return doubleval($this->get($key, $default));
         }
 
         /**
@@ -197,8 +226,8 @@ namespace Imperium\Http\Parameters {
          *
          * Get the digits of a parameter value.
          *
-         * @param string $key       The parameter key
-         * @param string $default   The parameter default value.
+         * @param string $key The parameter key
+         * @param string $default The parameter default value.
          *
          * @return string
          *
@@ -213,10 +242,10 @@ namespace Imperium\Http\Parameters {
          *
          * Filter a key
          *
-         * @param string    $key        The parameter key to filter.
-         * @param mixed     $default    The default parameter value.
-         * @param integer   $filter     The filter constant.
-         * @param array     $options    The filter option.
+         * @param string $key The parameter key to filter.
+         * @param mixed $default The default parameter value.
+         * @param integer $filter The filter constant.
+         * @param array $options The filter option.
          *
          * @return mixed
          *
@@ -232,8 +261,8 @@ namespace Imperium\Http\Parameters {
          *
          * Get the alphabetic characters of the parameter value.
          *
-         * @param string $key       The parameter key
-         * @param string $default   The parameter default value
+         * @param string $key The parameter key
+         * @param string $default The parameter default value
          *
          * @return string
          *
@@ -247,8 +276,8 @@ namespace Imperium\Http\Parameters {
          *
          * Get the the alphabetic characters and digits of the parameter value.
          *
-         * @param string $key       The parameter key
-         * @param string $default   The default parameter value
+         * @param string $key The parameter key
+         * @param string $default The default parameter value
          *
          * @return string
          *

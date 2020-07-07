@@ -43,9 +43,6 @@ namespace Imperium\Http\Request {
      */
     final class Request
     {
-
-
-
         /**
          *
          * Initialize a new request
