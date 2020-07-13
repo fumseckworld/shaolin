@@ -16,6 +16,8 @@
  *
  */
 
+use DI\DependencyException;
+use DI\NotFoundException;
 use Imperium\Configuration\Config;
 use Imperium\Configuration\Personalization\Imperium;
 use Imperium\Container\Ioc;
@@ -43,7 +45,7 @@ if (!function_exists('validator_messages')) {
             VALIDATOR_ARGUMENT_NOT_BETWEEN => config($file, 'between', 'The %s argument must be between %d and %d'),
             VALIDATOR_ARGUMENT_SUPERIOR_OF_MAX_VALUE => config($file, 'max', 'The %s argument is superior to %d'),
             VALIDATOR_ARGUMENT_SUPERIOR_MIN_OF_VALUE => config($file, 'min', 'The %s argument is inferior to %d'),
-            VALIDATOR_ARGUMENT_SLUG =>  config($file, 'slug', 'The %s is not a slug'),
+            VALIDATOR_ARGUMENT_SLUG => config($file, 'slug', 'The %s is not a slug'),
             VALIDATOR_ARGUMENT_SNAKE => config($file, 'snake', 'The %s is not a snake case string format'),
             VALIDATOR_ARGUMENT_CAMEL_CASE => config($file, 'camel', 'The %s is not a camel case string format'),
             VALIDATOR_ARGUMENT_ARRAY => config($file, 'array', 'The %s is not an array'),
@@ -100,7 +102,6 @@ if (!function_exists('not_def')) {
         return true;
     }
 }
-
 
 
 if (!function_exists('camel_to_snake')) {
@@ -177,7 +178,7 @@ if (!function_exists('sluglify')) {
 
         $point = function (string $point) {
             $x = function ($x) {
-                return  str_replace(
+                return str_replace(
                     '__',
                     '_',
                     str_replace(
@@ -282,6 +283,9 @@ if (!function_exists('logged')) {
      *
      * @return boolean
      *
+     * @throws NotFoundException
+     * @throws Exception
+     * @throws DependencyException
      */
     function logged(): bool
     {
@@ -296,6 +300,10 @@ if (!function_exists('guest')) {
      * Check if te user is not logged.
      *
      * @return boolean
+     *
+     * @throws NotFoundException
+     * @throws Exception
+     * @throws DependencyException
      *
      */
     function guest(): bool
@@ -312,7 +320,6 @@ if (!function_exists('secure_password')) {
      *
      * @return string
      *
-     * @throws Kedavra
      *
      */
     function secure_password(string $value): string
@@ -331,7 +338,6 @@ if (!function_exists('check_password')) {
      *
      * @return bool
      *
-     * @throws Kedavra
      */
     function check_password(string $plain_text_password, string $hash_value): bool
     {
@@ -402,7 +408,7 @@ if (!function_exists('base')) {
                             }
                         }
                     } else {
-                        $base .=   DIRECTORY_SEPARATOR . $dir;
+                        $base .= DIRECTORY_SEPARATOR . $dir;
                         if (strcmp($dir, '*') !== 0) {
                             if (!file_exists($base)) {
                                 if (def(strstr($base, '.'))) {
@@ -452,6 +458,10 @@ if (!function_exists('app')) {
      *
      * @return mixed
      *
+     * @throws NotFoundException
+     * @throws Exception
+     * @throws DependencyException
+     *
      */
     function app(string $key)
     {
@@ -472,7 +482,7 @@ if (!function_exists('files')) {
      */
     function files(string $pattern): array
     {
-        $x =  glob($pattern);
+        $x = glob($pattern);
         return is_bool($x) ? [] : $x;
     }
 }
@@ -487,10 +497,14 @@ if (!function_exists('env')) {
      * If the variable is not define
      * the default value is returned.
      *
-     * @param string $key       The environment key.
-     * @param mixed  $default   The default value if not found.
+     * @param string $key     The environment key.
+     * @param mixed  $default The default value if not found.
      *
      * @return mixed
+     *
+     * @throws NotFoundException
+     * @throws Exception
+     * @throws DependencyException
      *
      */
     function env(string $key, $default = null)
@@ -505,8 +519,8 @@ if (!function_exists('config')) {
      *
      * Get a config value
      *
-     * @param string $file  The config filename.
-     * @param string $key   The config key value.
+     * @param string $file    The config filename.
+     * @param string $key     The config key value.
      * @param mixed  $default The default value if not exist.
      *
      * @return mixed

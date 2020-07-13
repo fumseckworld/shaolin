@@ -43,7 +43,7 @@ namespace Imperium\Container {
      *
      * It's the parent class of container class.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Container\Ioc
      * @version 12
      *
@@ -64,8 +64,8 @@ namespace Imperium\Container {
          *
          * @throws NotFoundException
          * @throws Exception
-         *
          * @throws DependencyException
+         *
          */
         final public function get(string $key)
         {
@@ -76,8 +76,8 @@ namespace Imperium\Container {
          *
          * Define an object or a value in the container.
          *
-         * @param string $key The container key.
-         * @param mixed $value The container value.
+         * @param string $key   The container key.
+         * @param mixed  $value The container value.
          *
          * @return Ioc
          *
@@ -97,7 +97,7 @@ namespace Imperium\Container {
          * Missing parameters will be resolved from the container.
          *
          * @param Closure $callback The callback to call.
-         * @param array $args The callback arguments.
+         * @param array   $args     The callback arguments.
          *
          * @return mixed
          *
@@ -113,8 +113,8 @@ namespace Imperium\Container {
          *
          * Make always a new instance
          *
-         * @param string $key The container key.
-         * @param array $args All parameters.
+         * @param string $key  The container key.
+         * @param array  $args All parameters.
          *
          * @return object
          *
