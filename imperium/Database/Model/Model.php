@@ -17,10 +17,12 @@
  */
 
 namespace Imperium\Database\Model {
-
+    
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Html\Pagination\Pagination;
     use stdClass;
-
+    
     /**
      *
      * Represent the core of all models.
@@ -29,59 +31,60 @@ namespace Imperium\Database\Model {
      *
      * It's the parent class of all model class.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Database\Model
      * @version 12
+     * @todo    Add crud missing method must be return an response.
      *
      **/
     abstract class Model
     {
-
+        
         /**
          * The table name
          */
         protected static string $table = '';
-
+        
         /**
          * The table prefix
          */
         protected static string $prefix = '';
-
+        
         /**
          *
          * Html code before the content of results.4
          *
          */
         protected static string $beforeContent = '';
-
-
+        
+        
         /**
          *
          * Html code after the content of results.
          *
          */
         protected static string $afterContent = '';
-
-
+        
+        
         /**
          *
          * Html code before the pagination
          *
          */
         protected static string $beforePagination = '';
-
+        
         /**
          *
          * Html code after the pagination of results.
          *
          */
         protected static string $afterPagination = '';
-
+        
         /**
          * The per page number
          */
         protected static int $limit = 24;
-
+        
         /**
          *
          * Method used to paginate all results inside the table.
@@ -92,109 +95,116 @@ namespace Imperium\Database\Model {
          *
          */
         abstract public static function each(stdClass $record): string;
-
-
+        
+        
         /**
          *
-         * Search a value inside a table.
+         * Search the value inside a table.
          *
-         * @param mixed     $value The value to search.
+         * @param mixed $value        The value to search.
+         * @param int   $current_page The current page to display
          *
-         * @return array
-         *
-         */
-        final public static function search($value): array
-        {
-            $x = app('connect');
-            if ($x->mysql() || $x->postgresql()) {
-                $columns = join(', ', app('table')->from(static::from())->columns());
-
-                $where = "WHERE CONCAT($columns) LIKE '%$value%'";
-            } else {
-                $fields = app('table')->from(static::from())->columns();
-                $end = end($fields);
-                $columns =  '';
-                foreach ($fields as $field) {
-                    if (strcmp($field, $end) != 0) {
-                        $columns .= "$field LIKE '%$value%' OR ";
-                    } else {
-                        $columns .=  "$field LIKE '%$value%'";
-                    }
-                }
-                $where = "WHERE $columns";
-            }
-
-            return $x->get(sprintf('SELECT * FROM %s %s', static::from(), $where));
-        }
-
-        /**
-         *
-         * Paginate the results for a page.
-         *
-         * @param integer $current_page     The current page.
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return string
          *
          */
-        final public static function paginate(int $current_page): string
+        final public static function search($value, int $current_page = 1): string
+        {
+            $x = app('connect');
+            if ($x->mysql() || $x->postgresql()) {
+                $columns = join(', ', app('table')->from(static::from())->columns());
+                
+                $where = "WHERE CONCAT($columns) LIKE '%$value%'";
+            } else {
+                $fields = app('table')->from(static::from())->columns();
+                $end = end($fields);
+                $columns = '';
+                foreach ($fields as $field) {
+                    if (strcmp($field, $end) != 0) {
+                        $columns .= "$field LIKE '%$value%' OR ";
+                    } else {
+                        $columns .= "$field LIKE '%$value%'";
+                    }
+                }
+                $where = "WHERE $columns";
+            }
+            
+            return static::paginate($current_page, $x->get(sprintf('SELECT * FROM %s %s', static::from(), $where)));
+        }
+        
+        /**
+         *
+         * Display all result with a pagination.
+         *
+         * @param int   $current_page The current page to display.
+         * @param array $data         The data to paginate.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return string
+         *
+         */
+        final public static function paginate(int $current_page, array $data = []): string
         {
             $content = '';
             $sql = app('sql')->from(static::from());
             $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render(static::$table);
-
-            $records =  $sql->take(static::$limit, (($current_page) - 1) * static::$limit)
-                ->by($sql->primary())->results();
-
+            
+            if (def($data)) {
+                $records = $data;
+            } else {
+                $records = $sql->take(static::$limit, (($current_page) - 1) * static::$limit)
+                    ->by($sql->primary())->results();
+            }
+            
             foreach ($records as $record) {
                 $content .= static::each($record);
             }
-            return trim(sprintf(
-                '%s%s%s%s%s%s',
-                static::$beforeContent,
-                $content,
-                static::$afterContent,
-                static::$beforePagination,
-                $pagination,
-                static::$afterPagination
-            ));
+            return trim(
+                sprintf(
+                    '%s%s%s%s%s%s',
+                    static::$beforeContent,
+                    $content,
+                    static::$afterContent,
+                    static::$beforePagination,
+                    $pagination,
+                    static::$afterPagination
+                )
+            );
         }
-
+        
         /**
          *
-         * Update a record by this identifier.
+         * Find all results different of the expected value.
          *
-         * @param integer $id   The record identifier to update.
-         * @param array   $values The new record values.
+         * @param string $column       The value column name.
+         * @param mixed  $expected     The expected value to be escaped of the results lists.
+         * @param int    $current_page The current page to display.
          *
-         * @return boolean
+         * @throws DependencyException
+         * @throws NotFoundException
          *
-         **/
-        final public static function update(int $id, array $values): bool
-        {
-            return true;
-        }
-
-        /**
-         *
-         * Create a new record.
-         *
-         * @param array $values The new record values.
-         *
-         * @return boolean
+         * @return string
          *
          */
-        final public static function create(array $values): bool
+        final public static function different(string $column, $expected, int $current_page): string
         {
-            return true;
+            return static::paginate($current_page, app('sql')->where($column, '!=', $expected)->results());
         }
-
+        
         /**
          *
          * Find a record by this identifier.
          *
-         * @param integer $id The identifier.
+         * @param int $id The record identifier.
          *
-         * @return array
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return array<StdClass>
          *
          */
         final public static function find(int $id): array
@@ -202,50 +212,7 @@ namespace Imperium\Database\Model {
             $sql = app('sql')->from(static::from());
             return $sql->where($sql->primary(), '=', $id)->results();
         }
-
-        /**
-         *
-         * Get values different of the expected value.
-         *
-         * @param  string  $column The column name.
-         * @param  mixed   $expected The expected value.
-         *
-         * @return array
-         *
-         */
-        final public static function different(string $column, $expected): array
-        {
-            return app('sql')->where($column, '!=', $expected)->results();
-        }
-
-        /**
-         *
-         * Delete a record by this id.
-         *
-         * @param integer $id The record identifier to delete.
-         *
-         * @return boolean
-         *
-         */
-        final public static function destroy(int $id): bool
-        {
-            $sql = app('sql')->from(static::from());
-            return  $sql->where($sql->primary(), '=', $id)->delete();
-        }
-
-
-        /**
-         *
-         * Count all records in the table
-         *
-         * @return integer
-         *
-         */
-        final public static function all(): int
-        {
-            return app('sql')->from(static::from())->sum();
-        }
-
+        
         /**
          *
          * Get the complete table name.

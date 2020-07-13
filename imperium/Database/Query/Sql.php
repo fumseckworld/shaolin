@@ -17,29 +17,29 @@
  */
 
 namespace Imperium\Database\Query {
-
-
+    
+    
     /**
      *
      * Represent an instance of the query builder.
      *
      * This package contains all useful method to make the query builder.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Database\Query\Sql
      * @version 12
      *
      */
     class Sql
     {
-
+        
         /**
          *
          * Add a where clause
          *
-         * @param string $column The where column.
+         * @param string $column    The where column.
          * @param string $condition The where condition.
-         * @param mixed  $value The expected value.
+         * @param mixed  $value     The expected value.
          *
          * @return Sql
          *
@@ -48,8 +48,8 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Select the table to manage
@@ -63,14 +63,14 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
+        
         /**
          *
          * Add a or clause
          *
-         * @param string $column The or column name.
+         * @param string $column    The or column name.
          * @param string $condition The or condition.
-         * @param mixed  $value The expected value.
+         * @param mixed  $value     The expected value.
          *
          * @return Sql
          *
@@ -79,14 +79,14 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
+        
         /**
          *
          * Add on the where clause an and clause
          *
-         * @param string $column        The column name.
-         * @param string $condition     The condition.
-         * @param string $expected      The expected value.
+         * @param string $column    The column name.
+         * @param string $condition The condition.
+         * @param string $expected  The expected value.
          *
          *
          * @return Sql
@@ -96,7 +96,7 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
+        
         /**
          *
          * Generate a where clause where values are different of expected values.
@@ -112,9 +112,8 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
-
-
+        
+        
         /**
          *
          * Return the sql query
@@ -126,7 +125,7 @@ namespace Imperium\Database\Query {
         {
             return '';
         }
-
+        
         /**
          *
          * Return the query results
@@ -138,16 +137,17 @@ namespace Imperium\Database\Query {
         {
             return [];
         }
+        
         /**
          *
          * Generate a join clause.
          *
-         * @param string $condition     The join condition.
-         * @param string $first_table   The join first table name.
-         * @param string $second_table  The join second table name.
-         * @param string $first_param   The join first parameter.
-         * @param string $second_param  The join second parameter.
-         * @param string ...$columns    The columns to use.
+         * @param string $condition    The join condition.
+         * @param string $first_table  The join first table name.
+         * @param string $second_table The join second table name.
+         * @param string $first_param  The join first parameter.
+         * @param string $second_param The join second parameter.
+         * @param string ...$columns   The columns to use.
          *
          * @return Sql
          *
@@ -162,7 +162,7 @@ namespace Imperium\Database\Query {
         ): Sql {
             return $this;
         }
-
+        
         /**
          *
          * Generate an union clause.
@@ -183,7 +183,7 @@ namespace Imperium\Database\Query {
         ): Sql {
             return $this;
         }
-
+        
         /**
          *
          * Generate a like clause
@@ -197,7 +197,7 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
+        
         /**
          *
          * Select the results columns.
@@ -211,12 +211,14 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
+        
         /**
          * Undocumented function
          *
          * @param string $column The column name.
          * @param mixed  $begin  The begin value.
          * @param mixed  $end    The end value.
+         *
          * @return Sql
          */
         public function between(string $column, $begin, $end): Sql
@@ -225,10 +227,10 @@ namespace Imperium\Database\Query {
             $begin = $pdo->quote($begin);
             $end = $pdo->quote($end);
             $x = "WHERE $column BETWEEN $begin AND $end";
-
+            
             return $this;
         }
-
+        
         /**
          *
          * Add a limit
@@ -243,7 +245,7 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
+        
         /**
          *
          * Generate an order by clause
@@ -258,7 +260,7 @@ namespace Imperium\Database\Query {
         {
             return $this;
         }
-
+        
         /**
          *
          * Count all records inside a table.
@@ -270,7 +272,7 @@ namespace Imperium\Database\Query {
         {
             return count($this->results());
         }
-
+        
         /**
          *
          * Delete all records found by the executed query.
