@@ -52,7 +52,7 @@ namespace Imperium\Database\Model {
         
         /**
          *
-         * Html code before the content of results.4
+         * Html code before the content of results.
          *
          */
         protected static string $beforeContent = '';

@@ -16,13 +16,6 @@ class ServerRequestTest extends Unit
             ->failure((new ServerRequest('/news'))->match('/'));
     }
 
-    public function testException()
-    {
-        $this->throw(Kedavra::class, 'The method used is not supported');
-        new ServerRequest('/', 'put');
-        new ServerRequest('/', 'delete');
-        new ServerRequest('/', '');
-    }
 
     public function testMethod()
     {

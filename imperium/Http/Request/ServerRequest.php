@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Imperium\Http\Request {
 
-    use Imperium\Exception\Kedavra;
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Parameters\UploadedFile;
 
@@ -51,20 +50,13 @@ namespace Imperium\Http\Request {
          * @param string $url       The url to visit.
          * @param string $method    The method to access to code.
          *
-         * @throws Kedavra
          *
          */
         public function __construct(string $url, string $method = 'GET')
         {
-            $method = strtoupper($method);
-
-            if (!in_array($method, ['GET', 'POST'])) {
-                throw new Kedavra('The method used is not supported');
-            }
-
             $this->url = $url;
 
-            $this->method = $method;
+            $this->method = strtoupper($method);
 
             $this->request = cli() ? new Request() :  Request::make();
         }
@@ -89,12 +81,11 @@ namespace Imperium\Http\Request {
          *
          * @return ServerRequest
          *
-         * @throws Kedavra
          *
          */
         public static function generate(): ServerRequest
         {
-            return php_sapi_name() == 'cli'
+            return cli()
             ?
                 new self('/')
             :   new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
