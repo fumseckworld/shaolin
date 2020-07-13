@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace Imperium\Http\Response {
 
-    use Imperium\Exception\Kedavra;
 
     /**
      *
@@ -28,11 +27,11 @@ namespace Imperium\Http\Response {
      *
      * This package contains all useful methods to interact with this redirection.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Response\RedirectResponse
      * @version 12
      *
-     * @property    Response    $response The response instance.
+     * @property    Response $response The response instance.
      *
      *
      */
@@ -44,14 +43,12 @@ namespace Imperium\Http\Response {
          * RedirectResponse constructor.
          *
          * @param string $url
-         * @param int $status
-         *
-         * @throws Kedavra
+         * @param int    $status
          *
          */
         public function __construct(string $url, int $status = 301)
         {
-            $this->response = new Response('', $url, $status, ['Location' => $url]);
+            $this->response = app('response')->set('', $status, ['Location' => $url], $url);
         }
 
         /**

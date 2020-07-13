@@ -30,6 +30,8 @@ namespace Imperium\Container {
     use Imperium\Database\Query\Sql;
     use Imperium\Database\Table\Table;
     use Imperium\Environment\Env;
+    use Imperium\Http\Request\Request;
+    use Imperium\Http\Response\Response;
     use Imperium\Session\Session;
     use InvalidArgumentException;
 
@@ -58,12 +60,12 @@ namespace Imperium\Container {
          *
          * @param string $key The container key.
          *
-         * @throws DependencyException
+         * @return mixed
+         *
          * @throws NotFoundException
          * @throws Exception
          *
-         * @return mixed
-         *
+         * @throws DependencyException
          */
         final public function get(string $key)
         {
@@ -75,11 +77,11 @@ namespace Imperium\Container {
          * Define an object or a value in the container.
          *
          * @param string $key The container key.
-         * @param mixed  $value The container value.
-         *
-         * @throws Exception
+         * @param mixed $value The container value.
          *
          * @return Ioc
+         *
+         * @throws Exception
          *
          */
         final public function set(string $key, $value): Ioc
@@ -97,9 +99,9 @@ namespace Imperium\Container {
          * @param Closure $callback The callback to call.
          * @param array $args The callback arguments.
          *
-         * @throws Exception
-         *
          * @return mixed
+         *
+         * @throws Exception
          *
          */
         final public function call(Closure $callback, array $args = [])
@@ -112,15 +114,15 @@ namespace Imperium\Container {
          * Make always a new instance
          *
          * @param string $key The container key.
-         * @param array  $args All parameters.
+         * @param array $args All parameters.
          *
-         * @throws InvalidArgumentException The name parameter must be of type string.
+         * @return object
+         *
          * @throws DependencyException Error while resolving the entry.
          * @throws NotFoundException No entry found for the given name.
          * @throws Exception
          *
-         * @return object
-         *
+         * @throws InvalidArgumentException The name parameter must be of type string.
          */
         final public function make(string $key, array $args = []): object
         {
@@ -134,9 +136,9 @@ namespace Imperium\Container {
          *
          * @param string $key The key to check
          *
-         * @throws Exception
-         *
          * @return boolean
+         *
+         * @throws Exception
          *
          */
         final public function has(string $key): bool
@@ -161,9 +163,9 @@ namespace Imperium\Container {
          *
          * Build the container.
          *
-         * @throws Exception
-         *
          * @return  Container
+         *
+         * @throws Exception
          *
          */
         final private function container(): Container
@@ -185,6 +187,8 @@ namespace Imperium\Container {
                 $c->useAutowiring(true);
                 $c = $c->build();
                 $c->set('sql', new Sql());
+                $c->set('response', new Response());
+                $c->set('request', new Request());
                 $c->set('table', new Table());
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());

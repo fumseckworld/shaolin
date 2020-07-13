@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace Imperium\Http\Request {
 
+    use Imperium\Exception\Kedavra;
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Parameters\UploadedFile;
 
@@ -33,12 +34,12 @@ namespace Imperium\Http\Request {
      * @package Imperium\Http\Request
      * @version 12
      *
-     * @property    Bag             $query      The container for $_GET values.
-     * @property    Bag             $request    The container for $_POST values.
-     * @property    Bag             $cookie     The container for $_COOKIE values
-     * @property    Bag             $server     The container for $_SERVER values.
-     * @property    Bag             $args       The container for the router params values.
-     * @property    UploadedFile    $files      The container for the uploaded files.
+     * @property    Bag $query      The container for $_GET values.
+     * @property    Bag $request    The container for $_POST values.
+     * @property    Bag $cookie     The container for $_COOKIE values
+     * @property    Bag $server     The container for $_SERVER values.
+     * @property    Bag $args       The container for the router params values.
+     * @property    UploadedFile $files      The container for the uploaded files.
      *
      */
     final class Request
@@ -48,10 +49,10 @@ namespace Imperium\Http\Request {
          * Initialize a new request
          *
          * @param array $request The $_POST values.
-         * @param array $query   The $_GET values.
+         * @param array $query The $_GET values.
          * @param array $cookies The $_COOKIE values.
-         * @param array $files   The $_FILES values.
-         * @param array $server  The $_SERVER values.
+         * @param array $files The $_FILES values.
+         * @param array $server The $_SERVER values.
          * @param array $router_args The router args for a route.
          */
         public function __construct(
@@ -63,6 +64,73 @@ namespace Imperium\Http\Request {
             array $router_args = []
         ) {
             $this->initialize($query, $request, $cookies, $files, $server, $router_args);
+        }
+
+        /**
+         *
+         * Save all missing values to use with the container.
+         *
+         * @param array $request The $_POST values.
+         * @param array $query The $_GET values.
+         * @param array $cookies The $_COOKIE values.
+         * @param array $files The $_FILES values.
+         * @param array $server The $_SERVER values.
+         * @param array $router_args The router args for a route.
+         *
+         * @return Request
+         *
+         */
+        public function set(
+            array $request = [],
+            array $query = [],
+            array $cookies = [],
+            array $files = [],
+            array $server = [],
+            array $router_args = []
+        ): self {
+            return new self($request, $query, $cookies, $files, $server, $router_args);
+        }
+
+        /**
+         *
+         * Set a request argument.
+         *
+         * @param string $key
+         * @param array $value
+         *
+         * @return Request
+         *
+         * @throws Kedavra
+         *
+         */
+        public function with(string $key, array $value): Request
+        {
+            if (
+                !in_array($key, ['post', 'get', 'cookie', 'file', 'server', 'args'])
+            ) {
+                throw new Kedavra('The used keys are invalid');
+            }
+            switch ($key) {
+                case 'post':
+                    $this->request = new  Bag($value);
+                    break;
+                case 'get':
+                    $this->query = new Bag($value);
+                    break;
+                case 'cookie':
+                    $this->cookie = new Bag($value);
+                    break;
+                case 'file':
+                    $this->files = new UploadedFile($value);
+                    break;
+                case 'server':
+                    $this->server = new Bag($value);
+                    break;
+                default:
+                    $this->args = new Bag($value);
+                    break;
+            }
+            return $this;
         }
 
         /**
@@ -204,7 +272,7 @@ namespace Imperium\Http\Request {
          */
         public function ip(): string
         {
-            return cli()  ? '127.0.0.1' : strval($this->server()->get('REMOTE_ADDR'));
+            return cli() ? '127.0.0.1' : strval($this->server()->get('REMOTE_ADDR'));
         }
 
         /**

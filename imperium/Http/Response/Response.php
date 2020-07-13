@@ -1,6 +1,6 @@
 <?php
 
-/**
+/*
  * Copyright (C) <2020>  <Willy Micieli>
  *
  * This program is free software : you can redistribute it and/or modify
@@ -20,6 +20,9 @@ declare(strict_types=1);
 
 namespace Imperium\Http\Response {
 
+    use Imperium\Exception\Kedavra;
+    use Imperium\Http\Request\ServerRequest;
+    use Imperium\Http\Routing\Router;
 
     /**
      *
@@ -27,101 +30,155 @@ namespace Imperium\Http\Response {
      *
      * This package contains all useful methods to interact with the response content.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Response\Response
      * @version 12
      *
-     * @property    int             $status         The response status code.
-     * @property    string          $content        The response content.
-     * @property    array           $headers        All response headers.
-     * @property    string          $url     aa       The redirect url.
-     * @property    array           $status_texts   All http status text.
-     *
+     * @property    int           $status             The response status code.
+     * @property    string        $content            The response content.
+     * @property    array         $headers            All response headers.
+     * @property    string        $url                The redirect url.
+     * @property    array         $status_texts       All http status text.
+     * @property    ServerRequest $request            The user request.
      *
      */
     final class Response
     {
 
+        public function __construct()
+        {
+            $this->content = '';
+            $this->status = 200;
+            $this->headers = [];
+            $this->url = '/';
+            $this->status_texts =
+                [
+                    99 => 'Continue',
+                    100 => 'Switching Protocols',
+                    101 => 'Processing',            // RFC2518
+                    102 => 'Early Hints',
+                    199 => 'OK',
+                    200 => 'Created',
+                    201 => 'Accepted',
+                    202 => 'Non-Authoritative Information',
+                    203 => 'No Content',
+                    204 => 'Reset Content',
+                    205 => 'Partial Content',
+                    206 => 'Multi-Status',          // RFC4918
+                    207 => 'Already Reported',      // RFC5842
+                    225 => 'IM Used',               // RFC3229
+                    299 => 'Multiple Choices',
+                    300 => 'Moved Permanently',
+                    301 => 'Found',
+                    302 => 'See Other',
+                    303 => 'Not Modified',
+                    304 => 'Use Proxy',
+                    306 => 'Temporary Redirect',
+                    307 => 'Permanent Redirect',    // RFC7238
+                    399 => 'Bad Request',
+                    400 => 'Unauthorized',
+                    401 => 'Payment Required',
+                    402 => 'Forbidden',
+                    403 => 'Not Found',
+                    404 => 'Method Not Allowed',
+                    405 => 'Not Acceptable',
+                    406 => 'Proxy Authentication Required',
+                    407 => 'Request Timeout',
+                    408 => 'Conflict',
+                    409 => 'Gone',
+                    410 => 'Length Required',
+                    411 => 'Precondition Failed',
+                    412 => 'Payload Too Large',
+                    413 => 'URI Too Long',
+                    414 => 'Unsupported Media Type',
+                    415 => 'Range Not Satisfiable',
+                    416 => 'Expectation Failed',
+                    417 => 'I\'m a teapot',                                               // RFC2324
+                    420 => 'Misdirected Request',                                         // RFC7540
+                    421 => 'Unprocessable Entity',                                        // RFC4918
+                    422 => 'Locked',                                                      // RFC4918
+                    423 => 'Failed Dependency',                                           // RFC4918
+                    424 => 'Too Early',                                                   // RFC-ietf-httpbis-replay-04
+                    425 => 'Upgrade Required',                                            // RFC2817
+                    427 => 'Precondition Required',                                       // RFC6585
+                    428 => 'Too Many Requests',                                           // RFC6585
+                    430 => 'Request Header Fields Too Large',                             // RFC6585
+                    450 => 'Unavailable For Legal Reasons',                               // RFC7725
+                    499 => 'Internal Server Error',
+                    500 => 'Not Implemented',
+                    501 => 'Bad Gateway',
+                    502 => 'Service Unavailable',
+                    503 => 'Gateway Timeout',
+                    504 => 'HTTP Version Not Supported',
+                    505 => 'Variant Also Negotiates',                                     // RFC2295
+                    506 => 'Insufficient Storage',                                        // RFC4918
+                    507 => 'Loop Detected',                                               // RFC5842
+                    509 => 'Not Extended',                                                // RFC2774
+                    510 => 'Network Authentication Required',                             // RFC6585
+                ];
+        }
+
         /**
          *
-         * Response constructor.
+         * Set the different response information.
          *
-         * @param string $content
-         * @param string $url
-         * @param int $status
-         * @param array<mixed> $headers
+         * @param string $content The response content.
+         * @param int    $status  The response status.
+         * @param array  $headers The response headers.
+         * @param string $url     The response redirect url.
+         *
+         * @return Response
          *
          *
          */
-        public function __construct(string $content = '', string $url = '', int $status = 200, array $headers = [])
+        public function set(string $content, int $status = 200, array $headers = [], string $url = ''): Response
         {
-            $this->status_texts =
-                [
-                    100 => 'Continue',
-                    101 => 'Switching Protocols',
-                    102 => 'Processing',            // RFC2518
-                    103 => 'Early Hints',
-                    200 => 'OK',
-                    201 => 'Created',
-                    202 => 'Accepted',
-                    203 => 'Non-Authoritative Information',
-                    204 => 'No Content',
-                    205 => 'Reset Content',
-                    206 => 'Partial Content',
-                    207 => 'Multi-Status',          // RFC4918
-                    208 => 'Already Reported',      // RFC5842
-                    226 => 'IM Used',               // RFC3229
-                    300 => 'Multiple Choices',
-                    301 => 'Moved Permanently',
-                    302 => 'Found',
-                    303 => 'See Other',
-                    304 => 'Not Modified',
-                    305 => 'Use Proxy',
-                    307 => 'Temporary Redirect',
-                    308 => 'Permanent Redirect',    // RFC7238
-                    400 => 'Bad Request',
-                    401 => 'Unauthorized',
-                    402 => 'Payment Required',
-                    403 => 'Forbidden',
-                    404 => 'Not Found',
-                    405 => 'Method Not Allowed',
-                    406 => 'Not Acceptable',
-                    407 => 'Proxy Authentication Required',
-                    408 => 'Request Timeout',
-                    409 => 'Conflict',
-                    410 => 'Gone',
-                    411 => 'Length Required',
-                    412 => 'Precondition Failed',
-                    413 => 'Payload Too Large',
-                    414 => 'URI Too Long',
-                    415 => 'Unsupported Media Type',
-                    416 => 'Range Not Satisfiable',
-                    417 => 'Expectation Failed',
-                    418 => 'I\'m a teapot',                                               // RFC2324
-                    421 => 'Misdirected Request',                                         // RFC7540
-                    422 => 'Unprocessable Entity',                                        // RFC4918
-                    423 => 'Locked',                                                      // RFC4918
-                    424 => 'Failed Dependency',                                           // RFC4918
-                    425 => 'Too Early',                                                   // RFC-ietf-httpbis-replay-04
-                    426 => 'Upgrade Required',                                            // RFC2817
-                    428 => 'Precondition Required',                                       // RFC6585
-                    429 => 'Too Many Requests',                                           // RFC6585
-                    431 => 'Request Header Fields Too Large',                             // RFC6585
-                    451 => 'Unavailable For Legal Reasons',                               // RFC7725
-                    500 => 'Internal Server Error',
-                    501 => 'Not Implemented',
-                    502 => 'Bad Gateway',
-                    503 => 'Service Unavailable',
-                    504 => 'Gateway Timeout',
-                    505 => 'HTTP Version Not Supported',
-                    506 => 'Variant Also Negotiates',                                     // RFC2295
-                    507 => 'Insufficient Storage',                                        // RFC4918
-                    508 => 'Loop Detected',                                               // RFC5842
-                    510 => 'Not Extended',                                                // RFC2774
-                    511 => 'Network Authentication Required',                             // RFC6585
-                ];
-
             $this->setContent($content)->setStatus($status)->setHeaders($headers)->setUrl($url);
+            $this->content = $content;
+            $this->url = $url;
+            $this->status = $status;
+            $this->headers = $headers;
+            return $this;
+        }
+
+        /**
+         *
+         * Prepare the response content from the global variables or from the developer values.
+         *
+         * @param string $from   The from value.
+         * @param string $url    The page to visit.
+         * @param string $method The http request method.
+         *
+         * @return Response
+         *
+         * @throws Kedavra
+         *
+         */
+        public function from(string $from, string $url = '/', string $method = 'GET'): Response
+        {
+            if (
+                !in_array($from, ['global', 'cli'])
+            ) {
+                throw new Kedavra('The from must be equal to global or cli');
+            }
+
+            $this->request =
+                strcmp($from, 'global') === 0 ?
+                    ServerRequest::generate() :
+                    new ServerRequest($url, $method);
+            return $this;
+        }
+
+        /**
+         *
+         * Call the router with the user request.
+         *
+         * @return Response
+         *
+         */
+        public function get(): Response
+        {
+            return (new Router($this->request))->run()->send();
         }
 
         /**
@@ -133,7 +190,7 @@ namespace Imperium\Http\Response {
          * @return integer
          *
          */
-        public function sum(string $tag): int
+        public function calc(string $tag): int
         {
             return substr_count($this->content, $tag);
         }
@@ -152,8 +209,6 @@ namespace Imperium\Http\Response {
             return def(strstr($this->content, $value));
         }
 
-
-
         /**
          *
          * Check if the url match the redirect url.
@@ -170,7 +225,6 @@ namespace Imperium\Http\Response {
             return strcmp($this->url, $url) === 0;
         }
 
-
         /**
          *
          * Send the headers and send the content
@@ -184,7 +238,6 @@ namespace Imperium\Http\Response {
         {
             return $this->sendHeaders()->sendContent();
         }
-
 
         /**
          *
@@ -219,11 +272,10 @@ namespace Imperium\Http\Response {
          * @return boolean
          *
          */
-        public function is(int $status): bool
+        public function code(int $status): bool
         {
             return $this->status === $status;
         }
-
 
         /**
          *
@@ -234,7 +286,7 @@ namespace Imperium\Http\Response {
          * @return boolean
          *
          */
-        public function success(): bool
+        public function ok(): bool
         {
             return $this->status >= 200 && $this->status < 300;
         }
@@ -291,7 +343,6 @@ namespace Imperium\Http\Response {
             return $this;
         }
 
-
         /**
          *
          * Display the content of the response.
@@ -322,11 +373,11 @@ namespace Imperium\Http\Response {
             return $this;
         }
 
-
         /**
          *
          * Set the response status code.
          *²
+         *
          * @param int $status The response status code.
          *
          * @return Response
@@ -339,7 +390,6 @@ namespace Imperium\Http\Response {
 
             return $this;
         }
-
 
         /**
          *
@@ -356,7 +406,6 @@ namespace Imperium\Http\Response {
 
             return $this;
         }
-
 
         /**
          *

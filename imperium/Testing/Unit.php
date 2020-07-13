@@ -1,9 +1,37 @@
 <?php
 
+/**
+ * Copyright (C) <2020>  <Willy Micieli>
+ *
+ * This program is free software : you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https: //www.gnu.org/licenses/>.
+ *
+ */
+
 namespace Imperium\Testing {
 
+    use Imperium\Http\Response\Response;
     use PHPUnit\Framework\TestCase;
 
+    /**
+     *
+     * Represent all method used to test the application.
+     *
+     * This packages contains all useful methods to write tests more simply.
+     *
+     * @author  Willy Micieli <fumseck@fumseck.org>
+     * @package Imperium\Testing\Unit
+     * @version 12
+     *
+     */
     abstract class Unit extends TestCase
     {
         /**
@@ -25,6 +53,17 @@ namespace Imperium\Testing {
 
         /**
          *
+         * Get an instance of the response.
+         *
+         * @return Response
+         */
+        public function response(): Response
+        {
+            return new Response();
+        }
+
+        /**
+         *
          * Asserts that a condition is true.
          *
          * @param mixed $conditions The condition to check.
@@ -38,6 +77,20 @@ namespace Imperium\Testing {
                 $this->assertTrue($condition, _('The condition must return true but return false'));
             }
             return $this;
+        }
+
+        /**
+         *
+         * Visit a page.
+         *
+         * @param string $url    The page url to visit
+         * @param string $method The http request method.
+         *
+         * @return Response
+         */
+        public function visit(string $url, string $method = 'GET'): Response
+        {
+            return app('response')->from('cli', $url, strtoupper($method))->get();
         }
 
         /**
@@ -390,8 +443,9 @@ namespace Imperium\Testing {
          *
          * Asserts that values contains a value.
          *
-         * @param iterable $data All values.
-         * @param mixed $values all values to check.
+         * @param iterable $data   All values.
+         * @param mixed    $values all values to check.
+         *
          * @return Unit
          *
          */
@@ -407,8 +461,8 @@ namespace Imperium\Testing {
          *
          * Asserts that a values does not contain a value.
          *
-         * @param iterable $data All values.
-         * @param mixed $values The values to check.
+         * @param iterable $data   All values.
+         * @param mixed    $values The values to check.
          *
          * @return Unit
          *
@@ -426,7 +480,7 @@ namespace Imperium\Testing {
          * Asserts that an array does not have a specified key.
          *
          * @param array $array The array to parse.
-         * @param mixed $keys The keys to verify the no existence.
+         * @param mixed $keys  The keys to verify the no existence.
          *
          * @return Unit
          *
@@ -444,7 +498,8 @@ namespace Imperium\Testing {
          * Asserts that an array has a specified key.
          *
          * @param array $array The array to parse.
-         * @param mixed $keys The keys to verify the existence.
+         * @param mixed $keys  The keys to verify the existence.
+         *
          * @return Unit
          *
          */
@@ -461,7 +516,7 @@ namespace Imperium\Testing {
          * Asserts that two variables are equal.
          *
          * @param mixed $expected The expected value.
-         * @param mixed $actual The actual value.
+         * @param mixed $actual   The actual value.
          *
          * @return Unit
          *
@@ -477,7 +532,7 @@ namespace Imperium\Testing {
          * Asserts that two variables are not equal.
          *
          * @param mixed $expected The expected value.
-         * @param mixed $actual The actual value.
+         * @param mixed $actual   The actual value.
          *
          * @return Unit
          *
@@ -492,9 +547,9 @@ namespace Imperium\Testing {
          *
          * Asserts that a haystack contains only values of a given type.
          *
-         * @param string $type The type to check.
+         * @param string   $type   The type to check.
          * @param iterable $values All values.
-         * @param boolean $native The type.
+         * @param boolean  $native The type.
          *
          * @return Unit
          *
@@ -515,9 +570,9 @@ namespace Imperium\Testing {
          *
          * Asserts that a haystack does not contain only values of a given type.
          *
-         * @param string $type The type to check.
+         * @param string   $type   The type to check.
          * @param iterable $values All values.
-         * @param boolean $native The type.
+         * @param boolean  $native The type.
          *
          * @return Unit
          *
@@ -582,8 +637,8 @@ namespace Imperium\Testing {
          *
          * Asserts that a class has a specified attribute.
          *
-         * @param string $class The class name.
-         * @param mixed $attributes the attribute to check
+         * @param string $class      The class name.
+         * @param mixed  $attributes the attribute to check
          *
          * @return Unit
          *
@@ -600,8 +655,8 @@ namespace Imperium\Testing {
          *
          * Asserts that a class does not have a specified attribute.
          *
-         * @param string $class The class name.
-         * @param mixed $attributes The attributes names.
+         * @param string $class      The class name.
+         * @param mixed  $attributes The attributes names.
          *
          * @return self
          *
@@ -618,8 +673,8 @@ namespace Imperium\Testing {
          *
          * Asserts that a class has a specified static attribute.
          *
-         * @param string $class The class name.
-         * @param mixed $attributes The attributes names.
+         * @param string $class      The class name.
+         * @param mixed  $attributes The attributes names.
          *
          * @return Unit
          *
@@ -636,8 +691,9 @@ namespace Imperium\Testing {
          *
          * Asserts that a class does not have a specified static attribute.
          *
-         * @param string $class The class name.
-         * @param mixed $attributes the attributes names.
+         * @param string $class      The class name.
+         * @param mixed  $attributes the attributes names.
+         *
          * @return Unit
          *
          */
@@ -653,8 +709,8 @@ namespace Imperium\Testing {
          *
          * Asserts the number of elements of an array, Countable or Traversable.
          *
-         * @param int $expected The expected number.
-         * @param iterable $value The data to count.
+         * @param int      $expected The expected number.
+         * @param iterable $value    The data to count.
          *
          * @return Unit
          *

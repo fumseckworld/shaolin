@@ -36,6 +36,22 @@ if (!defined('SQLITE')) {
      */
     define('SQLITE', 'sqlite');
 }
+
+if (!defined('SITE')) {
+    define('SITE', 1);
+}
+
+if (!defined('ADMIN')) {
+    define('ADMIN', 2);
+}
+if (!defined('TODO')) {
+    define('TODO', 3);
+}
+
+if (!defined('ROUTING_MODES')) {
+    define('ROUTING_MODES', [SITE, ADMIN, TODO]);
+}
+
 define('VALIDATOR_EMAIL_NOT_VALID', 1);
 define('VALIDATOR_ARGUMENT_NOT_DEFINED', 2);
 define('VALIDATOR_ARGUMENT_NOT_NUMERIC', 3);
