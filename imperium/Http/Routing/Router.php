@@ -9,37 +9,30 @@ namespace Imperium\Http\Routing {
     /**
      * Class Router
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Routing
      * @version 12
      *
      * @property string $method The request method.
-     * @property string $url The request url.
-     * @property array $args The request args.
-     * @property array $routes All routes found in the base for the method.
+     * @property string $url    The request url.
+     * @property array  $args   The request args.
+     * @property array  $routes All routes found in the base for the method.
      *
      */
     class Router
     {
         /**
-         * Change the routing database.
-         */
-        protected static int $mode = SITE;
-
-        /**
-         *
          * Router constructor.
          *
-         * @param ServerRequest $request The user request.
-         *
-         *
+         * @param ServerRequest $request The user's request.
+         * @param int           $mode    The server mode.
          */
-        public function __construct(ServerRequest $request)
+        public function __construct(ServerRequest $request, int $mode = SITE)
         {
             $this->url = $request->url();
             $this->method = $request->method();
             $this->args = [];
-            switch (static::$mode) {
+            switch ($mode) {
                 case ADMIN:
                     $this->routes = app('admin')->from('routes')->where('method', '=', $this->method)->results();
                     break;
@@ -66,7 +59,7 @@ namespace Imperium\Http\Routing {
                     return new  Response();
                 }
             }
-            return  new  Response();
+            return new  Response();
         }
 
         /**
