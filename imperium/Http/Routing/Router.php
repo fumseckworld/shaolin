@@ -1,11 +1,14 @@
 <?php
 
 namespace Imperium\Http\Routing {
-
+    
+    use DI\DependencyException;
+    use DI\NotFoundException;
+    use Exception;
     use Imperium\Http\Request\ServerRequest;
     use Imperium\Http\Response\Response;
-
-
+    
+    
     /**
      * Class Router
      *
@@ -22,10 +25,16 @@ namespace Imperium\Http\Routing {
     class Router
     {
         /**
+         *
          * Router constructor.
          *
          * @param ServerRequest $request The user's request.
          * @param int           $mode    The server mode.
+         *
+         * @throws NotFoundException
+         * @throws Exception
+         * @throws DependencyException
+         *
          */
         public function __construct(ServerRequest $request, int $mode = SITE)
         {
@@ -44,7 +53,7 @@ namespace Imperium\Http\Routing {
                     break;
             }
         }
-
+        
         /**
          *
          * Call the correct controller method.
@@ -61,7 +70,7 @@ namespace Imperium\Http\Routing {
             }
             return new  Response();
         }
-
+        
         /**
          *
          * Check if a url match a route.
@@ -74,9 +83,9 @@ namespace Imperium\Http\Routing {
         private function match(string $url): bool
         {
             $path = preg_replace('#:([\w]+)#', '([^/]+)', $url);
-
+            
             $regex = "#^$path$#";
-
+            
             return preg_match($regex, $this->url, $this->args) === 1;
         }
     }
