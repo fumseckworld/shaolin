@@ -1042,13 +1042,12 @@ namespace Imperium\Collection {
          * @return Collect
          *
          */
-        public function each(callable $callable): Collect
+        public function each($callable): Collect
         {
             $result = collect();
             foreach ($this->all() as $k => $v) {
                 $result->put($k, call_user_func_array($callable, [$k, $v]));
             }
-
             return $this->checkout($result->all());
         }
 

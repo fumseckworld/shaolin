@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 namespace Imperium\Container {
-
+    
     use Closure;
     use DI\Container;
     use DI\ContainerBuilder;
@@ -34,7 +34,7 @@ namespace Imperium\Container {
     use Imperium\Http\Response\Response;
     use Imperium\Session\Session;
     use InvalidArgumentException;
-
+    
     /**
      *
      * Represent the core of the container of dependencies injection.
@@ -51,27 +51,27 @@ namespace Imperium\Container {
      */
     final class Ioc
     {
-
+        
         private static ?Container $container = null;
-
+        
         /**
          *
          * Get an instance of an object inside the container.
          *
          * @param string $key The container key.
          *
-         * @return mixed
-         *
          * @throws NotFoundException
          * @throws Exception
          * @throws DependencyException
+         *
+         * @return mixed
          *
          */
         final public function get(string $key)
         {
             return $this->container()->get($key);
         }
-
+        
         /**
          *
          * Define an object or a value in the container.
@@ -79,9 +79,9 @@ namespace Imperium\Container {
          * @param string $key   The container key.
          * @param mixed  $value The container value.
          *
-         * @return Ioc
-         *
          * @throws Exception
+         *
+         * @return Ioc
          *
          */
         final public function set(string $key, $value): Ioc
@@ -89,7 +89,7 @@ namespace Imperium\Container {
             $this->container()->set($key, $value);
             return $this;
         }
-
+        
         /**
          *
          * Call the given function using the given parameters
@@ -99,16 +99,16 @@ namespace Imperium\Container {
          * @param Closure $callback The callback to call.
          * @param array   $args     The callback arguments.
          *
-         * @return mixed
-         *
          * @throws Exception
+         *
+         * @return mixed
          *
          */
         final public function call(Closure $callback, array $args = [])
         {
             return $this->container()->call($callback, $args);
         }
-
+        
         /**
          *
          * Make always a new instance
@@ -116,61 +116,61 @@ namespace Imperium\Container {
          * @param string $key  The container key.
          * @param array  $args All parameters.
          *
-         * @return object
-         *
          * @throws DependencyException Error while resolving the entry.
          * @throws NotFoundException No entry found for the given name.
          * @throws Exception
          *
          * @throws InvalidArgumentException The name parameter must be of type string.
+         * @return object
+         *
          */
         final public function make(string $key, array $args = []): object
         {
             return $this->container()->make($key, $args);
         }
-
-
+        
+        
         /**
          *
          * Check if a key exist in the container.
          *
          * @param string $key The key to check
          *
-         * @return boolean
-         *
          * @throws Exception
+         *
+         * @return boolean
          *
          */
         final public function has(string $key): bool
         {
             return $this->container()->has($key);
         }
-
+        
         /**
          *
          * Return the instance of the container.
          *
-         * @return Container
          * @throws Exception
          *
-         **/
+         **@return Container
+         */
         final public function ioc(): Container
         {
             return $this->container();
         }
-
+        
         /**
          *
          * Build the container.
          *
-         * @return  Container
-         *
          * @throws Exception
+         *
+         * @return  Container
          *
          */
         final private function container(): Container
         {
-
+            
             if (is_null(static::$container)) {
                 $c = new ContainerBuilder();
                 $c->addDefinitions(
@@ -193,124 +193,175 @@ namespace Imperium\Container {
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());
                 $c->set('session', new Session());
-
+                
                 $c->set('app-directory', imperium('app-directory', 'app'));
-
+                
                 $c->set('db-directory', imperium('db-directory', 'db'));
-
+                
                 $c->set('tests-directory', imperium('tests-directory', 'tests'));
-
+                
                 $c->set('app-namespace', imperium('app-namespace', 'App'));
-
+                
                 $c->set('base-namespace', imperium('base-namespace', 'Evolution'));
-
+                
                 $c->set('tests-namespace', imperium('tests-namespace', 'Testing'));
-
-                $c->set('models-dirname', imperium(
-                    'app-models-directory',
-                    'Models'
-                ));
-
+                
+                $c->set('form-submit-classname', imperium('form-submit-classname', 'form-button form-submit'));
+                
+                $c->set('form-separator-classname', imperium('form-separator-classname', 'form-group'));
+                
+                $c->set('form-input-classname', imperium('form-input-classname', 'form-input'));
+                
+                $c->set(
+                    'models-dirname',
+                    imperium(
+                        'app-models-directory',
+                        'Models'
+                    )
+                );
+                
                 $c->set('app-dirname', $c->get('app-directory'));
-
-                $c->set('views-dirname', imperium(
-                    'app-views-directory',
-                    'Views'
-                ));
-
-                $c->set('public-dirname', imperium(
-                    'public-directory',
-                    'web'
-                ));
-
-                $c->set('db-dirname', imperium(
-                    'db-base-directory',
-                    'db'
-                ));
-
-                $c->set('emails-dirname', imperium(
-                    'app-emails-directory',
-                    'Emails'
-                ));
-
-                $c->set('cache-dirname', imperium(
-                    'cache-directory',
-                    'cache'
-                ));
-
-                $c->set('controllers-dirname', imperium(
-                    'app-controllers-directory',
-                    'Controllers'
-                ));
-
-                $c->set('forms-dirname', imperium(
-                    'app-forms-directory',
-                    'Forms'
-                ));
-
-
-                $c->set('emails-dirname', imperium(
-                    'app-emails-directory',
-                    'Emails'
-                ));
-
-                $c->set('consoles-dirname', imperium(
-                    'app-consoles-directory',
-                    'Consoles'
-                ));
-
-                $c->set('validators-dirname', imperium(
-                    'app-validators-directory',
-                    'Validators'
-                ));
-
-                $c->set('search-dirname', imperium(
-                    'app-search-directory',
-                    'Search'
-                ));
-
-                $c->set('translations-dirname', imperium(
-                    'translations-directory',
-                    'po'
-                ));
-                $c->set('migrations-dirname', imperium(
-                    'db-migrations-directory',
-                    'Migrations'
-                ));
-
-                $c->set('seeds-dirname', imperium(
-                    'db-seeds-directory',
-                    'Seeds'
-                ));
-
+                
+                $c->set(
+                    'views-dirname',
+                    imperium(
+                        'app-views-directory',
+                        'Views'
+                    )
+                );
+                
+                $c->set(
+                    'public-dirname',
+                    imperium(
+                        'public-directory',
+                        'web'
+                    )
+                );
+                
+                $c->set(
+                    'db-dirname',
+                    imperium(
+                        'db-base-directory',
+                        'db'
+                    )
+                );
+                
+                $c->set(
+                    'emails-dirname',
+                    imperium(
+                        'app-emails-directory',
+                        'Emails'
+                    )
+                );
+                
+                $c->set(
+                    'cache-dirname',
+                    imperium(
+                        'cache-directory',
+                        'cache'
+                    )
+                );
+                
+                $c->set(
+                    'controllers-dirname',
+                    imperium(
+                        'app-controllers-directory',
+                        'Controllers'
+                    )
+                );
+                
+                $c->set(
+                    'forms-dirname',
+                    imperium(
+                        'app-forms-directory',
+                        'Forms'
+                    )
+                );
+                
+                
+                $c->set(
+                    'emails-dirname',
+                    imperium(
+                        'app-emails-directory',
+                        'Emails'
+                    )
+                );
+                
+                $c->set(
+                    'consoles-dirname',
+                    imperium(
+                        'app-consoles-directory',
+                        'Consoles'
+                    )
+                );
+                
+                $c->set(
+                    'validators-dirname',
+                    imperium(
+                        'app-validators-directory',
+                        'Validators'
+                    )
+                );
+                
+                $c->set(
+                    'search-dirname',
+                    imperium(
+                        'app-search-directory',
+                        'Search'
+                    )
+                );
+                
+                $c->set(
+                    'translations-dirname',
+                    imperium(
+                        'translations-directory',
+                        'po'
+                    )
+                );
+                $c->set(
+                    'migrations-dirname',
+                    imperium(
+                        'db-migrations-directory',
+                        'Migrations'
+                    )
+                );
+                
+                $c->set(
+                    'seeds-dirname',
+                    imperium(
+                        'db-seeds-directory',
+                        'Seeds'
+                    )
+                );
+                
                 $c->set('tests-dirname', $c->get('tests-directory'));
-
+                
                 $c->set('tests-path', base($c->get('db-directory'), $c->get('tests-dirname')));
-
+                
                 $c->set('migrations-path', base($c->get('db-directory'), $c->get('migrations-dirname')));
-
+                
                 $c->set('seeds-path', base($c->get('db-directory'), $c->get('seeds-dirname')));
-
+                
                 $c->set('models-path', base($c->get('app-directory'), $c->get('models-dirname')));
-
+                
                 $c->set('views-path', base($c->get('app-directory'), $c->get('views-dirname')));
-
+                
                 $c->set('controllers-path', base($c->get('app-directory'), $c->get('controllers-dirname')));
-
+                
                 $c->set('emails-path', base($c->get('app-directory'), $c->get('emails-dirname')));
-
+                
                 $c->set('forms-path', base($c->get('app-directory'), $c->get('forms-dirname')));
-
+                
                 $c->set('consoles-path', base($c->get('app-directory'), $c->get('consoles-dirname')));
-
+                
                 $c->set('validators-path', base($c->get('app-directory'), $c->get('validators-dirname')));
-
+                
                 $c->set('search-path', base($c->get('app-directory'), $c->get('search-dirname')));
-
+                
                 $c->set('cache-path', base($c->get('cache-dirname')));
-
+                
                 $c->set('translations-path', base($c->get('translations-dirname')));
-
+                
                 static::$container = $c;
             }
             return static::$container;

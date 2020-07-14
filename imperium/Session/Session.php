@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 namespace Imperium\Session {
-
+    
     /**
      *
      * Manage all session content
@@ -28,11 +28,23 @@ namespace Imperium\Session {
      *
      * @package Imperium\Session\Session
      * @version 12
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      *
      */
     class Session
     {
+        /**
+         * Session constructor.
+         */
+        public function __construct()
+        {
+            if (not_cli()) {
+                if (session_status() === PHP_SESSION_NONE) {
+                    session_start();
+                }
+            }
+        }
+        
         /**
          *
          * Get a session value by this key.
@@ -44,27 +56,25 @@ namespace Imperium\Session {
          */
         public function get(string $key)
         {
-            $this->start();
-            return $this->has($key) ?  $_SESSION[$key] : '';
+            return $this->has($key) ? $_SESSION[$key] : '';
         }
-
+        
         /**
          *
          * Define a value accessible by the given key inside the session.
          *
-         * @param string $key The session key.
-         * @param mixed $value The session value to store.
+         * @param string $key   The session key.
+         * @param mixed  $value The session value to store.
          *
          * @return Session
          *
          */
         public function set(string $key, $value): Session
         {
-            $this->start();
             $_SESSION[$key] = $value;
             return $this;
         }
-
+        
         /**
          *
          * Check if the session has the given key.
@@ -76,10 +86,9 @@ namespace Imperium\Session {
          */
         public function has(string $key): bool
         {
-            $this->start();
-            return  array_key_exists($key, $_SESSION);
+            return array_key_exists($key, $_SESSION);
         }
-
+        
         /**
          *
          * Remove all given key inside the session.
@@ -92,7 +101,7 @@ namespace Imperium\Session {
         public function destroy(...$keys): bool
         {
             $x = collect();
-
+            
             foreach ($keys as $key) {
                 if ($this->has($key)) {
                     unset($_SESSION[$key]);
@@ -103,26 +112,7 @@ namespace Imperium\Session {
             }
             return $x->ok();
         }
-
-        /**
-         *
-         * Start the session
-         *
-         * @return Session
-         *
-         */
-        public function start(): Session
-        {
-            if (php_sapi_name() !== 'cli') {
-                if (session_status() === PHP_SESSION_NONE) {
-                    session_start();
-                }
-            }
-
-
-            return  $this;
-        }
-
+        
         /**
          * Return the session content.
          *
@@ -130,10 +120,9 @@ namespace Imperium\Session {
          */
         public function all(): array
         {
-            $this->start();
             return $_SESSION;
         }
-
+        
         /**
          *
          * Remove all values inside the session.

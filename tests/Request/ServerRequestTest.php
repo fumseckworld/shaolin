@@ -2,7 +2,6 @@
 
 namespace Testing\Request;
 
-use Imperium\Exception\Kedavra;
 use Imperium\Http\Parameters\Bag;
 use Imperium\Http\Parameters\UploadedFile;
 use Imperium\Http\Request\ServerRequest;

@@ -20,7 +20,7 @@ namespace Imperium\Database\Found {
     
     use DI\DependencyException;
     use DI\NotFoundException;
-    use Imperium\Html\Form\Form;
+    use Imperium\Html\Form\Generator\FormGenerator;
     use Imperium\Html\Pagination\Pagination;
     use ReflectionClass;
     use ReflectionException;
@@ -98,12 +98,12 @@ namespace Imperium\Database\Found {
          *
          * Get an instance of the form builder.
          *
-         * @return Form
+         * @return FormGenerator
          *
          */
-        public static function builder(): Form
+        public static function builder(): FormGenerator
         {
-            return new Form();
+            return new FormGenerator();
         }
         
         /**

@@ -4,7 +4,7 @@ use Imperium\Collection\Collect;
 use Imperium\Http\Request\Request;
 
 if (!function_exists('url')) {
-
+    
     /**
      *
      * Generate the full url
@@ -22,11 +22,11 @@ if (!function_exists('url')) {
         if (https()) {
             return sprintf('https://%s/%s', Request::make()->server()->get('HTTP_HOST'), join('/', $urls));
         }
-        return  sprintf('http://%s/%s', Request::make()->server()->get('HTTP_HOST'), join('/', $urls));
+        return sprintf('http://%s/%s', Request::make()->server()->get('HTTP_HOST'), join('/', $urls));
     }
 }
 
-if (!function_exists(('cli'))) {
+if (!function_exists('cli')) {
     
     /**
      *
@@ -40,8 +40,23 @@ if (!function_exists(('cli'))) {
         return strcmp(php_sapi_name(), 'cli') === 0;
     }
 }
-if (!function_exists('https')) {
 
+if (!function_exists('not_cli')) {
+    
+    /**
+     *
+     * check if the code is not executed  from the command line.
+     *
+     * @return bool
+     *
+     */
+    function not_cli(): bool
+    {
+        return !cli();
+    }
+}
+if (!function_exists('https')) {
+    
     /**
      *
      * Check if the server is secure
@@ -57,7 +72,7 @@ if (!function_exists('https')) {
 
 
 if (!function_exists('collect')) {
-
+    
     /**
      *
      * Get a new collection
@@ -82,8 +97,8 @@ if (!function_exists('collect')) {
 }
 
 if (!function_exists('total')) {
-
-
+    
+    
     /**
      *
      * @param int $x
@@ -100,7 +115,7 @@ if (!function_exists('total')) {
         } elseif ($x >= 1000) {
             return round(($x / 1000), 2) . ' K';
         }
-
+        
         return number_format($x);
     }
 }
