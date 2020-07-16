@@ -19,14 +19,14 @@
 declare(strict_types=1);
 
 namespace Imperium\Http\Response {
-    
+
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
     use Imperium\Exception\Kedavra;
     use Imperium\Http\Request\ServerRequest;
     use Imperium\Http\Routing\Router;
-    
+
     /**
      *
      * Represent an response for a user request on the website.
@@ -47,7 +47,7 @@ namespace Imperium\Http\Response {
      */
     final class Response
     {
-        
+
         public function __construct()
         {
             $this->content = '';
@@ -120,7 +120,7 @@ namespace Imperium\Http\Response {
                     510 => 'Network Authentication Required',                             // RFC6585
                 ];
         }
-        
+
         /**
          *
          * Set the different response information.
@@ -143,7 +143,7 @@ namespace Imperium\Http\Response {
             $this->headers = $headers;
             return $this;
         }
-        
+
         /**
          * @param string $from
          * @param string $url
@@ -159,14 +159,14 @@ namespace Imperium\Http\Response {
             ) {
                 throw new Kedavra('The from must be equal to global or cli');
             }
-            
+
             $this->request =
                 strcmp($from, 'global') === 0 ?
                     ServerRequest::generate() :
                     new ServerRequest($url, $method);
             return $this;
         }
-        
+
         /**
          * @throws DependencyException
          * @throws NotFoundException
@@ -180,7 +180,8 @@ namespace Imperium\Http\Response {
                 return app('response')->set($e->getMessage(), 404)->send();
             }
         }
-        
+
+
         /**
          *
          * Count how many html tags exist in the content.
@@ -194,7 +195,7 @@ namespace Imperium\Http\Response {
         {
             return substr_count($this->content, $tag);
         }
-        
+
         /**
          *
          * Check if the element exist in the view
@@ -208,7 +209,7 @@ namespace Imperium\Http\Response {
         {
             return def(strstr($this->content, $value));
         }
-        
+
         /**
          *
          * Check if the url match the redirect url.
@@ -224,7 +225,7 @@ namespace Imperium\Http\Response {
         {
             return strcmp($this->url, $url) === 0;
         }
-        
+
         /**
          *
          * Send the headers and send the content
@@ -238,7 +239,7 @@ namespace Imperium\Http\Response {
         {
             return $this->sendHeaders()->sendContent();
         }
-        
+
         /**
          *
          * Get response content
@@ -250,7 +251,7 @@ namespace Imperium\Http\Response {
         {
             return $this->content;
         }
-        
+
         /**
          *
          * Get the response status
@@ -262,7 +263,7 @@ namespace Imperium\Http\Response {
         {
             return $this->status;
         }
-        
+
         /**
          *
          * Check the response status code
@@ -276,7 +277,7 @@ namespace Imperium\Http\Response {
         {
             return $this->status === $status;
         }
-        
+
         /**
          *
          * Check if the response has been successfully executed
@@ -290,7 +291,7 @@ namespace Imperium\Http\Response {
         {
             return $this->status >= 200 && $this->status < 300;
         }
-        
+
         /**
          *
          * Check if the response is a redirect
@@ -302,7 +303,7 @@ namespace Imperium\Http\Response {
         {
             return $this->status >= 300 && $this->status < 400;
         }
-        
+
         /**
          *
          * Check if the response is a forbidden response
@@ -314,7 +315,7 @@ namespace Imperium\Http\Response {
         {
             return $this->status == 403;
         }
-        
+
         /**
          *
          * Check if the response is a not found response.
@@ -326,7 +327,7 @@ namespace Imperium\Http\Response {
         {
             return $this->status == 404;
         }
-        
+
         /**
          *
          * Set the redirect url
@@ -339,10 +340,10 @@ namespace Imperium\Http\Response {
         public function setUrl(string $url): Response
         {
             $this->url = def($url) ? $url : '';
-            
+
             return $this;
         }
-        
+
         /**
          *
          * Display the content of the response.
@@ -352,11 +353,12 @@ namespace Imperium\Http\Response {
          */
         public function sendContent(): Response
         {
-            echo $this->content();
-            
+            if (not_cli()) {
+                echo $this->content();
+            }
             return $this;
         }
-        
+
         /**
          *
          * Set all response headers.
@@ -369,10 +371,10 @@ namespace Imperium\Http\Response {
         public function setHeaders(array $headers): Response
         {
             $this->headers = $headers;
-            
+
             return $this;
         }
-        
+
         /**
          *
          * Set the response status code.
@@ -385,12 +387,12 @@ namespace Imperium\Http\Response {
          */
         public function setStatus(int $status): Response
         {
-            
+
             $this->status = $status;
-            
+
             return $this;
         }
-        
+
         /**
          *
          * Set the response content
@@ -403,10 +405,10 @@ namespace Imperium\Http\Response {
         public function setContent(string $content): Response
         {
             $this->content = $content;
-            
+
             return $this;
         }
-        
+
         /**
          *
          * Send all response headers.
@@ -420,15 +422,15 @@ namespace Imperium\Http\Response {
             if (headers_sent()) {
                 return $this;
             }
-            
+
             foreach ($this->headers as $k => $v) {
                 $replace = strcasecmp($k, 'Content-Type') === 0;
                 header("$k:$v", $replace, $this->status());
             }
-            
+
             // status
             header(sprintf('HTTP/%s %s %s', '1.1', $this->status, $this->status_texts[$this->status]));
-            
+
             return $this;
         }
     }
