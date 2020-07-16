@@ -21,6 +21,7 @@ namespace Imperium\Testing {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Imperium\Http\Response\JsonResponse;
     use Imperium\Http\Response\Response;
     use PHPUnit\Framework\TestCase;
 
@@ -63,6 +64,21 @@ namespace Imperium\Testing {
         public function response(): Response
         {
             return new Response();
+        }
+
+        /**
+         *
+         * Send a json response.
+         *
+         * @param array $data The json data.
+         *
+         *
+         * @return Response
+         *
+         */
+        public function json(array $data): Response
+        {
+            return (new JsonResponse($data))->send();
         }
 
         /**
