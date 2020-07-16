@@ -25,7 +25,7 @@ use Imperium\Exception\Kedavra;
 use Imperium\Security\Hashing\Hash;
 
 if (!function_exists('validator_messages')) {
-    
+
     /**
      *
      * Get validation message
@@ -36,7 +36,7 @@ if (!function_exists('validator_messages')) {
     function validator_messages(): array
     {
         $file = 'validator';
-        
+
         return [
             VALIDATOR_EMAIL_NOT_VALID => config($file, 'email', 'The %s email is not a valid email'),
             VALIDATOR_ARGUMENT_NOT_DEFINED => config($file, 'required', 'The %s argument is required'),
@@ -65,7 +65,7 @@ if (!function_exists('validator_messages')) {
 }
 
 if (!function_exists('class_to_array')) {
-    
+
     /**
      *
      * Parse an object an return an array
@@ -98,15 +98,15 @@ if (!function_exists('not_def')) {
                 return false;
             }
         }
-        
+
         return true;
     }
 }
 
 
 if (!function_exists('camel_to_snake')) {
-    
-    
+
+
     /**
      *
      * Get a snake case string format with camel case format
@@ -123,8 +123,8 @@ if (!function_exists('camel_to_snake')) {
 }
 
 if (!function_exists('is_snake')) {
-    
-    
+
+
     /**
      *
      * check if string is a snake case
@@ -141,8 +141,8 @@ if (!function_exists('is_snake')) {
 }
 
 if (!function_exists('is_slug')) {
-    
-    
+
+
     /**
      *
      * check if string is a snake case
@@ -159,8 +159,8 @@ if (!function_exists('is_slug')) {
 }
 
 if (!function_exists('sluglify')) {
-    
-    
+
+
     /**
      *
      * convert a string to a slug
@@ -175,7 +175,7 @@ if (!function_exists('sluglify')) {
         $space = function (string $x) {
             return collect(explode(' ', $x))->for('trim')->for('strtolower')->join('-');
         };
-        
+
         $point = function (string $point) {
             $x = function ($x) {
                 return str_replace(
@@ -192,48 +192,48 @@ if (!function_exists('sluglify')) {
                     )
                 );
             };
-            
+
             return collect(explode('_', call_user_func_array($x, [$point])))->join('-');
         };
         $comma = function (string $comma) {
             $x = function ($x) {
                 return str_replace('-', '', str_replace(',', '_', $x));
             };
-            
+
             return collect(explode('_', call_user_func_array($x, [$comma])))->join('-');
         };
-        
+
         if (is_slug($slug)) {
             return $slug;
         }
-        
+
         if (def(strstr($slug, ' '))) {
             $slug = call_user_func_array($space, [$slug]);
         }
-        
-        
+
+
         if (is_slug($slug)) {
             return $slug;
         }
-        
+
         if (def(strstr($slug, ','))) {
             $slug = call_user_func_array($comma, [$slug]);
         }
-        
+
         if (is_slug($slug)) {
             return $slug;
         }
         if (def(strstr($slug, '.'))) {
             $slug = call_user_func_array($point, [$slug]);
         }
-        
+
         if (is_slug($slug)) {
             return $slug;
         }
         if (def(strstr($slug, '_'))) {
             $slug = collect(explode('_', $slug))->join('-');
         }
-        
+
         if (is_slug($slug)) {
             return $slug;
         }
@@ -242,8 +242,8 @@ if (!function_exists('sluglify')) {
 }
 
 if (!function_exists('is_camel')) {
-    
-    
+
+
     /**
      *
      * convert a sing in a slug
@@ -259,8 +259,8 @@ if (!function_exists('is_camel')) {
     }
 }
 if (!function_exists('snake_to_camel')) {
-    
-    
+
+
     /**
      *
      * Get a camel case string format with snake case format
@@ -294,7 +294,7 @@ if (!function_exists('logged')) {
 }
 
 if (!function_exists('guest')) {
-    
+
     /**
      *
      * Check if te user is not logged.
@@ -347,8 +347,8 @@ if (!function_exists('check_password')) {
 
 
 if (!function_exists('def')) {
-    
-    
+
+
     /**
      *
      * Check if a values are define an not empty.
@@ -370,7 +370,7 @@ if (!function_exists('def')) {
 }
 
 if (!function_exists('base')) {
-    
+
     /**
      *
      * Found the base path of the application.
@@ -384,49 +384,9 @@ if (!function_exists('base')) {
      */
     function base(string ...$values): string
     {
-        $base = cli() ? strval(realpath('.')) : dirname(strval(realpath('./')));
-        
-        if (def($values)) {
-            foreach ($values as $dir) {
-                if (def($dir)) {
-                    if (def(strstr($dir, DIRECTORY_SEPARATOR))) {
-                        foreach (explode(DIRECTORY_SEPARATOR, $dir) as $x) {
-                            $base .= DIRECTORY_SEPARATOR . $x;
-                            
-                            if (strcmp($x, '*') !== 0) {
-                                if (!file_exists($base)) {
-                                    if (def(strstr($base, '.'))) {
-                                        if (!file_exists($base)) {
-                                            touch($base);
-                                        }
-                                    } else {
-                                        if (!is_dir($base)) {
-                                            mkdir($base);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        $base .= DIRECTORY_SEPARATOR . $dir;
-                        if (strcmp($dir, '*') !== 0) {
-                            if (!file_exists($base)) {
-                                if (def(strstr($base, '.'))) {
-                                    if (!file_exists($base)) {
-                                        touch($base);
-                                    }
-                                } else {
-                                    if (!is_dir($base)) {
-                                        mkdir($base);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return $base;
+        $base = cli() ? [strval(realpath('.'))] : [dirname(strval(realpath('./')))];
+
+        return collect(array_merge($base, $values))->join(DIRECTORY_SEPARATOR);
     }
 }
 
@@ -449,7 +409,7 @@ if (!function_exists('is_serial')) {
     }
 }
 if (!function_exists('form_token')) {
-    
+
     /**
      *
      * Generate the form token
@@ -462,11 +422,11 @@ if (!function_exists('form_token')) {
     function form_token(): string
     {
         $value = bin2hex(random_bytes(16));
-        
+
         if (not_cli()) {
             $value =
                 app('session')->has('form_token') ? app('session')->get('form_token')
-                : app('session')->set('form_token', $value)->get('form_token');
+                    : app('session')->set('form_token', $value)->get('form_token');
         }
         return sprintf(
             '<input type="hidden" name="form_token" value="%s">',
@@ -475,7 +435,7 @@ if (!function_exists('form_token')) {
     }
 }
 if (!function_exists('app')) {
-    
+
     /**
      *
      * Get an instance of a class.
@@ -496,7 +456,7 @@ if (!function_exists('app')) {
 }
 
 if (!function_exists('files')) {
-    
+
     /**
      *
      * Get all files who matches the pattern.
@@ -515,7 +475,7 @@ if (!function_exists('files')) {
 
 
 if (!function_exists('env')) {
-    
+
     /**
      *
      * Get an environment variable.
@@ -540,7 +500,7 @@ if (!function_exists('env')) {
 }
 
 if (!function_exists('config')) {
-    
+
     /**
      *
      * Get a config value
@@ -563,7 +523,7 @@ if (!function_exists('config')) {
 }
 
 if (!function_exists('imperium')) {
-    
+
     /**
      *
      * Get a personalized config value

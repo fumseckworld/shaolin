@@ -18,21 +18,9 @@ class AdminHelpersTest extends Unit
     public function testBase()
     {
         $this->def(
-            base(),
-            base('imperium'),
-            base('imperium/Html'),
-            base('core/models/Users.php')
-        )
-            ->success(
-                is_dir(base('bidon', 'alexandre')),
-                file_exists(base('bidon', 'a.php')),
-                unlink(base('bidon', 'a.php')),
-                rmdir(base('bidon', 'alexandre')),
-                unlink(base('core', 'models', 'Users.php')),
-                rmdir(base('core', 'models')),
-                rmdir(base('core'))
-            );
-        $this->assertStringContainsString('imperium', base('imperium'));
+            \base('README.md'),
+            \base('tests', 'Helpers', 'AdminHelpers.php')
+        );
     }
 
     public function testImperium()
@@ -44,6 +32,7 @@ class AdminHelpersTest extends Unit
     {
         $this->failure(logged())->success(guest());
     }
+
     public function testPassword()
     {
         $this->def(secure_password(''))
