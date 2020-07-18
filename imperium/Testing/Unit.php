@@ -17,10 +17,12 @@
  */
 
 namespace Imperium\Testing {
-
+    
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Http\Response\Response;
     use PHPUnit\Framework\TestCase;
-
+    
     /**
      *
      * Represent all method used to test the application.
@@ -50,7 +52,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Get an instance of the response.
@@ -61,7 +63,7 @@ namespace Imperium\Testing {
         {
             return new Response();
         }
-
+        
         /**
          *
          * Asserts that a condition is true.
@@ -78,7 +80,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+    
         /**
          *
          * Visit a page.
@@ -86,13 +88,15 @@ namespace Imperium\Testing {
          * @param string $url    The page url to visit
          * @param string $method The http request method.
          *
+         * @throws DependencyException
+         * @throws NotFoundException
          * @return Response
          */
         public function visit(string $url, string $method = 'GET'): Response
         {
             return app('response')->from('cli', $url, strtoupper($method))->get();
         }
-
+        
         /**
          * Undocumented function
          *
@@ -107,7 +111,7 @@ namespace Imperium\Testing {
             $this->expectExceptionMessage($message);
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a condition is false.
@@ -124,7 +128,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is of type bool.
@@ -141,7 +145,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is not of type bool.
@@ -158,8 +162,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is of type int.
@@ -176,7 +180,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is not of type int.
@@ -193,7 +197,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is of type numeric.
@@ -210,7 +214,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is not of type numeric.
@@ -227,7 +231,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is of type callable.
@@ -244,7 +248,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Assert that a variable is not of type callable.
@@ -261,7 +265,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is of type float.
@@ -278,7 +282,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is not of type float.
@@ -295,7 +299,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is of type iterable.
@@ -312,8 +316,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is not of type iterable.
@@ -330,8 +334,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is of type array.
@@ -348,8 +352,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is not of type array.
@@ -366,8 +370,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is of type object.
@@ -384,8 +388,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is not of type object.
@@ -402,8 +406,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that actual is empty.
@@ -420,8 +424,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that actual is not empty.
@@ -438,7 +442,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that values contains a value.
@@ -456,7 +460,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a values does not contain a value.
@@ -474,7 +478,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that an array does not have a specified key.
@@ -492,7 +496,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that an array has a specified key.
@@ -510,7 +514,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that two variables are equal.
@@ -526,7 +530,7 @@ namespace Imperium\Testing {
             $this->assertEquals($expected, $actual, _('The actual value is not identic to the expected value'));
             return $this;
         }
-
+        
         /**
          *
          * Asserts that two variables are not equal.
@@ -542,7 +546,7 @@ namespace Imperium\Testing {
             $this->assertNotEquals($expected, $actual, _('The actual value is not identic to the expected value'));
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a haystack contains only values of a given type.
@@ -564,8 +568,8 @@ namespace Imperium\Testing {
             );
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a haystack does not contain only values of a given type.
@@ -587,7 +591,7 @@ namespace Imperium\Testing {
             );
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a variable is of a given type.
@@ -606,11 +610,11 @@ namespace Imperium\Testing {
                     _('The instance is not an instance of the expected class')
                 );
             }
-
+            
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a variable is not of a given type.
@@ -632,7 +636,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a class has a specified attribute.
@@ -650,7 +654,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a class does not have a specified attribute.
@@ -668,7 +672,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a class has a specified static attribute.
@@ -686,7 +690,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a class does not have a specified static attribute.
@@ -704,7 +708,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts the number of elements of an array, Countable or Traversable.
@@ -720,7 +724,7 @@ namespace Imperium\Testing {
             $this->assertCount($expected, $value, _('The results not match te expected value'));
             return $this;
         }
-
+        
         /**
          *
          * Asserts that directories exists.
@@ -737,8 +741,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a directory does not exist.
@@ -755,7 +759,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
+        
         /**
          *
          * Asserts that a directory exists and is readable.
@@ -772,8 +776,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a directory exists and is not readable.
@@ -790,8 +794,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a directory exists and is writable.
@@ -808,8 +812,8 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-
-
+        
+        
         /**
          *
          * Asserts that a directory exists and is not writable.
