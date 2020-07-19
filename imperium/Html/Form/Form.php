@@ -2,10 +2,13 @@
 
 namespace Imperium\Html\Form {
     
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Request\Request;
     use Imperium\Http\Response\RedirectResponse;
     use Imperium\Http\Response\Response;
+    use Imperium\Messages\Flash\Flash;
     use Imperium\Security\Validator\Validator;
     
     /**
@@ -24,9 +27,9 @@ namespace Imperium\Html\Form {
         protected static string $method = 'POST';
         
         /**
-         * The action url
+         * The route name
          */
-        protected static string $action = '';
+        protected static string $route = '';
         
         /**
          *
@@ -38,12 +41,15 @@ namespace Imperium\Html\Form {
          *
          */
         abstract protected function success(Bag $bag): Response;
-        
+    
         /**
          *
-         * Analyse the user request and use it data if they are validated.
+         *  Apply the request if form are valid.
          *
          * @param Request $request The user request.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return Response
          *
@@ -53,7 +59,15 @@ namespace Imperium\Html\Form {
             if ($this->check($request->request)) {
                 return $this->success($request->request);
             }
-            //TODO add flash message with all errors inside static::$errors
+            
+            if (not_cli()) {
+                $message = '<ul class="alert alert-danger">';
+                $message .= collect(static::$errors)->for(function ($error) {
+                    return sprintf('<li>%s</li>', $error);
+                })->join('');
+                $message .= '</ul>';
+                Flash::set($message);
+            }
             return (new RedirectResponse(static::$redirect))->send();
         }
     }

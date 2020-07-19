@@ -1,34 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-use Imperium\Console\Argument;
-use Imperium\Console\Command;
-use Imperium\Console\Question;
-
 require 'vendor/autoload.php';
 
-class Hello extends Command
-{
-
-    protected static string $name = 'app';
-
-    protected static bool $interact = false;
-
-    protected static array $arguments = [
-        'table' => 'required',
-        'action' => 'required'
-    ];
-
-    public function ask(Question $question): int
-    {
-        return 0;
-    }
-
-    public function do(Argument $args): int
-    {
-        dd($args);
-        return 1; 
-    }
-}
-
-exit((new Hello())->run());
+(new \Imperium\Console\Command('shaolin','1.0'))->run();

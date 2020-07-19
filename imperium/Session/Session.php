@@ -98,7 +98,7 @@ namespace Imperium\Session {
          * @return boolean
          *
          */
-        public function destroy(...$keys): bool
+        public function del(...$keys): bool
         {
             $x = collect();
             
@@ -133,7 +133,7 @@ namespace Imperium\Session {
         public function clear(): bool
         {
             foreach ($this->all() as $value) {
-                $this->destroy($value);
+                $this->del($value);
             }
             return empty($this->all());
         }

@@ -193,7 +193,7 @@ namespace Imperium\Container {
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());
                 $c->set('session', new Session());
-                
+    
                 $c->set('app-directory', imperium('app-directory', 'app'));
                 
                 $c->set('db-directory', imperium('db-directory', 'db'));
