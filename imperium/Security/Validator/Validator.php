@@ -1,22 +1,22 @@
 <?php
 
 namespace Imperium\Security\Validator {
-    
+
     use Imperium\Http\Parameters\Bag;
-    
+
     abstract class Validator
     {
         /**
          * All validators rules
          */
         protected static array $rules = [];
-        
+
         protected static array $errors = [];
-        
+
         protected static array $messages = [];
-        
+
         protected static string $redirect = '';
-        
+
         /**
          *
          * Analyse a container content.
@@ -29,7 +29,7 @@ namespace Imperium\Security\Validator {
         {
             return $this->analyse($bag);
         }
-        
+
         /**
          *
          * Check the content of the container
@@ -180,13 +180,23 @@ namespace Imperium\Security\Validator {
                                 );
                             };
                             break;
+                        case 'integer':
+                            if (!is_int($bag->get($field))) {
+                                $this->addError(
+                                    sprintf(
+                                        'The %s argument is not an integer',
+                                        $field
+                                    )
+                                );
+                            }
+                            break;
                     }
                     $x->next();
                 }
             }
             return not_def(static::$errors);
         }
-        
+
         /**
          * @param string $message The error message.
          */

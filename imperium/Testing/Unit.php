@@ -20,6 +20,8 @@ namespace Imperium\Testing {
     
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Exception;
+    use Imperium\Http\Response\JsonResponse;
     use Imperium\Http\Response\Response;
     use PHPUnit\Framework\TestCase;
     
@@ -66,6 +68,21 @@ namespace Imperium\Testing {
         
         /**
          *
+         * Send a json response.
+         *
+         * @param array $data The json data.
+         *
+         *
+         * @return Response
+         *
+         */
+        public function json(array $data): Response
+        {
+            return (new JsonResponse($data))->send();
+        }
+
+        /**
+         *
          * Asserts that a condition is true.
          *
          * @param mixed $conditions The condition to check.
@@ -83,14 +100,19 @@ namespace Imperium\Testing {
     
         /**
          *
-         * Visit a page.
+         * Visit a page
          *
-         * @param string $url    The page url to visit
-         * @param string $method The http request method.
+         * @param string $url    the url to visit.
+         * @param string $method The http method to access at the page.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Exception
          *
          * @throws DependencyException
          * @throws NotFoundException
          * @return Response
+         *
          */
         public function visit(string $url, string $method = 'GET'): Response
         {
