@@ -19,30 +19,32 @@
 declare(strict_types=1);
 
 namespace Imperium\Database\Connection {
-
+    
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use PDO;
     use PDOException;
-
+    
     /**
      *
      * Represent a connection between php code and a database.
      *
      * Groups off all method useful to execute queries.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Database\Connection\Connect
      * @version 12
      *
-     * @property string  $driver    The current pdo driver value
-     * @property string  $base      The current pdo database value
-     * @property string  $username  The current pdo username value
-     * @property string  $password  The current pdo password value
-     * @property string  $host      The current pdo hostname value
+     * @property string $driver    The current pdo driver value
+     * @property string $base      The current pdo database value
+     * @property string $username  The current pdo username value
+     * @property string $password  The current pdo password value
+     * @property string $host      The current pdo hostname value
      * @property PDO    $pdo       The pdo instance
      */
     class Connect
     {
-
+        
         /**
          *
          * Build a new instance
@@ -50,11 +52,11 @@ namespace Imperium\Database\Connection {
          * Initialize required values
          *
          *
-         * @param string $driver        The driver to use
-         * @param string $base          The database name
-         * @param string $username      The database username
-         * @param string $password      The database password
-         * @param string $host          The database hostname
+         * @param string $driver   The driver to use
+         * @param string $base     The database name
+         * @param string $username The database username
+         * @param string $password The database password
+         * @param string $host     The database hostname
          */
         final public function __construct(
             string $driver = '',
@@ -69,10 +71,13 @@ namespace Imperium\Database\Connection {
             $this->password = $password;
             $this->host = $host;
         }
-
+        
         /**
          *
          * Call the constructor with the development environment information.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return Connect
          *
@@ -87,10 +92,13 @@ namespace Imperium\Database\Connection {
                 env('DEVELOP_DB_HOST', 'localhost')
             );
         }
-
+        
         /**
          *
          * Call the constructor with the production environment information.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return Connect
          *
@@ -105,10 +113,13 @@ namespace Imperium\Database\Connection {
                 env('DB_HOST', 'localhost')
             );
         }
-
+        
         /**
          *
          * Call the constructor with the test environment information.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return Connect
          *
@@ -123,16 +134,19 @@ namespace Imperium\Database\Connection {
                 env('TESTS_DB_HOST', 'localhost')
             );
         }
-
+        
         /**
          *
          * Execute a query sql.
          *
          * Return true on success of false on failure.
          *
-         * @param string $sql   The query to execute
-         * @param array  $args  The query args
+         * @param string $sql  The query to execute
+         * @param array  $args The query args
          *
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return boolean
          *
@@ -140,23 +154,26 @@ namespace Imperium\Database\Connection {
         public function exec(string $sql, array $args = []): bool
         {
             $stm = $this->pdo()->prepare($sql);
-
+            
             $success = $stm->execute($args);
-
+            
             $stm->closeCursor();
-
+            
             $stm = null;
-
+            
             return $success;
         }
-
+        
         /**
          *
          * Execute the query and return the results in an array.
          *
-         * @param string  $sql          The query to execute
-         * @param array   $args         The query arguments
-         * @param int     $output_mode  The output style
+         * @param string $sql         The query to execute
+         * @param array  $args        The query arguments
+         * @param int    $output_mode The output style
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return array
          *
@@ -174,13 +191,17 @@ namespace Imperium\Database\Connection {
             $data = $stm->fetchAll($output_mode);
             $stm->closeCursor();
             $stm = null;
-
+            
             return is_bool($data) ? [] : $data;
         }
+        
         /**
          *
          * Get the correct environment.
          *
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return Connect
          *
@@ -195,6 +216,7 @@ namespace Imperium\Database\Connection {
             }
             return $this->test();
         }
+        
         /**
          *
          * Get the pdo driver used.
@@ -206,8 +228,8 @@ namespace Imperium\Database\Connection {
         {
             return $this->driver;
         }
-
-
+        
+        
         /**
          *
          * Return the current username used.
@@ -219,7 +241,7 @@ namespace Imperium\Database\Connection {
         {
             return $this->username;
         }
-
+        
         /**
          *
          * Return the current password used.
@@ -231,7 +253,7 @@ namespace Imperium\Database\Connection {
         {
             return $this->password;
         }
-
+        
         /**
          *
          * Return the current base used.
@@ -243,7 +265,7 @@ namespace Imperium\Database\Connection {
         {
             return $this->base;
         }
-
+        
         /**
          *
          * Return the current hostname used.
@@ -255,12 +277,15 @@ namespace Imperium\Database\Connection {
         {
             return $this->host;
         }
-
+        
         /**
          *
          * Check if the current driver used is mysql.
          *
          * Return true if mysql is used or return false.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return boolean
          *
@@ -269,12 +294,15 @@ namespace Imperium\Database\Connection {
         {
             return strcmp($this->env()->driver(), MYSQL) == 0;
         }
-
+        
         /**
          *
          * Check if the current driver used is postgresql.
          *
          * Return true if postgresql is used or return false.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return boolean
          *
@@ -283,13 +311,16 @@ namespace Imperium\Database\Connection {
         {
             return strcmp($this->env()->driver(), POSTGRESQL) == 0;
         }
-
-
+        
+        
         /**
          *
          * Check if the current driver used is sqlite.
          *
          * Return true if sqlite is used or return false.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return boolean
          *
@@ -298,16 +329,20 @@ namespace Imperium\Database\Connection {
         {
             return strcmp($this->env()->driver(), SQLITE) == 0;
         }
-
+        
         /**
          *
          * Build the pdo instance.
          *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
          * @return PDO
+         *
          */
         protected function pdo(): PDO
         {
-            if (! $this->pdo  instanceof  PDO) {
+            if (!$this->pdo instanceof PDO) {
                 if ($this->env()->mysql()) {
                     $this->pdo =
                         new PDO(
@@ -330,10 +365,13 @@ namespace Imperium\Database\Connection {
                         $this->env()->password()
                     );
                 } else {
-                    $this->pdo =  new PDO(sprintf('sqlite:%s', $this->env()->base()), '', '');
+                    $this->pdo = new PDO(sprintf('sqlite:%s', $this->env()->base()), '', '');
                 }
-
-                $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                if (env('DEBUG', false)) {
+                    $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                } else {
+                    $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
+                }
             }
             return $this->pdo;
         }
