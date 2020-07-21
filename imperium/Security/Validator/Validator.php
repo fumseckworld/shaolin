@@ -178,7 +178,7 @@ namespace Imperium\Security\Validator {
                                         $field
                                     )
                                 );
-                            };
+                            }
                             break;
                         case 'integer':
                             if (!is_int($bag->get($field))) {

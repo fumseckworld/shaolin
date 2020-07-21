@@ -4,6 +4,7 @@ namespace Imperium\Html\Form {
     
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Imperium\Html\Form\Generator\FormGenerator;
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Request\Request;
     use Imperium\Http\Response\RedirectResponse;
@@ -21,15 +22,6 @@ namespace Imperium\Html\Form {
      */
     abstract class Form extends Validator
     {
-        /**
-         * The action method.
-         */
-        protected static string $method = 'POST';
-        
-        /**
-         * The route name
-         */
-        protected static string $route = '';
         
         /**
          *
@@ -41,7 +33,51 @@ namespace Imperium\Html\Form {
          *
          */
         abstract protected function success(Bag $bag): Response;
-    
+        
+        /**
+         *
+         * The form to display at the user.
+         *
+         * @return string
+         *
+         */
+        abstract public function display(): string;
+        
+        /**
+         *
+         * Return an instance of the form generator.
+         *
+         * @return FormGenerator
+         *
+         */
+        protected function builder(): FormGenerator
+        {
+            return new FormGenerator();
+        }
+        
+        /**
+         *
+         * Redirect user to an url with a flash message.
+         *
+         * @param string $message Redirect user message.
+         * @param bool   $success Request has been an successfully executed or not.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Response
+         *
+         */
+        public function redirect(string $message, bool $success = true): Response
+        {
+            if (not_cli()) {
+                $success
+                    ? Flash::set(sprintf('<div class="alert alert-success">%s</div>', $message))
+                    : Flash::set($message);
+            }
+            return (new RedirectResponse(static::$redirect))->send();
+        }
+        
         /**
          *
          *  Apply the request if form are valid.
@@ -60,15 +96,15 @@ namespace Imperium\Html\Form {
                 return $this->success($request->request);
             }
             
-            if (not_cli()) {
-                $message = '<ul class="alert alert-danger">';
-                $message .= collect(static::$errors)->for(function ($error) {
+            $message = '<ul class="alert alert-danger">';
+            $message .= collect(static::$errors)->for(
+                function ($error) {
                     return sprintf('<li>%s</li>', $error);
-                })->join('');
-                $message .= '</ul>';
-                Flash::set($message);
-            }
-            return (new RedirectResponse(static::$redirect))->send();
+                }
+            )->join('');
+            $message .= '</ul>';
+            
+            return $this->redirect($message, false);
         }
     }
 }
