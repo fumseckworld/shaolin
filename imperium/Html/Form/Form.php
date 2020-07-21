@@ -50,7 +50,7 @@ namespace Imperium\Html\Form {
          * @return FormGenerator
          *
          */
-        protected function builder(): FormGenerator
+        final protected function builder(): FormGenerator
         {
             return new FormGenerator();
         }
@@ -68,7 +68,7 @@ namespace Imperium\Html\Form {
          * @return Response
          *
          */
-        public function redirect(string $message, bool $success = true): Response
+        final public function redirect(string $message, bool $success = true): Response
         {
             if (not_cli()) {
                 $success
