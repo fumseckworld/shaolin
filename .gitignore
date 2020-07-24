@@ -10,3 +10,6 @@ doc
 wanted
 .php_cs.cache
 .vscode
+node_modules
+package-lock.json
+mix-*
