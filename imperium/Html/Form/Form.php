@@ -4,6 +4,8 @@ namespace Imperium\Html\Form {
     
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Exception;
+    use Imperium\Exception\Kedavra;
     use Imperium\Html\Form\Generator\FormGenerator;
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Request\Request;
@@ -22,6 +24,24 @@ namespace Imperium\Html\Form {
      */
     abstract class Form extends Validator
     {
+        /**
+         * All input in the form.
+         */
+      
+        /**
+         * The form method
+         */
+        protected static string $method = 'POST';
+    
+        /**
+         * The form action
+         */
+        protected static string $action = '/';
+    
+        /**
+         * The form submit text
+         */
+        protected static string $submit = 'submit';
         
         /**
          *
@@ -36,12 +56,61 @@ namespace Imperium\Html\Form {
         
         /**
          *
-         * The form to display at the user.
+         * Display the form.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Exception
+         * @throws Kedavra
          *
          * @return string
          *
          */
-        abstract public function display(): string;
+        final public function display(): string
+        {
+            $form = $this->builder();
+            
+            $form->open(static::$action, static::$method);
+            
+            foreach (static::$fields as $field => $rules) {
+                $options = collect();
+                
+                $options->put('name', $field);
+                
+                $rules = explode('|', $rules);
+                
+                foreach ($rules as $rule) {
+                    if (def(strstr($rule, ':'))) {
+                        $x = collect(explode(':', $rule));
+                        $key = $x->first();
+                        $value = $x->last();
+                        $options->put($key, $value);
+                    }
+                    if (def(strstr($rule, 'required'))) {
+                        $options->put('required', 'required');
+                    }
+                }
+                if (is_null($options->get('name'))) {
+                    throw new Kedavra('A input in the form has no name');
+                }
+                if (is_null($options->get('type'))) {
+                    throw new Kedavra('A input in the form has no type');
+                }
+                if (is_null($options->get('label'))) {
+                    throw new Kedavra('A input in the form has no label');
+                }
+                
+                $form->add(
+                    $options->get('name'),
+                    $options->get('type'),
+                    $options->get('label'),
+                    $options->del(
+                        ['label', 'type', 'name']
+                    )->all()
+                );
+            }
+            return $form->close(static::$submit);
+        }
         
         /**
          *
@@ -50,7 +119,7 @@ namespace Imperium\Html\Form {
          * @return FormGenerator
          *
          */
-        final protected function builder(): FormGenerator
+        final private function builder(): FormGenerator
         {
             return new FormGenerator();
         }
@@ -95,7 +164,7 @@ namespace Imperium\Html\Form {
             if ($this->check($request->request)) {
                 return $this->success($request->request);
             }
-            
+           
             $message = '<ul class="alert alert-danger">';
             $message .= collect(static::$errors)->for(
                 function ($error) {
@@ -103,7 +172,7 @@ namespace Imperium\Html\Form {
                 }
             )->join('');
             $message .= '</ul>';
-            
+
             return $this->redirect($message, false);
         }
     }

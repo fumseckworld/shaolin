@@ -56,7 +56,7 @@ namespace Imperium\Messages\Flash {
          * @return string
          *
          */
-        public static function get(): string
+        public static function message(): string
         {
             if (static::has()) {
                 $message = app('session')->get('flash');

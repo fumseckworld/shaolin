@@ -62,6 +62,7 @@ namespace Imperium\Html\Form\Generator {
          *
          * @param string $name    The input name.
          * @param string $type    The input type.
+         * @param string $label   The label text.
          * @param array  $options The input options.
          *
          * @throws DependencyException
@@ -70,7 +71,7 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function add(string $name, string $type, array $options = []): FormGenerator
+        public function add(string $name, string $type, string $label, array $options = []): FormGenerator
         {
             if ($this->has($name)) {
                 return $this;
@@ -101,9 +102,15 @@ namespace Imperium\Html\Form\Generator {
                 case 'datetime':
                     return $this->append(
                         sprintf(
-                            '<div class="%s"><input type="%s" name="%s" class="%s" %s ></div>',
+                            '<div class="%s">
+                                <label for="%s">%s</label>
+                                <input type="%s" id="%s" name="%s" class="%s" %s >
+                            </div>',
                             app('form-separator-classname'),
+                            $name,
+                            $label,
                             $type,
+                            $name,
                             $name,
                             app('form-input-classname'),
                             collect($options)->each([$this, 'generateInputOptions'])->join(' ')
@@ -112,8 +119,14 @@ namespace Imperium\Html\Form\Generator {
                 case 'textarea':
                     return $this->append(
                         sprintf(
-                            '<div class="%s"><textarea name="%s" class="%s" %s >%s</textarea></div>',
+                            '<div class="%s">
+                                <label for="%s">%s</label>
+                                <textarea id="%s" name="%s" class="%s" %s >%s</textarea>
+                            </div>',
                             app('form-separator-classname'),
+                            $name,
+                            $label,
+                            $name,
                             $name,
                             app('form-input-classname'),
                             collect($options)->each([$this, 'generateInputOptions'])->join(' '),
@@ -145,6 +158,7 @@ namespace Imperium\Html\Form\Generator {
          *
          * @param bool   $condition The add input condition.
          * @param string $name      The input name.
+         * @param string $label     The input label.
          * @param string $type      The input type.
          * @param array  $options   The input options.
          *
@@ -154,9 +168,9 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function only(bool $condition, string $name, string $type, array $options = []): FormGenerator
+        public function only(bool $condition, string $name, string $label, string $type, array $options = []): self
         {
-            return $condition ? $this->add($name, $type, $options) : $this;
+            return $condition ? $this->add($name, $type, $label, $options) : $this;
         }
         
         /**
