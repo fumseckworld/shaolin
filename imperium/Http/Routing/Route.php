@@ -7,8 +7,6 @@ namespace Imperium\Http\Routing {
     use Imperium\Exception\Kedavra;
     use Imperium\Http\Request\Request;
     use Imperium\Http\Response\Response;
-    use ReflectionClass;
-    use ReflectionException;
 
     /**
      * Class Route
@@ -80,7 +78,8 @@ namespace Imperium\Http\Routing {
          */
         final public function exec(): Response
         {
-            return call_user_func_array(app($this->controller()), [$this->args]);
+            /** @phpstan-ignore-next-line */
+            return call_user_func_array([app($this->controller()), $this->action()], [$this->args]);
         }
     }
 }
