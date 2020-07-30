@@ -1,14 +1,15 @@
 <?php
 
 namespace Imperium\Http\Routing {
-    
+
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Imperium\Exception\Kedavra;
     use Imperium\Http\Request\ServerRequest;
     use Imperium\Http\Response\Response;
-    
-    
+
+
     /**
      * Class Router
      *
@@ -18,25 +19,25 @@ namespace Imperium\Http\Routing {
      *
      * @property string $method The request method.
      * @property string $url    The request url.
-     * @property array  $args   The request args.
-     * @property array  $routes All routes found in the base for the method.
+     * @property array $args   The request args.
+     * @property array $routes All routes found in the base for the method.
      *
      */
-    class Router
+    final class Router
     {
         /**
          *
          * Router constructor.
          *
          * @param ServerRequest $request The user's request.
-         * @param int           $mode    The server mode.
+         * @param int $mode The server mode.
          *
          * @throws NotFoundException
          * @throws Exception
          * @throws DependencyException
          *
          */
-        public function __construct(ServerRequest $request, int $mode = SITE)
+        final public function __construct(ServerRequest $request, int $mode = SITE)
         {
             $this->url = $request->url();
             $this->method = $request->method();
@@ -53,24 +54,32 @@ namespace Imperium\Http\Routing {
                     break;
             }
         }
-        
+
         /**
          *
-         * Call the correct controller method.
+         * Execute the route callback
          *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
          * @return Response
          *
          */
-        public function run(): Response
+        final public function run(): Response
         {
             foreach ($this->routes as $route) {
                 if ($this->match($route->url)) {
-                    return new  Response();
+                    return (new Route($route->controller, $route->action, $this->args))->exec();
                 }
             }
-            return new  Response();
+
+            return (new Route(
+                app('not-found-controller-name'),
+                app('not-found-action-name'),
+                $this->args
+            ))->exec();
         }
-        
+
         /**
          *
          * Check if a url match a route.
@@ -80,12 +89,12 @@ namespace Imperium\Http\Routing {
          * @return bool
          *
          */
-        private function match(string $url): bool
+        final private function match(string $url): bool
         {
             $path = preg_replace('#:([\w]+)#', '([^/]+)', $url);
-            
+
             $regex = "#^$path$#";
-            
+
             return preg_match($regex, $this->url, $this->args) === 1;
         }
     }

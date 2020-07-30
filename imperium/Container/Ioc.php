@@ -195,7 +195,11 @@ namespace Imperium\Container {
                 $c->set('session', new Session());
     
                 $c->set('app-directory', imperium('app-directory', 'app'));
-                
+
+                $c->set('not-found-controller-name', imperium('not-found-controller-name', 'NotFoundController'));
+
+                $c->set('not-found-action-name', imperium('not-found-action-name', 'notFound'));
+
                 $c->set('db-directory', imperium('db-directory', 'db'));
                 
                 $c->set('tests-directory', imperium('tests-directory', 'tests'));
