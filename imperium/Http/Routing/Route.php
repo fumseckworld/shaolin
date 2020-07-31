@@ -25,12 +25,27 @@ namespace Imperium\Http\Routing {
          * @param string $action     The controller action name.
          * @param array  $args       The action arguments.
          *
+         * @throws Kedavra
          */
         public function __construct(string $controller, string $action, array $args = [])
         {
             $this->controller = $controller;
             $this->action = $action;
             $this->args = $args;
+
+            if (!class_exists($this->controller)) {
+                throw new Kedavra(_('The controller has not been found'));
+            }
+
+            if (!method_exists($this->controller, $this->action)) {
+                throw new Kedavra(
+                    sprintf(
+                        _('The %s method has not been found in the %s controller'),
+                        $this->action(),
+                        $this->controller()
+                    )
+                );
+            }
         }
 
         /**

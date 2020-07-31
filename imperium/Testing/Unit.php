@@ -17,14 +17,17 @@
  */
 
 namespace Imperium\Testing {
-    
+
+    use Closure;
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Imperium\Exception\Kedavra;
     use Imperium\Http\Response\JsonResponse;
     use Imperium\Http\Response\Response;
+    use Imperium\Http\Routing\Route;
     use PHPUnit\Framework\TestCase;
-    
+
     /**
      *
      * Represent all method used to test the application.
@@ -47,25 +50,25 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notDef(...$actual): self
+        final public function notDef(...$actual): self
         {
             foreach ($actual as $value) {
                 $this->assertNull($value, _('The data are not equal to null'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Get an instance of the response.
          *
          * @return Response
          */
-        public function response(): Response
+        final public function response(): Response
         {
             return new Response();
         }
-        
+
         /**
          *
          * Send a json response.
@@ -76,7 +79,7 @@ namespace Imperium\Testing {
          * @return Response
          *
          */
-        public function json(array $data): Response
+        final public function json(array $data): Response
         {
             return (new JsonResponse($data))->send();
         }
@@ -90,14 +93,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function success(...$conditions): self
+        final public function success(...$conditions): self
         {
             foreach ($conditions as $condition) {
                 $this->assertTrue($condition, _('The condition must return true but return false'));
             }
             return $this;
         }
-    
+
         /**
          *
          * Visit a page
@@ -114,26 +117,48 @@ namespace Imperium\Testing {
          * @return Response
          *
          */
-        public function visit(string $url, string $method = 'GET'): Response
+        final public function visit(string $url, string $method = 'GET'): Response
         {
             return app('response')->from('cli', $url, strtoupper($method))->get();
         }
-        
+
+
+        /**
+         *
+         * Test a route.
+         *
+         * @param string $controller The controller name.
+         * @param string $action     The controller action name
+         * @param array  $args       The action args.
+         *
+         * @throws Kedavra
+         *
+         * @return Route
+         *
+         */
+        final public function route(string $controller, string $action, array $args = []): Route
+        {
+            return new Route($controller, $action, $args);
+        }
+
         /**
          * Undocumented function
          *
-         * @param class-string<\Throwable> $expected The expected exception.
-         * @param string $message The expected message.
+         * @param class-string<\Throwable>  $expected  $expected The expected exception.
+         * @param string  $message The expected message.
+         * @param Closure $closure The function to test code.
          *
          * @return Unit
+         *
          */
-        public function throw(string $expected, string $message): self
+        final public function throw(string $expected, string $message, Closure $closure): self
         {
             $this->expectException($expected);
             $this->expectExceptionMessage($message);
+            call_user_func($closure);
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a condition is false.
@@ -143,14 +168,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function failure(...$conditions): self
+        final public function failure(...$conditions): self
         {
             foreach ($conditions as $condition) {
                 $this->assertFalse($condition, _('The condition must return false but return true'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is of type bool.
@@ -160,14 +185,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function boolean(...$values): self
+        final public function boolean(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsBool($value, _('The result is not of the boolean type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is not of type bool.
@@ -177,15 +202,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notBoolean(...$values): self
+        final public function notBoolean(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotBool($value, _('The result is of the boolean type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is of type int.
@@ -195,14 +220,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function int(...$values): self
+        final public function int(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsInt($value, _('The result is not of the int type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is not of type int.
@@ -212,14 +237,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notInt(...$values): self
+        final public function notInt(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotInt($value, _('The result is of the int type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is of type numeric.
@@ -229,14 +254,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function num(...$values): self
+        final public function num(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNumeric($value, _('The result is not of the numeric type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is not of type numeric.
@@ -246,14 +271,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notNum(...$values): self
+        final public function notNum(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotNumeric($value, _('The result is of the numeric type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is of type callable.
@@ -263,14 +288,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function callable(...$values): self
+        final public function callable(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsCallable($value, _('The result is not of the callable type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Assert that a variable is not of type callable.
@@ -280,14 +305,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notCallable(...$values): self
+        final public function notCallable(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotCallable($value, _('The result is of the callable type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is of type float.
@@ -297,14 +322,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function float(...$values): self
+        final public function float(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsFloat($value, _('The result is not of the float type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is not of type float.
@@ -314,14 +339,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notFloat(...$values): self
+        final public function notFloat(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotFloat($value, _('The result is of the float type'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is of type iterable.
@@ -331,15 +356,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function iterable(...$values): self
+        final public function iterable(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsIterable($value, _('The result is not of the iterable type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is not of type iterable.
@@ -349,15 +374,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notIterable(...$values): self
+        final public function notIterable(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotIterable($value, _('The result is of the iterable type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is of type array.
@@ -367,15 +392,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function isArray(...$values): self
+        final public function isArray(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsArray($value, _('The result is not of the array type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is not of type array.
@@ -385,15 +410,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notArray(...$values): self
+        final public function notArray(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotArray($value, _('The result is of the array type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is of type object.
@@ -403,15 +428,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function object(...$values): self
+        final public function object(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsObject($value, _('The result is not of the object type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is not of type object.
@@ -421,15 +446,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notObject(...$values): self
+        final public function notObject(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertIsNotObject($value, _('The result is of the object type'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that actual is empty.
@@ -439,15 +464,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function empty(...$values): self
+        final public function empty(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertEmpty($value, _('The result is not empty'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that actual is not empty.
@@ -457,14 +482,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function def(...$values): self
+        final public function def(...$values): self
         {
             foreach ($values as $value) {
                 $this->assertNotEmpty($value, _('The result is empty'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that values contains a value.
@@ -475,14 +500,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function exist(iterable $data, ...$values): self
+        final public function exist(iterable $data, ...$values): self
         {
             foreach ($values as $value) {
                 $this->assertContains($value, $data, _('The value has not been found in all values'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a values does not contain a value.
@@ -493,14 +518,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notExist(iterable $data, ...$values): self
+        final public function notExist(iterable $data, ...$values): self
         {
             foreach ($values as $value) {
                 $this->assertNotContains($value, $data, _('The value has been found in all values'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that an array does not have a specified key.
@@ -511,14 +536,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notHas(array $array, ...$keys): self
+        final public function notHas(array $array, ...$keys): self
         {
             foreach ($keys as $key) {
                 $this->assertArrayNotHasKey($key, $array, _('The key has been found in the array'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that an array has a specified key.
@@ -529,14 +554,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function has(array $array, ...$keys): self
+        final public function has(array $array, ...$keys): self
         {
             foreach ($keys as $key) {
                 $this->assertArrayHasKey($key, $array, _('The key has not been found in the array'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that two variables are equal.
@@ -547,12 +572,12 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function identical($expected, $actual): self
+        final public function identical($expected, $actual): self
         {
             $this->assertEquals($expected, $actual, _('The actual value is not identic to the expected value'));
             return $this;
         }
-        
+
         /**
          *
          * Asserts that two variables are not equal.
@@ -563,12 +588,12 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function different($expected, $actual): self
+        final public function different($expected, $actual): self
         {
             $this->assertNotEquals($expected, $actual, _('The actual value is not identic to the expected value'));
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a haystack contains only values of a given type.
@@ -580,7 +605,7 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function only(string $type, iterable $values, bool $native = null): self
+        final public function only(string $type, iterable $values, bool $native = null): self
         {
             $this->assertContainsOnly(
                 $type,
@@ -590,8 +615,8 @@ namespace Imperium\Testing {
             );
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a haystack does not contain only values of a given type.
@@ -603,7 +628,7 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function notOnly(string $type, iterable $values, bool $native = null): self
+        final  public function notOnly(string $type, iterable $values, bool $native = null): self
         {
             $this->assertNotContainsOnly(
                 $type,
@@ -613,7 +638,7 @@ namespace Imperium\Testing {
             );
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a variable is of a given type.
@@ -623,7 +648,7 @@ namespace Imperium\Testing {
          *
          * @return Unit
          */
-        public function is(string $instance, ...$values): self
+        final public function is(string $instance, ...$values): self
         {
             foreach ($values as $value) {
                 $this->assertInstanceOf(
@@ -632,11 +657,11 @@ namespace Imperium\Testing {
                     _('The instance is not an instance of the expected class')
                 );
             }
-            
+
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a variable is not of a given type.
@@ -647,7 +672,7 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function not($actual, ...$instances): self
+        final  public function not($actual, ...$instances): self
         {
             foreach ($instances as $instance) {
                 $this->assertNotInstanceOf(
@@ -658,7 +683,7 @@ namespace Imperium\Testing {
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a class has a specified attribute.
@@ -669,14 +694,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function hasAttribute(string $class, ...$attributes): self
+        final public function hasAttribute(string $class, ...$attributes): self
         {
             foreach ($attributes as $attribute) {
                 $this->assertClassHasAttribute($attribute, $class, _('The class attribute has not been found'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a class does not have a specified attribute.
@@ -687,14 +712,14 @@ namespace Imperium\Testing {
          * @return self
          *
          */
-        public function hasNotAttribute(string $class, ...$attributes): self
+        final public function hasNotAttribute(string $class, ...$attributes): self
         {
             foreach ($attributes as $attribute) {
                 $this->assertClassNotHasAttribute($attribute, $class, _('The class attribute has been found'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a class has a specified static attribute.
@@ -705,14 +730,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function hasStatic(string $class, ...$attributes): self
+        final public function hasStatic(string $class, ...$attributes): self
         {
             foreach ($attributes as $attribute) {
                 $this->assertClassHasStaticAttribute($attribute, $class, _('The attribute has not been found'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a class does not have a specified static attribute.
@@ -723,14 +748,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function hasNotStatic(string $class, ...$attributes): self
+        final public function hasNotStatic(string $class, ...$attributes): self
         {
             foreach ($attributes as $attribute) {
                 $this->assertClassNotHasStaticAttribute($attribute, $class, _('The attribute has been found'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts the number of elements of an array, Countable or Traversable.
@@ -741,12 +766,12 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function sum(int $expected, iterable $value): self
+        final public function sum(int $expected, iterable $value): self
         {
             $this->assertCount($expected, $value, _('The results not match te expected value'));
             return $this;
         }
-        
+
         /**
          *
          * Asserts that directories exists.
@@ -756,15 +781,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function directoriesExist(...$directories): self
+        final public function directoriesExist(...$directories): self
         {
             foreach ($directories as $directory) {
                 $this->assertDirectoryExists($directory, _('The directory not exists'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a directory does not exist.
@@ -774,14 +799,14 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function directoriesNotExist(...$directories): self
+        final public function directoriesNotExist(...$directories): self
         {
             foreach ($directories as $directory) {
                 $this->assertDirectoryNotExists($directory, _('The directory has been found'));
             }
             return $this;
         }
-        
+
         /**
          *
          * Asserts that a directory exists and is readable.
@@ -791,15 +816,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function directoriesReadable(...$directories): self
+        final public function directoriesReadable(...$directories): self
         {
             foreach ($directories as $directory) {
                 $this->assertDirectoryIsReadable($directory, _('The directory is not readable'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a directory exists and is not readable.
@@ -809,15 +834,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function directoriesNotReadable(...$directories): self
+        final public function directoriesNotReadable(...$directories): self
         {
             foreach ($directories as $directory) {
                 $this->assertDirectoryNotIsReadable($directory, _('The directory is readable'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a directory exists and is writable.
@@ -827,15 +852,15 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function directoriesWritable(...$directories): self
+        final public function directoriesWritable(...$directories): self
         {
             foreach ($directories as $directory) {
                 $this->assertDirectoryIsWritable($directory, _('The directory is not writable'));
             }
             return $this;
         }
-        
-        
+
+
         /**
          *
          * Asserts that a directory exists and is not writable.
@@ -845,7 +870,7 @@ namespace Imperium\Testing {
          * @return Unit
          *
          */
-        public function directoriesNotWritable(...$directories): self
+        final public function directoriesNotWritable(...$directories): self
         {
             foreach ($directories as $directory) {
                 $this->assertDirectoryNotIsWritable($directory, _('The directory is writable'));
