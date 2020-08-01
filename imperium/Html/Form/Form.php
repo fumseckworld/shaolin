@@ -52,7 +52,7 @@ namespace Imperium\Html\Form {
          * @return Response
          *
          */
-        abstract protected function success(Bag $bag): Response;
+        abstract public function success(Bag $bag): Response;
         
         /**
          *

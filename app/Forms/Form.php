@@ -14,7 +14,7 @@ class Form extends \Imperium\Html\Form\Form
     
     protected static string $redirect = '/login';
     
-    protected function success(Bag $bag): Response
+    final public function success(Bag $bag): Response
     {
         return (new Response())->setContent('ok')->send();
     }

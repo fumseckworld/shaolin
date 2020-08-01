@@ -17,7 +17,7 @@ class LoginForm extends Form
     
     protected static string $redirect = "/";
     
-    protected function success(Bag $bag): Response
+    final public function success(Bag $bag): Response
     {
         return (new Response())->setContent('ok')->send();
     }
