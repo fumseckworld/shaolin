@@ -19,12 +19,12 @@ class RouteTest extends Unit
      */
     final public function testSuccess(): void
     {
+
         $this->success(
-            $this->route(WelcomeController::class, 'run')->exec()->see('ok'),
+            $this->route(WelcomeController::class, 'run')->exec()->see('submit'),
             $this->route(WelcomeController::class, 'run')->exec()->ok()
-        )
-            ->identical('run', $this->route(WelcomeController::class, 'run')->action())
-            ->identical('ok', $this->route(WelcomeController::class, 'run')->exec()->content())
+        )->identical('run', $this->route(WelcomeController::class, 'run')->action())
+            ->def($this->route(WelcomeController::class, 'run')->exec()->content())
             ->def($this->route(WelcomeController::class, 'run')->controller())
             ->is(Request::class, $this->route(WelcomeController::class, 'run')->args());
     }

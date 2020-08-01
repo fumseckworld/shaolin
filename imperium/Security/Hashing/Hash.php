@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Imperium\Security\Hashing {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
+
     /**
      *
      * Represent all hashed values.
@@ -18,10 +21,12 @@ namespace Imperium\Security\Hashing {
     {
 
         /**
-         *
          * Hash constructor.
          *
-         * @param string $data The value to use.
+         * @param string $data The data to use.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          */
         public function __construct(string $data)
@@ -39,12 +44,12 @@ namespace Imperium\Security\Hashing {
          *
          * Check if the hash is valid.
          *
-         * @param  string  $value The value to analyse.
+         * @param string $value The value to analyse.
          *
          * @return bool
          *
          */
-        public function valid(string $value): bool
+        final public function valid(string $value): bool
         {
             return hash_equals($this->generate(), $value);
         }
@@ -56,7 +61,7 @@ namespace Imperium\Security\Hashing {
          * @return string
          *
          */
-        public function generate(): string
+        final public function generate(): string
         {
             return $this->valid;
         }
