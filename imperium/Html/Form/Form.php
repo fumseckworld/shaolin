@@ -1,7 +1,7 @@
 <?php
 
 namespace Imperium\Html\Form {
-    
+
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
@@ -13,7 +13,7 @@ namespace Imperium\Html\Form {
     use Imperium\Http\Response\Response;
     use Imperium\Messages\Flash\Flash;
     use Imperium\Security\Validator\Validator;
-    
+
     /**
      * Class Form
      *
@@ -27,22 +27,22 @@ namespace Imperium\Html\Form {
         /**
          * All input in the form.
          */
-      
+
         /**
          * The form method
          */
         protected static string $method = 'POST';
-    
+
         /**
          * The form action
          */
         protected static string $action = '/';
-    
+
         /**
          * The form submit text
          */
         protected static string $submit = 'submit';
-        
+
         /**
          *
          * Do something with the validated request.
@@ -53,7 +53,7 @@ namespace Imperium\Html\Form {
          *
          */
         abstract public function success(Bag $bag): Response;
-        
+
         /**
          *
          * Display the form.
@@ -61,7 +61,6 @@ namespace Imperium\Html\Form {
          * @throws DependencyException
          * @throws NotFoundException
          * @throws Exception
-         * @throws Kedavra
          *
          * @return string
          *
@@ -69,22 +68,26 @@ namespace Imperium\Html\Form {
         final public function display(): string
         {
             $form = $this->builder();
-            
+
             $form->open(static::$action, static::$method);
-            
+
             foreach (static::$fields as $field => $rules) {
                 $options = collect();
-                
+
                 $options->put('name', $field);
-                
-                $rules = explode('|', $rules);
-                
+
+                $rules = collect(explode('|', $rules))->for('trim')->all();
+
                 foreach ($rules as $rule) {
                     if (def(strstr($rule, ':'))) {
                         $x = collect(explode(':', $rule));
                         $key = $x->first();
                         $value = $x->last();
-                        $options->put($key, $value);
+                        if (def(strstr($value, '%s'))) {
+                            $options->put($key, sprintf($value, $field));
+                        } else {
+                            $options->put($key, $value);
+                        }
                     }
                     if (def(strstr($rule, 'required'))) {
                         $options->put('required', 'required');
@@ -99,7 +102,7 @@ namespace Imperium\Html\Form {
                 if (is_null($options->get('label'))) {
                     throw new Kedavra('A input in the form has no label');
                 }
-                
+
                 $form->add(
                     $options->get('name'),
                     $options->get('type'),
@@ -111,7 +114,7 @@ namespace Imperium\Html\Form {
             }
             return $form->close(static::$submit);
         }
-        
+
         /**
          *
          * Return an instance of the form generator.
@@ -123,7 +126,7 @@ namespace Imperium\Html\Form {
         {
             return new FormGenerator();
         }
-        
+
         /**
          *
          * Redirect user to an url with a flash message.
@@ -146,7 +149,7 @@ namespace Imperium\Html\Form {
             }
             return (new RedirectResponse(static::$redirect))->send();
         }
-        
+
         /**
          *
          *  Apply the request if form are valid.
@@ -161,10 +164,23 @@ namespace Imperium\Html\Form {
          */
         final public function apply(Request $request): Response
         {
-            if ($this->check($request->request)) {
-                return $this->success($request->request);
+            if ($request->submitted()) {
+                $bag = $request->request();
+                if ($this->check($bag) && $request->hasToken()) {
+                    return $this->success($bag);
+                }
             }
-           
+            return $this->redirect($this->error(), false);
+        }
+
+        /**
+         *
+         * Get the errors messages.
+         *
+         * @return string
+         */
+        private function error(): string
+        {
             $message = '<ul class="alert alert-danger">';
             $message .= collect(static::$errors)->for(
                 function ($error) {
@@ -173,7 +189,7 @@ namespace Imperium\Html\Form {
             )->join('');
             $message .= '</ul>';
 
-            return $this->redirect($message, false);
+            return $message;
         }
     }
 }

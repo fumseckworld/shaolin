@@ -30,15 +30,15 @@ namespace Imperium\Http\Request {
      *
      * This package contains all useful methods to interact with all values.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Request
      * @version 12
      *
-     * @property    Bag $query      The container for $_GET values.
-     * @property    Bag $request    The container for $_POST values.
-     * @property    Bag $cookie     The container for $_COOKIE values
-     * @property    Bag $server     The container for $_SERVER values.
-     * @property    Bag $args       The container for the router params values.
+     * @property    Bag          $query      The container for $_GET values.
+     * @property    Bag          $request    The container for $_POST values.
+     * @property    Bag          $cookie     The container for $_COOKIE values
+     * @property    Bag          $server     The container for $_SERVER values.
+     * @property    Bag          $args       The container for the router params values.
      * @property    UploadedFile $files      The container for the uploaded files.
      *
      */
@@ -48,11 +48,11 @@ namespace Imperium\Http\Request {
          *
          * Initialize a new request
          *
-         * @param array $request The $_POST values.
-         * @param array $query The $_GET values.
-         * @param array $cookies The $_COOKIE values.
-         * @param array $files The $_FILES values.
-         * @param array $server The $_SERVER values.
+         * @param array $request     The $_POST values.
+         * @param array $query       The $_GET values.
+         * @param array $cookies     The $_COOKIE values.
+         * @param array $files       The $_FILES values.
+         * @param array $server      The $_SERVER values.
          * @param array $router_args The router args for a route.
          */
         public function __construct(
@@ -70,11 +70,11 @@ namespace Imperium\Http\Request {
          *
          * Save all missing values to use with the container.
          *
-         * @param array $request The $_POST values.
-         * @param array $query The $_GET values.
-         * @param array $cookies The $_COOKIE values.
-         * @param array $files The $_FILES values.
-         * @param array $server The $_SERVER values.
+         * @param array $request     The $_POST values.
+         * @param array $query       The $_GET values.
+         * @param array $cookies     The $_COOKIE values.
+         * @param array $files       The $_FILES values.
+         * @param array $server      The $_SERVER values.
          * @param array $router_args The router args for a route.
          *
          * @return Request
@@ -96,11 +96,11 @@ namespace Imperium\Http\Request {
          * Set a request argument.
          *
          * @param string $key
-         * @param array $value
-         *
-         * @return Request
+         * @param array  $value
          *
          * @throws Kedavra
+         *
+         * @return Request
          *
          */
         public function with(string $key, array $value): Request
@@ -286,6 +286,30 @@ namespace Imperium\Http\Request {
         public function local(): bool
         {
             return strcmp($this->ip(), '127.0.0.1') === 0;
+        }
+
+        /**
+         *
+         * Check if the token has been defined and are valid.
+         *
+         * @return bool
+         *
+         */
+        public function hasToken(): bool
+        {
+            return $this->request()->has('form_token');
+        }
+
+        /**
+         *
+         * Check if the request is submitted.
+         *
+         * @return bool
+         *
+         */
+        public function submitted(): bool
+        {
+            return $this->request()->count() > 0;
         }
     }
 }

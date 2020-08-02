@@ -15,7 +15,6 @@ class ValidatorTest extends Unit
     /**
      * @throws DependencyException
      * @throws NotFoundException
-     * @throws Kedavra
      */
     public function testDisplay()
     {
@@ -23,20 +22,28 @@ class ValidatorTest extends Unit
             (new LoginForm())->display()
         );
     }
-    
+
     /**
      * @throws DependencyException
      * @throws NotFoundException
      */
     public function testRequestSuccess()
     {
-        $this->success(
+        $this->failure(
             (new LoginForm())->apply(
                 new Request(['email' => 'ale@a.fr', 'password' => '000000000'])
             )->see('ok')
+        )->success(
+            (new LoginForm())->apply(
+                new Request([
+                        'email' => 'ale@a.fr',
+                        'password' => '000000000',
+                        'form_token' => bin2hex(random_bytes(16))
+                    ])
+            )->see('ok')
         );
     }
-    
+
     /**
      * @throws DependencyException
      * @throws NotFoundException
@@ -48,24 +55,23 @@ class ValidatorTest extends Unit
                 new Request(['email' => 'al', 'password' => '000000000'])
             )->see('ok')
         );
-        
+
         $this->failure(
             (new LoginForm())->apply(
                 new Request(['email' => 'al@a.fr', 'password' => '000'])
             )->see('ok')
         );
-        
-        
+
+
         $this->success(
             (new LoginForm())->apply(
                 new Request(['email' => 'al@a.fr', 'password' => '000'])
             )->to('/')
         );
     }
-    
+
     /**
      * @throws DependencyException
-     * @throws Kedavra
      * @throws NotFoundException
      */
     public function testForm()

@@ -1,24 +1,24 @@
 <?php
 
 namespace Imperium\Security\Validator {
-    
+
     use Imperium\Http\Parameters\Bag;
-    
+
     abstract class Validator
     {
         /**
          * All validators rules
          */
         protected static array $rules = [];
-        
+
         protected static array $fields = [];
-        
+
         protected static array $errors = [];
-        
+
         protected static array $messages = [];
-        
+
         protected static string $redirect = '';
-        
+
         /**
          *
          * Analyse a container content.
@@ -31,7 +31,7 @@ namespace Imperium\Security\Validator {
         {
             return $this->analyse($bag);
         }
-        
+
         /**
          *
          * Check the content of the container
@@ -41,21 +41,39 @@ namespace Imperium\Security\Validator {
          * @return bool
          *
          */
-        final protected function analyse(Bag $bag): bool
+        final private function analyse(Bag $bag): bool
         {
             $rules = def(static::$rules) ? static::$rules : static::$fields;
-            
-            
+
+
             foreach ($rules as $field => $rule) {
                 $x = collect(explode('|', $rule));
                 $x->rewind();
-                
                 while ($x->valid()) {
-                    switch ($x->current()) {
+                    switch (trim($x->current())) {
                         case 'required':
                             if (not_def($bag->get($field))) {
                                 $this->addError(
                                     sprintf('The %s field must be defined', $field)
+                                );
+                            }
+                            break;
+                        case def(strstr($x->current(), 'between')):
+                            $part = collect(explode(':', $x->current()))->last();
+                            $part = collect(explode(',', $part));
+                            $min = str_replace('between,', '', $part->first());
+                            $max = $part->last();
+
+                            $value = $bag->get($field);
+
+                            if ($value < $min || $value > $max) {
+                                $this->addError(
+                                    sprintf(
+                                        _('The %s field is not between %s and %s'),
+                                        $field,
+                                        $min,
+                                        $max
+                                    )
                                 );
                             }
                             break;
@@ -65,7 +83,7 @@ namespace Imperium\Security\Validator {
                             $number = is_string($delta) ? strlen(strval($delta)) : intval($delta);
                             $x = collect(explode(':', $x->current()));
                             $value = $x->last();
-                            
+
                             if ($number > $value) {
                                 $this->addError(
                                     sprintf(
@@ -81,7 +99,7 @@ namespace Imperium\Security\Validator {
                             $value = $x->last();
                             $delta = $bag->get($field);
                             $number = is_string($delta) ? strlen(strval($delta)) : intval($delta);
-                            
+
                             if ($number < $value) {
                                 $this->addError(
                                     sprintf(
@@ -244,7 +262,7 @@ namespace Imperium\Security\Validator {
             }
             return not_def(static::$errors);
         }
-        
+
         /**
          * @param string $message The error message.
          */

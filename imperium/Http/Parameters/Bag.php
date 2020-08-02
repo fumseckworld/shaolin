@@ -30,14 +30,14 @@ namespace Imperium\Http\Parameters {
      *
      * This package contains all useful methods to get a request type values.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Parameters\Bag
      * @version 12
      *
      * @property array $data All request values.
      *
      */
-    class Bag implements IteratorAggregate, Countable
+    final class Bag implements IteratorAggregate, Countable
     {
         /**
          *
@@ -46,7 +46,7 @@ namespace Imperium\Http\Parameters {
          * @param array $data
          *
          */
-        public function __construct(array $data)
+        final public function __construct(array $data)
         {
             $this->data = $data;
         }
@@ -58,7 +58,7 @@ namespace Imperium\Http\Parameters {
          * @return array
          *
          **/
-        public function keys(): array
+        final public function keys(): array
         {
             return array_keys($this->data);
         }
@@ -70,7 +70,7 @@ namespace Imperium\Http\Parameters {
          * @return array
          *
          **/
-        public function values(): array
+        final public function values(): array
         {
             return array_values($this->data);
         }
@@ -82,13 +82,13 @@ namespace Imperium\Http\Parameters {
          *
          * Return the value on success or false on failure.
          *
-         * @param string $key The value key.
-         * @param mixed $default The value if not define.
+         * @param string $key     The value key.
+         * @param mixed  $default The value if not define.
          *
          * @return mixed
          *
          */
-        public function get(string $key, $default = null)
+        final public function get(string $key, $default = null)
         {
             return array_key_exists($key, $this->data) ? $this->data[$key] : $default;
         }
@@ -97,13 +97,13 @@ namespace Imperium\Http\Parameters {
          *
          * Set a value for a specific key.
          *
-         * @param string $key The bag key.
-         * @param mixed $value The bag value.
+         * @param string $key   The bag key.
+         * @param mixed  $value The bag value.
          *
          * @return Bag
          *
          */
-        public function set(string $key, $value): Bag
+        final public function set(string $key, $value): Bag
         {
             $this->data[$key] = $value;
 
@@ -119,7 +119,7 @@ namespace Imperium\Http\Parameters {
          * @return Bag
          *
          */
-        public function add(array $parameters = []): Bag
+        final public function add(array $parameters = []): Bag
         {
             $this->data = array_replace($this->data, $parameters);
 
@@ -137,7 +137,7 @@ namespace Imperium\Http\Parameters {
          * @return boolean
          *
          */
-        public function has(string $key): bool
+        final public function has(string $key): bool
         {
             return array_key_exists($key, $this->data);
         }
@@ -153,7 +153,7 @@ namespace Imperium\Http\Parameters {
          * @return boolean
          *
          */
-        public function destroy(string $key): bool
+        final public function destroy(string $key): bool
         {
             if ($this->has($key)) {
                 unset($this->data[$key]);
@@ -166,13 +166,13 @@ namespace Imperium\Http\Parameters {
          *
          * Return the parameter value converted in an integer.
          *
-         * @param string $key The parameter key.
+         * @param string  $key     The parameter key.
          * @param integer $default The default value.
          *
          * @return integer
          *
          */
-        public function int(string $key, int $default = 0): int
+        final public function int(string $key, int $default = 0): int
         {
             return intval($this->get($key, $default));
         }
@@ -181,13 +181,13 @@ namespace Imperium\Http\Parameters {
          *
          * Return the parameter value converted in a string.
          *
-         * @param string $key The parameter key.
+         * @param string  $key     The parameter key.
          * @param integer $default The default value.
          *
          * @return string
          *
          */
-        public function string(string $key, int $default = 0): string
+        final public function string(string $key, int $default = 0): string
         {
             return strval($this->get($key, $default));
         }
@@ -196,13 +196,13 @@ namespace Imperium\Http\Parameters {
          *
          * Return the parameter value converted in a double.
          *
-         * @param string $key The parameter key.
+         * @param string  $key     The parameter key.
          * @param integer $default The default value.
          *
          * @return float
          *
          */
-        public function double(string $key, int $default = 0): float
+        final public function double(string $key, int $default = 0): float
         {
             return doubleval($this->get($key, $default));
         }
@@ -211,13 +211,13 @@ namespace Imperium\Http\Parameters {
          *
          * Return the parameter value converted to boolean.
          *
-         * @param string $key The parameter key.
+         * @param string  $key     The parameter key.
          * @param boolean $default The default value.
          *
          * @return boolean
          *
          */
-        public function bool(string $key, bool $default = false): bool
+        final public function bool(string $key, bool $default = false): bool
         {
             return $this->filter($key, $default, FILTER_VALIDATE_BOOLEAN);
         }
@@ -226,13 +226,13 @@ namespace Imperium\Http\Parameters {
          *
          * Get the digits of a parameter value.
          *
-         * @param string $key The parameter key
+         * @param string $key     The parameter key
          * @param string $default The parameter default value.
          *
          * @return string
          *
          */
-        public function digits(string $key, string $default = ''): string
+        final public function digits(string $key, string $default = ''): string
         {
             return str_replace(['-', '+'], '', $this->filter($key, $default, FILTER_SANITIZE_NUMBER_INT));
         }
@@ -242,15 +242,15 @@ namespace Imperium\Http\Parameters {
          *
          * Filter a key
          *
-         * @param string $key The parameter key to filter.
-         * @param mixed $default The default parameter value.
-         * @param integer $filter The filter constant.
-         * @param array $options The filter option.
+         * @param string  $key     The parameter key to filter.
+         * @param mixed   $default The default parameter value.
+         * @param integer $filter  The filter constant.
+         * @param array   $options The filter option.
          *
          * @return mixed
          *
          */
-        public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, array $options = [])
+        final public function filter(string $key, $default = null, int $filter = FILTER_DEFAULT, array $options = [])
         {
             $value = $this->get($key, $default);
 
@@ -261,13 +261,13 @@ namespace Imperium\Http\Parameters {
          *
          * Get the alphabetic characters of the parameter value.
          *
-         * @param string $key The parameter key
+         * @param string $key     The parameter key
          * @param string $default The parameter default value
          *
          * @return string
          *
          */
-        public function alpha(string $key, string $default = ''): string
+        final public function alpha(string $key, string $default = ''): string
         {
             return preg_replace('/[^[:alpha:]]/', '', $this->get($key, $default));
         }
@@ -276,13 +276,13 @@ namespace Imperium\Http\Parameters {
          *
          * Get the the alphabetic characters and digits of the parameter value.
          *
-         * @param string $key The parameter key
+         * @param string $key     The parameter key
          * @param string $default The default parameter value
          *
          * @return string
          *
          */
-        public function alnum(string $key, string $default = ''): string
+        final public function alnum(string $key, string $default = ''): string
         {
             return preg_replace('/[^[:alnum:]]/', '', $this->get($key, $default));
         }
@@ -294,7 +294,7 @@ namespace Imperium\Http\Parameters {
          * @return array
          *
          */
-        public function all(): array
+        final public function all(): array
         {
             return $this->data;
         }
@@ -306,7 +306,7 @@ namespace Imperium\Http\Parameters {
          * @return ArrayIterator An ArrayIterator instance.
          *
          */
-        public function getIterator(): ArrayIterator
+        final public function getIterator(): ArrayIterator
         {
             return new ArrayIterator($this->data);
         }
@@ -317,7 +317,7 @@ namespace Imperium\Http\Parameters {
          *
          * @return int
          */
-        public function count(): int
+        final public function count(): int
         {
             return count($this->data);
         }

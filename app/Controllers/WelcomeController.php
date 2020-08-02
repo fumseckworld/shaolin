@@ -2,6 +2,7 @@
 
 namespace App\Controllers {
 
+    use App\Forms\Form;
     use App\Forms\LoginForm;
     use DI\DependencyException;
     use DI\NotFoundException;

@@ -44,7 +44,7 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function open(string $action, string $method = 'POST', array $options = []): FormGenerator
+        final public function open(string $action, string $method = 'POST', array $options = []): FormGenerator
         {
             return $this->append(
                 sprintf(
@@ -71,7 +71,7 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function add(string $name, string $type, string $label, array $options = []): FormGenerator
+        final public function add(string $name, string $type, string $label, array $options = []): FormGenerator
         {
             if ($this->has($name)) {
                 return $this;
@@ -147,30 +147,9 @@ namespace Imperium\Html\Form\Generator {
          * @return bool
          *
          */
-        public function has(string $name): bool
+        final public function has(string $name): bool
         {
             return $this->fields->exist($name);
-        }
-        
-        /**
-         *
-         * Add an input by a condition.
-         *
-         * @param bool   $condition The add input condition.
-         * @param string $name      The input name.
-         * @param string $label     The input label.
-         * @param string $type      The input type.
-         * @param array  $options   The input options.
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
-         * @return FormGenerator
-         *
-         */
-        public function only(bool $condition, string $name, string $label, string $type, array $options = []): self
-        {
-            return $condition ? $this->add($name, $type, $label, $options) : $this;
         }
         
         /**
@@ -182,7 +161,7 @@ namespace Imperium\Html\Form\Generator {
          *
          * @return FormGenerator
          */
-        public function row(): FormGenerator
+        final public function row(): FormGenerator
         {
             return $this->append('<div class="' . app('form-row-classname') . '">');
         }
@@ -194,7 +173,7 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function end(): FormGenerator
+        final public function end(): FormGenerator
         {
             return $this->append('</div>');
         }
@@ -211,7 +190,7 @@ namespace Imperium\Html\Form\Generator {
          * @return string
          *
          */
-        public function close(string $submit_text = 'submit'): string
+        final public function close(string $submit_text = 'submit'): string
         {
             $this->append(
                 sprintf(
@@ -232,7 +211,7 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function append(string $x): FormGenerator
+        final public function append(string $x): FormGenerator
         {
             $this->form .= $x;
             return $this;
@@ -252,7 +231,7 @@ namespace Imperium\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        public function select(string $name, array $options, array $values): FormGenerator
+        final public function select(string $name, array $options, array $values): FormGenerator
         {
             return $this->append(
                 sprintf(
@@ -279,7 +258,7 @@ namespace Imperium\Html\Form\Generator {
          *
          * @return string
          */
-        public function generateInputOptions(string $k, string $v): string
+        final public function generateInputOptions(string $k, string $v): string
         {
             return sprintf(' %s="%s" ', $k, $v);
         }

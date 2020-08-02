@@ -9,8 +9,8 @@ use Imperium\Http\Response\Response;
 class LoginForm extends Form
 {
     protected static array $fields = [
-        'email' => 'required|email|type:email|label:email',
-        'password' => 'required|max:255|min:8|type:password|label:password'
+        'email' => 'type:email | label:email | required | email | max:255 | min:2',
+        'password' => 'type:password | label:%s | required | max:255 | min:8'
     ];
     
     protected static string $action = '/';
