@@ -28,7 +28,6 @@ namespace Imperium\Http\Views {
      */
     final class View
     {
-        private string $class;
 
         /**
          * View constructor.
@@ -84,6 +83,13 @@ namespace Imperium\Http\Views {
             $this->creator = env('CREATOR', '');
         }
 
+        /**
+         *
+         * Send the view.
+         *
+         * @return Response
+         *
+         */
         final public function send(): Response
         {
             extract($this->args);
@@ -95,13 +101,13 @@ namespace Imperium\Http\Views {
             $title = $this->title;
             $description = $this->description;
             $author = $this->author;
-            $keywords  = $this->keywords;
+            $keywords = $this->keywords;
             $creator = $this->creator;
-            $robots  = $this->robots;
+            $robots = $this->robots;
             $content = ob_get_clean();
 
             ob_start();
-            
+
             require($this->layout);
 
             return (new Response())->setContent(strval(ob_get_clean()))->send();
