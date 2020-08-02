@@ -21,7 +21,7 @@ class RouteTest extends Unit
     {
 
         $this->success(
-            $this->route(WelcomeController::class, 'run')->exec()->see('submit'),
+            $this->route(WelcomeController::class, 'run')->exec()->see('welcome'),
             $this->route(WelcomeController::class, 'run')->exec()->ok()
         )->identical('run', $this->route(WelcomeController::class, 'run')->action())
             ->def($this->route(WelcomeController::class, 'run')->exec()->content())

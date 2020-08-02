@@ -384,7 +384,7 @@ if (!function_exists('base')) {
      */
     function base(string ...$values): string
     {
-        $base = cli() ? [strval(realpath('.'))] : [dirname(strval(realpath('./')))];
+        $base = [strval(realpath('./'))];
 
         return collect(array_merge($base, $values))->join(DIRECTORY_SEPARATOR);
     }
@@ -429,7 +429,7 @@ if (!function_exists('form_token')) {
                     : app('session')->set('form_token', $value)->get('form_token');
         }
         return sprintf(
-            '<input type="hidden" name="form_token" value="%s">',
+            '<input type="hidden" name="" value="%s">',
             $value
         );
     }

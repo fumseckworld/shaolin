@@ -2,10 +2,6 @@
 
 namespace App\Controllers {
 
-    use App\Forms\Form;
-    use App\Forms\LoginForm;
-    use DI\DependencyException;
-    use DI\NotFoundException;
     use Imperium\Collection\Collect;
     use Imperium\Container\Ioc;
     use Imperium\Database\Query\Sql;
@@ -55,13 +51,11 @@ namespace App\Controllers {
         /**
          * @param Request $request
          *
-         * @throws DependencyException
-         * @throws NotFoundException
          * @return Response
          */
         final public function run(Request $request): Response
         {
-            return $this->response()->setContent($this->form(LoginForm::class));
+            return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial']);
         }
     }
 }

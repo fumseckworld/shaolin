@@ -196,6 +196,8 @@ namespace Imperium\Container {
     
                 $c->set('app-directory', imperium('app-directory', 'app'));
 
+                $c->set('views-directory', imperium('views-directory', 'Views'));
+
                 $c->set('not-found-controller-name', imperium('not-found-controller-name', 'NotFoundController'));
 
                 $c->set('not-found-action-name', imperium('not-found-action-name', 'notFound'));

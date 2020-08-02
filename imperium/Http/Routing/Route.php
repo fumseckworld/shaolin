@@ -100,7 +100,7 @@ namespace Imperium\Http\Routing {
         final public function exec(): Response
         {
             /** @phpstan-ignore-next-line */
-            return call_user_func_array([app($this->controller()), $this->action()], [$this->args()])->send();
+            return call_user_func_array([app($this->controller()), $this->action()], [$this->args()]);
         }
     }
 }

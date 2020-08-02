@@ -23,6 +23,10 @@ if (!defined('MYSQL')) {
     define('MYSQL', 'mysql');
 }
 
+define('INDEX_PAGE', 'index,follow');
+
+define('NO_INDEX_PAGE', 'noindex, nofollow');
+
 if (!defined('POSTGRESQL')) {
     /**
      * The pdo driver value for postgresql.

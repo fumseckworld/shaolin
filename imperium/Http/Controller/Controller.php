@@ -13,12 +13,17 @@ namespace Imperium\Http\Controller {
     use Imperium\Exception\Kedavra;
     use Imperium\Http\Request\Request;
     use Imperium\Http\Response\Response;
+    use Imperium\Http\Views\View;
     use Imperium\Messages\Flash\Flash;
     use Imperium\Security\Hashing\Hash;
     use Imperium\Session\Session;
 
     abstract class Controller
     {
+
+        protected static string $layout = 'layout';
+        protected static string $directory = '';
+
         /**
          *
          * Get the query builder.
@@ -145,6 +150,37 @@ namespace Imperium\Http\Controller {
         final public function collect($data): Collect
         {
             return collect($data);
+        }
+
+        /**
+         *
+         * Render a view
+         *
+         * @param string $view        The view name.
+         * @param string $title       The view title.
+         * @param string $description The view description.
+         * @param array<string>  $keywords   The view keywords
+         * @param array  $args        The views args.
+         * @param string $robots
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @return Response
+         */
+        final public function view(
+            string $view,
+            string $title,
+            string $description,
+            array $keywords,
+            array $args = [],
+            string $robots = INDEX_PAGE
+        ): Response {
+            if (not_def(static::$directory)) {
+                $dir = str_replace('Controller', '', collect(explode('\\', get_called_class()))->last());
+            } else {
+                $dir = static::$directory;
+            }
+            return (new View($dir, $view, $title, $description, static::$layout, $keywords, $robots, $args))->send();
         }
 
         /**
