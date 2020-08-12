@@ -26,7 +26,8 @@
     "scrivo/highlight.php": "v9.18.1.1",
     "erusev/parsedown": "^1.7",
     "swiftmailer/swiftmailer": "^6.2",
-    "opis/closure": "^3.5"
+    "opis/closure": "^3.5",
+    "ext-zend-opcache": "*"
   },
   "authors": [
     {

@@ -26,6 +26,7 @@ namespace Imperium\Container {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Imperium\Cache\ZenCache;
     use Imperium\Database\Connection\Connect;
     use Imperium\Database\Query\Sql;
     use Imperium\Database\Table\Table;
@@ -192,6 +193,7 @@ namespace Imperium\Container {
                 $c->set('table', new Table());
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());
+                $c->set('cache', new ZenCache());
                 $c->set('session', new Session());
     
                 $c->set('app-directory', imperium('app-directory', 'app'));

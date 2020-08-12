@@ -4,6 +4,7 @@ namespace Imperium\Http\Views {
 
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Imperium\Exception\Kedavra;
     use Imperium\Http\Response\Response;
 
     /**
@@ -64,7 +65,7 @@ namespace Imperium\Http\Views {
                 $this->directory,
                 DIRECTORY_SEPARATOR,
                 ucfirst(strtolower($view)),
-                '.html'
+                '.php'
             );
             $this->title = $title;
             $this->description = $description;
@@ -86,6 +87,10 @@ namespace Imperium\Http\Views {
         /**
          *
          * Send the view.
+         *
+         * @throws DependencyException
+         * @throws notFoundException
+         * @throws Kedavra
          *
          * @return Response
          *
@@ -110,7 +115,7 @@ namespace Imperium\Http\Views {
 
             require($this->layout);
 
-            return (new Response())->setContent(strval(ob_get_clean()))->send();
+            return app('response')->setContent(strval(ob_get_clean()))->send();
         }
     }
 }
