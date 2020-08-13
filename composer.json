@@ -1,6 +1,6 @@
 {
-  "name": "imperium/imperium",
-  "description": "A library to build a modern and customizable mvc framework",
+  "name": "nol/nol",
+  "description": "The core of the ji framework",
   "type": "library",
   "license": "GPL-3.0-or-later",
   "require": {
