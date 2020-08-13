@@ -1,15 +1,15 @@
 {
-  "name": "imperium/imperium",
+  "name": "nol/nol",
   "type": "library",
-  "description": "A library to make mvc websites more simply",
+  "description": "The core of the ji framework",
   "license": "GPL-3.0-or-later",
   "support": {
-    "source": "https://git.fumseck.eu/cgit/imperium/"
+    "source": "https://github.com/fumseckworld/nol"
   },
   "authors": [
     {
       "name": "Willy Micieli",
-      "email": "micieli@laposte.net",
+      "email": "micieli@outlook.fr",
       "role": "Developer"
     }
   ],
@@ -52,13 +52,13 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Testing\\": "tests/"
+      "Testing\\": "tests/",
+      "App\\": "app/"
     }
   },
   "autoload": {
     "psr-4": {
-      "Imperium\\": "imperium/",
-      "App\\": "app/"
+      "Imperium\\": "imperium/"
     },
     "files": [
       "helpers/web.php",
