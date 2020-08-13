@@ -2,34 +2,32 @@
 </div>
 <br/>  
 <div align="center">
-    <a href="https://travis-ci.com/fumseckworld/imperium">   <img src="https://travis-ci.com/fumseckworld/imperium.svg?branch=omaticayas" alt="build status"></a>
-    <img  src="https://poser.pugx.org/imperium/imperium/license" alt="imperium licence">
-    <img src="https://poser.pugx.org/imperium/imperium/downloads"  alt="total download"> 
-    <img src="https://poser.pugx.org/imperium/imperium/version" alt="stable version">
+    <a href="https://travis-ci.com/fumseckworld/nol">   <img src="https://travis-ci.com/fumseckworld/nol.svg?branch=omaticayas" alt="build status"></a>
+    <img  src="https://poser.pugx.org/nol/nol/license" alt="nol licence">
+    <img src="https://poser.pugx.org/nol/nol/downloads"  alt="total download"> 
+    <img src="https://poser.pugx.org/nol/nol/version" alt="stable version">
 </div>
 
 <br/>
 
 # Installation 
 
-`composer require imperium/imperium`
-
+`composer require nol/nol`
 
 # Links 
 
 * [**Todo**](https://trello.com/b/ZMKB0OiD)
-* [**Wiki**](https://github.com/fumseckworld/imperium/wiki)
-* [**Source code**](https://github.com/fumseckworld/imperium)
-* [**Bugs Reports**](https://github.com/fumseckworld/imperium/issues)
-* [**Collaboration**](https://github.com/fumseckworld/imperium/pulls)
-* [**Code coverage**](https://fumseckworld.github.io/imperium-coverage/)
+* [**Wiki**](https://github.com/fumseckworld/nol/wiki)
+* [**Source code**](https://github.com/fumseckworld/nol)
+* [**Bugs Reports**](https://github.com/fumseckworld/nol/issues)
+* [**Collaboration**](https://github.com/fumseckworld/nol/pulls)
 
 # How contribute  ? 
 
-All [**ideas**](https://github.com/fumseckworld/imperium/issues) and [**pull request**](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
+All [**ideas**](https://github.com/fumseckworld/nol/issues) and [**pull request**](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/about-pull-requests)
  are welcome.
 
-You can just submit me a missing feature and i will code it for you.
+You can just submit me a missing feature, and I will code it for you.
 
 You can also help me and send me a pull-request.
 
@@ -43,9 +41,7 @@ The next version will be out on **december**.
 
 The documentation can be downloaded by the command :
 
-`composer create-project imperium/doc documentation`
-
-But it's also automatically downloaded by the `./vendor/bin/imperium init` command
+`composer create-project nol/doc documentation`
 
 **I'm writing the documentation** so of course, she will be **available on december** like imperium.
 
