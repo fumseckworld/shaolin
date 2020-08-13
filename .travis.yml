@@ -6,6 +6,9 @@ php:
   - 7.4.4
   - 7.4.5
   - 7.4.6
+  - 7.4.7
+  - 7.4.8
+  - 7.4.9
 
 branches:
   only:
@@ -34,6 +37,3 @@ before_script:
   - psql -c 'create database eywa;' -U postgres
 script:
   - ./vendor/bin/grumphp run
- 
-after_success:
-  - travis_retry php vendor/bin/php-coveralls

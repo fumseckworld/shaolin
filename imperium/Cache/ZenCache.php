@@ -18,7 +18,7 @@ namespace Imperium\Cache {
          *
          * @return boolean
          */
-        final public function cache(string $directory): bool
+        final public function add(string $directory): bool
         {
             $boolean = collect();
             foreach ($this->scan($directory) as $file) {
@@ -62,6 +62,7 @@ namespace Imperium\Cache {
          */
         final private function scan(string $directory): array
         {
+            $directory = base($directory);
             $excludeRegex = '~/\.git/~';
             $results = [];
             $ignore = ['.', '..'];

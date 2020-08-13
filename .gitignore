@@ -13,4 +13,3 @@ wanted
 node_modules
 package-lock.json
 mix-*
-build
