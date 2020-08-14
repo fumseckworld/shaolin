@@ -9,9 +9,7 @@ namespace Imperium\Html\Form {
     use Imperium\Html\Form\Generator\FormGenerator;
     use Imperium\Http\Parameters\Bag;
     use Imperium\Http\Request\Request;
-    use Imperium\Http\Response\RedirectResponse;
     use Imperium\Http\Response\Response;
-    use Imperium\Messages\Flash\Flash;
     use Imperium\Security\Validator\Validator;
 
     /**
@@ -129,29 +127,6 @@ namespace Imperium\Html\Form {
 
         /**
          *
-         * Redirect user to an url with a flash message.
-         *
-         * @param string $message Redirect user message.
-         * @param bool   $success Request has been an successfully executed or not.
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
-         * @return Response
-         *
-         */
-        final public function redirect(string $message, bool $success = true): Response
-        {
-            if (not_cli()) {
-                $success
-                    ? Flash::set(sprintf('<div class="alert alert-success">%s</div>', $message))
-                    : Flash::set($message);
-            }
-            return (new RedirectResponse(static::$redirect))->send();
-        }
-
-        /**
-         *
          *  Apply the request if form are valid.
          *
          * @param Request $request The user request.
@@ -170,26 +145,7 @@ namespace Imperium\Html\Form {
                     return $this->success($bag);
                 }
             }
-            return $this->redirect($this->error(), false);
-        }
-
-        /**
-         *
-         * Get the errors messages.
-         *
-         * @return string
-         */
-        private function error(): string
-        {
-            $message = '<ul class="alert alert-danger">';
-            $message .= collect(static::$errors)->for(
-                function ($error) {
-                    return sprintf('<li>%s</li>', $error);
-                }
-            )->join('');
-            $message .= '</ul>';
-
-            return $message;
+            return $this->redirect();
         }
     }
 }

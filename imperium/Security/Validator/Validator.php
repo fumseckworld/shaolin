@@ -2,7 +2,12 @@
 
 namespace Imperium\Security\Validator {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
     use Imperium\Http\Parameters\Bag;
+    use Imperium\Http\Response\RedirectResponse;
+    use Imperium\Http\Response\Response;
+    use Imperium\Messages\Flash\Flash;
 
     abstract class Validator
     {
@@ -19,6 +24,8 @@ namespace Imperium\Security\Validator {
 
         protected static string $redirect = '';
 
+        protected static string $message = '';
+
         /**
          *
          * Analyse a container content.
@@ -31,6 +38,45 @@ namespace Imperium\Security\Validator {
         {
             return $this->analyse($bag);
         }
+
+        /**
+         *
+         * Get the errors messages.
+         *
+         * @return string
+         */
+        final public function alert(): string
+        {
+            $message = '<ul class="alert alert-danger">';
+            $message .= collect(static::$errors)->for(
+                function ($error) {
+                    return sprintf('<li>%s</li>', $error);
+                }
+            )->join('');
+            $message .= '</ul>';
+            return $message;
+        }
+
+        /**
+         *
+         * Redirect the user to the correct url with the correct message.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Response
+         *
+         */
+        final public function redirect(): Response
+        {
+            if (not_cli()) {
+                not_def(static::$errors)
+                    ? Flash::set(sprintf('<div class="alert alert-success">%s</div>', static::$message))
+                    : Flash::set($this->alert());
+            }
+            return (new RedirectResponse(static::$redirect))->send();
+        }
+
 
         /**
          *

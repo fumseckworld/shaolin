@@ -27,7 +27,9 @@
     "erusev/parsedown": "^1.7",
     "swiftmailer/swiftmailer": "^6.2",
     "opis/closure": "^3.5",
-    "ext-zend-opcache": "*"
+    "ext-zend-opcache": "*",
+    "intervention/image": "^2.5",
+	"ext-gd": "*"
   },
   "authors": [
     {
