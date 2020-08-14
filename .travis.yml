@@ -18,7 +18,7 @@ os:
   - linux
 
 before_install:
-  - sudo apt-get update &&  sudo apt-get install -y mysql-server redis-server php-redis php-mysql php-pgsql php-sqlite3 composer sqlite3 apache2 php php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-mbstring openssl php-intl
+  - sudo apt-get update &&  sudo apt-get install -y mysql-server redis-server php-redis php-mysql php-pgsql php-sqlite3 composer sqlite3 apache2 php php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-mbstring openssl php-intl php-gd
   - phpenv config-add php.ini
 addons:
   postgresql: '9.4'
