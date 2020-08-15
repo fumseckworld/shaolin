@@ -69,10 +69,12 @@ namespace Imperium\Http\Routing {
         {
             foreach ($this->routes as $route) {
                 if ($this->match($route->url)) {
+                    array_shift($this->args);
                     return (new Route($route->controller, $route->action, $this->args))->exec();
                 }
             }
 
+            array_shift($this->args);
             return (new Route(
                 app('not-found-controller-name'),
                 app('not-found-action-name'),
