@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Imperium\Http\Routing {
 
     use DI\DependencyException;
