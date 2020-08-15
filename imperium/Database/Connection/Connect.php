@@ -19,12 +19,13 @@
 declare(strict_types=1);
 
 namespace Imperium\Database\Connection {
-    
+
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Imperium\Exception\Kedavra;
     use PDO;
     use PDOException;
-    
+
     /**
      *
      * Represent a connection between php code and a database.
@@ -42,9 +43,9 @@ namespace Imperium\Database\Connection {
      * @property string $host      The current pdo hostname value
      * @property PDO    $pdo       The pdo instance
      */
-    class Connect
+    final class Connect
     {
-        
+
         /**
          *
          * Build a new instance
@@ -71,70 +72,8 @@ namespace Imperium\Database\Connection {
             $this->password = $password;
             $this->host = $host;
         }
-        
-        /**
-         *
-         * Call the constructor with the development environment information.
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
-         * @return Connect
-         *
-         */
-        private function dev(): Connect
-        {
-            return new static(
-                env('DEVELOP_DB_DRIVER', 'mysql'),
-                env('DEVELOP_DB_NAME', 'ikran'),
-                env('DEVELOP_DB_USERNAME', 'ikran'),
-                env('DEVELOP_DB_PASSWORD', ''),
-                env('DEVELOP_DB_HOST', 'localhost')
-            );
-        }
-        
-        /**
-         *
-         * Call the constructor with the production environment information.
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
-         * @return Connect
-         *
-         */
-        private function prod(): Connect
-        {
-            return new static(
-                env('DB_DRIVER', 'mysql'),
-                env('DB_NAME', 'eywa'),
-                env('DB_USERNAME', 'eywa'),
-                env('DB_PASSWORD', ''),
-                env('DB_HOST', 'localhost')
-            );
-        }
-        
-        /**
-         *
-         * Call the constructor with the test environment information.
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
-         * @return Connect
-         *
-         */
-        private function test(): Connect
-        {
-            return new static(
-                env('TESTS_DB_DRIVER', 'mysql'),
-                env('TESTS_DB_NAME', 'vortex'),
-                env('TESTS_DB_USERNAME', 'vortex'),
-                env('TESTS_DB_PASSWORD', ''),
-                env('TESTS_DB_HOST', 'localhost')
-            );
-        }
-        
+
+
         /**
          *
          * Execute a query sql.
@@ -144,26 +83,35 @@ namespace Imperium\Database\Connection {
          * @param string $sql  The query to execute
          * @param array  $args The query args
          *
-         *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
          *
          * @return boolean
          *
+         *
          */
-        public function exec(string $sql, array $args = []): bool
+        final public function exec(string $sql, array $args = []): bool
         {
             $stm = $this->pdo()->prepare($sql);
-            
-            $success = $stm->execute($args);
-            
+
+            try {
+                $success = $stm->execute($args);
+            } catch (PDOException $e) {
+                $stm->closeCursor();
+
+                $stm = null;
+
+                throw new Kedavra($e->getMessage());
+            }
+
             $stm->closeCursor();
-            
+
             $stm = null;
-            
+
             return $success;
         }
-        
+
         /**
          *
          * Execute the query and return the results in an array.
@@ -174,49 +122,36 @@ namespace Imperium\Database\Connection {
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
          *
          * @return array
          *
+         *
          */
-        public function get(string $sql, array $args = [], int $output_mode = PDO::FETCH_OBJ): array
+        final public function get(string $sql, array $args = [], int $output_mode = PDO::FETCH_OBJ): array
         {
             $stm = $this->pdo()->prepare($sql);
+
             try {
                 $stm->execute($args);
+
+                $data = $stm->fetchAll($output_mode);
             } catch (PDOException $e) {
                 $stm->closeCursor();
+
                 $stm = null;
-                return [];
+
+                throw new Kedavra($e->getMessage());
             }
-            $data = $stm->fetchAll($output_mode);
+
             $stm->closeCursor();
+
             $stm = null;
-            
+
             return is_bool($data) ? [] : $data;
         }
-        
-        /**
-         *
-         * Get the correct environment.
-         *
-         *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
-         * @return Connect
-         *
-         */
-        private function env(): Connect
-        {
-            $env = config('mode', 'connection');
-            if (strcmp($env, 'prod') === 0) {
-                return $this->prod();
-            } elseif (strcmp($env, 'dev') === 0) {
-                return $this->dev();
-            }
-            return $this->test();
-        }
-        
+
+
         /**
          *
          * Get the pdo driver used.
@@ -224,12 +159,12 @@ namespace Imperium\Database\Connection {
          * @return string
          *
          */
-        public function driver(): string
+        final public function driver(): string
         {
             return $this->driver;
         }
-        
-        
+
+
         /**
          *
          * Return the current username used.
@@ -237,11 +172,11 @@ namespace Imperium\Database\Connection {
          * @return string
          *
          */
-        public function username(): string
+        final public function username(): string
         {
             return $this->username;
         }
-        
+
         /**
          *
          * Return the current password used.
@@ -249,11 +184,11 @@ namespace Imperium\Database\Connection {
          * @return string
          *
          */
-        public function password(): string
+        final public function password(): string
         {
             return $this->password;
         }
-        
+
         /**
          *
          * Return the current base used.
@@ -261,11 +196,11 @@ namespace Imperium\Database\Connection {
          * @return string
          *
          */
-        public function base(): string
+        final public function base(): string
         {
             return $this->base;
         }
-        
+
         /**
          *
          * Return the current hostname used.
@@ -273,11 +208,11 @@ namespace Imperium\Database\Connection {
          * @return string
          *
          */
-        public function hostname(): string
+        final public function hostname(): string
         {
             return $this->host;
         }
-        
+
         /**
          *
          * Check if the current driver used is mysql.
@@ -290,11 +225,11 @@ namespace Imperium\Database\Connection {
          * @return boolean
          *
          */
-        public function mysql(): bool
+        final public function mysql(): bool
         {
             return strcmp($this->env()->driver(), MYSQL) == 0;
         }
-        
+
         /**
          *
          * Check if the current driver used is postgresql.
@@ -307,12 +242,12 @@ namespace Imperium\Database\Connection {
          * @return boolean
          *
          */
-        public function postgresql(): bool
+        final public function postgresql(): bool
         {
             return strcmp($this->env()->driver(), POSTGRESQL) == 0;
         }
-        
-        
+
+
         /**
          *
          * Check if the current driver used is sqlite.
@@ -325,11 +260,11 @@ namespace Imperium\Database\Connection {
          * @return boolean
          *
          */
-        public function sqlite(): bool
+        final public function sqlite(): bool
         {
             return strcmp($this->env()->driver(), SQLITE) == 0;
         }
-        
+
         /**
          *
          * Build the pdo instance.
@@ -374,6 +309,91 @@ namespace Imperium\Database\Connection {
                 }
             }
             return $this->pdo;
+        }
+
+        /**
+         *
+         * Get the correct environment.
+         *
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Connect
+         *
+         */
+        private function env(): Connect
+        {
+            $env = config('mode', 'connection', 'prod');
+            if (strcmp($env, 'prod') === 0) {
+                return $this->prod();
+            } elseif (strcmp($env, 'dev') === 0) {
+                return $this->dev();
+            }
+            return $this->test();
+        }
+
+        /**
+         *
+         * Call the constructor with the development environment information.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Connect
+         *
+         */
+        private function dev(): Connect
+        {
+            return new static(
+                env('DEVELOP_DB_DRIVER', 'mysql'),
+                env('DEVELOP_DB_NAME', 'ikran'),
+                env('DEVELOP_DB_USERNAME', 'ikran'),
+                env('DEVELOP_DB_PASSWORD', ''),
+                env('DEVELOP_DB_HOST', 'localhost')
+            );
+        }
+
+        /**
+         *
+         * Call the constructor with the production environment information.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Connect
+         *
+         */
+        private function prod(): Connect
+        {
+            return new static(
+                env('DB_DRIVER', 'mysql'),
+                env('DB_NAME', 'eywa'),
+                env('DB_USERNAME', 'eywa'),
+                env('DB_PASSWORD', ''),
+                env('DB_HOST', 'localhost')
+            );
+        }
+
+        /**
+         *
+         * Call the constructor with the test environment information.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Connect
+         *
+         */
+        private function test(): Connect
+        {
+            return new static(
+                env('TESTS_DB_DRIVER', 'mysql'),
+                env('TESTS_DB_NAME', 'vortex'),
+                env('TESTS_DB_USERNAME', 'vortex'),
+                env('TESTS_DB_PASSWORD', ''),
+                env('TESTS_DB_HOST', 'localhost')
+            );
         }
     }
 }
