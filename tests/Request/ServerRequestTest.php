@@ -2,10 +2,10 @@
 
 namespace Testing\Request;
 
-use Imperium\Http\Parameters\Bag;
-use Imperium\Http\Parameters\UploadedFile;
-use Imperium\Http\Request\ServerRequest;
-use Imperium\Testing\Unit;
+use Nol\Http\Parameters\Bag;
+use Nol\Http\Parameters\UploadedFile;
+use Nol\Http\Request\ServerRequest;
+use Nol\Testing\Unit;
 
 class ServerRequestTest extends Unit
 {
@@ -43,9 +43,9 @@ class ServerRequestTest extends Unit
         $server = new ServerRequest('/');
         $this->is(
             Bag::class,
-            $server->query(),
+            $server->get(),
             $server->cookie(),
-            $server->request(),
+            $server->post(),
             $server->server()
         );
         $this->is(UploadedFile::class, $server->files());

@@ -2,7 +2,7 @@
 
 namespace Testing\Response;
 
-use Imperium\Testing\Unit;
+use Nol\Testing\Unit;
 
 class JsonResponseTest extends Unit
 {

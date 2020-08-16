@@ -2,8 +2,8 @@
 
 namespace Testing\Connect;
 
-use Imperium\Database\Connection\Connect;
-use Imperium\Testing\Unit;
+use Nol\Database\Connection\Connect;
+use Nol\Testing\Unit;
 
 class ConnectTest extends Unit
 {

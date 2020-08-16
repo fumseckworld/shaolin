@@ -2,11 +2,17 @@
 
 namespace Testing\Security;
 
-use Imperium\Security\Hashing\Hash;
-use Imperium\Testing\Unit;
+use DI\DependencyException;
+use DI\NotFoundException;
+use Nol\Security\Hashing\Hash;
+use Nol\Testing\Unit;
 
 class HashTest extends Unit
 {
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
     public function test()
     {
         $valid = 'secret';

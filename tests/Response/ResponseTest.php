@@ -2,8 +2,7 @@
 
 namespace Testing\Response;
 
-use Imperium\Http\Response\Response;
-use Imperium\Testing\Unit;
+use Nol\Testing\Unit;
 
 class ResponseTest extends Unit
 {

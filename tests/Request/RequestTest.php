@@ -3,9 +3,9 @@
 namespace Testing\Request;
 
 use ArrayIterator;
-use Imperium\Http\Parameters\Bag;
-use Imperium\Http\Request\Request;
-use Imperium\Testing\Unit;
+use Nol\Http\Parameters\Bag;
+use Nol\Http\Request\Request;
+use Nol\Testing\Unit;
 
 class RequestTest extends Unit
 {

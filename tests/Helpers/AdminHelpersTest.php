@@ -2,8 +2,7 @@
 
 namespace Testing\Helpers;
 
-use Faker\Provider\Base;
-use Imperium\Testing\Unit;
+use Nol\Testing\Unit;
 
 class AdminHelpersTest extends Unit
 {
@@ -25,7 +24,7 @@ class AdminHelpersTest extends Unit
 
     public function testImperium()
     {
-        $this->identical('a', imperium('', 'a'));
+        $this->identical('a', nol('', 'a'));
     }
 
     public function testLogged()

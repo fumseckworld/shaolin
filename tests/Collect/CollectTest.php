@@ -2,8 +2,9 @@
 
 namespace Testing\Collect;
 
-use Imperium\Collection\Collect;
-use Opis\Closure\SerializableClosure;
+use DI\DependencyException;
+use DI\NotFoundException;
+use Nol\Collection\Collect;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
@@ -21,6 +22,10 @@ class CollectTest extends TestCase
         $this->assertEquals(['id' => 4, 'username' => 'willy'], collect($obj)->all());
     }
 
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
     public function testCall()
     {
         $x = function (string $os) {
@@ -40,6 +45,10 @@ class CollectTest extends TestCase
         $this->assertEquals(2, collect()->put('disk', $a)->get('disk'));
     }
 
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     */
     public function testCollect()
     {
         $obj = new stdClass();

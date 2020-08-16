@@ -2,7 +2,7 @@
 
 namespace Testing\Html;
 
-use Imperium\Html\Pagination\Pagination;
+use Nol\Html\Pagination\Pagination;
 use PHPUnit\Framework\TestCase;
 
 class PaginationTest extends TestCase

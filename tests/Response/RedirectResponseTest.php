@@ -2,8 +2,8 @@
 
 namespace Testing\Response;
 
-use Imperium\Http\Response\RedirectResponse;
-use Imperium\Testing\Unit;
+use Nol\Http\Response\RedirectResponse;
+use Nol\Testing\Unit;
 
 class RedirectResponseTest extends Unit
 {

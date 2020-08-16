@@ -1,6 +1,6 @@
 watch:
   directories:
-    - imperium
+    - nol
     - tests
   fileMask: '*.php'
 notifications:

@@ -3,11 +3,9 @@
 namespace Testing\Container;
 
 use DI\Container;
-use Imperium\Container\Ioc;
-use Imperium\Exception\Kedavra;
-use Imperium\Http\Request\Request;
-use Imperium\Http\Response\Response;
-use Imperium\Testing\Unit;
+use Nol\Container\Ioc;
+use Nol\Http\Response\Response;
+use Nol\Testing\Unit;
 
 class IocTest extends Unit
 {

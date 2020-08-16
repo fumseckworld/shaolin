@@ -6,9 +6,9 @@ use App\Forms\Form;
 use App\Forms\LoginForm;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Imperium\Exception\Kedavra;
-use Imperium\Http\Request\Request;
-use Imperium\Testing\Unit;
+use Exception;
+use Nol\Http\Request\Request;
+use Nol\Testing\Unit;
 
 class ValidatorTest extends Unit
 {
@@ -26,6 +26,7 @@ class ValidatorTest extends Unit
     /**
      * @throws DependencyException
      * @throws NotFoundException
+     * @throws Exception
      */
     public function testRequestSuccess()
     {

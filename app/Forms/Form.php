@@ -2,10 +2,10 @@
 
 namespace App\Forms;
 
-use Imperium\Http\Parameters\Bag;
-use Imperium\Http\Response\Response;
+use Nol\Http\Parameters\Bag;
+use Nol\Http\Response\Response;
 
-class Form extends \Imperium\Html\Form\Form
+class Form extends \Nol\Html\Form\Form
 {
     protected static array $fields = [
         'username' => 'type:text|label:your username|required|min:3|max:20',
@@ -14,7 +14,7 @@ class Form extends \Imperium\Html\Form\Form
 
     protected static string $redirect = '/login';
 
-    final public function success(Bag $bag): Response
+    public function success(Bag $bag): Response
     {
         return (new Response())->setContent('ok')->send();
     }

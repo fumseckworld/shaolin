@@ -2,9 +2,8 @@
 
 namespace App\Forms;
 
-use Imperium\Html\Form\Form;
-use Imperium\Http\Parameters\Bag;
-use Imperium\Http\Response\Response;
+use Nol\Http\Parameters\Bag;
+use Nol\Http\Response\Response;
 
 class LoginForm extends Form
 {

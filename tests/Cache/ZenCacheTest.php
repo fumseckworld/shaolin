@@ -2,7 +2,7 @@
 
 namespace Testing\Cache;
 
-use Imperium\Testing\Unit;
+use Nol\Testing\Unit;
 
 class ZenCacheTest extends Unit
 {

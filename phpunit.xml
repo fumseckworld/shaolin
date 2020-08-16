@@ -22,7 +22,7 @@
     </testsuites>
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">imperium/</directory>
+            <directory suffix=".php">nol/</directory>
             <directory suffix=".php">helpers/</directory>
         </whitelist>
     </filter>

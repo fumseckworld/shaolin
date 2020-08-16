@@ -47,7 +47,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Imperium\\": "imperium/"
+      "Nol\\": "nol/"
     },
     "files": [
       "helpers/const.php",

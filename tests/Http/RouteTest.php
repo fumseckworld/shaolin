@@ -5,10 +5,10 @@ namespace Testing\Http;
 use App\Controllers\WelcomeController;
 use DI\DependencyException;
 use DI\NotFoundException;
-use Imperium\Exception\Kedavra;
-use Imperium\Http\Request\Request;
-use Imperium\Http\Routing\Route;
-use Imperium\Testing\Unit;
+use Nol\Exception\Kedavra;
+use Nol\Http\Request\Request;
+use Nol\Http\Routing\Route;
+use Nol\Testing\Unit;
 
 class RouteTest extends Unit
 {

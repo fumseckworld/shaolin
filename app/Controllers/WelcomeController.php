@@ -2,13 +2,15 @@
 
 namespace App\Controllers {
 
-    use Imperium\Collection\Collect;
-    use Imperium\Container\Ioc;
-    use Imperium\Database\Query\Sql;
-    use Imperium\Html\Form\Generator\FormGenerator;
-    use Imperium\Http\Controller\Controller;
-    use Imperium\Http\Request\Request;
-    use Imperium\Http\Response\Response;
+    use DI\DependencyException;
+    use DI\NotFoundException;
+    use Nol\Collection\Collect;
+    use Nol\Container\Ioc;
+    use Nol\Database\Query\Sql;
+    use Nol\Html\Form\Generator\FormGenerator;
+    use Nol\Http\Controller\Controller;
+    use Nol\Http\Request\Request;
+    use Nol\Http\Response\Response;
 
     class WelcomeController extends Controller
     {
@@ -51,6 +53,8 @@ namespace App\Controllers {
         /**
          * @param Request $request
          *
+         * @throws DependencyException
+         * @throws NotFoundException
          * @return Response
          */
         final public function run(Request $request): Response

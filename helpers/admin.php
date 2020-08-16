@@ -13,16 +13,15 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https: //www.gnu.org/licenses/>.
- *
  */
 
 use DI\DependencyException;
 use DI\NotFoundException;
-use Imperium\Configuration\Config;
-use Imperium\Configuration\Personalization\Imperium;
-use Imperium\Container\Ioc;
-use Imperium\Exception\Kedavra;
-use Imperium\Security\Hashing\Hash;
+use Nol\Configuration\Config;
+use Nol\Configuration\Personalization\Nol;
+use Nol\Container\Ioc;
+use Nol\Exception\Kedavra;
+use Nol\Security\Hashing\Hash;
 
 if (!function_exists('validator_messages')) {
 
@@ -318,8 +317,10 @@ if (!function_exists('secure_password')) {
      *
      * @param string $value The password to hash.
      *
-     * @return string
+     * @throws DependencyException
+     * @throws NotFoundException
      *
+     * @return string
      *
      */
     function secure_password(string $value): string
@@ -329,12 +330,16 @@ if (!function_exists('secure_password')) {
 }
 
 if (!function_exists('check_password')) {
+
     /**
      *
      * Check the password
      *
      * @param string $plain_text_password
      * @param string $hash_value
+     *
+     * @throws DependencyException
+     * @throws NotFoundException
      *
      * @return bool
      *
@@ -522,7 +527,7 @@ if (!function_exists('config')) {
     }
 }
 
-if (!function_exists('imperium')) {
+if (!function_exists('nol')) {
 
     /**
      *
@@ -534,8 +539,8 @@ if (!function_exists('imperium')) {
      * @return mixed
      *
      */
-    function imperium(string $key, string $default = '')
+    function nol(string $key, string $default = '')
     {
-        return (new Imperium($key))->get($default);
+        return (new Nol($key))->get($default);
     }
 }
