@@ -20,6 +20,9 @@ namespace Nol\Database\Query {
 
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Nol\Database\Connection\Connect;
+    use Nol\Exception\Kedavra;
+    use PDO;
 
     /**
      *
@@ -31,14 +34,15 @@ namespace Nol\Database\Query {
      * @package Imperium\Database\Query\Sql
      * @version 12
      *
-     * @property string $limit     The limit clause.
-     * @property string $from      The from clause.
-     * @property string $between   The between clause.
-     * @property string $order     The order clause.
-     * @property string $where     The where clause.
-     * @property string $columns   The selected columns.
-     * @property string $join      The join clause.
-     * @property string $union     The union clause.
+     * @property string  $limit     The limit clause.
+     * @property string  $from      The from clause.
+     * @property string  $between   The between clause.
+     * @property string  $order     The order clause.
+     * @property string  $where     The where clause.
+     * @property string  $columns   The selected columns.
+     * @property string  $join      The join clause.
+     * @property string  $union     The union clause.
+     * @property Connect $connect   The connection to the base.
      *
      */
     class Sql
@@ -59,7 +63,7 @@ namespace Nol\Database\Query {
         public function where(string $column, string $condition, $value): Sql
         {
             $condition = html_entity_decode($condition);
-            $value = is_numeric($value) ? $value : app('connect')->pdo()->quote($value);
+            $value = is_numeric($value) ? $value : $this->connect->pdo()->quote($value);
             if (def($this->where)) {
                 $this->where .= sprintf(' AND WHERE %s %s %s', $column, $condition, strval($value));
             } else {
@@ -82,6 +86,21 @@ namespace Nol\Database\Query {
         {
             $this->from = sprintf('FROM %s', $table);
 
+            return $this;
+        }
+
+        /**
+         *
+         * The base connection to interact.
+         *
+         * @param Connect $connect The connection to use.
+         *
+         * @return Sql
+         *
+         */
+        public function for(Connect $connect): Sql
+        {
+            $this->connect = $connect;
             return $this;
         }
 
@@ -156,15 +175,17 @@ namespace Nol\Database\Query {
         }
 
         /**
+         * @param array $args
+         * @param int   $output
          *
-         * Return the query results
-         *
+         * @throws \DI\DependencyException
+         * @throws \DI\NotFoundException
+         * @throws \Nol\Exception\Kedavra
          * @return array
-         *
          */
-        public function results(): array
+        public function get(array $args = [], int $output = PDO::FETCH_OBJ): array
         {
-            return [];
+            return $this->connect->get($this->sql(), $args, $output);
         }
 
         /**
@@ -275,7 +296,7 @@ namespace Nol\Database\Query {
          */
         public function like($value): Sql
         {
-            if (app('connect')->not('sqlite')) {
+            if ($this->connect->not('sqlite')) {
                 $columns = collect(app('table')->from($this->from)->columns())->join();
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
@@ -327,7 +348,7 @@ namespace Nol\Database\Query {
          */
         public function between(string $column, $begin, $end): Sql
         {
-            $pdo = app('connect')->pdo();
+            $pdo = $this->connect->pdo();
             $begin = $pdo->quote($begin);
             $end = $pdo->quote($end);
             $this->between = sprintf('WHERE %s BETWEEN %s AND %s', $column, $begin, $end);
@@ -350,7 +371,7 @@ namespace Nol\Database\Query {
          */
         public function take(int $limit, int $offset = 0): Sql
         {
-            $this->limit = app('connect')->mysql() ?
+            $this->limit = $this->connect->mysql() ?
                 sprintf('LIMIT %d,%d', $offset, $limit) : sprintf('LIMIT %d OFFSET %d', $limit, $offset);
 
             return $this;
@@ -374,32 +395,90 @@ namespace Nol\Database\Query {
 
         /**
          *
-         * Count all records inside a table.
+         * Get the sum of results.
          *
-         * @return integer
+         * @param array $args the sql arguments.
          *
+         * @throws \DI\DependencyException
+         * @throws \DI\NotFoundException
+         * @throws \Nol\Exception\Kedavra
+         * @return int
          */
-        public function sum(): int
+        public function sum(array $args = []): int
         {
-            return count($this->results());
+            return count($this->get($args));
         }
 
         /**
          *
          * Delete all records found by the executed query.
          *
+         *
          * @throws DependencyException
          * @throws NotFoundException
-         *
+         * @throws Kedavra
          * @return boolean
-         *
          */
-        public function delete(): bool
+        public function remove(): bool
         {
             if (def($this->from, $this->where)) {
-                return app('connect')->exec(sprintf('DELETE %s %s', $this->from, $this->where));
+                return $this->connect->exec(sprintf('DELETE %s %s', $this->from, $this->where));
             }
             return false;
+        }
+
+        /**
+         *
+         *
+         * Found the primary key on the table.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return string
+         *
+         */
+        public function primary(): string
+        {
+            switch ($this->connect->driver()) {
+                case MYSQL:
+                    foreach (
+                        $this->connect->get(
+                            sprintf(
+                                "show columns from %s where `Key` = 'PRI';",
+                                $this->from
+                            )
+                        ) as $key
+                    ) {
+                        if (def($key->Field)) {
+                            return $key->Field;
+                        }
+                    }
+                    break;
+                case POSTGRESQL:
+                    foreach (
+                        $this->connect->get(
+                            sprintf(
+                                "select column_name FROM information_schema.key_column_usage WHERE table_name = '%s';",
+                                $this->from
+                            )
+                        ) as $key
+                    ) {
+                        if (def($key->column_name)) {
+                            return $key->column_name;
+                        }
+                    }
+                    break;
+                case SQLITE:
+                    foreach ($this->connect->get(sprintf('PRAGMA table_info(%s)', $this->from)) as $key) {
+                        if (def($key->pk)) {
+                            return $key->name;
+                        }
+                    }
+                    break;
+            }
+            throw new Kedavra(_('No primary key has been found'));
         }
     }
 }

@@ -17,16 +17,16 @@
  */
 
 namespace Nol\Database\Found {
-    
+
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Nol\Database\Connection\Connect;
     use Nol\Html\Form\Generator\FormGenerator;
     use Nol\Html\Pagination\Pagination;
     use ReflectionClass;
     use ReflectionException;
     use stdClass;
 
-    
     /**
      *
      * Represent all values for a search.
@@ -37,7 +37,6 @@ namespace Nol\Database\Found {
      * @package Imperium\Database\Found\Search
      * @version 12
      *
-     *
      **/
     abstract class Search
     {
@@ -45,47 +44,47 @@ namespace Nol\Database\Found {
          * The table name
          */
         protected static string $table = '';
-        
+
         /**
          * The table prefix
          */
         protected static string $prefix = 'search';
-        
+
         /**
          *
          * Html code before the content of results.
          *
          */
         protected static string $beforeContent = '';
-        
-        
+
+
         /**
          *
          * Html code after the content of results.
          *
          */
         protected static string $afterContent = '';
-        
-        
+
+
         /**
          *
          * Html code before the pagination
          *
          */
         protected static string $beforePagination = '';
-        
+
         /**
          *
          * Html code after the pagination of results.
          *
          */
         protected static string $afterPagination = '';
-        
+
         /**
          * The per page number
          */
         protected static int $limit = 12;
-        
+
         /**
          *
          * Generate the search form.
@@ -93,8 +92,8 @@ namespace Nol\Database\Found {
          * @return string
          *
          */
-        abstract public static function form(): string;
-        
+        abstract public function form(): string;
+
         /**
          *
          * Get an instance of the form builder.
@@ -102,11 +101,11 @@ namespace Nol\Database\Found {
          * @return FormGenerator
          *
          */
-        public static function builder(): FormGenerator
+        final public function builder(): FormGenerator
         {
             return new FormGenerator();
         }
-        
+
         /**
          *
          * Method used to paginate all results inside the table or global.
@@ -118,35 +117,34 @@ namespace Nol\Database\Found {
          *
          */
         abstract protected static function each(stdClass $record, bool $global): string;
-        
+
         /**
          *
          * Search the value and return all results with a pagination.
          *
-         * @param mixed $value        The value to search.
-         * @param int   $current_page The current page to display.
+         * @param mixed   $value        The value to search.
+         * @param Connect $connect      The selected database.
+         * @param int     $current_page The current page to display.
          *
          * @throws DependencyException
          * @throws NotFoundException
          * @throws ReflectionException
-         *
          * @return string
-         *
          */
-        public static function search($value, int $current_page = 1): string
+        final public function search($value, Connect $connect, int $current_page = 1): string
         {
             $content = '';
-            
+
             $global = not_def(static::$table);
-            
-            $records = $global ? static::global($value) : static::from($value);
-            
+
+            $records = $global ? static::global($value, $connect) : static::from($value, $connect);
+
             $pagination = (new Pagination($current_page, static::$limit, count($records)))->render(static::$prefix);
-            
+
             foreach ($records as $record) {
                 $content .= static::each($record, $global);
             }
-            
+
             return trim(
                 sprintf(
                     '%s%s%s%s%s%s',
@@ -159,12 +157,13 @@ namespace Nol\Database\Found {
                 )
             );
         }
-        
+
         /**
          *
          * Search a value in a table.
          *
-         * @param mixed $x The value to search.
+         * @param mixed   $x       The value to search.
+         * @param Connect $connect The select database.
          *
          * @throws DependencyException
          * @throws NotFoundException
@@ -172,34 +171,36 @@ namespace Nol\Database\Found {
          * @return array
          *
          */
-        private static function from($x): array
+        private static function from($x, Connect $connect): array
         {
-            return app('sql')->from(static::$table)->like($x)->results();
+            return app('sql')->from(static::$table)->for($connect)->like($x)->get();
         }
-        
+
+
         /**
          *
          * Search a value in all tables.
          *
-         * @param mixed $x The value to search.
+         * @param mixed   $x       The value to search.
+         * @param Connect $connect The selected database.
          *
-         * @throws ReflectionException
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws ReflectionException
          *
          * @return array
          *
          */
-        private static function global($x): array
+        private static function global($x, Connect $connect): array
         {
             $data = collect();
-            
+
             $models_base = app('models-path') . DIRECTORY_SEPARATOR . '*.php';
-            
+
             $models_dir = app('models-path') . DIRECTORY_SEPARATOR . '*' . DIRECTORY_SEPARATOR . '*.php';
-            
+
             $models = array_merge(files($models_base), files($models_dir));
-            
+
             foreach ($models as $model) {
                 $class = sprintf(
                     '%s\%s\%s',
@@ -217,10 +218,10 @@ namespace Nol\Database\Found {
                         )
                     )->first()
                 );
-                
+
                 $reflection = new ReflectionClass(new $class());
-                
-                $data->push($reflection->getMethod('search')->invokeArgs($reflection->newInstance(), [$x]));
+
+                $data->push($reflection->getMethod('search')->invokeArgs($reflection->newInstance(), [$x, $connect]));
             }
             return $data->all();
         }

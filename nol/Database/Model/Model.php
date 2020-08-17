@@ -20,6 +20,8 @@ namespace Nol\Database\Model {
     
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Nol\Database\Query\Sql;
+    use Nol\Exception\Kedavra;
     use Nol\Html\Pagination\Pagination;
     use stdClass;
     
@@ -37,7 +39,7 @@ namespace Nol\Database\Model {
      * @todo    Add crud missing method must be return an response.
      *
      **/
-    abstract class Model
+    abstract class Model extends Sql
     {
         
         /**
@@ -94,7 +96,7 @@ namespace Nol\Database\Model {
          * @return string
          *
          */
-        abstract public static function each(stdClass $record): string;
+        abstract public function each(stdClass $record): string;
         
         
         /**
@@ -110,15 +112,15 @@ namespace Nol\Database\Model {
          * @return string
          *
          */
-        final public static function search($value, int $current_page = 1): string
+        final public function search($value, int $current_page = 1): string
         {
             $x = app('connect');
             if ($x->mysql() || $x->postgresql()) {
-                $columns = join(', ', app('table')->from(static::from())->columns());
+                $columns = join(', ', app('table')->from(static::table())->columns());
                 
                 $where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
-                $fields = app('table')->from(static::from())->columns();
+                $fields = app('table')->from(static::table())->columns();
                 $end = end($fields);
                 $columns = '';
                 foreach ($fields as $field) {
@@ -131,7 +133,7 @@ namespace Nol\Database\Model {
                 $where = "WHERE $columns";
             }
             
-            return static::paginate($current_page, $x->get(sprintf('SELECT * FROM %s %s', static::from(), $where)));
+            return $this->paginate($current_page, $x->get(sprintf('SELECT * FROM %s %s', static::table(), $where)));
         }
         
         /**
@@ -147,10 +149,10 @@ namespace Nol\Database\Model {
          * @return string
          *
          */
-        final public static function paginate(int $current_page, array $data = []): string
+        final public function paginate(int $current_page, array $data = []): string
         {
             $content = '';
-            $sql = app('sql')->from(static::from());
+            $sql = app('sql')->from(static::table());
             $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render(static::$table);
             
             if (def($data)) {
@@ -190,27 +192,26 @@ namespace Nol\Database\Model {
          * @return string
          *
          */
-        final public static function different(string $column, $expected, int $current_page): string
+        final public function different(string $column, $expected, int $current_page): string
         {
-            return static::paginate($current_page, app('sql')->where($column, '!=', $expected)->results());
+            return $this->paginate($current_page, app('sql')->where($column, '!=', $expected)->results());
         }
-        
+
         /**
          *
          * Find a record by this identifier.
          *
          * @param int $id The record identifier.
          *
+         *
          * @throws DependencyException
          * @throws NotFoundException
-         *
+         * @throws Kedavra
          * @return array<StdClass>
-         *
          */
-        final public static function find(int $id): array
+        final public function find(int $id): array
         {
-            $sql = app('sql')->from(static::from());
-            return $sql->where($sql->primary(), '=', $id)->results();
+            return $this->from($this->table())->where($this->from($this->table())->primary(), '=', $id)->get();
         }
         
         /**
@@ -220,7 +221,7 @@ namespace Nol\Database\Model {
          * @return string
          *
          */
-        final private static function from(): string
+        final public function table(): string
         {
             return trim(sprintf('%s%s', static::$prefix, static::$table));
         }

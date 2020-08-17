@@ -7,6 +7,7 @@ namespace Nol\Http\Controller {
     use Nol\Collection\Collect;
     use Nol\Configuration\Config;
     use Nol\Database\Connection\Connect;
+    use Nol\Database\Model\Model;
     use Nol\Database\Query\Sql;
     use Nol\Database\Table\Table;
     use Nol\Environment\Env;
@@ -20,7 +21,6 @@ namespace Nol\Http\Controller {
 
     abstract class Controller
     {
-
         protected static string $layout = 'layout';
         protected static string $directory = '';
 
@@ -156,12 +156,12 @@ namespace Nol\Http\Controller {
          *
          * Render a view
          *
-         * @param string $view        The view name.
-         * @param string $title       The view title.
-         * @param string $description The view description.
-         * @param array<string>  $keywords   The view keywords
-         * @param array  $args        The views args.
-         * @param string $robots
+         * @param string        $view        The view name.
+         * @param string        $title       The view title.
+         * @param string        $description The view description.
+         * @param array<string> $keywords    The view keywords
+         * @param array         $args        The views args.
+         * @param string        $robots
          *
          * @throws DependencyException
          * @throws NotFoundException
@@ -267,6 +267,43 @@ namespace Nol\Http\Controller {
         final public function connect(): Connect
         {
             return $this->app('connect');
+        }
+
+        /**
+         *
+         * Search the value in a base or in a table using the search class.
+         *
+         * @param class-string  $class   The search class name.
+         * @param Connect $connect The base to use.
+         * @param string  $value   The search value.
+         * @param int     $page    The current page.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return string
+         *
+         */
+        final public function search(string $class, Connect $connect, string $value, int $page = 1): string
+        {
+            return $this->app($class)->search($value, $connect, $page);
+        }
+
+        /**
+         *
+         * Get an instance of the model.
+         *
+         * @param class-string $model The model to load.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Model
+         *
+         */
+        final public function model(string $model): Model
+        {
+            return $this->app($model);
         }
 
         /**

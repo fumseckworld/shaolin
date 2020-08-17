@@ -43,13 +43,13 @@ namespace Nol\Http\Routing {
             $this->args = [];
             switch ($mode) {
                 case ADMIN:
-                    $this->routes = app('admin')->from('routes')->where('method', '=', $this->method)->results();
+                    $this->routes = app('admin')->from('routes')->where('method', '=', $this->method)->get();
                     break;
                 case TODO:
-                    $this->routes = app('task')->from('routes')->where('method', '=', $this->method)->results();
+                    $this->routes = app('task')->from('routes')->where('method', '=', $this->method)->get();
                     break;
                 default:
-                    $this->routes = app('web')->from('routes')->where('method', '=', $this->method)->results();
+                    $this->routes = app('web')->from('routes')->where('method', '=', $this->method)->get();
                     break;
             }
         }
@@ -67,12 +67,9 @@ namespace Nol\Http\Routing {
         {
             foreach ($this->routes as $route) {
                 if ($this->match($route->url)) {
-                    array_shift($this->args);
                     return (new Route($route->controller, $route->action, $this->args))->exec();
                 }
             }
-
-            array_shift($this->args);
             return (new Route(
                 app('not-found-controller-name'),
                 app('not-found-action-name'),
