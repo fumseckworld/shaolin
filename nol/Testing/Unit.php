@@ -26,6 +26,7 @@ namespace Nol\Testing {
     use Nol\Http\Response\JsonResponse;
     use Nol\Http\Response\Response;
     use Nol\Http\Routing\Route;
+    use PHPUnit\Framework\MockObject\MockBuilder;
     use PHPUnit\Framework\TestCase;
 
     /**
@@ -97,6 +98,20 @@ namespace Nol\Testing {
         final public function json(array $data): Response
         {
             return (new JsonResponse($data))->send();
+        }
+
+        /**
+         *
+         * Get an instance of the mock builder.
+         *
+         * @param class-string<object> $class The class name to mock
+         *
+         * @return MockBuilder
+         *
+         */
+        final public function mock(string $class): MockBuilder
+        {
+            return $this->getMockBuilder($class);
         }
 
         /**
