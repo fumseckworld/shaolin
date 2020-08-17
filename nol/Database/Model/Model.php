@@ -120,7 +120,7 @@ namespace Nol\Database\Model {
                 
                 $where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
-                $fields = app('table')->from(static::table())->columns();
+                $fields = app('table')->from($this->table())->columns();
                 $end = end($fields);
                 $columns = '';
                 foreach ($fields as $field) {
