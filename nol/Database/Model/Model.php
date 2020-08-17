@@ -17,14 +17,14 @@
  */
 
 namespace Nol\Database\Model {
-    
+
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Database\Query\Sql;
     use Nol\Exception\Kedavra;
     use Nol\Html\Pagination\Pagination;
     use stdClass;
-    
+
     /**
      *
      * Represent the core of all models.
@@ -36,57 +36,56 @@ namespace Nol\Database\Model {
      * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Database\Model
      * @version 12
-     * @todo    Add crud missing method must be return an response.
      *
      **/
     abstract class Model extends Sql
     {
-        
+
         /**
          * The table name
          */
         protected static string $table = '';
-        
+
         /**
          * The table prefix
          */
         protected static string $prefix = '';
-        
+
         /**
          *
          * Html code before the content of results.
          *
          */
         protected static string $beforeContent = '';
-        
-        
+
+
         /**
          *
          * Html code after the content of results.
          *
          */
         protected static string $afterContent = '';
-        
-        
+
+
         /**
          *
          * Html code before the pagination
          *
          */
         protected static string $beforePagination = '';
-        
+
         /**
          *
          * Html code after the pagination of results.
          *
          */
         protected static string $afterPagination = '';
-        
+
         /**
          * The per page number
          */
         protected static int $limit = 12;
-        
+
         /**
          *
          * Method used to paginate all results inside the table.
@@ -97,8 +96,7 @@ namespace Nol\Database\Model {
          *
          */
         abstract public function each(stdClass $record): string;
-        
-        
+
         /**
          *
          * Search the value inside a table.
@@ -116,8 +114,8 @@ namespace Nol\Database\Model {
         {
             $x = app('connect');
             if ($x->mysql() || $x->postgresql()) {
-                $columns = join(', ', app('table')->from(static::table())->columns());
-                
+                $columns = join(', ', app('table')->from($this->table())->columns());
+
                 $where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
                 $fields = app('table')->from($this->table())->columns();
@@ -132,10 +130,10 @@ namespace Nol\Database\Model {
                 }
                 $where = "WHERE $columns";
             }
-            
-            return $this->paginate($current_page, $x->get(sprintf('SELECT * FROM %s %s', static::table(), $where)));
+
+            return $this->paginate($current_page, $x->get(sprintf('SELECT * FROM %s %s', $this->table(), $where)));
         }
-        
+
         /**
          *
          * Display all result with a pagination.
@@ -152,16 +150,16 @@ namespace Nol\Database\Model {
         final public function paginate(int $current_page, array $data = []): string
         {
             $content = '';
-            $sql = app('sql')->from(static::table());
+            $sql = app('sql')->from($this->table())->for(app('connect')->env());
             $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render(static::$table);
-            
+
             if (def($data)) {
                 $records = $data;
             } else {
                 $records = $sql->take(static::$limit, (($current_page) - 1) * static::$limit)
-                    ->by($sql->primary())->results();
+                    ->by($sql->primary())->get();
             }
-            
+
             foreach ($records as $record) {
                 $content .= static::each($record);
             }
@@ -177,7 +175,7 @@ namespace Nol\Database\Model {
                 )
             );
         }
-        
+
         /**
          *
          * Find all results different of the expected value.
@@ -185,6 +183,7 @@ namespace Nol\Database\Model {
          * @param string $column       The value column name.
          * @param mixed  $expected     The expected value to be escaped of the results lists.
          * @param int    $current_page The current page to display.
+         * @param array  $args         The query arguments.
          *
          * @throws DependencyException
          * @throws NotFoundException
@@ -192,9 +191,16 @@ namespace Nol\Database\Model {
          * @return string
          *
          */
-        final public function different(string $column, $expected, int $current_page): string
+        final public function different(string $column, $expected, int $current_page, array $args = []): string
         {
-            return $this->paginate($current_page, app('sql')->where($column, '!=', $expected)->results());
+            return $this->paginate(
+                $current_page,
+                app('sql')
+                ->from($this->table())
+                ->for(app('connect')->env())
+                ->where($column, '!=', $expected)
+                ->get($args)
+            );
         }
 
         /**
@@ -211,9 +217,13 @@ namespace Nol\Database\Model {
          */
         final public function find(int $id): array
         {
-            return $this->from($this->table())->where($this->from($this->table())->primary(), '=', $id)->get();
+            return $this->from($this->table())
+                ->for(app('connect')->env())
+                ->where($this->from($this->table())
+                ->for(app('connect')->env())
+                ->primary(), '=', $id)->get();
         }
-        
+
         /**
          *
          * Get the complete table name.

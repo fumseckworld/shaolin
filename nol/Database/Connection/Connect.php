@@ -336,7 +336,7 @@ namespace Nol\Database\Connection {
          * @return Connect
          *
          */
-        private function env(): Connect
+        final public function env(): Connect
         {
             $env = config('mode', 'connection', 'prod');
             if (strcmp($env, 'prod') === 0) {
