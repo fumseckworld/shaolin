@@ -83,7 +83,7 @@ namespace Nol\Database\Model {
         /**
          * The per page number
          */
-        protected static int $limit = 24;
+        protected static int $limit = 12;
         
         /**
          *
