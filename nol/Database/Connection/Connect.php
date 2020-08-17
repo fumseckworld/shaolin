@@ -203,6 +203,20 @@ namespace Nol\Database\Connection {
 
         /**
          *
+         * Check if the driver used is not equal to the passed driver.
+         *
+         * @param string $driver The driver to check.
+         *
+         * @return bool
+         *
+         */
+        final public function not(string $driver): bool
+        {
+            return $this->driver() !== $driver;
+        }
+
+        /**
+         *
          * Return the current hostname used.
          *
          * @return string
@@ -275,7 +289,7 @@ namespace Nol\Database\Connection {
          * @return PDO
          *
          */
-        protected function pdo(): PDO
+        public function pdo(): PDO
         {
             if (!$this->pdo instanceof PDO) {
                 if ($this->env()->mysql()) {
