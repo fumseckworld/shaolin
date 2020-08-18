@@ -82,7 +82,7 @@ namespace Nol\Http\Request {
          * @return Request
          *
          */
-        public function set(
+        final public function set(
             array $request = [],
             array $query = [],
             array $cookies = [],
