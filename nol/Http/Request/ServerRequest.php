@@ -29,13 +29,13 @@ namespace Nol\Http\Request {
      *
      * This package contains all useful methods to interact with the router request.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author  Willy Micieli <fumseck@fumseck.org>
      * @package Imperium\Http\Request\ServerRequest
      * @version 12
      *
-     * @property    string          $url            The request url.
-     * @property    string          $method         The request method.
-     * @property    Request         $request        The request instance.
+     * @property    string  $url            The request url.
+     * @property    string  $method         The request method.
+     * @property    Request $request        The request instance.
      *
      *
      */
@@ -47,8 +47,8 @@ namespace Nol\Http\Request {
          *
          * ServerRequest constructor.
          *
-         * @param string $url       The url to visit.
-         * @param string $method    The method to access to code.
+         * @param string $url    The url to visit.
+         * @param string $method The method to access to code.
          *
          *
          */
@@ -58,7 +58,7 @@ namespace Nol\Http\Request {
 
             $this->method = strtoupper($method);
 
-            $this->request = cli() ? new Request() :  Request::make();
+            $this->request = cli() ? new Request() : Request::make();
         }
 
         /**
@@ -72,7 +72,7 @@ namespace Nol\Http\Request {
          */
         public function match(string $url): bool
         {
-            return  strcmp($this->url(), $url) === 0;
+            return strcmp($this->url(), $url) === 0;
         }
 
         /**
@@ -86,9 +86,9 @@ namespace Nol\Http\Request {
         public static function generate(): ServerRequest
         {
             return cli()
-            ?
+                ?
                 new self('/')
-            :   new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
+                : new self($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);
         }
 
         /**
@@ -210,7 +210,7 @@ namespace Nol\Http\Request {
          */
         public function hasToken(): bool
         {
-            return def($this->request->request()->get('_csrf_token'));
+            return $this->request->request()->has('form_token');
         }
     }
 }

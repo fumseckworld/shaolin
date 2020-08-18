@@ -48,6 +48,7 @@ namespace Nol\Http\Response {
     final class Response
     {
 
+
         public function __construct()
         {
             $this->content = '';
@@ -132,9 +133,8 @@ namespace Nol\Http\Response {
          *
          * @return Response
          *
-         *
          */
-        public function set(string $content, int $status = 200, array $headers = [], string $url = ''): Response
+        final public function set(string $content, int $status = 200, array $headers = [], string $url = ''): Response
         {
             $this->setContent($content)->setStatus($status)->setHeaders($headers)->setUrl($url);
             $this->content = $content;
@@ -145,18 +145,19 @@ namespace Nol\Http\Response {
         }
 
         /**
-         * @param string $from
-         * @param string $url
-         * @param string $method
+         *
+         * @param string $from   The response from global or from cli.
+         * @param string $url    The request url.
+         * @param string $method The request method.
          *
          * @throws Kedavra
-         * @return $this
+         *
+         * @return Response
+         *
          */
-        public function from(string $from, string $url = '/', string $method = 'GET'): Response
+        final public function from(string $from, string $url = '/', string $method = 'GET'): Response
         {
-            if (
-                !in_array($from, ['global', 'cli'])
-            ) {
+            if (!in_array($from, ['global', 'cli'])) {
                 throw new Kedavra('The from must be equal to global or cli');
             }
 
@@ -175,7 +176,7 @@ namespace Nol\Http\Response {
         public function get(): Response
         {
             try {
-                return (new Router($this->request, intval(env('MODE', SITE))))->run()->send();
+                return (new Router($this->request, strval(env('MODE', SITE))))->run()->send();
             } catch (NotFoundException | DependencyException | Exception $e) {
                 return app('response')->set($e->getMessage(), 404)->send();
             }

@@ -95,22 +95,27 @@ namespace Nol\Http\Request {
 
         /**
          *
-         * Set a request argument.
+         * Set a bag content.
          *
-         * @param string $key
-         * @param array  $value
+         * @param string $key   The bag key.
+         * @param array  $value THe bag value.
          *
          * @throws Kedavra
          *
          * @return Request
          *
          */
-        public function with(string $key, array $value): Request
+        final public function with(string $key, array $value): Request
         {
             if (
                 !in_array($key, ['post', 'get', 'cookie', 'file', 'server', 'args'])
             ) {
-                throw new Kedavra('The used keys are invalid');
+                throw new Kedavra(
+                    sprintf(
+                        'Only the %s keys are valid',
+                        join(', ', ['post', 'get', 'cookie', 'file', 'server', 'args'])
+                    )
+                );
             }
             switch ($key) {
                 case 'post':
@@ -144,7 +149,7 @@ namespace Nol\Http\Request {
          * @return boolean
          *
          */
-        public function secure(): bool
+        final public function secure(): bool
         {
             return cli() ? false : intval($this->server->get('SERVER_PORT')) === 443;
         }
@@ -159,7 +164,7 @@ namespace Nol\Http\Request {
          *
          *
          */
-        public static function make(array $args = []): Request
+        final public static function make(array $args = []): Request
         {
             return new self($_POST, $_GET, $_COOKIE, $_FILES, $_SERVER, $args);
         }
@@ -171,7 +176,7 @@ namespace Nol\Http\Request {
          * @return Bag
          *
          */
-        public function query(): Bag
+        final public function query(): Bag
         {
             return $this->query;
         }
@@ -184,7 +189,7 @@ namespace Nol\Http\Request {
          * @return Bag
          *
          */
-        public function args(): Bag
+        final public function args(): Bag
         {
             return $this->args;
         }
@@ -196,7 +201,7 @@ namespace Nol\Http\Request {
          * @return Bag
          *
          */
-        public function request(): Bag
+        final public function request(): Bag
         {
             return $this->request;
         }
@@ -208,7 +213,7 @@ namespace Nol\Http\Request {
          * @return Bag
          *
          */
-        public function server(): Bag
+        final public function server(): Bag
         {
             return $this->server;
         }
@@ -220,7 +225,7 @@ namespace Nol\Http\Request {
          * @return UploadedFile
          *
          */
-        public function files(): UploadedFile
+        final public function files(): UploadedFile
         {
             return $this->files;
         }
@@ -232,7 +237,7 @@ namespace Nol\Http\Request {
          * @return Bag
          *
          */
-        public function cookie(): Bag
+        final public function cookie(): Bag
         {
             return $this->cookie;
         }
@@ -249,7 +254,7 @@ namespace Nol\Http\Request {
          * @param array $router_args
          *
          */
-        private function initialize(
+        final private function initialize(
             array $query,
             array $request,
             array $cookies,
@@ -272,7 +277,7 @@ namespace Nol\Http\Request {
          * @return string
          *
          */
-        public function ip(): string
+        final public function ip(): string
         {
             return cli() ? '127.0.0.1' : strval($this->server()->get('REMOTE_ADDR'));
         }
@@ -284,8 +289,9 @@ namespace Nol\Http\Request {
          * Return true if is in local or false on production.
          *
          * @return boolean
+         *
          */
-        public function local(): bool
+        final public function local(): bool
         {
             return strcmp($this->ip(), '127.0.0.1') === 0;
         }
@@ -297,7 +303,7 @@ namespace Nol\Http\Request {
          * @return bool
          *
          */
-        public function hasToken(): bool
+        final public function hasToken(): bool
         {
             return $this->request()->has('form_token');
         }
@@ -309,7 +315,7 @@ namespace Nol\Http\Request {
          * @return bool
          *
          */
-        public function submitted(): bool
+        final public function submitted(): bool
         {
             return $this->request()->count() > 0;
         }

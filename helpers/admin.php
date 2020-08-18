@@ -434,7 +434,7 @@ if (!function_exists('form_token')) {
                     : app('session')->set('form_token', $value)->get('form_token');
         }
         return sprintf(
-            '<input type="hidden" name="" value="%s">',
+            '<input type="hidden" name="form_token" value="%s">',
             $value
         );
     }

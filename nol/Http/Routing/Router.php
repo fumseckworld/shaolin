@@ -29,23 +29,23 @@ namespace Nol\Http\Routing {
          * Router constructor.
          *
          * @param ServerRequest $request The user's request.
-         * @param int $mode The server mode.
+         * @param string $mode The server mode.
          *
          * @throws NotFoundException
          * @throws Exception
          * @throws DependencyException
          *
          */
-        final public function __construct(ServerRequest $request, int $mode = SITE)
+        final public function __construct(ServerRequest $request, string $mode = 'site')
         {
             $this->url = $request->url();
             $this->method = $request->method();
             $this->args = [];
-            switch ($mode) {
-                case ADMIN:
+            switch (strtolower($mode)) {
+                case 'admin':
                     $this->routes = app('admin')->from('routes')->where('method', '=', $this->method)->get();
                     break;
-                case TODO:
+                case 'todo':
                     $this->routes = app('task')->from('routes')->where('method', '=', $this->method)->get();
                     break;
                 default:

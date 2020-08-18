@@ -23,6 +23,7 @@ class FormTest extends Unit
                 $form,
                 'action="/"',
                 'method="POST"',
+                'form_token',
                 '<button type="submit" class="form-button form-submit">envoyer</button>'
             );
     }
