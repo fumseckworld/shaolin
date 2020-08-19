@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 namespace Nol\Container {
-    
+
     use Closure;
     use DI\Container;
     use DI\ContainerBuilder;
@@ -52,9 +52,9 @@ namespace Nol\Container {
      */
     final class Ioc
     {
-        
+
         private static ?Container $container = null;
-        
+
         /**
          *
          * Get an instance of an object inside the container.
@@ -72,7 +72,7 @@ namespace Nol\Container {
         {
             return $this->container()->get($key);
         }
-        
+
         /**
          *
          * Define an object or a value in the container.
@@ -90,7 +90,7 @@ namespace Nol\Container {
             $this->container()->set($key, $value);
             return $this;
         }
-        
+
         /**
          *
          * Call the given function using the given parameters
@@ -109,7 +109,7 @@ namespace Nol\Container {
         {
             return $this->container()->call($callback, $args);
         }
-        
+
         /**
          *
          * Make always a new instance
@@ -129,8 +129,8 @@ namespace Nol\Container {
         {
             return $this->container()->make($key, $args);
         }
-        
-        
+
+
         /**
          *
          * Check if a key exist in the container.
@@ -146,7 +146,7 @@ namespace Nol\Container {
         {
             return $this->container()->has($key);
         }
-        
+
         /**
          *
          * Return the instance of the container.
@@ -159,7 +159,7 @@ namespace Nol\Container {
         {
             return $this->container();
         }
-        
+
         /**
          *
          * Build the container.
@@ -171,7 +171,7 @@ namespace Nol\Container {
          */
         final private function container(): Container
         {
-            
+
             if (is_null(static::$container)) {
                 $c = new ContainerBuilder();
                 $c->addDefinitions(
@@ -195,7 +195,11 @@ namespace Nol\Container {
                 $c->set('env', new Env());
                 $c->set('cache', new ZenCache());
                 $c->set('session', new Session());
-    
+
+                $c->set('web', $c->get('sql')->for(connect('sqlite', base('routes', 'web.db')))->from('routes'));
+                $c->set('toto', $c->get('sql')->for(connect('sqlite', base('routes', 'todo.db')))->from('routes'));
+                $c->set('admin', $c->get('sql')->for(connect('sqlite', base('routes', 'admin.db')))->from('routes'));
+
                 $c->set('app-directory', nol('app-directory', 'app'));
 
                 $c->set('views-directory', nol('views-directory', 'Views'));
@@ -205,21 +209,21 @@ namespace Nol\Container {
                 $c->set('not-found-action-name', nol('not-found-action-name', 'notFound'));
 
                 $c->set('db-directory', nol('db-directory', 'db'));
-                
+
                 $c->set('tests-directory', nol('tests-directory', 'tests'));
-                
+
                 $c->set('app-namespace', nol('app-namespace', 'App'));
-                
+
                 $c->set('base-namespace', nol('base-namespace', 'Evolution'));
-                
+
                 $c->set('tests-namespace', nol('tests-namespace', 'Testing'));
-                
+
                 $c->set('form-submit-classname', nol('form-submit-classname', 'form-button form-submit'));
-                
+
                 $c->set('form-separator-classname', nol('form-separator-classname', 'form-group'));
-                
+
                 $c->set('form-input-classname', nol('form-input-classname', 'form-input'));
-                
+
                 $c->set(
                     'models-dirname',
                     nol(
@@ -227,9 +231,9 @@ namespace Nol\Container {
                         'Models'
                     )
                 );
-                
+
                 $c->set('app-dirname', $c->get('app-directory'));
-                
+
                 $c->set(
                     'views-dirname',
                     nol(
@@ -237,7 +241,7 @@ namespace Nol\Container {
                         'Views'
                     )
                 );
-                
+
                 $c->set(
                     'public-dirname',
                     nol(
@@ -245,7 +249,7 @@ namespace Nol\Container {
                         'web'
                     )
                 );
-                
+
                 $c->set(
                     'db-dirname',
                     nol(
@@ -253,7 +257,7 @@ namespace Nol\Container {
                         'db'
                     )
                 );
-                
+
                 $c->set(
                     'emails-dirname',
                     nol(
@@ -261,7 +265,7 @@ namespace Nol\Container {
                         'Emails'
                     )
                 );
-                
+
                 $c->set(
                     'cache-dirname',
                     nol(
@@ -269,7 +273,7 @@ namespace Nol\Container {
                         'cache'
                     )
                 );
-                
+
                 $c->set(
                     'controllers-dirname',
                     nol(
@@ -277,7 +281,7 @@ namespace Nol\Container {
                         'Controllers'
                     )
                 );
-                
+
                 $c->set(
                     'forms-dirname',
                     nol(
@@ -285,8 +289,8 @@ namespace Nol\Container {
                         'Forms'
                     )
                 );
-                
-                
+
+
                 $c->set(
                     'emails-dirname',
                     nol(
@@ -294,7 +298,7 @@ namespace Nol\Container {
                         'Emails'
                     )
                 );
-                
+
                 $c->set(
                     'consoles-dirname',
                     nol(
@@ -302,7 +306,7 @@ namespace Nol\Container {
                         'Consoles'
                     )
                 );
-                
+
                 $c->set(
                     'validators-dirname',
                     nol(
@@ -310,7 +314,7 @@ namespace Nol\Container {
                         'Validators'
                     )
                 );
-                
+
                 $c->set(
                     'search-dirname',
                     nol(
@@ -318,7 +322,7 @@ namespace Nol\Container {
                         'Search'
                     )
                 );
-                
+
                 $c->set(
                     'translations-dirname',
                     nol(
@@ -333,7 +337,7 @@ namespace Nol\Container {
                         'Migrations'
                     )
                 );
-                
+
                 $c->set(
                     'seeds-dirname',
                     nol(
@@ -341,35 +345,35 @@ namespace Nol\Container {
                         'Seeds'
                     )
                 );
-                
+
                 $c->set('tests-dirname', $c->get('tests-directory'));
-                
+
                 $c->set('tests-path', base($c->get('db-directory'), $c->get('tests-dirname')));
-                
+
                 $c->set('migrations-path', base($c->get('db-directory'), $c->get('migrations-dirname')));
-                
+
                 $c->set('seeds-path', base($c->get('db-directory'), $c->get('seeds-dirname')));
-                
+
                 $c->set('models-path', base($c->get('app-directory'), $c->get('models-dirname')));
-                
+
                 $c->set('views-path', base($c->get('app-directory'), $c->get('views-dirname')));
-                
+
                 $c->set('controllers-path', base($c->get('app-directory'), $c->get('controllers-dirname')));
-                
+
                 $c->set('emails-path', base($c->get('app-directory'), $c->get('emails-dirname')));
-                
+
                 $c->set('forms-path', base($c->get('app-directory'), $c->get('forms-dirname')));
-                
+
                 $c->set('consoles-path', base($c->get('app-directory'), $c->get('consoles-dirname')));
-                
+
                 $c->set('validators-path', base($c->get('app-directory'), $c->get('validators-dirname')));
-                
+
                 $c->set('search-path', base($c->get('app-directory'), $c->get('search-dirname')));
-                
+
                 $c->set('cache-path', base($c->get('cache-dirname')));
-                
+
                 $c->set('translations-path', base($c->get('translations-dirname')));
-                
+
                 static::$container = $c;
             }
             return static::$container;

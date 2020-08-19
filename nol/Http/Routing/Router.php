@@ -43,13 +43,13 @@ namespace Nol\Http\Routing {
             $this->args = [];
             switch (strtolower($mode)) {
                 case 'admin':
-                    $this->routes = app('admin')->from('routes')->where('method', '=', $this->method)->get();
+                    $this->routes = app('admin')->where('method', '=', $this->method)->get();
                     break;
                 case 'todo':
-                    $this->routes = app('task')->from('routes')->where('method', '=', $this->method)->get();
+                    $this->routes = app('task')->where('method', '=', $this->method)->get();
                     break;
                 default:
-                    $this->routes = app('web')->from('routes')->where('method', '=', $this->method)->get();
+                    $this->routes = app('web')->where('method', '=', $this->method)->get();
                     break;
             }
         }
@@ -91,7 +91,6 @@ namespace Nol\Http\Routing {
             $path = preg_replace('#:([\w]+)#', '([^/]+)', $url);
 
             $regex = "#^$path$#";
-
             return preg_match($regex, $this->url, $this->args) === 1;
         }
     }

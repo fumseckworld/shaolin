@@ -20,6 +20,7 @@ use DI\NotFoundException;
 use Nol\Configuration\Config;
 use Nol\Configuration\Personalization\Nol;
 use Nol\Container\Ioc;
+use Nol\Database\Connection\Connect;
 use Nol\Exception\Kedavra;
 use Nol\Security\Hashing\Hash;
 
@@ -460,6 +461,31 @@ if (!function_exists('app')) {
     }
 }
 
+if (!function_exists('connect')) {
+
+    /**
+     *
+     * Create a new instance of connect.
+     *
+     * @param string $driver   The driver to use.
+     * @param string $base     THe base name or path.
+     * @param string $username The base username.
+     * @param string $password The base password.
+     * @param string $host     The base hostname.
+     *
+     * @return Connect
+     *
+     */
+    function connect(
+        string $driver,
+        string $base,
+        string $username = '',
+        string $password = '',
+        string $host = 'localhost'
+    ): Connect {
+        return new Connect($driver, $base, $username, $password, $host);
+    }
+}
 if (!function_exists('files')) {
 
     /**

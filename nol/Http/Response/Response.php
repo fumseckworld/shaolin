@@ -169,16 +169,14 @@ namespace Nol\Http\Response {
         }
 
         /**
-         * @throws DependencyException
-         * @throws NotFoundException
          * @return Response
          */
         public function get(): Response
         {
             try {
-                return (new Router($this->request, strval(env('MODE', SITE))))->run()->send();
+                return (new Router($this->request, strval(env('MODE', 'site'))))->run();
             } catch (NotFoundException | DependencyException | Exception $e) {
-                return app('response')->set($e->getMessage(), 404)->send();
+                return (new Response())->set($e->getMessage(), 404)->send();
             }
         }
 

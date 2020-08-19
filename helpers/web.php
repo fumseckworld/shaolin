@@ -4,7 +4,7 @@ use Nol\Collection\Collect;
 use Nol\Http\Request\Request;
 
 if (!function_exists('url')) {
-    
+
     /**
      *
      * Generate the full url
@@ -27,7 +27,7 @@ if (!function_exists('url')) {
 }
 
 if (!function_exists('cli')) {
-    
+
     /**
      *
      * Check if the code is execute in command line.
@@ -42,7 +42,7 @@ if (!function_exists('cli')) {
 }
 
 if (!function_exists('not_cli')) {
-    
+
     /**
      *
      * check if the code is not executed  from the command line.
@@ -56,7 +56,7 @@ if (!function_exists('not_cli')) {
     }
 }
 if (!function_exists('https')) {
-    
+
     /**
      *
      * Check if the server is secure
@@ -72,7 +72,7 @@ if (!function_exists('https')) {
 
 
 if (!function_exists('collect')) {
-    
+
     /**
      *
      * Get a new collection
@@ -97,8 +97,8 @@ if (!function_exists('collect')) {
 }
 
 if (!function_exists('total')) {
-    
-    
+
+
     /**
      *
      * @param int $x
@@ -115,7 +115,7 @@ if (!function_exists('total')) {
         } elseif ($x >= 1000) {
             return round(($x / 1000), 2) . ' K';
         }
-        
+
         return number_format($x);
     }
 }

@@ -171,7 +171,40 @@ namespace Nol\Database\Query {
          */
         public function sql(): string
         {
-            return '';
+            $where = def($this->where) ? $this->where : '';
+            $order = def($this->order) ? $this->order : '';
+            $table = def($this->from) ? $this->from : '';
+            $limit = def($this->limit) ? $this->limit : '';
+            $join = def($this->join) ? $this->join : '';
+            $union = def($this->union) ? $this->union : '';
+            $columns = def($this->columns) ? $this->columns : "*";
+
+            if (def($this->join)) {
+                return sprintf(
+                    'SELECT %s %s %s %s %s',
+                    $columns,
+                    $table,
+                    $join,
+                    $order,
+                    $limit
+                );
+            } elseif (def($this->union)) {
+                return  sprintf(
+                    '%s %s %s %s',
+                    $union,
+                    $where,
+                    $order,
+                    $limit
+                );
+            }
+            return sprintf(
+                'SELECT %s %s %s %s %s',
+                $columns,
+                $table,
+                $where,
+                $order,
+                $limit
+            );
         }
 
         /**

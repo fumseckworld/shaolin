@@ -41,10 +41,10 @@ namespace Nol\Database\Connection {
      * @property string $username  The current pdo username value
      * @property string $password  The current pdo password value
      * @property string $host      The current pdo hostname value
-     * @property PDO    $pdo       The pdo instance
      */
     final class Connect
     {
+        private ?PDO $pdo = null;
 
         /**
          *
@@ -291,7 +291,7 @@ namespace Nol\Database\Connection {
          */
         public function pdo(): PDO
         {
-            if (!$this->pdo instanceof PDO) {
+            if (is_null($this->pdo)) {
                 if ($this->env()->mysql()) {
                     $this->pdo =
                         new PDO(
@@ -338,6 +338,9 @@ namespace Nol\Database\Connection {
          */
         final public function env(): Connect
         {
+            if (def($this->driver)) {
+                return $this;
+            }
             $env = config('mode', 'connection', 'prod');
             if (strcmp($env, 'prod') === 0) {
                 return $this->prod();

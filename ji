@@ -1,6 +1,9 @@
 #!/usr/bin/env php
 <?php
 
+
+use Nol\Console\Ji;
+
 require 'vendor/autoload.php';
 
-(new \Imperium\Console\Command('shaolin','1.0'))->run();
+(new Ji('ji', '1.0'))->run();

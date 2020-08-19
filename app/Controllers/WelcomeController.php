@@ -57,9 +57,14 @@ namespace App\Controllers {
          * @throws NotFoundException
          * @return Response
          */
-        final public function run(Request $request): Response
+        final public function home(Request $request): Response
         {
             return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial']);
+        }
+
+        public function run(Request $request)
+        {
+            return $this->home($request);
         }
     }
 }
