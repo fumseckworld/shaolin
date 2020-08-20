@@ -20,7 +20,10 @@ namespace Nol\Database\Table {
 
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Nol\Database\Connection\Connect;
     use Nol\Exception\Kedavra;
+    use PDO;
+    use stdClass;
 
     /**
      *
@@ -32,17 +35,25 @@ namespace Nol\Database\Table {
      * @package Imperium\Database\Table\Table
      * @version 12
      *
-     * @property string $table      The table name.
-     * @property string $primary    The primary key.
-     * @property array  $columns    The table columns name.
-     *
+     * @property string  $table      The table name.
+     * @property string  $primary    The primary key.
+     * @property array   $columns    The table columns name.
+     * @property Connect $connect    The selected base.
+     * @property array   $show       All tables found
      */
     class Table
     {
-
-        private ?string $primary = null;
-
-        private array $columns = [];
+        /**
+         *
+         * @param Connect $connect The connection of the selected base.
+         *
+         */
+        public function __construct(Connect $connect)
+        {
+            $this->connect = $connect;
+            $this->primary = '';
+            $this->columns = [];
+        }
 
         /**
          *
@@ -53,10 +64,26 @@ namespace Nol\Database\Table {
          * @return Table
          *
          */
-        public function from(string $table): Table
+        final public function from(string $table): Table
         {
             $this->table = $table;
             return $this;
+        }
+
+        /**
+         *
+         * Check if a base has tables.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return bool
+         *
+         */
+        final public function has(): bool
+        {
+            return def($this->show());
         }
 
         /**
@@ -65,26 +92,29 @@ namespace Nol\Database\Table {
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
          *
          * @return array
          *
          */
-        public function columns(): array
+        final public function columns(): array
         {
-            $x = app('connect');
-
-            if (empty($this->columns)) {
+            $x = $this->connect;
+            if (not_def($this->columns)) {
                 $fields = [];
                 switch ($x->driver()) {
                     case MYSQL:
-                        foreach ($x->get("SHOW FULL COLUMNS FROM {$this->table}") as $column) {
+                        foreach ($x->get(sprintf('SHOW FULL COLUMNS FROM %s', $this->table)) as $column) {
                             array_push($fields, $column->Field);
                         }
                         break;
                     case POSTGRESQL:
                         foreach (
                             $x->get(
-                                "SELECT column_name FROM information_schema.columns WHERE table_name ='{$this->table}'"
+                                sprintf(
+                                    "SELECT column_name FROM information_schema.columns WHERE table_name ='%s'",
+                                    $this->table
+                                )
                             ) as $column
                         ) {
                             array_push($fields, $column->column_name);
@@ -104,32 +134,218 @@ namespace Nol\Database\Table {
 
         /**
          *
+         * Check if the table exist.
+         *
+         * @param string $table The table to check existence.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return bool
+         *
+         */
+        final public function exist(string $table): bool
+        {
+            return collect($this->show())->exist($table);
+        }
+
+        /**
+         * @param string $table
+         *
+         * @throws \DI\DependencyException
+         * @throws \DI\NotFoundException
+         * @throws \Nol\Exception\Kedavra
+         * @return bool
+         */
+        final public function notExist(string $table): bool
+        {
+            return !$this->exist($table);
+        }
+
+        /**
+         *
+         * Rename a table.
+         *
+         * @param string $new The new table name.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return bool
+         *
+         */
+        final public function rename(string $new): bool
+        {
+            switch ($this->connect->driver) {
+                case MYSQL:
+                    $data = $this->connect->exec(sprintf('RENAME TABLE %s TO %s', $this->table, $new));
+                    if ($data) {
+                        $this->table = $new;
+                    }
+                    return $data;
+                case POSTGRESQL:
+                case SQLITE:
+                    $data = $this->connect->exec(sprintf(
+                        'ALTER TABLE %s RENAME TO %s',
+                        $this->table,
+                        $new
+                    ));
+
+                    if ($data) {
+                        $this->table = $new;
+                    }
+                    return $data;
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         *
+         * Check if a table is empty
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return bool
+         *
+         */
+        final public function empty(): bool
+        {
+            return $this->sum() == 0;
+        }
+
+        /**
+         *
+         * Drop the table.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return boolean
+         *
+         */
+        final public function drop(): bool
+        {
+            return $this->connect->exec(
+                sprintf(
+                    'DROP TABLE %s',
+                    $this->table
+                )
+            );
+        }
+
+        /**
+         *
+         * Show all tables in a base.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return array
+         *
+         */
+        final public function show(): array
+        {
+            if (empty($this->show)) {
+                switch ($this->connect->driver) {
+                    case MYSQL:
+                        $this->show = array_unique($this->connect->get('SHOW TABLES', [], PDO::FETCH_COLUMN));
+                        break;
+                    case POSTGRESQL:
+                        $this->show = array_unique($this->connect->get(
+                            "SELECT table_name FROM information_schema.tables WHERE  table_type = 'BASE TABLE'
+                            AND table_schema NOT IN ('pg_catalog', 'information_schema');",
+                            [],
+                            PDO::FETCH_COLUMN
+                        ));
+                        break;
+                    case SQLITE:
+                        $this->show = array_unique(
+                            $this->connect->get(
+                                'SELECT tbl_name FROM sqlite_master',
+                                [],
+                                PDO::FETCH_COLUMN
+                            )
+                        );
+                        break;
+                    default:
+                        $this->show = [];
+                        break;
+                }
+            }
+            return $this->show;
+        }
+
+        /**
+         *
+         * Truncate a table.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return bool
+         *
+         */
+        final public function truncate(): bool
+        {
+            switch ($this->connect->driver) {
+                case MYSQL:
+                    return $this->connect->exec(sprintf(
+                        'TRUNCATE TABLE %s',
+                        $this->table
+                    ));
+                case POSTGRESQL:
+                    return $this->connect->exec(
+                        sprintf(
+                            'TRUNCATE TABLE %s RESTART IDENTITY',
+                            $this->table
+                        )
+                    );
+                case SQLITE:
+                    return
+                        $this->connect->exec(sprintf('DELETE  FROM %s', $this->table)) &&
+                        $this->connect->exec('VACUUM');
+                default:
+                    return false;
+            }
+        }
+
+        /**
+         *
          * Get the primary key of the given table.
          *
          * @throws DependencyException
          * @throws NotFoundException
-         * @throws  Kedavra
+         * @throws Kedavra
          *
          * @return string
          *
          */
-        public function primary(): string
+        final public function primary(): string
         {
-
-            if (is_null($this->primary)) {
-                $x = app('connect');
+            if (not_def($this->primary)) {
+                $x = $this->connect;
                 switch ($x->driver()) {
                     case MYSQL:
-                        foreach ($x->get("show columns from {$this->table} where `Key` = 'PRI';") as $key) {
+                        foreach ($x->get(sprintf("show columns from %s where `Key` = 'PRI';", $this->table)) as $key) {
                             $this->primary = $key->Field;
                         }
-
                         break;
                     case POSTGRESQL:
                         foreach (
                             $x->get(
-                                "select column_name FROM information_schema.key_column_usage 
-                                WHERE table_name = '{$this->table}';"
+                                sprintf(
+                                    "select column_name FROM information_schema.key_column_usage 
+                                    WHERE table_name = '%s';",
+                                    $this->table
+                                )
                             ) as $key
                         ) {
                             $this->primary = $key->column_name;
@@ -137,18 +353,61 @@ namespace Nol\Database\Table {
 
                         break;
                     case SQLITE:
-                        foreach ($x->get("PRAGMA table_info({$this->table})") as $field) {
-                            if (def($field->pk)) {
+                        foreach ($x->get(sprintf('PRAGMA table_info(%s)', $this->table)) as $field) {
+                            if ($field->pk) {
                                 $this->primary = $field->name;
                             }
                         }
                         break;
                 }
-                if (is_null($this->primary)) {
+                if (not_def($this->primary)) {
                     throw  new Kedavra('We have not found a primary key');
                 }
             }
             return $this->primary;
+        }
+
+        /**
+         *
+         * Get the contents in the table.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return array<stdClass>
+         *
+         */
+        final public function content(): array
+        {
+            return $this->connect->get(sprintf('SELECT * FROM %s', $this->table));
+        }
+
+
+        /**
+         *
+         * Get the contents in the table.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
+         * @return int
+         *
+         */
+        final public function sum(): int
+        {
+            return intval(
+                $this->connect->get(
+                    sprintf(
+                        'SELECT COUNT(%s) FROM %s',
+                        $this->primary(),
+                        $this->table
+                    ),
+                    [],
+                    PDO::FETCH_COLUMN
+                )
+            );
         }
     }
 }

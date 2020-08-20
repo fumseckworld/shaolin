@@ -55,7 +55,7 @@ namespace Nol\Http\Controller {
          */
         final public function table(string $table = ''): Table
         {
-            return def($table) ? $this->app('table')->from($table) : $this->app('table');
+            return def($table) ? (new Table($this->connect()))->from($table) : new Table($this->connect());
         }
 
         /**

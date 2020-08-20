@@ -30,7 +30,6 @@ namespace Nol\Container {
     use Nol\Cache\ZenCache;
     use Nol\Database\Connection\Connect;
     use Nol\Database\Query\Sql;
-    use Nol\Database\Table\Table;
     use Nol\Environment\Env;
     use Nol\Http\Request\Request;
     use Nol\Http\Response\Response;
@@ -190,14 +189,13 @@ namespace Nol\Container {
                 $c->set('sql', new Sql());
                 $c->set('response', new Response());
                 $c->set('request', new Request());
-                $c->set('table', new Table());
                 $c->set('connect', new Connect());
                 $c->set('env', new Env());
                 $c->set('cache', new ZenCache());
                 $c->set('session', new Session());
 
                 $c->set('web', $c->get('sql')->for(connect('sqlite', base('routes', 'web.db')))->from('routes'));
-                $c->set('toto', $c->get('sql')->for(connect('sqlite', base('routes', 'todo.db')))->from('routes'));
+                $c->set('todo', $c->get('sql')->for(connect('sqlite', base('routes', 'todo.db')))->from('routes'));
                 $c->set('admin', $c->get('sql')->for(connect('sqlite', base('routes', 'admin.db')))->from('routes'));
 
                 $c->set('app-directory', nol('app-directory', 'app'));

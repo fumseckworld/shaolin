@@ -4,4 +4,4 @@ chdir(dirname(__DIR__));
 
 require 'vendor/autoload.php';
 
-app('response')->from('global')->get();
+dd((new \Nol\Database\Table\Table(connect('sqlite', base('routes', 'web.db'))))->show());
