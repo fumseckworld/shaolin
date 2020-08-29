@@ -21,6 +21,7 @@ namespace Nol\Database\Model {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Database\Query\Sql;
+    use Nol\Database\Table\Table;
     use Nol\Exception\Kedavra;
     use Nol\Html\Pagination\Pagination;
     use stdClass;
@@ -105,20 +106,18 @@ namespace Nol\Database\Model {
          * @param int   $current_page The current page to display
          *
          * @throws DependencyException
+         * @throws Kedavra
          * @throws NotFoundException
-         *
          * @return string
-         *
          */
         final public function search($value, int $current_page = 1): string
         {
             $x = app('connect');
             if ($x->mysql() || $x->postgresql()) {
-                $columns = join(', ', app('table')->from($this->table())->columns());
-
+                $columns = join(', ', (new Table($x))->from($this->table())->columns());
                 $where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
-                $fields = app('table')->from($this->table())->columns();
+                $fields = (new Table($x))->from($this->table())->columns();
                 $end = end($fields);
                 $columns = '';
                 foreach ($fields as $field) {
@@ -141,17 +140,17 @@ namespace Nol\Database\Model {
          * @param int   $current_page The current page to display.
          * @param array $data         The data to paginate.
          *
+         *
          * @throws DependencyException
+         * @throws Kedavra
          * @throws NotFoundException
-         *
          * @return string
-         *
          */
         final public function paginate(int $current_page, array $data = []): string
         {
             $content = '';
-            $sql = app('sql')->from($this->table())->for(app('connect')->env());
-            $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render(static::$table);
+            $sql = (new Sql())->from($this->table())->for(app('connect'));
+            $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render([static::$table]);
 
             if (def($data)) {
                 $records = $data;
@@ -187,6 +186,7 @@ namespace Nol\Database\Model {
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
          *
          * @return string
          *
@@ -195,7 +195,7 @@ namespace Nol\Database\Model {
         {
             return $this->paginate(
                 $current_page,
-                app('sql')
+                (new Sql())
                 ->from($this->table())
                 ->for(app('connect')->env())
                 ->where($column, '!=', $expected)
@@ -220,7 +220,6 @@ namespace Nol\Database\Model {
             return $this->from($this->table())
                 ->for(app('connect')->env())
                 ->where($this->from($this->table())
-                ->for(app('connect')->env())
                 ->primary(), '=', $id)->get();
         }
 

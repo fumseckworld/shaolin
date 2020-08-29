@@ -104,7 +104,7 @@ namespace Nol\Database\Table {
                 $fields = [];
                 switch ($x->driver()) {
                     case MYSQL:
-                        foreach ($x->get(sprintf('SHOW FULL COLUMNS FROM %s', $this->table)) as $column) {
+                        foreach ($x->get(sprintf('SHOW FULL COLUMNS  %s', $this->table)) as $column) {
                             array_push($fields, $column->Field);
                         }
                         break;

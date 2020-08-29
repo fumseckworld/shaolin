@@ -2,6 +2,7 @@
 
 namespace App\Controllers {
 
+    use App\Search\ArticlesSearch;
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Collection\Collect;
@@ -60,6 +61,25 @@ namespace App\Controllers {
         final public function home(Request $request): Response
         {
             return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial']);
+        }
+
+        public function found(Request $request): Response
+        {
+            $results = $this->search(
+                ArticlesSearch::class,
+                $request->args()->get('value', ''),
+                $request->args()->int('page', 1)
+            );
+            return $this->view(
+                'search',
+                'search',
+                sprintf(
+                    'The result for %s',
+                    $request->args()->string('value')
+                ),
+                ['search'],
+                compact('results')
+            );
         }
 
         public function run(Request $request)

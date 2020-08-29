@@ -189,16 +189,18 @@ namespace Nol\Container {
                 $c->set('sql', new Sql());
                 $c->set('response', new Response());
                 $c->set('request', new Request());
-                $c->set('connect', new Connect());
+                $c->set('connect', (new Connect()));
                 $c->set('env', new Env());
                 $c->set('cache', new ZenCache());
                 $c->set('session', new Session());
 
-                $c->set('web', $c->get('sql')->for(connect('sqlite', base('routes', 'web.db')))->from('routes'));
-                $c->set('todo', $c->get('sql')->for(connect('sqlite', base('routes', 'todo.db')))->from('routes'));
-                $c->set('admin', $c->get('sql')->for(connect('sqlite', base('routes', 'admin.db')))->from('routes'));
+                $c->set('web', (new Sql())->for(connect('sqlite', base('routes', 'web.db')))->from('routes'));
+                $c->set('todo', (new Sql())->for(connect('sqlite', base('routes', 'todo.db')))->from('routes'));
+                $c->set('admin', (new Sql())->for(connect('sqlite', base('routes', 'admin.db')))->from('routes'));
 
                 $c->set('app-directory', nol('app-directory', 'app'));
+                $c->set('pagination-results-text', nol('pagination-results-text', 'records has been found'));
+                $c->set('pagination-class', nol('pagination-class', 'pagination'));
 
                 $c->set('views-directory', nol('views-directory', 'Views'));
 

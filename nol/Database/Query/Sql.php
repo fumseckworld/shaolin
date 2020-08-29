@@ -21,6 +21,7 @@ namespace Nol\Database\Query {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Database\Connection\Connect;
+    use Nol\Database\Table\Table;
     use Nol\Exception\Kedavra;
     use PDO;
 
@@ -189,7 +190,7 @@ namespace Nol\Database\Query {
                     $limit
                 );
             } elseif (def($this->union)) {
-                return  sprintf(
+                return sprintf(
                     '%s %s %s %s',
                     $union,
                     $where,
@@ -211,9 +212,9 @@ namespace Nol\Database\Query {
          * @param array $args
          * @param int   $output
          *
-         * @throws \DI\DependencyException
-         * @throws \DI\NotFoundException
-         * @throws \Nol\Exception\Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
          * @return array
          */
         public function get(array $args = [], int $output = PDO::FETCH_OBJ): array
@@ -323,6 +324,7 @@ namespace Nol\Database\Query {
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
          *
          * @return Sql
          *
@@ -330,10 +332,10 @@ namespace Nol\Database\Query {
         public function like($value): Sql
         {
             if ($this->connect->not('sqlite')) {
-                $columns = collect(app('table')->from($this->from)->columns())->join();
+                $columns = collect((new Table($this->connect))->from($this->from)->columns())->join();
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";
             } else {
-                $fields = collect(app('table')->from($this->from)->columns());
+                $fields = collect((new Table($this->connect))->from($this->from)->columns());
                 $end = $fields->last();
                 $columns = collect();
                 foreach ($fields->all() as $column) {
@@ -432,9 +434,9 @@ namespace Nol\Database\Query {
          *
          * @param array $args the sql arguments.
          *
-         * @throws \DI\DependencyException
-         * @throws \DI\NotFoundException
-         * @throws \Nol\Exception\Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
          * @return int
          */
         public function sum(array $args = []): int
@@ -479,7 +481,7 @@ namespace Nol\Database\Query {
                     foreach (
                         $this->connect->get(
                             sprintf(
-                                "show columns from %s where `Key` = 'PRI';",
+                                "show columns %s where `Key` = 'PRI';",
                                 $this->from
                             )
                         ) as $key

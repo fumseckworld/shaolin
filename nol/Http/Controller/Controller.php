@@ -38,7 +38,7 @@ namespace Nol\Http\Controller {
          */
         final public function sql(string $table): Sql
         {
-            return $this->app('sql')->from($table);
+            return (new Sql())->for($this->connect())->from($table);
         }
 
         /**
@@ -274,9 +274,8 @@ namespace Nol\Http\Controller {
          * Search the value in a base or in a table using the search class.
          *
          * @param class-string  $class   The search class name.
-         * @param Connect $connect The base to use.
-         * @param string  $value   The search value.
-         * @param int     $page    The current page.
+         * @param string $value The search value.
+         * @param int    $page  The current page.
          *
          * @throws DependencyException
          * @throws NotFoundException
@@ -284,9 +283,13 @@ namespace Nol\Http\Controller {
          * @return string
          *
          */
-        final public function search(string $class, Connect $connect, string $value, int $page = 1): string
+        final public function search(string $class, string $value, int $page = 1): string
         {
-            return $this->app($class)->search($value, $connect, $page);
+            return $this->app($class)->search(
+                $value,
+                $this->connect()->env(),
+                $page
+            );
         }
 
         /**

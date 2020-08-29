@@ -85,7 +85,6 @@ namespace Nol\Http\Routing {
          */
         final public function args(): Request
         {
-            array_shift($this->args);
             return cli() ? (new Request())->with('args', $this->args) : Request::make($this->args);
         }
 

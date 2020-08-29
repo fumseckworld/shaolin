@@ -67,6 +67,13 @@ namespace Nol\Http\Routing {
         {
             foreach ($this->routes as $route) {
                 if ($this->match($route->url)) {
+                    $args = collect();
+                    foreach (explode(':', $route->url) as $key => $value) {
+                        if ($key) {
+                            $args->put(str_replace('/', '', $value), $this->args[$key]);
+                        }
+                    }
+                    $this->args = $args->all();
                     return (new Route($route->controller, $route->action, $this->args))->exec();
                 }
             }

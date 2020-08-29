@@ -20,14 +20,17 @@ declare(strict_types=1);
 
 namespace Nol\Html\Pagination {
 
+    use DI\DependencyException;
+    use DI\NotFoundException;
+
 
     /**
      *
      * Generate a pagination.
      *
-     * @author Willy Micieli <fumseck@fumseck.org>
+     * @author   Willy Micieli <fumseck@fumseck.org>
      * @version  12
-     * @package Imperium\Html\Pagination
+     * @package  Imperium\Html\Pagination
      */
     class Pagination
     {
@@ -77,36 +80,38 @@ namespace Nol\Html\Pagination {
          *
          * Get the pagination
          *
-         * @param string $prefix
+         * @param array $prefix
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
          *
          * @return string
          *
-         *
          */
-        public function render(string $prefix): string
+        public function render(array $prefix)
         {
             $x = $this->current_page;
             if ($x > $this->pages) {
                 return '';
             }
 
-            $html = '<nav><ul class="' . config('pagination', 'ul_class', 'pagination') . '">';
 
             $next = strval($x + 1);
             $previous = strval(($x - 1));
             $last = strval($this->pages);
 
+            $li = '';
 
             if ($x > 1) {
                 if ($x !== $this->pages) {
-                    $html .= '<li class="' . config('pagination', 'li_class', 'page-item') . '">
-                <a href="' . url($prefix) . '" class="' . config('pagination', 'link_class', 'page-link') . '">'
+                    $li .= '<li class="' . config('pagination', 'li_class', 'page-item') . '">
+                <a href="' . url($prefix, '1') . '" class="' . config('pagination', 'link_class', 'page-link') . '">'
                         . config('pagination', 'first', 'first') . '
                     </a>
                 </li>';
                 }
 
-                $html .= '<li class="' . config('pagination', 'li_class', 'page-item') . '">
+                $li .= '<li class="' . config('pagination', 'li_class', 'page-item') . '">
         <a href="' . url($prefix, $previous) . '" class="' . config('pagination', 'link_class', 'page-link') . '">'
                     . config('pagination', 'previous', 'previous') . '
                         </a>
@@ -114,7 +119,7 @@ namespace Nol\Html\Pagination {
             }
 
             if ($x < $this->pages) {
-                $html .= '<li class="' . config('pagination', 'li_class', 'page-item') . '"> 
+                $li .= '<li class="' . config('pagination', 'li_class', 'page-item') . '"> 
                 <a href="' . url($prefix, $next) . '" class="' . config('pagination', 'link_class', 'page-link') . '"> '
                     . config('pagination', 'next', 'next') . '
                 </a>
@@ -122,16 +127,40 @@ namespace Nol\Html\Pagination {
             }
 
             if ($x + 1 < $this->pages) {
-                $html .= '<li class="' . config('pagination', 'li_class', 'page-item') . '">
+                $li .= '<li class="' . config('pagination', 'li_class', 'page-item') . '">
             <a href="' . url($prefix, $last) . '" class="' . config('pagination', 'link_class', 'page-link') . '">'
                     . config('pagination', 'last', 'last') . '
             </a>
         </li>';
             }
 
-            $html .= '</ul></nav>';
+            return sprintf(
+                '<div>%s<nav><ul class="pagination">%s</ul></nav></div>',
+                $this->found(),
+                $li
+            );
+        }
 
-            return $html;
+        /**
+         *
+         * Display all records match the request.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return string
+         *
+         */
+        final public function found(): string
+        {
+            if ($this->total > $this->limit) {
+                return sprintf(
+                    '<div class="pagination-results">%d %s</div>',
+                    $this->total,
+                    app('pagination-results-text')
+                );
+            }
+            return '';
         }
     }
 }

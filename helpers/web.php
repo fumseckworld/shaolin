@@ -9,13 +9,15 @@ if (!function_exists('url')) {
      *
      * Generate the full url
      *
-     * @param string ...$urls The url parts.
+     * @param array $base The base urls.
+     * @param string ...$urls The url arguments.
      *
      * @return string
-     *
      */
-    function url(string ...$urls): string
+    function url(array $base, string ...$urls): string
     {
+        $urls = array_merge($base, $urls);
+
         if (php_sapi_name() == 'cli') {
             return sprintf('/%s', join('/', $urls));
         }

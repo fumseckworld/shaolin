@@ -21,6 +21,8 @@ namespace Nol\Database\Found {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Database\Connection\Connect;
+    use Nol\Database\Query\Sql;
+    use Nol\Exception\Kedavra;
     use Nol\Html\Form\Generator\FormGenerator;
     use Nol\Html\Pagination\Pagination;
     use ReflectionClass;
@@ -116,7 +118,7 @@ namespace Nol\Database\Found {
          * @return string
          *
          */
-        abstract protected static function each(stdClass $record, bool $global): string;
+        abstract public function each(stdClass $record, bool $global): string;
 
         /**
          *
@@ -127,32 +129,47 @@ namespace Nol\Database\Found {
          * @param int     $current_page The current page to display.
          *
          * @throws DependencyException
+         * @throws Kedavra
          * @throws NotFoundException
          * @throws ReflectionException
+         *
          * @return string
+         *
          */
         final public function search($value, Connect $connect, int $current_page = 1): string
         {
-            $content = '';
 
             $global = not_def(static::$table);
 
-            $records = $global ? static::global($value, $connect) : static::from($value, $connect);
+            $records = $global ? $this->global($value, $connect) : $this->from($value, $connect);
 
-            $pagination = (new Pagination($current_page, static::$limit, count($records)))->render(static::$prefix);
+            $pagination = new Pagination(
+                $current_page,
+                static::$limit,
+                count($records)
+            );
 
-            foreach ($records as $record) {
-                $content .= static::each($record, $global);
-            }
+            $content = collect(
+                (new Sql())
+                    ->from(static::$table)
+                    ->for($connect)
+                    ->take(static::$limit, (($current_page) - 1) * static::$limit)
+                    ->by((new Sql())->from(static::$table)->for($connect)->primary())
+                    ->like($value)
+                    ->get()
+            )->for(function (stdClass $record) use ($global) {
+                return $this->each($record, $global);
+            })->join('');
 
             return trim(
                 sprintf(
-                    '%s%s%s%s%s%s',
+                    '%s%s%s%s%s%s%s',
                     static::$beforeContent,
+                    $pagination->found(),
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
-                    $pagination,
+                    $pagination->render([static::$prefix, $value]),
                     static::$afterPagination
                 )
             );
@@ -167,13 +184,14 @@ namespace Nol\Database\Found {
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
          *
          * @return array
          *
          */
-        private static function from($x, Connect $connect): array
+        private function from($x, Connect $connect): array
         {
-            return app('sql')->from(static::$table)->for($connect)->like($x)->get();
+            return (new Sql())->from(static::$table)->for($connect)->like($x)->get();
         }
 
 
@@ -184,14 +202,14 @@ namespace Nol\Database\Found {
          * @param mixed   $x       The value to search.
          * @param Connect $connect The selected database.
          *
-         * @throws DependencyException
          * @throws NotFoundException
          * @throws ReflectionException
+         * @throws DependencyException
          *
          * @return array
          *
          */
-        private static function global($x, Connect $connect): array
+        private function global($x, Connect $connect): array
         {
             $data = collect();
 
