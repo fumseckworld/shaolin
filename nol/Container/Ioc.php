@@ -217,6 +217,7 @@ namespace Nol\Container {
                 $c->set('base-namespace', nol('base-namespace', 'Evolution'));
 
                 $c->set('tests-namespace', nol('tests-namespace', 'Testing'));
+                $c->set('server-port', nol('server-port', '3000'));
 
                 $c->set('form-submit-classname', nol('form-submit-classname', 'form-button form-submit'));
 

@@ -3,6 +3,7 @@
 namespace Nol\Console {
 
     use Exception;
+    use Nol\Console\Http\Server;
     use Symfony\Component\Console\Application;
 
     /**
@@ -57,6 +58,7 @@ namespace Nol\Console {
         final public function run(): int
         {
             $ji = [
+                new Server()
             ];
             $this->add($ji);
             return $this->app->run();
