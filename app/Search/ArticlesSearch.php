@@ -19,7 +19,7 @@ namespace App\Search {
                 ->open('/')
                 ->select('value', ['sql' => 'select title from articles'])
                 ->select('value', ['sql' => 'select created_at from articles ORDER BY created_at desc'])
-                ->select('value', [], ['a', 'b'])
+                ->select('value', [], ['<js>alert(404)</js>', 'b'])
                 ->close('search');
         }
 

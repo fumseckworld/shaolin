@@ -243,8 +243,7 @@ namespace Nol\Html\Form\Generator {
                     ->get($options['sql'], $values, PDO::FETCH_COLUMN))
                     ->for(function ($x) {
                         return str_replace('"', "'", $x);
-                    })->for('strip_tags')->all();
-
+                    })->all();
                 $options = collect($options)->del(['sql'])->all();
             }
 
@@ -257,6 +256,7 @@ namespace Nol\Html\Form\Generator {
                     collect($options)->each([$this, 'generateInputOptions'])->join(' '),
                     collect($values)->for(
                         function ($v) {
+                            $v = strip_tags($v);
                             return sprintf('<option value="%s">%s</option>', $v, $v);
                         }
                     )->join(' ')
