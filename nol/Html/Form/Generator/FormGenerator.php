@@ -239,7 +239,12 @@ namespace Nol\Html\Form\Generator {
         final public function select(string $name, array $options, array $values = []): FormGenerator
         {
             if (array_key_exists('sql', $options)) {
-                $values = app('connect')->env()->get($options['sql'], $values, PDO::FETCH_COLUMN);
+                $values = collect(app('connect')->env()
+                    ->get($options['sql'], $values, PDO::FETCH_COLUMN))
+                    ->for(function ($x) {
+                        return str_replace('"', "'", $x);
+                    })->all();
+
                 $options = collect($options)->del(['sql'])->all();
             }
 

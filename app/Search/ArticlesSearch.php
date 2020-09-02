@@ -29,7 +29,7 @@ namespace App\Search {
         public function each(stdClass $record, bool $global): string
         {
             return sprintf(
-                '<section><header><h2>%s</h2></header><article>%s</article></section>',
+                '<article><header><h2>%s</h2></header>%s</article>',
                 $record->title,
                 nl2br($record->content)
             );
