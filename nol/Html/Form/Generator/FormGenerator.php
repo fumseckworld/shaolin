@@ -243,7 +243,7 @@ namespace Nol\Html\Form\Generator {
                     ->get($options['sql'], $values, PDO::FETCH_COLUMN))
                     ->for(function ($x) {
                         return str_replace('"', "'", $x);
-                    })->all();
+                    })->for('strip_tags')->all();
 
                 $options = collect($options)->del(['sql'])->all();
             }
