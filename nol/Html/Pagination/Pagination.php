@@ -136,7 +136,7 @@ namespace Nol\Html\Pagination {
 
             return sprintf(
                 '<div>%s<nav><ul class="pagination">%s</ul></nav></div>',
-                $this->found(),
+                $this->total > $this->limit ? $this->found() : '',
                 $li
             );
         }
@@ -153,14 +153,10 @@ namespace Nol\Html\Pagination {
          */
         final public function found(): string
         {
-            if ($this->total > $this->limit) {
-                return sprintf(
-                    '<div class="pagination-results">%d %s</div>',
-                    $this->total,
-                    app('pagination-results-text')
-                );
-            }
-            return '';
+            return str_replace('%d', strval($this->total), sprintf(
+                '<div class="pagination-results">%s</div>',
+                app('pagination-results-text'),
+            ));
         }
     }
 }
