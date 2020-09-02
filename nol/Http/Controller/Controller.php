@@ -12,6 +12,7 @@ namespace Nol\Http\Controller {
     use Nol\Database\Table\Table;
     use Nol\Environment\Env;
     use Nol\Exception\Kedavra;
+    use Nol\Html\Form\Generator\FormGenerator;
     use Nol\Http\Request\Request;
     use Nol\Http\Response\Response;
     use Nol\Http\Views\View;
@@ -290,6 +291,23 @@ namespace Nol\Http\Controller {
                 $this->connect()->env(),
                 $page
             );
+        }
+
+        /**
+         *
+         * Get the generated form for search a value.
+         *
+         * @param string $class The search class.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return string
+         *
+         */
+        final public function searchForm(string $class): string
+        {
+            return $this->app($class)->form(new FormGenerator());
         }
 
         /**

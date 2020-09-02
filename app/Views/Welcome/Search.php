@@ -1,3 +1,4 @@
 <?php
 
+echo $form ?? '';
 echo $results ?? '';

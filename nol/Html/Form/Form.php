@@ -65,7 +65,7 @@ namespace Nol\Html\Form {
          */
         final public function display(): string
         {
-            $form = $this->builder();
+            $form = new FormGenerator();
 
             $form->open(static::$action, static::$method);
 
@@ -111,18 +111,6 @@ namespace Nol\Html\Form {
                 );
             }
             return $form->close(static::$submit);
-        }
-
-        /**
-         *
-         * Return an instance of the form generator.
-         *
-         * @return FormGenerator
-         *
-         */
-        final private function builder(): FormGenerator
-        {
-            return new FormGenerator();
         }
 
         /**

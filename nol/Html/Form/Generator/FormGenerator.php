@@ -6,6 +6,8 @@ namespace Nol\Html\Form\Generator {
     use DI\NotFoundException;
     use Exception;
     use Nol\Collection\Collect;
+    use Nol\Database\Query\Sql;
+    use PDO;
 
     /**
      *
@@ -38,8 +40,8 @@ namespace Nol\Html\Form\Generator {
          *
          * Open the form.
          *
-         * @param string $action The form action.
-         * @param string $method The form method.
+         * @param string $action  The form action.
+         * @param string $method  The form method.
          * @param array  $options The form options.
          *
          * @throws Exception
@@ -234,8 +236,13 @@ namespace Nol\Html\Form\Generator {
          * @return FormGenerator
          *
          */
-        final public function select(string $name, array $options, array $values): FormGenerator
+        final public function select(string $name, array $options, array $values = []): FormGenerator
         {
+            if (array_key_exists('sql', $options)) {
+                $values = app('connect')->env()->get($options['sql'], $values, PDO::FETCH_COLUMN);
+                $options = collect($options)->del(['sql'])->all();
+            }
+
             return $this->append(
                 sprintf(
                     '<div class="%s"><select name="%s" class="%s" %s> %s</select></div>',
@@ -243,12 +250,9 @@ namespace Nol\Html\Form\Generator {
                     $name,
                     app('form-input-classname'),
                     collect($options)->each([$this, 'generateInputOptions'])->join(' '),
-                    collect($values)->each(
-                        function ($k, $v) {
-                            if (is_integer($k)) {
-                                return sprintf('<option value="%s">%s</option>', $v, $v);
-                            }
-                            return sprintf('<option value="%s">%s</option>', $k, $v);
+                    collect($values)->for(
+                        function ($v) {
+                            return sprintf('<option value="%s">%s</option>', $v, $v);
                         }
                     )->join(' ')
                 )

@@ -70,6 +70,9 @@ namespace App\Controllers {
                 $request->args()->get('value', ''),
                 $request->args()->int('page', 1)
             );
+
+            $form = $this->searchForm(ArticlesSearch::class);
+
             return $this->view(
                 'search',
                 'search',
@@ -78,7 +81,7 @@ namespace App\Controllers {
                     $request->args()->string('value')
                 ),
                 ['search'],
-                compact('results')
+                compact('results', 'form')
             );
         }
 

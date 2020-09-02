@@ -3,6 +3,7 @@
 namespace App\Search {
 
     use Nol\Database\Found\Search;
+    use Nol\Html\Form\Generator\FormGenerator;
     use stdClass;
 
     class ArticlesSearch extends Search
@@ -12,9 +13,14 @@ namespace App\Search {
         /**
          * @inheritDoc
          */
-        public function form(): string
+        public function form(FormGenerator $formGenerator): string
         {
-            return '';
+            return $formGenerator
+                ->open('/')
+                ->select('value', ['sql' => 'select title from articles'])
+                ->select('value', ['sql' => 'select created_at from articles ORDER BY created_at desc'])
+                ->select('value', [], ['a', 'b'])
+                ->close('search');
         }
 
         /**

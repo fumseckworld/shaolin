@@ -91,22 +91,12 @@ namespace Nol\Database\Found {
          *
          * Generate the search form.
          *
+         * @param FormGenerator $formGenerator
+         *
          * @return string
          *
          */
-        abstract public function form(): string;
-
-        /**
-         *
-         * Get an instance of the form builder.
-         *
-         * @return FormGenerator
-         *
-         */
-        final public function builder(): FormGenerator
-        {
-            return new FormGenerator();
-        }
+        abstract public function form(FormGenerator $formGenerator): string;
 
         /**
          *
