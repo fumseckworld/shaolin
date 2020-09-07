@@ -105,10 +105,12 @@ namespace Nol\Database\Model {
          * @param mixed $value        The value to search.
          * @param int   $current_page The current page to display
          *
-         * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
+         * @throws DependencyException
+         *
          * @return string
+         *
          */
         final public function search($value, int $current_page = 1): string
         {
@@ -140,15 +142,15 @@ namespace Nol\Database\Model {
          * @param int   $current_page The current page to display.
          * @param array $data         The data to paginate.
          *
-         *
-         * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
+         * @throws DependencyException
+         *
          * @return string
+         *
          */
         final public function paginate(int $current_page, array $data = []): string
         {
-            $content = '';
             $sql = (new Sql())->from($this->table())->for(app('connect'));
             $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render([static::$table]);
 
@@ -158,10 +160,10 @@ namespace Nol\Database\Model {
                 $records = $sql->take(static::$limit, (($current_page) - 1) * static::$limit)
                     ->by($sql->primary())->get();
             }
+            $content = collect($records)->for(function (stdClass $record) {
+                return $this->each($record);
+            })->join('');
 
-            foreach ($records as $record) {
-                $content .= static::each($record);
-            }
             return trim(
                 sprintf(
                     '%s%s%s%s%s%s',
@@ -184,10 +186,10 @@ namespace Nol\Database\Model {
          * @param int    $current_page The current page to display.
          * @param array  $args         The query arguments.
          *
-         * @throws DependencyException
          * @throws NotFoundException
          * @throws Kedavra
          *
+         * @throws DependencyException
          * @return string
          *
          */
@@ -196,10 +198,10 @@ namespace Nol\Database\Model {
             return $this->paginate(
                 $current_page,
                 (new Sql())
-                ->from($this->table())
-                ->for(app('connect')->env())
-                ->where($column, '!=', $expected)
-                ->get($args)
+                    ->from($this->table())
+                    ->for(app('connect')->env())
+                    ->where($column, '!=', $expected)
+                    ->get($args)
             );
         }
 
@@ -210,9 +212,9 @@ namespace Nol\Database\Model {
          * @param int $id The record identifier.
          *
          *
-         * @throws DependencyException
          * @throws NotFoundException
          * @throws Kedavra
+         * @throws DependencyException
          * @return array<StdClass>
          */
         final public function find(int $id): array
@@ -220,7 +222,7 @@ namespace Nol\Database\Model {
             return $this->from($this->table())
                 ->for(app('connect')->env())
                 ->where($this->from($this->table())
-                ->primary(), '=', $id)->get();
+                    ->primary(), '=', $id)->get();
         }
 
         /**

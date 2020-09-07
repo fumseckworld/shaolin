@@ -51,7 +51,7 @@ namespace Nol\Html\Form\Generator {
          */
         final public function open(string $action, string $method = 'POST', array $options = []): FormGenerator
         {
-            return $this->append(
+            return $this->begin()->append(
                 sprintf(
                     '<form action="%s" method="%s" %s>%s',
                     $action,
@@ -171,9 +171,22 @@ namespace Nol\Html\Form\Generator {
             return $this->append('<div class="' . app('form-row-classname') . '">');
         }
 
+
         /**
          *
-         * Close the div
+         * Start a form separator.
+         *
+         * @return FormGenerator
+         *
+         */
+        final public function begin(): FormGenerator
+        {
+            return $this->append('<div class="form-separator">');
+        }
+
+        /**
+         *
+         * Close the form separator div
          *
          * @return FormGenerator
          *
@@ -192,18 +205,30 @@ namespace Nol\Html\Form\Generator {
          * @throws DependencyException
          * @throws NotFoundException
          *
-         * @return string
+         * @return FormGenerator
          *
          */
-        final public function close(string $submit_text = 'submit'): string
+        final public function close(string $submit_text = 'submit'): FormGenerator
         {
-            $this->append(
+            return $this->append(
                 sprintf(
                     '<button type="submit" class="%s">%s</button></form>',
                     app('form-submit-classname'),
                     $submit_text
                 )
-            );
+            )->end();
+        }
+
+
+        /**
+         *
+         * Get all generated forms.
+         *
+         * @return string
+         *
+         */
+        public function get(): string
+        {
             return trim($this->form);
         }
 

@@ -16,11 +16,12 @@ namespace App\Search {
         public function form(FormGenerator $formGenerator): string
         {
             return $formGenerator
-                ->open('/')
-                ->select('value', ['sql' => 'select title from articles'])
-                ->select('value', ['sql' => 'select created_at from articles ORDER BY created_at desc'])
-                ->select('value', [], ['<js>alert(404)</js>', 'b'])
-                ->close('search');
+                ->open('/search')
+                ->select('created_at', [], [2020, 2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012])
+                ->close('watch')
+                ->open('/article')
+                ->select('title', ['sql' => 'select title from articles'])->close('show')
+                ->get();
         }
 
         /**

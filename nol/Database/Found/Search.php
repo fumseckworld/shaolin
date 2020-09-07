@@ -150,7 +150,6 @@ namespace Nol\Database\Found {
             )->for(function (stdClass $record) use ($global) {
                 return $this->each($record, $global);
             })->join('');
-
             return trim(
                 sprintf(
                     '%s%s%s%s%s%s%s',

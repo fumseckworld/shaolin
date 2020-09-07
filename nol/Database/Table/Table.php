@@ -101,34 +101,25 @@ namespace Nol\Database\Table {
         {
             $x = $this->connect;
             if (not_def($this->columns)) {
-                $fields = [];
                 switch ($x->driver()) {
                     case MYSQL:
-                        foreach ($x->get(sprintf('SHOW FULL COLUMNS  %s', $this->table)) as $column) {
-                            array_push($fields, $column->Field);
-                        }
+                        $this->columns = $x->get(sprintf('SHOW FULL COLUMNS %s', $this->table), [], PDO::FETCH_COLUMN);
                         break;
                     case POSTGRESQL:
-                        foreach (
-                            $x->get(
-                                sprintf(
-                                    "SELECT column_name FROM information_schema.columns WHERE table_name ='%s'",
-                                    $this->table
-                                )
-                            ) as $column
-                        ) {
-                            array_push($fields, $column->column_name);
-                        }
+                        $this->columns = $x->get(
+                            sprintf(
+                                "SELECT column_name FROM information_schema.columns WHERE table_name ='%s'",
+                                $this->table
+                            ),
+                            [],
+                            PDO::FETCH_COLUMN
+                        );
                         break;
                     case SQLITE:
-                        foreach ($x->get("PRAGMA table_info({$this->table})") as $column) {
-                            array_push($fields, $column->name);
-                        }
+                        $this->columns = $x->get("PRAGMA table_info({$this->table})", [], PDO::FETCH_COLUMN);
                         break;
                 }
-                $this->columns = $fields;
             }
-
             return $this->columns;
         }
 
@@ -153,10 +144,12 @@ namespace Nol\Database\Table {
         /**
          * @param string $table
          *
-         * @throws \DI\DependencyException
-         * @throws \DI\NotFoundException
-         * @throws \Nol\Exception\Kedavra
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @throws Kedavra
+         *
          * @return bool
+         *
          */
         final public function notExist(string $table): bool
         {

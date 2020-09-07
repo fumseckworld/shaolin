@@ -19,6 +19,7 @@ namespace Nol\Http\Controller {
     use Nol\Messages\Flash\Flash;
     use Nol\Security\Hashing\Hash;
     use Nol\Session\Session;
+    use stdClass;
 
     abstract class Controller
     {
@@ -56,14 +57,16 @@ namespace Nol\Http\Controller {
          */
         final public function table(string $table = ''): Table
         {
-            return def($table) ? (new Table($this->connect()))->from($table) : new Table($this->connect());
+            return def($table) ?
+                (new Table($this->connect()->env()))->from($table) :
+                new Table($this->connect()->env());
         }
 
         /**
          *
          * Generate the form.
          *
-         * @param string $form The form class name.
+         * @param class-string $form The form class name.
          *
          * @throws DependencyException
          * @throws NotFoundException
@@ -74,6 +77,42 @@ namespace Nol\Http\Controller {
         final public function form(string $form): string
         {
             return $this->app($form)->display();
+        }
+
+        /**
+         * @param string   $class
+         * @param stdClass $data
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @return string
+         */
+        final public function each(string $class, stdClass $data): string
+        {
+            return $this->app($class)->each($data, false);
+        }
+
+        /**
+         *
+         * Search the values in the table.
+         *
+         * @param class-string   $class     The search class.
+         * @param int            $page      The current page.
+         * @param string         ...$values The values to search.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return string
+         *
+         */
+        public function searchFormResults(string $class, int $page, string ...$values)
+        {
+            $html = '';
+            foreach ($values as $value) {
+                $html .= $this->search($class, $value, $page);
+            }
+            return $html;
         }
 
         /**

@@ -17,7 +17,7 @@ class FormTest extends Unit
      */
     public function testForm()
     {
-        $form = (new FormGenerator())->open('/')->close('envoyer');
+        $form = (new FormGenerator())->open('/')->close('envoyer')->get();
         $this->def($form)
             ->contains(
                 $form,

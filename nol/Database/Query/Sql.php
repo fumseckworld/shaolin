@@ -118,7 +118,7 @@ namespace Nol\Database\Query {
          */
         public function or(string $column, string $condition, $value): Sql
         {
-            $this->where .= sprintf(' OR %s %s %s', $column, html_entity_decode($condition), strval($value));
+            $this->where .= sprintf(' OR WHERE %s %s %s', $column, html_entity_decode($condition), strval($value));
             return $this;
         }
 
@@ -213,8 +213,8 @@ namespace Nol\Database\Query {
          * @param int   $output
          *
          * @throws DependencyException
-         * @throws NotFoundException
          * @throws Kedavra
+         * @throws NotFoundException
          * @return array
          */
         public function get(array $args = [], int $output = PDO::FETCH_OBJ): array
@@ -331,6 +331,8 @@ namespace Nol\Database\Query {
          */
         public function like($value): Sql
         {
+            $value = addslashes($value);
+            
             if ($this->connect->not('sqlite')) {
                 $columns = collect((new Table($this->connect))->from($this->from)->columns())->join();
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";

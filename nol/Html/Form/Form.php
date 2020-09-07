@@ -110,7 +110,7 @@ namespace Nol\Html\Form {
                     )->all()
                 );
             }
-            return $form->close(static::$submit);
+            return $form->close(static::$submit)->get();
         }
 
         /**
