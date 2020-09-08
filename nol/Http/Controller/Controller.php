@@ -7,6 +7,7 @@ namespace Nol\Http\Controller {
     use Nol\Collection\Collect;
     use Nol\Configuration\Config;
     use Nol\Database\Connection\Connect;
+    use Nol\Database\Model\Crud;
     use Nol\Database\Model\Model;
     use Nol\Database\Query\Sql;
     use Nol\Database\Table\Table;
@@ -41,6 +42,23 @@ namespace Nol\Http\Controller {
         final public function sql(string $table): Sql
         {
             return (new Sql())->for($this->connect())->from($table);
+        }
+
+        /**
+         *
+         * create read update or delete record.
+         *
+         * @param class-string $class
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Crud
+         *
+         */
+        final public function crud(string $class): Crud
+        {
+            return $this->app($class);
         }
 
         /**
@@ -97,8 +115,8 @@ namespace Nol\Http\Controller {
          * Search the values in the table.
          *
          * @param class-string   $class     The search class.
-         * @param int            $page      The current page.
-         * @param string         ...$values The values to search.
+         * @param int    $page      The current page.
+         * @param string ...$values The values to search.
          *
          * @throws DependencyException
          * @throws NotFoundException
