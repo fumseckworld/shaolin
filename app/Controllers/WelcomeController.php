@@ -2,12 +2,14 @@
 
 namespace App\Controllers {
 
+    use App\Models\Articles;
     use App\Search\ArticlesSearch;
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Collection\Collect;
     use Nol\Container\Ioc;
     use Nol\Database\Query\Sql;
+    use Nol\Exception\Kedavra;
     use Nol\Html\Form\Generator\FormGenerator;
     use Nol\Http\Controller\Controller;
     use Nol\Http\Request\Request;
@@ -52,15 +54,25 @@ namespace App\Controllers {
         }
 
         /**
+         *
          * @param Request $request
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws Kedavra
+         *
          * @return Response
+         *
          */
         final public function home(Request $request): Response
         {
-            return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial']);
+            $articles = $this->model(Articles::class)
+                ->different(
+                    'slug',
+                    'jeremy-labarbe-julien-martin-pays-soleil-levant',
+                    1
+                );
+            return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial'], compact('articles'));
         }
 
         /**

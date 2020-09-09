@@ -31,46 +31,28 @@ namespace Nol\Html\Pagination {
      * @author   Willy Micieli <fumseck@fumseck.org>
      * @version  12
      * @package  Imperium\Html\Pagination
+     *
+     * @property int $current The current page.
+     * @property int $limit   The per page limit.
+     * @property int $total   The sum of the elements.
+     * @property int $pages   The pages to create.
+     *
      */
     class Pagination
     {
 
         /**
          *
-         * The current page
-         *
-         */
-        private int $current_page;
-
-        /**
-         *
-         * The limit
-         *
-         */
-        private int $limit;
-
-        /**
-         *
-         * The total of records
-         *
-         */
-        private int $total;
-        private int $pages;
-
-        /**
-         *
          * @param int $current_page
          * @param int $limit
          * @param int $total
-         *
-         *
          */
         public function __construct(int $current_page, int $limit, int $total)
         {
+
             $limit = $limit === 0 ? 1 : $limit;
 
-            $this->current_page = $current_page;
-
+            $this->current = $current_page;
             $this->limit = $limit;
             $this->total = $total;
             $this->pages = intval(ceil($total / $limit));
@@ -90,7 +72,7 @@ namespace Nol\Html\Pagination {
          */
         public function render(array $prefix)
         {
-            $x = $this->current_page;
+            $x = $this->current;
             if ($x > $this->pages) {
                 return '';
             }

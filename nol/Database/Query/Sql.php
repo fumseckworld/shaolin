@@ -65,10 +65,10 @@ namespace Nol\Database\Query {
         {
             $condition = html_entity_decode($condition);
             $value = is_numeric($value) ? $value : $this->connect->pdo()->quote($value);
-            if (def($this->where)) {
-                $this->where .= sprintf(' AND WHERE %s %s %s', $column, $condition, strval($value));
-            } else {
+            if (empty($this->where)) {
                 $this->where = sprintf('WHERE %s %s %s', $column, $condition, strval($value));
+            } else {
+                $this->where .= sprintf(' AND WHERE %s %s %s', $column, $condition, strval($value));
             }
             return $this;
         }
@@ -172,13 +172,13 @@ namespace Nol\Database\Query {
          */
         public function sql(): string
         {
-            $where = def($this->where) ? $this->where : '';
-            $order = def($this->order) ? $this->order : '';
-            $table = def($this->from) ? $this->from : '';
-            $limit = def($this->limit) ? $this->limit : '';
-            $join = def($this->join) ? $this->join : '';
-            $union = def($this->union) ? $this->union : '';
-            $columns = def($this->columns) ? $this->columns : "*";
+            $where = empty($this->where) ? '' : $this->where;
+            $order = empty($this->order) ? '' : $this->order;
+            $table = empty($this->from) ? '' : $this->from;
+            $limit = empty($this->limit) ? '' : $this->limit;
+            $join = empty($this->join) ? '' : $this->join;
+            $union = empty($this->union) ? '' : $this->union;
+            $columns = empty($this->columns) ? '*' : $this->columns;
 
             if (def($this->join)) {
                 return sprintf(
@@ -246,7 +246,8 @@ namespace Nol\Database\Query {
             string $second_param,
             string $where = '',
             array $columns = []
-        ): Sql {
+        ): Sql
+        {
             $select = '';
             if (def($columns)) {
                 foreach ($columns as $column) {
@@ -271,10 +272,10 @@ namespace Nol\Database\Query {
                     $where
                 );
             }
-            if (def($this->join)) {
-                $this->join .= sprintf(' AND %s', $join);
-            } else {
+            if (empty($this->join)) {
                 $this->join = $join;
+            } else {
+                $this->join .= sprintf(' AND %s', $join);
             }
             return $this;
         }
@@ -297,7 +298,8 @@ namespace Nol\Database\Query {
             string $second_table,
             string $first_column,
             string $second_column
-        ): Sql {
+        ): Sql
+        {
             $first_select = def($first_column) ? $first_column : '*';
             $second_select = def($second_column) ? $second_column : '*';
             $union = sprintf(
@@ -308,10 +310,10 @@ namespace Nol\Database\Query {
                 $second_select,
                 $second_table
             );
-            if (def($this->union)) {
-                $this->union .= sprintf(' AND %s', $union);
-            } else {
+            if (empty($this->union)) {
                 $this->union = $union;
+            } else {
+                $this->union .= sprintf(' AND %s', $union);
             }
             return $this;
         }
@@ -332,7 +334,7 @@ namespace Nol\Database\Query {
         public function like($value): Sql
         {
             $value = addslashes($value);
-            
+
             if ($this->connect->not('sqlite')) {
                 $columns = collect((new Table($this->connect))->from($this->from)->columns())->join();
                 $this->where = "WHERE CONCAT($columns) LIKE '%$value%'";

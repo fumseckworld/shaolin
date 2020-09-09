@@ -21,7 +21,6 @@ namespace Nol\Database\Model {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Database\Query\Sql;
-    use Nol\Database\Table\Table;
     use Nol\Exception\Kedavra;
     use Nol\Html\Pagination\Pagination;
     use stdClass;
@@ -114,25 +113,44 @@ namespace Nol\Database\Model {
          */
         final public function search($value, int $current_page = 1): string
         {
-            $x = app('connect');
-            if ($x->mysql() || $x->postgresql()) {
-                $columns = join(', ', (new Table($x))->from($this->table())->columns());
-                $where = "WHERE CONCAT($columns) LIKE '%$value%'";
-            } else {
-                $fields = (new Table($x))->from($this->table())->columns();
-                $end = end($fields);
-                $columns = '';
-                foreach ($fields as $field) {
-                    if (strcmp($field, $end) != 0) {
-                        $columns .= "$field LIKE '%$value%' OR ";
-                    } else {
-                        $columns .= "$field LIKE '%$value%'";
-                    }
-                }
-                $where = "WHERE $columns";
-            }
+            $data = (new Sql())
+                ->from($this->table())
+                ->for(app('connect')->env())
+                ->like($value)
+                ->by((new Sql())->from($this->table())->for(app('connect')->env())->primary())
+                ->get();
 
-            return $this->paginate($current_page, $x->get(sprintf('SELECT * FROM %s %s', $this->table(), $where)));
+            $pagination = count($data) >= static::$limit ?
+                (new Pagination(
+                    $current_page,
+                    static::$limit,
+                    count($data)
+                ))->render([static::$table])
+                : '';
+
+            $content = collect(
+                (new Sql())
+                    ->from(static::$table)
+                    ->for(app('connect')->env())
+                    ->take(static::$limit, (($current_page) - 1) * static::$limit)
+                    ->by((new Sql())->from($this->table())->for(app('connect')->env())->primary())
+                    ->like($value)
+                    ->get()
+            )->for(function (stdClass $record) {
+                return $this->each($record);
+            })->join('');
+
+            return trim(
+                sprintf(
+                    '%s%s%s%s%s%s',
+                    static::$beforeContent,
+                    $content,
+                    static::$afterContent,
+                    static::$beforePagination,
+                    $pagination,
+                    static::$afterPagination
+                )
+            );
         }
 
         /**
@@ -142,25 +160,26 @@ namespace Nol\Database\Model {
          * @param int   $current_page The current page to display.
          * @param array $data         The data to paginate.
          *
+         * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
-         * @throws DependencyException
          *
          * @return string
          *
          */
         final public function paginate(int $current_page, array $data = []): string
         {
-            $sql = (new Sql())->from($this->table())->for(app('connect'));
-            $pagination = (new Pagination($current_page, static::$limit, $sql->sum()))->render([static::$table]);
 
-            if (def($data)) {
-                $records = $data;
-            } else {
-                $records = $sql->take(static::$limit, (($current_page) - 1) * static::$limit)
-                    ->by($sql->primary())->get();
-            }
-            $content = collect($records)->for(function (stdClass $record) {
+            $pagination = (new Pagination($current_page, static::$limit, count($data)))->render([static::$table]);
+
+            $content = collect(
+                (new Sql())
+                    ->from($this->table())
+                    ->for(app('connect')->env())
+                    ->take(static::$limit, (($current_page) - 1) * static::$limit)
+                    ->by((new Sql())->from($this->table())->for(app('connect')->env())->primary())
+                    ->get()
+            )->for(function (stdClass $record) {
                 return $this->each($record);
             })->join('');
 
@@ -201,6 +220,7 @@ namespace Nol\Database\Model {
                     ->from($this->table())
                     ->for(app('connect')->env())
                     ->where($column, '!=', $expected)
+                    ->by((new Sql())->from($this->table())->for(app('connect')->env())->primary())
                     ->get($args)
             );
         }
