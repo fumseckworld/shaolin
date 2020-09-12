@@ -172,15 +172,17 @@ namespace Nol\Database\Query {
          */
         public function sql(): string
         {
-            $where = empty($this->where) ? '' : $this->where;
-            $order = empty($this->order) ? '' : $this->order;
-            $table = empty($this->from) ? '' : $this->from;
-            $limit = empty($this->limit) ? '' : $this->limit;
-            $join = empty($this->join) ? '' : $this->join;
-            $union = empty($this->union) ? '' : $this->union;
+
+
+            $where = $this->where ??  '';
+            $order = $this->order ??  '';
+            $table = $this->from ??  '';
+            $limit = $this->limit ??  '';
+            $join = $this->join ??  '';
+            $union = $this->union ??  '';
             $columns = empty($this->columns) ? '*' : $this->columns;
 
-            if (def($this->join)) {
+            if (def($join)) {
                 return sprintf(
                     'SELECT %s %s %s %s %s',
                     $columns,
@@ -189,7 +191,7 @@ namespace Nol\Database\Query {
                     $order,
                     $limit
                 );
-            } elseif (def($this->union)) {
+            } elseif (def($union)) {
                 return sprintf(
                     '%s %s %s %s',
                     $union,
@@ -246,8 +248,7 @@ namespace Nol\Database\Query {
             string $second_param,
             string $where = '',
             array $columns = []
-        ): Sql
-        {
+        ): Sql {
             $select = '';
             if (def($columns)) {
                 foreach ($columns as $column) {
@@ -298,8 +299,7 @@ namespace Nol\Database\Query {
             string $second_table,
             string $first_column,
             string $second_column
-        ): Sql
-        {
+        ): Sql {
             $first_select = def($first_column) ? $first_column : '*';
             $second_select = def($second_column) ? $second_column : '*';
             $union = sprintf(

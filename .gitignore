@@ -5,7 +5,6 @@ vendor
 .env
 coverage
 *.key
-*.db
 doc
 wanted
 .php_cs.cache

@@ -2,6 +2,7 @@
 
 use Nol\Collection\Collect;
 use Nol\Http\Request\Request;
+use Whoops\Run;
 
 if (!function_exists('url')) {
 
@@ -28,6 +29,19 @@ if (!function_exists('url')) {
     }
 }
 
+if (!function_exists('display_error')) {
+
+
+    function display_error(): ?Run
+    {
+        if (app('debug')) {
+            $whoops = new Run();
+            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+            return $whoops->register();
+        }
+        return null;
+    }
+}
 if (!function_exists('cli')) {
 
     /**

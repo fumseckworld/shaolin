@@ -66,13 +66,7 @@ namespace App\Controllers {
          */
         final public function home(Request $request): Response
         {
-            $articles = $this->model(Articles::class)
-                ->different(
-                    'slug',
-                    'jeremy-labarbe-julien-martin-pays-soleil-levant',
-                    1
-                );
-            return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial'], compact('articles'));
+            return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial']);
         }
 
         /**

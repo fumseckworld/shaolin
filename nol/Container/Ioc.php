@@ -1,5 +1,7 @@
 <?php
 
+/** @noinspection PhpExpressionResultUnusedInspection */
+
 /**
  * Copyright (C) <2020>  <Willy Micieli>
  *
@@ -60,12 +62,12 @@ namespace Nol\Container {
          *
          * @param string $key The container key.
          *
-         * @throws NotFoundException
+         * @return mixed
+         *
          * @throws Exception
          * @throws DependencyException
          *
-         * @return mixed
-         *
+         * @throws NotFoundException
          */
         final public function get(string $key)
         {
@@ -76,12 +78,12 @@ namespace Nol\Container {
          *
          * Define an object or a value in the container.
          *
-         * @param string $key   The container key.
-         * @param mixed  $value The container value.
-         *
-         * @throws Exception
+         * @param string $key The container key.
+         * @param mixed $value The container value.
          *
          * @return Ioc
+         *
+         * @throws Exception
          *
          */
         final public function set(string $key, $value): Ioc
@@ -97,11 +99,11 @@ namespace Nol\Container {
          * Missing parameters will be resolved from the container.
          *
          * @param Closure $callback The callback to call.
-         * @param array   $args     The callback arguments.
-         *
-         * @throws Exception
+         * @param array $args The callback arguments.
          *
          * @return mixed
+         *
+         * @throws Exception
          *
          */
         final public function call(Closure $callback, array $args = [])
@@ -113,16 +115,16 @@ namespace Nol\Container {
          *
          * Make always a new instance
          *
-         * @param string $key  The container key.
-         * @param array  $args All parameters.
+         * @param string $key The container key.
+         * @param array $args All parameters.
          *
-         * @throws DependencyException Error while resolving the entry.
+         * @return object
+         *
          * @throws NotFoundException No entry found for the given name.
          * @throws Exception
          * @throws InvalidArgumentException The name parameter must be of type string.
          *
-         * @return object
-         *
+         * @throws DependencyException Error while resolving the entry.
          */
         final public function make(string $key, array $args = []): object
         {
@@ -136,9 +138,9 @@ namespace Nol\Container {
          *
          * @param string $key The key to check
          *
-         * @throws Exception
-         *
          * @return boolean
+         *
+         * @throws Exception
          *
          */
         final public function has(string $key): bool
@@ -150,10 +152,10 @@ namespace Nol\Container {
          *
          * Return the instance of the container.
          *
+         * @return Container
          * @throws Exception
          *
-         **@return Container
-         */
+         **/
         final public function ioc(): Container
         {
             return $this->container();
@@ -163,9 +165,9 @@ namespace Nol\Container {
          *
          * Build the container.
          *
-         * @throws Exception
-         *
          * @return  Container
+         *
+         * @throws Exception
          *
          */
         final private function container(): Container
@@ -192,6 +194,9 @@ namespace Nol\Container {
                 $c->set('connect', (new Connect()));
                 $c->set('env', new Env());
                 $c->set('cache', new ZenCache());
+
+                $c->set('debug', strcmp(strval((new Env())->get('DEBUG', 'false')), 'true') === 0);
+
                 $c->set('session', new Session());
 
                 $c->set('web', (new Sql())->for(connect('sqlite', base('routes', 'web.db')))->from('routes'));
