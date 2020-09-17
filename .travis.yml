@@ -9,6 +9,7 @@ php:
   - 7.4.7
   - 7.4.8
   - 7.4.9
+  - 7.4.10
 
 branches:
   only:
@@ -33,7 +34,8 @@ install:
   - cp .env.example .env
 
 before_script:
-  - mysql -e 'CREATE DATABASE eywa;'
-  - psql -c 'create database eywa;' -U postgres
+  - mysql -e 'CREATE DATABASE nol;'
+  - mysql -u root nol < nol.sql
+  - psql -c 'create database nol;' -U postgres
 script:
   - ./vendor/bin/grumphp run

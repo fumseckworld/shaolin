@@ -22,6 +22,9 @@ namespace Nol\Testing {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Nol\Database\Found\Search;
+    use Nol\Database\Model\Model;
+    use Nol\Database\Query\Sql;
     use Nol\Exception\Kedavra;
     use Nol\Http\Response\JsonResponse;
     use Nol\Http\Response\Response;
@@ -57,6 +60,71 @@ namespace Nol\Testing {
                 $this->assertNull($value, _('The data are not equal to null'));
             }
             return $this;
+        }
+
+        /**
+         * @param string $key
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return mixed
+         *
+         */
+        final public function app(string $key)
+        {
+            return app($key);
+        }
+
+        /**
+         *
+         * Get an instance of a model.
+         *
+         * @param class-string $class The model to load
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Model
+         *
+         */
+        final public function model(string $class): Model
+        {
+            return $this->app($class);
+        }
+
+        /**
+         *
+         * Get an instance of the query builder.
+         *
+         * @param string $table The table name.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Sql
+         *
+         */
+        final public function sql(string $table): Sql
+        {
+            return (new Sql())->from($table)->for($this->app('connect')->env());
+        }
+
+        /**
+         *
+         * Get an instance of a search class.
+         *
+         * @param class-string $class The search class name.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Search
+         *
+         */
+        final public function search(string $class): Search
+        {
+            return $this->app($class);
         }
 
         /**
@@ -138,12 +206,12 @@ namespace Nol\Testing {
          * @param string $url    the url to visit.
          * @param string $method The http method to access at the page.
          *
-         * @throws DependencyException
          * @throws NotFoundException
          * @throws Exception
          *
          * @throws DependencyException
          * @throws NotFoundException
+         * @throws DependencyException
          * @return Response
          *
          */
