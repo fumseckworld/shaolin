@@ -46,7 +46,7 @@ class UsersCrud extends Crud
     /**
      * @inheritDoc
      */
-    public static function each(stdClass $record): string
+    public function each(stdClass $record): string
     {
         return '';
     }
