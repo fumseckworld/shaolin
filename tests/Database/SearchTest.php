@@ -9,7 +9,7 @@ use stdClass;
 
 class SearchTest extends Unit
 {
-
+    
     public function testSuccess()
     {
         $record = new StdClass();
