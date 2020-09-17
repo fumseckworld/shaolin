@@ -2,14 +2,12 @@
 
 namespace App\Controllers {
 
-    use App\Models\Articles;
     use App\Search\ArticlesSearch;
     use DI\DependencyException;
     use DI\NotFoundException;
     use Nol\Collection\Collect;
     use Nol\Container\Ioc;
     use Nol\Database\Query\Sql;
-    use Nol\Exception\Kedavra;
     use Nol\Html\Form\Generator\FormGenerator;
     use Nol\Http\Controller\Controller;
     use Nol\Http\Request\Request;
@@ -59,7 +57,6 @@ namespace App\Controllers {
          *
          * @throws DependencyException
          * @throws NotFoundException
-         * @throws Kedavra
          *
          * @return Response
          *
@@ -95,9 +92,23 @@ namespace App\Controllers {
             );
         }
 
+        /**
+         * @param Request $request
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         * @return Response
+         */
         public function readArticles(Request $request): Response
         {
-            $article = $this->search(ArticlesSearch::class, $request->request()->get('title'));
+            $article = $this->whereAndDifferent(
+                ArticlesSearch::class,
+                $request->request()->get('title'),
+                'title',
+                'Your article',
+                'Others articles',
+                $request->args()->int('page', 1)
+            );
             return $this->view('show', 'read', 'read and article', ['article', 'read'], compact('article'));
         }
 

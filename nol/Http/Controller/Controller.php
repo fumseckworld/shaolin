@@ -352,6 +352,39 @@ namespace Nol\Http\Controller {
 
         /**
          *
+         * @param string $class
+         * @param string $value
+         * @param string $column
+         * @param string $resultsTitle
+         * @param string $differentTitle
+         * @param int    $page
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return string
+         *
+         */
+        final public function whereAndDifferent(
+            string $class,
+            string $value,
+            string $column,
+            string $resultsTitle,
+            string $differentTitle,
+            int $page
+        ): string {
+            return $this->app($class)->whereAndDifferent(
+                $value,
+                $column,
+                $resultsTitle,
+                $differentTitle,
+                $this->connect()->env(),
+                $page
+            );
+        }
+
+        /**
+         *
          * Get the generated form for search a value.
          *
          * @param string $class The search class.

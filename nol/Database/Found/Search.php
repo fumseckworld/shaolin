@@ -111,22 +111,97 @@ namespace Nol\Database\Found {
         abstract public function each(stdClass $record, bool $global): string;
 
         /**
-         *
-         * Search the value and return all results with a pagination.
-         *
-         * @param mixed   $value        The value to search.
-         * @param Connect $connect      The selected database.
-         * @param int     $current_page The current page to display.
+         * @param string  $value
+         * @param string  $column
+         * @param string  $resultsTitle
+         * @param string  $differentTitle
+         * @param Connect $connect
+         * @param int     $current_page
          *
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
          * @throws ReflectionException
-         *
          * @return string
-         *
          */
-        final public function search($value, Connect $connect, int $current_page = 1): string
+        final public function whereAndDifferent(
+            string $value,
+            string $column,
+            string $resultsTitle,
+            string $differentTitle,
+            Connect $connect,
+            int $current_page = 1
+        ): string {
+            return sprintf(
+                '<section><h1>%s</h1>%s</section><section><h2>%s</h2>%s</section></div>',
+                $resultsTitle,
+                $this->search($value, $connect, $current_page),
+                $differentTitle,
+                $this->different($column, $value, $connect, $current_page)
+            );
+        }
+
+        /**
+         * @param string  $column
+         * @param string  $value
+         * @param Connect $connect
+         * @param int     $current_page
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         * @throws ReflectionException
+         * @return string
+         */
+        final public function different(string $column, string $value, Connect $connect, int $current_page = 1): string
+        {
+            $global = not_def(static::$table);
+
+            $records = $global ? $this->global($value, $connect) : $this->from($value, $connect);
+
+            $pagination = new Pagination(
+                $current_page,
+                static::$limit,
+                count($records)
+            );
+
+            $content = collect(
+                (new Sql())
+                    ->from(static::$table)
+                    ->for($connect)
+                    ->take(static::$limit, (($current_page) - 1) * static::$limit)
+                    ->by((new Sql())->from(static::$table)->for($connect)->primary())
+                    ->where($column, '!=', $value)
+                    ->get()
+            )->for(function (stdClass $record) use ($global) {
+                return $this->each($record, $global);
+            })->join('');
+            return trim(
+                sprintf(
+                    '%s%s%s%s%s%s%s',
+                    static::$beforeContent,
+                    $pagination->found(),
+                    $content,
+                    static::$afterContent,
+                    static::$beforePagination,
+                    $pagination->render([static::$prefix, $value]),
+                    static::$afterPagination
+                )
+            );
+        }
+
+        /**
+         * @param string  $value
+         * @param Connect $connect
+         * @param int     $current_page
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         * @throws ReflectionException
+         * @return string
+         */
+        final public function search(string $value, Connect $connect, int $current_page = 1): string
         {
 
             $global = not_def(static::$table);
