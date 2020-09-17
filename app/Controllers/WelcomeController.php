@@ -103,8 +103,8 @@ namespace App\Controllers {
         {
             $article = $this->whereAndDifferent(
                 ArticlesSearch::class,
-                $request->request()->get('title'),
-                'title',
+                $request->args()->get('slug'),
+                'slug',
                 'Your article',
                 'Others articles',
                 $request->args()->int('page', 1)

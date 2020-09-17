@@ -133,9 +133,9 @@ namespace Nol\Database\Found {
             int $current_page = 1
         ): string {
             return sprintf(
-                '<section><h1>%s</h1>%s</section><section><h2>%s</h2>%s</section></div>',
+                '<section><h1>%s</h1>%s</section><section><h2>%s</h2>%s</section>',
                 $resultsTitle,
-                $this->search($value, $connect, $current_page),
+                $this->search($value, $connect, 1),
                 $differentTitle,
                 $this->different($column, $value, $connect, $current_page)
             );
@@ -150,14 +150,17 @@ namespace Nol\Database\Found {
          * @throws DependencyException
          * @throws Kedavra
          * @throws NotFoundException
-         * @throws ReflectionException
          * @return string
          */
         final public function different(string $column, string $value, Connect $connect, int $current_page = 1): string
         {
             $global = not_def(static::$table);
 
-            $records = $global ? $this->global($value, $connect) : $this->from($value, $connect);
+            $records = (new Sql())
+                ->from(static::$table)
+                ->for(app('connect')->env())
+                ->where($column, '!=', $value)
+                ->get();
 
             $pagination = new Pagination(
                 $current_page,

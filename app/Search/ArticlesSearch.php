@@ -10,6 +10,8 @@ namespace App\Search {
     {
         protected static string $table = 'articles';
 
+        protected static string $prefix = 'article';
+
         /**
          * @inheritDoc
          */
