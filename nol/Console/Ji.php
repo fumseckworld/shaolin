@@ -26,6 +26,11 @@ namespace Nol\Console {
         public function __construct(string $name, string $version)
         {
             $this->app = new Application($name, $version);
+
+            $ji = [
+                new Server()
+            ];
+            $this->add($ji);
         }
 
         /**
@@ -57,10 +62,6 @@ namespace Nol\Console {
          */
         final public function run(): int
         {
-            $ji = [
-                new Server()
-            ];
-            $this->add($ji);
             return $this->app->run();
         }
     }

@@ -22,6 +22,7 @@ namespace Nol\Testing {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Nol\Database\Connection\Connect;
     use Nol\Database\Found\Search;
     use Nol\Database\Model\Model;
     use Nol\Database\Query\Sql;
@@ -74,6 +75,21 @@ namespace Nol\Testing {
         final public function app(string $key)
         {
             return app($key);
+        }
+
+        /**
+         *
+         * Get an instance of connect class
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return Connect
+         *
+         */
+        final public function connect(): Connect
+        {
+            return $this->app('connect')->env();
         }
 
         /**

@@ -222,6 +222,7 @@ namespace Nol\Container {
                 $c->set('base-namespace', nol('base-namespace', 'Evolution'));
 
                 $c->set('tests-namespace', nol('tests-namespace', 'Testing'));
+
                 $c->set('server-port', nol('server-port', '3000'));
 
                 $c->set('form-submit-classname', nol('form-submit-classname', 'form-button form-submit'));
@@ -306,10 +307,10 @@ namespace Nol\Container {
                 );
 
                 $c->set(
-                    'consoles-dirname',
+                    'console-dirname',
                     nol(
                         'app-consoles-directory',
-                        'Consoles'
+                        'Console'
                     )
                 );
 
@@ -370,7 +371,7 @@ namespace Nol\Container {
 
                 $c->set('forms-path', base($c->get('app-directory'), $c->get('forms-dirname')));
 
-                $c->set('consoles-path', base($c->get('app-directory'), $c->get('consoles-dirname')));
+                $c->set('console-path', base($c->get('app-directory'), $c->get('console-dirname')));
 
                 $c->set('validators-path', base($c->get('app-directory'), $c->get('validators-dirname')));
 

@@ -19,6 +19,7 @@ use DI\DependencyException;
 use DI\NotFoundException;
 use Nol\Configuration\Config;
 use Nol\Configuration\Personalization\Nol;
+use Nol\Console\Ji;
 use Nol\Container\Ioc;
 use Nol\Database\Connection\Connect;
 use Nol\Exception\Kedavra;
@@ -64,6 +65,51 @@ if (!function_exists('validator_messages')) {
     }
 }
 
+if (!function_exists('ji')) {
+    /**
+     *
+     * Console commands
+     *
+     * @param string $name    The application name
+     * @param string $version The application version
+     *
+     * @throws Exception
+     * @return int
+     */
+    function ji(string $name, string $version): int
+    {
+        return (new Ji($name, $version))->add(commands())->run();
+    }
+}
+
+if (!function_exists('commands')) {
+
+    /**
+     * @throws DependencyException
+     * @throws NotFoundException
+     * @return array
+     */
+    function commands(): array
+    {
+        return collect(
+            array_merge(
+                files(
+                    app('console-path') . '*.php'
+                ),
+                files(app('console-path') . '*/*.php')
+            )
+        )->for(function ($x) {
+            $class = str_replace(
+                strval(app('app-directory')),
+                strval(app('app-namespace')),
+                strval(collect(
+                    explode('.', str_replace(DIRECTORY_SEPARATOR, '\\', strval(strstr($x, app('app-directory')))))
+                )->first())
+            );
+            return new $class();
+        })->all();
+    }
+}
 if (!function_exists('class_to_array')) {
 
     /**
