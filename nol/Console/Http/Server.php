@@ -29,21 +29,19 @@ namespace Nol\Console\Http {
          */
         protected function execute(InputInterface $input, OutputInterface $output)
         {
+            $dir = app('app-directory');
             $x = Process::fromShellCommandline(
                 sprintf(
-                    'php -S localhost:%s -t %s',
-                    app('server-port'),
-                    app('public-dirname')
+                    'browser-sync start --proxy "%s" --files "%s/**/*.php"',
+                    app('hostname'),
+                    $dir,
                 )
             );
 
             $x->setTimeout(null)->setIdleTimeout(null)->enableOutput();
             $io = new SymfonyStyle($input, $output);
             $io->success(
-                sprintf(
-                    'Your website is now accessible at the url : http://localhost:%s',
-                    app('server-port')
-                )
+                'Your website is now accessible at the url : http://localhost:3000',
             );
             return $x->run();
         }

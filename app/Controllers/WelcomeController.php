@@ -63,7 +63,7 @@ namespace App\Controllers {
          */
         final public function home(Request $request): Response
         {
-            return $this->view('home', 'welcome', 'a super website', ['judo', 'art martial']);
+            return $this->view('home', 'Welcome', 'a super website', ['judo', 'art martial']);
         }
 
         /**

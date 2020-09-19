@@ -11,7 +11,7 @@ class LoginForm extends Form
         'email' => 'type:email | label:email | required | email | max:255 | min:2',
         'password' => 'type:password | label:%s | required | max:255 | min:8'
     ];
-    
+
     protected static string $action = '/';
     
     protected static string $redirect = "/";

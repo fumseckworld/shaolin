@@ -62,12 +62,12 @@ namespace Nol\Container {
          *
          * @param string $key The container key.
          *
-         * @return mixed
-         *
          * @throws Exception
          * @throws DependencyException
          *
          * @throws NotFoundException
+         * @return mixed
+         *
          */
         final public function get(string $key)
         {
@@ -78,12 +78,12 @@ namespace Nol\Container {
          *
          * Define an object or a value in the container.
          *
-         * @param string $key The container key.
-         * @param mixed $value The container value.
-         *
-         * @return Ioc
+         * @param string $key   The container key.
+         * @param mixed  $value The container value.
          *
          * @throws Exception
+         *
+         * @return Ioc
          *
          */
         final public function set(string $key, $value): Ioc
@@ -99,11 +99,11 @@ namespace Nol\Container {
          * Missing parameters will be resolved from the container.
          *
          * @param Closure $callback The callback to call.
-         * @param array $args The callback arguments.
-         *
-         * @return mixed
+         * @param array   $args     The callback arguments.
          *
          * @throws Exception
+         *
+         * @return mixed
          *
          */
         final public function call(Closure $callback, array $args = [])
@@ -115,16 +115,16 @@ namespace Nol\Container {
          *
          * Make always a new instance
          *
-         * @param string $key The container key.
-         * @param array $args All parameters.
-         *
-         * @return object
+         * @param string $key  The container key.
+         * @param array  $args All parameters.
          *
          * @throws NotFoundException No entry found for the given name.
          * @throws Exception
          * @throws InvalidArgumentException The name parameter must be of type string.
          *
          * @throws DependencyException Error while resolving the entry.
+         * @return object
+         *
          */
         final public function make(string $key, array $args = []): object
         {
@@ -138,9 +138,9 @@ namespace Nol\Container {
          *
          * @param string $key The key to check
          *
-         * @return boolean
-         *
          * @throws Exception
+         *
+         * @return boolean
          *
          */
         final public function has(string $key): bool
@@ -152,10 +152,10 @@ namespace Nol\Container {
          *
          * Return the instance of the container.
          *
-         * @return Container
          * @throws Exception
          *
-         **/
+         **@return Container
+         */
         final public function ioc(): Container
         {
             return $this->container();
@@ -165,9 +165,9 @@ namespace Nol\Container {
          *
          * Build the container.
          *
-         * @return  Container
-         *
          * @throws Exception
+         *
+         * @return  Container
          *
          */
         final private function container(): Container
@@ -200,12 +200,18 @@ namespace Nol\Container {
                 $c->set('session', new Session());
 
                 $c->set('web', (new Sql())->for(connect('sqlite', base('routes', 'web.db')))->from('routes'));
+
                 $c->set('todo', (new Sql())->for(connect('sqlite', base('routes', 'todo.db')))->from('routes'));
+
                 $c->set('admin', (new Sql())->for(connect('sqlite', base('routes', 'admin.db')))->from('routes'));
 
                 $c->set('app-directory', nol('app-directory', 'app'));
+
                 $c->set('pagination-results-text', nol('pagination-results-text', 'records has been found'));
+
                 $c->set('pagination-class', nol('pagination-class', 'pagination'));
+
+                $c->set('hostname', nol('hostname', 'nol.ji'));
 
                 $c->set('views-directory', nol('views-directory', 'Views'));
 
