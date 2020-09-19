@@ -2,6 +2,7 @@
 
 use Nol\Collection\Collect;
 use Nol\Http\Request\Request;
+use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
 if (!function_exists('url')) {
@@ -36,7 +37,7 @@ if (!function_exists('display_error')) {
     {
         if (app('debug')) {
             $whoops = new Run();
-            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+            $whoops->pushHandler(new PrettyPageHandler());
             return $whoops->register();
         }
         return null;

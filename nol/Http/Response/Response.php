@@ -26,6 +26,7 @@ namespace Nol\Http\Response {
     use Nol\Exception\Kedavra;
     use Nol\Http\Request\ServerRequest;
     use Nol\Http\Routing\Router;
+    use Whoops\Run;
 
     /**
      *
@@ -169,14 +170,15 @@ namespace Nol\Http\Response {
         }
 
         /**
+         * @throws Kedavra
          * @return Response
          */
         public function get(): Response
         {
             try {
                 return (new Router($this->request, strval(env('MODE', 'site'))))->run();
-            } catch (NotFoundException | DependencyException | Exception $e) {
-                return (new Response())->set($e->getMessage(), 404)->send();
+            } catch (NotFoundException | DependencyException | Exception | Kedavra $e) {
+                return (new Response())->set($e->getMessage(), 500)->send();
             }
         }
 
@@ -231,11 +233,13 @@ namespace Nol\Http\Response {
          *
          * Send the response at the browser.
          *
-         * @return Response
-         *
+         * @throws Kedavra
          */
         public function send(): Response
         {
+            if (display_error() instanceof Run && !$this->ok() && ! $this->redirect()) {
+                throw new Kedavra($this->content());
+            }
             return $this->sendHeaders()->sendContent();
         }
 
@@ -346,8 +350,6 @@ namespace Nol\Http\Response {
         /**
          *
          * Display the content of the response.
-         *
-         * @return Response
          *
          */
         public function sendContent(): Response
