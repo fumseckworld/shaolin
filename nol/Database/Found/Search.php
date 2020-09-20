@@ -20,6 +20,7 @@ namespace Nol\Database\Found {
 
     use DI\DependencyException;
     use DI\NotFoundException;
+    use Exception;
     use Nol\Database\Connection\Connect;
     use Nol\Database\Query\Sql;
     use Nol\Exception\Kedavra;
@@ -92,6 +93,8 @@ namespace Nol\Database\Found {
          * Generate the search form.
          *
          * @param FormGenerator $formGenerator
+         *
+         * @throws Exception
          *
          * @return string
          *

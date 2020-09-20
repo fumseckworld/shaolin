@@ -147,6 +147,8 @@ namespace Nol\Http\Response {
 
         /**
          *
+         * Generate a response from a global or cli request
+         *
          * @param string $from   The response from global or from cli.
          * @param string $url    The request url.
          * @param string $method The request method.
@@ -170,10 +172,15 @@ namespace Nol\Http\Response {
         }
 
         /**
+         *
+         * Get the response
+         *
          * @throws Kedavra
+         *
          * @return Response
+         *
          */
-        public function get(): Response
+        final public function get(): Response
         {
             try {
                 return (new Router($this->request, strval(env('MODE', 'site'))))->run();
@@ -192,9 +199,9 @@ namespace Nol\Http\Response {
          * @return integer
          *
          */
-        public function calc(string $tag): int
+        final public function calc(string $tag): int
         {
-            return substr_count($this->content, $tag);
+            return substr_count($this->content(), $tag);
         }
 
         /**
@@ -206,9 +213,9 @@ namespace Nol\Http\Response {
          * @return boolean
          *
          */
-        public function see(string $value): bool
+        final public function see(string $value): bool
         {
-            return def(strstr($this->content, $value));
+            return def(strstr($this->content(), $value));
         }
 
         /**
@@ -222,7 +229,7 @@ namespace Nol\Http\Response {
          * @return boolean
          *
          */
-        public function to(string $url): bool
+        final public function to(string $url): bool
         {
             return strcmp($this->url, $url) === 0;
         }
@@ -234,10 +241,14 @@ namespace Nol\Http\Response {
          * Send the response at the browser.
          *
          * @throws Kedavra
+         *
+         * @return Response
+         *
+         *
          */
-        public function send(): Response
+        final public function send(): Response
         {
-            if (display_error() instanceof Run && !$this->ok() && ! $this->redirect()) {
+            if (display_error() instanceof Run && !$this->ok() && !$this->redirect()) {
                 throw new Kedavra($this->content());
             }
             return $this->sendHeaders()->sendContent();
@@ -250,7 +261,7 @@ namespace Nol\Http\Response {
          * @return string
          *
          */
-        public function content(): string
+        final public function content(): string
         {
             return $this->content;
         }
@@ -262,7 +273,7 @@ namespace Nol\Http\Response {
          * @return integer
          *
          */
-        public function status(): int
+        final public function status(): int
         {
             return $this->status;
         }
@@ -271,12 +282,12 @@ namespace Nol\Http\Response {
          *
          * Check the response status code
          *
-         * @param int $status
+         * @param int $status The status code to check.
          *
          * @return boolean
          *
          */
-        public function code(int $status): bool
+        final public function code(int $status): bool
         {
             return $this->status === $status;
         }
@@ -290,7 +301,7 @@ namespace Nol\Http\Response {
          * @return boolean
          *
          */
-        public function ok(): bool
+        final public function ok(): bool
         {
             return $this->status >= 200 && $this->status < 300;
         }
@@ -302,7 +313,7 @@ namespace Nol\Http\Response {
          * @return boolean
          *
          */
-        public function redirect(): bool
+        final public function redirect(): bool
         {
             return $this->status >= 300 && $this->status < 400;
         }
@@ -314,7 +325,7 @@ namespace Nol\Http\Response {
          * @return bool
          *
          */
-        public function forbidden(): bool
+        final public function forbidden(): bool
         {
             return $this->status == 403;
         }
@@ -326,7 +337,7 @@ namespace Nol\Http\Response {
          * @return bool
          *
          */
-        public function error(): bool
+        final public function error(): bool
         {
             return $this->status == 404;
         }
@@ -340,7 +351,7 @@ namespace Nol\Http\Response {
          * @return Response
          *
          */
-        public function setUrl(string $url): Response
+        final public function setUrl(string $url): Response
         {
             $this->url = def($url) ? $url : '';
 
@@ -352,7 +363,7 @@ namespace Nol\Http\Response {
          * Display the content of the response.
          *
          */
-        public function sendContent(): Response
+        final public function sendContent(): Response
         {
             if (not_cli()) {
                 echo $this->content();
@@ -369,7 +380,7 @@ namespace Nol\Http\Response {
          * @return Response
          *
          */
-        public function setHeaders(array $headers): Response
+        final public function setHeaders(array $headers): Response
         {
             $this->headers = $headers;
 
@@ -379,14 +390,13 @@ namespace Nol\Http\Response {
         /**
          *
          * Set the response status code.
-         *²
          *
          * @param int $status The response status code.
          *
          * @return Response
          *
          */
-        public function setStatus(int $status): Response
+        final public function setStatus(int $status): Response
         {
 
             $this->status = $status;
@@ -403,7 +413,7 @@ namespace Nol\Http\Response {
          * @return Response
          *
          */
-        public function setContent(string $content): Response
+        final public function setContent(string $content): Response
         {
             $this->content = $content;
 
@@ -417,7 +427,7 @@ namespace Nol\Http\Response {
          * @return Response
          *
          */
-        public function sendHeaders(): Response
+        final public function sendHeaders(): Response
         {
             // headers have already been sent by the developer
             if (headers_sent()) {
