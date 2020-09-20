@@ -1,0 +1,41 @@
+language: php
+
+php:
+  - 7.4.2
+  - 7.4.3
+  - 7.4.4
+  - 7.4.5
+  - 7.4.6
+  - 7.4.7
+  - 7.4.8
+  - 7.4.9
+  - 7.4.10
+
+branches:
+  only:
+  - omaticayas
+  - pandora
+os:
+  - linux
+
+before_install:
+  - sudo apt-get update &&  sudo apt-get install -y mysql-server redis-server php-redis php-mysql php-pgsql php-sqlite3 composer sqlite3 apache2 php php-apcu gettext php-gettext php-enchant php-memcached  php-curl php-mbstring openssl php-intl php-gd
+  - phpenv config-add php.ini
+addons:
+  postgresql: '9.4'
+
+services:
+  - mysql
+  - postgresql
+  - redis-server
+
+install:  
+  - composer install
+  - cp .env.example .env
+
+before_script:
+  - mysql -e 'CREATE DATABASE nol;'
+  - mysql -u root nol < nol.sql
+  - psql -c 'create database nol;' -U postgres
+script:
+  - ./vendor/bin/grumphp run

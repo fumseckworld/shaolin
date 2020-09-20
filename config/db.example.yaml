@@ -1,9 +1,0 @@
-driver: mysql
-base: imperium
-username: root
-password: root
-dump: dump
-host: localhost
-port: 3306
-hidden_tables:
-  - migrations

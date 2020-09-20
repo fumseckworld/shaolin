@@ -1,0 +1,12 @@
+watch:
+  directories:
+    - nol
+    - tests
+  fileMask: '*.php'
+notifications:
+  passingTests: false
+  failingTests: false
+phpunit:
+  binaryPath: vendor/bin/phpunit
+  arguments: '--stop-on-failure  --stop-on-error   --stop-on-warning   --stop-on-risky   --stop-on-skipped --stop-on-incomplete'
+  timeout: 180

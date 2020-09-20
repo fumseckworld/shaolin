@@ -1,9 +1,0 @@
-namespaces:
-
-config:
-  cache: 'cache'
-  charset: 'utf-8'
-  auto_reload: true
-  debug: false
-  strict_variables: true
-development: true

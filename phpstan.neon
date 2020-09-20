@@ -1,0 +1,9 @@
+parameters:
+  level: 8
+  paths:
+    - nol
+    - helpers
+  excludes_analyse:
+      - tests/*
+  checkMissingIterableValueType: false
+  checkGenericClassInNonGenericObjectType: false

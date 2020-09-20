@@ -1,8 +1,0 @@
-todo_not_created: 'The task has not been created'
-todo_created: 'The task has been created'
-todo_updated: 'The task has been updated'
-todo_not_updated: 'The task has not been updated'
-toto_not_close: 'The task has not been closed'
-toto_closed: 'The task is now closed'
-task_name: 'The name of the task'
-task_description: 'Describe the task to to'
