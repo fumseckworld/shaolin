@@ -4,6 +4,7 @@ namespace Nol\Console {
 
     use Exception;
     use Nol\Console\Http\Server;
+    use Nol\Console\Make\GenerateDkimKey;
     use Symfony\Component\Console\Application;
 
     /**
@@ -28,7 +29,8 @@ namespace Nol\Console {
             $this->app = new Application($name, $version);
 
             $ji = [
-                new Server()
+                new Server(),
+                new GenerateDkimKey()
             ];
             $this->add($ji);
         }

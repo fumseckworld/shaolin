@@ -1,1 +1,6 @@
 pagination-results-text: '<p>%d résultats trouvés</p>'
+email-to: 'fumseckworld@gmail.com'
+email-from: 'admin@localhost'
+site-domain-name: ''
+site-domain-selector: ''
+email-private-key-passphrase: ''

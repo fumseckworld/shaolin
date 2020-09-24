@@ -1,0 +1,1 @@
+i'm <?= $name ?? ''?>,and i'm interesting for the stage.

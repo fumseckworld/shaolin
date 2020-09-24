@@ -18,6 +18,7 @@ namespace Nol\Http\Controller {
     use Nol\Http\Response\Response;
     use Nol\Http\Views\View;
     use Nol\Messages\Flash\Flash;
+    use Nol\Messages\Mailing\Message;
     use Nol\Security\Hashing\Hash;
     use Nol\Session\Session;
     use stdClass;
@@ -42,6 +43,26 @@ namespace Nol\Http\Controller {
         final public function sql(string $table): Sql
         {
             return (new Sql())->for($this->connect())->from($table);
+        }
+
+        /**
+         *
+         * Send a message at a contact.
+         *
+         * @param string $subject     The message subject.
+         * @param string $authorEmail The message author email.
+         * @param string $message     The message to send.
+         * @param array  $args        The message arguments.
+         *
+         * @throws DependencyException
+         * @throws NotFoundException
+         *
+         * @return bool
+         *
+         */
+        final public function send(string $subject, string $authorEmail, string $message, array $args = []): bool
+        {
+            return (new Message($subject, $authorEmail, $message, $args))->send();
         }
 
         /**
