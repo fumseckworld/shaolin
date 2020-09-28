@@ -53,21 +53,17 @@ namespace Nol\Database\Found {
          */
         protected static string $prefix = 'search';
 
-        /**
-         *
-         * Html code before the content of results.
-         *
-         */
         protected static string $beforeContent = '';
 
+        protected static string $beforeFound = '';
 
-        /**
-         *
-         * Html code after the content of results.
-         *
-         */
+        protected static string $beforeOthers = '';
+
         protected static string $afterContent = '';
 
+        protected static string $afterFound = '';
+
+        protected static string $afterOthers = '';
 
         /**
          *
@@ -147,11 +143,17 @@ namespace Nol\Database\Found {
             int $current_page = 1
         ): string {
             return sprintf(
-                '<section><h1>%s</h1>%s</section><section><h2>%s</h2>%s</section>',
+                '%s%s<h1>%s</h1>%s%s%s<h2>%s</h2>%s%s%s',
+                static::$beforeContent,
+                static::$beforeFound,
                 $resultsTitle,
                 $this->for($value, $connect, 1),
+                static::$afterFound,
+                static::$beforeOthers,
                 $differentTitle,
-                $this->different($column, $value, $connect, $current_page)
+                $this->different($column, $value, $connect, $current_page),
+                static::$afterOthers,
+                static::$afterContent
             );
         }
 
