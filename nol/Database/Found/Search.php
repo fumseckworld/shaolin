@@ -48,10 +48,7 @@ namespace Nol\Database\Found {
          */
         protected static string $table = '';
 
-        /**
-         * The table prefix
-         */
-        protected static string $prefix = 'search';
+        protected static string $paginationPrefix = '';
 
         protected static string $beforeContent = '';
 
@@ -214,7 +211,7 @@ namespace Nol\Database\Found {
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
-                    $pagination->render([static::$prefix, $value]),
+                    $pagination->render([static::$paginationPrefix, $value]),
                     static::$afterPagination
                 )
             );
@@ -262,7 +259,7 @@ namespace Nol\Database\Found {
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
-                    $pagination->render([static::$prefix, $value]),
+                    $pagination->render([static::$paginationPrefix, $value]),
                     static::$afterPagination
                 )
             );
@@ -381,7 +378,7 @@ namespace Nol\Database\Found {
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
-                    $pagination->render([static::$prefix, $value]),
+                    $pagination->render([static::$paginationPrefix, $value]),
                     static::$afterPagination
                 )
             );

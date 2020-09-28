@@ -10,7 +10,7 @@ namespace App\Search {
     {
         protected static string $table = 'articles';
 
-        protected static string $prefix = 'article';
+        protected static string $paginationPrefix = 'article';
 
         /**
          * @inheritDoc
