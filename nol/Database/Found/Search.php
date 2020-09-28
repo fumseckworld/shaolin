@@ -114,6 +114,17 @@ namespace Nol\Database\Found {
         abstract public function each(stdClass $record, bool $global): string;
 
         /**
+         *
+         * Method to generate html code for all records who matches the request.
+         *
+         * @param stdClass $record The current record found.
+         *
+         * @return string
+         *
+         */
+        abstract public function found(stdClass $record): string;
+
+        /**
          * @param string  $value
          * @param string  $column
          * @param string  $resultsTitle
@@ -138,7 +149,7 @@ namespace Nol\Database\Found {
             return sprintf(
                 '<section><h1>%s</h1>%s</section><section><h2>%s</h2>%s</section>',
                 $resultsTitle,
-                $this->search($value, $connect, 1),
+                $this->for($value, $connect, 1),
                 $differentTitle,
                 $this->different($column, $value, $connect, $current_page)
             );
@@ -312,6 +323,57 @@ namespace Nol\Database\Found {
                 $data->push($reflection->getMethod('search')->invokeArgs($reflection->newInstance(), [$x, $connect]));
             }
             return $data->all();
+        }
+
+        /**
+         * @param string  $value        The value to search
+         * @param Connect $connect      The connection
+         * @param int     $current_page The current page
+         *
+         * @throws DependencyException
+         * @throws Kedavra
+         * @throws NotFoundException
+         * @throws ReflectionException
+         *
+         * @return string
+         *
+         */
+        final private function for(string $value, Connect $connect, int $current_page = 1): string
+        {
+
+            $global = not_def(static::$table);
+
+            $records = $global ? $this->global($value, $connect) : $this->from($value, $connect);
+
+            $pagination = new Pagination(
+                $current_page,
+                static::$limit,
+                count($records)
+            );
+
+            $content = collect(
+                (new Sql())
+                    ->from(static::$table)
+                    ->for($connect)
+                    ->take(static::$limit, (($current_page) - 1) * static::$limit)
+                    ->by((new Sql())->from(static::$table)->for($connect)->primary())
+                    ->like($value)
+                    ->get()
+            )->for(function (stdClass $record) {
+                return $this->found($record);
+            })->join('');
+            return trim(
+                sprintf(
+                    '%s%s%s%s%s%s%s',
+                    static::$beforeContent,
+                    $pagination->found(),
+                    $content,
+                    static::$afterContent,
+                    static::$beforePagination,
+                    $pagination->render([static::$prefix, $value]),
+                    static::$afterPagination
+                )
+            );
         }
     }
 }

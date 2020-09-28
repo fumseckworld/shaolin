@@ -37,5 +37,17 @@ namespace App\Search {
                 nl2br($record->content)
             );
         }
+
+        /**
+         * @inheritDoc
+         */
+        public function found(stdClass $record): string
+        {
+            return sprintf(
+                '<article><header><h2>%s</h2></header>%s</article>',
+                $record->title,
+                nl2br($record->content)
+            );
+        }
     }
 }
