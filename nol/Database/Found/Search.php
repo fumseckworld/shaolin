@@ -65,6 +65,14 @@ namespace Nol\Database\Found {
 
         protected static string $afterOthers = '';
 
+        protected static string $beforeFoundTitle = '';
+
+        protected static string $afterFoundTitle = '';
+
+        protected static string $beforeOthersTitle = '';
+
+        protected static string $afterOthersTitle = '';
+
         /**
          *
          * Html code before the pagination
@@ -143,14 +151,18 @@ namespace Nol\Database\Found {
             int $current_page = 1
         ): string {
             return sprintf(
-                '%s%s<h1>%s</h1>%s%s%s<h2>%s</h2>%s%s%s',
+                '%s%s%s%s%s%s%s%s%s%s%s%s%s%s',
                 static::$beforeContent,
                 static::$beforeFound,
+                static::$beforeFoundTitle,
                 $resultsTitle,
+                static::$afterFoundTitle,
                 $this->for($value, $connect, 1),
                 static::$afterFound,
                 static::$beforeOthers,
+                static::$beforeOthersTitle,
                 $differentTitle,
+                static::$afterOthersTitle,
                 $this->different($column, $value, $connect, $current_page),
                 static::$afterOthers,
                 static::$afterContent
