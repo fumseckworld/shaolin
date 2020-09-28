@@ -64,9 +64,6 @@ namespace Nol\Html\Pagination {
          *
          * @param array $prefix
          *
-         * @throws DependencyException
-         * @throws NotFoundException
-         *
          * @return string
          *
          */
@@ -117,8 +114,7 @@ namespace Nol\Html\Pagination {
             }
 
             return sprintf(
-                '<div>%s<nav><ul class="pagination">%s</ul></nav></div>',
-                $this->total > $this->limit ? $this->found() : '',
+                '<nav><ul class="pagination">%s</ul></nav>',
                 $li
             );
         }

@@ -209,9 +209,8 @@ namespace Nol\Database\Found {
             })->join('');
             return trim(
                 sprintf(
-                    '%s%s%s%s%s%s%s',
+                    '%s%s%s%s%s%s',
                     static::$beforeContent,
-                    $pagination->found(),
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
@@ -258,9 +257,8 @@ namespace Nol\Database\Found {
             })->join('');
             return trim(
                 sprintf(
-                    '%s%s%s%s%s%s%s',
+                    '%s%s%s%s%s%s',
                     static::$beforeContent,
-                    $pagination->found(),
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
@@ -378,9 +376,8 @@ namespace Nol\Database\Found {
             })->join('');
             return trim(
                 sprintf(
-                    '%s%s%s%s%s%s%s',
+                    '%s%s%s%s%s%s',
                     static::$beforeContent,
-                    $pagination->found(),
                     $content,
                     static::$afterContent,
                     static::$beforePagination,
