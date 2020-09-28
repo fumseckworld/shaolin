@@ -54,7 +54,7 @@ namespace Nol\Configuration {
         {
             $x = collect(explode('.', $file));
 
-            $file = base($this->path(), $x->first(), '.yaml');
+            $file = sprintf("%s%s%s.yaml", base($this->path()), DIRECTORY_SEPARATOR, $x->first());
 
             if (!file_exists($file)) {
                 throw new Kedavra(sprintf(
@@ -89,7 +89,7 @@ namespace Nol\Configuration {
          */
         private function path(): string
         {
-            return base(nol('config-directory', 'config'));
+            return nol('config-directory', 'config');
         }
 
         /**
