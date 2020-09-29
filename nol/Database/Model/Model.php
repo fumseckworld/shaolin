@@ -52,6 +52,11 @@ namespace Nol\Database\Model {
         protected static string $prefix = '';
 
         /**
+         * The pagination prefix
+         */
+        protected static string $paginationPrefix = '';
+
+        /**
          *
          * Html code before the content of results.
          *
@@ -125,7 +130,7 @@ namespace Nol\Database\Model {
                     $current_page,
                     static::$limit,
                     count($data)
-                ))->render([static::$table])
+                ))->render([static::$paginationPrefix])
                 : '';
 
             $content = collect(
@@ -170,7 +175,9 @@ namespace Nol\Database\Model {
         final public function paginate(int $current_page, array $data = []): string
         {
 
-            $pagination = (new Pagination($current_page, static::$limit, count($data)))->render([static::$table]);
+            $pagination = (new Pagination($current_page, static::$limit, count($data)))->render(
+                [static::$paginationPrefix]
+            );
 
             $content = collect(
                 (new Sql())
