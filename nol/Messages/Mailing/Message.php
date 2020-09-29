@@ -50,8 +50,7 @@ namespace Nol\Messages\Mailing {
                 nol('site-domain-selector', ''),
                 nol('email-private-key-passphrase', '')
             );
-            $this->message = new Swift_Message($subject, $message, 'text\html', 'utf-8');
-            $this->message->addPart($message, 'text/plain', 'utf-8');
+            $this->message = new Swift_Message($subject, $message);
             $this->message->setReplyTo($authorEmail);
             $this->message->attachSigner($signer);
             $this->message->addTo(nol('email-to', ''));
