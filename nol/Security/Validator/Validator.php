@@ -91,7 +91,6 @@ namespace Nol\Security\Validator {
         {
             $rules = def(static::$rules) ? static::$rules : static::$fields;
 
-
             foreach ($rules as $field => $rule) {
                 $x = collect(explode('|', $rule));
                 $x->rewind();
@@ -100,7 +99,7 @@ namespace Nol\Security\Validator {
                         case 'required':
                             if (not_def($bag->get($field))) {
                                 $this->addError(
-                                    sprintf('The %s field must be defined', $field)
+                                    $this->trans($x->current(), $field, 'The %s field must be defined')
                                 );
                             }
                             break;
@@ -115,7 +114,11 @@ namespace Nol\Security\Validator {
                             if ($value < $min || $value > $max) {
                                 $this->addError(
                                     sprintf(
-                                        _('The %s field is not between %s and %s'),
+                                        config(
+                                            'validator',
+                                            'between',
+                                            'The %s field is not between %s and %s'
+                                        ),
                                         $field,
                                         $min,
                                         $max
@@ -132,10 +135,7 @@ namespace Nol\Security\Validator {
 
                             if ($number > $value) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s field is superior to the limit',
-                                        $field
-                                    )
+                                    $this->trans('max', $field, 'The %s field is superior to the limit')
                                 );
                             }
                             break;
@@ -148,26 +148,24 @@ namespace Nol\Security\Validator {
 
                             if ($number < $value) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s field is inferior to the limit',
-                                        $field
-                                    )
+                                    $this->trans('min', $field, 'The %s field is inferior to the limit')
                                 );
                             }
                             break;
                         case 'array':
                             if (!is_array($bag->get($field))) {
                                 $this->addError(
-                                    sprintf('The %s field is not an array', $field)
+                                    $this->trans($x->current(), $field, 'The %s field is not an array')
                                 );
                             }
                             break;
                         case 'snake':
                             if (!is_snake($bag->get($field))) {
                                 $this->addError(
-                                    sprintf(
-                                        'the %s argument is not in the snake case format',
-                                        $field
+                                    $this->trans(
+                                        $x->current(),
+                                        $field,
+                                        'The %s argument is not in the snake case format'
                                     )
                                 );
                             }
@@ -175,9 +173,10 @@ namespace Nol\Security\Validator {
                         case 'camel':
                             if (!is_camel($bag->get($field))) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not in the camel case format',
-                                        $field
+                                    $this->trans(
+                                        $x->current(),
+                                        $field,
+                                        'The %s argument is not in the camel case format'
                                     )
                                 );
                             }
@@ -192,10 +191,7 @@ namespace Nol\Security\Validator {
                                 === false
                             ) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not a valid ipv4 address',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not a valid ipv4 address')
                                 );
                             }
                             break;
@@ -209,10 +205,7 @@ namespace Nol\Security\Validator {
                                 === false
                             ) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not a valid ipv6 address',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not a valid ipv6 address')
                                 );
                             }
                             break;
@@ -226,10 +219,7 @@ namespace Nol\Security\Validator {
                                 === false
                             ) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not a valid domain',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not a valid domain')
                                 );
                             }
                             break;
@@ -242,10 +232,7 @@ namespace Nol\Security\Validator {
                                 === false
                             ) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not a valid mac address',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not a valid mac address')
                                 );
                             }
                             break;
@@ -257,10 +244,7 @@ namespace Nol\Security\Validator {
                                 ) === false
                             ) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not a valid boolean',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not a valid boolean')
                                 );
                             }
                             break;
@@ -275,30 +259,21 @@ namespace Nol\Security\Validator {
                                 )
                             ) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not a valid float number',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not a valid float number')
                                 );
                             }
                             break;
                         case 'email':
                             if (filter_var($bag->get($field), FILTER_VALIDATE_EMAIL) === false) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s field is not a valid email',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s field is not a valid email')
                                 );
                             }
                             break;
                         case 'integer':
                             if (!is_int($bag->get($field))) {
                                 $this->addError(
-                                    sprintf(
-                                        'The %s argument is not an integer',
-                                        $field
-                                    )
+                                    $this->trans($x->current(), $field, 'The %s argument is not an integer')
                                 );
                             }
                             break;
@@ -307,6 +282,25 @@ namespace Nol\Security\Validator {
                 }
             }
             return not_def(static::$errors);
+        }
+
+        /**
+         *
+         * Translate a validator message from user config or default.
+         *
+         * @param string $key     The current error key
+         * @param string $field   The current field not valid
+         * @param string $message The default message
+         *
+         * @return string
+         *
+         */
+        private function trans(string $key, string $field, string $message): string
+        {
+            return sprintf(
+                config('validator', trim($key), $message),
+                $field
+            );
         }
 
         /**
