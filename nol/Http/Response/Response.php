@@ -175,18 +175,22 @@ namespace Nol\Http\Response {
          *
          * Get the response
          *
+         *
+         * @throws DependencyException
          * @throws Kedavra
-         *
+         * @throws NotFoundException
          * @return Response
-         *
          */
         final public function get(): Response
         {
-            try {
-                return (new Router($this->request, strval(env('MODE', 'site'))))->run();
-            } catch (NotFoundException | DependencyException | Exception | Kedavra $e) {
-                return (new Response())->set($e->getMessage(), 500)->send();
+            if (display_error() instanceof Run) {
+                try {
+                    return (new Router($this->request, strval(env('MODE', 'site'))))->run();
+                } catch (NotFoundException | DependencyException | Exception | Kedavra $e) {
+                    return (new Response())->set($e->getMessage(), 500)->send();
+                }
             }
+            return (new Router($this->request, strval(env('MODE', 'site'))))->run();
         }
 
 
