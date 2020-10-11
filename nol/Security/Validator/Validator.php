@@ -126,8 +126,7 @@ namespace Nol\Security\Validator {
                                 );
                             }
                             break;
-                        case preg_match("/max:([0-9]+)/", $x->current()) === 1:
-                        case preg_match("/maxlength:([0-9]+)/", $x->current()) === 1:
+                        case def(strstr($x->current(), 'max')):
                             $delta = $bag->get($field);
                             $number = is_string($delta) ? strlen(strval($delta)) : intval($delta);
                             $x = collect(explode(':', $x->current()));
@@ -139,8 +138,8 @@ namespace Nol\Security\Validator {
                                 );
                             }
                             break;
-                        case preg_match("/min:([0-9]+)/", $x->current()) === 1:
-                        case preg_match("/minlength:([0-9]+)/", $x->current()) === 1:
+
+                        case def(strstr($x->current(), 'min')):
                             $x = collect(explode(':', $x->current()));
                             $value = $x->last();
                             $delta = $bag->get($field);
