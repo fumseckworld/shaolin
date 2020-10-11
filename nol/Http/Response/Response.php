@@ -23,6 +23,7 @@ namespace Nol\Http\Response {
     use DI\DependencyException;
     use DI\NotFoundException;
     use Exception;
+    use Nol\Cache\ZenCache;
     use Nol\Exception\Kedavra;
     use Nol\Http\Request\ServerRequest;
     use Nol\Http\Routing\Router;
@@ -183,14 +184,17 @@ namespace Nol\Http\Response {
          */
         final public function get(): Response
         {
-            if (display_error() instanceof Run) {
-                try {
-                    return (new Router($this->request, strval(env('MODE', 'site'))))->run();
-                } catch (NotFoundException | DependencyException | Exception | Kedavra $e) {
-                    return (new Response())->set($e->getMessage(), 500)->send();
+            if ((new ZenCache())->add(app('app-directory'))) {
+                if (display_error() instanceof Run) {
+                    try {
+                        return (new Router($this->request, strval(env('MODE', 'site'))))->run();
+                    } catch (NotFoundException | DependencyException | Exception | Kedavra $e) {
+                        return (new Response())->set($e->getMessage(), 500)->send();
+                    }
                 }
+                return (new Router($this->request, strval(env('MODE', 'site'))))->run();
             }
-            return (new Router($this->request, strval(env('MODE', 'site'))))->run();
+            throw new Kedavra('The caching task of the application directory has failed');
         }
 
 
