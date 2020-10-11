@@ -22,9 +22,6 @@ namespace Nol\Cache {
         {
             $boolean = collect();
             foreach ($this->scan($directory) as $file) {
-                if (opcache_is_script_cached($file)) {
-                    continue;
-                }
                 $boolean->push(opcache_compile_file($file));
             }
             return $boolean->ok();
